@@ -476,7 +476,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   /**
    * Answers a tap on the app's native header (`modal/action`) with what the
-   * dialog's own button or menu item would do; ids are those `modal/header`
+   * dialog's own button or menu item would do; ids are those `modal/update`
    * named. See `computeNativeMoreInfoHeader`.
    */
   public performHeaderAction(id: string) {
@@ -1203,7 +1203,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       return;
     }
     this._sentNativeHeader = serialized;
-    external.fireMessage({ type: "modal/header", payload: header });
+    external.fireMessage({ type: "modal/update", payload: { header } });
   }
 
   private _reportShownEntityToExternalApp(

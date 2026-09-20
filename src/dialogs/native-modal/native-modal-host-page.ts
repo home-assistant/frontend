@@ -52,7 +52,10 @@ export abstract class NativeModalHostPage extends LitElement {
       this.hass.localize
     );
     if (decision.action === "grow") {
-      external.fireMessage({ type: "modal/size", payload: { size: "full" } });
+      external.fireMessage({
+        type: "modal/update",
+        payload: { size: "full" },
+      });
       return;
     }
     // Stopped so the dialog manager does not also draw it in this page.

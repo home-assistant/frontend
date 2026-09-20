@@ -91,7 +91,7 @@ export interface NativeMoreInfoHeaderContext {
 }
 
 /**
- * The header of the standalone more-info page as `modal/header` describes it to
+ * The header of the standalone more-info page as `modal/update` describes it to
  * the app: the same buttons and menu items the dialog renders, in the same
  * order and under the same conditions, named by the ids the dialog answers in
  * `performHeaderAction`.

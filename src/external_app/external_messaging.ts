@@ -244,18 +244,6 @@ interface EMOutgoingMessageModalOpen extends EMMessage {
 }
 
 /**
- * Asks the app to change how much room the modal takes, after it is already up.
- * A dialog opened inside a modal needs the whole screen: a half-height one
- * would clip it.
- */
-interface EMOutgoingMessageModalSize extends EMMessage {
-  type: "modal/size";
-  payload: {
-    size: NativeModalSize;
-  };
-}
-
-/**
  * Sent from inside a native modal when the user asks to close it. The page has
  * no dialog to hide, so the app dismisses the modal around it.
  */
@@ -308,14 +296,21 @@ export interface NativeModalHeader {
 }
 
 /**
- * Sent from inside a native modal whenever the header it leaves out
- * (`hasNativeModalHeader`) would change. The app draws exactly this and answers
- * a tap with the `modal/action` command, so what the header offers is decided
- * by the frontend alone.
+ * Tells the app what changed about a modal that is already up: the header it
+ * should draw, and how much room the page needs. Both are optional, and at
+ * least one is always present.
+ *
+ * The header arrives whenever the page's own header would change, and the app
+ * answers a tap with the `modal/action` command, so what it offers is decided by
+ * the frontend alone. The size arrives when a dialog opens over the page, which
+ * a half-height modal would clip.
  */
-interface EMOutgoingMessageModalHeader extends EMMessage {
-  type: "modal/header";
-  payload: NativeModalHeader;
+interface EMOutgoingMessageModalUpdate extends EMMessage {
+  type: "modal/update";
+  payload: {
+    size?: NativeModalSize;
+    header?: NativeModalHeader;
+  };
 }
 
 interface EMOutgoingMessageFocusElement extends EMMessage {
@@ -351,10 +346,9 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
   | EMOutgoingMessageModalOpen
-  | EMOutgoingMessageModalSize
+  | EMOutgoingMessageModalUpdate
   | EMOutgoingMessageModalClose
   | EMOutgoingMessageModalNavigate
-  | EMOutgoingMessageModalHeader
   | EMOutgoingMessageMoreInfoOpened
   | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageSidebarShow
@@ -472,7 +466,7 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
-/** The user picked an item of a native modal's header; `id` is from `modal/header`. */
+/** The user picked an item of a native modal's header; `id` is from `modal/update`. */
 export interface EMIncomingMessageModalAction {
   id: number;
   type: "command";
@@ -529,7 +523,7 @@ export interface ExternalConfig {
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasNativeModal?: boolean; // Shows a frontend route in a native modal: the frontend sends modal/open instead of opening its own dialog
-  hasNativeModalHeader?: boolean; // The native modal draws its header from modal/header (title, buttons, menu) and sends modal/action, so the page inside leaves its own out
+  hasNativeModalHeader?: boolean; // The native modal draws its header from modal/update (title, buttons, menu) and sends modal/action, so the page inside leaves its own out
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }
