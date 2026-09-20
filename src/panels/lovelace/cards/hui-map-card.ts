@@ -975,9 +975,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     @media (max-width: 600px) {
-      /* The map bleeds past the view's safe-area padding, so the sheet over it
-         has to reach the same edges: anything less leaves a strip of map down
-         its trailing side and under it. */
       #overview {
         top: auto;
         bottom: calc(-1 * var(--map-bleed-bottom, 0px));
