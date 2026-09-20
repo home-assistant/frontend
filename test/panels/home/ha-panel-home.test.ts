@@ -68,6 +68,14 @@ const saveConfig = (el: TestPanelHome, config: HomeFrontendSystemData) =>
     >
   )._saveConfig(config);
 
+const getPreviewConfig = (el: TestPanelHome) =>
+  (
+    el as unknown as Record<
+      "_previewConfig",
+      HomeFrontendSystemData | undefined
+    >
+  )._previewConfig;
+
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((res) => {
@@ -248,6 +256,46 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     // window must not trigger a regeneration.
     await vi.advanceTimersByTimeAsync(200);
     expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  it("clears _previewConfig after a save whose content matches it, so a reopened dialog does not inherit a stale draft", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+
+    const draft: HomeFrontendSystemData = { hide_welcome_message: true };
+    setPreviewConfig(el, draft);
+
+    // The saved config is content-equal to the current preview (e.g. Save
+    // was clicked on that exact draft), but built via a separate
+    // buildHomeConfig() call, so it is a different object reference.
+    await saveConfig(el, { hide_welcome_message: true });
+
+    expect(getPreviewConfig(el)).toBeUndefined();
+  });
+
+  it("preserves _previewConfig after a save whose content differs from it, keeping a newer live draft", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+
+    // A newer edit is pushed to the preview after the save's config was
+    // captured but before it resolves (mirrors dialog-edit-home's stale
+    // save handling, which keeps the dialog open with the newer draft).
+    const saved: HomeFrontendSystemData = { hide_welcome_message: true };
+    const newerDraft: HomeFrontendSystemData = {
+      hide_welcome_message: true,
+      hide_suggested_entities: true,
+    };
+    setPreviewConfig(el, newerDraft);
+
+    await saveConfig(el, saved);
+
+    expect(getPreviewConfig(el)).toEqual(newerDraft);
   });
 
   it("cancels a pending preview debounce before a locale-driven regeneration", async () => {

@@ -1,4 +1,4 @@
-import { shallowEqual } from "../../../common/util/shallow-equal";
+import { deepEqual } from "../../../common/util/deep-equal";
 import type { EditorState } from "./dialog-edit-home";
 
 /**
@@ -18,7 +18,7 @@ export class HomeConfigDraftSession {
   }
 
   get isDirty(): boolean {
-    return !shallowEqual(this.draft, this._baseline);
+    return !deepEqual(this.draft, this._baseline);
   }
 
   withDraft(newDraft: EditorState): HomeConfigDraftSession {

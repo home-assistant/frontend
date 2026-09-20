@@ -101,6 +101,21 @@ const suggestedChanged = (
     })
   );
 
+const favoriteEntitiesChanged = (
+  el: TestDialogEditHome,
+  favoriteEntities: string[]
+) =>
+  (
+    el as unknown as Record<
+      "_favoriteEntitiesChanged",
+      (ev: CustomEvent) => void
+    >
+  )._favoriteEntitiesChanged(
+    new CustomEvent("value-changed", {
+      detail: { value: favoriteEntities },
+    })
+  );
+
 const dialogClosed = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_dialogClosed", () => void>)._dialogClosed();
 
@@ -183,6 +198,24 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     dialogClosed(el);
 
     expect(previewConfig).not.toHaveBeenCalled();
+  });
+
+  it("reports not dirty when an array field is edited back to matching content via a new array reference", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
+    await el.updateComplete;
+
+    favoriteEntitiesChanged(el, ["light.kitchen"]);
+    await el.updateComplete;
+    expect(el.isDirtyState).toBe(true);
+
+    // A brand new array literal with the same contents as the original
+    // baseline (empty), not the same reference: isDirtyState must compare
+    // by content, not by reference, or this would incorrectly read dirty.
+    favoriteEntitiesChanged(el, []);
+    await el.updateComplete;
+    expect(el.isDirtyState).toBe(false);
   });
 
   it("still clears the preview on a later cancel after a reused, edited session", async () => {

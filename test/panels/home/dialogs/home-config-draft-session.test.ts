@@ -80,4 +80,21 @@ describe("HomeConfigDraftSession", () => {
     expect(stale).toBe(true);
     expect(updated.isDirty).toBe(false);
   });
+
+  it("compares array fields by content, not by reference (a round-trip edit produces a new array)", () => {
+    const withFavorite: EditorState = {
+      ...stateA,
+      favorite_entities: ["light.kitchen"],
+    };
+    const session = HomeConfigDraftSession.start(withFavorite)
+      .withDraft({
+        ...withFavorite,
+        favorite_entities: ["light.kitchen", "light.hallway"],
+      })
+      // A brand new array literal with the same contents as the baseline's,
+      // not the same reference as withFavorite.favorite_entities.
+      .withDraft({ ...withFavorite, favorite_entities: ["light.kitchen"] });
+
+    expect(session.isDirty).toBe(false);
+  });
 });

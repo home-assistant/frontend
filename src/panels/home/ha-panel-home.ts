@@ -466,6 +466,16 @@ class PanelHome extends SubscribeMixin(LitElement) {
     try {
       await saveFrontendSystemData(this.hass.connection, "home", config);
       this._config = config || {};
+      if (deepEqual(this._previewConfig, config)) {
+        // Otherwise the dialog's own preview push already cleared this on
+        // a normal close; only a stale-but-now-matching completion (see
+        // dialog-edit-home's withSaved()) can still leave it set here. A
+        // reused legacy dialog instance is never destroyed between opens
+        // (make-dialog-manager keeps it in the DOM), so a leftover value
+        // would otherwise persist indefinitely and leak into the next
+        // showDialog() call.
+        this._previewConfig = undefined;
+      }
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to save home configuration:", err);

@@ -84,7 +84,7 @@ export class DialogEditHome
       shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
     };
     this._session = HomeConfigDraftSession.start(initial);
-    this._initDirtyTracking({ type: "shallow" }, initial);
+    this._initDirtyTracking({ type: "deep" }, initial);
     this._open = true;
   }
 
