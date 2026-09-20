@@ -12,7 +12,7 @@ describe("native modal url", () => {
       params: { entry: { when: 1, name: "Sun" } },
     });
 
-    expect(url.startsWith("/_modal#dialog=")).toBe(true);
+    expect(url.startsWith("/modal#dialog=")).toBe(true);
     expect(isNativeModalPath(new URL(url, "http://x").pathname)).toBe(true);
     expect(decodeNativeModalDialogUrl(new URL(url, "http://x").hash)).toEqual({
       tag: "dialog-logbook-detail",
@@ -56,9 +56,9 @@ describe("native modal url", () => {
   });
 
   it("matches its own path and nothing else", () => {
-    expect(isNativeModalPath("/_modal")).toBe(true);
-    expect(isNativeModalPath("/_modal/")).toBe(true);
-    expect(isNativeModalPath("/_modal/extra")).toBe(false);
+    expect(isNativeModalPath("/modal")).toBe(true);
+    expect(isNativeModalPath("/modal/")).toBe(true);
+    expect(isNativeModalPath("/modal/extra")).toBe(false);
     expect(isNativeModalPath("/more-info")).toBe(false);
   });
 });

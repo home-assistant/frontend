@@ -21,7 +21,7 @@ describe("decideNativeModalDialog", () => {
       title: "ui.dialogs.logbook_detail.title",
     });
     expect(
-      decision.action === "open" && decision.path.startsWith("/_modal#dialog=")
+      decision.action === "open" && decision.path.startsWith("/modal#dialog=")
     ).toBe(true);
   });
 

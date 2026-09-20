@@ -119,7 +119,7 @@ describe("the page an app shows in a native modal", () => {
   });
 
   it("closes the modal for a url it cannot read", async () => {
-    await openAt("/_modal#dialog=not-json");
+    await openAt("/modal#dialog=not-json");
 
     expect(hostedDialog()).toBeNull();
     expect(fireMessage).toHaveBeenCalledWith({ type: "modal/close" });
@@ -146,7 +146,7 @@ describe("the page an app shows in a native modal", () => {
       type: "modal/navigate",
       payload: { path: "/config/devices/dashboard" },
     });
-    expect(window.location.pathname).toBe("/_modal");
+    expect(window.location.pathname).toBe("/modal");
   });
 
   it("stops relaying once it is gone", async () => {

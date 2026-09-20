@@ -1,9 +1,10 @@
 /**
  * Route that shows one dialog as a frameless page, for a companion app that puts
  * it in a modal of its own. Which dialog travels in the fragment, which never
- * reaches the server.
+ * reaches the server. The name is reserved: it is matched before panels are, so
+ * a panel called `modal` would never be reached.
  */
-export const NATIVE_MODAL_PATH = "/_modal";
+export const NATIVE_MODAL_PATH = "/modal";
 
 const DIALOG_FRAGMENT_PREFIX = "#dialog=";
 

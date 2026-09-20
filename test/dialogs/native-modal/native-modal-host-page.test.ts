@@ -51,7 +51,7 @@ describe("a page the app is showing in a modal", () => {
 
     const message = fireMessage.mock.calls[0][0];
     expect(message.type).toBe("modal/open");
-    expect(message.payload.path).toContain("/_modal#dialog=");
+    expect(message.payload.path).toContain("/modal#dialog=");
   });
 
   // A half-height modal would clip a dialog drawn in the page.
