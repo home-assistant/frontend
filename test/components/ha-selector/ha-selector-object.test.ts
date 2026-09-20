@@ -213,6 +213,13 @@ describe("ha-selector-object form dialog flow", () => {
       object: {},
       choose: chooseDefault,
     });
+
+    (params.data!.choose as { Temperature: number }).Temperature = 3000;
+
+    expect(chooseDefault).toEqual({
+      active_choice: "Temperature",
+      Temperature: 4000,
+    });
   });
 
   it("leaves unsupported required fields unset in Add dialog data", async () => {

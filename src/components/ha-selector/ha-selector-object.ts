@@ -245,7 +245,7 @@ export class HaObjectSelector extends LitElement {
       ...Object.fromEntries(
         schema
           .filter((field) => "default" in field)
-          .map((field) => [field.name, field.default])
+          .map((field) => [field.name, structuredClone(field.default)])
       ),
     };
 
