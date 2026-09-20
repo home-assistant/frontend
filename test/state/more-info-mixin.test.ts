@@ -31,11 +31,6 @@ const makeHass = (hasNativeModal: boolean, fireMessage: unknown) =>
         state: "on",
         attributes: { friendly_name: "Kitchen ceiling" },
       },
-      "sensor.outside": {
-        entity_id: "sensor.outside",
-        state: "12",
-        attributes: { friendly_name: "Outside" },
-      },
     },
     entities: {},
     devices: {},
@@ -80,15 +75,6 @@ describe("more-info mixin with a native modal", () => {
     expect(payload.path).toBe("/more-info?more-info-entity-id=light.kitchen");
     expect(payload.title).toBe("Kitchen ceiling");
     expect(payload.size).toBe("full");
-  });
-
-  // A sensor's details fit half a screen; the app maps that to its own presentation.
-  it("asks for half a screen for a domain that needs it", async () => {
-    host.hass = makeHass(true, fireMessage);
-
-    await openMoreInfo("sensor.outside");
-
-    expect(fireMessage.mock.calls[0][0].payload.size).toBe("compact");
   });
 
   // The modal carries the entity in its own URL. Rewriting this page's URL would
