@@ -12,6 +12,7 @@ import {
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   fireEvent,
@@ -39,6 +40,7 @@ import type {
 } from "../../../components/trace/hat-script-graph";
 import type { AutomationEntity } from "../../../data/automation";
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import { buildTraceLabels } from "../../../data/trace-labels";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -96,6 +98,9 @@ export class HaAutomationTrace extends LitElement {
   @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
+
+  /** Memoized on the trace, so state changes do not rerender the graph. */
+  private _traceLabels = memoizeOne(buildTraceLabels);
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -277,6 +282,15 @@ export class HaAutomationTrace extends LitElement {
         <hat-script-graph
           .trace=${this._trace}
           .selected=${this._selected?.path}
+          .labels=${
+            this._trace
+              ? this._traceLabels(
+                  this._trace,
+                  this.hass,
+                  this._entityRegistry ?? []
+                )
+              : undefined
+          }
           @graph-node-selected=${this._pickNode}
         ></hat-script-graph>
       </div>
