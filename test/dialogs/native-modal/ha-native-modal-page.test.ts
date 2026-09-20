@@ -27,11 +27,14 @@ class TestHostedDialog extends HTMLElement {
     this.actions.push(id);
   }
 }
+class OtherHostedDialog extends TestHostedDialog {}
 customElements.define("test-hosted-dialog", TestHostedDialog);
+customElements.define("test-other-dialog", OtherHostedDialog);
 
 declare global {
   interface HTMLElementTagNameMap {
     "test-hosted-dialog": TestHostedDialog;
+    "test-other-dialog": OtherHostedDialog;
   }
 }
 
@@ -41,13 +44,17 @@ vi.mock("../../../src/dialogs/native-modal/native-modal-dialogs", () => ({
       tag: "test-hosted-dialog",
       load: () => Promise.resolve(),
     },
+    "test-other-dialog": {
+      tag: "test-other-dialog",
+      load: () => Promise.resolve(),
+    },
   },
 }));
 
 await import("../../../src/dialogs/native-modal/ha-native-modal-page");
 
-const dialogUrl = (params: unknown) =>
-  createNativeModalDialogUrl({ tag: "test-hosted-dialog", params });
+const dialogUrl = (params: unknown, tag = "test-hosted-dialog") =>
+  createNativeModalDialogUrl({ tag, params });
 
 /** Lets the page's dynamic import of the dialog settle. */
 const settle = () =>
@@ -97,6 +104,18 @@ describe("the page an app shows in a native modal", () => {
       { entry: "first" },
       { entry: "second" },
     ]);
+  });
+
+  it("puts another dialog in place of the one on screen", async () => {
+    await openAt(dialogUrl({ entry: "first" }));
+
+    await navigate(dialogUrl({ entry: "second" }, "test-other-dialog"));
+    await settle();
+
+    expect(hostedDialog()).toBeNull();
+    const other =
+      page.shadowRoot!.querySelector<OtherHostedDialog>("test-other-dialog");
+    expect(other!.shown).toEqual([{ entry: "second" }]);
   });
 
   it("closes the modal for a url it cannot read", async () => {
