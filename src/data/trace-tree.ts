@@ -334,12 +334,17 @@ export class TraceTree {
           node.iterations !== undefined && node.iterations > 1
             ? node.iterations
             : undefined;
+        const steps = ensureArray<Action>(repeat.repeat.sequence);
         node.branches = [
           this._branch(
             `${path}/repeat`,
             prefix,
-            ensureArray<Action>(repeat.repeat.sequence),
-            disabled
+            steps,
+            disabled,
+            // An empty body has no step path for Core to record. It ran when
+            // the repeat itself ran. A non-empty body without traced steps
+            // never entered, e.g. `count: 0` or an immediately false `while`.
+            steps.length === 0 ? node.hasTrace : this._hasTracedSteps(prefix)
           ),
         ];
         break;

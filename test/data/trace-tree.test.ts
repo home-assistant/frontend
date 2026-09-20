@@ -602,6 +602,36 @@ describe("TraceTree branch completion", () => {
     expect(branch.unfinished).toBe(false);
   });
 
+  it("tracks a repeat body only when it was entered", () => {
+    const repeatBranch = (sequence: Action[], records: ActionTraceStep[]) =>
+      new TraceTree(createTrace([{ repeat: { count: 0, sequence } }], records))
+        .sequence[0].branches[0];
+
+    // The repeat ran but never entered its body, e.g. `count: 0` or a `while`
+    // that is false on the first check.
+    const notEntered = repeatBranch(
+      [{ action: "light.turn_on" }],
+      [{ path: "sequence/0", timestamp }]
+    );
+    expect(notEntered.hasTrace).toBe(false);
+    expect(notEntered.unfinished).toBe(false);
+
+    const entered = repeatBranch(
+      [{ action: "light.turn_on" }],
+      [
+        { path: "sequence/0", timestamp },
+        { path: "sequence/0/repeat/sequence/0", timestamp },
+      ]
+    );
+    expect(entered.hasTrace).toBe(true);
+
+    // An empty body has no step path for Core to record, so it counts as run
+    // when the repeat itself ran.
+    const empty = repeatBranch([], [{ path: "sequence/0", timestamp }]);
+    expect(empty.hasTrace).toBe(true);
+    expect(empty.finished).toBe(true);
+  });
+
   it("preserves empty, unreached, error, condition and stop handling", () => {
     const finishedIn = (steps: Action[], records: ActionTraceStep[]) => {
       const trace = createTrace([{ if: [], then: steps }], records, {

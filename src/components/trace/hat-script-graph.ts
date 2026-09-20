@@ -20,6 +20,7 @@ import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import { hasTemplate } from "../../common/string/has-template";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type {
   Condition,
@@ -27,16 +28,15 @@ import type {
   Trigger,
 } from "../../data/automation";
 import { expandConditionWithShorthand } from "../../data/automation";
-import {
-  getActionType,
-  type ChooseAction,
-  type IfAction,
-  type ParallelAction,
-  type RepeatAction,
-  type SequenceAction,
-  type ServiceAction,
-  type WaitAction,
-  type WaitForTriggerAction,
+import type {
+  ChooseAction,
+  IfAction,
+  ParallelAction,
+  RepeatAction,
+  SequenceAction,
+  ServiceAction,
+  WaitAction,
+  WaitForTriggerAction,
 } from "../../data/script";
 import type { TraceExtended } from "../../data/trace";
 import { TraceTree } from "../../data/trace-tree";
@@ -133,12 +133,7 @@ export class HatScriptGraph extends LitElement {
   };
 
   private _renderActionNode(node: TraceActionNode, graphStart = false) {
-    // The modern `action:` key has no dedicated renderer. The old
-    // `key in node` lookup fell through to the generic node for it, so keep
-    // that here for visual parity. The generic node still picks the service
-    // icon through the node's action type.
-    const type =
-      "action" in node.config ? "other" : (node.actionType ?? "other");
+    const type = node.actionType ?? "other";
     return (this._typeRenderers[type] ?? this._renderOtherNode).bind(this)(
       node,
       graphStart
@@ -349,7 +344,7 @@ export class HatScriptGraph extends LitElement {
         ></hat-graph-node>
         <div
           class="repeat-sequence"
-          ?track=${model.hasTrace}
+          ?track=${branch.hasTrace}
           ?unfinished=${branch.unfinished}
         >
           ${branch.children.map((action) => this._renderActionNode(action))}
@@ -363,10 +358,15 @@ export class HatScriptGraph extends LitElement {
     graphStart = false
   ) {
     const { config: node, path, track } = model;
+    // Traces keep the config as it was stored, so both the modern `action:`
+    // and the legacy `service:` key can show up here. A templated service is
+    // not resolvable to an icon, so it keeps the generic glyph.
+    const service = node.action ?? (node as { service?: string }).service;
+    const knownService = service && !hasTemplate(service) ? service : undefined;
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${node.action ? undefined : mdiRoomService}
+        .iconPath=${knownService ? undefined : mdiRoomService}
         @focus=${this._selectNode(node, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}
@@ -375,10 +375,10 @@ export class HatScriptGraph extends LitElement {
         tabindex=${model.hasTrace ? "0" : "-1"}
       >
         ${
-          node.action
+          knownService
             ? html`<ha-service-icon
                 slot="icon"
-                .service=${node.action}
+                .service=${knownService}
               ></ha-service-icon>`
             : nothing
         }
@@ -490,7 +490,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${ACTION_ICONS[getActionType(node)] || mdiCodeBrackets}
+        .iconPath=${ACTION_ICONS[model.actionType] || mdiCodeBrackets}
         @focus=${this._selectNode(node, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}

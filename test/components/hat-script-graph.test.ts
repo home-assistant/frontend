@@ -120,6 +120,28 @@ describe("hat-script-graph rendering", () => {
     ).toEqual([false, false, false, false, true]);
   });
 
+  it("does not track a repeat body that was never entered", () => {
+    // Core recorded the repeat action, but `count: 0` means no body step ran.
+    const trace = createTrace(
+      { "sequence/0": [step] },
+      {
+        config: {
+          alias: "Test",
+          sequence: [{ repeat: { count: 0, sequence: [{ delay: 1 }] } }],
+        },
+      }
+    );
+    const graph = new HatScriptGraph();
+    graph.trace = trace;
+    const node = new TraceTree(trace)
+      .sequence[0] as TraceActionNode<RepeatAction>;
+    const container = document.createElement("div");
+    render(graph["_renderRepeatNode"](node), container);
+    const body = container.querySelector(".repeat-sequence")!;
+    expect(body.hasAttribute("track")).toBe(false);
+    expect(body.hasAttribute("unfinished")).toBe(false);
+  });
+
   it.each([45, undefined])(
     "uses the recorded repeat index (%s) before the retained count",
     (index) => {
