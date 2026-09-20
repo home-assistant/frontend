@@ -149,8 +149,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
    * Leave out the header in standalone mode: the app draws the title and the
    * close button in its own chrome, from the `modal/open` payload.
    */
-  @property({ type: Boolean, attribute: "hide-header" }) public hideHeader =
-    false;
+  @property({ type: Boolean, attribute: "without-header" })
+  public withoutHeader = false;
 
   @state() private _fill = false;
 
@@ -702,7 +702,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
    * header `render` would show.
    */
   private _computeNativeHeader(): NativeModalHeader | undefined {
-    if (!this.standalone || !this.hideHeader || !this._entityId) {
+    if (!this.standalone || !this.withoutHeader || !this._entityId) {
       return undefined;
     }
     const entityId = this._entityId;
@@ -828,7 +828,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       <ha-adaptive-dialog
         .open=${this._open}
         .standalone=${this.standalone}
-        .withoutHeader=${this.standalone && this.hideHeader}
+        .withoutHeader=${this.standalone && this.withoutHeader}
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
@@ -1226,10 +1226,12 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
   }
 
+  /**
+   * Standalone is the whole of the app's modal, so there is nothing to hide:
+   * the app dismisses it instead. A request with no entity has nothing to show
+   * either, and closes it rather than leaving it blank.
+   */
   private _requestExternalClose() {
-    if (!this._entityId) {
-      return;
-    }
     this.hass.auth.external?.fireMessage({ type: "modal/close" });
   }
 

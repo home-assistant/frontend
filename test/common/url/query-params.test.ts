@@ -16,9 +16,7 @@ import {
 } from "../../../src/common/url/query-params";
 import {
   createMoreInfoUrl,
-  createStandaloneMoreInfoUrl,
   decodeMoreInfoUrl,
-  isMoreInfoStandalonePath,
   removeMoreInfoUrl,
 } from "../../../src/common/url/more-info-query-params";
 import {
@@ -294,26 +292,5 @@ describe("more-info query params", () => {
     ).toBe(
       "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info#some-anchor"
     );
-  });
-
-  it("creates a standalone page link the page can decode", () => {
-    const url = createStandaloneMoreInfoUrl("light.kitchen");
-
-    expect(url).toBe("/more-info?more-info-entity-id=light.kitchen");
-    expect(isMoreInfoStandalonePath(new URL(url, "http://x").pathname)).toBe(
-      true
-    );
-    expect(decodeMoreInfoUrl(new URL(url, "http://x").search)).toEqual({
-      entityId: "light.kitchen",
-      view: undefined,
-    });
-  });
-
-  it("only treats the standalone route itself as standalone", () => {
-    expect(isMoreInfoStandalonePath("/more-info")).toBe(true);
-    expect(isMoreInfoStandalonePath("/more-info/")).toBe(true);
-    expect(isMoreInfoStandalonePath("/more-info-panel")).toBe(false);
-    expect(isMoreInfoStandalonePath("/lovelace/more-info")).toBe(false);
-    expect(isMoreInfoStandalonePath("/")).toBe(false);
   });
 });

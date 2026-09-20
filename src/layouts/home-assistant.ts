@@ -6,10 +6,7 @@ import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { handleHistoryPop, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
-import {
-  decodeMoreInfoUrl,
-  isMoreInfoStandalonePath,
-} from "../common/url/more-info-query-params";
+import { decodeMoreInfoUrl } from "../common/url/more-info-query-params";
 import { isNativeModalPath } from "../common/url/native-modal-url";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { afterNextRender } from "../common/util/render-status";
@@ -80,8 +77,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _visiblePromiseResolve?: () => void;
 
-  private _moreInfoPageLoaded = false;
-
   private _nativeModalPageLoaded = false;
 
   constructor() {
@@ -96,10 +91,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected renderHass() {
-    if (isMoreInfoStandalonePath(this._route.path)) {
-      // Frameless more-info for external apps: no sidebar, no panel.
-      return html`<ha-more-info-page .hass=${this.hass}></ha-more-info-page>`;
-    }
     if (isNativeModalPath(this._route.path)) {
       // One dialog, frameless, for an app showing it in a modal of its own.
       return html`<ha-native-modal-page
@@ -116,13 +107,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
-    if (
-      !this._moreInfoPageLoaded &&
-      isMoreInfoStandalonePath(this._route.path)
-    ) {
-      this._moreInfoPageLoaded = true;
-      import("../dialogs/more-info/ha-more-info-page");
-    }
     if (!this._nativeModalPageLoaded && isNativeModalPath(this._route.path)) {
       this._nativeModalPageLoaded = true;
       import("../dialogs/native-modal/ha-native-modal-page");
@@ -345,11 +329,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (this.render !== this.renderHass) {
       return;
     }
-    // The frameless pages are the thing itself; no dialog on top of them.
-    if (
-      isMoreInfoStandalonePath(this._route.path) ||
-      isNativeModalPath(this._route.path)
-    ) {
+    // The frameless page is the thing itself; no dialog on top of it.
+    if (isNativeModalPath(this._route.path)) {
       return;
     }
     const searchParams = extractSearchParamsObject();

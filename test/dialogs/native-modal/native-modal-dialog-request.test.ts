@@ -54,6 +54,22 @@ describe("decideNativeModalDialog", () => {
     ).toEqual({ action: "grow" });
   });
 
+  // More-info reaches a modal through `hass-more-info`, which names the entity
+  // in the message; there is nothing to title the app's bar with here.
+  it("draws in the page a hosted dialog that names itself elsewhere", () => {
+    expect(
+      decideNativeModalDialog(
+        {
+          dialogTag: "ha-more-info-dialog",
+          dialogImport: () => Promise.resolve(),
+          dialogParams: { entityId: "light.kitchen" },
+        },
+        true,
+        localize
+      )
+    ).toEqual({ action: "grow" });
+  });
+
   it("draws in the page when the event names no dialog", () => {
     expect(decideNativeModalDialog(undefined, true, localize)).toEqual({
       action: "grow",

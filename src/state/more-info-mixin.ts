@@ -5,9 +5,9 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { replaceCurrentUrl } from "../common/navigate";
 import {
   createMoreInfoUrl,
-  createStandaloneMoreInfoUrl,
   removeMoreInfoUrl,
 } from "../common/url/more-info-query-params";
+import { createNativeModalDialogUrl } from "../common/url/native-modal-url";
 import { showDialog } from "../dialogs/make-dialog-manager";
 import { computeNativeModalOrigin } from "../external_app/native-modal-origin";
 import { computeMoreInfoHeader } from "../dialogs/more-info/compute-more-info-header";
@@ -41,11 +41,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const view = ev.detail.view || ev.detail.tab || "info";
 
       // The app shows the frontend's route in a modal of its own, so hand it the
-      // standalone page instead of opening the dialog. The modal carries the
-      // entity in its own URL, so this page keeps the one it has: a page already
-      // inside a modal would otherwise follow the entity it is asking for and
-      // change under the modal opening over it. A null entity id would only
-      // close a dialog, and none is open.
+      // modal route instead of opening the dialog. The modal carries the entity
+      // in its own URL, so this page keeps the one it has: a page already inside
+      // a modal would otherwise follow the entity it is asking for and change
+      // under the modal opening over it. A null entity id would only close a
+      // dialog, and none is open.
       const external = this.hass!.auth.external;
       if (external?.config.hasNativeModal) {
         const entityId = ev.detail.entityId;
@@ -54,7 +54,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           external.fireMessage({
             type: "modal/open",
             payload: {
-              path: createStandaloneMoreInfoUrl(entityId),
+              path: createNativeModalDialogUrl({
+                tag: "ha-more-info-dialog",
+                params: { entityId, view },
+              }),
               ...computeMoreInfoHeader(this.hass!, entityId),
               size: computeMoreInfoModalSize(entityId),
               origin: computeNativeModalOrigin(ev),

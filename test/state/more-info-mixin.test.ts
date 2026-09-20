@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent } from "../../src/common/dom/fire_event";
+import { decodeNativeModalDialogUrl } from "../../src/common/url/native-modal-url";
 import { HassBaseEl } from "../../src/state/hass-base-mixin";
 import MoreInfoMixin from "../../src/state/more-info-mixin";
 import type { HomeAssistant } from "../../src/types";
@@ -62,7 +63,7 @@ describe("more-info mixin with a native modal", () => {
     });
   };
 
-  it("hands the standalone route to the app instead of opening the dialog", async () => {
+  it("hands the modal route to the app instead of opening the dialog", async () => {
     host.hass = makeHass(true, fireMessage);
 
     await openMoreInfo("light.kitchen");
@@ -72,7 +73,12 @@ describe("more-info mixin with a native modal", () => {
       expect.objectContaining({ type: "modal/open" })
     );
     const { payload } = fireMessage.mock.calls[0][0];
-    expect(payload.path).toBe("/more-info?more-info-entity-id=light.kitchen");
+    expect(
+      decodeNativeModalDialogUrl(new URL(payload.path, "http://x").hash)
+    ).toEqual({
+      tag: "ha-more-info-dialog",
+      params: { entityId: "light.kitchen", view: "info" },
+    });
     expect(payload.title).toBe("Kitchen ceiling");
     expect(payload.size).toBe("full");
   });

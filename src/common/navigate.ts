@@ -106,9 +106,9 @@ const dirtyGuards = (): UnsavedChangesGuard[] =>
 
 /**
  * Lets a host that shows a single page take over navigation to other pages.
- * The standalone more-info page runs inside a native screen of a companion
- * app, and a link out of it belongs in the app's main frontend, not in that
- * screen. Return true to claim the navigation; nothing is then navigated here.
+ * The native modal page runs inside a screen of a companion app, and a link
+ * out of it belongs in the app's main frontend, not in that screen. Return
+ * true to claim the navigation; nothing is then navigated here.
  */
 export type NavigationInterceptor = (path: string) => boolean;
 

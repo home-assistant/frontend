@@ -17,7 +17,9 @@ export const decideNativeModalDialog = (
 ): NativeModalDialogDecision => {
   const tag = detail?.dialogTag;
   const dialog = tag ? NATIVE_MODAL_DIALOGS[tag] : undefined;
-  if (!tag || !dialog || !hasNativeModal) {
+  // Without a title there is nothing to put in the app's bar, so the dialog is
+  // drawn here instead.
+  if (!tag || !dialog?.title || !hasNativeModal) {
     return { action: "grow" };
   }
   return {
