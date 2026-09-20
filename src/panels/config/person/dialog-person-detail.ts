@@ -319,9 +319,12 @@ class DialogPersonDetail
   private _renderUserFields() {
     const user = this._user;
     if (!user) return nothing;
+    const hasHomeAssistantCredential = user.credentials.some(
+      (credential) => credential.type === "homeassistant"
+    );
     return html`
       ${
-        !user.system_generated
+        !user.system_generated && hasHomeAssistantCredential
           ? html`
               <ha-row-item>
                 <span slot="headline"
@@ -350,7 +353,9 @@ class DialogPersonDetail
           : nothing
       }
       ${
-        !user.system_generated && this.hass.user?.is_owner
+        !user.system_generated &&
+        hasHomeAssistantCredential &&
+        this.hass.user?.is_owner
           ? html`
               <ha-row-item>
                 <span slot="headline"
