@@ -1,11 +1,7 @@
 import { mdiRestore } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { computeDomain } from "../../common/entity/compute_domain";
-import {
-  findEntities,
-  generateEntityFilter,
-} from "../../common/entity/entity_filter";
+import { consume, type ContextType } from "@lit/context";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
@@ -17,13 +13,19 @@ import {
   fetchMaintenanceData,
   saveMaintenanceData,
 } from "../../data/battery-thresholds";
+import {
+  connectionContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../data/context";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import { haStyleDialog } from "../../resources/styles";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
-import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import type { BatteryThresholdsDialogParams } from "./show-dialog-battery-thresholds";
 import {
   batteryThresholdKey,
   LOW_BATTERY_THRESHOLD,
-  maintenanceEntityFilters,
 } from "./strategies/maintenance-view-strategy";
 
 // An empty field starts its arrows from the default, not from 0
@@ -42,10 +44,31 @@ const clampInput = (ev: Event) => {
   return el.value;
 };
 
+interface ThresholdsState {
+  global: string;
+  overrides: Record<string, string>;
+}
+
 @customElement("dialog-battery-thresholds")
-class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>(
-  LitElement
+export class DialogBatteryThresholds extends DirtyStateProviderMixin<ThresholdsState>()(
+  DialogMixin<BatteryThresholdsDialogParams>(LitElement)
 ) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
   @state() private _groups?: { name: string; ids: string[] }[];
 
   @state() private _global = "";
@@ -57,34 +80,31 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
 
   @state() private _saving = false;
 
-  private _baseline?: string;
-
   public connectedCallback() {
     super.connectedCallback();
     this._load();
   }
 
   private async _load() {
-    const { hass } = this.params!;
+    // the consumed contexts resolve after the first update
+    await this.updateComplete;
     try {
-      const data = await fetchMaintenanceData(hass.connection);
-      const filters = maintenanceEntityFilters.map((f) =>
-        generateEntityFilter(hass, f)
-      );
+      const data = await fetchMaintenanceData(this._connection.connection);
+      const { entities, devices, areas } = this._registries;
       const byArea = new Map<string | undefined, string[]>();
       const seen = new Set<string>();
-      for (const id of findEntities(Object.keys(hass.states), filters)) {
-        const key = batteryThresholdKey(hass, id);
+      for (const id of this.params!.entityIds) {
         // One row per device, even if it exposes several battery sensors
-        if (computeDomain(id) !== "sensor" || seen.has(key)) {
+        const key = batteryThresholdKey(entities, id);
+        if (seen.has(key)) {
           continue;
         }
         seen.add(key);
-        const entity = hass.entities[id];
+        const entity = entities[id];
         const areaId =
           entity?.area_id ||
           (entity?.device_id
-            ? hass.devices[entity.device_id]?.area_id
+            ? devices[entity.device_id]?.area_id
             : undefined) ||
           undefined;
         byArea.set(areaId, [...(byArea.get(areaId) ?? []), id]);
@@ -92,8 +112,8 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
       this._groups = [...byArea]
         .map(([areaId, ids]) => ({
           name: areaId
-            ? (hass.areas[areaId]?.name ?? areaId)
-            : hass.localize(
+            ? (areas[areaId]?.name ?? areaId)
+            : this._i18n.localize(
                 "ui.panel.lovelace.strategy.maintenance.other_devices"
               ),
           ids,
@@ -111,39 +131,35 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
           String(v),
         ])
       );
-      this._baseline = this._snapshot();
+      this._initDirtyTracking({ type: "deep" }, this._formState());
     } catch (err) {
       this._error = err instanceof Error ? err.message : String(err);
     }
   }
 
   // Empty overrides are the same as missing ones
-  private _snapshot() {
-    return JSON.stringify([
-      this._global.trim(),
-      Object.entries(this._overrides)
-        .filter(([, v]) => v !== "")
-        .sort(([a], [b]) => a.localeCompare(b)),
-    ]);
-  }
+  private _formState = (): ThresholdsState => ({
+    global: this._global.trim(),
+    overrides: Object.fromEntries(
+      Object.entries(this._overrides).filter(([, v]) => v !== "")
+    ),
+  });
 
-  private get _dirty() {
-    return this._baseline !== undefined && this._snapshot() !== this._baseline;
+  private _edited() {
+    this._updateDirtyState(this._formState());
   }
 
   protected render() {
     if (!this.params) {
       return nothing;
     }
-    const { hass } = this.params;
     return html`
       <ha-dialog
         open
-        .headerTitle=${hass.localize(
+        .headerTitle=${this._i18n.localize(
           "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
         )}
-        .preventScrimClose=${this._saving || this._dirty}
-        @closed=${this.closeDialog}
+        .preventScrimClose=${this._saving || this.isDirtyState}
       >
         ${
           this._error
@@ -162,16 +178,16 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
             appearance="plain"
             slot="secondaryAction"
             ?disabled=${this._saving}
-            @click=${this._cancel}
+            @click=${this.closeDialog}
           >
-            ${hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
-            ?disabled=${!this._groups || this._saving}
+            ?disabled=${!this._groups || this._saving || !this.isDirtyState}
             @click=${this._save}
           >
-            ${hass.localize("ui.common.save")}
+            ${this._i18n.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -179,7 +195,6 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
   }
 
   private _renderForm() {
-    const { hass } = this.params!;
     return html`
       <ha-input
         autofocus
@@ -187,7 +202,7 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
         min=${minFor(this._global, String(LOW_BATTERY_THRESHOLD))}
         max="100"
         step="1"
-        .label=${hass.localize(
+        .label=${this._i18n.localize(
           "ui.panel.lovelace.strategy.maintenance.default_threshold"
         )}
         .placeholder=${String(LOW_BATTERY_THRESHOLD)}
@@ -204,15 +219,15 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
   }
 
   private _renderRow(id: string) {
-    const { hass } = this.params!;
-    const key = batteryThresholdKey(hass, id);
+    const { entities, devices } = this._registries;
+    const key = batteryThresholdKey(entities, id);
     const value = this._overrides[key] ?? "";
-    const deviceId = hass.entities[id]?.device_id;
-    const device = deviceId ? hass.devices[deviceId] : undefined;
+    const deviceId = entities[id]?.device_id;
+    const device = deviceId ? devices[deviceId] : undefined;
     const name =
       device?.name_by_user ||
       device?.name ||
-      hass.states[id]?.attributes.friendly_name ||
+      this._states[id]?.attributes.friendly_name ||
       id;
     return html`
       <div class="row">
@@ -229,7 +244,7 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
         ></ha-input>
         <ha-icon-button
           .path=${mdiRestore}
-          .label=${hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.lovelace.strategy.maintenance.reset_threshold",
             { name }
           )}
@@ -243,35 +258,19 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
 
   private _globalChanged(ev: Event) {
     this._global = clampInput(ev);
+    this._edited();
   }
 
   private _overrideChanged(ev: Event) {
     const key = (ev.currentTarget as HTMLElement).dataset.key!;
     this._overrides = { ...this._overrides, [key]: clampInput(ev) };
+    this._edited();
   }
 
   private _resetOverride(ev: Event) {
     const key = (ev.currentTarget as HTMLElement).dataset.key!;
     this._overrides = { ...this._overrides, [key]: "" };
-  }
-
-  private async _cancel() {
-    if (this._dirty) {
-      const { hass } = this.params!;
-      const discard = await showConfirmationDialog(this, {
-        title: hass.localize(
-          "ui.panel.lovelace.strategy.maintenance.discard_title"
-        ),
-        text: hass.localize(
-          "ui.panel.lovelace.strategy.maintenance.discard_text"
-        ),
-        destructive: true,
-      });
-      if (!discard) {
-        return;
-      }
-    }
-    this.closeDialog();
+    this._edited();
   }
 
   private async _save() {
@@ -288,10 +287,11 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
       })
     );
     try {
-      await saveMaintenanceData(this.params!.hass.connection, {
+      await saveMaintenanceData(this._connection.connection, {
         battery_threshold: parse(this._global),
         battery_thresholds,
       });
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err) {
       this._error = err instanceof Error ? err.message : String(err);
@@ -299,25 +299,28 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
     }
   }
 
-  static styles = css`
-    h3 {
-      margin: 16px 0 0;
-      font-size: var(--ha-font-size-m, 14px);
-      color: var(--secondary-text-color);
-    }
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .row ha-input {
-      flex: 1;
-    }
-    ha-input {
-      display: block;
-      margin-top: 8px;
-    }
-  `;
+  static styles = [
+    haStyleDialog,
+    css`
+      h3 {
+        margin: 16px 0 0;
+        font-size: var(--ha-font-size-m, 14px);
+        color: var(--secondary-text-color);
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .row ha-input {
+        flex: 1;
+      }
+      ha-input {
+        display: block;
+        margin-top: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {

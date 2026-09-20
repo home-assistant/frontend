@@ -1,8 +1,7 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
 
 export interface BatteryThresholdsDialogParams {
-  hass: HomeAssistant;
+  entityIds: string[];
 }
 
 export const showBatteryThresholdsDialog = (

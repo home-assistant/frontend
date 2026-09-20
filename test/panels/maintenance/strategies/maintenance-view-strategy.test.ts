@@ -165,8 +165,8 @@ describe("batteryThresholdKey", () => {
     const h = {
       entities: { "sensor.a": { device_id: "dev1" } },
     } as unknown as HomeAssistant;
-    expect(batteryThresholdKey(h, "sensor.a")).toBe("dev1");
-    expect(batteryThresholdKey(h, "sensor.b")).toBe("sensor.b");
+    expect(batteryThresholdKey(h.entities, "sensor.a")).toBe("dev1");
+    expect(batteryThresholdKey(h.entities, "sensor.b")).toBe("sensor.b");
   });
 });
 

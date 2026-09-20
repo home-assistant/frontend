@@ -19,6 +19,12 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import { showBatteryThresholdsDialog } from "./show-dialog-battery-thresholds";
 import "../../components/ha-svg-icon";
+import { computeDomain } from "../../common/entity/compute_domain";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../common/entity/entity_filter";
+import { maintenanceEntityFilters } from "./strategies/maintenance-view-strategy";
 
 const MAINTENANCE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -96,8 +102,20 @@ class PanelMaintenance extends LitElement {
     this._setLovelace();
   };
 
-  private _openThresholds = () =>
-    showBatteryThresholdsDialog(this, { hass: this.hass });
+  private _openThresholds = () => {
+    if (!this.hass.user?.is_admin) {
+      return;
+    }
+    const filters = maintenanceEntityFilters.map((f) =>
+      generateEntityFilter(this.hass, f)
+    );
+    showBatteryThresholdsDialog(this, {
+      // Same entities as the Maintenance view; only sensors have a percentage
+      entityIds: findEntities(Object.keys(this.hass.states), filters).filter(
+        (id) => computeDomain(id) === "sensor"
+      ),
+    });
+  };
 
   protected render() {
     return html`
@@ -106,19 +124,29 @@ class PanelMaintenance extends LitElement {
         .backButton=${this._searchParams.has("historyBack")}
       >
         <div slot="title">${this.hass.localize("panel.maintenance")}</div>
-        <ha-dropdown slot="actionItems" @wa-select=${this._openThresholds}>
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <ha-dropdown-item>
-            <ha-svg-icon slot="icon" .path=${mdiBatteryAlert}></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
-            )}
-          </ha-dropdown-item>
-        </ha-dropdown>
+        ${
+          this.hass.user?.is_admin
+            ? html`<ha-dropdown
+                slot="actionItems"
+                @wa-select=${this._openThresholds}
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                <ha-dropdown-item>
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiBatteryAlert}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
+              )}
+                </ha-dropdown-item>
+              </ha-dropdown> `
+            : nothing
+        }
         ${
           this._lovelace
             ? html`
