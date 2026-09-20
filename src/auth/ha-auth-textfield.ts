@@ -26,8 +26,6 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
 
   @state() private _passwordVisible = false;
 
-  @state() private _focused = false;
-
   @query("input") private _input?: HTMLInputElement;
 
   protected override get _formControl(): HTMLInputElement | undefined {
@@ -38,16 +36,6 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
     return this;
   }
 
-  public override connectedCallback(): void {
-    super.connectedCallback();
-    this.addEventListener("focusin", this._syncFromNativeInput);
-  }
-
-  public override disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.removeEventListener("focusin", this._syncFromNativeInput);
-  }
-
   protected override firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     if (this.autofocus) {
@@ -55,8 +43,8 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
     }
   }
 
-  public override focus(options?: FocusOptions): void {
-    this._input?.focus(options);
+  public override focus(): void {
+    this._input?.focus();
   }
 
   public override checkValidity(): boolean {
@@ -64,7 +52,8 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
   }
 
   public override reportValidity(): boolean {
-    this._syncFromNativeInput();
+    // Adopt a value a password manager wrote to the input without events.
+    this._handleInput();
     return super.reportValidity();
   }
 
@@ -114,7 +103,7 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
             height var(--wa-transition-normal) ease-in-out,
             background-color var(--wa-transition-normal) ease-in-out;
         }
-        ha-auth-textfield .base.focused::after {
+        ha-auth-textfield .base:focus-within::after {
           height: 2px;
           background-color: var(--primary-color);
         }
@@ -127,11 +116,7 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
           left: 0;
           right: 0;
           z-index: 1;
-          box-sizing: border-box;
           padding: var(--ha-space-5) var(--ha-space-4) 0;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
           pointer-events: none;
           font-family: var(--ha-font-family-body);
           font-size: var(--ha-font-size-m);
@@ -140,12 +125,12 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
           color: var(--secondary-text-color);
           transition: all var(--wa-transition-normal) ease-in-out;
         }
-        ha-auth-textfield label.raised,
+        ha-auth-textfield input:focus + label,
         ha-auth-textfield input:not(:placeholder-shown) + label {
           padding-top: var(--ha-space-3);
           font-size: var(--ha-font-size-xs);
         }
-        ha-auth-textfield .base.focused label {
+        ha-auth-textfield .base:focus-within label {
           color: var(--primary-color);
         }
         ha-auth-textfield .base.invalid:not(.disabled) label {
@@ -169,12 +154,6 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
           font-size: var(--ha-font-size-m);
           -webkit-appearance: none;
           box-sizing: border-box;
-        }
-        ha-auth-textfield .base.no-label input {
-          padding-top: 0;
-        }
-        ha-auth-textfield input::placeholder {
-          color: var(--ha-color-neutral-60);
         }
         ha-auth-textfield input:-webkit-autofill,
         ha-auth-textfield input:-webkit-autofill:hover,
@@ -205,20 +184,8 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
         ha-auth-textfield .hint.error {
           color: var(--ha-color-on-danger-quiet);
         }
-        ha-auth-textfield .hint.hidden {
-          height: 0;
-          min-height: 0;
-        }
       </style>
-      <div
-        class=${classMap({
-          base: true,
-          focused: this._focused,
-          invalid,
-          disabled: this.disabled,
-          "no-label": !this.label,
-        })}
-      >
+      <div class=${classMap({ base: true, invalid, disabled: this.disabled })}>
         <input
           id=${ifDefined(this.name)}
           name=${ifDefined(this.name)}
@@ -227,48 +194,30 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
               ? "text"
               : this.type
           }
-          placeholder=${this.placeholder || " "}
+          placeholder=" "
           autocomplete=${ifDefined(this.autocomplete)}
-          autocapitalize=${ifDefined(this.autocapitalize || undefined)}
-          spellcheck=${this.spellcheck}
-          inputmode=${ifDefined(this.inputmode || undefined)}
-          enterkeyhint=${ifDefined(this.enterkeyhint || undefined)}
-          minlength=${ifDefined(this.minlength)}
-          maxlength=${ifDefined(this.maxlength)}
           ?required=${this.required}
           ?disabled=${this.disabled}
-          ?readonly=${this.readonly}
           .value=${this.value ?? ""}
           aria-describedby=${ifDefined(hintId)}
           aria-invalid=${ifDefined(invalid ? "true" : undefined)}
           @input=${this._handleInput}
           @change=${this._handleChange}
-          @focus=${this._handleFocus}
-          @blur=${this._handleBlurEvent}
+          @blur=${this._handleBlur}
         />
-        ${
-          this.label
-            ? html`<label
-                for=${ifDefined(this.name)}
-                class=${classMap({
-                  raised: this._focused || !!this.value || !!this.placeholder,
-                })}
-                >${this._renderLabel(this.label, this.required)}</label
-              >`
-            : nothing
-        }
+        <label for=${ifDefined(this.name)}
+          >${this._renderLabel(this.label ?? "", this.required)}</label
+        >
         ${
           this.passwordToggle && !this.disabled
             ? html`<ha-icon-button
                 .path=${this._passwordVisible ? mdiEyeOff : mdiEye}
                 .label=${
-                  (this._passwordVisible
+                  this._passwordVisible
                     ? this.hidePasswordLabel
-                    : this.showPasswordLabel) ||
-                  (this._passwordVisible ? "Hide password" : "Show password")
+                    : this.showPasswordLabel
                 }
                 @click=${this._togglePasswordVisibility}
-                @keydown=${stopPropagation}
                 @keypress=${stopPropagation}
               ></ha-icon-button>`
             : nothing
@@ -276,11 +225,7 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
       </div>
       <div
         id=${ifDefined(hintId)}
-        class=${classMap({
-          hint: true,
-          error: invalid,
-          hidden: !this.hint && !this.required && !invalid,
-        })}
+        class=${classMap({ hint: true, error: invalid })}
         role=${ifDefined(invalid ? "alert" : undefined)}
         aria-live="polite"
       >
@@ -291,23 +236,6 @@ export class HaAuthTextField extends WaInputMixin(LitElement) {
         }
       </div>
     `;
-  }
-
-  // Adopts a value a password manager wrote to the native input without events.
-  private _syncFromNativeInput = (): void => {
-    const nativeValue = this._input?.value;
-    if (nativeValue !== undefined && (this.value ?? "") !== nativeValue) {
-      this._handleInput();
-    }
-  };
-
-  private _handleFocus(): void {
-    this._focused = true;
-  }
-
-  private _handleBlurEvent(): void {
-    this._focused = false;
-    this._handleBlur();
   }
 
   private _togglePasswordVisibility(): void {
