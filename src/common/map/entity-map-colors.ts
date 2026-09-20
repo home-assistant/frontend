@@ -56,6 +56,21 @@ export const entityMapColor = (
     computedStyles
   );
 
+/** The color a new zone will take once created, from the next creation-order slot */
+export const nextZoneColor = (
+  passive: boolean,
+  entries: EntityRegistryEntry[],
+  computedStyles: CSSStyleDeclaration
+): string => {
+  if (passive) {
+    return computedStyles.getPropertyValue("--secondary-text-color");
+  }
+  return getColorByIndex(
+    Object.keys(creationIndex(entries)).length,
+    computedStyles
+  );
+};
+
 /** A zone's color: primary for home, muted for passive, its entity map color otherwise */
 export const zoneColor = (
   entityId: string,

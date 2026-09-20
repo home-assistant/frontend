@@ -69,7 +69,10 @@ export class HaTracePathDetails extends LitElement {
   @property({ attribute: false })
   public renderedNodes: Record<string, any> = {};
 
-  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<
+    string,
+    NodeInfo
+  >;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
@@ -192,11 +195,16 @@ export class HaTracePathDetails extends LitElement {
       const nestPath = curPath
         .substring(this.selected.path.length + 1)
         .split("/");
-      let currentDetail = this.selected.config;
+      let currentDetail: unknown = this.selected.config;
       for (const part of nestPath) {
-        if (!["undefined", "string"].includes(typeof currentDetail[part])) {
-          currentDetail = currentDetail[part];
+        if (typeof currentDetail !== "object" || currentDetail === null) {
+          break;
         }
+        const child = (currentDetail as Record<string, unknown>)[part];
+        if (child === undefined || typeof child === "string") {
+          break;
+        }
+        currentDetail = child;
       }
 
       parts.push(
@@ -282,6 +290,9 @@ export class HaTracePathDetails extends LitElement {
                 : html`<pre>${dump(rest)}</pre>`
             }
             ${
+              typeof currentDetail === "object" &&
+              currentDetail !== null &&
+              "entity_id" in currentDetail &&
               currentDetail.entity_id &&
               curPath
                 .substring(this.selected.path.length + 1)
@@ -486,7 +497,9 @@ export class HaTracePathDetails extends LitElement {
     const trackedPaths = Object.keys(this.trackedNodes);
     const index = trackedPaths.indexOf(this.selected.path);
 
-    if (index === -1) {
+    // Synthetic choose-option nodes have no direct trace records, so there is
+    // no start timestamp to slice the logbook with.
+    if (index === -1 || !startTrace) {
       return html`<div class="padded-box">
         ${this.hass!.localize(
           "ui.panel.config.automation.trace.path.step_not_executed"
@@ -496,7 +509,11 @@ export class HaTracePathDetails extends LitElement {
 
     let entries: LogbookEntry[];
 
-    if (index === trackedPaths.length - 1) {
+    const nextTrace =
+      index < trackedPaths.length - 1
+        ? paths[trackedPaths[index + 1]]
+        : undefined;
+    if (!nextTrace) {
       // it's the last entry. Find all logbook entries after start.
       const startTime = new Date(startTrace[0].timestamp);
       const idx = this.logbookEntries.findIndex(
@@ -508,8 +525,6 @@ export class HaTracePathDetails extends LitElement {
         entries = this.logbookEntries.slice(idx);
       }
     } else {
-      const nextTrace = paths[trackedPaths[index + 1]];
-
       const startTime = new Date(startTrace[0].timestamp);
       const endTime = new Date(nextTrace[0].timestamp);
 

@@ -12,8 +12,11 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { zoneColor } from "../../../../common/map/entity-map-colors";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../../common/map/entity-map-colors";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -277,12 +280,19 @@ export class HuiMapOverview extends LitElement {
           stateObj.attributes.latitude !== undefined &&
           stateObj.attributes.longitude !== undefined
       )
-      .sort((a, b) =>
-        computeStateName(a).localeCompare(
+      .sort((a, b) => {
+        // Home first
+        if (
+          (a.entity_id === HOME_ZONE_ENTITY_ID) !==
+          (b.entity_id === HOME_ZONE_ENTITY_ID)
+        ) {
+          return a.entity_id === HOME_ZONE_ENTITY_ID ? -1 : 1;
+        }
+        return computeStateName(a).localeCompare(
           computeStateName(b),
           this._i18n.locale.language
-        )
-      );
+        );
+      });
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -502,6 +512,30 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
+  // The color of the zone a person's state names; undefined when away or unknown
+  private _zoneColorForState(entityState: string): string | undefined {
+    if (entityState === "not_home" || entityState === "unknown") {
+      return undefined;
+    }
+    const zone =
+      entityState === "home"
+        ? this._states[HOME_ZONE_ENTITY_ID]
+        : Object.values(this._states).find(
+            (candidate) =>
+              computeStateDomain(candidate) === "zone" &&
+              computeStateName(candidate) === entityState
+          );
+    if (!zone) {
+      return undefined;
+    }
+    return zoneColor(
+      zone.entity_id,
+      !!zone.attributes.passive,
+      this._entityReg,
+      getComputedStyle(this)
+    );
+  }
+
   // A logbook row: the person, the zone they are in now, and when. On the
   // zone tab the row belongs to the person who arrived or left.
   private _renderActivityEntry(
@@ -520,11 +554,17 @@ export class HuiMapOverview extends LitElement {
       entity_id: entityId,
       state: entry.state,
     };
+    // Zone changes take the zone's color; arrivals and departures keep the
+    // logbook's own colors
+    const stateColor = entry.personId
+      ? undefined
+      : this._zoneColorForState(entry.state);
     return html`
       <ha-logbook-entry
         .hass=${this.hass}
         .item=${item}
         .lastOfDay=${last}
+        .nodeColor=${stateColor}
         narrow
         no-detail
       ></ha-logbook-entry>
@@ -750,6 +790,8 @@ export class HuiMapOverview extends LitElement {
       pointer-events: auto;
       /* The tabs sit right under the handle */
       --ha-bottom-sheet-handle-padding: var(--ha-space-2);
+      --ha-bottom-sheet-inset-left: 0px;
+      --ha-bottom-sheet-inset-right: 0px;
     }
 
     .panel.sheet {
@@ -758,7 +800,9 @@ export class HuiMapOverview extends LitElement {
       border-radius: 0;
       box-shadow: none;
       padding-top: var(--ha-space-7);
-      padding-bottom: max(var(--ha-space-3), env(safe-area-inset-bottom));
+      padding-right: max(var(--ha-space-3), var(--safe-area-inset-right));
+      padding-bottom: max(var(--ha-space-3), var(--safe-area-inset-bottom));
+      padding-left: max(var(--ha-space-3), var(--safe-area-inset-left));
     }
 
     .tabs {
@@ -894,7 +938,11 @@ export class HuiMapOverview extends LitElement {
       border-radius: 50%;
       border: none;
       background: var(--accent-color);
-      color: var(--text-accent-color, var(--text-primary-color));
+      color: #fff;
+    }
+
+    .avatar.zone ha-state-icon {
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
 
     ha-relative-time {
