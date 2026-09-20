@@ -141,8 +141,8 @@ class PanelMaintenance extends LitElement {
                     .path=${mdiBatteryAlert}
                   ></ha-svg-icon>
                   ${this.hass.localize(
-                "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
-              )}
+                    "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
+                  )}
                 </ha-dropdown-item>
               </ha-dropdown> `
             : nothing
