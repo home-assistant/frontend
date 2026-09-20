@@ -8,9 +8,7 @@ import type {
   LocalizeKeys,
 } from "../../../../../common/translations/localize";
 import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
-import "../../../../../components/ha-dropdown-item";
 import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
-import "../../../../../components/ha-select";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,

@@ -604,6 +604,27 @@ describe("MapLibreMapEngine", () => {
     });
   });
 
+  describe("fitting", () => {
+    it("keeps overlays clear of the fitted bounds", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      engine.fitBounds([[52, 4]], { maxZoom: 15, padding: { bottom: 200 } });
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      const [bounds, options] = map.fitBounds.mock.calls[0];
+      // A single point centers on itself at the requested zoom
+      expect(bounds[0]).toEqual([4, 52]);
+      expect(bounds[1]).toEqual([4, 52]);
+      expect(options.maxZoom).toBe(14);
+      expect(options.padding).toEqual({
+        top: 0,
+        right: 0,
+        bottom: 200,
+        left: 0,
+      });
+    });
+  });
+
   describe("markers", () => {
     it("hands a removed element back without MapLibre's positioning", async () => {
       const { engine, ready } = await createEngine();
@@ -1030,10 +1051,7 @@ describe("MapLibreMapEngine", () => {
       expect(handle.radius).toBeCloseTo(110, 5);
 
       element.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowUp" }));
-      // The host echoes the old radius once before its save returns
-      handle.update([52, 4], 100);
-      expect(handle.radius).toBeCloseTo(110, 5);
-      // A later identical update is a real change
+      // Once committed, the host is the truth again
       handle.update([52, 4], 100);
       expect(handle.radius).toBe(100);
     });
@@ -1100,25 +1118,24 @@ describe("MapLibreMapEngine", () => {
       expect(element.getAttribute("aria-valuenow")).toBe("150000");
     });
 
-    it("ignores one update echoing the values from before a drag", async () => {
+    it("ignores host updates only while a drag is in progress", async () => {
       const { engine, ready } = await createEngine();
       await ready;
       const { handle, center } = addCircle(engine);
 
       center.lngLat = [4.01, 52];
       center.fire("dragstart");
-      // Nothing moves while a drag is in progress
+      // The user's hand wins while dragging
       handle.update([53, 5], 500);
       expect(handle.center).toEqual([52, 4]);
       center.fire("drag");
       center.fire("dragend");
-
-      // The host saves and echoes the old values once; that is not a move back
-      handle.update([52, 4], 100);
       expect(handle.center).toEqual([52, 4.01]);
-      // A later identical update is a real change
+
+      // Afterwards the host is the truth, even when it moves the circle back
       handle.update([52, 4], 100);
       expect(handle.center).toEqual([52, 4]);
+      expect(handle.radius).toBe(100);
     });
 
     it("activates the center by click, Enter and Space, but not after a drag", async () => {

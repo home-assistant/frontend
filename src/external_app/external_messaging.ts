@@ -184,6 +184,15 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageEntityControlled extends EMMessage {
+  type: "entity/controlled";
+  payload: {
+    entity_ids: string[];
+    domain: string;
+    service: string;
+  };
+}
+
 interface EMOutgoingMessageMoreInfoOpened extends EMMessage {
   type: "more_info/opened";
   payload: {
@@ -239,6 +248,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
   | EMOutgoingMessageAddEntityTo
+  | EMOutgoingMessageEntityControlled
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageReloadAndClearCache
   | EMOutgoingMessageAssistSettings;

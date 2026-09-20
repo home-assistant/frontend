@@ -21,7 +21,6 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
-import "../components/hui-badge-edit-mode";
 import "../components/hui-section-edit-mode";
 import { addSection, moveCard, moveSection } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";

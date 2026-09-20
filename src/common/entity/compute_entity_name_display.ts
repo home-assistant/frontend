@@ -19,37 +19,16 @@ import {
   getEntityContext,
   getEntityEntryContext,
 } from "./context/get_entity_context";
+import type { EntityNameItem, EntityNameOptions } from "./entity_name_config";
 
 const DEFAULT_SEPARATOR = " ";
 
-export const DEFAULT_ENTITY_NAME = [
-  { type: "parent_device" },
-  { type: "device" },
-  { type: "entity" },
-] satisfies EntityNameItem[];
-
-export const ENTITY_NAME_TYPES = [
-  "floor",
-  "area",
-  "parent_device",
-  "device",
-  "entity",
-] as const;
-
-export type EntityNameType = (typeof ENTITY_NAME_TYPES)[number];
-
-export type EntityNameItem =
-  | {
-      type: EntityNameType;
-    }
-  | {
-      type: "text";
-      text: string;
-    };
-
-export interface EntityNameOptions {
-  separator?: string;
-}
+export { DEFAULT_ENTITY_NAME, ENTITY_NAME_TYPES } from "./entity_name_config";
+export type {
+  EntityNameItem,
+  EntityNameOptions,
+  EntityNameType,
+} from "./entity_name_config";
 
 // Joins items that need no entity context. Returns undefined as soon as one
 // item references the registries (device, area, ...).

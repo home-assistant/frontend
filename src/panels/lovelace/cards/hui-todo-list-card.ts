@@ -40,7 +40,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-markdown-element";
 import "../../../components/ha-relative-time";
-import "../../../components/ha-select";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input";

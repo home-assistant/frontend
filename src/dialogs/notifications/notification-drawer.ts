@@ -21,6 +21,10 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // Reflected so the styles can apply the right safe-area inset whenever the
+  // drawer spans the full viewport width, not only below a fixed breakpoint.
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @state() private _notifications: PersistentNotification[] = [];
 
   @state() public _open = false;
@@ -48,6 +52,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   }
 
   showDialog({ narrow }) {
+    this.narrow = narrow;
     this._unsubNotifications = subscribeNotifications(
       this.hass.connection,
       (notifications) => {
@@ -218,11 +223,9 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       display: block;
     }
 
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      ha-header-bar {
-        --header-bar-padding: var(--safe-area-inset-top, 0px)
-          var(--safe-area-inset-right, 0px) 0 var(--safe-area-inset-left, 0px);
-      }
+    :host([narrow]) ha-header-bar {
+      --header-bar-padding: var(--safe-area-inset-top, 0px)
+        var(--safe-area-inset-right, 0px) 0 var(--safe-area-inset-left, 0px);
     }
 
     .list-container {
@@ -246,11 +249,9 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       color: var(--primary-text-color);
     }
 
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      .notifications {
-        padding-right: var(--safe-area-inset-right, 0px);
-        padding-inline-end: var(--safe-area-inset-right, 0px);
-      }
+    :host([narrow]) .notifications {
+      padding-right: var(--safe-area-inset-right, 0px);
+      padding-inline-end: var(--safe-area-inset-right, 0px);
     }
 
     .notification {

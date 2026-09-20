@@ -6,10 +6,8 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
-import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
 import "../../../components/progress/ha-progress-bar";

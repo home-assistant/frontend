@@ -125,7 +125,23 @@ export class StatisticsChart extends LitElement {
   private _yAxisFractionDigits = 1;
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return changedProps.size > 1 || !changedProps.has("hass");
+    return (
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      this._entityNamesChanged(changedProps)
+    );
+  }
+
+  // Series names are resolved once and cached in _chartData, so a hass update
+  // that only replaces the formatters has to regenerate them. The formatters are
+  // swapped as a set whenever the registries change, which is what renames a
+  // series.
+  private _entityNamesChanged(changedProps: PropertyValues): boolean {
+    if (!changedProps.has("hass")) {
+      return false;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    return !!oldHass && oldHass.formatEntityName !== this.hass.formatEntityName;
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -135,7 +151,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("chartType") ||
       changedProps.has("hideLegend") ||
       changedProps.has("_hiddenStats") ||
-      changedProps.has("names")
+      changedProps.has("names") ||
+      this._entityNamesChanged(changedProps)
     ) {
       this._generateData();
     }
@@ -528,17 +545,26 @@ export class StatisticsChart extends LitElement {
     this.unit = data.unit;
     this._yAxisFractionDigits = data.yAxisFractionDigits;
     this._chartData = data.datasets;
-    if (data.legendData.length !== this._legendData?.length) {
+    const legendData =
+      data.legendData.length > 1
+        ? data.legendData.map(({ id, name, noLabelClick }) => ({
+            id,
+            name,
+            noLabelClick,
+          }))
+        : // if there is only one entity, let the base chart handle the legend
+          undefined;
+    if (
+      legendData?.length !== this._legendData?.length ||
+      legendData?.some(
+        (item, index) =>
+          item.id !== this._legendData?.[index]?.id ||
+          item.name !== this._legendData?.[index]?.name ||
+          item.noLabelClick !== this._legendData?.[index]?.noLabelClick
+      )
+    ) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData =
-        data.legendData.length > 1
-          ? data.legendData.map(({ id, name, noLabelClick }) => ({
-              id,
-              name,
-              noLabelClick,
-            }))
-          : // if there is only one entity, let the base chart handle the legend
-            undefined;
+      this._legendData = legendData;
     }
     this._statisticIds = data.statisticIds;
   }

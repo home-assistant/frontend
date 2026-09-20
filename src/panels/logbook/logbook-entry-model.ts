@@ -320,13 +320,7 @@ const computeLogbookValue = (
   if (item.entity_id && item.state) {
     return {
       text: stateObj
-        ? localizeStateMessage(
-            hass,
-            item.state,
-            stateObj,
-            domain!,
-            item.attributes
-          )
+        ? localizeStateMessage(hass, item.state, stateObj, domain!, item)
         : item.state,
       type: "state",
     };

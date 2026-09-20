@@ -290,6 +290,25 @@ describe("automation trigger IDs", () => {
     ]);
   });
 
+  it("strips unreferenced duplicate IDs instead of generating new ones", () => {
+    const config: AutomationConfig = {
+      triggers: [
+        { trigger: "state", entity_id: "light.kitchen", id: "motion" },
+        { trigger: "time", at: "12:00:00", id: "motion" },
+      ],
+      conditions: [{ condition: "trigger", id: "" }],
+      actions: [],
+    };
+
+    const updated = makeDuplicateTriggerIdsUnique(config);
+
+    expect(updated.triggers).toEqual([
+      { trigger: "state", entity_id: "light.kitchen" },
+      { trigger: "time", at: "12:00:00" },
+    ]);
+    expect(updated.conditions).toBe(config.conditions);
+  });
+
   it("removes generated trigger IDs that no condition or action references", () => {
     const generatedA = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
     const generatedB = `${GENERATED_TRIGGER_ID_PREFIX}yZ7w`;

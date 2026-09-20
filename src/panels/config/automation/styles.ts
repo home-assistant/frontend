@@ -46,18 +46,6 @@ export const rowStyles = css`
   ha-card {
     transition: outline 0.2s;
   }
-  .disabled-bar {
-    background: var(--divider-color, #e0e0e0);
-    text-align: center;
-    border-top-right-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-    border-top-left-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-  }
   .warning ul {
     margin: 4px 0;
   }
@@ -109,11 +97,11 @@ export const rowStyles = css`
     text-box-edge: cap alphabetic;
     overflow: hidden;
     transition:
-      opacity 180ms ease-out,
-      transform 180ms ease-out,
-      width 180ms ease-out,
-      margin-inline-end 180ms ease-out,
-      border-width 180ms ease-out;
+      opacity var(--ha-animation-duration-fast) ease-out,
+      transform var(--ha-animation-duration-fast) ease-out,
+      width var(--ha-animation-duration-fast) ease-out,
+      margin-inline-end var(--ha-animation-duration-fast) ease-out,
+      border-width var(--ha-animation-duration-fast) ease-out;
   }
 
   .trigger-index-badge.hidden {

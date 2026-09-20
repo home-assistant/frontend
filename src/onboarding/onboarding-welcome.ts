@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -9,6 +10,8 @@ import "../components/ha-button";
 import "../components/ha-icon-next";
 import "../components/item/ha-list-item-button";
 import "../components/list/ha-list-base";
+import { translationsReadyContext } from "../mixins/lit-localize-lite-mixin";
+import { renderSkeleton, skeletonStyles } from "./render-skeleton";
 import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-welcome")
@@ -17,44 +20,89 @@ class OnboardingWelcome extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  protected render(): TemplateResult {
-    return html`
-      <h1>${this._localize("ui.panel.page-onboarding.welcome.header")}</h1>
-      <p>${this._localize("ui.panel.page-onboarding.intro")}</p>
+  @state()
+  @consume({ context: translationsReadyContext, subscribe: true })
+  private _translationsReady!: boolean;
 
-      <ha-button @click=${this._start} class="start">
-        ${this._localize("ui.panel.page-onboarding.welcome.start")}
+  protected render(): TemplateResult {
+    const ready = this._translationsReady;
+    return html`
+      <h1>
+        ${
+          ready
+            ? this._localize("ui.panel.page-onboarding.welcome.header")
+            : renderSkeleton("title")
+        }
+      </h1>
+      <p>
+        ${
+          ready
+            ? this._localize("ui.panel.page-onboarding.intro")
+            : renderSkeleton("line")
+        }
+      </p>
+
+      <ha-button @click=${this._start} class="start" .disabled=${!ready}>
+        ${
+          ready
+            ? this._localize("ui.panel.page-onboarding.welcome.start")
+            : renderSkeleton("button")
+        }
       </ha-button>
 
       <div class="divider">
         <wa-divider></wa-divider>
         <div>
-          <span
-            >${this._localize(
-              "ui.panel.page-onboarding.welcome.or_restore"
-            )}</span
-          >
+          <span>
+            ${
+              ready
+                ? this._localize("ui.panel.page-onboarding.welcome.or_restore")
+                : renderSkeleton("chip")
+            }
+          </span>
         </div>
       </div>
 
       <ha-list-base>
-        <ha-list-item-button @click=${this._restoreBackupUpload}>
+        <ha-list-item-button
+          @click=${this._restoreBackupUpload}
+          .disabled=${!ready}
+        >
           <div slot="headline">
-            ${this._localize("ui.panel.page-onboarding.restore.upload_backup")}
+            ${
+              ready
+                ? this._localize(
+                    "ui.panel.page-onboarding.restore.upload_backup"
+                  )
+                : renderSkeleton("headline")
+            }
           </div>
           <div slot="supporting-text">
-            ${this._localize(
-              "ui.panel.page-onboarding.restore.options.upload_description"
-            )}
+            ${
+              ready
+                ? this._localize(
+                    "ui.panel.page-onboarding.restore.options.upload_description"
+                  )
+                : renderSkeleton("line")
+            }
           </div>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-button>
-        <ha-list-item-button @click=${this._restoreBackupCloud}>
-          <div slot="headline">Home Assistant Cloud</div>
+        <ha-list-item-button
+          @click=${this._restoreBackupCloud}
+          .disabled=${!ready}
+        >
+          <div slot="headline">
+            ${ready ? "Home Assistant Cloud" : renderSkeleton("headline")}
+          </div>
           <div slot="supporting-text">
-            ${this._localize(
-              "ui.panel.page-onboarding.restore.ha-cloud.description"
-            )}
+            ${
+              ready
+                ? this._localize(
+                    "ui.panel.page-onboarding.restore.ha-cloud.description"
+                  )
+                : renderSkeleton("line")
+            }
           </div>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-button>
@@ -93,10 +141,12 @@ class OnboardingWelcome extends LitElement {
           margin-bottom: calc(var(--ha-space-4) * -1);
         }
         h1 {
+          width: 100%;
           margin-top: var(--ha-space-4);
           margin-bottom: var(--ha-space-2);
         }
         p {
+          width: 100%;
           margin: 0;
         }
         .start {
@@ -129,6 +179,7 @@ class OnboardingWelcome extends LitElement {
           --ha-row-item-padding-inline: 0;
         }
       `,
+      skeletonStyles,
     ];
   }
 }

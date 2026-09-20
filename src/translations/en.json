@@ -1537,7 +1537,10 @@
         "title": "Map vacuum segments to areas",
         "no_segments": "No segments available",
         "area_label": "Area",
-        "description": "Configure which areas correspond to each vacuum segment"
+        "description": "Configure which areas correspond to each vacuum segment",
+        "orphaned_header": "Segments no longer on the vacuum",
+        "orphaned_description": "These areas were mapped to segments the vacuum no longer reports. Remove them to keep the mapping up to date.",
+        "orphaned_remove": "Remove mapping for {name}"
       },
       "codemirror": {
         "open_documentation": "Open documentation"
@@ -5866,8 +5869,8 @@
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
                   "duplicate_ids": "Some triggers share the same trigger ID. Avoid reusing a trigger ID to group triggers and select multiple triggers here instead.",
                   "duplicate_ids_fix": "Fix",
-                  "assign_unique_ids_title": "Assign unique trigger IDs?",
-                  "assign_unique_ids_description": "Each trigger sharing an ID gets a unique one, and conditions using it are updated to match. Templates or actions that use trigger.id directly may need to be updated.",
+                  "assign_unique_ids_title": "Fix duplicate trigger IDs?",
+                  "assign_unique_ids_description": "Triggers that share a used ID get a unique ID, and conditions using it are updated to match. IDs that nothing uses are removed. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
                     "full": "If triggered by {id}",
@@ -6182,6 +6185,8 @@
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
             "newer_trace": "Newer trace",
+            "previous_tracked_node": "Previous tracked node",
+            "next_tracked_node": "Next tracked node",
             "no_traces_found": "No traces found",
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
@@ -9394,7 +9399,19 @@
           },
           "map": {
             "reset_focus": "Reset focus",
-            "toggle_grouping": "Toggle grouping"
+            "toggle_grouping": "Toggle grouping",
+            "overview": {
+              "people": "People",
+              "devices": "Devices",
+              "zones": "Zones",
+              "no_people": "No people",
+              "no_devices": "No devices with a location",
+              "no_zones": "No zones",
+              "activity": "Activity",
+              "no_activity": "No recent activity",
+              "activity_unavailable": "Activity couldn't be loaded",
+              "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"
+            }
           },
           "energy": {
             "loading": "Loading…",
