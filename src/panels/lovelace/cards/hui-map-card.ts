@@ -977,9 +977,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     @media (max-width: 600px) {
       #overview {
         top: auto;
-        bottom: calc(-1 * var(--map-bleed-bottom, 0px));
-        inset-inline-start: calc(-1 * var(--map-bleed-left, 0px));
-        inset-inline-end: calc(-1 * var(--map-bleed-right, 0px));
+        bottom: 0;
+        inset-inline-start: 0;
+        inset-inline-end: 0;
         width: auto;
         max-height: 70%;
       }
