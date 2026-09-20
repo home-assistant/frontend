@@ -60,7 +60,9 @@ export class HaInitPage extends LitElement {
               : nothing
           }
         `
-      : html`<p class=${classMap({ "loading-text": !this.migration })}>
+      : html`<p
+          class=${classMap({ "loading-text": !this.migration, rtl: document.dir === "rtl" })}
+        >
           ${
             this.migration
               ? html`<span class="migration-text"
@@ -123,6 +125,9 @@ export class HaInitPage extends LitElement {
     }
     .loading-text {
       opacity: 0.66;
+    }
+    .rtl {
+      direction: rtl;
     }
   `;
 }

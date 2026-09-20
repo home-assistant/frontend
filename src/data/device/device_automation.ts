@@ -182,26 +182,69 @@ export const deviceAutomationEditorMode = (
     : "unknown-device";
 };
 
-// Like deviceAutomationsEqual, but ignores device_id and entity_id so an
-// automation can be matched to the equivalent one on a different device (for
-// example when a referenced device was replaced by a split device).
-export const deviceAutomationsSimilar = (
+const deviceAutomationsSameType = (a: DeviceAutomation, b: DeviceAutomation) =>
+  deviceAutomationIdentifiers
+    .filter((property) => property !== "device_id" && property !== "entity_id")
+    .every((property) => Object.is(a[property], b[property]));
+
+// An entity can be referenced by its registry id or by its entity id, and the
+// two sides do not have to agree.
+const deviceAutomationsSameEntity = (
+  entityRegistry: EntityRegistryEntry[],
   a: DeviceAutomation,
   b: DeviceAutomation
 ) => {
-  if (typeof a !== typeof b) {
+  if (!a.entity_id && !b.entity_id) {
+    return true;
+  }
+  if (!a.entity_id || !b.entity_id) {
     return false;
   }
-  return deviceAutomationIdentifiers
-    .filter((property) => property !== "device_id" && property !== "entity_id")
-    .every((property) => {
-      const inA = property in a;
-      const inB = property in b;
-      if (!inA && !inB) {
-        return true;
-      }
-      return Object.is(a[property], b[property]);
-    });
+  return (
+    a.entity_id === b.entity_id ||
+    compareEntityIdWithEntityRegId(entityRegistry, a.entity_id, b.entity_id)
+  );
+};
+
+// A device exposes the same automation type once per entity, so the same type
+// on another entity is a different automation, not an equivalent one.
+export const findEquivalentDeviceAutomation = <T extends DeviceAutomation>(
+  entityRegistry: EntityRegistryEntry[],
+  automations: T[],
+  automation: DeviceAutomation
+): T | undefined =>
+  automations.find(
+    (candidate) =>
+      deviceAutomationsSameType(candidate, automation) &&
+      deviceAutomationsSameEntity(entityRegistry, candidate, automation)
+  );
+
+// Among the split devices that replaced a removed device, the ones that offer
+// the given automation. Nothing in the registry says which of them took it over,
+// so each candidate has to be asked.
+export const fetchReplacementDevices = async <T extends DeviceAutomation>(
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
+  automation: DeviceAutomation,
+  compositeSplits: DeviceCompositeSplits,
+  fetchDeviceAutomations: (callWS: CallWS, deviceId: string) => Promise<T[]>
+): Promise<string[]> => {
+  const candidates =
+    compositeSplits[automation.device_id]?.split_ids.filter(
+      (id) => id in hass.devices
+    ) ?? [];
+  const automationsPerCandidate = await Promise.all(
+    candidates.map((id) =>
+      fetchDeviceAutomations(hass.callWS, id).catch(() => [] as T[])
+    )
+  );
+  return candidates.filter((_id, index) =>
+    findEquivalentDeviceAutomation(
+      entityRegistry,
+      automationsPerCandidate[index],
+      automation
+    )
+  );
 };
 
 const compareEntityIdWithEntityRegId = (

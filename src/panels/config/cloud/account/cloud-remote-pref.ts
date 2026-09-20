@@ -4,10 +4,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-tip";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/list/ha-list-base";
 
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -179,8 +179,8 @@ export class CloudRemotePref extends LitElement {
                     )}
                   >
                     <div class="card-content">
-                      <ha-md-list>
-                        <ha-md-list-item>
+                      <ha-list-base>
+                        <ha-list-item-base>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.external_activation"
@@ -196,8 +196,8 @@ export class CloudRemotePref extends LitElement {
                             .checked=${remote_allow_remote_enable}
                             @change=${this._toggleAllowRemoteEnabledChanged}
                           ></ha-switch>
-                        </ha-md-list-item>
-                        <ha-md-list-item>
+                        </ha-list-item-base>
+                        <ha-list-item-base>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.certificate_info"
@@ -232,8 +232,8 @@ export class CloudRemotePref extends LitElement {
                               "ui.panel.config.cloud.account.remote.more_info"
                             )}
                           </ha-button>
-                        </ha-md-list-item>
-                      </ha-md-list>
+                        </ha-list-item-base>
+                      </ha-list-base>
                     </div>
                   </ha-card>
                   <ha-tip .hass=${this.hass}>
@@ -318,13 +318,8 @@ export class CloudRemotePref extends LitElement {
         display: flex;
         justify-content: flex-end;
       }
-      ha-md-list {
-        background: none;
-        --md-list-item-leading-space: 0;
-        --md-list-item-trailing-space: 0;
-      }
-      ha-md-list-item {
-        --md-item-overflow: visible;
+      ha-list-base {
+        --ha-row-item-padding-inline: 0;
       }
       ha-tip {
         max-width: 600px;

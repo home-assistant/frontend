@@ -191,7 +191,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/connectivity"
         .route=${this.route}
         .tabs=${configSections.tags}
         .columns=${this._columns(this.hass.localize)}

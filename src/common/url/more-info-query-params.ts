@@ -10,18 +10,15 @@ const VIEW_PARAM = "more-info-view";
 export interface MoreInfoUrlData {
   entityId?: string;
   view?: MoreInfoView;
-  hash: URLSearchParams;
 }
 
 export interface CreateMoreInfoUrlData {
   entityId: string;
   view: MoreInfoView;
-  hash?: URLSearchParams;
 }
 
 export const decodeMoreInfoUrl = (
-  search: SearchParamsSource,
-  hash = ""
+  search: SearchParamsSource
 ): MoreInfoUrlData => {
   const params =
     typeof search === "string"
@@ -35,9 +32,6 @@ export const decodeMoreInfoUrl = (
   return {
     entityId,
     view: isMoreInfoView(view) ? view : undefined,
-    hash: new URLSearchParams(
-      __DEMO__ ? "" : hash.startsWith("#") ? hash.substring(1) : hash
-    ),
   };
 };
 
@@ -48,9 +42,6 @@ export const createMoreInfoUrl = (
   const url = new URL(base, window.location.origin);
   url.searchParams.set(ENTITY_ID_PARAM, data.entityId);
   url.searchParams.set(VIEW_PARAM, data.view);
-  if (!__DEMO__ && data.hash !== undefined) {
-    url.hash = data.hash.toString();
-  }
 
   return `${url.pathname}${url.search}${url.hash}`;
 };

@@ -1,5 +1,5 @@
 import { titleCase } from "../../../common/string/title-case";
-import type { Condition } from "../../../panels/lovelace/common/validate-condition";
+import type { VisibilityCondition } from "../../../panels/lovelace/common/validate-condition";
 import type { MediaSelectorValue } from "../../selector";
 import type { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
@@ -52,7 +52,7 @@ export interface LovelaceViewSidebarConfig {
   sections?: LovelaceSectionConfig[];
   content_label?: string;
   sidebar_label?: string;
-  visibility?: Condition[];
+  visibility?: VisibilityCondition[];
 }
 
 export interface LovelaceBaseViewConfig {

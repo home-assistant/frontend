@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/buttons/ha-progress-button";
@@ -9,14 +10,12 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { cloudLogin } from "../../../../data/cloud";
 import { loginHaCloud } from "../../../../data/onboarding";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   showAlertDialog,
-  showConfirmationDialog,
   showPromptDialog,
 } from "../../../lovelace/custom-card-helpers";
 import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
@@ -30,16 +29,20 @@ export class CloudLogin extends LitElement {
 
   @property() public email?: string;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     "page-onboarding.restore.ha-cloud" | "config.cloud" = "config.cloud";
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
 
+  @property() public lead?: string;
+
   @query("#email", true) public emailField!: HaInput;
 
   @query("#password", true) private _passwordField!: HaInput;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _error?: string;
 
@@ -50,28 +53,20 @@ export class CloudLogin extends LitElement {
       return this._renderLoginForm();
     }
 
-    return html`
-      <ha-card
-        outlined
-        .header=${this.localize(
-          `ui.panel.${this.translationKeyPanel}.login.sign_in`
-        )}
-      >
-        ${this._renderLoginForm()}
-      </ha-card>
-    `;
+    return html`<ha-card outlined>${this._renderLoginForm()}</ha-card>`;
   }
 
   private _renderLoginForm() {
     return html`
       <div class="card-content login-form">
+        ${this.lead ? html`<p class="lead">${this.lead}</p>` : nothing}
         ${
           this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing
         }
         <ha-input
-          .label=${this.localize(
+          .label=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.email`
           )}
           id="email"
@@ -82,7 +77,7 @@ export class CloudLogin extends LitElement {
           .value=${this.email ?? ""}
           @keydown=${this._keyDown}
           .disabled=${this._inProgress}
-          .validationMessage=${this.localize(
+          .validationMessage=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.email_error_msg`
           )}
         ></ha-input>
@@ -91,7 +86,7 @@ export class CloudLogin extends LitElement {
           type="password"
           password-toggle
           name="password"
-          .label=${this.localize(
+          .label=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.password`
           )}
           autocomplete="current-password"
@@ -99,7 +94,7 @@ export class CloudLogin extends LitElement {
           minlength="8"
           @keydown=${this._keyDown}
           .disabled=${this._inProgress}
-          .validationMessage=${this.localize(
+          .validationMessage=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.password_error_msg`
           )}
         ></ha-input>
@@ -110,14 +105,14 @@ export class CloudLogin extends LitElement {
           .disabled=${this._inProgress}
           @click=${this._handleForgotPassword}
         >
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.forgot_password`
           )}
         </ha-button>
         <ha-progress-button
           @click=${this._handleLogin}
           .progress=${this._inProgress}
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.sign_in`
           )}</ha-progress-button
         >
@@ -140,18 +135,18 @@ export class CloudLogin extends LitElement {
     const errCode = err && err.body && err.body.code;
     if (errCode === "mfarequired") {
       const totpCode = await showPromptDialog(this, {
-        title: this.localize(
+        title: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.totp_code_prompt_title`
         ),
-        inputLabel: this.localize(
+        inputLabel: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.totp_code`
         ),
         inputType: "text",
         defaultValue: "",
-        confirmText: this.localize(
+        confirmText: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.submit`
         ),
-        dismissText: this.localize(
+        dismissText: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.cancel`
         ),
       });
@@ -172,7 +167,7 @@ export class CloudLogin extends LitElement {
     }
     if (errCode === "PasswordChangeRequired") {
       showAlertDialog(this, {
-        title: this.localize(
+        title: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_password_change_required`
         ),
       });
@@ -185,19 +180,19 @@ export class CloudLogin extends LitElement {
 
     switch (errCode) {
       case "UserNotConfirmed":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_email_confirm_necessary`
         );
       case "mfarequired":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_mfa_code_required`
         );
       case "mfaexpiredornotstarted":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_mfa_expired_or_not_started`
         );
       case "invalidtotpcode":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_totp_code_invalid`
         );
       default:
@@ -219,28 +214,12 @@ export class CloudLogin extends LitElement {
 
     try {
       if (this.hass) {
-        const result = await cloudLogin({
+        await cloudLogin({
           hass: this.hass,
           email,
           ...(code ? { code } : { password }),
           check_connection: checkConnection,
         });
-        if (result.cloud_pipeline) {
-          if (
-            await showConfirmationDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_title"
-              ),
-              text: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_text"
-              ),
-              confirmText: this.hass.localize("ui.common.yes"),
-              dismissText: this.hass.localize("ui.common.no"),
-            })
-          ) {
-            setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
-          }
-        }
       } else {
         // for onboarding
         await loginHaCloud({
@@ -250,6 +229,7 @@ export class CloudLogin extends LitElement {
       }
       this.email = "";
       fireEvent(this, "ha-refresh-cloud-status");
+      fireEvent(this, "cloud-logged-in");
     } catch (err: any) {
       const error = await this._handleCloudLoginError(
         err,
@@ -307,7 +287,9 @@ export class CloudLogin extends LitElement {
   }
 
   private _handleForgotPassword() {
-    fireEvent(this, "cloud-forgot-password");
+    fireEvent(this, "cloud-forgot-password", {
+      email: this.emailField?.value ?? this.email ?? "",
+    });
   }
 
   static get styles() {
@@ -317,9 +299,6 @@ export class CloudLogin extends LitElement {
         ha-card {
           overflow: hidden;
         }
-        ha-card .card-header {
-          margin-bottom: -8px;
-        }
         .card-actions {
           display: flex;
           justify-content: space-between;
@@ -328,6 +307,11 @@ export class CloudLogin extends LitElement {
         .login-form {
           display: flex;
           flex-direction: column;
+        }
+        .lead {
+          margin: 0 0 var(--ha-space-2);
+          color: var(--secondary-text-color);
+          line-height: var(--ha-line-height-normal);
         }
       `,
     ];
@@ -347,5 +331,6 @@ declare global {
     "cloud-forgot-password": {
       email: string;
     };
+    "cloud-logged-in": undefined;
   }
 }

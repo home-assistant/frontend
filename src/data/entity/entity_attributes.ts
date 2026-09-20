@@ -50,9 +50,6 @@ export const DOMAIN_ATTRIBUTES_UNITS = {
     azimuth: "°",
     elevation: "°",
   },
-  vacuum: {
-    battery_level: "%",
-  },
   valve: {
     current_position: "%",
   },

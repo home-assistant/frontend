@@ -877,20 +877,32 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .narrow-header-row {
+      --header-row-inset-start: var(--safe-area-inset-left, 0px);
+      --header-row-inset-end: var(--safe-area-inset-right, 0px);
       display: flex;
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0 16px;
+      padding: 0;
+      padding-inline-start: calc(16px + var(--header-row-inset-start));
       box-sizing: border-box;
       overflow-x: scroll;
-      -ms-overflow-style: none;
       scrollbar-width: none;
+    }
+
+    .narrow-header-row:dir(rtl) {
+      --header-row-inset-start: var(--safe-area-inset-right, 0px);
+      --header-row-inset-end: var(--safe-area-inset-left, 0px);
+    }
+
+    .narrow-header-row::after {
+      content: "";
+      flex: 0 0 var(--header-row-inset-end);
     }
 
     .narrow-header-row .flex {
       flex: 1;
-      margin-left: -16px;
+      margin-inline-start: -16px;
     }
 
     .selection-bar {

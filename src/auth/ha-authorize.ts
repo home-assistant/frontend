@@ -12,6 +12,7 @@ import "../components/ha-svg-icon";
 import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
 import { fetchAuthProviders } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import { provideLiteI18nMixin } from "../mixins/provide-lite-i18n-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
 
@@ -23,7 +24,9 @@ const appNames = {
 };
 
 @customElement("ha-authorize")
-export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
+export class HaAuthorize extends provideLiteI18nMixin(
+  litLocalizeLiteMixin(LitElement)
+) {
   @property({ attribute: false }) public clientId?: string;
 
   @property({ attribute: false }) public redirectUri?: string;
@@ -183,14 +186,12 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                   .redirectUri=${this.redirectUri}
                   .oauth2State=${this.oauth2State}
                   .authProvider=${this._authProvider}
-                  .localize=${this.localize}
                   .initStoreToken=${this._preselectStoreToken}
                 ></ha-auth-flow>
                 ${
                   inactiveProviders!.length > 0
                     ? html`
                         <ha-pick-auth-provider
-                          .localize=${this.localize}
                           .clientId=${this.clientId}
                           .authProviders=${inactiveProviders!}
                           @pick-auth-provider=${this._handleAuthProviderPick}

@@ -3,6 +3,7 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type { Lovelace } from "../../../src/panels/lovelace/types";
 import { setDemoAreas } from "../stubs/area_registry";
 import { energyEntities } from "../stubs/entities";
+import { connectivityEntities } from "../stubs/connectivity/fixtures";
 import { setDemoFloors } from "../stubs/floor_registry";
 import { getDemoTheme } from "../stubs/frontend";
 import type { DemoConfig, DemoTheme } from "./types";
@@ -53,6 +54,9 @@ export const setDemoConfig = async (
   setDemoAreas(hass, config.areas);
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());
+  // Replaced the whole state map above, so the entities that do not belong to a
+  // demo config have to be added back.
+  hass.addEntities(connectivityEntities());
 
   // Let the new registries and entities reach the dashboard before saving the
   // config, so dashboard strategies generate against them

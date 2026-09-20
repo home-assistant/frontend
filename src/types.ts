@@ -43,15 +43,6 @@ declare global {
   interface Window {
     // Custom panel entry point url
     customPanelJS: string;
-    ShadyCSS: {
-      nativeCss: boolean;
-      nativeShadow: boolean;
-      prepareTemplate(templateElement, elementName, elementExtension);
-      styleElement(element);
-      styleSubtree(element, overrideProperties);
-      styleDocument(overrideProperties);
-      getComputedStyleValue(element, propertyName);
-    };
   }
 
   // for fire event
@@ -295,8 +286,8 @@ export interface HomeAssistantFormatters {
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,
-    type: string | EntityNameItem | EntityNameItem[] | undefined,
-    separator?: EntityNameOptions
+    name: string | EntityNameItem | EntityNameItem[] | undefined,
+    options?: EntityNameOptions
   ): string;
 }
 

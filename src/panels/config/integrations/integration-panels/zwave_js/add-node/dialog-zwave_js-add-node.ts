@@ -1,4 +1,4 @@
-import { mdiChevronLeft, mdiClose } from "@mdi/js";
+import { mdiChevronLeft, mdiChevronRight, mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -64,6 +64,7 @@ import "./zwave-js-add-node-loading";
 import "./zwave-js-add-node-searching-devices";
 import "./zwave-js-add-node-select-method";
 import "./zwave-js-add-node-select-security-strategy";
+import { mainWindow } from "../../../../../../common/dom/get_main_window";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
@@ -184,7 +185,8 @@ class DialogZWaveJSAddNode extends LitElement {
       (this._step && backButtonStages.includes(this._step)) ||
       (this._step === "search_devices" && this._supportsSmartStart)
     ) {
-      icon = mdiChevronLeft;
+      icon =
+        mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
     }
 
     let titleTranslationKey = "title";
@@ -306,6 +308,7 @@ class DialogZWaveJSAddNode extends LitElement {
     if (this._step === "choose_security_strategy") {
       return html`<zwave-js-add-node-select-security-strategy
         .hass=${this.hass}
+        .inclusionStrategy=${this._inclusionStrategy}
         @z-wave-strategy-selected=${this._setSecurityStrategy}
       ></zwave-js-add-node-select-security-strategy>`;
     }

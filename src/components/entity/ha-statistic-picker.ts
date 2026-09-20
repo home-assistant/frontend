@@ -11,15 +11,16 @@ import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { type HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { computeRTL } from "../../common/util/compute_rtl";
+import {
+  computeEntityPickerDisplay,
+  computeEntitySearchLabels,
+} from "../../common/entity/compute_entity_name_display";
 import { domainToName } from "../../data/integration";
 import {
-  getStatisticIds,
   getStatisticLabel,
   type StatisticsMetaData,
 } from "../../data/recorder";
+import { getStatisticIds } from "../../data/recorder_statistic_ids";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box-item";
@@ -52,6 +53,7 @@ const SEARCH_KEYS = [
   { name: "search_labels.entityName", weight: 10 },
   { name: "search_labels.friendlyName", weight: 9 },
   { name: "search_labels.deviceName", weight: 8 },
+  { name: "search_labels.parentDeviceName", weight: 6 },
   { name: "search_labels.areaName", weight: 6 },
   { name: "search_labels.domainName", weight: 4 },
   { name: "statisticId", weight: 3 },
@@ -232,11 +234,6 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const isRTL = computeRTL(
-        hass.language,
-        hass.translationMetadata.translations
-      );
-
       const output: StatisticComboBoxItem[] = [];
 
       statisticIds.forEach((meta) => {
@@ -290,21 +287,17 @@ export class HaStatisticPicker extends LitElement {
         }
         const id = meta.statistic_id;
 
-        const friendlyName = computeStateName(stateObj); // Keep this for search
-
-        const [entityName, deviceName, areaName] = computeEntityNameList(
+        const { primary, secondary } = computeEntityPickerDisplay(
+          hass,
+          stateObj
+        );
+        const searchLabels = computeEntitySearchLabels(
           stateObj,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
           hass.entities,
           hass.devices,
           hass.areas,
           hass.floors
         );
-
-        const primary = entityName || deviceName || id;
-        const secondary = [areaName, entityName ? deviceName : undefined]
-          .filter(Boolean)
-          .join(isRTL ? " ◂ " : " ▸ ");
 
         const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
         output.push({
@@ -314,13 +307,12 @@ export class HaStatisticPicker extends LitElement {
           secondary,
           stateObj: stateObj,
           type: "entity",
-          sorting_label: [sortingPrefix, deviceName, entityName].join("_"),
-          search_labels: {
-            entityName: entityName || null,
-            deviceName: deviceName || null,
-            areaName: areaName || null,
-            friendlyName,
-          },
+          sorting_label: [
+            sortingPrefix,
+            searchLabels.deviceName,
+            searchLabels.entityName,
+          ].join("_"),
+          search_labels: searchLabels,
         });
       });
 
@@ -395,25 +387,17 @@ export class HaStatisticPicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
+      const { primary, secondary } = computeEntityPickerDisplay(
+        this.hass,
+        stateObj
+      );
+      const searchLabels = computeEntitySearchLabels(
         stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
         this.hass.entities,
         this.hass.devices,
         this.hass.areas,
         this.hass.floors
       );
-
-      const isRTL = computeRTL(
-        this.hass.language,
-        this.hass.translationMetadata.translations
-      );
-
-      const primary = entityName || deviceName || statisticId;
-      const secondary = [areaName, entityName ? deviceName : undefined]
-        .filter(Boolean)
-        .join(isRTL ? " ◂ " : " ▸ ");
-      const friendlyName = computeStateName(stateObj); // Keep this for search
 
       const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
       return {
@@ -423,14 +407,12 @@ export class HaStatisticPicker extends LitElement {
         secondary,
         stateObj: stateObj,
         type: "entity",
-        sorting_label: [sortingPrefix, deviceName, entityName].join("_"),
-        search_labels: {
-          entityName: entityName || null,
-          deviceName: deviceName || null,
-          areaName: areaName || null,
-          friendlyName,
-          statisticId,
-        },
+        sorting_label: [
+          sortingPrefix,
+          searchLabels.deviceName,
+          searchLabels.entityName,
+        ].join("_"),
+        search_labels: { ...searchLabels, statisticId },
       };
     }
 

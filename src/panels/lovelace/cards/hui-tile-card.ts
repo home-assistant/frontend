@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -18,6 +19,7 @@ import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
+import { timerJustFinished } from "../../../data/timer";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
@@ -90,6 +92,31 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   @state() private _config?: TileCardConfig;
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
+
+  @state() private _timerFinished = false;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      !changedProps.has("hass") ||
+      !this._config?.entity ||
+      computeDomain(this._config.entity) !== "timer"
+    ) {
+      return;
+    }
+    const stateObj = this.hass?.states[this._config.entity];
+    const oldStateObj = (changedProps.get("hass") as HomeAssistant | undefined)
+      ?.states[this._config.entity];
+    if (stateObj && timerJustFinished(oldStateObj, stateObj)) {
+      this._timerFinished = true;
+    }
+  }
+
+  private _timerFinishedAnimationEnded(ev: AnimationEvent): void {
+    if (ev.animationName === "timer-finished-pulse") {
+      this._timerFinished = false;
+    }
+  }
 
   public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
@@ -312,7 +339,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
-            class=${classMap({ image: hasImage })}
+            class=${classMap({
+              image: hasImage,
+              "timer-finished": this._timerFinished,
+            })}
+            @animationend=${this._timerFinishedAnimationEnded}
           >
             ${
               hasImage
@@ -392,6 +423,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
       ha-tile-icon[data-domain="lock"][data-state="jammed"] {
         animation: pulse 1s infinite;
+      }
+
+      ha-tile-icon.timer-finished {
+        animation: timer-finished-pulse 0.5s ease-in-out 2;
+      }
+
+      @keyframes timer-finished-pulse {
+        50% {
+          --tile-icon-color: var(--error-color);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        ha-tile-icon.timer-finished {
+          animation-duration: var(--ha-animation-duration-none);
+        }
       }
 
       /* Make sure we display the whole image */

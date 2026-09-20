@@ -204,41 +204,13 @@ export class HaDataTable extends LitElement {
     this._checkedRowsChanged();
   }
 
-  public selectAll(): void {
+  public selectAll(extraFilter?: (row: DataTableRowData) => boolean): void {
     this._checkedRows = (this._filteredData || [])
-      .filter((data) => data.selectable !== false)
+      .filter(
+        (data) =>
+          data.selectable !== false && (!extraFilter || extraFilter(data))
+      )
       .map((data) => data[this.id]);
-    this._lastSelectedRowId = null;
-    this._checkedRowsChanged();
-  }
-
-  public select(ids: string[], clear?: boolean): void {
-    if (clear) {
-      this._checkedRows = [];
-    }
-    // Map + Set keep a large selection O(rows + ids) instead of O(rows × ids).
-    const rowLookup = new Map(
-      (this._filteredData || []).map((data) => [data[this.id], data])
-    );
-    const checkedRows = new Set(this._checkedRows);
-    ids.forEach((id) => {
-      const row = rowLookup.get(id);
-      if (row?.selectable !== false && !checkedRows.has(id)) {
-        this._checkedRows.push(id);
-        checkedRows.add(id);
-      }
-    });
-    this._lastSelectedRowId = null;
-    this._checkedRowsChanged();
-  }
-
-  public unselect(ids: string[]): void {
-    ids.forEach((id) => {
-      const index = this._checkedRows.indexOf(id);
-      if (index > -1) {
-        this._checkedRows.splice(index, 1);
-      }
-    });
     this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
@@ -1230,15 +1202,27 @@ export class HaDataTable extends LitElement {
           overflow: auto;
         }
 
+        :host([narrow]) .mdc-data-table {
+          width: calc(
+            100% + var(--safe-area-inset-left, 0px) +
+              var(--safe-area-inset-right, 0px)
+          );
+          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
+          margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+          overflow: visible;
+        }
+
+        :host([narrow]) .mdc-data-table__header-row {
+          overflow: visible;
+        }
+
         /* Hide scrollbar for Chrome, Safari and Opera */
         .mdc-data-table__header-row::-webkit-scrollbar {
           display: none;
         }
 
-        /* Hide scrollbar for IE, Edge and Firefox */
         .mdc-data-table__header-row {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
+          scrollbar-width: none;
         }
 
         .mdc-data-table__cell,
@@ -1527,6 +1511,16 @@ export class HaDataTable extends LitElement {
         .scroller {
           height: calc(100% - 57px);
           overflow: overlay !important;
+        }
+
+        :host([narrow]) .mdc-data-table__row {
+          box-sizing: border-box;
+          padding-left: var(--safe-area-inset-left, 0px);
+          padding-right: var(--safe-area-inset-right, 0px);
+        }
+
+        :host([narrow]) .mdc-data-table__row:has(.group-header) {
+          background-color: var(--primary-background-color);
         }
 
         .mdc-data-table__table.auto-height .scroller {

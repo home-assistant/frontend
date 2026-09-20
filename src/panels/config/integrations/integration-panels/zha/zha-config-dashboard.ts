@@ -16,18 +16,20 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
-import { animationStyles } from "../../../../../resources/theme/animations.globals";
+import "../../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/buttons/ha-progress-button";
-import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
+import { animationStyles } from "../../../../../resources/theme/animations.globals";
 
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
+import "../../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import type {
@@ -101,7 +103,7 @@ class ZHAConfigDashboard extends LitElement {
           .hass=${this.hass}
           .narrow=${this.narrow}
           .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
-          back-path="/config"
+          back-path="/config/connectivity"
         >
           <div class="loading">
             <ha-spinner></ha-spinner>
@@ -129,7 +131,7 @@ class ZHAConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
-        back-path="/config"
+        back-path="/config/connectivity"
         has-fab
       >
         <div class="container">
@@ -219,9 +221,12 @@ class ZHAConfigDashboard extends LitElement {
           </ha-button>
         </div>
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.my_network_title"
+            )}
+          >
+            <ha-list-item-button
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -232,9 +237,8 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
+            </ha-list-item-button>
+            <ha-list-item-button
               href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
@@ -245,8 +249,8 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item type="link" href="/config/zha/groups">
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/zha/groups">
               <ha-svg-icon
                 slot="start"
                 .path=${mdiFolderMultipleOutline}
@@ -271,8 +275,8 @@ class ZHAConfigDashboard extends LitElement {
                 }
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -288,8 +292,12 @@ class ZHAConfigDashboard extends LitElement {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item type="link" href="/config/zha/options">
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.options_title"
+            )}
+          >
+            <ha-list-item-button href="/config/zha/options">
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
@@ -302,8 +310,8 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item type="link" href="/config/zha/network-info">
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/zha/network-info">
               <ha-svg-icon
                 slot="start"
                 .path=${mdiInformationOutline}
@@ -319,13 +327,10 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
+            </ha-list-item-button>
             ${dynamicSections.map(
               (section) => html`
-                <ha-md-list-item
-                  type="link"
-                  href=${`/config/zha/section/${section}`}
-                >
+                <ha-list-item-button href=${`/config/zha/section/${section}`}>
                   <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
                   <div slot="headline">
                     ${
@@ -335,10 +340,10 @@ class ZHAConfigDashboard extends LitElement {
                     }
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
+                </ha-list-item-button>
               `
             )}
-          </ha-md-list>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -348,8 +353,8 @@ class ZHAConfigDashboard extends LitElement {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item>
+          <ha-list-base>
+            <ha-list-item-base>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.download_backup"
@@ -372,8 +377,8 @@ class ZHAConfigDashboard extends LitElement {
                   "ui.panel.config.zha.configuration_page.download_backup_action"
                 )}
               </ha-progress-button>
-            </ha-md-list-item>
-            <ha-md-list-item>
+            </ha-list-item-base>
+            <ha-list-item-base>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.migrate_radio"
@@ -394,8 +399,8 @@ class ZHAConfigDashboard extends LitElement {
                   "ui.panel.config.zha.configuration_page.migrate_radio_action"
                 )}
               </ha-button>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-base>
+          </ha-list-base>
         </div>
       </ha-card>
     `;
@@ -530,15 +535,6 @@ class ZHAConfigDashboard extends LitElement {
           display: flex;
           justify-content: center;
           padding: var(--ha-space-12);
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
 
         .network-status div.heading {

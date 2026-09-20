@@ -61,3 +61,59 @@ test("completes onboarding and opens the default dashboard", async ({
   expect(calls.tokenRequests[1]).toContain("dashboard-auth-code");
   expectNoPageErrors(errors);
 });
+
+test("chooses analytics consent using named switches", async ({
+  page,
+  baseURL,
+}) => {
+  const errors = trackPageErrors(page);
+  const calls = await setupOnboardingMocks(page);
+
+  await openOnboarding(page, baseURL!);
+  await createOwner(page);
+  await completeCoreConfig(page);
+
+  const analytics = page.locator("onboarding-analytics");
+  const basic = analytics.getByRole("switch", {
+    name: "Basic analytics",
+    exact: true,
+  });
+  const usage = analytics.getByRole("switch", { name: "Usage", exact: true });
+  const statistics = analytics.getByRole("switch", {
+    name: "Statistical data",
+    exact: true,
+  });
+  const diagnostics = analytics.getByRole("switch", {
+    name: "Diagnostics",
+    exact: true,
+  });
+
+  await expect(basic).toBeVisible();
+  await basic.press("Space");
+  await usage.press("Space");
+  await statistics.press("Space");
+  await diagnostics.press("Space");
+  await expect(usage).toBeChecked();
+  await expect(statistics).toBeChecked();
+  await expect(diagnostics).toBeChecked();
+
+  // Withdrawing basic consent also withdraws its dependent categories,
+  // while independently selected crash reporting stays enabled.
+  await basic.press("Space");
+  await expect(usage).not.toBeChecked();
+  await expect(statistics).not.toBeChecked();
+  await expect(diagnostics).toBeChecked();
+  await completeAnalytics(page);
+  await expect.poll(() => calls.analyticsCompleted).toBe(true);
+
+  expect(calls.analyticsPreferences).toMatchObject({
+    type: "analytics/preferences",
+    preferences: {
+      base: false,
+      usage: false,
+      statistics: false,
+      diagnostics: true,
+    },
+  });
+  expectNoPageErrors(errors);
+});

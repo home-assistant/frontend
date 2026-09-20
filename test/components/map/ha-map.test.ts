@@ -49,6 +49,10 @@ const STATES = {
   },
 } as unknown as HassEntities;
 
+// jsdom has no WebGL2, so ha-map runs its Leaflet fallback engine here; the
+// Leaflet map underneath is what the fit assertions read.
+const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
+
 const createMap = async (): Promise<HaMap> => {
   const el = document.createElement("ha-map");
   el.entities = [
@@ -61,7 +65,7 @@ const createMap = async (): Promise<HaMap> => {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
   };
   document.body.appendChild(el);
-  await vi.waitUntil(() => el.leafletMap !== undefined && (el as any)._loaded);
+  await vi.waitUntil(() => leafletMap(el) !== undefined && (el as any)._loaded);
   await el.updateComplete;
   return el;
 };
@@ -104,7 +108,7 @@ describe("ha-map", () => {
     fireResizeObservers();
     await el.updateComplete;
 
-    const map = el.leafletMap!;
+    const map = leafletMap(el)!;
     // The map should be fitted to the markers, not zoomed out to the world.
     expect(map.getZoom()).toBeGreaterThanOrEqual(10);
     expect(map.getCenter().lat).toBeCloseTo(52.3745, 2);
@@ -131,7 +135,7 @@ describe("ha-map", () => {
 
     try {
       const el = await createMap();
-      const map = el.leafletMap!;
+      const map = leafletMap(el)!;
       expect(map.getZoom()).toBeGreaterThanOrEqual(10);
       expect(map.getCenter().lat).toBeCloseTo(52.3745, 2);
       expect(map.getCenter().lng).toBeCloseTo(4.8925, 2);

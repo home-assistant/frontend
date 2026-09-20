@@ -1,7 +1,8 @@
 import { mdiOpenInNew } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
@@ -22,7 +23,9 @@ import { onBoardingStyles } from "./styles";
 class OnboardingAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _error?: string;
 
@@ -34,15 +37,15 @@ class OnboardingAnalytics extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h1>${this.localize("ui.panel.page-onboarding.analytics.header")}</h1>
-      <p>${this.localize("ui.panel.page-onboarding.analytics.intro")}</p>
+      <h1>${this._localize("ui.panel.page-onboarding.analytics.header")}</h1>
+      <p>${this._localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <p>
         <a
           href=${documentationUrl(this.hass, "/integrations/analytics/")}
           target="_blank"
           rel="noreferrer"
         >
-          ${this.localize("ui.panel.page-onboarding.analytics.learn_more")}
+          ${this._localize("ui.panel.page-onboarding.analytics.learn_more")}
           <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
         </a>
       </p>
@@ -52,7 +55,6 @@ class OnboardingAnalytics extends LitElement {
               <ha-analytics
                 translation_key_panel="page-onboarding"
                 @analytics-preferences-changed=${this._preferencesChanged}
-                .localize=${this.localize}
                 .analytics=${this._analyticsDetails}
               >
               </ha-analytics>
@@ -61,7 +63,7 @@ class OnboardingAnalytics extends LitElement {
               <div class="loading">
                 <ha-spinner></ha-spinner>
                 <p>
-                  ${this.localize("ui.panel.page-onboarding.analytics.waiting")}
+                  ${this._localize("ui.panel.page-onboarding.analytics.waiting")}
                 </p>
               </div>
             `
@@ -69,7 +71,7 @@ class OnboardingAnalytics extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : ""}
       <div class="footer">
         <ha-button @click=${this._save} .disabled=${!this._analyticsDetails}>
-          ${this.localize("ui.panel.page-onboarding.analytics.finish")}
+          ${this._localize("ui.panel.page-onboarding.analytics.finish")}
         </ha-button>
       </div>
     `;

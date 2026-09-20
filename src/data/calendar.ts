@@ -1,8 +1,10 @@
 import {
   computeCssColor,
   isValidColorString,
+  resolveThemeColor,
 } from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
+import { getContrastedColorHex, isOpaqueColor } from "../common/color/rgb";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
@@ -13,6 +15,7 @@ export interface Calendar {
   entity_id: string;
   name?: string;
   backgroundColor?: string;
+  textColor?: string;
 }
 
 /** Object used to render a calendar event in fullcalendar. */
@@ -22,6 +25,7 @@ export interface CalendarEvent {
   end?: string;
   backgroundColor?: string;
   borderColor?: string;
+  textColor?: string;
   calendar: string;
   eventData: CalendarEventData;
   [key: string]: any;
@@ -107,6 +111,28 @@ export const fetchCalendarEvents = async (
   return { events: calEvents, errors };
 };
 
+export const getCalendarColors = (
+  color: string | null | undefined,
+  index: number,
+  computedStyles: CSSStyleDeclaration
+): { backgroundColor: string; textColor?: string } => {
+  // Fall back to a color by index when the entity has none set
+  const resolved =
+    color && isValidColorString(color)
+      ? color
+      : getColorByIndex(index, computedStyles);
+  // A theme color stays a CSS variable in the background, so the text color
+  // comes from what that variable holds for this element.
+  const background = resolveThemeColor(resolved, computedStyles);
+  return {
+    backgroundColor: computeCssColor(resolved),
+    // A background we cannot measure keeps the color fullcalendar picks itself
+    textColor: isOpaqueColor(background)
+      ? getContrastedColorHex(background)
+      : undefined,
+  };
+};
+
 export const getCalendars = (
   hass: HomeAssistant,
   element: Element,
@@ -127,18 +153,10 @@ export const getCalendars = (
     .map((eid, idx) => {
       const stateObj = hass.states[eid];
       const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
-      let backgroundColor: string;
-      // Validate and use the color from entity registry if valid
-      if (entityColor && isValidColorString(entityColor)) {
-        backgroundColor = computeCssColor(entityColor);
-      } else {
-        // Fall back to default color by index
-        backgroundColor = getColorByIndex(idx, computedStyles);
-      }
       return {
         ...stateObj,
         name: computeStateName(stateObj),
-        backgroundColor,
+        ...getCalendarColors(entityColor, idx, computedStyles),
       };
     });
 };
@@ -268,6 +286,7 @@ export const normalizeSubscriptionEventData = (
     title: eventData.summary,
     backgroundColor: calendar.backgroundColor,
     borderColor: calendar.backgroundColor,
+    textColor: calendar.textColor,
     calendar: calendar.entity_id,
     eventData: normalizedEventData,
   };

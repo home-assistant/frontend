@@ -48,6 +48,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
@@ -72,10 +73,16 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import "../ha-automation-row-behavior";
+import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
+import {
+  automationTriggerContext,
+  type AutomationTriggerContext,
+} from "./automation-trigger-id";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
@@ -135,6 +142,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
+  @property({ type: Number }) public index?: number;
+
   @property({ type: Boolean }) public highlight?: boolean;
 
   @property({ type: Boolean, attribute: "sidebar" })
@@ -164,7 +173,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
-  @query("ha-automation-row-event-chip")
+  @query(".triggered-chip")
   private _eventChipElement?: HaAutomationRowEventChip;
 
   @storage({
@@ -178,6 +187,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
+
+  @state()
+  @consume({ context: automationTriggerContext, subscribe: true })
+  private _triggers?: AutomationTriggerContext;
 
   get selected() {
     return this._selected;
@@ -204,6 +217,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderRow() {
+    const triggerIndex = this._triggers?.options.find(
+      (option) => option.trigger === this.trigger
+    )?.index;
     const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
@@ -236,25 +252,62 @@ export default class HaAutomationTriggerRow extends LitElement {
     );
 
     return html`
-      ${
-        type === "list"
-          ? html`<ha-svg-icon
-              slot="leading-icon"
-              class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
-            ></ha-svg-icon>`
-          : html`<ha-trigger-icon
-              slot="leading-icon"
-              .hass=${this.hass}
-              .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
-            ></ha-trigger-icon>`
-      }
+      <div slot="leading-icon" class="trigger-leading">
+        ${
+          triggerIndex !== undefined
+            ? html`
+                <span
+                  id="trigger-index-badge-${triggerIndex}"
+                  tabindex=${this._triggers?.showIndices ? "0" : "-1"}
+                  class="trigger-index-badge ${
+                    this._triggers?.showIndices ? "" : "hidden"
+                  }"
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.trigger_index_aria_label",
+                    { number: triggerIndex + 1 }
+                  )}
+                  aria-hidden=${this._triggers?.showIndices ? "false" : "true"}
+                  >${triggerIndex + 1}</span
+                >
+                ${
+                  this._triggers?.showIndices
+                    ? html`<ha-tooltip for="trigger-index-badge-${triggerIndex}"
+                        ><p>
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.trigger_index_tooltip"
+                          )}
+                        </p></ha-tooltip
+                      >`
+                    : nothing
+                }
+              `
+            : nothing
+        }
+        ${
+          type === "list"
+            ? html`<ha-svg-icon
+                class="trigger-icon"
+                .path=${TRIGGER_ICONS[type]}
+              ></ha-svg-icon>`
+            : html`<ha-trigger-icon
+                .hass=${this.hass}
+                .trigger=${
+                  (this.trigger as Exclude<Trigger, TriggerList>).trigger
+                }
+              ></ha-trigger-icon>`
+        }
+      </div>
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeTrigger(this.trigger, this.hass, this._entityReg, {
-            hideEntities: true,
-          })
+          describeTrigger(this.trigger, this.hass, this._entityReg)
         )}
+        ${
+          type === "platform"
+            ? html`<ha-automation-row-behavior
+                .config=${this.trigger}
+              ></ha-automation-row-behavior>`
+            : nothing
+        }
         ${
           target !== undefined || targetRequired
             ? this._renderTargets(
@@ -263,6 +316,13 @@ export default class HaAutomationTriggerRow extends LitElement {
                 triggerTargetSpec,
                 type !== "device"
               )
+            : nothing
+        }
+        ${
+          type === "platform"
+            ? html`<ha-automation-row-options
+                .config=${this.trigger}
+              ></ha-automation-row-options>`
             : nothing
         }
         ${
@@ -286,9 +346,23 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${
+          "enabled" in this.trigger &&
+          this.trigger.enabled === false &&
+          !this._triggered
+        }
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._triggered}
         slot="event"
-        class="event-chip"
+        class="event-chip triggered-chip"
         interactive
         aria-live="polite"
         @click=${this._showTriggeredInfo}
@@ -562,17 +636,6 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     return html`
       <ha-card outlined class=${this._selected ? "selected" : ""}>
-        ${
-          "enabled" in this.trigger && this.trigger.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row

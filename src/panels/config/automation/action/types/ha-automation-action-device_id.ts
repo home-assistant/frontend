@@ -14,6 +14,8 @@ import type {
 } from "../../../../../data/device/device_automation";
 import {
   deviceAutomationEditorMode,
+  fetchReplacementDevices,
+  fetchDeviceActions,
   deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
   localizeExtraFieldsComputeHelperCallback,
@@ -39,6 +41,8 @@ export class HaDeviceAction extends LitElement {
   @state() private _capabilities?: DeviceCapabilities;
 
   @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  @state() private _replacementDeviceIds?: string[];
 
   private _loadingCompositeSplits = false;
 
@@ -95,13 +99,27 @@ export class HaDeviceAction extends LitElement {
     return true;
   }
 
+  private async _resolveReplacements(compositeSplits: DeviceCompositeSplits) {
+    this._replacementDeviceIds = await fetchReplacementDevices(
+      this.hass,
+      this._entityReg,
+      this.action,
+      compositeSplits,
+      fetchDeviceActions
+    );
+  }
+
   private async _loadCompositeSplits() {
     if (this._loadingCompositeSplits) {
       return;
     }
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      // Resolve the candidates before exposing the split map, so the picker
+      // never offers one that cannot host the automation.
+      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      await this._resolveReplacements(compositeSplits);
+      this._compositeSplits = compositeSplits;
     } catch (_err) {
       this._compositeSplits = {};
     } finally {
@@ -115,6 +133,7 @@ export class HaDeviceAction extends LitElement {
     return html`
       <ha-device-picker
         .value=${deviceId}
+        .replacementDeviceIds=${this._replacementDeviceIds}
         .disabled=${this.disabled}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
@@ -156,6 +175,19 @@ export class HaDeviceAction extends LitElement {
     `;
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    // The picked device only lives here until the configuration catches up.
+    // Once it points somewhere else, undo and redo included, it is stale.
+    const previous = changedProps.get("action");
+    if (previous && previous.device_id !== this.action.device_id) {
+      this._deviceId = undefined;
+      this._replacementDeviceIds = undefined;
+      if (this._compositeSplits) {
+        this._resolveReplacements(this._compositeSplits);
+      }
+    }
+  }
+
   protected firstUpdated() {
     this.hass.loadBackendTranslation("device_automation");
     if (!this._capabilities) {
@@ -185,6 +217,15 @@ export class HaDeviceAction extends LitElement {
 
   private _devicePicked(ev) {
     ev.stopPropagation();
+    // The automation exists as is on the replacement, so only the reference
+    // changes and the rest of the configuration is left untouched.
+    if (this._replacementDeviceIds?.includes(ev.target.value)) {
+      this._deviceId = undefined;
+      fireEvent(this, "value-changed", {
+        value: { ...this.action, device_id: ev.target.value },
+      });
+      return;
+    }
     this._deviceId = ev.target.value;
     if (this._deviceId === undefined) {
       fireEvent(this, "value-changed", {

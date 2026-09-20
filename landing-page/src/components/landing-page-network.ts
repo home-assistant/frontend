@@ -1,35 +1,37 @@
+import { LitElement, css, html, nothing, type CSSResultGroup } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { consumeLocalize } from "../../../src/common/decorators/consume-context-entry";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import type {
   LandingPageKeys,
   LocalizeFunc,
 } from "../../../src/common/translations/localize";
-import "../../../src/components/ha-button";
 import "../../../src/components/ha-alert";
+import "../../../src/components/ha-button";
+import type { NetworkInterface } from "../../../src/data/hassio/network";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import {
   ALTERNATIVE_DNS_SERVERS,
   setSupervisorNetworkDns,
   type NetworkInfo,
 } from "../data/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import type { NetworkInterface } from "../../../src/data/hassio/network";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("landing-page-network")
 class LandingPageNetwork extends LitElement {
-  @property({ attribute: false })
-  public localize!: LocalizeFunc<LandingPageKeys>;
-
   @property({ attribute: false }) public networkInfo?: NetworkInfo;
 
   @property({ type: Boolean }) public error = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc<LandingPageKeys>;
 
   protected render() {
     if (this.error) {
       return html`
         <ha-alert alert-type="error">
-          <p>${this.localize("network_issue.error_get_network_info")}</p>
+          <p>${this._localize("network_issue.error_get_network_info")}</p>
         </ha-alert>
       `;
     }
@@ -47,19 +49,21 @@ class LandingPageNetwork extends LitElement {
     return html`
       <ha-alert
         alert-type="warning"
-        .title=${this.localize("network_issue.title")}
+        .title=${this._localize("network_issue.title")}
       >
         <p>
-          ${this.localize("network_issue.description", {
+          ${this._localize("network_issue.description", {
             dns: dnsPrimaryInterfaceNameservers || "?",
           })}
         </p>
-        <p>${this.localize("network_issue.resolve_different")}</p>
+        <p>${this._localize("network_issue.resolve_different")}</p>
         ${
           !dnsPrimaryInterfaceNameservers
             ? html`
                 <p>
-                  <b>${this.localize("network_issue.no_primary_interface")} </b>
+                  <b
+                    >${this._localize("network_issue.no_primary_interface")}
+                  </b>
                 </p>
               `
             : nothing
@@ -72,7 +76,7 @@ class LandingPageNetwork extends LitElement {
                 .index=${key}
                 .disabled=${!dnsPrimaryInterfaceNameservers}
                 @click=${this._setDns}
-                >${this.localize(translationKey)}</ha-button
+                >${this._localize(translationKey)}</ha-button
               >`
           )}
         </div>
@@ -118,12 +122,12 @@ class LandingPageNetwork extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       showAlertDialog(this, {
-        title: this.localize("network_issue.failed"),
+        title: this._localize("network_issue.failed"),
         warning: true,
-        text: `${this.localize(
+        text: `${this._localize(
           "network_issue.set_dns_failed"
-        )}${err?.message ? ` ${this.localize("network_issue.error")}: ${err.message}` : ""}`,
-        confirmText: this.localize("network_issue.close"),
+        )}${err?.message ? ` ${this._localize("network_issue.error")}: ${err.message}` : ""}`,
+        confirmText: this._localize("network_issue.close"),
       });
     }
   }

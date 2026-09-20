@@ -291,6 +291,7 @@ class HuiWaterSankeyCard
                   .hass=${this.hass}
                   .data=${{ nodes, links }}
                   .vertical=${vertical}
+                  .showValues=${this._config.show_values === true}
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`

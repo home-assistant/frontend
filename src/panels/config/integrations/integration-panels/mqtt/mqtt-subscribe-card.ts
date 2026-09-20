@@ -256,10 +256,14 @@ class MqttSubscribeCard extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
+      gap: var(--ha-space-2);
+    }
+    ha-button {
+      align-self: flex-start;
+      margin-top: var(--ha-space-3);
     }
     ha-select {
       width: 96px;
-      margin: 0 8px;
     }
     ha-input {
       flex: 1;
@@ -281,10 +285,6 @@ class MqttSubscribeCard extends LitElement {
     @media screen and (max-width: 600px) {
       ha-select {
         display: block;
-        margin-left: 0px;
-        margin-top: 8px;
-        margin-inline-start: 0px;
-        margin-inline-end: initial;
       }
       ha-input {
         flex: auto;

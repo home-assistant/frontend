@@ -1,6 +1,6 @@
 import type { HomeAssistant, PanelInfo } from "../../types";
 import type { SupervisorArch } from "../supervisor/supervisor";
-import type { HassioResponse } from "./common";
+import { supervisorUrl, type HassioResponse } from "./common";
 
 export interface HassioHomeAssistantInfo {
   arch: SupervisorArch;
@@ -198,18 +198,20 @@ export const fetchHassioLogsFollowSkip = async (
   );
 
 export const getHassioLogDownloadUrl = (provider: string) =>
-  `/api/hassio/${
-    provider.includes("_") ? `addons/${provider}` : provider
-  }/logs`;
+  supervisorUrl(
+    `${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+  );
 
 export const getHassioLogDownloadLinesUrl = (
   provider: string,
   lines: number,
   boot = 0
 ) =>
-  `/api/hassio/${
-    provider.includes("_") ? `addons/${provider}` : provider
-  }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`;
+  supervisorUrl(
+    `${
+      provider.includes("_") ? `addons/${provider}` : provider
+    }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`
+  );
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,
@@ -223,4 +225,4 @@ export const setSupervisorOption = async (
   });
 };
 
-export const coreLatestLogsUrl = "/api/hassio/core/logs/latest";
+export const coreLatestLogsUrl = supervisorUrl("core/logs/latest");

@@ -27,7 +27,6 @@ import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import type { InputSelectEntity } from "../../data/input_select";
 import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";
-import "../../panels/lovelace/entity-rows/hui-select-entity-row";
 import type { HomeAssistant } from "../../types";
 import { getTranslation } from "../../util/common-translation";
 import { AssistantSetupStyles } from "./styles";

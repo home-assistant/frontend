@@ -4,8 +4,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { ZHANetworkSettings } from "../../../../../data/zha";
 import { fetchZHANetworkSettings } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -53,8 +53,8 @@ class ZHANetworkInfoPage extends LitElement {
           <ha-card>
             ${
               this._networkSettings
-                ? html`<ha-md-list>
-                    <ha-md-list-item>
+                ? html`<ha-list-base>
+                    <ha-list-item-base>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.zha.configuration_page.channel_label"
@@ -73,16 +73,16 @@ class ZHANetworkInfoPage extends LitElement {
                         .path=${mdiPencil}
                         @click=${this._showChannelMigrationDialog}
                       ></ha-icon-button>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">PAN ID</span>
                       <span slot="supporting-text"
                         >${
                           this._networkSettings.settings.network_info.pan_id
                         }</span
                       >
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">Extended PAN ID</span>
                       <span slot="supporting-text"
                         >${
@@ -90,14 +90,14 @@ class ZHANetworkInfoPage extends LitElement {
                             .extended_pan_id
                         }</span
                       >
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">Coordinator IEEE</span>
                       <span slot="supporting-text"
                         >${this._networkSettings.settings.node_info.ieee}</span
                       >
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.zha.configuration_page.radio_type"
@@ -106,8 +106,8 @@ class ZHANetworkInfoPage extends LitElement {
                       <span slot="supporting-text"
                         >${this._networkSettings.radio_type}</span
                       >
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.zha.configuration_page.serial_port"
@@ -116,12 +116,12 @@ class ZHANetworkInfoPage extends LitElement {
                       <span slot="supporting-text"
                         >${this._networkSettings.device.path}</span
                       >
-                    </ha-md-list-item>
+                    </ha-list-item-base>
                     ${
                       this._networkSettings.device.baudrate &&
                       !this._networkSettings.device.path.startsWith("socket://")
                         ? html`
-                            <ha-md-list-item>
+                            <ha-list-item-base>
                               <span slot="headline"
                                 >${this.hass.localize(
                                   "ui.panel.config.zha.configuration_page.baudrate"
@@ -130,11 +130,11 @@ class ZHANetworkInfoPage extends LitElement {
                               <span slot="supporting-text"
                                 >${this._networkSettings.device.baudrate}</span
                               >
-                            </ha-md-list-item>
+                            </ha-list-item-base>
                           `
                         : nothing
                     }
-                  </ha-md-list>`
+                  </ha-list-base>`
                 : nothing
             }
           </ha-card>
@@ -175,17 +175,9 @@ class ZHANetworkInfoPage extends LitElement {
           margin: auto;
         }
 
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
-          --md-list-item-supporting-text-size: var(
-            --md-list-item-label-text-size,
-            var(--md-sys-typescale-body-large-size, 1rem)
-          );
+        ha-list-item-base::part(supporting-text) {
+          font-size: var(--ha-font-size-m);
+          white-space: normal;
         }
       `,
     ];

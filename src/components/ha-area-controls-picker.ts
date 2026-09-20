@@ -3,8 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
-import { computeEntityNameList } from "../common/entity/compute_entity_name_display";
-import { computeRTL } from "../common/util/compute_rtl";
+import { computeEntityPickerDisplay } from "../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../common/translations/localize";
 import {
   multiTermSortedSearch,
@@ -183,11 +182,6 @@ export class HaAreaControlsPicker extends LitElement {
           const allEntityIds = Object.values(controlEntities).flat();
           const uniqueEntityIds = Array.from(new Set(allEntityIds));
 
-          const isRTL = computeRTL(
-            this.hass.language,
-            this.hass.translationMetadata.translations
-          );
-
           uniqueEntityIds.forEach((entityId) => {
             if (isSelected(entityId)) {
               return;
@@ -197,19 +191,10 @@ export class HaAreaControlsPicker extends LitElement {
               return;
             }
 
-            const [entityName, deviceName, areaName] = computeEntityNameList(
-              stateObj,
-              [{ type: "entity" }, { type: "device" }, { type: "area" }],
-              this.hass!.entities,
-              this.hass!.devices,
-              this.hass!.areas,
-              this.hass!.floors
+            const { primary, secondary } = computeEntityPickerDisplay(
+              this.hass!,
+              stateObj
             );
-
-            const primary = entityName || deviceName || entityId;
-            const secondary = [areaName, entityName ? deviceName : undefined]
-              .filter(Boolean)
-              .join(isRTL ? " ◂ " : " ▸ ");
 
             entityItems.push({
               type: "entity",

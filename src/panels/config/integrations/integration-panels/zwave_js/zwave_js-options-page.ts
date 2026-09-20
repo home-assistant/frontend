@@ -3,8 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type {
   ZWaveJSClient,
   ZWaveJSNetwork,
@@ -61,8 +61,8 @@ class ZWaveJSOptionsPage extends LitElement {
           <ha-card>
             ${
               this._network
-                ? html`<ha-md-list>
-                    <ha-md-list-item>
+                ? html`<ha-list-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.common.rebuild_network_routes"
@@ -84,8 +84,8 @@ class ZWaveJSOptionsPage extends LitElement {
                           "ui.panel.config.zwave_js.dashboard.rebuild_routes_action"
                         )}
                       </ha-button>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.common.remove_node"
@@ -113,8 +113,8 @@ class ZWaveJSOptionsPage extends LitElement {
                           "ui.panel.config.zwave_js.dashboard.remove_node_action"
                         )}
                       </ha-button>
-                    </ha-md-list-item>
-                  </ha-md-list>`
+                    </ha-list-item-base>
+                  </ha-list-base>`
                 : nothing
             }
           </ha-card>
@@ -148,15 +148,6 @@ class ZWaveJSOptionsPage extends LitElement {
         ha-card {
           max-width: 600px;
           margin: auto;
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
       `,
     ];

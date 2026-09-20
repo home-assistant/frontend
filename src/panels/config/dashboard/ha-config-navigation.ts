@@ -14,7 +14,7 @@ import {
   type RegisterChildPanelReady,
 } from "../../../layouts/panel-ready";
 import type { HomeAssistant } from "../../../types";
-import "../components/ha-config-navigation-list";
+import "../../../components/ha-config-navigation-list";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
@@ -23,6 +23,8 @@ class HaConfigNavigation extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public pages!: PageNavigation[];
+
+  @property() public label?: string;
 
   @state() private _visiblePages?: PageNavigation[];
 
@@ -99,16 +101,15 @@ class HaConfigNavigation extends LitElement {
                 }
               `,
     }));
+    const label = this.label ?? this.hass.localize("panel.config");
     return html`
-      <div class="visually-hidden" role="heading" aria-level="2">
-        ${this.hass.localize("panel.config")}
-      </div>
+      <div class="visually-hidden" role="heading" aria-level="2">${label}</div>
       <ha-config-navigation-list
         has-secondary
         .hass=${this.hass}
         .narrow=${this.narrow}
         .pages=${pages}
-        .label=${this.hass.localize("panel.config")}
+        .label=${label}
       ></ha-config-navigation-list>
     `;
   }

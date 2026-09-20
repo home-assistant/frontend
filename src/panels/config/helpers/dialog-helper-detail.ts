@@ -5,6 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
@@ -139,8 +140,13 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._domain = params.domain;
     this._item = undefined;
     if (this._domain && this._domain in HELPERS) {
-      await HELPERS[this._domain].import();
-      this._initDirtyTracking({ type: "deep" }, undefined);
+      this._loading = true;
+      try {
+        await HELPERS[this._domain].import();
+        this._initDirtyTracking({ type: "deep" }, undefined);
+      } finally {
+        this._loading = false;
+      }
     }
     this._open = true;
     await this.updateComplete;
@@ -184,7 +190,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     let content: TemplateResult;
     let footer: TemplateResult | typeof nothing = nothing;
 
-    if (this._domain) {
+    if (this._domain && !this._loading) {
       content = html`
         <div class="form" @value-changed=${this._valueChanged}>
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
@@ -368,9 +374,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
   );
 
-  private async _filterChanged(e: InputEvent) {
-    const target = e.target as HaInputSearch;
-    this._filter = target.value;
+  private async _filterChanged(e: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = e.target.value;
   }
 
   private _valueChanged(ev: CustomEvent): void {

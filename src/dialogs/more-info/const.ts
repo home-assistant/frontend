@@ -38,6 +38,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "siren",
   "script",
   "switch",
+  "timer",
   "vacuum",
   "valve",
   "water_heater",

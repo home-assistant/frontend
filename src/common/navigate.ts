@@ -42,6 +42,7 @@ export const updateHistoryState = (patch: Record<string, unknown>) => {
  */
 export const replaceCurrentUrl = (url: string) => {
   mainWindow.history.replaceState(mainWindow.history.state, "", url);
+  rememberCurrentEntry();
 };
 
 /**
@@ -80,6 +81,105 @@ const ensureDialogsClosed = async (timestamp: number): Promise<boolean> => {
   return ensureDialogsClosed(timestamp);
 };
 
+/**
+ * Lets a page with unsaved changes (e.g. the automation editor) veto
+ * navigation. `isDirty` is read live at navigation time; `prompt` resolves
+ * true when navigation may proceed.
+ */
+export interface UnsavedChangesGuard {
+  isDirty(): boolean;
+  prompt(): Promise<boolean>;
+}
+
+const unsavedChangesGuards = new Set<UnsavedChangesGuard>();
+
+export const registerUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
+  unsavedChangesGuards.add(guard);
+};
+
+export const unregisterUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
+  unsavedChangesGuards.delete(guard);
+};
+
+const dirtyGuards = (): UnsavedChangesGuard[] =>
+  [...unsavedChangesGuards].filter((guard) => guard.isDirty());
+
+let pendingUnsavedPrompt: Promise<boolean> | undefined;
+
+/**
+ * Counts navigations that changed the history entry, so a navigation held up
+ * by an unsaved-changes prompt can tell whether a newer one has moved the app
+ * on in the meantime.
+ */
+let committedNavigations = 0;
+
+interface HistoryEntry {
+  path: string;
+  /** Path of the entry behind this one, stamped by `performNavigation`. */
+  from?: string;
+}
+
+const readEntry = (): HistoryEntry => ({
+  path: currentPath(),
+  from: mainWindow.history.state?.from,
+});
+
+/**
+ * How far a pop moved from `entry`, signed, or undefined when it cannot be told:
+ * the entry behind us is the one our `from` names, the one ahead is the one
+ * whose `from` names us. A stack with the same path on both sides matches both,
+ * and back is then by far the likelier press.
+ */
+const popStep = (entry: HistoryEntry): number | undefined => {
+  if (currentPath() === entry.from) {
+    return -1;
+  }
+  return mainWindow.history.state?.from === entry.path ? 1 : undefined;
+};
+
+let currentEntry: HistoryEntry = readEntry();
+
+const rememberCurrentEntry = () => {
+  currentEntry = readEntry();
+};
+
+/** Where the pops held while a prompt is open left us. */
+let heldEntry: HistoryEntry | undefined;
+let heldSteps = 0;
+
+/** The entry `goBack()` asked to leave; the pop it triggers is not prompted. */
+let popRequestedFromPath: string | undefined;
+
+/**
+ * Asks each dirty guard whether navigation may proceed. Returns true when
+ * nothing is dirty or every prompt was confirmed. Concurrent navigations
+ * share one pending prompt instead of stacking dialogs; the dirty check runs
+ * before joining it, so a navigation triggered from inside a prompt (e.g. by
+ * its save action) cannot deadlock on its own promise.
+ */
+const ensureUnsavedChangesConfirmed = (): Promise<boolean> => {
+  const guards = dirtyGuards();
+  if (!guards.length) {
+    return Promise.resolve(true);
+  }
+  if (!pendingUnsavedPrompt) {
+    pendingUnsavedPrompt = (async () => {
+      try {
+        for (const guard of guards) {
+          // eslint-disable-next-line no-await-in-loop
+          if (!(await guard.prompt())) {
+            return false;
+          }
+        }
+        return true;
+      } finally {
+        pendingUnsavedPrompt = undefined;
+      }
+    })();
+  }
+  return pendingUnsavedPrompt;
+};
+
 const buildHistoryState = (
   data: Record<string, unknown> | undefined,
   from?: string
@@ -91,7 +191,7 @@ const buildHistoryState = (
   return { ...state, from };
 };
 
-export const navigate = async (path: string, options?: NavigateOptions) => {
+const performNavigation = async (path: string, options?: NavigateOptions) => {
   const canProceed = await ensureDialogsClosed(Date.now());
   if (!canProceed) {
     return false;
@@ -124,10 +224,30 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
     );
   }
 
+  rememberCurrentEntry();
   fireEvent(mainWindow, "location-changed", {
     replace,
   });
+  committedNavigations += 1;
   return true;
+};
+
+export const navigate = async (path: string, options?: NavigateOptions) => {
+  // Only guard actual departures: navigating to the current path keeps the
+  // page, and any unsaved state on it, mounted.
+  if (path !== currentPath()) {
+    const navigationsBeforePrompt = committedNavigations;
+    if (!(await ensureUnsavedChangesConfirmed())) {
+      return false;
+    }
+    if (committedNavigations !== navigationsBeforePrompt) {
+      // Another navigation landed while the prompt was waiting for an answer,
+      // so this destination is stale. Dropping it keeps a late answer from
+      // pulling the user back off the page they are on now.
+      return false;
+    }
+  }
+  return performNavigation(path, options);
 };
 
 /**
@@ -142,6 +262,9 @@ export const canGoBack = (): boolean =>
 /**
  * Navigate back to the page we came from, falling back to a path when the
  * previous entry is not ours (deep link, login redirect, fresh tab).
+ * Deliberately not guarded against unsaved changes: pages with such a guard
+ * confirm in their own back handlers, and delete flows leave through here
+ * after the edited item is already gone.
  */
 export const goBack = async (fallbackPath?: string): Promise<void> => {
   const canProceed = await ensureDialogsClosed(Date.now());
@@ -152,9 +275,75 @@ export const goBack = async (fallbackPath?: string): Promise<void> => {
   // Read after closing dialogs: their history entries are popped by then, so
   // this is the state of the page entry.
   if (canGoBack()) {
+    popRequestedFromPath = currentEntry.path;
     mainWindow.history.back();
     return;
   }
 
-  await navigate(fallbackPath || "/", { replace: true });
+  await performNavigation(fallbackPath || "/", { replace: true });
+};
+
+/**
+ * Handles a history pop before the router acts on it. A pop cannot be cancelled,
+ * so one away from a page with unsaved changes holds the route and prompts;
+ * `resume` runs once the user agrees to leave. The prompt must add no history
+ * entry of its own, or the entries the pop left would be truncated.
+ */
+export const handleHistoryPop = (resume: () => void): void => {
+  if (heldEntry) {
+    const heldStep = popStep(heldEntry);
+    if (heldStep !== undefined) {
+      heldSteps += heldStep;
+      heldEntry = readEntry();
+    }
+    return;
+  }
+
+  if (currentPath() === currentEntry.path) {
+    // A dialog's history entry was popped, not a page.
+    rememberCurrentEntry();
+    resume();
+    return;
+  }
+
+  const step = popStep(currentEntry);
+  if (
+    popRequestedFromPath === currentEntry.path ||
+    // Not a pop we could undo, so do not hold it.
+    step === undefined ||
+    !dirtyGuards().length
+  ) {
+    popRequestedFromPath = undefined;
+    rememberCurrentEntry();
+    committedNavigations += 1;
+    resume();
+    return;
+  }
+
+  heldSteps = step;
+  heldEntry = readEntry();
+  const navigationsAtPop = committedNavigations;
+  ensureUnsavedChangesConfirmed().then(
+    (confirmed) => {
+      const steps = heldSteps;
+      heldEntry = undefined;
+      if (committedNavigations !== navigationsAtPop) {
+        // A navigation landed while the prompt was open.
+        return;
+      }
+      if (!confirmed) {
+        // go(0) would reload the document, and at zero we are already back.
+        if (steps) {
+          mainWindow.history.go(-steps);
+        }
+        return;
+      }
+      rememberCurrentEntry();
+      committedNavigations += 1;
+      resume();
+    },
+    () => {
+      heldEntry = undefined;
+    }
+  );
 };

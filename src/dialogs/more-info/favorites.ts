@@ -30,6 +30,8 @@ import {
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../data/light";
+import type { TimerEntity } from "../../data/timer";
+import { normalizeTimerPresets } from "../../data/timer";
 import type { ValveEntity } from "../../data/valve";
 import {
   DEFAULT_VALVE_FAVORITE_POSITIONS,
@@ -58,6 +60,8 @@ export interface FavoritesDialogHandler {
   domain: FavoritesDomain;
   supports: (stateObj: HassEntity) => boolean;
   hasCustomFavorites: (entry: ExtEntityRegistryEntry) => boolean;
+  // Omitted means there is always something to copy (domains with defaults).
+  canCopy?: (entry: ExtEntityRegistryEntry) => boolean;
   getResetOptions: (
     stateObj: HassEntity
   ) => Partial<Record<FavoriteOption, undefined>>;
@@ -315,6 +319,25 @@ const valveFavoritesHandler = createNumericFavoritesDialogHandler<ValveEntity>({
   ],
 });
 
+const timerFavoritesHandler: FavoritesDialogHandler = {
+  ...createNumericFavoritesDialogHandler<TimerEntity>({
+    domain: "timer",
+    supports: () => true,
+    specs: [
+      {
+        option: "presets",
+        supports: () => true,
+        getStoredFavorites: (entry) => entry.options?.timer?.presets,
+        getFavorites: (entry) =>
+          normalizeTimerPresets(entry.options?.timer?.presets),
+      },
+    ],
+  }),
+  // No default presets, so an empty timer has nothing to copy.
+  canCopy: (entry) =>
+    normalizeTimerPresets(entry.options?.timer?.presets).length > 0,
+};
+
 const FAVORITES_DIALOG_HANDLERS: Record<
   FavoritesDomain,
   FavoritesDialogHandler
@@ -322,6 +345,7 @@ const FAVORITES_DIALOG_HANDLERS: Record<
   cover: coverFavoritesHandler,
   light: lightFavoritesHandler,
   valve: valveFavoritesHandler,
+  timer: timerFavoritesHandler,
 };
 
 export const getFavoritesDialogHandler = (

@@ -7,7 +7,6 @@ import { consumeEntityState } from "../../../common/decorators/consume-context-e
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";

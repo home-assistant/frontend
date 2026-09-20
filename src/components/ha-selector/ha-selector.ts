@@ -3,7 +3,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import type { Selector } from "../../data/selector";
+import type { Selector, SelectorType } from "../../data/selector";
 import {
   handleLegacyDeviceSelector,
   handleLegacyEntitySelector,
@@ -30,6 +30,7 @@ const LOAD_ELEMENTS = {
   date: () => import("./ha-selector-date"),
   datetime: () => import("./ha-selector-datetime"),
   device: () => import("./ha-selector-device"),
+  device_class: () => import("./ha-selector-device-class"),
   duration: () => import("./ha-selector-duration"),
   entity: () => import("./ha-selector-entity"),
   entity_name: () => import("./ha-selector-entity-name"),
@@ -48,6 +49,7 @@ const LOAD_ELEMENTS = {
   selector: () => import("./ha-selector-selector"),
   serial_port: () => import("./ha-selector-serial-port"),
   state: () => import("./ha-selector-state"),
+  state_class: () => import("./ha-selector-state-class"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
   target: () => import("./ha-selector-target"),
@@ -69,7 +71,7 @@ const LOAD_ELEMENTS = {
   ui_color: () => import("./ha-selector-ui-color"),
   ui_state_content: () => import("./ha-selector-ui-state-content"),
   ui_time_format: () => import("./ha-selector-ui-time-format"),
-};
+} satisfies Record<SelectorType, () => Promise<unknown>>;
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 

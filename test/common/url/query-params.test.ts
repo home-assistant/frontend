@@ -247,15 +247,13 @@ describe("todo query params", () => {
 });
 
 describe("more-info query params", () => {
-  it("decodes the entity, view, and named hash params", () => {
+  it("decodes the entity and view", () => {
     const params = decodeMoreInfoUrl(
-      "?more-info-entity-id=weather.home&more-info-view=info",
-      "#forecast=hourly"
+      "?more-info-entity-id=weather.home&more-info-view=info"
     );
 
     expect(params.entityId).toBe("weather.home");
     expect(params.view).toBe("info");
-    expect(params.hash.get("forecast")).toBe("hourly");
   });
 
   it("ignores invalid views", () => {
@@ -271,22 +269,21 @@ describe("more-info query params", () => {
       createMoreInfoUrl("/lovelace/home?theme=dark", {
         entityId: "weather.home",
         view: "info",
-        hash: new URLSearchParams({ forecast: "hourly" }),
       })
     ).toBe(
-      "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#forecast=hourly"
+      "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info"
     );
   });
 
-  it("removes more-info query params but preserves other hash state", () => {
+  it("removes more-info query params but preserves the hash", () => {
     expect(
       removeMoreInfoUrl(
-        "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#forecast=hourly"
+        "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#some-anchor"
       )
-    ).toBe("/lovelace/home?theme=dark#forecast=hourly");
+    ).toBe("/lovelace/home?theme=dark#some-anchor");
   });
 
-  it("preserves an unrelated hash when creating a more-info url without a dialog hash", () => {
+  it("preserves the hash of the page it links from", () => {
     expect(
       createMoreInfoUrl("/lovelace/home?theme=dark#some-anchor", {
         entityId: "light.kitchen",
@@ -294,18 +291,6 @@ describe("more-info query params", () => {
       })
     ).toBe(
       "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info#some-anchor"
-    );
-  });
-
-  it("clears an existing hash when an empty dialog hash is explicitly supplied", () => {
-    expect(
-      createMoreInfoUrl("/lovelace/home?theme=dark#some-anchor", {
-        entityId: "light.kitchen",
-        view: "info",
-        hash: new URLSearchParams(),
-      })
-    ).toBe(
-      "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info"
     );
   });
 });

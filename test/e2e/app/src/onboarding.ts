@@ -177,6 +177,19 @@ export async function setupOnboardingMocks(
 ): Promise<OnboardingCalls> {
   const calls: OnboardingCalls = { tokenRequests: [] };
 
+  // The location step shows a map. This app builds with __DEMO__ true, so its
+  // tiles come from the demo upstreams; answering those here keeps CI off the
+  // live servers.
+  await Promise.all(
+    [
+      "https://vector.openstreetmap.org/**",
+      "https://tiles.versatiles.org/**",
+      "https://tile.openstreetmap.org/**",
+    ].map((upstream) =>
+      page.route(upstream, (route) => route.fulfill({ status: 404, body: "" }))
+    )
+  );
+
   await page.route("**/api/onboarding**", async (route) => {
     const request = route.request();
     const pathname = new URL(request.url()).pathname;

@@ -26,7 +26,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { SelectOption } from "../../../../data/selector";
-import { SENSOR_NUMERIC_DEVICE_CLASSES } from "../../../../data/sensor_numeric_device_classes";
+import { SENSOR_NUMERIC_DEVICE_CLASSES } from "../../../../data/sensor_entity_constants";
 import type { HomeAssistant } from "../../../../types";
 import type {
   LovelaceCardFeatureConfig,

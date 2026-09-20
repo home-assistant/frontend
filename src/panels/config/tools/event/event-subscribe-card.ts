@@ -1,19 +1,18 @@
-import {
-  mdiChevronDoubleLeft,
-  mdiChevronDoubleRight,
-  mdiChevronLeft,
-  mdiChevronRight,
-  mdiInformationOutline,
-} from "@mdi/js";
+import { mdiInformationOutline } from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatTimeWithSeconds } from "../../../../common/datetime/format_time";
+import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-next";
+import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-icon-button-last";
+import "../../../../components/ha-icon-button-first";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
@@ -168,22 +167,20 @@ class EventSubscribeCard extends LitElement {
     return html`
       <ha-card class="events-card">
         <div class="events-toolbar">
-          <ha-icon-button
-            .path=${mdiChevronDoubleLeft}
+          <ha-icon-button-first
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.oldest_event"
             )}
             @click=${this._showOldest}
-          ></ha-icon-button>
-          <ha-icon-button
-            .path=${mdiChevronLeft}
+          ></ha-icon-button-first>
+          <ha-icon-button-prev
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.older_event"
             )}
             @click=${this._showOlder}
-          ></ha-icon-button>
+          ></ha-icon-button-prev>
           <div class="event-info">
             ${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.event_fired",
@@ -217,22 +214,20 @@ class EventSubscribeCard extends LitElement {
                 : nothing
             }
           </div>
-          <ha-icon-button
-            .path=${mdiChevronRight}
+          <ha-icon-button-next
             .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.newer_event"
             )}
             @click=${this._showNewer}
-          ></ha-icon-button>
-          <ha-icon-button
-            .path=${mdiChevronDoubleRight}
+          ></ha-icon-button-next>
+          <ha-icon-button-last
             .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.newest_event"
             )}
             @click=${this._showNewest}
-          ></ha-icon-button>
+          ></ha-icon-button-last>
         </div>
         <ha-yaml-editor
           .value=${event.event}
@@ -286,13 +281,13 @@ class EventSubscribeCard extends LitElement {
     this._viewedEventId = this._events[next].id;
   }
 
-  private _valueChanged(ev: InputEvent) {
-    this._eventType = (ev.target as HaInput).value ?? "";
+  private _valueChanged(ev: HASSDomTargetEvent<HaInput>) {
+    this._eventType = ev.target.value ?? "";
     this._error = undefined;
   }
 
-  private _filterChanged(ev: InputEvent) {
-    this._eventFilter = (ev.target as HaInput).value ?? "";
+  private _filterChanged(ev: HASSDomTargetEvent<HaInput>) {
+    this._eventFilter = ev.target.value ?? "";
   }
 
   private _testEventFilter(event: HassEvent): boolean {

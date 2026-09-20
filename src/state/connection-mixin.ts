@@ -8,7 +8,7 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { computeEntityNameDisplayWithoutContext } from "../common/entity/compute_entity_name_display";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
@@ -18,7 +18,10 @@ import {
   subscribeFrontendUserData,
 } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
-import { serviceCallWillDisconnect } from "../data/service";
+import {
+  getServiceCallEntityIds,
+  serviceCallWillDisconnect,
+} from "../data/service";
 import {
   DateFormat,
   FirstWeekday,
@@ -32,7 +35,12 @@ import { preserveUnchangedRecord } from "../common/util/preserve-unchanged-recor
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
+import type {
+  Constructor,
+  HomeAssistant,
+  ServiceCallRequest,
+  ServiceCallResponse,
+} from "../types";
 import {
   addBrandsAuth,
   clearBrandsTokenRefresh,
@@ -114,7 +122,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             );
           }
           try {
-            return (await callService(
+            const response = (await callService(
               conn,
               domain,
               service,
@@ -122,11 +130,24 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               target,
               returnResponse
             )) as ServiceCallResponse;
+            this._reportEntityControlToExternalApp(
+              domain,
+              service,
+              serviceData,
+              target
+            );
+            return response;
           } catch (err: any) {
             if (
               err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service, serviceData)
             ) {
+              this._reportEntityControlToExternalApp(
+                domain,
+                service,
+                serviceData,
+                target
+              );
               return { context: { id: "" } };
             }
             if (this.hass?.debugConnection) {
@@ -218,7 +239,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               value != null ? value : (stateObj.attributes[attribute] ?? ""),
           },
         ],
-        formatEntityName: (stateObj) => computeStateName(stateObj),
+        formatEntityName: computeEntityNameDisplayWithoutContext,
         ...getState(),
         ...this._pendingHass,
       };
@@ -403,6 +424,30 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       const changed = await fetchAndScheduleBrandsAccessToken(this.hass!);
       if (changed) {
         this._updateHass({});
+      }
+    }
+
+    private _reportEntityControlToExternalApp(
+      domain: string,
+      service: string,
+      serviceData?: ServiceCallRequest["serviceData"],
+      target?: ServiceCallRequest["target"]
+    ) {
+      const external = this.hass?.auth.external;
+      if (!external) {
+        return;
+      }
+      const entityIds = getServiceCallEntityIds(serviceData, target);
+      if (!entityIds.length) {
+        return;
+      }
+      try {
+        external.fireMessage({
+          type: "entity/controlled",
+          payload: { entity_ids: entityIds, domain, service },
+        });
+      } catch (_err) {
+        // Reporting is best effort and must not fail the service call.
       }
     }
   };

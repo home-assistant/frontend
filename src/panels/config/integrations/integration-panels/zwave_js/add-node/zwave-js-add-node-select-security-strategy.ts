@@ -1,4 +1,4 @@
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { css, html, LitElement } from "lit";
 import memoizeOne from "memoize-one";
 
@@ -14,7 +14,7 @@ import "../../../../../../components/ha-form/ha-form";
 export class ZWaveJsAddNodeSelectMethod extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() public _inclusionStrategy?: InclusionStrategy;
+  @property({ attribute: false }) public inclusionStrategy?: InclusionStrategy;
 
   private _getSchema = memoizeOne((localize: LocalizeFunc): HaFormSchema[] => [
     {
@@ -62,7 +62,7 @@ export class ZWaveJsAddNodeSelectMethod extends LitElement {
     return html`
       <ha-form
         .schema=${this._getSchema(this.hass.localize)}
-        .data=${{ strategy: this._inclusionStrategy?.toString() }}
+        .data=${{ strategy: this.inclusionStrategy?.toString() }}
         @value-changed=${this._selectStrategy}
         .computeLabel=${this._computeLabel}
       >

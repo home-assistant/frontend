@@ -18,6 +18,19 @@ export const integrationsWithPanel = {
   zwave_js: "config/zwave_js/dashboard",
 };
 
+/**
+ * The panel an integration is configured in, if it has one of its own.
+ *
+ * An integration can register a panel at runtime; the built-in ones above are
+ * the fallback for those that do not.
+ */
+export const getConfigPanelPath = (
+  domain: string,
+  panels: HomeAssistant["panels"]
+): string | undefined =>
+  Object.values(panels).find((panel) => panel.config_panel_domain === domain)
+    ?.url_path || integrationsWithPanel[domain];
+
 export type IntegrationType =
   "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
 

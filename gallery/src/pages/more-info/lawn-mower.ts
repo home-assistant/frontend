@@ -11,6 +11,7 @@ import { LawnMowerEntityFeature } from "../../../../src/data/lawn_mower";
 const ALL_FEATURES =
   LawnMowerEntityFeature.START_MOWING +
   LawnMowerEntityFeature.PAUSE +
+  LawnMowerEntityFeature.STOP +
   LawnMowerEntityFeature.DOCK;
 
 const ENTITIES = [
@@ -46,6 +47,14 @@ const ENTITIES = [
     state: "paused",
     attributes: {
       friendly_name: "Paused",
+      supported_features: ALL_FEATURES,
+    },
+  },
+  {
+    entity_id: "lawn_mower.idle",
+    state: "idle",
+    attributes: {
+      friendly_name: "Idle",
       supported_features: ALL_FEATURES,
     },
   },

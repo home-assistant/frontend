@@ -675,6 +675,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
 
     this._updateCollectionPeriod();
+
+    // "yesterday" is the only preset whose range never includes today, making
+    // it the only remembered default that keeps reopening in the past.
+    const storageKey = getEnergyDefaultPeriodStorageKey(
+      this.hass,
+      this.collectionKey
+    );
+    if (localStorage.getItem(storageKey) === "yesterday") {
+      localStorage.setItem(storageKey, "today");
+    }
   }
 
   private _pickPrevious() {
@@ -842,10 +852,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       right: 0;
       bottom: 0;
       z-index: var(--dialog-z-index, 8);
-      -webkit-backdrop-filter: var(
-        --ha-dialog-scrim-backdrop-filter,
-        var(--dialog-backdrop-filter)
-      );
       backdrop-filter: var(
         --ha-dialog-scrim-backdrop-filter,
         var(--dialog-backdrop-filter)

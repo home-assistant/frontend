@@ -18,9 +18,6 @@ export class HuiNotificationItemTemplate extends LitElement {
   static styles = css`
     .contents {
       padding: 16px;
-      -ms-user-select: text;
-      -webkit-user-select: text;
-      -moz-user-select: text;
       user-select: text;
     }
 

@@ -1,4 +1,5 @@
 import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
+import { connectivityDevices } from "./connectivity/fixtures";
 
 const baseDevice = {
   config_entries_subentries: {},
@@ -86,4 +87,5 @@ export const demoDevices: DeviceRegistryEntry[] = [
     entry_type: null,
     parent_device_id: "power-strip",
   },
+  ...connectivityDevices,
 ];

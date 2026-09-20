@@ -328,6 +328,7 @@ export class StateHistoryChartLine extends LitElement {
           ...createYAxisPrecisionBounds({
             min: this._clampYAxis(minYAxis),
             max: this._clampYAxis(maxYAxis),
+            unit: this.unit,
             onFractionDigits: (digits) => {
               if (digits !== this._yAxisFractionDigits) {
                 this._yAxisFractionDigits = digits;

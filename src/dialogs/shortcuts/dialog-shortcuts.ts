@@ -235,7 +235,7 @@ class DialogShortcuts extends DialogMixin(LitElement) {
 
         <ha-alert slot="footer">
           ${this._i18n.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
-            user_profile: html`<a href="/profile/general#shortcuts"
+            user_profile: html`<a href="/profile/browser#shortcuts"
               >${this._i18n.localize(
                 "ui.dialogs.shortcuts.enable_shortcuts_hint_user_profile"
               )}</a

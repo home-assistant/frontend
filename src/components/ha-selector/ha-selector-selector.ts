@@ -99,6 +99,10 @@ const SELECTOR_SCHEMAS = {
         },
       },
     },
+    {
+      name: "multiple",
+      selector: { boolean: {} },
+    },
   ] as const,
   number: [
     {

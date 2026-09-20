@@ -13,6 +13,7 @@ import type { ObjectSelector } from "../../data/selector";
 import { formatSelectorValue } from "../../data/selector/format_selector_value";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
 import type { HomeAssistant } from "../../types";
+import { computeInitialHaFormData } from "../ha-form/compute-initial-ha-form-data";
 import type { HaFormSchema } from "../ha-form/types";
 import "../ha-input-helper-text";
 import "../ha-md-list";
@@ -203,9 +204,7 @@ export class HaObjectSelector extends LitElement {
       ></ha-yaml-editor>
       ${
         this.helper
-          ? html`<ha-input-helper-text .disabled=${this.disabled}
-              >${this.helper}</ha-input-helper-text
-            >`
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : ""
       } `;
   }
@@ -239,11 +238,16 @@ export class HaObjectSelector extends LitElement {
     ev.stopPropagation();
 
     const schema = this._schema(this.selector);
-    const data = Object.fromEntries(
-      schema
-        .filter((field) => "default" in field)
-        .map((field) => [field.name, field.default])
-    );
+    const data = {
+      ...computeInitialHaFormData(schema, {
+        skipUnsupportedSelectors: true,
+      }),
+      ...Object.fromEntries(
+        schema
+          .filter((field) => "default" in field)
+          .map((field) => [field.name, field.default])
+      ),
+    };
 
     const newItem = await showFormDialog(this, {
       title: this.hass.localize("ui.common.add"),
@@ -301,7 +305,7 @@ export class HaObjectSelector extends LitElement {
     const index = ev.currentTarget.index;
 
     if (!this.selector.object!.multiple) {
-      fireEvent(this, "value-changed", { value: undefined });
+      fireEvent(this, "value-changed", { value: "" });
       return;
     }
 

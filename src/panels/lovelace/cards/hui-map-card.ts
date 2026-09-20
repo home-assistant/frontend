@@ -3,15 +3,18 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type { HassEntities } from "home-assistant-js-websocket";
-import type { LatLngTuple } from "leaflet";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../common/color/colors";
+import type { ContextType } from "@lit/context";
+import { consume, ContextConsumer } from "@lit/context";
 import { resolveThemeColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -29,9 +32,21 @@ import type {
   HaMapPaths,
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
+import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
+import { circleBoundsPoints } from "../../../common/map/map-engine";
+import {
+  entityMapColor,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import type { Themes } from "../../../data/ws-themes";
+import { fullEntitiesContext, uiContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { PANEL_VIEW_LAYOUT } from "../views/const";
 import { findEntities } from "../common/find-entities";
 import {
   hasConfigChanged,
@@ -48,6 +63,15 @@ import {
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
+// GPS accuracy (meters) above which the selected person's circle is shown
+const IMPRECISE_GPS_ACCURACY = 100;
+
+// Margin around the overview (--ha-space-3), in pixels
+const OVERVIEW_GAP = 12;
+
+const FOCUS_PERSON_ZOOM = 19;
+const FOCUS_ZONE_MAX_ZOOM = 18;
+
 interface GeoEntity {
   entity_id: string;
   label_mode?: MapCardMarkerLabelMode;
@@ -58,9 +82,23 @@ interface GeoEntity {
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
+  constructor() {
+    super();
+    new ContextConsumer(this, {
+      context: fullEntitiesContext,
+      subscribe: true,
+      callback: (entries) => {
+        this._entityReg = entries;
+        this._mapEntities = this._getMapEntities();
+      },
+    });
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
+
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _stateHistory?: HistoryStates;
 
@@ -76,13 +114,32 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _filteredMapEntities: HaMapEntity[] = [];
 
-  private _colorDict: Record<string, string> = {};
-
-  private _colorIndex = 0;
+  // The overview lists people the map snapshot missed (e.g. no location yet),
+  // so it holds the map entities plus those, who may have no marker of their
+  // own until they are located.
+  private _overviewEntities: HaMapEntity[] = [];
 
   @state() private _error?: { code: string; message: string };
 
+  // Registry creation order decides the palette colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  // Palette colors are read from the theme when the entities are built
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<ContextType<typeof uiContext>, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes?: Themes;
+
   @state() private _clusterMarkers = true;
+
+  @state() private _overviewSelected?: string;
+
+  // Height of the overview drawer when it sits over the bottom of the map
+  @state() private _overviewSize = { width: 0, height: 0 };
+
+  private _overviewLoaded = false;
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
@@ -209,18 +266,48 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card id="card" .header=${this._config.title}>
-        <div id="root">
+        <div
+          id="root"
+          class=${classMap({
+            "panel-layout": this.layout === PANEL_VIEW_LAYOUT,
+            rtl: computeRTL(
+              this.hass.language,
+              this.hass.translationMetadata.translations
+            ),
+          })}
+          @hass-more-info=${this._handleMapMoreInfo}
+        >
           <ha-map
+            style=${styleMap({
+              "--overview-height": `${this._overviewSize.height}px`,
+              "--overview-width": `${this._overviewSize.width}px`,
+            })}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
-            .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
+            .paths=${this._getHistoryPaths(
+              this._config,
+              this._stateHistory,
+              this._entityReg,
+              this._themes
+            )}
             .autoFit=${this._config.auto_fit || false}
+            .fitPadding=${this._overviewPadding()}
             .fitZones=${this._config.fit_zones || false}
+            .zoomPosition=${
+              this.layout === PANEL_VIEW_LAYOUT &&
+              !computeRTL(
+                this.hass.language,
+                this.hass.translationMetadata.translations
+              )
+                ? "topright"
+                : "topleft"
+            }
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
             .scaleRuler=${this._config.scale_ruler || false}
+            @map-clicked=${this._handleMapClicked}
             interactive-zones
-            render-passive
+            .renderPassive=${this.layout !== PANEL_VIEW_LAYOUT}
           ></ha-map>
           <div id="buttons">
             ${
@@ -252,6 +339,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               tabindex="0"
             ></ha-icon-button>
           </div>
+          ${
+            this.layout === PANEL_VIEW_LAYOUT
+              ? html`<hui-map-overview
+                  id="overview"
+                  .hass=${this.hass}
+                  .entities=${this._overviewEntities}
+                  .selected=${this._overviewSelected}
+                  @map-overview-select=${this._handleOverviewSelect}
+                  @map-overview-resize=${this._handleOverviewResize}
+                ></hui-map-overview>`
+              : nothing
+          }
         </div>
       </ha-card>
     `;
@@ -321,20 +420,116 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ) {
       this._mapEntities = this._getMapEntities();
     }
+    // Private state is not in keyof this
+    if ((changedProps as PropertyValues).has("_themes") && this.hasUpdated) {
+      this._mapEntities = this._getMapEntities();
+    }
 
     // Filter entities by conditions
     if (this._config?.conditions && this._mapEntities) {
-      const conditions = this._config.conditions;
-      this._filteredMapEntities = this._mapEntities.filter((entity) => {
-        const conditionWithEntity = conditions.map((condition) =>
-          addEntityToCondition(condition, entity.entity_id)
-        );
-        return checkConditionsMet(conditionWithEntity, this.hass!, {});
-      });
+      this._filteredMapEntities = this._mapEntities.filter((entity) =>
+        this._meetsConditions(entity.entity_id)
+      );
     } else {
       this._filteredMapEntities = this._mapEntities;
     }
+
+    if (this.layout === PANEL_VIEW_LAYOUT) {
+      if (!this._overviewLoaded) {
+        this._overviewLoaded = true;
+        void import("./map/hui-map-overview");
+      }
+      // Keep people and standalone trackers the snapshot missed so they appear
+      // once they locate.
+      const entities = this._config?.show_all
+        ? this._withMissingTracked(this._filteredMapEntities)
+        : this._filteredMapEntities;
+      this._filteredMapEntities = this._decorateOverviewEntities(
+        entities,
+        this._overviewSelected,
+        this._overviewSelected
+          ? this.hass.states[this._overviewSelected]
+          : undefined,
+        this.preview
+      );
+      this._overviewEntities = this._filteredMapEntities;
+    }
   }
+
+  private _meetsConditions(entityId: string): boolean {
+    const conditions = this._config?.conditions;
+    if (!conditions) {
+      return true;
+    }
+    return checkConditionsMet(
+      conditions.map((condition) => addEntityToCondition(condition, entityId)),
+      this.hass!,
+      {}
+    );
+  }
+
+  // show_all freezes located entities, so a person or standalone tracker that
+  // locates later is missing. Add every eligible one and let the map and
+  // overview skip it until it has coordinates. Trackers owned by a person are
+  // shown through that person, so they are left out here.
+  private _withMissingTracked(entities: HaMapEntity[]): HaMapEntity[] {
+    const hass = this.hass;
+    if (!hass) {
+      return entities;
+    }
+    const present = new Set(entities.map((entity) => entity.entity_id));
+    const personSources = new Set<string>();
+    Object.values(hass.states).forEach((stateObj) => {
+      if (
+        computeStateDomain(stateObj) === "person" &&
+        stateObj.attributes.source
+      ) {
+        personSources.add(stateObj.attributes.source);
+      }
+    });
+    const extra: HaMapEntity[] = [];
+    Object.values(hass.states).forEach((stateObj) => {
+      const entityId = stateObj.entity_id;
+      const domain = computeStateDomain(stateObj);
+      const eligible =
+        domain === "person" ||
+        (domain === "device_tracker" && !personSources.has(entityId));
+      if (
+        eligible &&
+        !present.has(entityId) &&
+        !hass.entities?.[entityId]?.hidden &&
+        this._meetsConditions(entityId)
+      ) {
+        extra.push({ entity_id: entityId, color: this._getColor(entityId) });
+      }
+    });
+    return extra.length ? [...entities, ...extra] : entities;
+  }
+
+  // In panel layout, only the selected zone shows its radius (all of them
+  // while editing) and only an imprecise selected person its accuracy circle
+  private _decorateOverviewEntities = memoizeOne(
+    (
+      entities: HaMapEntity[],
+      selectedId: string | undefined,
+      selectedStateObj: HassEntity | undefined,
+      preview: boolean
+    ): HaMapEntity[] => {
+      const selectedLocation = selectedStateObj
+        ? getEntityLocation(selectedStateObj, this.hass.states)
+        : undefined;
+      const showSelectedAccuracy =
+        (selectedLocation?.gpsAccuracy ?? 0) > IMPRECISE_GPS_ACCURACY;
+      return entities.map((entity) => ({
+        ...entity,
+        hide_accuracy: !(
+          showSelectedAccuracy && entity.entity_id === selectedId
+        ),
+        hide_radius: !preview && entity.entity_id !== selectedId,
+        selected: entity.entity_id === selectedId,
+      }));
+    }
+  );
 
   public connectedCallback() {
     super.connectedCallback();
@@ -428,22 +623,147 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._map?.fitMap({ unpause_autofit: true });
   }
 
+  private _handleMapClicked() {
+    // A click on the map itself (not on a marker) deselects
+    if (this._overviewSelected) {
+      this._overviewSelected = undefined;
+    }
+  }
+
+  private _handleMapMoreInfo(ev: HASSDomEvent<{ entityId: string | null }>) {
+    if ((ev.target as HTMLElement)?.localName === "hui-map-overview") {
+      // The overview asks for the dialog itself, so let it through
+      return;
+    }
+    const entityId = ev.detail.entityId;
+    if (
+      this.layout !== PANEL_VIEW_LAYOUT ||
+      !entityId ||
+      !["person", "device_tracker", "zone"].includes(computeDomain(entityId)) ||
+      (computeDomain(entityId) !== "zone" &&
+        !this._filteredMapEntities.some(
+          (entity) => entity.entity_id === entityId
+        ))
+    ) {
+      return;
+    }
+    ev.stopPropagation();
+    this._overviewSelected = entityId;
+    this._focusEntity(entityId);
+  }
+
+  private _handleOverviewResize(
+    ev: HASSDomEvent<{ width: number; height: number }>
+  ) {
+    const { width, height } = ev.detail;
+    // A collapsed overview keeps its width; zero both so it reserves no space.
+    this._overviewSize =
+      width && height ? { width, height } : { width: 0, height: 0 };
+    // A focused fit pauses auto-fit, so refit to apply the new padding.
+    if (this._overviewSelected) {
+      this._focusEntity(this._overviewSelected);
+    }
+  }
+
+  private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
+    this._overviewSelected = ev.detail.entityId;
+    if (ev.detail.entityId) {
+      this._focusEntity(ev.detail.entityId);
+    }
+  }
+
+  private _focusEntity(entityId: string) {
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj) {
+      return;
+    }
+    if (computeStateDomain(stateObj) === "zone") {
+      const { latitude, longitude, radius } = stateObj.attributes;
+      this._map?.fitBounds(
+        circleBoundsPoints([latitude, longitude], radius ?? 100),
+        {
+          pad: 0.2,
+          zoom: FOCUS_ZONE_MAX_ZOOM,
+          padding: this._overviewPadding(),
+        }
+      );
+      return;
+    }
+    const location = getEntityLocation(stateObj, this.hass.states);
+    if (!location) {
+      return;
+    }
+    const center: MapLatLng = [location.latitude, location.longitude];
+    const accuracy = location.gpsAccuracy ?? 0;
+    // Fit the accuracy circle so it is not mostly off-screen, capping the zoom
+    if (accuracy > IMPRECISE_GPS_ACCURACY) {
+      this._map?.fitBounds(circleBoundsPoints(center, accuracy), {
+        pad: 0.2,
+        zoom: FOCUS_PERSON_ZOOM,
+        padding: this._overviewPadding(),
+      });
+      return;
+    }
+    this._map?.fitBounds([center], {
+      zoom: FOCUS_PERSON_ZOOM,
+      padding: this._overviewPadding(),
+    });
+  }
+
+  // The part of the map the overview covers, so fitted markers land next to
+  // it rather than under it: the bottom sheet on phones, the start side
+  // otherwise (see the #overview styles). Memoized so the map only refits
+  // when the drawer actually changes size.
+  private _overviewPadding(): MapFitPadding | undefined {
+    // The overview, and its padding, only exist in panel layout.
+    if (this.layout !== PANEL_VIEW_LAYOUT) {
+      return undefined;
+    }
+    return this._paddingFor(
+      this._overviewSize.width,
+      this._overviewSize.height,
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+  }
+
+  private _paddingFor = memoizeOne(
+    (
+      width: number,
+      height: number,
+      language: string,
+      translations: HomeAssistant["translationMetadata"]["translations"]
+    ): MapFitPadding | undefined => {
+      if (!width || !height) {
+        return undefined;
+      }
+      if (window.matchMedia("(max-width: 600px)").matches) {
+        return { bottom: height + OVERVIEW_GAP };
+      }
+      const side = width + 2 * OVERVIEW_GAP;
+      return computeRTL(language, translations)
+        ? { right: side }
+        : { left: side };
+    }
+  );
+
   private _toggleClusterMarkers() {
     this._clusterMarkers = !this._clusterMarkers;
   }
 
+  // The same color for an entity on every map; a config color still wins
   private _getColor(entityId: string): string {
-    let color = this._colorDict[entityId];
-    if (color) {
-      return color;
-    }
     const computedStyles = getComputedStyle(this);
-    color = getColorByIndex(this._colorIndex, computedStyles);
-    if (color) {
-      this._colorIndex++;
-      this._colorDict[entityId] = color;
+    if (computeDomain(entityId) === "zone") {
+      const stateObj = this.hass?.states[entityId];
+      return zoneColor(
+        entityId,
+        !!stateObj?.attributes.passive,
+        this._entityReg,
+        computedStyles
+      );
     }
-    return color;
+    return entityMapColor(entityId, this._entityReg, computedStyles);
   }
 
   private _getSourceEntities(states?: HassEntities): GeoEntity[] {
@@ -503,7 +823,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getHistoryPaths = memoizeOne(
     (
       config: MapCardConfig,
-      history?: HistoryStates
+      history: HistoryStates | undefined,
+      // Trail colors follow the registry order and the theme like the markers
+      _entityReg: EntityRegistryEntry[],
+      _themes: Themes | undefined
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
@@ -528,7 +851,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             continue;
           }
           const p = {} as HaMapPathPoint;
-          p.point = [latitude, longitude] as LatLngTuple;
+          p.point = [latitude, longitude] as MapLatLng;
           p.timestamp = new Date(entityState.lu * 1000);
           points.push(p);
         }
@@ -595,9 +918,80 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       flex-direction: column;
     }
 
+    /* The overview panel covers the start side in panel layout */
+    #root.panel-layout #buttons {
+      left: auto;
+      inset-inline-start: auto;
+      inset-inline-end: 3px;
+    }
+
     #root {
       position: relative;
       height: 100%;
+    }
+
+    #overview {
+      position: absolute;
+      top: var(--ha-space-3);
+      inset-inline-start: var(--ha-space-3);
+      width: min(360px, calc(100% - 2 * var(--ha-space-3)));
+      max-height: calc(100% - 2 * var(--ha-space-3));
+      display: flex;
+      z-index: 1;
+    }
+
+    #root.panel-layout {
+      --map-bleed-left: var(--view-container-inset-left, 0px);
+      --map-bleed-right: var(--view-container-inset-right, 0px);
+      --map-bleed-bottom: var(--view-container-inset-bottom, 0px);
+    }
+    #card:has(#root.panel-layout) {
+      overflow: visible;
+    }
+    #root.panel-layout ha-map {
+      left: calc(-1 * var(--map-bleed-left));
+      right: calc(-1 * var(--map-bleed-right));
+      bottom: calc(-1 * var(--map-bleed-bottom));
+      width: auto;
+      height: auto;
+    }
+
+    /* Keep the attribution and scale ruler clear of the drawer: beside it on
+       wide layouts, above it on phones. The controls sit at physical corners. */
+    #root.panel-layout ha-map {
+      --ha-map-left-inset: calc(
+        var(--overview-width, 0px) + 2 * var(--ha-space-3) +
+          var(--map-bleed-left)
+      );
+      --ha-map-right-inset: var(--map-bleed-right);
+      --ha-map-bottom-inset: var(--map-bleed-bottom);
+    }
+    #root.panel-layout.rtl ha-map {
+      --ha-map-left-inset: var(--map-bleed-left);
+      --ha-map-right-inset: calc(
+        var(--overview-width, 0px) + 2 * var(--ha-space-3) +
+          var(--map-bleed-right)
+      );
+    }
+
+    @media (max-width: 600px) {
+      #overview {
+        top: auto;
+        bottom: 0;
+        inset-inline-start: 0;
+        inset-inline-end: 0;
+        width: auto;
+        max-height: 70%;
+      }
+
+      #root.panel-layout ha-map,
+      #root.panel-layout.rtl ha-map {
+        --ha-map-left-inset: var(--map-bleed-left);
+        --ha-map-right-inset: var(--map-bleed-right);
+        --ha-map-bottom-inset: calc(
+          var(--overview-height, 0px) + var(--ha-space-2)
+        );
+      }
     }
   `;
 }

@@ -16,6 +16,7 @@ import {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
@@ -76,6 +77,13 @@ export class HAFullCalendar extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: "add-fab", type: Boolean }) public addFab = false;
+
+  @property({ attribute: "add-fab-size" }) public addFabSize = "large";
+
+  @property({ attribute: "add-fab-style" }) public addFabStyle = "on_top";
+
+  @property({ attribute: "auto-height", type: Boolean }) public autoHeight =
+    false;
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
@@ -172,13 +180,34 @@ export class HAFullCalendar extends LitElement {
                           </ha-icon-button-next>
                         </div>
                         <h1>${this.calendar.view.title}</h1>
-                        <ha-button-toggle-group
-                          .buttons=${viewToggleButtons}
-                          .active=${this._activeView}
-                          size="s"
-                          no-wrap
-                          @value-changed=${this._handleView}
-                        ></ha-button-toggle-group>
+                        <div>
+                          <ha-button-toggle-group
+                            .buttons=${viewToggleButtons}
+                            .active=${this._activeView}
+                            size="s"
+                            no-wrap
+                            @value-changed=${this._handleView}
+                          ></ha-button-toggle-group>
+                          ${
+                            this.addFab &&
+                            this._hasMutableCalendars &&
+                            this.addFabStyle === "header"
+                              ? html`<ha-button
+                                  size="s"
+                                  class="fab-header"
+                                  aria-label=${this.hass.localize(
+                                    "ui.components.calendar.event.add"
+                                  )}
+                                  @click=${this._createEvent}
+                                >
+                                  <ha-svg-icon
+                                    slot=""
+                                    .path=${mdiPlus}
+                                  ></ha-svg-icon>
+                                </ha-button>`
+                              : nothing
+                          }
+                        </div>
                       `
                     : html`
                         <div class="controls">
@@ -208,13 +237,34 @@ export class HAFullCalendar extends LitElement {
                               "ui.components.calendar.today"
                             )}</ha-button
                           >
-                          <ha-button-toggle-group
-                            .buttons=${viewToggleButtons}
-                            .active=${this._activeView}
-                            size="s"
-                            no-wrap
-                            @value-changed=${this._handleView}
-                          ></ha-button-toggle-group>
+                          <div>
+                            <ha-button-toggle-group
+                              .buttons=${viewToggleButtons}
+                              .active=${this._activeView}
+                              size="s"
+                              no-wrap
+                              @value-changed=${this._handleView}
+                            ></ha-button-toggle-group>
+                            ${
+                              this.addFab &&
+                              this._hasMutableCalendars &&
+                              this.addFabStyle === "header"
+                                ? html`<ha-button
+                                    size="s"
+                                    class="fab-header"
+                                    aria-label=${this.hass.localize(
+                                      "ui.components.calendar.event.add"
+                                    )}
+                                    @click=${this._createEvent}
+                                  >
+                                    <ha-svg-icon
+                                      slot=""
+                                      .path=${mdiPlus}
+                                    ></ha-svg-icon>
+                                  </ha-button>`
+                                : nothing
+                            }
+                          </div>
                         </div>
                       `
                 }
@@ -225,8 +275,15 @@ export class HAFullCalendar extends LitElement {
 
       <div id="calendar"></div>
       ${
-        this.addFab && this._hasMutableCalendars
-          ? html`<ha-button size="l" slot="fab" @click=${this._createEvent}>
+        this.addFab &&
+        this._hasMutableCalendars &&
+        this.addFabStyle !== "header"
+          ? html`<ha-button
+              size=${this.addFabSize.charAt(0)}
+              class=${classMap({ below: this.addFabStyle === "below" })}
+              slot="fab"
+              @click=${this._createEvent}
+            >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize("ui.components.calendar.event.add")}
             </ha-button>`
@@ -260,6 +317,10 @@ export class HAFullCalendar extends LitElement {
       this.calendar!.setOption("eventDisplay", this.eventDisplay);
     }
 
+    if (changedProps.has("autoHeight")) {
+      this.calendar.setOption("height", this._height);
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant;
 
     if (oldHass && oldHass.language !== this.hass.language) {
@@ -291,6 +352,7 @@ export class HAFullCalendar extends LitElement {
           : this.hass.config.time_zone,
       firstDay: firstWeekdayIndex(this.hass.locale),
       initialView,
+      height: this._height,
       eventDisplay: this.eventDisplay,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
@@ -308,6 +370,10 @@ export class HAFullCalendar extends LitElement {
     );
     this.calendar!.render();
     this._fireViewChanged();
+  }
+
+  private get _height(): CalendarOptions["height"] {
+    return this.autoHeight ? "auto" : defaultFullCalendarConfig.height;
   }
 
   // Return if there are calendars that support creating events
@@ -572,6 +638,17 @@ export class HAFullCalendar extends LitElement {
           inset-inline-start: initial;
           z-index: 1;
           --ha-button-box-shadow: var(--ha-box-shadow-l);
+        }
+
+        ha-button.below[slot="fab"] {
+          position: relative;
+          margin-inline-start: auto;
+          padding-top: var(--ha-space-2);
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: 0;
+          --ha-button-box-shadow: none;
         }
 
         #calendar {

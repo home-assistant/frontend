@@ -1,5 +1,5 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/entity_name_config";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
@@ -158,15 +158,6 @@ export const getRecorderEntityOptions = (
   hass.callWS<RecorderEntityOptions>({
     type: "recorder/entity_options/get",
     entity_id,
-  });
-
-export const getStatisticIds = (
-  hass: Pick<HomeAssistant, "callWS">,
-  statistic_type?: "mean" | "sum"
-) =>
-  hass.callWS<StatisticsMetaData[]>({
-    type: "recorder/list_statistic_ids",
-    statistic_type,
   });
 
 export const getStatisticMetadata = (
@@ -357,8 +348,9 @@ export const getStatisticLabel = (
 ): string => {
   const entity = hass.states[statisticsId];
   if (entity) {
-    return computeStateName(entity);
+    return hass.formatEntityName(entity, DEFAULT_ENTITY_NAME);
   }
+  // External statistics have no entity to resolve a name against.
   return statisticsMetaData?.name || statisticsId;
 };
 

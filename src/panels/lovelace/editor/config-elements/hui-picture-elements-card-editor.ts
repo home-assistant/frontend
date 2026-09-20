@@ -124,7 +124,6 @@ export class HuiPictureElementsCardEditor
               selector: {
                 media: {
                   accept: ["image/*"] as string[],
-                  clearable: true,
                   image_upload: true,
                   hide_content_type: true,
                   content_id_helper: localize(
@@ -138,7 +137,6 @@ export class HuiPictureElementsCardEditor
               selector: {
                 media: {
                   accept: ["image/*"] as string[],
-                  clearable: true,
                   image_upload: true,
                   hide_content_type: true,
                   content_id_helper: localize(
