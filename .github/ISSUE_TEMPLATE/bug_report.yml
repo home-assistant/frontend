@@ -14,6 +14,7 @@ body:
         [fr]: https://github.com/orgs/home-assistant/discussions
         [releases]: https://github.com/home-assistant/home-assistant/releases
   - type: checkboxes
+    id: checklist
     attributes:
       label: Checklist
       description: Please verify that you've followed these steps
@@ -30,18 +31,21 @@ body:
       value: |
         ## The problem
   - type: textarea
+    id: problem
     validations:
       required: true
     attributes:
       label: Describe the issue you are experiencing
       description: Provide a clear and concise description of what the bug is.
   - type: textarea
+    id: expected_behavior
     validations:
       required: true
     attributes:
       label: Describe the behavior you expected
       description: Describe what you expected to happen or it should look/behave.
   - type: textarea
+    id: steps_to_reproduce
     validations:
       required: true
     attributes:
@@ -68,6 +72,7 @@ body:
       description: >
         Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
   - type: input
+    id: last_working_version
     attributes:
       label: What was the last working version of Home Assistant Core?
       placeholder: core-
@@ -81,6 +86,7 @@ body:
       description: >
         Provide the full name and don't forget to add the version!
   - type: input
+    id: os
     attributes:
       label: Which operating system are you using to run this browser?
       placeholder: macOS Big Sur (1.11)
@@ -92,6 +98,7 @@ body:
         # Details
 
   - type: textarea
+    id: entity_state
     attributes:
       label: State of relevant entities
       description: >
@@ -100,6 +107,7 @@ body:
         information in the Details view of the More info dialog.
       render: txt
   - type: textarea
+    id: configuration
     attributes:
       label: Problem-relevant frontend configuration
       description: >
@@ -117,6 +125,7 @@ body:
         browser console/inspector please provide them.
       render: txt
   - type: textarea
+    id: additional_information
     attributes:
       label: Additional information
       description: >
