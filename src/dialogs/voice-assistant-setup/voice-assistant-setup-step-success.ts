@@ -56,7 +56,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       this._setTtsSettings();
       return;
     }
-    if (changedProperties.has("hass") && this.assistConfiguration) {
+    if (
+      changedProperties.has("hass") &&
+      this.assistConfiguration?.pipeline_entity_id
+    ) {
       const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
       if (oldHass) {
         const oldState =
@@ -71,7 +74,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   }
 
   protected override render() {
-    const pipelineEntity = this.assistConfiguration
+    const pipelineEntity = this.assistConfiguration?.pipeline_entity_id
       ? (this.hass.states[
           this.assistConfiguration.pipeline_entity_id
         ] as InputSelectEntity)
@@ -254,7 +257,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private _pipelinePicked(ev: HaSelectSelectEvent) {
     const stateObj = this.hass!.states[
-      this.assistConfiguration!.pipeline_entity_id
+      this.assistConfiguration!.pipeline_entity_id!
     ] as InputSelectEntity;
     const option = ev.detail.value;
     if (

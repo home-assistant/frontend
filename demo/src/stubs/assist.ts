@@ -15,6 +15,7 @@ const pipelines: AssistPipeline[] = [
     tts_voice: "JennyNeural",
     wake_word_entity: null,
     wake_word_id: null,
+    prefer_local_intents: false,
   },
   {
     id: "01local",
@@ -29,6 +30,7 @@ const pipelines: AssistPipeline[] = [
     tts_voice: null,
     wake_word_entity: null,
     wake_word_id: null,
+    prefer_local_intents: false,
   },
   {
     id: "01chatgpt",
@@ -43,6 +45,7 @@ const pipelines: AssistPipeline[] = [
     tts_voice: "ElviraNeural",
     wake_word_entity: null,
     wake_word_id: null,
+    prefer_local_intents: false,
   },
 ];
 

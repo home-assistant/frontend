@@ -2,9 +2,9 @@ import type { HomeAssistant } from "../types";
 
 export interface TTSEngine {
   engine_id: string;
-  supported_languages?: string[];
+  supported_languages: string[];
   name?: string;
-  deprecated: boolean;
+  deprecated?: boolean;
 }
 
 export interface TTSVoice {

@@ -80,7 +80,9 @@ class AssistDevicesPage extends LitElement {
     ): AssistDeviceExtra[] =>
       assistDevices.map((assistDevice) => {
         const device = deviceReg[assistDevice.device_id];
-        const selected = states[assistDevice.pipeline_entity]?.state;
+        const selected = assistDevice.pipeline_entity
+          ? states[assistDevice.pipeline_entity]?.state
+          : undefined;
         const isPreferred = selected === "preferred";
         const pipeline = isPreferred ? preferred : selected;
         const pipelineName =
