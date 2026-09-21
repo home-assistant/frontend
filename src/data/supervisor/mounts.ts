@@ -14,8 +14,12 @@ export enum SupervisorMountUsage {
 
 export enum SupervisorMountState {
   ACTIVE = "active",
+  ACTIVATING = "activating",
+  DEACTIVATING = "deactivating",
   FAILED = "failed",
-  UNKNOWN = "unknown",
+  INACTIVE = "inactive",
+  MAINTENANCE = "maintenance",
+  RELOADING = "reloading",
 }
 
 interface MountOptions {
@@ -26,14 +30,16 @@ export type CIFSVersion = "auto" | "1.0" | "2.0";
 
 interface SupervisorMountBase {
   name: string;
-  usage: SupervisorMountUsage;
+  usage: SupervisorMountUsage | null;
   type: SupervisorMountType;
+  read_only: boolean;
   server: string;
-  port: number;
+  port?: number;
 }
 
 export interface SupervisorMountResponse extends SupervisorMountBase {
   state: SupervisorMountState | null;
+  user_path: string | null;
 }
 
 export interface SupervisorNFSMount extends SupervisorMountResponse {
@@ -44,7 +50,7 @@ export interface SupervisorNFSMount extends SupervisorMountResponse {
 export interface SupervisorCIFSMount extends SupervisorMountResponse {
   type: SupervisorMountType.CIFS;
   share: string;
-  version?: CIFSVersion;
+  version?: CIFSVersion | null;
 }
 
 export type SupervisorMount = SupervisorNFSMount | SupervisorCIFSMount;
@@ -54,7 +60,7 @@ export type SupervisorNFSMountRequestParams = SupervisorNFSMount;
 export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
   username?: string;
   password?: string;
-  version?: CIFSVersion;
+  version?: CIFSVersion | null;
 }
 
 export type SupervisorMountRequestParams =

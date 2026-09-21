@@ -203,7 +203,7 @@ class DialogSystemInformation extends LitElement {
                               .heading=${this.hass.localize(
                                 "ui.panel.config.system_health.cpu_usage"
                               )}
-                              .value=${this._coreStats.cpu_percent}
+                              .value=${this._coreStats.cpu_percent ?? 0}
                             ></ha-metric>
                             <ha-metric
                               .heading=${this.hass.localize(
@@ -226,7 +226,7 @@ class DialogSystemInformation extends LitElement {
                               .heading=${this.hass.localize(
                                 "ui.panel.config.system_health.cpu_usage"
                               )}
-                              .value=${this._supervisorStats.cpu_percent}
+                              .value=${this._supervisorStats.cpu_percent ?? 0}
                             ></ha-metric>
                             <ha-metric
                               .heading=${this.hass.localize(

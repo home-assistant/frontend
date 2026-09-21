@@ -2,19 +2,19 @@ import type { HomeAssistant } from "../../types";
 
 export interface HassioHostInfo {
   agent_version: string;
-  chassis: string;
-  cpe: string;
-  deployment: string;
+  chassis: string | null;
+  cpe: string | null;
+  deployment: string | null;
   disk_life_time: number | null;
   disk_free: number;
   disk_total: number;
   disk_used: number;
   features: string[];
-  hostname: string;
-  kernel: string;
-  operating_system: string;
-  boot_timestamp: number;
-  startup_time: number;
+  hostname: string | null;
+  kernel: string | null;
+  operating_system: string | null;
+  boot_timestamp: number | null;
+  startup_time: number | null;
 }
 
 export interface HassioHassOSInfo {
@@ -23,7 +23,8 @@ export interface HassioHassOSInfo {
   update_available: boolean;
   version_latest: string | null;
   version: string | null;
-  data_disk: string;
+  version_pending: string | null;
+  data_disk: string | null;
 }
 
 export interface Datadisk {

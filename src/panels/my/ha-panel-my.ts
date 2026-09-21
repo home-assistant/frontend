@@ -174,6 +174,9 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth",
   },
+  config_connectivity: {
+    redirect: "/config/connectivity",
+  },
   config_dhcp: {
     component: "dhcp",
     redirect: "/config/dhcp",
@@ -184,6 +187,10 @@ export const getMyRedirects = (): Redirects => ({
   },
   config_infrared: {
     redirect: "/config/infrared",
+  },
+  config_modbus: {
+    component: "modbus",
+    redirect: "/config/modbus",
   },
   config_radiofrequency: {
     component: "radio_frequency",
@@ -357,6 +364,9 @@ export const getMyRedirects = (): Redirects => ({
   },
   climate: {
     redirect: "/climate",
+  },
+  lights: {
+    redirect: "/light",
   },
   security: {
     redirect: "/security",
