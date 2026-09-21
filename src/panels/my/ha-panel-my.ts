@@ -358,6 +358,9 @@ export const getMyRedirects = (): Redirects => ({
   lights: {
     redirect: "/light",
   },
+  security: {
+    redirect: "/security",
+  },
   media_browser: {
     component: "media_source",
     redirect: "/media-browser",
