@@ -38,7 +38,7 @@ export interface ChatLogAssistantContent {
 }
 
 export interface ChatLogToolResult {
-  data: any;
+  data: Record<string, unknown>;
   error: boolean;
 }
 
