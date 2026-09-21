@@ -91,11 +91,16 @@ export const fetchConfigFlowInProgress = (
     type: "config_entries/flow/progress",
   });
 
-export interface ConfigFlowInProgressMessage {
-  type: null | "added" | "removed";
-  flow_id: string;
-  flow: DataEntryFlowProgress;
-}
+export type ConfigFlowInProgressMessage =
+  | {
+      type: "removed";
+      flow_id: string;
+    }
+  | {
+      type: null | "added";
+      flow_id: string;
+      flow: DataEntryFlowProgress;
+    };
 
 export const subscribeConfigFlowInProgress = (
   hass: HomeAssistant,

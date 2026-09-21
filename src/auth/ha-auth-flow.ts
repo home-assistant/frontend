@@ -241,7 +241,7 @@ export class HaAuthFlow extends LitElement {
             html`<ha-auth-form
               .data=${this._stepData!}
               .schema=${autocompleteLoginFields(step.data_schema)}
-              .error=${step.errors}
+              .error=${step.errors ?? undefined}
               .disabled=${this._submitting}
               .computeLabel=${this._computeLabelCallback(step)}
               .computeError=${this._computeErrorCallback(step)}
