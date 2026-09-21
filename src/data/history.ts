@@ -80,7 +80,7 @@ export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
-  a: Record<string, any>;
+  a?: Record<string, any>;
   /** last_changed; if set, also applies to lu */
   lc?: number;
   /** last_updated */
@@ -384,7 +384,7 @@ const processTimelineEntity = (
             ? " ◂ "
             : " ▸ ",
         }) || current_state.entity_id
-      : computeStateNameFromEntityAttributes(entityId, first.a),
+      : computeStateNameFromEntityAttributes(entityId, first.a ?? {}),
     entity_id: entityId,
     data,
   };
@@ -423,7 +423,7 @@ const processLineChartEntities = (
         };
 
         for (const attr of LINE_ATTRIBUTES_TO_KEEP) {
-          if (attr in state.a) {
+          if (state.a && attr in state.a) {
             processedState.attributes![attr] = state.a[attr];
           }
         }
@@ -456,7 +456,7 @@ const processLineChartEntities = (
           }) || entityId
         : computeStateNameFromEntityAttributes(
             entityId,
-            "friendly_name" in first.a ? first.a : {}
+            first.a && "friendly_name" in first.a ? first.a : {}
           );
 
     data.push({
@@ -603,7 +603,7 @@ export const computeHistory = (
     if (isNumeric) {
       unit =
         currentState?.attributes.unit_of_measurement ||
-        numericStateFromHistory?.a.unit_of_measurement ||
+        numericStateFromHistory?.a?.unit_of_measurement ||
         BLANK_UNIT;
     } else {
       unit = {
