@@ -132,6 +132,7 @@ export interface ConversationChatLogToolResultDelta {
   tool_call_id: string;
   tool_name: string;
   result: ChatLogToolResult;
+  created: string;
 }
 interface PipelineIntentProgressEvent extends PipelineEventBase {
   type: "intent-progress";
