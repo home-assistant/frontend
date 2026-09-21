@@ -32,7 +32,14 @@ export const getConfigPanelPath = (
     ?.url_path || integrationsWithPanel[domain];
 
 export type IntegrationType =
-  "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
+  | "device"
+  | "helper"
+  | "hub"
+  | "service"
+  | "hardware"
+  | "entity"
+  | "system"
+  | "virtual";
 
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 

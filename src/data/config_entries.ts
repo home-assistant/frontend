@@ -14,7 +14,8 @@ export interface ConfigEntry {
     | "setup_retry"
     | "not_loaded"
     | "failed_unload"
-    | "setup_in_progress";
+    | "setup_in_progress"
+    | "unload_in_progress";
   supports_options: boolean;
   supports_remove_device: boolean;
   supports_unload: boolean;

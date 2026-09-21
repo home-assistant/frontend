@@ -5,7 +5,6 @@ import type {
   DataEntryFlowProgress,
   DataEntryFlowStep,
 } from "./data_entry_flow";
-import type { IntegrationType } from "./integration";
 import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [
@@ -75,9 +74,10 @@ export const ignoreConfigFlow = (
 export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
 
+// The backend indexes a single key, and only these two exist.
 export const getConfigFlowHandlers = (
   hass: HomeAssistant,
-  type?: IntegrationType[]
+  type?: "helper" | "integration"
 ) =>
   hass.callApi<string[]>(
     "GET",
