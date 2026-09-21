@@ -5,7 +5,7 @@ export type SystemLogLevel =
 
 export interface LoggedError {
   name: string;
-  message: [string];
+  message: string[];
   level: SystemLogLevel;
   source: [string, number];
   exception: string;

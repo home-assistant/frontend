@@ -7,18 +7,17 @@ import type { DataEntryFlowStep } from "./data_entry_flow";
 
 export interface RepairsIssue {
   domain: string;
-  issue_domain?: string;
+  issue_domain: string | null;
   issue_id: string;
-  active: boolean;
   is_fixable: boolean;
   severity: "error" | "warning" | "critical";
-  breaks_in_ha_version?: string;
+  breaks_in_ha_version: string | null;
   ignored: boolean;
   created: string;
-  dismissed_version?: string;
-  learn_more_url?: string;
-  translation_key?: string;
-  translation_placeholders?: Record<string, string>;
+  dismissed_version: string | null;
+  learn_more_url: string | null;
+  translation_key: string | null;
+  translation_placeholders: Record<string, string> | null;
 }
 
 export const severitySort = {
@@ -37,7 +36,7 @@ export const fetchRepairsIssueData = (
   domain: string,
   issue_id: string
 ) =>
-  conn.sendMessagePromise<{ issue_data: { string: any } }>({
+  conn.sendMessagePromise<{ issue_data: Record<string, any> | null }>({
     type: "repairs/get_issue_data",
     domain,
     issue_id,
@@ -48,7 +47,7 @@ export const ignoreRepairsIssue = async (
   issue: RepairsIssue,
   ignore: boolean
 ) =>
-  hass.callWS<string>({
+  hass.callWS<undefined>({
     type: "repairs/ignore_issue",
     issue_id: issue.issue_id,
     domain: issue.domain,

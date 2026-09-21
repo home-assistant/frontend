@@ -102,7 +102,7 @@ class DialogRepairsIssue extends LitElement {
                 `component.${this._issue.domain}.issues.${
                   this._issue.translation_key || this._issue.issue_id
                 }.description`,
-                this._issue.translation_placeholders
+                this._issue.translation_placeholders ?? undefined
               ) ||
               `${this._issue.domain}: ${this._issue.translation_key || this._issue.issue_id}`
             }
