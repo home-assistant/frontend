@@ -49,7 +49,7 @@ import "./ha-markdown";
 import "./input/ha-input";
 import type { HaInput } from "./input/ha-input";
 
-interface AssistMessage {
+export interface AssistMessage {
   who: string;
   text: string | TemplateResult;
   thinking: string;
@@ -84,6 +84,181 @@ export const greetingTranslationLanguage = (
   }
   const language = findAvailableLanguage(pipelineLanguage);
   return language && language !== interfaceLanguage ? language : undefined;
+};
+
+export interface AssistMessageProcessor {
+  readonly continueConversation: boolean;
+  readonly hassMessage: AssistMessage;
+  addMessage: () => void;
+  setError: (error: string) => void;
+  processEvent: (event: PipelineRunEvent) => void;
+}
+
+type ChatLogDelta =
+  | Partial<ConversationChatLogAssistantDelta>
+  | ConversationChatLogToolResultDelta;
+
+// Appended to the end of a reply while it is still streaming.
+const STREAMING_ELLIPSIS = "…";
+
+const stripStreamingEllipsis = (text: string): string =>
+  text.endsWith(STREAMING_ELLIPSIS) ? text.slice(0, -1) : text;
+
+// A chat log delta that carries a role starts a new message. Join it with a
+// paragraph break unless one of the sides already provides whitespace, so
+// separate assistant messages stay readable when merged into one bubble.
+const joinWithBreak = (previous: string, next: string): string => {
+  if (previous === "" || next === "") {
+    return previous + next;
+  }
+  return /\s$/.test(previous) || /^\s/.test(next)
+    ? previous + next
+    : `${previous}\n\n${next}`;
+};
+
+const newAssistantMessage = (): AssistMessage => ({
+  who: "hass",
+  text: STREAMING_ELLIPSIS,
+  thinking: "",
+  tool_calls: {},
+  error: false,
+});
+
+export const createAssistMessageProcessor = ({
+  addMessage,
+  requestUpdate,
+}: {
+  addMessage: (message: AssistMessage) => void;
+  requestUpdate: () => void;
+}): AssistMessageProcessor => {
+  let currentDeltaRole = "";
+  let continueConversation = false;
+  let hassMessage: AssistMessage = newAssistantMessage();
+
+  const isMessageEmpty = (message: AssistMessage) =>
+    message.text === STREAMING_ELLIPSIS &&
+    !message.thinking &&
+    Object.keys(message.tool_calls).length === 0;
+
+  const progressToNextMessage = () => {
+    if (isMessageEmpty(hassMessage)) {
+      return;
+    }
+    if (typeof hassMessage.text === "string") {
+      hassMessage.text = stripStreamingEllipsis(hassMessage.text);
+    }
+    hassMessage = newAssistantMessage();
+    addMessage(hassMessage);
+  };
+
+  const isAssistantDelta = (
+    _delta: ChatLogDelta
+  ): _delta is Partial<ConversationChatLogAssistantDelta> =>
+    currentDeltaRole === "assistant";
+
+  const isToolResultDelta = (
+    _delta: ChatLogDelta
+  ): _delta is ConversationChatLogToolResultDelta =>
+    currentDeltaRole === "tool_result";
+
+  // Merge the final response into the streamed text. The chat log streams
+  // every assistant message of a turn, while the response speech only
+  // contains the final one, so replacing the streamed text with the response
+  // would drop the beginning of the reply (see #54310).
+  const applyFinalResponse = (message: AssistMessage, response: string) => {
+    const streamed =
+      typeof message.text === "string"
+        ? stripStreamingEllipsis(message.text)
+        : "";
+    if (streamed === "") {
+      message.text = response;
+      return;
+    }
+    if (streamed.endsWith(response)) {
+      // The final response was already streamed, keep it as is.
+      message.text = streamed;
+      return;
+    }
+    message.text = joinWithBreak(streamed, response);
+  };
+
+  const setError = (error: string) => {
+    progressToNextMessage();
+    hassMessage.text = error;
+    hassMessage.error = true;
+    requestUpdate();
+  };
+
+  const processEvent = (event: PipelineRunEvent) => {
+    if (event.type === "intent-progress" && event.data.chat_log_delta) {
+      const delta = event.data.chat_log_delta;
+
+      // new message
+      if (delta.role) {
+        currentDeltaRole = delta.role;
+      }
+
+      if (isAssistantDelta(delta)) {
+        if (delta.content && typeof hassMessage.text === "string") {
+          let text = stripStreamingEllipsis(hassMessage.text);
+          if (delta.role) {
+            // A role marks the start of a new chat log message.
+            text = joinWithBreak(text, delta.content);
+          } else {
+            text += delta.content;
+          }
+          hassMessage.text = text + STREAMING_ELLIPSIS;
+        }
+        if (delta.thinking_content) {
+          hassMessage.thinking += delta.thinking_content;
+        }
+        if (delta.tool_calls) {
+          for (const toolCall of delta.tool_calls) {
+            hassMessage.tool_calls[toolCall.id] = toolCall;
+          }
+        }
+        requestUpdate();
+      } else if (isToolResultDelta(delta)) {
+        if (hassMessage.tool_calls[delta.tool_call_id]) {
+          hassMessage.tool_calls[delta.tool_call_id].result = delta.result;
+          requestUpdate();
+        }
+      }
+    } else if (event.type === "intent-end") {
+      continueConversation = event.data.intent_output.continue_conversation;
+      const response = event.data.intent_output.response.speech?.plain.speech;
+      if (
+        event.data.intent_output.response.response_type === "error" &&
+        response
+      ) {
+        setError(response);
+        return;
+      }
+      if (response) {
+        applyFinalResponse(hassMessage, response);
+      }
+      // Finalize the streaming marker so a reply without a spoken response
+      // does not stay stuck with a trailing ellipsis.
+      if (typeof hassMessage.text === "string") {
+        hassMessage.text = stripStreamingEllipsis(hassMessage.text);
+      }
+      requestUpdate();
+    }
+  };
+
+  return {
+    get continueConversation() {
+      return continueConversation;
+    },
+    get hassMessage() {
+      return hassMessage;
+    },
+    addMessage: () => {
+      addMessage(hassMessage);
+    },
+    setError,
+    processEvent,
+  };
 };
 
 @customElement("ha-assist-chat")
@@ -631,6 +806,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
             hassMessageProcesser.addMessage();
           } else if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
+            if (event.type === "intent-end") {
+              this._conversationId = event.data.intent_output.conversation_id;
+            }
           } else if (event.type === "run-end") {
             this._stt_binary_handler_id = undefined;
             unsub();
@@ -720,6 +898,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
         (event) => {
           if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
+            if (event.type === "intent-end") {
+              this._conversationId = event.data.intent_output.conversation_id;
+            }
           }
           if (event.type === "intent-end") {
             unsub();
@@ -746,118 +927,11 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     }
   }
 
-  private _createAddHassMessageProcessor() {
-    let currentDeltaRole = "";
-
-    const progressToNextMessage = () => {
-      if (
-        progress.hassMessage.text === "…" &&
-        !progress.hassMessage.thinking &&
-        (!progress.hassMessage.tool_calls ||
-          Object.keys(progress.hassMessage.tool_calls).length === 0)
-      ) {
-        return;
-      }
-      if (progress.hassMessage.text?.endsWith("…")) {
-        progress.hassMessage.text = progress.hassMessage.text.slice(0, -1);
-      }
-
-      progress.hassMessage = {
-        who: "hass",
-        text: "…",
-        thinking: "",
-        tool_calls: {},
-        error: false,
-      };
-      this._addMessage(progress.hassMessage);
-    };
-
-    const isAssistantDelta = (
-      _delta: any
-    ): _delta is Partial<ConversationChatLogAssistantDelta> =>
-      currentDeltaRole === "assistant";
-
-    const isToolResult = (
-      _delta: any
-    ): _delta is ConversationChatLogToolResultDelta =>
-      currentDeltaRole === "tool_result";
-
-    const progress = {
-      continueConversation: false,
-      hassMessage: {
-        who: "hass",
-        text: "…",
-        thinking: "",
-        tool_calls: {},
-        error: false,
-      },
-      addMessage: () => {
-        this._addMessage(progress.hassMessage);
-      },
-      setError: (error: string) => {
-        progressToNextMessage();
-        progress.hassMessage.text = error;
-        progress.hassMessage.error = true;
-        this.requestUpdate("_conversation");
-      },
-      processEvent: (event: PipelineRunEvent) => {
-        if (event.type === "intent-progress" && event.data.chat_log_delta) {
-          const delta = event.data.chat_log_delta;
-
-          // new message
-          if (delta.role) {
-            currentDeltaRole = delta.role;
-          }
-
-          if (isAssistantDelta(delta)) {
-            if (delta.content) {
-              if (progress.hassMessage.text.endsWith("…")) {
-                progress.hassMessage.text =
-                  progress.hassMessage.text.substring(
-                    0,
-                    progress.hassMessage.text.length - 1
-                  ) +
-                  delta.content +
-                  "…";
-              } else {
-                progress.hassMessage.text += delta.content + "…";
-              }
-            }
-            if (delta.thinking_content) {
-              progress.hassMessage.thinking += delta.thinking_content;
-            }
-            if (delta.tool_calls) {
-              for (const toolCall of delta.tool_calls) {
-                progress.hassMessage.tool_calls[toolCall.id] = toolCall;
-              }
-            }
-            this.requestUpdate("_conversation");
-          } else if (isToolResult(delta)) {
-            if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
-              progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.result;
-              this.requestUpdate("_conversation");
-            }
-          }
-        } else if (event.type === "intent-end") {
-          this._conversationId = event.data.intent_output.conversation_id;
-          progress.continueConversation =
-            event.data.intent_output.continue_conversation;
-          const response =
-            event.data.intent_output.response.speech?.plain.speech;
-          if (!response) {
-            return;
-          }
-          if (event.data.intent_output.response.response_type === "error") {
-            progress.setError(response);
-          } else {
-            progress.hassMessage.text = response;
-            this.requestUpdate("_conversation");
-          }
-        }
-      },
-    };
-    return progress;
+  private _createAddHassMessageProcessor(): AssistMessageProcessor {
+    return createAssistMessageProcessor({
+      addMessage: (message) => this._addMessage(message),
+      requestUpdate: () => this.requestUpdate("_conversation"),
+    });
   }
 
   static get styles(): CSSResultGroup {
