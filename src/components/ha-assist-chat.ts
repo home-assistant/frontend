@@ -111,8 +111,15 @@ const joinWithBreak = (previous: string, next: string): string => {
   if (previous === "" || next === "") {
     return previous + next;
   }
-  return /\s$/.test(previous) || /^\s/.test(next)
-    ? previous + next
+  if (
+    /\r?\n\r?\n$/.test(previous) ||
+    /^\r?\n\r?\n/.test(next) ||
+    (/\r?\n$/.test(previous) && /^\r?\n/.test(next))
+  ) {
+    return previous + next;
+  }
+  return /\r?\n$/.test(previous) || /^\r?\n/.test(next)
+    ? `${previous}\n${next}`
     : `${previous}\n\n${next}`;
 };
 
