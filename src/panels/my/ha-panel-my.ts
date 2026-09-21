@@ -185,6 +185,10 @@ export const getMyRedirects = (): Redirects => ({
   config_infrared: {
     redirect: "/config/infrared",
   },
+  config_modbus: {
+    component: "modbus",
+    redirect: "/config/modbus",
+  },
   config_radiofrequency: {
     component: "radio_frequency",
     redirect: "/config/radio-frequency",
