@@ -85,11 +85,11 @@ class StateCardDisplay extends LitElement {
           align-items: center;
           justify-content: flex-end;
         }
-.state.has-unit_of_measurement {
-  white-space: nowrap;
-  direction: ltr;
-  justify-content: var(--float-end, right);
-}
+        .state.has-unit_of_measurement {
+          white-space: nowrap;
+          direction: ltr;
+          justify-content: var(--float-end, right);
+        }
       `,
     ];
   }
