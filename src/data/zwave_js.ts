@@ -310,10 +310,21 @@ export interface ZWaveJSSetRawConfigParamData {
 }
 
 export interface ZWaveJSSetConfigParamResult {
-  value_id?: string;
-  status?: string;
-  error?: string;
+  value_id: string;
+  status: number;
 }
+
+export type ZWaveJSSetConfigParamStatus = "accepted" | "queued" | "error";
+
+// Maps the numeric SetValueStatus from zwave-js.
+export const computeSetConfigParamStatus = (
+  status: number
+): ZWaveJSSetConfigParamStatus => {
+  if (status === 254 || status === 255) {
+    return "accepted";
+  }
+  return status === 1 ? "queued" : "error";
+};
 
 export interface ZwaveJSNodeConfigParameterUpdate {
   id: string;

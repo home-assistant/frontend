@@ -29,11 +29,12 @@ import "../../../../../components/input/ha-input";
 import type {
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
-  ZWaveJSSetConfigParamResult,
+  ZWaveJSSetConfigParamStatus,
   ZwaveJSNodeConfigParameterUpdate,
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
 import {
+  computeSetConfigParamStatus,
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
@@ -60,6 +61,11 @@ const icons = {
   error: mdiCloseCircle,
 };
 
+interface ConfigParamResult {
+  status: ZWaveJSSetConfigParamStatus;
+  error?: string;
+}
+
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -80,7 +86,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @state() private _canResetAll = false;
 
-  @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
+  @state() private _results: Record<string, ConfigParamResult> = {};
 
   @state() private _error?: string;
 
@@ -687,7 +693,7 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       this._config![target.key].value = value;
 
-      this._setResult(target.key, result.status);
+      this._setResult(target.key, computeSetConfigParamStatus(result.status));
     } catch (err: any) {
       this._setError(target.key, err.message);
     }
@@ -707,7 +713,10 @@ class ZWaveJSNodeConfig extends LitElement {
     this._resultTimeouts = {};
   }
 
-  private _setResult(key: string, value: string | undefined) {
+  private _setResult(
+    key: string,
+    value: ZWaveJSSetConfigParamStatus | undefined
+  ) {
     this._clearResultTimeout(key);
     if (value === undefined) {
       delete this._results[key];
@@ -725,7 +734,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
   private _setError(key: string, message: string) {
     this._clearResultTimeout(key);
-    const errorParam = { status: "error", error: message };
+    const errorParam: ConfigParamResult = { status: "error", error: message };
     this._results = { ...this._results, [key]: errorParam };
   }
 
