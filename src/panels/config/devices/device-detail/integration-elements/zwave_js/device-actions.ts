@@ -217,7 +217,8 @@ export const getZwaveDeviceActions = async (
       action: async () => {
         showZWaveJSAddNodeDialog(el, {
           entry_id: entryId,
-          longRangeSupported: networkStatus.controller?.supports_long_range,
+          longRangeSupported:
+            networkStatus.controller?.supports_long_range ?? undefined,
         });
       },
     });

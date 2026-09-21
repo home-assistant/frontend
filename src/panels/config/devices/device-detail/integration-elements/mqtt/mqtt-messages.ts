@@ -4,14 +4,14 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
-import type { MQTTMessage } from "../../../../../../data/mqtt";
+import type { MQTTLoggedMessage } from "../../../../../../data/mqtt";
 import type { HomeAssistant } from "../../../../../../types";
 
 @customElement("mqtt-messages")
 class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public messages!: MQTTMessage[];
+  @property({ attribute: false }) public messages!: MQTTLoggedMessage[];
 
   @property() public direction!: string;
 

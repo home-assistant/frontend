@@ -532,7 +532,7 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         );
         this._controllerSupportsLongRange =
-          zwaveNetwork?.controller?.supports_long_range;
+          zwaveNetwork?.controller?.supports_long_range ?? undefined;
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -903,7 +903,7 @@ class DialogZWaveJSAddNode extends LitElement {
           this._deviceOptions.name,
           this._deviceOptions.area
         );
-        this._device.id = id;
+        this._device.id = id ?? undefined;
         this._subscribeNewDeviceSearch();
         this._step = "search_smart_start_device";
       } catch (err: any) {

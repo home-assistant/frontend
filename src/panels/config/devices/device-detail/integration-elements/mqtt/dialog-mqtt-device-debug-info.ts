@@ -234,12 +234,12 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             <ul class="discoverydata">
               <li>
                 Topic:
-                <code>${trigger.discovery_data.topic}</code>
+                <code>${trigger.discovery_data?.topic}</code>
               </li>
               <li>
                 <mqtt-discovery-payload
                   .hass=${this.hass}
-                  .payload=${trigger.discovery_data.payload}
+                  .payload=${trigger.discovery_data?.payload ?? ""}
                   .showAsYaml=${this._showAsYaml}
                   .summary=${"Payload"}
                 >
