@@ -350,6 +350,11 @@ export class HaMap extends ReactiveElement {
 
   private _entityHandles: MapMarkerHandle[] = [];
 
+  private _clusterAvatars = new Map<
+    string,
+    HTMLElementTagNameMap["ha-entity-marker"]
+  >();
+
   private _zoneHandles: MapItemHandle[] = [];
 
   private _pathHandles: MapItemHandle[] = [];
@@ -412,6 +417,7 @@ export class HaMap extends ReactiveElement {
     this._startingEngine = undefined;
     this._loading = false;
     this._entityHandles = [];
+    this._clusterAvatars.clear();
     this._zoneHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
@@ -1124,6 +1130,7 @@ export class HaMap extends ReactiveElement {
     this._focusZonePoints = [];
 
     if (!this.entities) {
+      this._clusterAvatars.clear();
       engine.setClustering(null);
       return;
     }
@@ -1326,6 +1333,13 @@ export class HaMap extends ReactiveElement {
       }
     }
 
+    const shownIds = new Set(this.entities.map(getEntityId));
+    for (const entityId of this._clusterAvatars.keys()) {
+      if (!shownIds.has(entityId)) {
+        this._clusterAvatars.delete(entityId);
+      }
+    }
+
     engine.setClustering(
       this.clusterMarkers
         ? {
@@ -1353,7 +1367,19 @@ export class HaMap extends ReactiveElement {
     const bubble = document.createElement("div");
     bubble.className = "cluster-bubble";
     for (const member of shown) {
-      const avatar = document.createElement("ha-entity-marker");
+      let avatar = member?.entityId
+        ? this._clusterAvatars.get(member.entityId)
+        : undefined;
+      // Leaflet keeps the outgoing bubble on screen during its zoom animation
+      if (avatar && (avatar.isConnected || avatar.parentElement === bubble)) {
+        avatar = undefined;
+      }
+      if (!avatar) {
+        avatar = document.createElement("ha-entity-marker");
+        if (member?.entityId) {
+          this._clusterAvatars.set(member.entityId, avatar);
+        }
+      }
       avatar.entityId = member?.entityId;
       avatar.entityName = member?.label ?? "";
       avatar.entityUnit = member?.unit ?? "";
@@ -1366,10 +1392,11 @@ export class HaMap extends ReactiveElement {
           member?.color ?? "var(--primary-color)"
         );
         avatar.style.setProperty("--ha-marker-border-width", "2px");
+      } else {
+        avatar.style.removeProperty("--ha-marker-color");
+        avatar.style.removeProperty("--ha-marker-border-width");
       }
-      if (member?.selected) {
-        avatar.selected = true;
-      }
+      avatar.selected = member?.selected ?? false;
       bubble.appendChild(avatar);
     }
 
