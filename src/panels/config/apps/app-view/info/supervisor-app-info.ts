@@ -897,7 +897,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 this._uninstalling
                               }
                               @change=${this._panelToggled}
-                              .checked=${this._currentAddon.ingress_panel}
+                              .checked=${
+                                this._currentAddon.ingress_panel || false
+                              }
                               haptic
                             ></ha-switch>
                           </ha-row-item>
