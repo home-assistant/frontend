@@ -15,6 +15,8 @@ export interface ChipFocusOptions extends FocusOptions {
 export class HaChipBase extends HaButton {
   @property() label = "";
 
+  @property({ type: Boolean, reflect: true }) override disabled = false;
+
   @property({ type: Boolean }) removable = false;
 
   @property({ type: Boolean, attribute: "remove-only" }) removeOnly = false;
