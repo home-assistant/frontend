@@ -39,7 +39,7 @@ const FRAME_SIZES = [
 ].flat();
 
 // Always rounds down, so no chart ends up with fewer frames than it asked for.
-function snapFrameSize(step: number): number {
+export function snapFrameSize(step: number): number {
   if (step >= DAY) {
     return Math.floor(step / DAY) * DAY;
   }
