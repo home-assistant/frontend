@@ -1,7 +1,6 @@
 name: Report a bug with the UI / Dashboards
 description: Report an issue related to the Home Assistant frontend.
 labels: bug
-# Keep field IDs stable: the frontend log-report action uses them for URL prefill.
 body:
   - type: markdown
     attributes:
