@@ -6,6 +6,10 @@ import { consumeEntityState } from "../../common/decorators/consume-context-entr
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-state-icon";
 
+/**
+ * @csspart marker - The framed avatar.
+ * @csspart picture - The entity picture inside the frame.
+ */
 @customElement("ha-entity-marker")
 class HaEntityMarker extends LitElement {
   @property({ attribute: "entity-id", reflect: true }) public entityId?: string;
@@ -29,6 +33,7 @@ class HaEntityMarker extends LitElement {
   protected render() {
     return html`
       <div
+        part="marker"
         class="marker ${this.entityPicture ? "picture" : ""}"
         style=${styleMap({ "--ha-marker-selected-color": this.entityColor })}
         @click=${this._badgeTap}
@@ -36,6 +41,7 @@ class HaEntityMarker extends LitElement {
         ${
           this.entityPicture
             ? html`<div
+                part="picture"
                 class="entity-picture"
                 style=${styleMap({
                   "background-image": `url(${this.entityPicture})`,
