@@ -4749,7 +4749,7 @@
               "frontend": {
                 "introduction": "This log entry was reported by a browser (or the Home Assistant app).",
                 "report": "If you think it relates to Home Assistant’s user interface, {report_link}.",
-                "guidance": "Core, custom integrations or frontend modules may also be involved. See the {guide_link} for further guidance.",
+                "guidance": "Core, custom integrations or Frontend modules may also be involved. See the {guide_link} for further guidance.",
                 "link_text": "report it on the Frontend repository"
               },
               "core": {
