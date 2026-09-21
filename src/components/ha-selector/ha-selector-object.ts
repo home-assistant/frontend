@@ -217,7 +217,9 @@ export class HaObjectSelector extends LitElement {
       name: key,
       selector: field.selector,
       required: field.required ?? false,
-      ...("default" in field ? { default: field.default } : {}),
+      ...("default" in field
+        ? { default: field.default as HaFormSchema["default"] }
+        : {}),
     }));
   });
 
