@@ -42,7 +42,6 @@ export interface ChatLogToolResultContent {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  result: { data: Record<string, any>; error: boolean };
   tool_result: any;
   created: Date;
 }
@@ -93,7 +92,6 @@ interface ChatLogToolResultContentWire {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  result: { data: Record<string, any>; error: boolean };
   tool_result: any;
   created: string;
 }

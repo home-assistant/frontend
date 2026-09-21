@@ -158,9 +158,7 @@ export interface ConversationChatLogToolResultDelta {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  result: { data: Record<string, unknown>; error: boolean };
-  tool_result: Record<string, unknown>;
-  created: string;
+  tool_result: unknown;
 }
 interface PipelineIntentProgressEvent extends PipelineEventBase {
   type: "intent-progress";
