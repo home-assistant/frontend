@@ -179,7 +179,11 @@ export interface MapClusterOptions {
   groupKey?(marker: MapMarkerHandle): string | undefined;
   groupRadius?: number;
   /** Builds a cluster's element; called when its members change and on refreshClusters() */
-  iconBuilder(members: MapMarkerHandle[], location: MapLatLng): MapClusterIcon;
+  iconBuilder(
+    members: MapMarkerHandle[],
+    location: MapLatLng,
+    key?: string
+  ): MapClusterIcon;
 }
 
 export interface MapEngine {

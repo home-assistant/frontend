@@ -31,6 +31,7 @@ import {
 import { isTouch } from "../../../util/is_touch";
 import type {
   MapCircleOptions,
+  MapClusterIcon,
   MapClusterOptions,
   MapControlPosition,
   MapDraggableMarkerOptions,
@@ -132,11 +133,17 @@ interface ClusterGroup {
   /** Members are shown in a bubble at their spot instead of an icon */
   open?: boolean;
   /** Grouped by key (a zone), so it bubbles even with a single member */
-  keyed?: boolean;
+  key?: string;
   members: ManagedMarker[];
   center: MapLatLng;
+  icon?: MapClusterIcon;
   iconMarker?: MapLibreMarker;
 }
+
+const centerOf = (members: ManagedMarker[]): MapLatLng => [
+  members.reduce((sum, m) => sum + m.location[0], 0) / members.length,
+  members.reduce((sum, m) => sum + m.location[1], 0) / members.length,
+];
 
 /**
  * The MapLibre GL engine: native vector rendering, requires WebGL2. The host
@@ -1236,9 +1243,9 @@ export class MapLibreMapEngine implements MapEngine {
     if (regroup || !this._clusterGroups.length) {
       const { radius, groupKey, groupRadius } = this._clusterOptions;
       const groups: {
-        seed: { x: number; y: number };
+        points: { x: number; y: number }[];
         members: ManagedMarker[];
-        keyed?: boolean;
+        key?: string;
       }[] = [];
 
       // Keyed groups first; one spread too wide falls through to proximity
@@ -1253,7 +1260,7 @@ export class MapLibreMapEngine implements MapEngine {
             (byKey[key] ??= []).push(managed);
           }
         }
-        for (const members of Object.values(byKey)) {
+        for (const [key, members] of Object.entries(byKey)) {
           const points = members.map((m) => this._project(m.location));
           const xs = points.map((p) => p.x);
           const ys = points.map((p) => p.y);
@@ -1264,7 +1271,7 @@ export class MapLibreMapEngine implements MapEngine {
           // A keyed group (a zone) bubbles even with a single member, so a lone
           // person or device in a zone still shows in a bubble pinned to it.
           if (members.length === 1 || spread <= (groupRadius ?? radius)) {
-            groups.push({ seed: points[0], members, keyed: true });
+            groups.push({ points, members, key });
           } else {
             ungrouped.push(...members);
           }
@@ -1275,28 +1282,23 @@ export class MapLibreMapEngine implements MapEngine {
 
       for (const managed of ungrouped) {
         const point = this._project(managed.location);
-        const group = groups.find(
-          (candidate) =>
-            Math.hypot(
-              candidate.seed.x - point.x,
-              candidate.seed.y - point.y
-            ) <= radius
+        const group = groups.find((candidate) =>
+          candidate.points.some(
+            (member) =>
+              Math.hypot(member.x - point.x, member.y - point.y) <= radius
+          )
         );
         if (group) {
           group.members.push(managed);
+          group.points.push(point);
         } else {
-          groups.push({ seed: point, members: [managed] });
+          groups.push({ points: [point], members: [managed] });
         }
       }
       this._clusterGroups = groups.map((group) => ({
         members: group.members,
-        keyed: group.keyed,
-        center: [
-          group.members.reduce((sum, m) => sum + m.location[0], 0) /
-            group.members.length,
-          group.members.reduce((sum, m) => sum + m.location[1], 0) /
-            group.members.length,
-        ] as MapLatLng,
+        key: group.key,
+        center: centerOf(group.members),
       }));
     }
 
@@ -1304,20 +1306,27 @@ export class MapLibreMapEngine implements MapEngine {
       group.iconMarker = undefined;
       // A lone non-keyed marker shows plainly; a lone zone occupant falls
       // through to the bubble path so it renders in a bubble at its zone.
-      if (group.members.length === 1 && !group.keyed) {
-        this._showMarker(group.members[0]);
-        continue;
-      }
-      if (group.open) {
-        this._openGroup(group);
+      group.icon =
+        (group.members.length > 1 || group.key !== undefined) && !group.open
+          ? this._buildIcon(group)
+          : undefined;
+    }
+    if (regroup) {
+      this._mergeOverlappingBubbles();
+    }
+
+    for (const group of this._clusterGroups) {
+      if (!group.icon) {
+        if (group.open) {
+          this._openGroup(group);
+        } else {
+          this._showMarker(group.members[0]);
+        }
         continue;
       }
       group.members.forEach((managed) => this._hideMarker(managed));
 
-      const icon = this._clusterOptions.iconBuilder(
-        group.members.map((managed) => managed.handle),
-        group.center
-      );
+      const { icon } = group;
       icon.element.style.width = `${icon.size[0]}px`;
       icon.element.style.height = `${icon.size[1]}px`;
       // Clicking a bubble zooms in on its members; when zooming cannot
@@ -1378,6 +1387,62 @@ export class MapLibreMapEngine implements MapEngine {
         // so send focus back to that member rather than to the document.
         (group.iconMarker?.getElement() ?? focusedMember.element).focus();
       }
+    }
+  }
+
+  private _buildIcon(group: ClusterGroup): MapClusterIcon {
+    return this._clusterOptions!.iconBuilder(
+      group.members.map((managed) => managed.handle),
+      group.center,
+      group.key
+    );
+  }
+
+  private _iconRect(group: ClusterGroup) {
+    const { size, anchor, location } = group.icon!;
+    const point = this._project(location ?? group.center);
+    const [left, top] = anchor
+      ? [point.x - anchor[0], point.y - anchor[1]]
+      : [point.x - size[0] / 2, point.y - size[1] / 2];
+    return { left, top, right: left + size[0], bottom: top + size[1] };
+  }
+
+  private _mergeOverlappingBubbles(): void {
+    for (;;) {
+      const bubbles = this._clusterGroups.filter((group) => group.icon);
+      const rects = bubbles.map((group) => this._iconRect(group));
+      let pair: [ClusterGroup, ClusterGroup] | undefined;
+      for (let i = 0; i < bubbles.length && !pair; i++) {
+        for (let j = i + 1; j < bubbles.length && !pair; j++) {
+          const a = rects[i];
+          const b = rects[j];
+          if (
+            a.left < b.right &&
+            b.left < a.right &&
+            a.top < b.bottom &&
+            b.top < a.bottom
+          ) {
+            pair = [bubbles[i], bubbles[j]];
+          }
+        }
+      }
+      if (!pair) {
+        return;
+      }
+      const members = [...pair[0].members, ...pair[1].members];
+      // Two zones cannot share a pinned bubble
+      const keys = [pair[0].key, pair[1].key].filter(
+        (key) => key !== undefined
+      );
+      const merged: ClusterGroup = {
+        members,
+        key: keys.length === 1 ? keys[0] : undefined,
+        center: centerOf(members),
+      };
+      merged.icon = this._buildIcon(merged);
+      this._clusterGroups = this._clusterGroups
+        .filter((group) => !pair!.includes(group))
+        .concat(merged);
     }
   }
 }
