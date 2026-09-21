@@ -135,15 +135,30 @@ class DialogSystemLogDetail extends LitElement {
           .label=${this.hass.localize("ui.panel.config.logs.copy")}
           .path=${mdiContentCopy}
         ></ha-icon-button>
-        ${
-          this.isCustomIntegration
-            ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.logs.error_from_custom_integration"
-                )}
-              </ha-alert>`
-            : ""
-        }
+        <ha-alert alert-type=${this.isCustomIntegration ? "warning" : "info"}>
+          ${
+            this.isCustomIntegration
+              ? html`${this.hass.localize(
+                    "ui.panel.config.logs.error_from_custom_integration"
+                  )}<br />`
+              : nothing
+          }
+          ${this.hass.localize(
+            reportRepository
+              ? "ui.panel.config.logs.detail.report_issue.description"
+              : "ui.panel.config.logs.detail.report_issue.custom_description",
+            {
+              repository: reportRepository,
+              integration: this._manifest?.name ?? new URL(reportUrl).hostname,
+              report_link: html`<a
+                href=${reportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                >${this.hass.localize("ui.panel.config.logs.detail.report_issue.link_text")}</a
+              >`,
+            }
+          )}
+        </ha-alert>
         <div class="contents" tabindex="-1" autofocus>
           <p>
             ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
@@ -232,24 +247,6 @@ class DialogSystemLogDetail extends LitElement {
               : item.message[0]
           }
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
-          <p class="report">
-            ${this.hass.localize(
-              reportRepository
-                ? "ui.panel.config.logs.detail.report_issue.description"
-                : "ui.panel.config.logs.detail.report_issue.custom_description",
-              {
-                repository: reportRepository,
-                integration:
-                  this._manifest?.name ?? new URL(reportUrl).hostname,
-                report_link: html`<a
-                  href=${reportUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >${this.hass.localize("ui.panel.config.logs.detail.report_issue.link_text")}</a
-                >`,
-              }
-            )}
-          </p>
         </div>
       </ha-dialog>
     `;
@@ -309,11 +306,6 @@ class DialogSystemLogDetail extends LitElement {
         }
         p {
           margin-top: 0;
-        }
-        .report {
-          margin-block: var(--ha-space-4) 0;
-          border-top: 1px solid var(--divider-color);
-          padding-block-start: var(--ha-space-4);
         }
         pre {
           margin-bottom: 0;
