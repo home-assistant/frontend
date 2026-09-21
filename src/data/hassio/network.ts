@@ -5,15 +5,18 @@ interface IpConfiguration {
   gateway: string | null;
   method: "disabled" | "static" | "auto";
   nameservers: string[];
+  ready: boolean | null;
+  route_metric: number | null;
 }
 
 export interface NetworkInterface {
+  connected: boolean;
+  mac: string;
   primary: boolean;
-  privacy: boolean;
   interface: string;
   enabled: boolean;
-  ipv4?: Partial<IpConfiguration>;
-  ipv6?: Partial<IpConfiguration>;
+  ipv4?: Partial<IpConfiguration> | null;
+  ipv6?: Partial<IpConfiguration> | null;
   type: "ethernet" | "wireless" | "vlan";
   wifi?: Partial<WifiConfiguration> | null;
 }
@@ -41,13 +44,15 @@ export interface WifiConfiguration {
   mode: "infrastructure" | "mesh" | "adhoc" | "ap";
   auth: "open" | "wep" | "wpa-psk";
   ssid: string;
-  signal: number;
+  signal: number | null;
   psk?: string;
 }
 
 export interface NetworkInfo {
   interfaces: NetworkInterface[];
   docker: DockerNetwork;
+  host_internet: boolean | null;
+  supervisor_internet: boolean;
 }
 
 export const fetchNetworkInfo = async (

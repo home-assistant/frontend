@@ -1,13 +1,15 @@
 import type { HomeAssistant } from "../../types";
 
-type HassioDockerRegistries = Record<
+type HassioDockerRegistries = Record<string, { username: string }>;
+
+type HassioDockerRegistryCredentials = Record<
   string,
-  { username: string; password?: string }
+  { username: string; password: string }
 >;
 
 export const fetchHassioDockerRegistries = async (
   hass: HomeAssistant
-): Promise<HassioDockerRegistries> =>
+): Promise<{ registries: HassioDockerRegistries }> =>
   hass.callWS({
     type: "supervisor/api",
     endpoint: `/docker/registries`,
@@ -16,7 +18,7 @@ export const fetchHassioDockerRegistries = async (
 
 export const addHassioDockerRegistry = async (
   hass: HomeAssistant,
-  data: HassioDockerRegistries
+  data: HassioDockerRegistryCredentials
 ) => {
   await hass.callWS({
     type: "supervisor/api",
