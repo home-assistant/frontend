@@ -22,12 +22,10 @@ export interface DeviceAutomation {
   subtype?: string;
   event?: string;
   enabled?: boolean;
-  metadata?: { secondary: boolean };
+  metadata?: { secondary?: boolean };
 }
 
-export interface DeviceAction extends DeviceAutomation {
-  entity_id: string;
-}
+export type DeviceAction = DeviceAutomation;
 
 export interface DeviceCondition extends DeviceAutomation {
   condition: "device";
@@ -39,7 +37,7 @@ export type DeviceTrigger = DeviceAutomation &
   };
 
 export interface DeviceCapabilities {
-  extra_fields: HaFormSchema[];
+  extra_fields?: HaFormSchema[];
 }
 
 export const fetchDeviceActions = (callWS: CallWS, deviceId: string) =>
