@@ -749,12 +749,14 @@ describe("MapLibreMapEngine", () => {
         clusterData,
       });
 
-    const iconBuilder = vi.fn((members: MapMarkerHandle[]) => ({
-      element: Object.assign(document.createElement("div"), {
-        textContent: String(members.length),
-      }),
-      size: [40, 40] as [number, number],
-    }));
+    const iconBuilder = vi.fn(
+      (members: MapMarkerHandle[], _location: MapLatLng, _key?: string) => ({
+        element: Object.assign(document.createElement("div"), {
+          textContent: String(members.length),
+        }),
+        size: [40, 40] as [number, number],
+      })
+    );
 
     beforeEach(() => {
       iconBuilder.mockClear();
