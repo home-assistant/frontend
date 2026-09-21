@@ -834,7 +834,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           } else if (isToolResult(delta)) {
             if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
               progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.tool_result;
+                delta.result.data;
               this.requestUpdate("_conversation");
             }
           }

@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../types";
+import type { ChatLogToolResult } from "./chat_log";
 import type { ConversationResult } from "./conversation";
 import type { SpeechMetadata } from "./stt";
 
@@ -130,7 +131,7 @@ export interface ConversationChatLogToolResultDelta {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  tool_result: unknown;
+  result: ChatLogToolResult;
 }
 interface PipelineIntentProgressEvent extends PipelineEventBase {
   type: "intent-progress";
