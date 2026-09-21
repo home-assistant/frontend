@@ -22,6 +22,7 @@ import {
   type ConversationChatLogToolResultDelta,
   type PipelineRunEvent,
 } from "../data/assist_pipeline";
+import type { ChatLogToolResult } from "../data/chat_log";
 import {
   configContext,
   connectionContext,
@@ -58,7 +59,7 @@ interface AssistMessage {
     {
       tool_name: string;
       tool_args: Record<string, unknown>;
-      result?: any;
+      result?: ChatLogToolResult;
     }
   >;
   error?: boolean;
@@ -834,7 +835,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           } else if (isToolResult(delta)) {
             if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
               progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.tool_result;
+                delta.result;
               this.requestUpdate("_conversation");
             }
           }

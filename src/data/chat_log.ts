@@ -37,12 +37,17 @@ export interface ChatLogAssistantContent {
   tool_calls?: any[];
 }
 
+export interface ChatLogToolResult {
+  data: Record<string, unknown>;
+  error: boolean;
+}
+
 export interface ChatLogToolResultContent {
   role: "tool_result";
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  tool_result: any;
+  result: ChatLogToolResult;
   created: Date;
 }
 
@@ -92,7 +97,7 @@ interface ChatLogToolResultContentWire {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  tool_result: any;
+  result: ChatLogToolResult;
   created: string;
 }
 

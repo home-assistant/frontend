@@ -358,6 +358,9 @@ export const getMyRedirects = (): Redirects => ({
   climate: {
     redirect: "/climate",
   },
+  security: {
+    redirect: "/security",
+  },
   media_browser: {
     component: "media_source",
     redirect: "/media-browser",
