@@ -206,7 +206,7 @@ test.describe("System log reporting", () => {
     );
 
     const reportLink = dialog.getByRole("link", {
-      name: "report it",
+      name: "Report this",
       exact: true,
     });
 
@@ -281,7 +281,7 @@ test.describe("System log reporting", () => {
       const dialog = await openSystemLogDetail(page, message);
 
       const link = dialog.getByRole("link", {
-        name: "report it",
+        name: "Report this",
         exact: true,
       });
 
@@ -309,7 +309,7 @@ test.describe("System log reporting", () => {
       const dialog = await openSystemLogDetail(page, message);
       await expect(
         dialog.getByRole("link", {
-          name: "report it",
+          name: "Report this",
           exact: true,
         })
       ).toHaveAttribute(
@@ -335,7 +335,7 @@ test.describe("System log reporting", () => {
     const detail = page.locator("dialog-system-log-detail");
     await expect(
       detail.getByRole("link", {
-        name: "report it",
+        name: "Report this",
         exact: true,
       })
     ).toHaveAttribute(
@@ -351,7 +351,7 @@ test.describe("System log reporting", () => {
     await page.evaluate(() => window.resolveReportManifest?.());
     await expect(
       detail.getByRole("link", {
-        name: "report it",
+        name: "Report this",
         exact: true,
       })
     ).toHaveAttribute(
@@ -364,7 +364,7 @@ test.describe("System log reporting", () => {
     page,
   }) => {
     const dialog = await openSystemLogDetail(page, "Delayed manifest error");
-    const link = dialog.getByRole("link", { name: "report it", exact: true });
+    const link = dialog.getByRole("link", { name: "Report this", exact: true });
 
     await expect(link).toHaveAttribute(
       "href",

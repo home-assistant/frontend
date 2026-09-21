@@ -4,6 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  GITHUB_CORE_ISSUES_URL,
+  GITHUB_FRONTEND_ISSUES_URL,
+} from "../../../common/url/github";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
@@ -93,6 +97,12 @@ class DialogSystemLogDetail extends LitElement {
       this.hass.connection.haVersion,
       this._manifest
     );
+
+    const reportRepository = reportUrl.startsWith(`${GITHUB_CORE_ISSUES_URL}/`)
+      ? "Home Assistant Core"
+      : reportUrl.startsWith(`${GITHUB_FRONTEND_ISSUES_URL}/`)
+        ? "Home Assistant Frontend"
+        : undefined;
 
     const showDocumentation =
       this._manifest &&
@@ -224,8 +234,13 @@ class DialogSystemLogDetail extends LitElement {
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
           <p class="report">
             ${this.hass.localize(
-              "ui.panel.config.logs.detail.report_issue.description",
+              reportRepository
+                ? "ui.panel.config.logs.detail.report_issue.description"
+                : "ui.panel.config.logs.detail.report_issue.custom_description",
               {
+                repository: reportRepository,
+                integration:
+                  this._manifest?.name ?? new URL(reportUrl).hostname,
                 report_link: html`<a
                   href=${reportUrl}
                   target="_blank"

@@ -4746,8 +4746,9 @@
           "detail": {
             "logger": "Logger",
             "report_issue": {
-              "description": "If this looks like a bug, {report_link}.",
-              "link_text": "report it"
+              "description": "Does this look like a bug? {report_link} on the {repository} repository.",
+              "custom_description": "Does this look like a bug? {report_link} on the {integration} issue tracker.",
+              "link_text": "Report this"
             },
             "source": "Source",
             "integration": "[%key:ui::components::related-items::integration%]",
