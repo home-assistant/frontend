@@ -361,6 +361,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   map: {
     redirect: "/map",
+  },
   security: {
     redirect: "/security",
   },
