@@ -359,6 +359,9 @@ export const getMyRedirects = (): Redirects => ({
   overview: {
     redirect: "/home/overview",
   },
+  lights: {
+    redirect: "/light",
+  },
   security: {
     redirect: "/security",
   },
