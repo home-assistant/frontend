@@ -362,6 +362,9 @@ export const getMyRedirects = (): Redirects => ({
   overview: {
     redirect: "/home/overview",
   },
+  climate: {
+    redirect: "/climate",
+  },
   lights: {
     redirect: "/light",
   },
