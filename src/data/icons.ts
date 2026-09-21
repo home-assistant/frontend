@@ -193,19 +193,22 @@ interface IconResources<
 
 type PlatformIcons = Record<
   string,
-  {
-    state: Record<string, string>;
-    range?: Record<string, string>;
-    state_attributes: Record<
-      string,
-      {
-        state: Record<string, string>;
-        range?: Record<string, string>;
-        default: string;
-      }
-    >;
-    default: string;
-  }
+  Record<
+    string,
+    {
+      state?: Record<string, string>;
+      range?: Record<string, string>;
+      state_attributes?: Record<
+        string,
+        {
+          state?: Record<string, string>;
+          range?: Record<string, string>;
+          default?: string;
+        }
+      >;
+      default?: string;
+    }
+  >
 >;
 
 export type ComponentIcons = Record<
@@ -216,7 +219,7 @@ export type ComponentIcons = Record<
     state_attributes?: Record<
       string,
       {
-        state: Record<string, string>;
+        state?: Record<string, string>;
         range?: Record<string, string>;
         default: string;
       }

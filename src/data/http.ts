@@ -16,7 +16,8 @@ export interface HttpConfig {
 }
 
 // The slot the running HTTP server was actually started with.
-export type ActiveConfigType = "stable" | "pending" | "default";
+export type ActiveConfigType =
+  "stable" | "pending" | "default" | "default_legacy_port";
 
 // A stored config slot carries metadata alongside the editable fields:
 // - created_at: when the slot was staged
@@ -25,6 +26,7 @@ export type ActiveConfigType = "stable" | "pending" | "default";
 export interface HttpConfigWithMeta extends HttpConfig {
   created_at?: string;
   error?: string | null;
+  error_message?: string | null;
 }
 
 export interface HttpConfigState {
