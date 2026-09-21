@@ -174,6 +174,9 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth",
   },
+  config_connectivity: {
+    redirect: "/config/connectivity",
+  },
   config_dhcp: {
     component: "dhcp",
     redirect: "/config/dhcp",
@@ -354,6 +357,12 @@ export const getMyRedirects = (): Redirects => ({
   },
   overview: {
     redirect: "/home/overview",
+  },
+  lights: {
+    redirect: "/light",
+  },
+  security: {
+    redirect: "/security",
   },
   media_browser: {
     component: "media_source",
