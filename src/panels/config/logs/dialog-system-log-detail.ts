@@ -297,6 +297,8 @@ class DialogSystemLogDetail extends LitElement {
         }
         .report {
           margin-block: var(--ha-space-4) 0;
+          border-top: 1px solid var(--divider-color);
+          padding-block-start: var(--ha-space-4);
         }
         pre {
           margin-bottom: 0;
