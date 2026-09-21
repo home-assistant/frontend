@@ -355,6 +355,9 @@ export const getMyRedirects = (): Redirects => ({
   overview: {
     redirect: "/home/overview",
   },
+  security: {
+    redirect: "/security",
+  },
   media_browser: {
     component: "media_source",
     redirect: "/media-browser",
