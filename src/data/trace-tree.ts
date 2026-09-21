@@ -334,6 +334,9 @@ export class TraceTree {
           node.iterations !== undefined && node.iterations > 1
             ? node.iterations
             : undefined;
+        // The body is tracked by its own traced steps. An empty body has no
+        // step path for Core to record and nothing to show as executed, so
+        // it stays untracked rather than being guessed from the repeat.
         node.branches = [
           this._branch(
             `${path}/repeat`,
