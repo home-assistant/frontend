@@ -348,7 +348,9 @@ const tryDescribeAction = <T extends ActionType>(
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id];
+    const stateObj = config.entity_id
+      ? hass.states[config.entity_id]
+      : undefined;
     if (config.type) {
       return `${config.type} ${
         stateObj ? computeStateName(stateObj) : config.entity_id

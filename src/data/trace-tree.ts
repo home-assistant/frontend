@@ -512,6 +512,7 @@ export class TraceTree {
     // a sibling failed. External cancellation may still interrupt it.
     return (
       (this.trace.state === "stopped" &&
+        this.trace.script_execution !== null &&
         ["finished", "aborted", "error"].includes(
           this.trace.script_execution
         )) ||
