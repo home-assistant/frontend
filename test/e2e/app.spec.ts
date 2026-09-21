@@ -5,6 +5,8 @@
  *   yarn test:e2e:app
  */
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { load } from "js-yaml";
 import {
   appSidebar,
   appSidebarConfig,
@@ -15,6 +17,7 @@ import {
   ensureAppSidebarPanelVisible,
   goToPanel,
   openMoreInfoDialog,
+  openSystemLogDetail,
 } from "./app/src/helpers";
 import {
   expectNoPageErrors,
@@ -162,6 +165,218 @@ test.describe("Quick search", () => {
 });
 
 defineRouteSmokeTests(appRouteSmokeGroups);
+
+test.describe("System log reporting", () => {
+  let errors: ReturnType<typeof trackPageErrors>;
+
+  test.beforeEach(async ({ page }) => {
+    errors = trackPageErrors(page);
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "clipboard", {
+        configurable: true,
+        value: {
+          writeText: async (text: string) => {
+            document.body.dataset.copiedReport = text;
+          },
+        },
+      });
+    });
+  });
+
+  test.afterEach(() => {
+    expectNoPageErrors(errors);
+  });
+
+  test("opens the frontend form directly with the selected log details", async ({
+    page,
+    context,
+  }) => {
+    const requests: string[] = [];
+    await context.route("https://github.com/**", async (route) => {
+      requests.push(route.request().url());
+      await route.fulfill({
+        contentType: "text/html",
+        body: "Issue form fixture",
+      });
+    });
+
+    const dialog = await openSystemLogDetail(
+      page,
+      "TypeError: Report fixture failed"
+    );
+
+    const reportLink = dialog.getByRole("link", {
+      name: "report it",
+      exact: true,
+    });
+
+    expect(requests).toEqual([]);
+
+    const popup = context.waitForEvent("page");
+    await reportLink.click();
+    await (await popup).waitForLoadState();
+    expect(requests).toHaveLength(1);
+    const submitted = new URL(requests[0]);
+    expect(submitted.pathname).toBe("/home-assistant/frontend/issues/new");
+    expect(Object.fromEntries(submitted.searchParams)).toEqual({
+      template: "bug_report.yml",
+      core_version: expect.any(String),
+      javascript_errors:
+        "frontend.js.modern.202609180\n\ncomponents/system_log/__init__.py:350\n\nUncaught error from Firefox 140.0 on Linux\nTypeError: Report fixture failed\nrender@src/example.ts:10:2\n\nAnother occurrence: café & ? # %\n```",
+    });
+
+    const form = load(
+      readFileSync(".github/ISSUE_TEMPLATE/bug_report.yml", "utf8")
+    );
+
+    for (const id of ["core_version", "javascript_errors"]) {
+      expect(form).toEqual(
+        expect.objectContaining({
+          body: expect.arrayContaining([
+            expect.objectContaining({
+              id,
+              type: expect.stringMatching(/^(input|textarea)$/),
+            }),
+          ]),
+        })
+      );
+    }
+
+    await expect(dialog.locator(".contents")).toBeVisible();
+  });
+
+  for (const { message, destination, params } of [
+    ...[
+      "Built-in integration error",
+      "Error with relative integration source",
+    ].map((logMessage) => ({
+      message: logMessage,
+      destination: "https://github.com/home-assistant/core/issues/new",
+      params: {
+        template: "bug_report.yml",
+        version: expect.any(String),
+        logs: expect.stringContaining("ValueError:"),
+        integration_name: "Philips Hue",
+        integration_link: "https://www.home-assistant.io/integrations/hue/",
+      },
+    })),
+    {
+      message: "General Core error",
+      destination: "https://github.com/home-assistant/core/issues/new",
+      params: {
+        template: "bug_report.yml",
+        version: expect.any(String),
+        logs: expect.stringContaining("RuntimeError: Test error"),
+      },
+    },
+    ...["Custom integration error", "Custom override error"].map(
+      (logMessage) => ({
+        message: logMessage,
+        destination: "https://example.com/issues",
+        params: { project: "example" },
+      })
+    ),
+  ]) {
+    test(`routes ${message} to its issue tracker`, async ({ page }) => {
+      const dialog = await openSystemLogDetail(page, message);
+
+      const link = dialog.getByRole("link", {
+        name: "report it",
+        exact: true,
+      });
+
+      await expect(link).toHaveAttribute("target", "_blank");
+
+      await expect(async () => {
+        const url = new URL((await link.getAttribute("href")) ?? "");
+
+        expect(`${url.origin}${url.pathname}`).toBe(destination);
+        expect(Object.fromEntries(url.searchParams)).toEqual(params);
+
+        if ("logs" in params) {
+          expect(url.searchParams.get("logs")).toContain(message);
+        }
+      }).toPass({ timeout: QUICK_TIMEOUT });
+    });
+  }
+
+  for (const message of [
+    "Missing tracker error",
+    "Unsafe tracker error",
+    "Failed manifest error",
+  ]) {
+    test(`falls back to the base template for ${message}`, async ({ page }) => {
+      const dialog = await openSystemLogDetail(page, message);
+      await expect(
+        dialog.getByRole("link", {
+          name: "report it",
+          exact: true,
+        })
+      ).toHaveAttribute(
+        "href",
+        "https://github.com/home-assistant/core/issues/new?template=bug_report.yml"
+      );
+      await dialog.locator("#copy").click();
+      await expect(page.locator("body")).toHaveAttribute(
+        "data-copied-report",
+        new RegExp(message)
+      );
+    });
+  }
+
+  test("ignores a manifest response after selecting another entry", async ({
+    page,
+  }) => {
+    await goToPanel(page, "/?scenario=system-log-reporting#/config/logs");
+    await page
+      .locator("system-log-card ha-list-item")
+      .filter({ hasText: "Delayed manifest error" })
+      .click();
+    const detail = page.locator("dialog-system-log-detail");
+    await expect(
+      detail.getByRole("link", {
+        name: "report it",
+        exact: true,
+      })
+    ).toHaveAttribute(
+      "href",
+      "https://github.com/home-assistant/core/issues/new?template=bug_report.yml"
+    );
+    await detail.getByRole("button", { name: "Close", exact: true }).click();
+    await expect(detail.locator("ha-dialog")).not.toBeAttached();
+    await page
+      .locator("system-log-card ha-list-item")
+      .filter({ hasText: "Built-in integration error" })
+      .click();
+    await page.evaluate(() => window.resolveReportManifest?.());
+    await expect(
+      detail.getByRole("link", {
+        name: "report it",
+        exact: true,
+      })
+    ).toHaveAttribute(
+      "href",
+      /\/home-assistant\/core\/issues\/new\?.*integration_name=Philips\+Hue/
+    );
+  });
+
+  test("replaces the base template when the manifest arrives", async ({
+    page,
+  }) => {
+    const dialog = await openSystemLogDetail(page, "Delayed manifest error");
+    const link = dialog.getByRole("link", { name: "report it", exact: true });
+
+    await expect(link).toHaveAttribute(
+      "href",
+      "https://github.com/home-assistant/core/issues/new?template=bug_report.yml"
+    );
+    await page.evaluate(() => window.resolveReportManifest?.());
+    await expect(link).toHaveAttribute(
+      "href",
+      "https://example.com/delayed/issues"
+    );
+  });
+});
 
 test("keeps the launch screen until initial panel content renders", async ({
   page,

@@ -2,6 +2,7 @@ import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
@@ -18,6 +19,7 @@ import {
   getLoggedErrorIntegration,
   isCustomIntegrationError,
 } from "../../../data/system_log";
+import { systemLogReportUrl } from "../../../data/system_log_report";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -46,6 +48,8 @@ class DialogSystemLogDetail extends LitElement {
 
   @query(".contents") private _contents?: HTMLElement;
 
+  private _reportUrl = memoizeOne(systemLogReportUrl);
+
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
@@ -64,12 +68,15 @@ class DialogSystemLogDetail extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
     if (!changedProps.has("_params") || !this._params) {
       return;
     }
+
     const integration = getLoggedErrorIntegration(this._params.item);
+
     if (integration) {
-      this._fetchManifest(integration);
+      this._fetchManifest(integration, this._params);
     }
   }
 
@@ -80,6 +87,12 @@ class DialogSystemLogDetail extends LitElement {
     const item = this._params.item;
 
     const integration = getLoggedErrorIntegration(item);
+
+    const reportUrl = this._reportUrl(
+      item,
+      this.hass.connection.haVersion,
+      this._manifest
+    );
 
     const showDocumentation =
       this._manifest &&
@@ -209,6 +222,19 @@ class DialogSystemLogDetail extends LitElement {
               : item.message[0]
           }
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
+          <p class="report">
+            ${this.hass.localize(
+              "ui.panel.config.logs.detail.report_issue.description",
+              {
+                report_link: html`<a
+                  href=${reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >${this.hass.localize("ui.panel.config.logs.detail.report_issue.link_text")}</a
+                >`,
+              }
+            )}
+          </p>
         </div>
       </ha-dialog>
     `;
@@ -220,11 +246,18 @@ class DialogSystemLogDetail extends LitElement {
       : isCustomIntegrationError(this._params!.item);
   }
 
-  private async _fetchManifest(integration: string) {
+  private async _fetchManifest(
+    integration: string,
+    params: SystemLogDetailDialogParams
+  ) {
     try {
-      this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (_err: any) {
-      // Ignore if loading manifest fails. Probably bad JSON in manifest
+      const manifest = await fetchIntegrationManifest(this.hass, integration);
+
+      if (this._params === params && this._open) {
+        this._manifest = manifest;
+      }
+    } catch {
+      // Ignore if loading manifest fails. Probably bad JSON in manifest.
     }
   }
 
@@ -261,6 +294,9 @@ class DialogSystemLogDetail extends LitElement {
         }
         p {
           margin-top: 0;
+        }
+        .report {
+          margin-block: var(--ha-space-4) 0;
         }
         pre {
           margin-bottom: 0;

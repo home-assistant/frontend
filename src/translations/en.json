@@ -4745,6 +4745,10 @@
           "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
+            "report_issue": {
+              "description": "If this looks like a bug, {report_link}.",
+              "link_text": "report it"
+            },
             "source": "Source",
             "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
