@@ -26,7 +26,10 @@ import {
 import { systemLogReportUrl } from "../../../data/system_log_report";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
+import {
+  DOCUMENTATION_URL,
+  documentationUrl,
+} from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
@@ -98,11 +101,16 @@ class DialogSystemLogDetail extends LitElement {
       this._manifest
     );
 
-    const reportRepository = reportUrl.startsWith(`${GITHUB_CORE_ISSUES_URL}/`)
-      ? "Home Assistant Core"
+    const reportTarget = reportUrl.startsWith(`${GITHUB_CORE_ISSUES_URL}/`)
+      ? "core"
       : reportUrl.startsWith(`${GITHUB_FRONTEND_ISSUES_URL}/`)
-        ? "Home Assistant Frontend"
-        : undefined;
+        ? "frontend"
+        : "custom";
+
+    const reportMessage =
+      this.isCustomIntegration && reportTarget === "core"
+        ? "custom_fallback"
+        : reportTarget;
 
     const showDocumentation =
       this._manifest &&
@@ -136,28 +144,48 @@ class DialogSystemLogDetail extends LitElement {
           .path=${mdiContentCopy}
         ></ha-icon-button>
         <ha-alert alert-type=${this.isCustomIntegration ? "warning" : "info"}>
+          <p>
+            ${this.hass.localize(
+              `ui.panel.config.logs.detail.report_issue.${reportMessage}.introduction`,
+              {
+                integration:
+                  this._manifest?.name ??
+                  (integration
+                    ? domainToName(this.hass.localize, integration)
+                    : new URL(reportUrl).hostname),
+              }
+            )}
+          </p>
+          <p>
+            ${this.hass.localize(
+              `ui.panel.config.logs.detail.report_issue.${reportMessage}.report`,
+              {
+                report_link: html`<a
+                  href=${reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >${this.hass.localize(`ui.panel.config.logs.detail.report_issue.${reportTarget}.link_text`)}</a
+                >`,
+              }
+            )}
+          </p>
           ${
-            this.isCustomIntegration
-              ? html`${this.hass.localize(
-                    "ui.panel.config.logs.error_from_custom_integration"
-                  )}<br />`
+            reportMessage !== "custom"
+              ? html`<p>
+                  ${this.hass.localize(
+                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.guidance`,
+                    {
+                      guide_link: html`<a
+                        href=${`${DOCUMENTATION_URL}/help/reporting_issues/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >${this.hass.localize("ui.panel.config.logs.detail.report_issue.guide_link_text")}</a
+                      >`,
+                    }
+                  )}
+                </p>`
               : nothing
           }
-          ${this.hass.localize(
-            reportRepository
-              ? "ui.panel.config.logs.detail.report_issue.description"
-              : "ui.panel.config.logs.detail.report_issue.custom_description",
-            {
-              repository: reportRepository,
-              integration: this._manifest?.name ?? new URL(reportUrl).hostname,
-              report_link: html`<a
-                href=${reportUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                >${this.hass.localize("ui.panel.config.logs.detail.report_issue.link_text")}</a
-              >`,
-            }
-          )}
         </ha-alert>
         <div class="contents" tabindex="-1" autofocus>
           <p>
@@ -297,10 +325,6 @@ class DialogSystemLogDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --dialog-content-padding: 0px;
-        }
-
         a {
           color: var(--primary-color);
         }
@@ -313,10 +337,16 @@ class DialogSystemLogDetail extends LitElement {
         }
         ha-alert {
           display: block;
-          margin: -4px 0;
+          margin-inline: calc(-1 * var(--ha-space-3));
+          margin-block-end: var(--ha-space-4);
+        }
+        ha-alert p {
+          margin: 0;
+        }
+        ha-alert p + p {
+          margin-block-start: var(--ha-space-2);
         }
         .contents {
-          padding: 16px;
           outline: none;
           direction: ltr;
         }

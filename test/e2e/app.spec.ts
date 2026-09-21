@@ -206,11 +206,18 @@ test.describe("System log reporting", () => {
     );
 
     const reportLink = dialog.getByRole("link", {
-      name: "Report this",
+      name: "report it on the Frontend repository",
       exact: true,
     });
 
     expect(requests).toEqual([]);
+
+    await expect(
+      dialog.getByRole("link", { name: "reporting guide", exact: true })
+    ).toHaveAttribute(
+      "href",
+      "https://www.home-assistant.io/help/reporting_issues/"
+    );
 
     const popup = context.waitForEvent("page");
     await reportLink.click();
@@ -281,7 +288,7 @@ test.describe("System log reporting", () => {
       const dialog = await openSystemLogDetail(page, message);
 
       const link = dialog.getByRole("link", {
-        name: "Report this",
+        name: /^report /i,
         exact: true,
       });
 
@@ -309,7 +316,7 @@ test.describe("System log reporting", () => {
       const dialog = await openSystemLogDetail(page, message);
       await expect(
         dialog.getByRole("link", {
-          name: "Report this",
+          name: /^report /i,
           exact: true,
         })
       ).toHaveAttribute(
@@ -335,7 +342,7 @@ test.describe("System log reporting", () => {
     const detail = page.locator("dialog-system-log-detail");
     await expect(
       detail.getByRole("link", {
-        name: "Report this",
+        name: /^report /i,
         exact: true,
       })
     ).toHaveAttribute(
@@ -351,7 +358,7 @@ test.describe("System log reporting", () => {
     await page.evaluate(() => window.resolveReportManifest?.());
     await expect(
       detail.getByRole("link", {
-        name: "Report this",
+        name: /^report /i,
         exact: true,
       })
     ).toHaveAttribute(
@@ -364,7 +371,7 @@ test.describe("System log reporting", () => {
     page,
   }) => {
     const dialog = await openSystemLogDetail(page, "Delayed manifest error");
-    const link = dialog.getByRole("link", { name: "Report this", exact: true });
+    const link = dialog.getByRole("link", { name: /^report /i, exact: true });
 
     await expect(link).toHaveAttribute(
       "href",
