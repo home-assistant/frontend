@@ -9,7 +9,6 @@ import {
 } from "../common/url/more-info-query-params";
 import { createNativeModalDialogUrl } from "../common/url/native-modal-url";
 import { showDialog } from "../dialogs/make-dialog-manager";
-import { computeNativeModalOrigin } from "../external_app/native-modal-origin";
 import { computeMoreInfoHeader } from "../dialogs/more-info/compute-more-info-header";
 import { computeMoreInfoModalSize } from "../dialogs/more-info/more-info-modal-size";
 import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
@@ -60,7 +59,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
               }),
               ...computeMoreInfoHeader(this.hass!, entityId),
               size: computeMoreInfoModalSize(entityId),
-              origin: computeNativeModalOrigin(ev),
             },
           });
         }
