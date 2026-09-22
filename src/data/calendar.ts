@@ -4,6 +4,7 @@ import {
   resolveThemeColor,
 } from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
+import { css2hex } from "../common/color/convert-color";
 import { getContrastedColorHex, isOpaqueColor } from "../common/color/rgb";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -71,8 +72,7 @@ export const fetchCalendarEvents = async (
   hass: HomeAssistant,
   start: Date,
   end: Date,
-  calendars: Calendar[],
-  computedStyles?: CSSStyleDeclaration
+  calendars: Calendar[]
 ): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
   const params = encodeURI(
     `?start=${start.toISOString()}&end=${end.toISOString()}`
@@ -102,11 +102,7 @@ export const fetchCalendarEvents = async (
     }
     const cal = calendars[idx];
     result.forEach((ev) => {
-      const normalized = normalizeSubscriptionEventData(
-        ev,
-        cal,
-        computedStyles
-      );
+      const normalized = normalizeSubscriptionEventData(ev, cal);
       if (normalized) {
         calEvents.push(normalized);
       }
@@ -116,15 +112,21 @@ export const fetchCalendarEvents = async (
   return { events: calEvents, errors };
 };
 
-const resolveColors = (
-  color: string,
+export const getCalendarColors = (
+  color: string | null | undefined,
+  index: number,
   computedStyles: CSSStyleDeclaration
 ): { backgroundColor: string; textColor?: string } => {
+  // Fall back to a color by index when the entity has none set
+  const resolved =
+    color && isValidColorString(color)
+      ? color
+      : getColorByIndex(index, computedStyles);
   // A theme color stays a CSS variable in the background, so the text color
   // comes from what that variable holds for this element.
-  const background = resolveThemeColor(color, computedStyles);
+  const background = resolveThemeColor(resolved, computedStyles);
   return {
-    backgroundColor: computeCssColor(color),
+    backgroundColor: computeCssColor(resolved),
     // A background we cannot measure keeps the color fullcalendar picks itself
     textColor: isOpaqueColor(background)
       ? getContrastedColorHex(background)
@@ -132,27 +134,25 @@ const resolveColors = (
   };
 };
 
-export const getCalendarColors = (
-  color: string | null | undefined,
-  index: number,
-  computedStyles: CSSStyleDeclaration
-): { backgroundColor: string; textColor?: string } =>
-  resolveColors(
-    // Fall back to a color by index when the entity has none set
-    color && isValidColorString(color)
-      ? color
-      : getColorByIndex(index, computedStyles),
-    computedStyles
-  );
-
 export const getCalendarEventColors = (
-  color: string | null | undefined,
-  computedStyles: CSSStyleDeclaration
-): { backgroundColor: string; textColor?: string } | undefined =>
-  // An event without a usable color of its own keeps the calendar's colors
-  color && isValidColorString(color)
-    ? resolveColors(color, computedStyles)
-    : undefined;
+  color: string | null | undefined
+): { backgroundColor: string; textColor?: string } | undefined => {
+  if (!color) {
+    return undefined;
+  }
+  // An rfc7986 color is a literal CSS color, so a name a Home Assistant theme
+  // also defines, such as "blue", must not become that theme's color here
+  const hex = css2hex(color);
+  if (!hex) {
+    // An event without a color this can read keeps its calendar's colors
+    return undefined;
+  }
+  return {
+    backgroundColor: color,
+    // A background we cannot measure keeps the color fullcalendar picks itself
+    textColor: isOpaqueColor(color) ? getContrastedColorHex(hex) : undefined,
+  };
+};
 
 export const getCalendars = (
   hass: HomeAssistant,
@@ -287,8 +287,7 @@ const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
  */
 export const normalizeSubscriptionEventData = (
   eventData: CalendarEventApiData,
-  calendar: Calendar,
-  computedStyles?: CSSStyleDeclaration
+  calendar: Calendar
 ): CalendarEvent | null => {
   const eventStart = getCalendarDate(eventData.start);
   const eventEnd = getCalendarDate(eventData.end);
@@ -297,10 +296,7 @@ export const normalizeSubscriptionEventData = (
     return null;
   }
 
-  // Resolving a per-event color needs the element to read theme variables from
-  const eventColors = computedStyles
-    ? getCalendarEventColors(eventData.color, computedStyles)
-    : undefined;
+  const eventColors = getCalendarEventColors(eventData.color);
 
   const normalizedEventData: CalendarEventData = {
     summary: eventData.summary,

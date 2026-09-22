@@ -288,10 +288,9 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     this._handleErrors(this._errorCalendars);
 
     // Add new events from this calendar
-    const computedStyles = getComputedStyle(this);
     const newEvents: CalendarEvent[] = update.events
       .map((eventData: CalendarEventApiData) =>
-        normalizeSubscriptionEventData(eventData, calendar, computedStyles)
+        normalizeSubscriptionEventData(eventData, calendar)
       )
       .filter((event): event is CalendarEvent => event !== null);
 
