@@ -108,6 +108,9 @@ describe("normalizeSubscriptionEventData", () => {
 
   it.each([
     ["an unusable value", "not a color"],
+    ["a malformed hex color", "#zzzzzz"],
+    ["a hex color of the wrong length", "#12345"],
+    ["a theme color name that CSS does not know", "primary"],
     ["no color at all", null],
   ])("keeps the calendar's colors for %s", (_name, color) => {
     expect(

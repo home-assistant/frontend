@@ -1,5 +1,6 @@
 import {
   computeCssColor,
+  isCssColorString,
   isValidColorString,
   resolveThemeColor,
 } from "../common/color/compute-color";
@@ -137,20 +138,19 @@ export const getCalendarColors = (
 export const getCalendarEventColors = (
   color: string | null | undefined
 ): { backgroundColor: string; textColor?: string } | undefined => {
-  if (!color) {
+  // The value comes from a calendar backend, so anything CSS does not accept
+  // leaves the event with its calendar's colors instead of an unusable one
+  if (!color || !isCssColorString(color)) {
     return undefined;
   }
   // An rfc7986 color is a literal CSS color, so a name a Home Assistant theme
   // also defines, such as "blue", must not become that theme's color here
   const hex = css2hex(color);
-  if (!hex) {
-    // An event without a color this can read keeps its calendar's colors
-    return undefined;
-  }
   return {
     backgroundColor: color,
     // A background we cannot measure keeps the color fullcalendar picks itself
-    textColor: isOpaqueColor(color) ? getContrastedColorHex(hex) : undefined,
+    textColor:
+      hex && isOpaqueColor(color) ? getContrastedColorHex(hex) : undefined,
   };
 };
 
