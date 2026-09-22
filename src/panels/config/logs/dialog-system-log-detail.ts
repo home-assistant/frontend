@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   GITHUB_CORE_ISSUES_URL,
@@ -24,6 +25,7 @@ import {
   isCustomIntegrationError,
 } from "../../../data/system_log";
 import { systemLogReportUrl } from "../../../data/system_log_report";
+import { subscribeSystemHealthInfo } from "../../../data/system_health";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -51,6 +53,8 @@ class DialogSystemLogDetail extends LitElement {
 
   @state() private _manifest?: IntegrationManifest;
 
+  @state() private _installationType?: string;
+
   @state() private _open = false;
 
   @query(".contents") private _contents?: HTMLElement;
@@ -60,6 +64,7 @@ class DialogSystemLogDetail extends LitElement {
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
+    this._installationType = undefined;
     this._open = true;
     await this.updateComplete;
   }
@@ -85,6 +90,10 @@ class DialogSystemLogDetail extends LitElement {
     if (integration) {
       this._fetchManifest(integration, this._params);
     }
+
+    if (isComponentLoaded(this.hass.config, "system_health")) {
+      this._fetchInstallationType(this._params);
+    }
   }
 
   protected render() {
@@ -98,7 +107,8 @@ class DialogSystemLogDetail extends LitElement {
     const reportUrl = this._reportUrl(
       item,
       this.hass.connection.haVersion,
-      this._manifest
+      this._manifest,
+      this._installationType
     );
 
     const reportTarget = reportUrl.startsWith(`${GITHUB_CORE_ISSUES_URL}/`)
@@ -299,6 +309,22 @@ class DialogSystemLogDetail extends LitElement {
     } catch {
       // Ignore if loading manifest fails. Probably bad JSON in manifest.
     }
+  }
+
+  private _fetchInstallationType(params: SystemLogDetailDialogParams) {
+    const subscription = subscribeSystemHealthInfo(this.hass, (info) => {
+      if (!info) {
+        return;
+      }
+
+      if (this._params === params && this._open) {
+        this._installationType = info.homeassistant?.info.installation_type;
+      }
+
+      subscription.then((unsub) => unsub?.());
+    }).catch(() => {
+      // The report remains usable without system health information.
+    });
   }
 
   private async _copyLog(): Promise<void> {

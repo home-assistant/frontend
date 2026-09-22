@@ -262,6 +262,7 @@ test.describe("System log reporting", () => {
       params: {
         template: "bug_report.yml",
         version: expect.any(String),
+        installation_type: "Home Assistant OS",
         logs: expect.stringContaining("ValueError:"),
         integration_name: "Philips Hue",
         integration_link: "https://www.home-assistant.io/integrations/hue/",
@@ -273,6 +274,7 @@ test.describe("System log reporting", () => {
       params: {
         template: "bug_report.yml",
         version: expect.any(String),
+        installation_type: "Home Assistant OS",
         logs: expect.stringContaining("RuntimeError: Test error"),
       },
     },

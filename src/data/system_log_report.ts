@@ -23,6 +23,7 @@ const coreIssueQueryParams = {
   string: [
     "template",
     "version",
+    "installation_type",
     "integration_name",
     "integration_link",
     "logs",
@@ -37,7 +38,8 @@ const coreIssueTemplateUrl = `${GITHUB_CORE_ISSUES_URL}/new?${createQueryString(
 export const systemLogReportUrl = (
   item: LoggedError,
   coreVersion: string,
-  manifest?: IntegrationManifest
+  manifest?: IntegrationManifest,
+  installationType?: string
 ): string => {
   const log = [
     item.name,
@@ -71,6 +73,7 @@ export const systemLogReportUrl = (
     {
       template: "bug_report.yml",
       version: coreVersion,
+      installation_type: installationType,
       integration_name: manifest?.name,
       integration_link: manifest
         ? `${DOCUMENTATION_URL}/integrations/${encodeURIComponent(manifest.domain)}/`

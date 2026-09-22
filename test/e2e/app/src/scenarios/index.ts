@@ -373,6 +373,12 @@ const delayedMediaBrowseErrorScenario: Scenario = (hass) => {
 
 const systemLogReportingScenario: Scenario = async (hass) => {
   await hass.loadFragmentTranslation("config");
+  hass.updateHass({
+    config: {
+      ...hass.config,
+      components: [...hass.config.components, "system_health"],
+    },
+  });
 
   const entries: Pick<
     LoggedError,
