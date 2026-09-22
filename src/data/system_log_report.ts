@@ -7,7 +7,7 @@ import {
   type QueryParamConfig,
 } from "../common/url/query-params";
 import { sanitizeHttpUrl } from "../common/url/sanitize-http-url";
-import { DOCUMENTATION_URL } from "../util/documentation-url";
+import { documentationUrlForVersion } from "../util/documentation-url";
 import type { IntegrationManifest } from "./integration";
 import type { LoggedError } from "./system_log";
 import {
@@ -78,7 +78,10 @@ export const systemLogReportUrl = (
       installation_type: installationType,
       integration_name: manifest?.name,
       integration_link: manifest
-        ? `${DOCUMENTATION_URL}/integrations/${encodeURIComponent(manifest.domain)}/`
+        ? documentationUrlForVersion(
+            coreVersion,
+            `/integrations/${encodeURIComponent(manifest.domain)}/`
+          )
         : undefined,
       logs: includeLogs ? log : undefined,
     },
