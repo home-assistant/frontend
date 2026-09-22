@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
 import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -51,7 +52,7 @@ class DialogSystemLogDetail extends LitElement {
 
   @state() private _params?: SystemLogDetailDialogParams;
 
-  @state() private _manifest?: IntegrationManifest;
+  @state() private _manifest?: IntegrationManifest | null;
 
   @state() private _installationType?: string;
 
@@ -61,10 +62,11 @@ class DialogSystemLogDetail extends LitElement {
 
   private _reportUrl = memoizeOne(systemLogReportUrl);
 
+  private _fetchingInstallationType = false;
+
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
-    this._installationType = undefined;
     this._open = true;
     await this.updateComplete;
   }
@@ -92,7 +94,7 @@ class DialogSystemLogDetail extends LitElement {
     }
 
     if (isComponentLoaded(this.hass.config, "system_health")) {
-      this._fetchInstallationType(this._params);
+      this._fetchInstallationType();
     }
   }
 
@@ -153,50 +155,60 @@ class DialogSystemLogDetail extends LitElement {
           .label=${this.hass.localize("ui.panel.config.logs.copy")}
           .path=${mdiContentCopy}
         ></ha-icon-button>
-        <ha-alert alert-type=${this.isCustomIntegration ? "warning" : "info"}>
-          <p>
-            ${this.hass.localize(
-              `ui.panel.config.logs.detail.report_issue.${reportMessage}.introduction`,
-              {
-                integration:
-                  this._manifest?.name ??
-                  (integration
-                    ? domainToName(this.hass.localize, integration)
-                    : new URL(reportUrl).hostname),
-              }
-            )}
-          </p>
-          <p>
-            ${this.hass.localize(
-              `ui.panel.config.logs.detail.report_issue.${reportMessage}.report`,
-              {
-                report_link: html`<a
-                  href=${reportUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >${this.hass.localize(`ui.panel.config.logs.detail.report_issue.${reportTarget}.link_text`)}</a
-                >`,
-              }
-            )}
-          </p>
-          ${
-            reportMessage !== "custom"
-              ? html`<p>
+        ${
+          integration &&
+          this._manifest === undefined &&
+          reportTarget !== "frontend"
+            ? html`<ha-alert alert-type="info">
+                <wa-skeleton effect="sheen"></wa-skeleton>
+              </ha-alert>`
+            : html`<ha-alert
+                alert-type=${this.isCustomIntegration ? "warning" : "info"}
+              >
+                <p>
                   ${this.hass.localize(
-                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.guidance`,
+                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.introduction`,
                     {
-                      guide_link: html`<a
-                        href=${`${DOCUMENTATION_URL}/help/reporting_issues/`}
+                      integration:
+                        this._manifest?.name ??
+                        (integration
+                          ? domainToName(this.hass.localize, integration)
+                          : new URL(reportUrl).hostname),
+                    }
+                  )}
+                </p>
+                <p>
+                  ${this.hass.localize(
+                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.report`,
+                    {
+                      report_link: html`<a
+                        href=${reportUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        >${this.hass.localize("ui.panel.config.logs.detail.report_issue.guide_link_text")}</a
+                        >${this.hass.localize(`ui.panel.config.logs.detail.report_issue.${reportTarget}.link_text`)}</a
                       >`,
                     }
                   )}
-                </p>`
-              : nothing
-          }
-        </ha-alert>
+                </p>
+                ${
+                  reportMessage !== "custom"
+                    ? html`<p>
+                        ${this.hass.localize(
+                          `ui.panel.config.logs.detail.report_issue.${reportMessage}.guidance`,
+                          {
+                            guide_link: html`<a
+                              href=${`${DOCUMENTATION_URL}/help/reporting_issues/`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >${this.hass.localize("ui.panel.config.logs.detail.report_issue.guide_link_text")}</a
+                            >`,
+                          }
+                        )}
+                      </p>`
+                    : nothing
+                }
+              </ha-alert>`
+        }
         <div class="contents" tabindex="-1" autofocus>
           <p>
             ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
@@ -300,30 +312,37 @@ class DialogSystemLogDetail extends LitElement {
     integration: string,
     params: SystemLogDetailDialogParams
   ) {
+    let manifest: IntegrationManifest | null;
     try {
-      const manifest = await fetchIntegrationManifest(this.hass, integration);
-
-      if (this._params === params && this._open) {
-        this._manifest = manifest;
-      }
+      manifest = await fetchIntegrationManifest(this.hass, integration);
     } catch {
       // Ignore if loading manifest fails. Probably bad JSON in manifest.
+      manifest = null;
+    }
+
+    if (this._params === params && this._open) {
+      this._manifest = manifest;
     }
   }
 
-  private _fetchInstallationType(params: SystemLogDetailDialogParams) {
+  private _fetchInstallationType() {
+    if (this._installationType || this._fetchingInstallationType) {
+      return;
+    }
+
+    this._fetchingInstallationType = true;
     const subscription = subscribeSystemHealthInfo(this.hass, (info) => {
+      this._fetchingInstallationType = false;
       if (!info) {
         return;
       }
 
-      if (this._params === params && this._open) {
-        this._installationType = info.homeassistant?.info.installation_type;
-      }
+      this._installationType = info.homeassistant?.info.installation_type;
 
       subscription.then((unsub) => unsub?.());
     }).catch(() => {
       // The report remains usable without system health information.
+      this._fetchingInstallationType = false;
     });
   }
 
@@ -371,6 +390,11 @@ class DialogSystemLogDetail extends LitElement {
         }
         ha-alert p + p {
           margin-block-start: var(--ha-space-2);
+        }
+        wa-skeleton {
+          height: 1em;
+          --color: var(--ha-color-fill-neutral-normal-resting);
+          --sheen-color: var(--ha-color-fill-neutral-loud-resting);
         }
         .contents {
           outline: none;

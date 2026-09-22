@@ -347,10 +347,7 @@ test.describe("System log reporting", () => {
         name: /^report /i,
         exact: true,
       })
-    ).toHaveAttribute(
-      "href",
-      "https://github.com/home-assistant/core/issues/new?template=bug_report.yml"
-    );
+    ).not.toBeAttached();
     await detail.getByRole("button", { name: "Close", exact: true }).click();
     await expect(detail.locator("ha-dialog")).not.toBeAttached();
     await page
@@ -369,16 +366,13 @@ test.describe("System log reporting", () => {
     );
   });
 
-  test("replaces the base template when the manifest arrives", async ({
+  test("waits for the manifest before offering a report destination", async ({
     page,
   }) => {
     const dialog = await openSystemLogDetail(page, "Delayed manifest error");
     const link = dialog.getByRole("link", { name: /^report /i, exact: true });
 
-    await expect(link).toHaveAttribute(
-      "href",
-      "https://github.com/home-assistant/core/issues/new?template=bug_report.yml"
-    );
+    await expect(link).not.toBeAttached();
     await page.evaluate(() => window.resolveReportManifest?.());
     await expect(link).toHaveAttribute(
       "href",

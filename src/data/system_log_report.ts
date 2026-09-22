@@ -38,7 +38,7 @@ const coreIssueTemplateUrl = `${GITHUB_CORE_ISSUES_URL}/new?${createQueryString(
 export const systemLogReportUrl = (
   item: LoggedError,
   coreVersion: string,
-  manifest?: IntegrationManifest,
+  manifest?: IntegrationManifest | null,
   installationType?: string
 ): string => {
   const log = [
@@ -50,12 +50,14 @@ export const systemLogReportUrl = (
     .filter(Boolean)
     .join("\n\n");
 
+  const includeLogs = new URLSearchParams({ log }).toString().length <= 6000;
+
   if (/^frontend\.js(?:_dev)?(?:\.|$)/.test(item.name)) {
     return `${GITHUB_FRONTEND_ISSUES_URL}/new?${createQueryString(
       {
         template: "bug_report.yml",
         core_version: coreVersion,
-        javascript_errors: log,
+        javascript_errors: includeLogs ? log : undefined,
       },
       frontendIssueQueryParams
     )}`;
@@ -78,7 +80,7 @@ export const systemLogReportUrl = (
       integration_link: manifest
         ? `${DOCUMENTATION_URL}/integrations/${encodeURIComponent(manifest.domain)}/`
         : undefined,
-      logs: log,
+      logs: includeLogs ? log : undefined,
     },
     coreIssueQueryParams
   )}`;
