@@ -4719,7 +4719,7 @@
             "debug": "DEBUG"
           },
           "custom_integration": "custom integration",
-          "error_from_custom_integration": "This error originated from a custom integration.",
+          "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
@@ -4745,6 +4745,31 @@
           "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
+            "report_issue": {
+              "frontend": {
+                "introduction": "This log entry was reported by a browser (or the Home Assistant app).",
+                "report": "If you think it relates to Home Assistant’s user interface, {report_link}.",
+                "guidance": "Core, custom integrations, or custom Frontend modules may also be involved. See the {guide_link} for further guidance.",
+                "link_text": "report it on the Frontend repository"
+              },
+              "core": {
+                "introduction": "This log entry was reported by Home Assistant Core.",
+                "report": "If you think it indicates a bug, {report_link}.",
+                "guidance": "See the {guide_link} for further guidance.",
+                "link_text": "report it on the Core repository"
+              },
+              "custom": {
+                "introduction": "This log entry is from {integration}, a custom integration.",
+                "report": "If you think it indicates a bug, you can {report_link}.",
+                "link_text": "report it on its issue tracker"
+              },
+              "custom_fallback": {
+                "introduction": "This log entry is from {integration}, a custom integration. Its issue tracker is unavailable.",
+                "report": "If you think it indicates a Home Assistant Core bug, {report_link}.",
+                "guidance": "See the {guide_link} for further guidance."
+              },
+              "guide_link_text": "reporting guide"
+            },
             "source": "Source",
             "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
