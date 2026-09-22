@@ -2514,6 +2514,11 @@
           "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
         },
+        "discovered": {
+          "header": "Add discovered device",
+          "code_instructions": "This device was found nearby over Bluetooth. Enter the setup code printed on the device or its packaging, or the text of its QR code.",
+          "setup_code": "[%key:ui::dialogs::matter-add-device::generic::setup_code%]"
+        },
         "device_added": {
           "header": "Device added",
           "finish": "Finish",

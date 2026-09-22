@@ -30,6 +30,7 @@ import {
 } from "../../../data/config_flow";
 import type { IntegrationManifest } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showMatterAddDeviceDialog } from "./integration-panels/matter/show-dialog-add-matter-device";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -180,6 +181,16 @@ export class HaConfigFlowCard extends LitElement {
             this.flow.context.title_placeholders.name,
         },
       });
+      return;
+    }
+    // A discovered Matter device is commissioned through the Matter dialog;
+    // other steps of a Bluetooth sourced flow set up the integration itself.
+    if (
+      this.flow.handler === "matter" &&
+      this.flow.context.source === "bluetooth" &&
+      this.flow.step_id === "bluetooth_confirm"
+    ) {
+      showMatterAddDeviceDialog(this, { discoveryFlowId: this.flow.flow_id });
       return;
     }
     showConfigFlowDialog(this, {
