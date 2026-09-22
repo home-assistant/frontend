@@ -16,6 +16,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-top-app-bar-fixed";
+import { NativeBackButtonController } from "../../external_app/external_back_button";
 import "../../components/media-player/ha-media-manage-button";
 import "../../components/media-player/ha-media-player-browse";
 import type {
@@ -89,11 +90,16 @@ class PanelMediaBrowser extends LitElement {
 
   @query("ha-bar-media-player") private _player!: BarMediaPlayer;
 
+  private _nativeBackButton = new NativeBackButtonController(this, {
+    visible: () => this._navigateIds.length > 1,
+    back: () => this._goBack(),
+  });
+
   protected render(): TemplateResult {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${
-          this._navigateIds.length > 1
+          this._navigateIds.length > 1 && !this._nativeBackButton.native
             ? html`
                 <ha-icon-button-arrow-prev
                   slot="navigationIcon"

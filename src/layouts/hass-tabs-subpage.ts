@@ -17,7 +17,8 @@ import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { getHistoryState, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
-import { handleBackClick } from "./back-navigation";
+import { NativeBackButtonController } from "../external_app/external_back_button";
+import { handleBackClick, navigateBack } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -93,6 +94,18 @@ export class HassTabsSubpage extends LitElement {
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
+
+  private _nativeBackButton = new NativeBackButtonController(this, {
+    visible: () => this._showsBackButton,
+    back: () => navigateBack(this.backPath, this.backCallback),
+  });
+
+  private get _showsBackButton(): boolean {
+    return (
+      !this.mainPage &&
+      !(!sanitizeNavigationPath(this.backPath) && getHistoryState()?.root)
+    );
+  }
 
   private _getTabs = memoizeOne(
     (
@@ -174,14 +187,16 @@ export class HassTabsSubpage extends LitElement {
         <slot name="toolbar">
           <div class="toolbar-content">
             ${
-              this.mainPage || (!backPath && getHistoryState()?.root)
+              !this._showsBackButton
                 ? html`<ha-menu-button></ha-menu-button>`
-                : html`
-                    <ha-icon-button-arrow-prev
-                      .href=${backPath}
-                      @click=${this._backTapped}
-                    ></ha-icon-button-arrow-prev>
-                  `
+                : this._nativeBackButton.native
+                  ? nothing
+                  : html`
+                      <ha-icon-button-arrow-prev
+                        .href=${backPath}
+                        @click=${this._backTapped}
+                      ></ha-icon-button-arrow-prev>
+                    `
             }
             ${
               this._narrow || !this.showTabs

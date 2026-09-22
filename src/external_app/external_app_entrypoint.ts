@@ -11,6 +11,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 import { navigate } from "../common/navigate";
 import { showAutomationEditor } from "../data/automation";
 import type { HomeAssistantMain } from "../layouts/home-assistant-main";
+import { handleNativeBackButtonPressed } from "./external_back_button";
 import type {
   EMIncomingMessageBarCodeScanAborted,
   EMIncomingMessageBarCodeScanResult,
@@ -99,6 +100,16 @@ export const handleExternalMessage = (
     barCodeListeners.forEach((listener) => listener(msg));
   } else if (msg.command === "kiosk_mode/set") {
     fireEvent(window, "hass-kiosk-mode", { enable: msg.payload.enable });
+  } else if (msg.command === "back_button/pressed") {
+    if (!handleNativeBackButtonPressed()) {
+      bus.fireMessage({
+        id: msg.id,
+        type: "result",
+        success: false,
+        error: { code: "not_allowed", message: "no back button shown" },
+      });
+      return true;
+    }
   } else {
     return false;
   }

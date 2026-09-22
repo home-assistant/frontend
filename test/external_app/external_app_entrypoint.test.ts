@@ -7,6 +7,7 @@ import {
   handleExternalMessage,
   addExternalBarCodeListener,
 } from "../../src/external_app/external_app_entrypoint";
+import { handleNativeBackButtonPressed } from "../../src/external_app/external_back_button";
 import { showAutomationEditor } from "../../src/data/automation";
 import type {
   EMIncomingMessageRestart,
@@ -19,6 +20,7 @@ import type {
   EMIncomingMessageImprovDeviceSetupDone,
   EMIncomingMessageBarCodeScanResult,
   EMIncomingMessageBarCodeScanAborted,
+  EMIncomingMessageBackButtonPressed,
 } from "../../src/external_app/external_messaging";
 
 vi.mock("../../src/common/dom/fire_event", () => ({
@@ -29,6 +31,9 @@ vi.mock("../../src/common/navigate", () => ({
 }));
 vi.mock("../../src/data/automation", () => ({
   showAutomationEditor: vi.fn(),
+}));
+vi.mock("../../src/external_app/external_back_button", () => ({
+  handleNativeBackButtonPressed: vi.fn(),
 }));
 
 describe("handleExternalMessage", () => {
@@ -282,6 +287,40 @@ describe("handleExternalMessage", () => {
       type: "result",
       success: true,
       result: null,
+    });
+    expect(result).toBe(true);
+  });
+  it("handles back_button/pressed command", () => {
+    vi.mocked(handleNativeBackButtonPressed).mockReturnValue(true);
+    const msg: EMIncomingMessageBackButtonPressed = {
+      type: "command",
+      command: "back_button/pressed",
+      id: 13,
+    };
+    const result = handleExternalMessage(hassMainEl, msg);
+    expect(handleNativeBackButtonPressed).toHaveBeenCalledOnce();
+    expect(fireMessage).toHaveBeenCalledWith({
+      id: 13,
+      type: "result",
+      success: true,
+      result: null,
+    });
+    expect(result).toBe(true);
+  });
+
+  it("reports back_button/pressed without a back button as an error", () => {
+    vi.mocked(handleNativeBackButtonPressed).mockReturnValue(false);
+    const msg: EMIncomingMessageBackButtonPressed = {
+      type: "command",
+      command: "back_button/pressed",
+      id: 14,
+    };
+    const result = handleExternalMessage(hassMainEl, msg);
+    expect(fireMessage).toHaveBeenCalledExactlyOnceWith({
+      id: 14,
+      type: "result",
+      success: false,
+      error: { code: "not_allowed", message: "no back button shown" },
     });
     expect(result).toBe(true);
   });

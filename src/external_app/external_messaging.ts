@@ -218,6 +218,14 @@ interface EMOutgoingMessageReloadAndClearCache extends EMMessage {
   type: "frontend/reload_and_clear_cache";
 }
 
+interface EMOutgoingMessageBackButtonShow extends EMMessage {
+  type: "back_button/show"; // The top bar offers a back action; only sent with hasNativeBackButton
+}
+
+interface EMOutgoingMessageBackButtonHide extends EMMessage {
+  type: "back_button/hide";
+}
+
 // These types are handled internally by the Android app via postMessage.
 // They are not sent by the frontend and should not be used directly.
 // They are intentionally listed here to prevent anyone from using them unintentionally.
@@ -228,6 +236,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultSuccess
   | EMOutgoingMessageAppConfiguration
   | EMOutgoingMessageAssistShow
+  | EMOutgoingMessageBackButtonHide
+  | EMOutgoingMessageBackButtonShow
   | EMOutgoingMessageBarCodeClose
   | EMOutgoingMessageBarCodeNotify
   | EMOutgoingMessageBarCodeScan
@@ -347,6 +357,12 @@ export interface EMIncomingMessageImprovDeviceSetupDone extends EMMessage {
   command: "improv/device_setup_done";
 }
 
+export interface EMIncomingMessageBackButtonPressed {
+  id: number;
+  type: "command";
+  command: "back_button/pressed";
+}
+
 export interface EMIncomingMessageKioskModeSet {
   id: number;
   type: "command";
@@ -369,6 +385,7 @@ export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
 }
 
 export type EMIncomingMessageCommands =
+  | EMIncomingMessageBackButtonPressed
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
   | EMIncomingMessageShowNotifications
@@ -403,6 +420,7 @@ export interface ExternalConfig {
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
+  hasNativeBackButton?: boolean; // App draws the back button of the top bar itself, driven by back_button/show and back_button/hide
 }
 
 export interface ExternalEntityAddToAction {
