@@ -167,7 +167,7 @@ export const fetchIntegrationManifestsCollection = async (
 };
 
 export const fetchIntegrationManifest = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   integration: string
 ) =>
   hass
