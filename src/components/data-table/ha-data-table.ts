@@ -123,6 +123,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
 
+  @property({ type: Boolean }) public loading = false;
+
   @property({ type: Boolean }) public selectable = false;
 
   @property({ type: Boolean }) public clickable = false;
@@ -140,6 +142,8 @@ export class HaDataTable extends LitElement {
   @property({ type: String }) public id = "id";
 
   @property({ attribute: false }) public noDataText?: string;
+
+  @property({ attribute: false }) public loadingText?: string;
 
   @property({ attribute: false }) public searchLabel?: string;
 
@@ -164,6 +168,8 @@ export class HaDataTable extends LitElement {
   @state() private _filter = "";
 
   @state() private _filteredData?: DataTableRowData[];
+
+  @state() private _processing = false;
 
   @state() private _headerHeight = 0;
 
@@ -514,7 +520,7 @@ export class HaDataTable extends LitElement {
             </slot>
           </div>
           ${
-            !this._filteredData?.length
+            this.loading || !this._filteredData?.length
               ? html`
                   <div class="mdc-data-table__content">
                     <div class="mdc-data-table__row" role="row">
@@ -523,8 +529,11 @@ export class HaDataTable extends LitElement {
                         role="cell"
                       >
                         ${
+                          this.loading ||
+                          this._processing ||
                           !this._filteredData
-                            ? this._i18n?.localize?.("ui.common.loading") ||
+                            ? this.loadingText ||
+                              this._i18n?.localize?.("ui.common.loading") ||
                               "Loading"
                             : this.data.length
                               ? this._i18n?.localize?.(
@@ -712,6 +721,7 @@ export class HaDataTable extends LitElement {
     value !== undefined && value !== null && value !== "" && value !== nothing;
 
   private async _sortFilterData() {
+    this._processing = true;
     const startTime = new Date().getTime();
     const timeBetweenUpdate = startTime - this._lastUpdate;
     const timeBetweenRequest = startTime - this._curRequest;
@@ -762,6 +772,10 @@ export class HaDataTable extends LitElement {
 
     this._lastUpdate = startTime;
     this._filteredData = data;
+
+    if (this._curRequest === startTime) {
+      this._processing = false;
+    }
   }
 
   private _groupData = memoizeOne(
