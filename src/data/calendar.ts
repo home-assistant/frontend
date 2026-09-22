@@ -71,7 +71,8 @@ export const fetchCalendarEvents = async (
   hass: HomeAssistant,
   start: Date,
   end: Date,
-  calendars: Calendar[]
+  calendars: Calendar[],
+  computedStyles?: CSSStyleDeclaration
 ): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
   const params = encodeURI(
     `?start=${start.toISOString()}&end=${end.toISOString()}`
@@ -101,7 +102,11 @@ export const fetchCalendarEvents = async (
     }
     const cal = calendars[idx];
     result.forEach((ev) => {
-      const normalized = normalizeSubscriptionEventData(ev, cal);
+      const normalized = normalizeSubscriptionEventData(
+        ev,
+        cal,
+        computedStyles
+      );
       if (normalized) {
         calEvents.push(normalized);
       }
@@ -111,27 +116,43 @@ export const fetchCalendarEvents = async (
   return { events: calEvents, errors };
 };
 
-export const getCalendarColors = (
-  color: string | null | undefined,
-  index: number,
+const resolveColors = (
+  color: string,
   computedStyles: CSSStyleDeclaration
 ): { backgroundColor: string; textColor?: string } => {
-  // Fall back to a color by index when the entity has none set
-  const resolved =
-    color && isValidColorString(color)
-      ? color
-      : getColorByIndex(index, computedStyles);
   // A theme color stays a CSS variable in the background, so the text color
   // comes from what that variable holds for this element.
-  const background = resolveThemeColor(resolved, computedStyles);
+  const background = resolveThemeColor(color, computedStyles);
   return {
-    backgroundColor: computeCssColor(resolved),
+    backgroundColor: computeCssColor(color),
     // A background we cannot measure keeps the color fullcalendar picks itself
     textColor: isOpaqueColor(background)
       ? getContrastedColorHex(background)
       : undefined,
   };
 };
+
+export const getCalendarColors = (
+  color: string | null | undefined,
+  index: number,
+  computedStyles: CSSStyleDeclaration
+): { backgroundColor: string; textColor?: string } =>
+  resolveColors(
+    // Fall back to a color by index when the entity has none set
+    color && isValidColorString(color)
+      ? color
+      : getColorByIndex(index, computedStyles),
+    computedStyles
+  );
+
+export const getCalendarEventColors = (
+  color: string | null | undefined,
+  computedStyles: CSSStyleDeclaration
+): { backgroundColor: string; textColor?: string } | undefined =>
+  // An event without a usable color of its own keeps the calendar's colors
+  color && isValidColorString(color)
+    ? resolveColors(color, computedStyles)
+    : undefined;
 
 export const getCalendars = (
   hass: HomeAssistant,
@@ -217,6 +238,12 @@ export interface CalendarEventApiData {
   uid?: string | null;
   recurrence_id?: string | null;
   rrule?: string | null;
+  /**
+   * A color for this event that overrides its calendar's own color. An
+   * rfc7986 COLOR value, so either a CSS3 color name or a hex color. Omitted
+   * by the subscription and null in the REST API when the event has none.
+   */
+  color?: string | null;
 }
 
 export interface CalendarEventSubscription {
@@ -260,7 +287,8 @@ const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
  */
 export const normalizeSubscriptionEventData = (
   eventData: CalendarEventApiData,
-  calendar: Calendar
+  calendar: Calendar,
+  computedStyles?: CSSStyleDeclaration
 ): CalendarEvent | null => {
   const eventStart = getCalendarDate(eventData.start);
   const eventEnd = getCalendarDate(eventData.end);
@@ -268,6 +296,11 @@ export const normalizeSubscriptionEventData = (
   if (!eventStart || !eventEnd) {
     return null;
   }
+
+  // Resolving a per-event color needs the element to read theme variables from
+  const eventColors = computedStyles
+    ? getCalendarEventColors(eventData.color, computedStyles)
+    : undefined;
 
   const normalizedEventData: CalendarEventData = {
     summary: eventData.summary,
@@ -284,9 +317,11 @@ export const normalizeSubscriptionEventData = (
     start: eventStart,
     end: eventEnd,
     title: eventData.summary,
-    backgroundColor: calendar.backgroundColor,
-    borderColor: calendar.backgroundColor,
-    textColor: calendar.textColor,
+    backgroundColor: eventColors?.backgroundColor ?? calendar.backgroundColor,
+    borderColor: eventColors?.backgroundColor ?? calendar.backgroundColor,
+    // An event color that fullcalendar has to contrast itself leaves the text
+    // color unset rather than falling back to the calendar's
+    textColor: eventColors ? eventColors.textColor : calendar.textColor,
     calendar: calendar.entity_id,
     eventData: normalizedEventData,
   };

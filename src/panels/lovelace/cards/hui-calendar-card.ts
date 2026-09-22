@@ -336,9 +336,10 @@ export class HuiCalendarCard
     }
 
     // Add new events from this calendar
+    const computedStyles = getComputedStyle(this);
     const newEvents: CalendarEvent[] = update.events
       .map((eventData: CalendarEventApiData) =>
-        normalizeSubscriptionEventData(eventData, calendar)
+        normalizeSubscriptionEventData(eventData, calendar, computedStyles)
       )
       .filter((event): event is CalendarEvent => event !== null);
 
