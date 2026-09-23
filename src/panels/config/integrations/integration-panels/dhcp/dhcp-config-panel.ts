@@ -30,13 +30,10 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _data: DHCPDiscoveryData[] = [];
 
-  @state() private _loading = true;
-
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeDHCPDiscovery(this.hass.connection, (data) => {
         this._data = data;
-        this._loading = false;
       }),
     ];
   }
@@ -101,7 +98,6 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         back-path="/config/integrations/integration/dhcp"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithIds(this._data)}
-        .loading=${this._loading}
         .noDataText=${this.hass.localize(
           "ui.panel.config.dhcp.no_devices_found"
         )}
