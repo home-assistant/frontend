@@ -291,7 +291,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _cursorScrollPending = false;
 
-  protected firstUpdated() {
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
     this._registerKeyboardShortcuts();
   }
 
@@ -309,7 +310,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues) {
+    // ScrollableFadeMixin attaches its scroll observer here, so the fades stop
+    // updating if this returns without calling it.
+    super.updated(changedProps);
     if (!this._cursorScrollPending) {
       return;
     }
