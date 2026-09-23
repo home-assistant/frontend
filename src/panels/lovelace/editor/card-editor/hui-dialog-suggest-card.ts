@@ -155,21 +155,15 @@ export class HuiDialogSuggestCard extends LitElement {
           ${
             !this._params.yaml
               ? html`
-                  ${
-                    !(this._sectionConfig && this._viewSupportsSection)
-                      ? html`
-                          <ha-button
-                            appearance="plain"
-                            slot="secondaryAction"
-                            @click=${this._pickCard}
-                          >
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.editor.suggest_card.create_own"
-                            )}
-                          </ha-button>
-                        `
-                      : nothing
-                  }
+                  <ha-button
+                    appearance="plain"
+                    slot="secondaryAction"
+                    @click=${this._pickCard}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.suggest_card.create_own"
+                    )}
+                  </ha-button>
                   <ha-button
                     slot="primaryAction"
                     .disabled=${this._saving}
