@@ -50,6 +50,8 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @state() private _data: BluetoothDeviceData[] = [];
 
+  @state() private _loading = true;
+
   @state() private _scanners: BluetoothScannersDetails = {};
 
   @state() private _sourceDevices: Record<string, DeviceRegistryEntry> = {};
@@ -79,6 +81,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         this.hass.connection,
         (data) => {
           this._data = data;
+          this._loading = false;
         }
       );
       this._unsub_scanners = subscribeBluetoothScannersDetails(
@@ -220,6 +223,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
         .noDataText=${this.hass.localize(
           "ui.panel.config.bluetooth.no_advertisements_found"
