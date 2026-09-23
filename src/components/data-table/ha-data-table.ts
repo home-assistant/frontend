@@ -32,8 +32,11 @@ import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
+import "../animation/ha-fade-in";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
+import "../skeleton/ha-skeleton-icon";
+import "../skeleton/ha-skeleton-text";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -110,6 +113,25 @@ export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
+
+// Default row height, used to fill the viewport with skeleton rows.
+const ROW_HEIGHT = 52;
+
+const cellClasses = (column: DataTableColumnData) => ({
+  "mdc-data-table__cell--flex": column.type === "flex",
+  "mdc-data-table__cell--numeric": column.type === "numeric",
+  "mdc-data-table__cell--icon": column.type === "icon",
+  "mdc-data-table__cell--icon-button": column.type === "icon-button",
+  "mdc-data-table__cell--overflow-menu": column.type === "overflow-menu",
+  "mdc-data-table__cell--overflow": column.type === "overflow",
+  forceLTR: Boolean(column.forceLTR),
+});
+
+const cellStyles = (column: DataTableColumnData) => ({
+  minWidth: column.minWidth,
+  maxWidth: column.maxWidth,
+  flex: column.flex || 1,
+});
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
@@ -520,20 +542,25 @@ export class HaDataTable extends LitElement {
           </div>
           ${
             !this._filteredData?.length
-              ? html`
-                  <div class="mdc-data-table__content">
-                    <div class="mdc-data-table__row" role="row">
-                      <div
-                        class="mdc-data-table__cell grows center"
-                        role="cell"
-                      >
-                        ${
-                          this.loading ||
-                          !this._filteredData ||
-                          (this.data.length && !this._filteredDataSourceLength)
-                            ? this._i18n?.localize?.("ui.common.loading") ||
-                              "Loading"
-                            : this.data.length
+              ? this.loading ||
+                !this._filteredData ||
+                (this.data.length && !this._filteredDataSourceLength)
+                ? html`
+                    <div class="mdc-data-table__content">
+                      <ha-fade-in .duration=${300} easing="ease-in">
+                        <div>${this._renderSkeletonRows(columns)}</div>
+                      </ha-fade-in>
+                    </div>
+                  `
+                : html`
+                    <div class="mdc-data-table__content">
+                      <div class="mdc-data-table__row" role="row">
+                        <div
+                          class="mdc-data-table__cell grows center"
+                          role="cell"
+                        >
+                          ${
+                            this.data.length
                               ? this._i18n?.localize?.(
                                   "ui.components.data-table.no_match_filter"
                                 ) || "No rows matching current filters"
@@ -542,11 +569,11 @@ export class HaDataTable extends LitElement {
                                   "ui.components.data-table.no-data"
                                 ) ||
                                 "No data"
-                        }
+                          }
+                        </div>
                       </div>
                     </div>
-                  </div>
-                `
+                  `
               : html`
                   <lit-virtualizer
                     scroller
@@ -575,6 +602,46 @@ export class HaDataTable extends LitElement {
   }
 
   private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
+
+  private _renderSkeletonRows(columns: DataTableColumnContainer) {
+    const row = html`
+      <div class="mdc-data-table__row">
+        ${
+          this.selectable
+            ? html`<div
+                class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+              ></div>`
+            : nothing
+        }
+        ${Object.entries(columns).map(([key, column]) =>
+          (this.narrow && !column.main && !column.showNarrow) ||
+          !this._isColumnVisible(key, column)
+            ? nothing
+            : html`
+                <div
+                  class="mdc-data-table__cell ${classMap(cellClasses(column))}"
+                  style=${styleMap(cellStyles(column))}
+                >
+                  ${
+                    column.type === "icon"
+                      ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+                      : column.type === "icon-button" ||
+                          column.type === "overflow-menu"
+                        ? nothing
+                        : html`<ha-skeleton-text></ha-skeleton-text>`
+                  }
+                </div>
+              `
+        )}
+      </div>
+    `;
+
+    const count = this.autoHeight
+      ? 1
+      : Math.ceil(window.innerHeight / ROW_HEIGHT);
+
+    return Array.from({ length: count }, () => row);
+  }
 
   private _renderRow = (
     columns: DataTableColumnContainer,
@@ -640,22 +707,8 @@ export class HaDataTable extends LitElement {
               @mouseover=${this._setTitle}
               @focus=${this._setTitle}
               role=${column.main ? "rowheader" : "cell"}
-              class="mdc-data-table__cell ${classMap({
-                "mdc-data-table__cell--flex": column.type === "flex",
-                "mdc-data-table__cell--numeric": column.type === "numeric",
-                "mdc-data-table__cell--icon": column.type === "icon",
-                "mdc-data-table__cell--icon-button":
-                  column.type === "icon-button",
-                "mdc-data-table__cell--overflow-menu":
-                  column.type === "overflow-menu",
-                "mdc-data-table__cell--overflow": column.type === "overflow",
-                forceLTR: Boolean(column.forceLTR),
-              })}"
-              style=${styleMap({
-                minWidth: column.minWidth,
-                maxWidth: column.maxWidth,
-                flex: column.flex || 1,
-              })}
+              class="mdc-data-table__cell ${classMap(cellClasses(column))}"
+              style=${styleMap(cellStyles(column))}
             >
               ${
                 column.template
@@ -1330,7 +1383,8 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__cell--icon:first-child ha-svg-icon,
         .mdc-data-table__cell--icon:first-child ha-state-icon,
         .mdc-data-table__cell--icon:first-child ha-domain-icon,
-        .mdc-data-table__cell--icon:first-child ha-service-icon {
+        .mdc-data-table__cell--icon:first-child ha-service-icon,
+        .mdc-data-table__cell--icon:first-child ha-skeleton-icon {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
