@@ -15,7 +15,6 @@ import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { DataTableController } from "../../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -92,8 +91,6 @@ type DataTableItem = Pick<
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
-  private _table = new DataTableController<DataTableItem>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -399,10 +396,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
 
-    this._table.setConfig({
-      data: this._getItems(this._dashboards, defaultPanel, this.hass.panels),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -415,6 +408,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this.hass.language,
           this._dashboards,
           this.hass.localize
+        )}
+        .data=${this._getItems(
+          this._dashboards,
+          defaultPanel,
+          this.hass.panels
         )}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}

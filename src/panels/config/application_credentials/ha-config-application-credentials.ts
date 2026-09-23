@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
@@ -34,8 +33,6 @@ import { showAddApplicationCredentialDialog } from "./show-dialog-add-applicatio
 
 @customElement("ha-config-application-credentials")
 export class HaConfigApplicationCredentials extends LitElement {
-  private _table = new DataTableController<ApplicationCredential>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
@@ -149,13 +146,6 @@ export class HaConfigApplicationCredentials extends LitElement {
   }
 
   protected render() {
-    this._table.setConfig({
-      data: this._getApplicationCredentials(
-        this._applicationCredentials,
-        this.hass.localize
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -164,6 +154,10 @@ export class HaConfigApplicationCredentials extends LitElement {
         back-path="/config"
         .tabs=${configSections.devices}
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._getApplicationCredentials(
+          this._applicationCredentials,
+          this.hass.localize
+        )}
         has-fab
         selectable
         .selected=${this._selected.length}

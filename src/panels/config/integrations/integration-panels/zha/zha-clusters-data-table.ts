@@ -2,7 +2,6 @@ import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -19,8 +18,6 @@ export interface ClusterRowData extends Cluster {
 
 @customElement("zha-clusters-data-table")
 export class ZHAClustersDataTable extends LitElement {
-  private _table = new DataTableController<ClusterRowData>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -75,18 +72,15 @@ export class ZHAClustersDataTable extends LitElement {
   }
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._clusters(this.clusters),
-      noDataText: this.hass.localize("ui.components.data-table.no-data"),
-    });
-
     return html`
       <ha-data-table
         .columns=${this._columns(this.narrow)}
+        .data=${this._clusters(this.clusters)}
         .id=${"cluster_id"}
         selectable
         auto-height
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+        .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
       ></ha-data-table>
     `;
   }

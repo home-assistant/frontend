@@ -6,7 +6,6 @@ import { navigate } from "../../../../../common/navigate";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -33,8 +32,6 @@ interface RadioFrequencyTransmitterRow {
 
 @customElement("radio-frequency-devices-page")
 export class RadioFrequencyDevicesPage extends LitElement {
-  private _table = new DataTableController<RadioFrequencyTransmitterRow>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -130,18 +127,6 @@ export class RadioFrequencyDevicesPage extends LitElement {
   );
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._data(
-        this.transmitters,
-        this.hass.states,
-        this.hass.localize,
-        this.hass.locale
-      ),
-      noDataText: this.hass.localize(
-        "ui.panel.config.radio_frequency.no_devices"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -150,6 +135,15 @@ export class RadioFrequencyDevicesPage extends LitElement {
         .tabs=${this._tabs}
         back-path="/config/radio-frequency/dashboard"
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._data(
+          this.transmitters,
+          this.hass.states,
+          this.hass.localize,
+          this.hass.locale
+        )}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.radio_frequency.no_devices"
+        )}
         @row-click=${this._handleRowClicked}
         clickable
       ></hass-tabs-subpage-data-table>

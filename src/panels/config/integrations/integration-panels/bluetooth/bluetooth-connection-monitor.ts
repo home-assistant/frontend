@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 
 import "../../../../../components/ha-icon-button";
@@ -28,8 +27,6 @@ import type { HomeAssistant, Route } from "../../../../../types";
 
 @customElement("bluetooth-connection-monitor")
 export class BluetoothConnectionMonitorPanel extends LitElement {
-  private _table = new DataTableController<BluetoothConnectionData>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -238,13 +235,6 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
   );
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._dataWithNamedSourceAndIds(this._data),
-      noDataText: this.hass.localize(
-        "ui.panel.config.bluetooth.no_connections"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -253,8 +243,12 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         .tabs=${this._tabs}
         back-path="/config/bluetooth/dashboard"
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._dataWithNamedSourceAndIds(this._data)}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.bluetooth.no_connections"
+        )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         filter=${this._filter || ""}

@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -24,8 +23,6 @@ interface InfraredDeviceRow extends InfraredDevice {
 
 @customElement("infrared-devices-page")
 export class InfraredDevicesPage extends LitElement {
-  private _table = new DataTableController<InfraredDeviceRow>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -99,11 +96,6 @@ export class InfraredDevicesPage extends LitElement {
   );
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._data(this.devices, this.hass.localize),
-      noDataText: this.hass.localize("ui.panel.config.infrared.no_devices"),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -113,6 +105,8 @@ export class InfraredDevicesPage extends LitElement {
         back-path="/config/infrared"
         clickable
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._data(this.devices, this.hass.localize)}
+        .noDataText=${this.hass.localize("ui.panel.config.infrared.no_devices")}
         @row-click=${this._handleRowClicked}
       ></hass-tabs-subpage-data-table>
     `;

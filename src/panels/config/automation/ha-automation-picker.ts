@@ -40,7 +40,6 @@ import {
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
 import "../../../components/chips/ha-assist-chip";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -167,8 +166,6 @@ type AutomationItem = AutomationEntity & {
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<AutomationItem>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -496,13 +493,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredEntityIds
     );
-    this._table.setConfig({
-      data: automations,
-      noDataText: this.hass.localize(
-        "ui.panel.config.automation.picker.no_automations"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -539,8 +529,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .data=${automations}
         .empty=${!this.automations.length}
         @row-click=${this._handleRowClicked}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.automation.picker.no_automations"
+        )}
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}

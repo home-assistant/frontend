@@ -32,7 +32,6 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -130,8 +129,6 @@ type SceneItem = SceneEntity & {
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<SceneItem>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -457,11 +454,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       this._filteredSceneEntityIds
     );
 
-    this._table.setConfig({
-      data: scenes,
-      noDataText: this.hass.localize("ui.panel.config.scene.picker.no_scenes"),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -498,8 +490,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .data=${scenes}
         .empty=${!this.scenes.length}
         .activeFilters=${this._activeFilters}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.scene.picker.no_scenes"
+        )}
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}

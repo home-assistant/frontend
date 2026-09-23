@@ -35,7 +35,6 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -179,8 +178,6 @@ const getConfigEntry = (
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<HelperItem>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -647,13 +644,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredHelperEntityIds
     );
-    this._table.setConfig({
-      data: helpers,
-      noDataText: this.hass.localize(
-        "ui.panel.config.helpers.picker.no_helpers"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -680,6 +670,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           ).length
         }
         .columns=${this._columns(this.hass.localize, helpers)}
+        .data=${helpers}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -696,6 +687,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         @search-changed=${this._handleSearchChange}
         has-fab
         clickable
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.helpers.picker.no_helpers"
+        )}
         class=${this.narrow ? "narrow" : ""}
       >
         <ha-filter-floor-areas

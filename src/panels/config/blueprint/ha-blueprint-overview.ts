@@ -22,7 +22,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -83,8 +82,6 @@ const createNewFunctions = {
 
 @customElement("ha-blueprint-overview")
 class HaBlueprintOverview extends LitElement {
-  private _table = new DataTableController<BlueprintMetaDataPath>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -326,17 +323,6 @@ class HaBlueprintOverview extends LitElement {
   }
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._processedBlueprints(
-        this.blueprints,
-        this.hass.localize,
-        this._usageCounts
-      ),
-      noDataText: this.hass.localize(
-        "ui.panel.config.blueprint.overview.no_blueprints"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -345,7 +331,15 @@ class HaBlueprintOverview extends LitElement {
         .route=${this.route}
         .tabs=${configSections.automations}
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._processedBlueprints(
+          this.blueprints,
+          this.hass.localize,
+          this._usageCounts
+        )}
         id="fullpath"
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.blueprint.overview.no_blueprints"
+        )}
         has-fab
         clickable
         @row-click=${this._handleRowClicked}

@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type {
   RowClickedEvent,
   DataTableColumnContainer,
@@ -23,8 +22,6 @@ import { showSSDPDiscoveryInfoDialog } from "./show-dialog-ssdp-discovery-info";
 
 @customElement("ssdp-config-panel")
 export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<SSDPDiscoveryData>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -97,11 +94,6 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   );
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._dataWithIds(this._data),
-      noDataText: this.hass.localize("ui.panel.config.ssdp.no_devices_found"),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -113,6 +105,10 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
         .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .data=${this._dataWithIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.ssdp.no_devices_found"
+        )}
         @row-click=${this._handleRowClicked}
         clickable
       ></hass-tabs-subpage-data-table>

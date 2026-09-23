@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -36,8 +35,6 @@ export interface GroupRowData extends ZHAGroup {
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
-  private _table = new DataTableController<GroupRowData>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -109,10 +106,6 @@ export class ZHAGroupsDashboard extends LitElement {
   );
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      data: this._formattedGroups(this._groups),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .tabs=${groupsTab}
@@ -121,6 +114,7 @@ export class ZHAGroupsDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab

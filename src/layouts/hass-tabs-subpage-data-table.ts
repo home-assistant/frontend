@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiArrowDown,
@@ -22,9 +21,9 @@ import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
-import { dataTableModelContext } from "../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
+  DataTableRowData,
   HaDataTable,
   SortingDirection,
 } from "../components/data-table/ha-data-table";
@@ -65,9 +64,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
-  @state()
-  @consume({ context: dataTableModelContext, subscribe: true })
-  private _model!: ContextType<typeof dataTableModelContext>;
+  /**
+   * Data to show in the table.
+   * @type {Array}
+   */
+  @property({ type: Array }) public data: DataTableRowData[] = [];
 
   /**
    * Should rows be selectable.
@@ -120,7 +121,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    * Number of active filters.
    * @type {Number}
    */
-  @property({ type: Number }) public filters = 0;
+  @property({ type: Number }) public filters?;
 
   /**
    * Number of current selections.
@@ -140,6 +141,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    * @type {() => void}
    */
   @property({ attribute: false }) public backCallback?: () => void;
+
+  /**
+   * String to show when there are no records in the data table.
+   * @type {String}
+   */
+  @property({ attribute: false }) public noDataText?: string;
 
   /**
    * Hides the data table and show an empty message.
@@ -227,10 +234,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  protected render() {
-    if (!this._model) {
-      return nothing;
-    }
+  protected render(): TemplateResult {
     const localize = this.localizeFunc || this.hass.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
@@ -488,9 +492,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this.empty && this._model.state === "ready"
+          this.empty
             ? html`<div class="center">
-                <slot name="empty">${this._model.noDataText}</slot>
+                <slot name="empty">${this.noDataText}</slot>
               </div>`
             : html`<div slot="toolbar-icon">
                   <slot name="toolbar-icon"></slot>
@@ -509,6 +513,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 <ha-data-table
                   .narrow=${this.narrow}
                   .columns=${this.columns}
+                  .data=${this.data}
+                  .noDataText=${this.noDataText}
                   .filter=${this.filter}
                   .selectable=${this._selectMode}
                   .id=${this.id}
@@ -593,7 +599,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               <ha-dialog-footer slot="footer">
                 <ha-button slot="primaryAction" data-dialog="close">
                   ${localize("ui.components.subpage-data-table.show_results", {
-                    number: this._model.data.length,
+                    number: this.data.length,
                   })}
                 </ha-button>
               </ha-dialog-footer>

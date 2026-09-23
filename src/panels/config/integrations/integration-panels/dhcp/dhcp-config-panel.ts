@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
-import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 
 import "../../../../../components/ha-icon-button";
@@ -29,14 +28,12 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  private _table = new DataTableController<DHCPDiscoveryData>(this, {
-    state: "loading",
-  });
+  @state() private _data: DHCPDiscoveryData[] = [];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeDHCPDiscovery(this.hass.connection, (data) => {
-        this._table.update({ state: "ready", data: this._dataWithIds(data) });
+        this._data = data;
       }),
     ];
   }
@@ -93,9 +90,6 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    this._table.setConfig({
-      noDataText: this.hass.localize("ui.panel.config.dhcp.no_devices_found"),
-    });
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -103,6 +97,10 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         .route=${this.route}
         back-path="/config/integrations/integration/dhcp"
         .columns=${this._columns(this.hass.localize)}
+        .data=${this._dataWithIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.dhcp.no_devices_found"
+        )}
         filter=${this._macAddress || ""}
       ></hass-tabs-subpage-data-table>
     `;

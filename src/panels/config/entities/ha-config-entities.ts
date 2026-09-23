@@ -45,7 +45,6 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -158,8 +157,6 @@ export interface EntityRow extends StateEntity {
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends LitElement {
-  private _table = new DataTableController<EntityRow>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -808,10 +805,6 @@ export class HaConfigEntities extends LitElement {
         [...filteredDomains][0]
       );
 
-    this._table.setConfig({
-      data: filteredEntities,
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -820,6 +813,7 @@ export class HaConfigEntities extends LitElement {
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(this.hass.localize, filteredEntities)}
+        .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search",
           { number: filteredEntities.length }

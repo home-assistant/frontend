@@ -11,7 +11,6 @@ import {
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { DataTableController } from "../../../../components/data-table/data-table-model";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -43,8 +42,6 @@ interface EntityPickerTableRowData extends DataTableRowData {
 
 @customElement("hui-entity-picker-table")
 export class HuiEntityPickerTable extends LitElement {
-  private _table = new DataTableController<EntityPickerTableRowData>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -112,21 +109,18 @@ export class HuiEntityPickerTable extends LitElement {
 
     const columns = this._columns(this.narrow, showEntityId);
 
-    this._table.setConfig({
-      data: data,
-      noDataText: this.hass.localize(
-        "ui.panel.lovelace.unused_entities.no_data"
-      ),
-    });
-
     return html`
       <ha-data-table
         class=${showEntityId ? "show-entity-id" : ""}
         selectable
         .id=${"entity_id"}
         .columns=${columns}
+        .data=${data}
         .searchLabel=${this.hass.localize(
           "ui.panel.lovelace.unused_entities.search"
+        )}
+        .noDataText=${this.hass.localize(
+          "ui.panel.lovelace.unused_entities.no_data"
         )}
         @selection-changed=${this._handleSelectionChanged}
       ></ha-data-table>

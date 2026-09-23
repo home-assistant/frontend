@@ -18,7 +18,6 @@ import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -85,8 +84,6 @@ const LOCATIONS_FILTER = "backup-locations";
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<BackupRow>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
@@ -426,11 +423,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       this.narrow ? 3 : 5
     );
 
-    this._table.setConfig({
-      data: data,
-      noDataText: this.hass.localize("ui.panel.config.backup.no_backups"),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         has-fab
@@ -472,6 +464,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
+        .data=${data}
+        .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
         )}

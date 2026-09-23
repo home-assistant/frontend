@@ -33,7 +33,6 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -110,10 +109,6 @@ interface DeviceRowData extends DeviceRegistryEntry {
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
-  private _table = new DataTableController<
-    ReturnType<typeof this._devicesAndFilterDomains>["devicesOutput"][number]
-  >(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -848,10 +843,6 @@ export class HaConfigDeviceDashboard extends LitElement {
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
 
-    this._table.setConfig({
-      data: devicesOutput,
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -864,6 +855,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           { number: devicesOutput.length }
         )}
         .columns=${this._columns(this.hass.localize)}
+        .data=${devicesOutput}
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}

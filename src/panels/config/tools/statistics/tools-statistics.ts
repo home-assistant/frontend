@@ -31,7 +31,6 @@ import { computeEntityEntryName } from "../../../../common/entity/compute_entity
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
-import { DataTableController } from "../../../../components/data-table/data-table-model";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -105,13 +104,9 @@ type DisplayedStatisticData = StatisticData & {
 
 @customElement("tools-statistics")
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
-  private _table = new DataTableController<DisplayedStatisticData>(this);
-
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
-
-  @state() private _loading = true;
 
   @state() private filter = "";
 
@@ -469,23 +464,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
     </ha-assist-chip>`;
 
-    this._table.setConfig({
-      state: this._loading ? "loading" : "ready",
-      loadingText: this._i18n.localize(
-        "ui.components.statistics_charts.loading_statistics"
-      ),
-      data: this._displayData(
-        this._data,
-        this._i18n.localize,
-        this._registries.entities,
-        this._registries.devices,
-        this._registries.areas
-      ),
-      noDataText: this._i18n.localize(
-        "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"
-      ),
-    });
-
     return html`
       <div class="table-with-toolbars">
         ${
@@ -577,6 +555,16 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         <ha-data-table
           .narrow=${this.narrow}
           .columns=${columns}
+          .data=${this._displayData(
+            this._data,
+            this._i18n.localize,
+            this._registries.entities,
+            this._registries.devices,
+            this._registries.areas
+          )}
+          .noDataText=${this._i18n.localize(
+            "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"
+          )}
           .filter=${this.filter}
           .selectable=${this._selectMode}
           id="statistic_id"
@@ -766,7 +754,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         });
       }
     });
-    this._loading = false;
   }
 
   private _clearSelected = async () => {

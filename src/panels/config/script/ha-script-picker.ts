@@ -34,7 +34,6 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -134,8 +133,6 @@ type ScriptItem = ScriptEntity & {
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<ScriptItem>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
@@ -428,13 +425,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredEntityIds
     );
-    this._table.setConfig({
-      data: scripts,
-      noDataText: this.hass.localize(
-        "ui.panel.config.script.picker.no_scripts"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -470,9 +460,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           ).length
         }
         .columns=${this._columns(this.hass.localize, scripts)}
+        .data=${scripts}
         .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}
         id="entity_id"
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.script.picker.no_scripts"
+        )}
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}

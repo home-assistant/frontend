@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -31,8 +30,6 @@ import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
-  private _table = new DataTableController<User>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -174,10 +171,6 @@ export class HaConfigUsers extends LitElement {
   }
 
   protected render() {
-    this._table.setConfig({
-      data: this._userData(this._users, this.hass.localize),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -186,6 +179,7 @@ export class HaConfigUsers extends LitElement {
         back-path="/config"
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
+        .data=${this._userData(this._users, this.hass.localize)}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}

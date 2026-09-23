@@ -22,7 +22,6 @@ import {
 } from "../../../common/entity/entity_domain_filter";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -65,8 +64,6 @@ import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
-  private _table = new DataTableController(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
@@ -492,10 +489,6 @@ export class VoiceAssistantsExpose extends LitElement {
       this._searchParms
     );
 
-    this._table.setConfig({
-      data: filteredEntities,
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -511,6 +504,7 @@ export class VoiceAssistantsExpose extends LitElement {
           this.hass.localize,
           filteredEntities
         )}
+        .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search",
           {

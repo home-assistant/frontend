@@ -32,13 +32,11 @@ import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import "../ha-alert";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
-import { dataTableModelContext, type DataTableModel } from "./data-table-model";
 
 export interface RowClickedEvent {
   id: string;
@@ -123,6 +121,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
+  @property({ type: Array }) public data: DataTableRowData[] = [];
+
   @property({ type: Boolean }) public selectable = false;
 
   @property({ type: Boolean }) public clickable = false;
@@ -138,6 +138,8 @@ export class HaDataTable extends LitElement {
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
+
+  @property({ attribute: false }) public noDataText?: string;
 
   @property({ attribute: false }) public searchLabel?: string;
 
@@ -162,12 +164,6 @@ export class HaDataTable extends LitElement {
   @state() private _filter = "";
 
   @state() private _filteredData?: DataTableRowData[];
-
-  @state() private _processing = false;
-
-  @state()
-  @consume({ context: dataTableModelContext, subscribe: true })
-  private _model!: ContextType<typeof dataTableModelContext>;
 
   @state() private _headerHeight = 0;
 
@@ -260,14 +256,6 @@ export class HaDataTable extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
-    if (!this._model) {
-      return;
-    }
-
-    const previousModel: DataTableModel | undefined = properties.get("_model");
-    const dataChanged =
-      properties.has("_model") && previousModel?.data !== this._model.data;
-
     if (!this.hasUpdated) {
       loadVirtualizer();
     }
@@ -311,12 +299,10 @@ export class HaDataTable extends LitElement {
       this._lastSelectedRowId = null;
     }
 
-    if (dataChanged) {
+    if (properties.has("data")) {
       // Clean up checked rows that no longer exist in the data
       if (this._checkedRows.length) {
-        const validIds = new Set(
-          this._model.data.map((row) => String(row[this.id]))
-        );
+        const validIds = new Set(this.data.map((row) => String(row[this.id])));
         const validCheckedRows = this._checkedRows.filter((id) =>
           validIds.has(id)
         );
@@ -326,7 +312,7 @@ export class HaDataTable extends LitElement {
         }
       }
 
-      this._checkableRowsCount = this._model.data.filter(
+      this._checkableRowsCount = this.data.filter(
         (row) => row.selectable !== false
       ).length;
     }
@@ -342,7 +328,7 @@ export class HaDataTable extends LitElement {
     }
 
     if (
-      dataChanged ||
+      properties.has("data") ||
       properties.has("columns") ||
       properties.has("_filter") ||
       properties.has("sortColumn") ||
@@ -400,12 +386,7 @@ export class HaDataTable extends LitElement {
   );
 
   protected render() {
-    if (!this._model) {
-      return nothing;
-    }
     const columns = this._sortedColumns(this.columns, this.columnOrder);
-    const loading = this._model.state === "loading";
-    const error = this._model.state === "error" ? this._model.error : undefined;
 
     const renderRow = (row: DataTableRowData, index: number) =>
       this._renderRow(columns, this.narrow, row, index);
@@ -533,61 +514,53 @@ export class HaDataTable extends LitElement {
             </slot>
           </div>
           ${
-            error
-              ? html`<ha-alert alert-type="error">${error}</ha-alert>`
-              : nothing
-          }
-          ${
-            error && !this._filteredData?.length && !loading
-              ? nothing
-              : loading || !this._filteredData?.length
-                ? html`
-                    <div class="mdc-data-table__content">
-                      <div class="mdc-data-table__row" role="row">
-                        <div
-                          class="mdc-data-table__cell grows center"
-                          role="cell"
-                        >
-                          ${
-                            loading || this._processing || !this._filteredData
-                              ? this._model.loadingText ||
-                                this._i18n?.localize?.("ui.common.loading") ||
-                                "Loading"
-                              : this._model.data.length
-                                ? this._i18n?.localize?.(
-                                    "ui.components.data-table.no_match_filter"
-                                  ) || "No rows matching current filters"
-                                : this._model.noDataText ||
-                                  this._i18n?.localize?.(
-                                    "ui.components.data-table.no-data"
-                                  ) ||
-                                  "No data"
-                          }
-                        </div>
+            !this._filteredData?.length
+              ? html`
+                  <div class="mdc-data-table__content">
+                    <div class="mdc-data-table__row" role="row">
+                      <div
+                        class="mdc-data-table__cell grows center"
+                        role="cell"
+                      >
+                        ${
+                          !this._filteredData
+                            ? this._i18n?.localize?.("ui.common.loading") ||
+                              "Loading"
+                            : this.data.length
+                              ? this._i18n?.localize?.(
+                                  "ui.components.data-table.no_match_filter"
+                                ) || "No rows matching current filters"
+                              : this.noDataText ||
+                                this._i18n?.localize?.(
+                                  "ui.components.data-table.no-data"
+                                ) ||
+                                "No data"
+                        }
                       </div>
                     </div>
-                  `
-                : html`
-                    <lit-virtualizer
-                      scroller
-                      class="mdc-data-table__content scroller ha-scrollbar"
-                      tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
-                      @scroll=${this._saveScrollPos}
-                      .items=${this._groupData(
-                        this._filteredData,
-                        this._i18n?.localize,
-                        this._i18n?.locale,
-                        this.appendRow,
-                        this.groupColumn,
-                        this.groupOrder,
-                        this._collapsedGroups,
-                        this.sortColumn,
-                        this.sortDirection
-                      )}
-                      .keyFunction=${this._keyFunction}
-                      .renderItem=${renderRow}
-                    ></lit-virtualizer>
-                  `
+                  </div>
+                `
+              : html`
+                  <lit-virtualizer
+                    scroller
+                    class="mdc-data-table__content scroller ha-scrollbar"
+                    tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
+                    @scroll=${this._saveScrollPos}
+                    .items=${this._groupData(
+                      this._filteredData,
+                      this._i18n?.localize,
+                      this._i18n?.locale,
+                      this.appendRow,
+                      this.groupColumn,
+                      this.groupOrder,
+                      this._collapsedGroups,
+                      this.sortColumn,
+                      this.sortDirection
+                    )}
+                    .keyFunction=${this._keyFunction}
+                    .renderItem=${renderRow}
+                  ></lit-virtualizer>
+                `
           }
         </div>
       </div>
@@ -739,7 +712,6 @@ export class HaDataTable extends LitElement {
     value !== undefined && value !== null && value !== "" && value !== nothing;
 
   private async _sortFilterData() {
-    this._processing = true;
     const startTime = new Date().getTime();
     const timeBetweenUpdate = startTime - this._lastUpdate;
     const timeBetweenRequest = startTime - this._curRequest;
@@ -749,10 +721,10 @@ export class HaDataTable extends LitElement {
       !this._lastUpdate ||
       (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
-    let filteredData = this._model.data;
+    let filteredData = this.data;
     if (this._filter) {
       filteredData = await this._memFilterData(
-        this._model.data,
+        this.data,
         this._sortColumns,
         this._filter.trim()
       );
@@ -790,10 +762,6 @@ export class HaDataTable extends LitElement {
 
     this._lastUpdate = startTime;
     this._filteredData = data;
-
-    if (this._curRequest === startTime) {
-      this._processing = false;
-    }
   }
 
   private _groupData = memoizeOne(
@@ -1091,7 +1059,7 @@ export class HaDataTable extends LitElement {
   }
 
   private async _calcTableHeight() {
-    if (!this._model || this.autoHeight) {
+    if (this.autoHeight) {
       return;
     }
     await this.updateComplete;
@@ -1140,14 +1108,11 @@ export class HaDataTable extends LitElement {
   public collapseAllGroups() {
     if (
       !this.groupColumn ||
-      !this._model.data.some((item) => item[this.groupColumn!])
+      !this.data.some((item) => item[this.groupColumn!])
     ) {
       return;
     }
-    const grouped = groupBy(
-      this._model.data,
-      (item) => item[this.groupColumn!]
-    );
+    const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
     if (grouped.undefined) {
       // undefined is a reserved group name
       grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;

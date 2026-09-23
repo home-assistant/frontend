@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { DataTableController } from "../../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -42,8 +41,6 @@ import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceResources extends LitElement {
-  private _table = new DataTableController<LovelaceResource>(this);
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -175,13 +172,6 @@ export class HaConfigLovelaceResources extends LitElement {
 
     const isYamlMode = this._lovelaceInfo?.resource_mode === "yaml";
 
-    this._table.setConfig({
-      data: this._resources,
-      noDataText: this.hass.localize(
-        "ui.panel.config.lovelace.resources.picker.no_resources"
-      ),
-    });
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -190,6 +180,10 @@ export class HaConfigLovelaceResources extends LitElement {
         back-path="/config/lovelace/dashboards"
         .tabs=${lovelaceResourcesTabs}
         .columns=${this._columns(this.hass.language, this.hass.localize)}
+        .data=${this._resources}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.lovelace.resources.picker.no_resources"
+        )}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}

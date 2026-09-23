@@ -1,5 +1,5 @@
 import {
-  getCollection,
+  createCollection,
   type Connection,
   type UnsubscribeFunc,
 } from "home-assistant-js-websocket";
@@ -73,9 +73,11 @@ export const subscribeDHCPDiscovery = (
   conn: Connection,
   callbackFunction: (dhcpDiscoveryData: DHCPDiscoveryData[]) => void
 ) =>
-  getCollection<DHCPDiscoveryData[]>(
-    conn,
+  createCollection<DHCPDiscoveryData[]>(
     "_dhcpDiscoveryRows",
-    undefined,
-    subscribeDHCPDiscoveryUpdates
-  ).subscribe(callbackFunction);
+    () => Promise.resolve<DHCPDiscoveryData[]>([]), // empty array as initial state
+
+    subscribeDHCPDiscoveryUpdates,
+    conn,
+    callbackFunction
+  );
