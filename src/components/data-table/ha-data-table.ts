@@ -32,10 +32,8 @@ import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import "../animation/ha-fade-in";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-spinner";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -533,9 +531,8 @@ export class HaDataTable extends LitElement {
                           this.loading ||
                           !this._filteredData ||
                           (this.data.length && !this._filteredDataSourceLength)
-                            ? html`<ha-fade-in .delay=${1000}>
-                                <ha-spinner></ha-spinner>
-                              </ha-fade-in>`
+                            ? this._i18n?.localize?.("ui.common.loading") ||
+                              "Loading"
                             : this.data.length
                               ? this._i18n?.localize?.(
                                   "ui.components.data-table.no_match_filter"
