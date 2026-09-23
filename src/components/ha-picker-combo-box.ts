@@ -301,7 +301,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._updateListMode();
     }
     if (changedProps.has("_items") || changedProps.has("value")) {
-      this._selectedItemIndex = this._defaultSelectedIndex();
+      this._selectedItemIndex = this._focusOwnsCursor
+        ? this._defaultSelectedIndex()
+        : -1;
     }
   }
 
@@ -730,6 +732,20 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   /**
+   * The search field and the list are the only places Enter reaches the cursor
+   * from, so the cursor exists only while one of them has focus. Anywhere else
+   * inside the picker — a section chip — the highlight would promise a pick
+   * that Enter will not make.
+   */
+  private get _focusOwnsCursor(): boolean {
+    const focused = this.shadowRoot?.activeElement;
+    return (
+      !!focused &&
+      (focused === this._searchFieldElement || focused === this._listElement)
+    );
+  }
+
+  /**
    * The blur handlers drop the cursor, so whichever of the search field and the
    * list takes focus next puts it back. Enter acts on the cursor, and the row
    * it points at is highlighted, so both have to survive focus moving between
@@ -810,10 +826,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     ev.stopPropagation();
 
     // Enter is bound to the host, so it arrives wherever focus sits inside the
-    // picker. Only the search field and the list drive the cursor; a focused
-    // section chip needs its own Enter to toggle its section.
-    const focused = this.shadowRoot?.activeElement;
-    if (focused !== this._searchFieldElement && focused !== this._listElement) {
+    // picker. A focused section chip needs its own Enter to toggle its section.
+    if (!this._focusOwnsCursor) {
       return;
     }
 
