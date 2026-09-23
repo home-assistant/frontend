@@ -178,6 +178,7 @@ class DialogSystemLogDetail extends LitElement {
         <span slot="headerTitle">${title}</span>
         <ha-icon-button
           id="copy"
+          autofocus
           @click=${this._copyLog}
           slot="headerActionItems"
           .label=${this._i18n.localize("ui.panel.config.logs.copy")}
@@ -237,7 +238,7 @@ class DialogSystemLogDetail extends LitElement {
                 }
               </ha-alert>`
         }
-        <div class="contents" tabindex="-1" autofocus>
+        <div class="contents">
           <p>
             ${this._i18n.localize("ui.panel.config.logs.detail.logger")}:
             ${item.name}<br />
