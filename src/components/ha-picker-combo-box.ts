@@ -754,9 +754,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
+    // Focusing the search field blurs the list, which resets the cursor, so
+    // read the starting index first.
+    const from = this._selectedItemIndex + 1;
+
     this._searchFieldElement?.focus();
 
-    this._moveCursor(this._selectedItemIndex + 1, 1);
+    this._moveCursor(from, 1);
   };
 
   private _selectPreviousItem = (ev: KeyboardEvent) => {
