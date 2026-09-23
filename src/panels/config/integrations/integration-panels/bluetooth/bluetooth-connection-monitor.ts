@@ -28,9 +28,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 
 @customElement("bluetooth-connection-monitor")
 export class BluetoothConnectionMonitorPanel extends LitElement {
-  private _table = new DataTableController<BluetoothConnectionData>(this, {
-    selectionMode: false,
-  });
+  private _table = new DataTableController<BluetoothConnectionData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -241,15 +239,10 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
 
   protected render(): TemplateResult {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._dataWithNamedSourceAndIds(this._data),
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
       noDataText: this.hass.localize(
         "ui.panel.config.bluetooth.no_connections"
       ),
-      filter: this._filter || "",
     });
 
     return html`
@@ -259,8 +252,12 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         .route=${this.route}
         .tabs=${this._tabs}
         back-path="/config/bluetooth/dashboard"
+        .columns=${this._columns(this.hass.localize)}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        filter=${this._filter || ""}
       ></hass-tabs-subpage-data-table>
     `;
   }

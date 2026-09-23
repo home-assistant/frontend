@@ -109,9 +109,6 @@ export class HaConfigLabels extends LitElement {
 
   private _table = new DataTableController<LabelRegistryEntry>(this, {
     state: "loading",
-    id: "label_id",
-    clickable: true,
-    selectionMode: false,
   });
 
   @state()
@@ -249,14 +246,7 @@ export class HaConfigLabels extends LitElement {
 
   protected render() {
     this._table.setConfig({
-      columns: this._columns(this.hass.localize, this.narrow),
-      narrow: this.narrow,
       noDataText: this.hass.localize("ui.panel.config.labels.no_labels"),
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
-      filter: this._filter,
     });
     return html`
       <hass-tabs-subpage-data-table
@@ -265,11 +255,18 @@ export class HaConfigLabels extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.areas}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
         has-fab
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editLabel}
+        clickable
+        id="label_id"
       >
         <ha-icon-button
           slot="toolbar-icon"

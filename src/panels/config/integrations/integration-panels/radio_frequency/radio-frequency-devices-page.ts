@@ -33,10 +33,7 @@ interface RadioFrequencyTransmitterRow {
 
 @customElement("radio-frequency-devices-page")
 export class RadioFrequencyDevicesPage extends LitElement {
-  private _table = new DataTableController<RadioFrequencyTransmitterRow>(this, {
-    selectionMode: false,
-    clickable: true,
-  });
+  private _table = new DataTableController<RadioFrequencyTransmitterRow>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -134,8 +131,6 @@ export class RadioFrequencyDevicesPage extends LitElement {
 
   protected render(): TemplateResult {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._data(
         this.transmitters,
         this.hass.states,
@@ -154,7 +149,9 @@ export class RadioFrequencyDevicesPage extends LitElement {
         .route=${this.route}
         .tabs=${this._tabs}
         back-path="/config/radio-frequency/dashboard"
+        .columns=${this._columns(this.hass.localize)}
         @row-click=${this._handleRowClicked}
+        clickable
       ></hass-tabs-subpage-data-table>
     `;
   }

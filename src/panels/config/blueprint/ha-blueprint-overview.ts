@@ -83,11 +83,7 @@ const createNewFunctions = {
 
 @customElement("ha-blueprint-overview")
 class HaBlueprintOverview extends LitElement {
-  private _table = new DataTableController<BlueprintMetaDataPath>(this, {
-    selectionMode: false,
-    id: "fullpath",
-    clickable: true,
-  });
+  private _table = new DataTableController<BlueprintMetaDataPath>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -113,7 +109,7 @@ class HaBlueprintOverview extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed: string[] = [];
+  private _activeCollapsed?: string;
 
   @storage({
     key: "blueprint-table-column-order",
@@ -331,8 +327,6 @@ class HaBlueprintOverview extends LitElement {
 
   protected render(): TemplateResult {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._processedBlueprints(
         this.blueprints,
         this.hass.localize,
@@ -341,32 +335,8 @@ class HaBlueprintOverview extends LitElement {
       noDataText: this.hass.localize(
         "ui.panel.config.blueprint.overview.no_blueprints"
       ),
-      appendRow: html`<div
-        class="mdc-data-table__cell"
-        style="width: 100%; text-align: center;"
-        role="cell"
-      >
-        <ha-button
-          appearance="plain"
-          href=${documentationUrl(this.hass, "/get-blueprints")}
-          target="_blank"
-          rel="noreferrer noopener"
-          size="s"
-        >
-          ${this.hass.localize(
-            "ui.panel.config.blueprint.overview.discover_more"
-          )}
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-button>
-      </div>`,
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
-      filter: this._filter,
     });
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -374,12 +344,39 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
+        .columns=${this._columns(this.hass.localize)}
+        id="fullpath"
         has-fab
+        clickable
         @row-click=${this._handleRowClicked}
+        .appendRow=${html`<div
+          class="mdc-data-table__cell"
+          style="width: 100%; text-align: center;"
+          role="cell"
+        >
+          <ha-button
+            appearance="plain"
+            href=${documentationUrl(this.hass, "/get-blueprints")}
+            target="_blank"
+            rel="noreferrer noopener"
+            size="s"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.blueprint.overview.discover_more"
+            )}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+          </ha-button>
+        </div>`}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
       >
         <ha-icon-button

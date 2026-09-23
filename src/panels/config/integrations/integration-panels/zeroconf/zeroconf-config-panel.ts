@@ -23,10 +23,7 @@ import { showZeroconfDiscoveryInfoDialog } from "./show-dialog-zeroconf-discover
 
 @customElement("zeroconf-config-panel")
 export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<ZeroconfDiscoveryData>(this, {
-    selectionMode: false,
-    clickable: true,
-  });
+  private _table = new DataTableController<ZeroconfDiscoveryData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -108,10 +105,6 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
       data: this._dataWithIds(this._data),
       noDataText: this.hass.localize(
         "ui.panel.config.zeroconf.no_devices_found"
@@ -124,9 +117,13 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config/integrations/integration/zeroconf"
+        .columns=${this._columns(this.hass.localize)}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
+        clickable
       ></hass-tabs-subpage-data-table>
     `;
   }

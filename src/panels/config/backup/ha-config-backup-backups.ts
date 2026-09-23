@@ -85,6 +85,8 @@ const LOCATIONS_FILTER = "backup-locations";
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
+  private _table = new DataTableController<BackupRow>(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
@@ -125,14 +127,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     subscribe: false,
   })
   private _activeCollapsed: string[] = [];
-
-  private _table = new DataTableController<BackupRow>(this, {
-    selectionMode: false,
-    id: "backup_id",
-    clickable: true,
-    hasFilters: true,
-    selectable: true,
-  });
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -433,26 +427,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     );
 
     this._table.setConfig({
-      narrow: this.narrow,
-      filters: Object.values(this._filters).filter((filter) =>
-        Array.isArray(filter)
-          ? filter.length
-          : filter &&
-            Object.values(filter).some((val) =>
-              Array.isArray(val) ? val.length : val
-            )
-      ).length,
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
-      groupOrder: this._groupOrder(
-        this._activeGrouping,
-        this.hass.localize,
-        isHassio
-      ),
-      columns: this._columns(this.hass.localize, maxDisplayedAgents),
-      data,
+      data: data,
       noDataText: this.hass.localize("ui.panel.config.backup.no_backups"),
-      searchLabel: this.hass.localize("ui.panel.config.backup.picker.search"),
     });
 
     return html`
@@ -467,12 +443,38 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config/backup/overview"
+        clickable
+        id="backup_id"
+        has-filters
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
+        selectable
+        .selected=${this._selected.length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .groupOrder=${this._groupOrder(
+          this._activeGrouping,
+          this.hass.localize,
+          isHassio
+        )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._clearFilter}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
+        .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.backup.picker.search"
+        )}
       >
         <div slot="toolbar-icon">
           <ha-dropdown

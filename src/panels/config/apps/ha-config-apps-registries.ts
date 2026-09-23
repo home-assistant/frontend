@@ -31,9 +31,7 @@ interface RegistryRowData {
 
 @customElement("ha-config-apps-registries")
 export class HaConfigAppsRegistries extends LitElement {
-  private _table = new DataTableController<RegistryRowData>(this, {
-    id: "registry",
-  });
+  private _table = new DataTableController<RegistryRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -105,7 +103,6 @@ export class HaConfigAppsRegistries extends LitElement {
     }
 
     this._table.setConfig({
-      columns: this._columns(this.hass.localize),
       data: this._registries,
       noDataText: this.hass.localize(
         "ui.panel.config.apps.registries.no_registries"
@@ -120,7 +117,11 @@ export class HaConfigAppsRegistries extends LitElement {
         back-path="/config/apps/available"
         .header=${this.hass.localize("ui.panel.config.apps.store.registries")}
       >
-        <ha-data-table has-fab></ha-data-table>
+        <ha-data-table
+          .columns=${this._columns(this.hass.localize)}
+          id="registry"
+          has-fab
+        ></ha-data-table>
         <ha-button size="l" @click=${this._showAddRegistryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.registries.add")}

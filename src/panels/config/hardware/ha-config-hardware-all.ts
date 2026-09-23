@@ -8,6 +8,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
+  DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -28,10 +29,7 @@ interface HardwareDeviceRow extends HardwareDevice {
 
 @customElement("ha-config-hardware-all")
 class HaConfigHardwareAll extends LitElement {
-  private _table = new DataTableController<HardwareDeviceRow>(this, {
-    selectionMode: false,
-    clickable: true,
-  });
+  private _table = new DataTableController(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -79,14 +77,14 @@ class HaConfigHardwareAll extends LitElement {
   );
 
   private _data = memoizeOne(
-    (hardware?: HassioHardwareInfo): HardwareDeviceRow[] =>
-      hardware?.devices.map((device) => ({
+    (hardware: HassioHardwareInfo): DataTableRowData[] =>
+      hardware.devices.map((device) => ({
         ...device,
         id: device.dev_path,
         attributes_string: Object.entries(device.attributes)
           .map(([key, value]) => `${key}: ${value}`)
           .join(" "),
-      })) ?? []
+      }))
   );
 
   protected firstUpdated(): void {
@@ -95,13 +93,12 @@ class HaConfigHardwareAll extends LitElement {
 
   protected render() {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
-      data: this._data(this._hardware),
+      data: this._hardware ? this._data(this._hardware) : [],
       noDataText:
         this._error ||
         this.hass.localize("ui.panel.config.hardware.loading_system_data"),
     });
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -109,6 +106,8 @@ class HaConfigHardwareAll extends LitElement {
         back-path="/config/system"
         .route=${this.route}
         .tabs=${hardwareTabs(this.hass)}
+        clickable
+        .columns=${this._columns(this.hass.localize)}
         @row-click=${this._handleRowClicked}
       ></hass-tabs-subpage-data-table>
     `;

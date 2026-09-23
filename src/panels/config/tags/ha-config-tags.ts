@@ -49,11 +49,7 @@ export interface TagRowData extends Tag {
 
 @customElement("ha-config-tags")
 export class HaConfigTags extends SubscribeMixin(LitElement) {
-  private _table = new DataTableController<TagRowData>(this, {
-    selectionMode: false,
-    id: "id",
-    clickable: true,
-  });
+  private _table = new DataTableController<TagRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -195,12 +191,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
 
   protected render() {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._data(this._tags),
       noDataText: this.hass.localize("ui.panel.config.tag.no_tags"),
-      filter: this._filter,
     });
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -208,9 +202,13 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         back-path="/config/connectivity"
         .route=${this.route}
         .tabs=${configSections.tags}
+        .columns=${this._columns(this.hass.localize)}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
+        clickable
         @row-click=${this._editTag}
+        id="id"
       >
         <ha-icon-button
           slot="toolbar-icon"

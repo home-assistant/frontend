@@ -21,9 +21,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 
 @customElement("zwave_js-provisioned")
 class ZWaveJSProvisioned extends LitElement {
-  private _table = new DataTableController<ZwaveJSProvisioningEntry>(this, {
-    selectionMode: false,
-  });
+  private _table = new DataTableController<ZwaveJSProvisioningEntry>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -39,8 +37,6 @@ class ZWaveJSProvisioned extends LitElement {
 
   protected render() {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._getData(this._provisioningEntries, this._nodeIdToDevice),
     });
 
@@ -60,6 +56,7 @@ class ZWaveJSProvisioned extends LitElement {
         back-path="/config/zwave_js/dashboard?config_entry=${
           this.configEntryId
         }"
+        .columns=${this._columns(this.hass.localize)}
       >
       </hass-tabs-subpage-data-table>
     `;

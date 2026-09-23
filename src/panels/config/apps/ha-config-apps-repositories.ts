@@ -43,9 +43,7 @@ interface RepositoryRowData {
 
 @customElement("ha-config-apps-repositories")
 export class HaConfigAppsRepositories extends LitElement {
-  private _table = new DataTableController<RepositoryRowData>(this, {
-    id: "slug",
-  });
+  private _table = new DataTableController<RepositoryRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -178,7 +176,6 @@ export class HaConfigAppsRepositories extends LitElement {
     );
 
     this._table.setConfig({
-      columns: this._columns(this.hass.localize, usedRepositories),
       data: this._data(repositories),
       noDataText: this.hass.localize(
         "ui.panel.config.apps.repositories.no_repositories"
@@ -193,7 +190,11 @@ export class HaConfigAppsRepositories extends LitElement {
         back-path="/config/apps/available"
         .header=${this.hass.localize("ui.panel.config.apps.store.repositories")}
       >
-        <ha-data-table has-fab></ha-data-table>
+        <ha-data-table
+          .columns=${this._columns(this.hass.localize, usedRepositories)}
+          id="slug"
+          has-fab
+        ></ha-data-table>
         <ha-button size="l" @click=${this._showAddRepositoryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.repositories.add")}

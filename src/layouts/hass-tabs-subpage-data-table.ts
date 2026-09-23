@@ -13,7 +13,7 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -23,7 +23,11 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
 import { dataTableModelContext } from "../components/data-table/data-table-model";
-import type { HaDataTable } from "../components/data-table/ha-data-table";
+import type {
+  DataTableColumnContainer,
+  HaDataTable,
+  SortingDirection,
+} from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-adaptive-dialog";
 import "../components/ha-button";
@@ -53,9 +57,29 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
+  @property({ attribute: false }) public initialCollapsedGroups: string[] = [];
+
+  /**
+   * Object with the columns.
+   * @type {Object}
+   */
+  @property({ type: Object }) public columns: DataTableColumnContainer = {};
+
   @state()
   @consume({ context: dataTableModelContext, subscribe: true })
   private _model!: ContextType<typeof dataTableModelContext>;
+
+  /**
+   * Should rows be selectable.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public selectable = false;
+
+  /**
+   * Should rows be clickable.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public clickable = false;
 
   /**
    * Do we need to add padding for a fab.
@@ -72,6 +96,39 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   public showTabs = false;
 
   /**
+   * Add an extra row at the bottom of the data table
+   * @type {TemplateResult}
+   */
+  @property({ attribute: false }) public appendRow?: TemplateResult;
+
+  /**
+   * Field with a unique id per entry in data.
+   * @type {String}
+   */
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: String }) public id = "id";
+
+  /**
+   * String to filter the data in the data table on.
+   * @type {String}
+   */
+  @property({ type: String }) public filter = "";
+
+  @property({ attribute: false }) public searchLabel?: string;
+
+  /**
+   * Number of active filters.
+   * @type {Number}
+   */
+  @property({ type: Number }) public filters = 0;
+
+  /**
+   * Number of current selections.
+   * @type {Number}
+   */
+  @property({ type: Number }) public selected?;
+
+  /**
    * What path to use when the back button is pressed.
    * @type {String}
    * @attr back-path
@@ -84,6 +141,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ attribute: false }) public backCallback?: () => void;
 
+  /**
+   * Hides the data table and show an empty message.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public empty = false;
+
   @property({ attribute: false }) public route!: Route;
 
   /**
@@ -92,7 +155,38 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ attribute: false }) public tabs: PageNavigation[] = [];
 
-  @query("ha-data-table") private _dataTable?: HaDataTable;
+  /**
+   * Show the filter menu.
+   * @type {Boolean}
+   */
+  @property({ attribute: "has-filters", type: Boolean })
+  public hasFilters = false;
+
+  @property({ attribute: "show-filters", type: Boolean })
+  public showFilters = false;
+
+  @property({ attribute: false }) public initialSorting?: {
+    column: string;
+    direction: SortingDirection;
+  };
+
+  @property({ attribute: false }) public initialGroupColumn?: string;
+
+  @property({ attribute: false }) public groupOrder?: string[];
+
+  @property({ attribute: false }) public columnOrder?: string[];
+
+  @property({ attribute: false }) public hiddenColumns?: string[];
+
+  @state() private _sortColumn?: string;
+
+  @state() private _sortDirection: SortingDirection = null;
+
+  @state() private _groupColumn?: string;
+
+  @state() private _selectMode = false;
+
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
@@ -107,7 +201,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   });
 
   public clearSelection() {
-    this._dataTable?.clearSelection();
+    this._dataTable.clearSelection();
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
@@ -120,6 +214,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       this.showTabs =
         this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;
     }
+
+    if (this.hasUpdated) {
+      return;
+    }
+    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
+      this._setGroupColumn(this.initialGroupColumn);
+    }
+    if (this.initialSorting && this.columns[this.initialSorting.column]) {
+      this._sortColumn = this.initialSorting.column;
+      this._sortDirection = this.initialSorting.direction;
+    }
   }
 
   protected render() {
@@ -128,21 +233,21 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
     const localize = this.localizeFunc || this.hass.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
-    const filterButton = this._model.hasFilters
+    const filterButton = this.hasFilters
       ? html`<ha-filter-pane-chip
           .label=${localize("ui.components.subpage-data-table.filters")}
           .path=${mdiFilterVariant}
-          .count=${this._model.filters}
-          .active=${!!this._model.filters}
+          .count=${this.filters}
+          .active=${!!this.filters}
           @click=${this._toggleFilters}
         ></ha-filter-pane-chip>`
       : nothing;
 
     const selectModeBtn =
-      this._model.selectable && !this._model.selectionMode
+      this.selectable && !this._selectMode
         ? html`<ha-assist-chip
             class="has-dropdown select-mode-chip"
-            .active=${this._model.selectionMode}
+            .active=${this._selectMode}
             @click=${this._enableSelectMode}
             .title=${localize(
               "ui.components.subpage-data-table.enter_selection_mode"
@@ -154,24 +259,21 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     const searchBar = html`<ha-input-search
       appearance="outlined"
-      .value=${this._model.filter}
+      .value=${this.filter}
       @input=${this._handleSearchChange}
-      .placeholder=${this._model.searchLabel}
+      .placeholder=${this.searchLabel}
     >
     </ha-input-search>`;
 
-    const sortByMenu = Object.values(this._model.columns).find(
-      (col) => col.sortable
-    )
+    const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
           <ha-dropdown @wa-select=${this._handleSortBy}>
             <ha-assist-chip
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.sort_by", {
                 sortColumn:
-                  this._model.sortColumn &&
-                  this._model.columns[this._model.sortColumn]
-                    ? ` ${this._model.columns[this._model.sortColumn].title || this._model.columns[this._model.sortColumn].label}`
+                  this._sortColumn && this.columns[this._sortColumn]
+                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
                     : "",
               })}
             >
@@ -180,20 +282,20 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 .path=${mdiMenuDown}
               ></ha-svg-icon>
             </ha-assist-chip>
-            ${Object.entries(this._model.columns).map(([id, column]) =>
+            ${Object.entries(this.columns).map(([id, column]) =>
               column.sortable
                 ? html`
                     <ha-dropdown-item
                       .value=${id}
-                      class=${classMap({ selected: id === this._model.sortColumn })}
+                      class=${classMap({ selected: id === this._sortColumn })}
                     >
                       ${
-                        this._model.sortColumn === id
+                        this._sortColumn === id
                           ? html`
                               <ha-svg-icon
                                 slot="end"
                                 .path=${
-                                  this._model.sortDirection === "desc"
+                                  this._sortDirection === "desc"
                                     ? mdiArrowDown
                                     : mdiArrowUp
                                 }
@@ -210,17 +312,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         `
       : nothing;
 
-    const groupByMenu = Object.values(this._model.columns).find(
-      (col) => col.groupable
-    )
+    const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
       ? html`
           <ha-dropdown @wa-select=${this._handleGroupBy}>
             <ha-assist-chip
               .label=${localize("ui.components.subpage-data-table.group_by", {
                 groupColumn:
-                  this._model.groupColumn &&
-                  this._model.columns[this._model.groupColumn]
-                    ? ` ${this._model.columns[this._model.groupColumn].title || this._model.columns[this._model.groupColumn].label}`
+                  this._groupColumn && this.columns[this._groupColumn]
+                    ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
                     : "",
               })}
               slot="trigger"
@@ -230,13 +329,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 .path=${mdiMenuDown}
               ></ha-svg-icon
             ></ha-assist-chip>
-            ${Object.entries(this._model.columns).map(([id, column]) =>
+            ${Object.entries(this.columns).map(([id, column]) =>
               column.groupable
                 ? html`
                     <ha-dropdown-item
                       .value=${id}
-                      .selected=${id === this._model.groupColumn}
-                      class=${classMap({ selected: id === this._model.groupColumn })}
+                      .selected=${id === this._groupColumn}
+                      class=${classMap({ selected: id === this._groupColumn })}
                     >
                       ${column.title || column.label}
                     </ha-dropdown-item>
@@ -245,14 +344,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             )}
             <ha-dropdown-item
               value="reset"
-              class=${classMap({ selected: !this._model.groupColumn })}
+              class=${classMap({ selected: !this._groupColumn })}
             >
               ${localize("ui.components.subpage-data-table.dont_group_by")}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
             <ha-dropdown-item
               value="collapse_all"
-              .disabled=${!this._model.groupColumn}
+              .disabled=${!this._groupColumn}
             >
               <ha-svg-icon
                 slot="icon"
@@ -264,7 +363,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             </ha-dropdown-item>
             <ha-dropdown-item
               value="expand_all"
-              .disabled=${!this._model.groupColumn}
+              .disabled=${!this._groupColumn}
             >
               <ha-svg-icon
                 slot="icon"
@@ -294,10 +393,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         .route=${this.route}
         .tabs=${this.tabs}
         .mainPage=${this.mainPage}
-        .pane=${showPane && this._model.showFilters}
+        .pane=${showPane && this.showFilters}
+        @sorting-changed=${this._sortingChanged}
       >
         ${
-          this._model.selectable && this._model.selectionMode
+          this._selectMode
             ? html`<div class="selection-bar" slot="toolbar">
                 <div class="selection-controls">
                   <ha-icon-button
@@ -336,11 +436,18 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                       )}
                     </ha-dropdown-item>
                   </ha-dropdown>
-                  <p>
-                    ${localize("ui.components.subpage-data-table.selected", {
-                      selected: this._model.selected.length,
-                    })}
-                  </p>
+                  ${
+                    this.selected !== undefined
+                      ? html`<p>
+                          ${localize(
+                            "ui.components.subpage-data-table.selected",
+                            {
+                              selected: this.selected || "0",
+                            }
+                          )}
+                        </p>`
+                      : nothing
+                  }
                 </div>
                 <div class="center-vertical">
                   <slot name="selection-bar"></slot>
@@ -349,7 +456,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this._model.showFilters
+          this.showFilters
             ? !showPane
               ? nothing
               : html`<div class="pane" slot="pane">
@@ -363,7 +470,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                       @click=${this._toggleFilters}
                     ></ha-filter-pane-chip>
                     ${
-                      this._model.filters
+                      this.filters
                         ? html`<ha-icon-button
                             .path=${mdiFilterVariantRemove}
                             @click=${this._clearFilters}
@@ -381,7 +488,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this._model.empty && this._model.state === "ready"
+          this.empty && this._model.state === "ready"
             ? html`<div class="center">
                 <slot name="empty">${this._model.noDataText}</slot>
               </div>`
@@ -399,7 +506,22 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                       `
                     : ""
                 }
-                <ha-data-table>
+                <ha-data-table
+                  .narrow=${this.narrow}
+                  .columns=${this.columns}
+                  .filter=${this.filter}
+                  .selectable=${this._selectMode}
+                  .id=${this.id}
+                  .clickable=${this.clickable}
+                  .appendRow=${this.appendRow}
+                  .sortColumn=${this._sortColumn}
+                  .sortDirection=${this._sortDirection}
+                  .groupColumn=${this._groupColumn}
+                  .groupOrder=${this.groupOrder}
+                  .initialCollapsedGroups=${this.initialCollapsedGroups}
+                  .columnOrder=${this.columnOrder}
+                  .hiddenColumns=${this.hiddenColumns}
+                >
                   ${
                     !this.narrow
                       ? html`
@@ -408,8 +530,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                             <slot name="header">
                               <div class="table-header">
                                 ${
-                                  this._model.hasFilters &&
-                                  !this._model.showFilters
+                                  this.hasFilters && !this.showFilters
                                     ? html`${filterButton}`
                                     : nothing
                                 }${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
@@ -423,7 +544,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                           </div>
                           <div slot="header-row" class="narrow-header-row">
                             ${
-                              this._model.hasFilters && !this._model.showFilters
+                              this.hasFilters && !this.showFilters
                                 ? html`${filterButton}`
                                 : nothing
                             }
@@ -438,7 +559,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
       ${
-        this._model.showFilters && !showPane
+        this.showFilters && !showPane
           ? html`<ha-adaptive-dialog
               open
               flexcontent
@@ -455,7 +576,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 )}
               ></ha-icon-button>
               ${
-                this._model.filters
+                this.filters
                   ? html`<ha-icon-button
                       slot="headerActionItems"
                       @click=${this._clearFilters}
@@ -487,29 +608,34 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _toggleFilters() {
-    this._model.update({ showFilters: !this._model.showFilters });
+    this.showFilters = !this.showFilters;
   }
 
   private _closeFilters = () => {
-    this._model.update({ showFilters: false });
+    this.showFilters = false;
   };
+
+  private _sortingChanged(ev) {
+    this._sortDirection = ev.detail.direction;
+    this._sortColumn = this._sortDirection ? ev.detail.column : undefined;
+  }
 
   private _handleSortBy(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // keep the dropdown open
 
     const columnId = ev.detail.item.value;
-    this._model.update({
-      sortColumn: columnId,
-      sortDirection:
-        this._model.sortColumn === columnId &&
-        this._model.sortDirection === "asc"
-          ? "desc"
-          : "asc",
-    });
+    if (!this._sortDirection || this._sortColumn !== columnId) {
+      this._sortDirection = "asc";
+    } else if (this._sortDirection === "asc") {
+      this._sortDirection = "desc";
+    } else {
+      this._sortDirection = "asc";
+    }
+    this._sortColumn = columnId;
 
     fireEvent(this, "sorting-changed", {
       column: columnId,
-      direction: this._model.sortDirection,
+      direction: this._sortDirection,
     });
   }
 
@@ -533,20 +659,21 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _setGroupColumn(columnId: string) {
-    this._model.update({ groupColumn: columnId });
+    this._groupColumn = columnId;
     fireEvent(this, "grouping-changed", { value: columnId });
   }
 
   private _openSettings() {
     showDataTableSettingsDialog(this, {
-      columns: this._model.columns,
-      hiddenColumns: this._model.hiddenColumns,
-      columnOrder: this._model.columnOrder,
+      columns: this.columns,
+      hiddenColumns: this.hiddenColumns,
+      columnOrder: this.columnOrder,
       onUpdate: (
         columnOrder: string[] | undefined,
         hiddenColumns: string[] | undefined
       ) => {
-        this._model.update({ columnOrder, hiddenColumns });
+        this.columnOrder = columnOrder;
+        this.hiddenColumns = hiddenColumns;
         fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
       },
       localizeFunc: this.localizeFunc,
@@ -554,15 +681,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _collapseAllGroups = () => {
-    this._dataTable?.collapseAllGroups();
+    this._dataTable.collapseAllGroups();
   };
 
   private _expandAllGroups = () => {
-    this._dataTable?.expandAllGroups();
+    this._dataTable.expandAllGroups();
   };
 
   private _enableSelectMode() {
-    this._model.update({ selectionMode: true });
+    this._selectMode = true;
   }
 
   private _handleSelect(ev: HaDropdownSelectEvent) {
@@ -586,26 +713,27 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _disableSelectMode = () => {
-    this._model.update({ selectionMode: false });
-    this._dataTable?.clearSelection();
+    this._selectMode = false;
+    this._dataTable.clearSelection();
   };
 
   private _selectAll = () => {
-    this._dataTable?.selectAll();
+    this._dataTable.selectAll();
   };
 
   private _selectNone = () => {
-    this._dataTable?.clearSelection();
+    this._dataTable.clearSelection();
   };
 
   private _handleSearchChange(
     ev: InputEvent & HASSDomTargetEvent<HaInputSearch>
   ) {
-    if (this._model.filter === ev.target.value) {
+    const target = ev.target as HaInputSearch;
+    if (this.filter === target.value) {
       return;
     }
-    this._model.update({ filter: ev.target.value ?? "" });
-    fireEvent(this, "search-changed", { value: this._model.filter });
+    this.filter = target.value ?? "";
+    fireEvent(this, "search-changed", { value: this.filter });
   }
 
   static styles = css`

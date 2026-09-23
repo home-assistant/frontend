@@ -19,11 +19,7 @@ export interface ClusterRowData extends Cluster {
 
 @customElement("zha-clusters-data-table")
 export class ZHAClustersDataTable extends LitElement {
-  private _table = new DataTableController<ClusterRowData>(this, {
-    id: "cluster_id",
-    selectable: true,
-    autoHeight: true,
-  });
+  private _table = new DataTableController<ClusterRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -80,13 +76,19 @@ export class ZHAClustersDataTable extends LitElement {
 
   protected render(): TemplateResult {
     this._table.setConfig({
-      columns: this._columns(this.narrow),
       data: this._clusters(this.clusters),
-      searchLabel: this.hass.localize("ui.components.data-table.search"),
       noDataText: this.hass.localize("ui.components.data-table.no-data"),
     });
 
-    return html` <ha-data-table></ha-data-table> `;
+    return html`
+      <ha-data-table
+        .columns=${this._columns(this.narrow)}
+        .id=${"cluster_id"}
+        selectable
+        auto-height
+        .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+      ></ha-data-table>
+    `;
   }
 }
 

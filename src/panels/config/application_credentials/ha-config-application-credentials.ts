@@ -34,10 +34,7 @@ import { showAddApplicationCredentialDialog } from "./show-dialog-add-applicatio
 
 @customElement("ha-config-application-credentials")
 export class HaConfigApplicationCredentials extends LitElement {
-  private _table = new DataTableController<ApplicationCredential>(this, {
-    selectionMode: false,
-    selectable: true,
-  });
+  private _table = new DataTableController<ApplicationCredential>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -85,9 +82,7 @@ export class HaConfigApplicationCredentials extends LitElement {
   private _filter = "";
 
   private _columns = memoizeOne(
-    (
-      localize: LocalizeFunc
-    ): DataTableColumnContainer<ApplicationCredential> => {
+    (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<ApplicationCredential> = {
         name: {
           title: localize(
@@ -155,18 +150,12 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   protected render() {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._getApplicationCredentials(
         this._applicationCredentials,
         this.hass.localize
       ),
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
-      filter: this._filter,
     });
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -174,10 +163,17 @@ export class HaConfigApplicationCredentials extends LitElement {
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.devices}
+        .columns=${this._columns(this.hass.localize)}
         has-fab
+        selectable
+        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
       >
         <div class="header-btns" slot="selection-bar">

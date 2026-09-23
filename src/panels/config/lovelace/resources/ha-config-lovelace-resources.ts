@@ -42,10 +42,7 @@ import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceResources extends LitElement {
-  private _table = new DataTableController<LovelaceResource>(this, {
-    selectionMode: false,
-    clickable: true,
-  });
+  private _table = new DataTableController<LovelaceResource>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -179,17 +176,10 @@ export class HaConfigLovelaceResources extends LitElement {
     const isYamlMode = this._lovelaceInfo?.resource_mode === "yaml";
 
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.language, this.hass.localize),
       data: this._resources,
       noDataText: this.hass.localize(
         "ui.panel.config.lovelace.resources.picker.no_resources"
       ),
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
-      filter: this._filter,
     });
 
     return html`
@@ -199,11 +189,17 @@ export class HaConfigLovelaceResources extends LitElement {
         .route=${this.route}
         back-path="/config/lovelace/dashboards"
         .tabs=${lovelaceResourcesTabs}
+        .columns=${this._columns(this.hass.language, this.hass.localize)}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editResource}
         has-fab
+        clickable
       >
         ${
           isYamlMode

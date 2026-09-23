@@ -92,11 +92,7 @@ type DataTableItem = Pick<
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
-  private _table = new DataTableController<DataTableItem>(this, {
-    selectionMode: false,
-    id: "url_path",
-    clickable: true,
-  });
+  private _table = new DataTableController<DataTableItem>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -164,7 +160,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       _language,
       dashboards,
       localize: LocalizeFunc
-    ): DataTableColumnContainer<DataTableItem> => {
+    ): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<DataTableItem> = {
         icon: {
           title: "",
@@ -404,21 +400,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
 
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(
-        this.narrow,
-        this.hass.language,
-        this._dashboards,
-        this.hass.localize
-      ),
       data: this._getItems(this._dashboards, defaultPanel, this.hass.panels),
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
-      filter: this._filter,
     });
 
     return html`
@@ -428,13 +410,27 @@ export class HaConfigLovelaceDashboards extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${lovelaceTabs}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.language,
+          this._dashboards,
+          this.hass.localize
+        )}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
+        id="url_path"
         has-fab
+        clickable
       >
         <ha-dropdown slot="toolbar-icon">
           <ha-icon-button

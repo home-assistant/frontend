@@ -36,10 +36,7 @@ export interface GroupRowData extends ZHAGroup {
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
-  private _table = new DataTableController<GroupRowData>(this, {
-    selectionMode: false,
-    clickable: true,
-  });
+  private _table = new DataTableController<GroupRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -113,8 +110,6 @@ export class ZHAGroupsDashboard extends LitElement {
 
   protected render(): TemplateResult {
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize),
       data: this._formattedGroups(this._groups),
     });
 
@@ -125,7 +120,9 @@ export class ZHAGroupsDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        .columns=${this._columns(this.hass.localize)}
         @row-click=${this._handleRowClicked}
+        clickable
         has-fab
       >
         <ha-button href="/config/zha/group-add" slot="fab" size="l">

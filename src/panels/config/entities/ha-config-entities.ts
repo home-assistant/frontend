@@ -158,6 +158,8 @@ export interface EntityRow extends StateEntity {
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends LitElement {
+  private _table = new DataTableController<EntityRow>(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -230,15 +232,7 @@ export class HaConfigEntities extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed: string[] = [];
-
-  private _table = new DataTableController<EntityRow>(this, {
-    selectionMode: false,
-    id: "entity_id",
-    hasFilters: true,
-    selectable: true,
-    clickable: true,
-  });
+  private _activeCollapsed?: string;
 
   @storage({
     key: "entities-table-column-order",
@@ -815,30 +809,7 @@ export class HaConfigEntities extends LitElement {
       );
 
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(this.hass.localize, filteredEntities),
       data: filteredEntities,
-      searchLabel: this.hass.localize(
-        "ui.panel.config.entities.picker.search",
-        {
-          number: filteredEntities.length,
-        }
-      ),
-      filters: Object.values(this._filters).filter((filter) =>
-        Array.isArray(filter)
-          ? filter.length
-          : filter &&
-            Object.values(filter).some((val) =>
-              Array.isArray(val) ? val.length : val
-            )
-      ).length,
-      groupColumn: this._activeGrouping ?? "device_full",
-      collapsedGroups: this._activeCollapsed,
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
-      filter: this._filter,
     });
 
     return html`
@@ -848,14 +819,40 @@ export class HaConfigEntities extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
+        .columns=${this._columns(this.hass.localize, filteredEntities)}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.entities.picker.search",
+          { number: filteredEntities.length }
+        )}
+        has-filters
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
+        selectable
+        .selected=${this._selected.length}
+        .initialGroupColumn=${this._activeGrouping ?? "device_full"}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
+        clickable
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
+        id="entity_id"
         .hasFab=${includeAddDeviceFab}
         class=${this.narrow ? "narrow" : ""}
       >

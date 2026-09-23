@@ -28,11 +28,7 @@ interface AssistDeviceExtra extends AssistDevice {
 
 @customElement("ha-config-voice-assistants-assist-devices")
 class AssistDevicesPage extends LitElement {
-  private _table = new DataTableController<AssistDeviceExtra>(this, {
-    id: "device_id",
-    clickable: true,
-    autoHeight: true,
-  });
+  private _table = new DataTableController<AssistDeviceExtra>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -137,7 +133,6 @@ class AssistDevicesPage extends LitElement {
     }
 
     this._table.setConfig({
-      columns: this._columns(this.hass.localize),
       data: this._data(
         this.hass.localize,
         this.hass.devices,
@@ -158,7 +153,13 @@ class AssistDevicesPage extends LitElement {
           "ui.panel.config.voice_assistants.assistants.pipeline.devices.title"
         )}
       >
-        <ha-data-table @row-click=${this._handleRowClicked}></ha-data-table>
+        <ha-data-table
+          clickable
+          id="device_id"
+          .columns=${this._columns(this.hass.localize)}
+          auto-height
+          @row-click=${this._handleRowClicked}
+        ></ha-data-table>
       </hass-subpage>
     `;
   }

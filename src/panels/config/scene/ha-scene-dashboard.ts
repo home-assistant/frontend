@@ -130,6 +130,8 @@ type SceneItem = SceneEntity & {
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends SubscribeMixin(LitElement) {
+  private _table = new DataTableController<SceneItem>(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -146,13 +148,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
-  private _table = new DataTableController<SceneItem>(this, {
-    selectionMode: false,
-    id: "entity_id",
-    selectable: true,
-    hasFilters: true,
-    clickable: true,
-  });
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredSceneEntityIds?: string[] | null;
 
@@ -204,7 +200,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed: string[] = [];
+  private _activeCollapsed?: string;
 
   @storage({
     key: "scene-table-column-order",
@@ -462,29 +458,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     );
 
     this._table.setConfig({
-      narrow: this.narrow,
-      searchLabel: this.hass.localize("ui.panel.config.scene.picker.search", {
-        number: scenes.length,
-      }),
-      filters: Object.values(this._filters).filter((filter) =>
-        Array.isArray(filter.value)
-          ? filter.value.length
-          : filter.value &&
-            Object.values(filter.value).some((val) =>
-              Array.isArray(val) ? val.length : val
-            )
-      ).length,
-      columns: this._columns(this.hass.localize, scenes),
-      groupColumn: this._activeGrouping ?? "category",
-      collapsedGroups: this._activeCollapsed,
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
       data: scenes,
-      empty: !this.scenes.length,
       noDataText: this.hass.localize("ui.panel.config.scene.picker.no_scenes"),
-      filter: this._filter,
     });
 
     return html`
@@ -494,14 +469,42 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.scene.picker.search",
+          { number: scenes.length }
+        )}
+        selectable
+        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
+        has-filters
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter.value)
+              ? filter.value.length
+              : filter.value &&
+                Object.values(filter.value).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
+        .columns=${this._columns(this.hass.localize, scenes)}
+        id="entity_id"
+        .initialGroupColumn=${this._activeGrouping ?? "category"}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .empty=${!this.scenes.length}
+        .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
+        clickable
         @row-click=${this._handleRowClicked}
       >
         <ha-icon-button

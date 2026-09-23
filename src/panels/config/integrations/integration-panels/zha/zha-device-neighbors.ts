@@ -28,9 +28,7 @@ export interface DeviceRowData extends DataTableRowData {
 
 @customElement("zha-device-neighbors")
 class ZHADeviceNeighbors extends LitElement {
-  private _table = new DataTableController<DeviceRowData>(this, {
-    autoHeight: true,
-  });
+  private _table = new DataTableController<DeviceRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -158,9 +156,7 @@ class ZHADeviceNeighbors extends LitElement {
     }
 
     this._table.setConfig({
-      columns: this._columns(this._narrow),
       data: neighbors,
-      searchLabel: this.hass.localize("ui.components.data-table.search"),
       noDataText: this.hass.localize(
         "ui.panel.config.zha.neighbors.no_neighbors"
       ),
@@ -169,7 +165,11 @@ class ZHADeviceNeighbors extends LitElement {
     return html`
       <ha-card class="device-page-card">
         ${this._renderCardHeader()}
-        <ha-data-table></ha-data-table>
+        <ha-data-table
+          .columns=${this._columns(this._narrow)}
+          auto-height
+          .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+        ></ha-data-table>
       </ha-card>
     `;
   }

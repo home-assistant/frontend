@@ -43,10 +43,7 @@ interface EntityPickerTableRowData extends DataTableRowData {
 
 @customElement("hui-entity-picker-table")
 export class HuiEntityPickerTable extends LitElement {
-  private _table = new DataTableController<EntityPickerTableRowData>(this, {
-    id: "entity_id",
-    selectable: true,
-  });
+  private _table = new DataTableController<EntityPickerTableRowData>(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -116,11 +113,7 @@ export class HuiEntityPickerTable extends LitElement {
     const columns = this._columns(this.narrow, showEntityId);
 
     this._table.setConfig({
-      columns,
-      data,
-      searchLabel: this.hass.localize(
-        "ui.panel.lovelace.unused_entities.search"
-      ),
+      data: data,
       noDataText: this.hass.localize(
         "ui.panel.lovelace.unused_entities.no_data"
       ),
@@ -129,6 +122,12 @@ export class HuiEntityPickerTable extends LitElement {
     return html`
       <ha-data-table
         class=${showEntityId ? "show-entity-id" : ""}
+        selectable
+        .id=${"entity_id"}
+        .columns=${columns}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.lovelace.unused_entities.search"
+        )}
         @selection-changed=${this._handleSelectionChanged}
       ></ha-data-table>
     `;

@@ -5,7 +5,6 @@ import {
   mdiPlus,
   mdiPlusBoxMultiple,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -26,6 +25,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
+  DataTableRowData,
   RowClickedEvent,
   SelectionChangedEvent,
   SortingChangedEvent,
@@ -63,26 +63,9 @@ import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 
-interface ExposedEntityRow {
-  entity_id: string;
-  entity: HassEntity;
-  name: string;
-  domain?: string;
-  area?: string;
-  assistants: string[];
-  assistants_sortable_key?: string;
-  manAssistants?: string[];
-  aliases: ExtEntityRegistryEntry["aliases"];
-}
-
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
-  private _table = new DataTableController<ExposedEntityRow>(this, {
-    selectionMode: false,
-    id: "entity_id",
-    selectable: true,
-    clickable: true,
-  });
+  private _table = new DataTableController(this);
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -142,7 +125,7 @@ export class VoiceAssistantsExpose extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed: string[] = [];
+  private _activeCollapsed?: string;
 
   @storage({
     key: "voice-expose-table-column-order",
@@ -177,8 +160,8 @@ export class VoiceAssistantsExpose extends LitElement {
         | undefined,
       _language: string,
       localize: LocalizeFunc,
-      entitiesToCheck?: ExposedEntityRow[]
-    ): DataTableColumnContainer<ExposedEntityRow> => ({
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.voice_assistants.expose.headers.icon"),
@@ -305,7 +288,7 @@ export class VoiceAssistantsExpose extends LitElement {
         showAssistants.splice(showAssistants.indexOf("cloud.alexa"), 1);
       }
 
-      const result: Record<string, ExposedEntityRow> = {};
+      const result: Record<string, DataTableRowData> = {};
 
       let filteredEntities = Object.values(this.hass.states);
 
@@ -510,29 +493,7 @@ export class VoiceAssistantsExpose extends LitElement {
     );
 
     this._table.setConfig({
-      narrow: this.narrow,
-      columns: this._columns(
-        this.narrow,
-        this._availableAssistants,
-        this._supportedEntities,
-        this.hass.language,
-        this.hass.localize,
-        filteredEntities
-      ),
       data: filteredEntities,
-      searchLabel: this.hass.localize(
-        "ui.panel.config.entities.picker.search",
-        {
-          number: filteredEntities.length,
-        }
-      ),
-      filter: this._filter,
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
     });
 
     return html`
@@ -542,6 +503,29 @@ export class VoiceAssistantsExpose extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
+        .columns=${this._columns(
+          this.narrow,
+          this._availableAssistants,
+          this._supportedEntities,
+          this.hass.language,
+          this.hass.localize,
+          filteredEntities
+        )}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.entities.picker.search",
+          {
+            number: filteredEntities.length,
+          }
+        )}
+        .filter=${this._filter}
+        selectable
+        .selected=${this._selectedEntities.length}
+        clickable
+        .initialSorting=${this._activeSorting}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @selection-changed=${this._handleSelectionChanged}
@@ -550,6 +534,7 @@ export class VoiceAssistantsExpose extends LitElement {
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
+        id="entity_id"
         has-fab
       >
         ${

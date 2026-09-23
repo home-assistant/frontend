@@ -105,10 +105,7 @@ type DisplayedStatisticData = StatisticData & {
 
 @customElement("tools-statistics")
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
-  private _table = new DataTableController<DisplayedStatisticData>(this, {
-    id: "statistic_id",
-    clickable: true,
-  });
+  private _table = new DataTableController<DisplayedStatisticData>(this);
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -473,12 +470,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     </ha-assist-chip>`;
 
     this._table.setConfig({
-      narrow: this.narrow,
       state: this._loading ? "loading" : "ready",
       loadingText: this._i18n.localize(
         "ui.components.statistics_charts.loading_statistics"
       ),
-      columns,
       data: this._displayData(
         this._data,
         this._i18n.localize,
@@ -489,14 +484,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       noDataText: this._i18n.localize(
         "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"
       ),
-      filter: this.filter,
-      selectable: this._selectMode,
-      sortColumn: this._sortColumn,
-      sortDirection: this._sortDirection,
-      groupColumn: this._groupColumn,
-      groupOrder: this.groupOrder,
-      columnOrder: this.columnOrder,
-      hiddenColumns: this.hiddenColumns,
     });
 
     return html`
@@ -588,6 +575,18 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         <ha-data-table
+          .narrow=${this.narrow}
+          .columns=${columns}
+          .filter=${this.filter}
+          .selectable=${this._selectMode}
+          id="statistic_id"
+          clickable
+          .sortColumn=${this._sortColumn}
+          .sortDirection=${this._sortDirection}
+          .groupColumn=${this._groupColumn}
+          .groupOrder=${this.groupOrder}
+          .columnOrder=${this.columnOrder}
+          .hiddenColumns=${this.hiddenColumns}
           @row-click=${this._rowClicked}
           @selection-changed=${this._handleSelectionChanged}
           @sorting-changed=${this._handleTableSortingChanged}

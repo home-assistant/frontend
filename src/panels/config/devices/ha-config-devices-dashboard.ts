@@ -110,6 +110,10 @@ interface DeviceRowData extends DeviceRegistryEntry {
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
+  private _table = new DataTableController<
+    ReturnType<typeof this._devicesAndFilterDomains>["devicesOutput"][number]
+  >(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -172,16 +176,7 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _activeGrouping?: string;
 
   @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
-  private _activeCollapsed: string[] = [];
-
-  private _table = new DataTableController<
-    ReturnType<typeof this._devicesAndFilterDomains>["devicesOutput"][number]
-  >(this, {
-    selectionMode: false,
-    selectable: true,
-    hasFilters: true,
-    clickable: true,
-  });
+  private _activeCollapsed?: string;
 
   @storage({
     key: "devices-table-column-order",
@@ -854,27 +849,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
 
     this._table.setConfig({
-      narrow: this.narrow,
-      searchLabel: this.hass.localize("ui.panel.config.devices.picker.search", {
-        number: devicesOutput.length,
-      }),
-      columns: this._columns(this.hass.localize),
       data: devicesOutput,
-      filter: this._filter,
-      filters: Object.values(this._filters).filter((filter) =>
-        Array.isArray(filter.value)
-          ? filter.value.length
-          : filter.value &&
-            Object.values(filter.value).some((val) =>
-              Array.isArray(val) ? val.length : val
-            )
-      ).length,
-      groupColumn: this._activeGrouping,
-      collapsedGroups: this._activeCollapsed,
-      sortColumn: this._activeSorting?.column,
-      sortDirection: this._activeSorting?.direction ?? null,
-      columnOrder: this._activeColumnOrder,
-      hiddenColumns: this._activeHiddenColumns,
     });
 
     return html`
@@ -884,7 +859,31 @@ export class HaConfigDeviceDashboard extends LitElement {
         back-path="/config"
         .tabs=${configSections.devices}
         .route=${this.route}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.devices.picker.search",
+          { number: devicesOutput.length }
+        )}
+        .columns=${this._columns(this.hass.localize)}
+        selectable
+        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
+        .filter=${this._filter}
+        has-filters
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter.value)
+              ? filter.value.length
+              : filter.value &&
+                Object.values(filter.value).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
@@ -892,6 +891,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
+        clickable
         has-fab
         class=${this.narrow ? "narrow" : ""}
       >
