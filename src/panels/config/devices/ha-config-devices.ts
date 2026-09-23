@@ -62,11 +62,9 @@ class HaConfigDevices extends HassRouterPage {
   private async _loadData() {
     await Promise.all([
       getConfigEntries(this.hass)
+        .catch(() => [])
         .then((configEntries) => {
           this._configEntries = configEntries;
-        })
-        .finally(() => {
-          this._configEntries ??= [];
         }),
       fetchIntegrationManifests(this.hass).then((manifests) => {
         this._manifests = manifests;

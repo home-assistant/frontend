@@ -105,7 +105,6 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
-  domains?: string[];
   battery_entity?: [string | undefined, string | undefined];
   label_entries: LabelRegistryEntry[];
 }
@@ -320,8 +319,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _devicesAndFilterDomains = memoizeOne(
     (
       devices: HomeAssistant["devices"],
-      entries: ConfigEntry[] | undefined,
-      entities: EntityRegistryEntry[] | undefined,
+      entries: ConfigEntry[] = [],
+      entities: EntityRegistryEntry[] = [],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
       filters: DataTableFilters,
@@ -338,7 +337,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       );
 
       const deviceEntityLookup: DeviceEntityLookup<EntityRegistryEntry> = {};
-      for (const entity of entities ?? []) {
+      for (const entity of entities) {
         if (!entity.device_id) {
           continue;
         }
@@ -349,7 +348,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       const entryLookup: Record<string, ConfigEntry> = {};
-      for (const entry of entries ?? []) {
+      for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
       }
 
@@ -374,7 +373,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             )
           );
 
-          const configEntries = (entries ?? []).filter(
+          const configEntries = entries.filter(
             (entry) =>
               entry.entry_id &&
               (filter.value as string[]).includes(entry.entry_id)
@@ -415,7 +414,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           Array.isArray(filter.value) &&
           filter.value.length
         ) {
-          const entryIds = (entries ?? [])
+          const entryIds = entries
             .filter((entry) =>
               (filter.value as string[]).includes(entry.domain)
             )
@@ -534,22 +533,17 @@ export class HaConfigDeviceDashboard extends LitElement {
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           area: areaName,
           floor: floorName,
-          integration: !entries
-            ? undefined
-            : deviceEntries.length
-              ? deviceEntries
-                  .map(
-                    (entry) =>
-                      localize(`component.${entry.domain}.title`) ||
-                      entry.domain
-                  )
-                  .join(", ")
-              : this.hass.localize(
-                  "ui.panel.config.devices.data_table.no_integration"
-                ),
-          domains: entries
-            ? deviceEntries.map((entry) => entry.domain)
-            : undefined,
+          integration: deviceEntries.length
+            ? deviceEntries
+                .map(
+                  (entry) =>
+                    localize(`component.${entry.domain}.title`) || entry.domain
+                )
+                .join(", ")
+            : this.hass.localize(
+                "ui.panel.config.devices.data_table.no_integration"
+              ),
+          domains: deviceEntries.map((entry) => entry.domain),
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(
                 parentDevice,
@@ -574,12 +568,10 @@ export class HaConfigDeviceDashboard extends LitElement {
               )
             : undefined,
           firmware_version: device.sw_version || undefined,
-          battery_entity: entities
-            ? [
-                this._batteryEntity(device.id, deviceEntityLookup),
-                this._batteryChargingEntity(device.id, deviceEntityLookup),
-              ]
-            : undefined,
+          battery_entity: [
+            this._batteryEntity(device.id, deviceEntityLookup),
+            this._batteryChargingEntity(device.id, deviceEntityLookup),
+          ],
           battery_level:
             this.hass.states[
               this._batteryEntity(device.id, deviceEntityLookup) || ""
@@ -609,7 +601,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         moveable: false,
         showNarrow: true,
         template: (device) =>
-          !device.domains
+          !this.entries
             ? html`<ha-skeleton-icon></ha-skeleton-icon>`
             : device.domains.length
               ? html`<img
@@ -655,9 +647,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                   ></ha-data-table-labels>
                 `
               : device.labels.length && !this._labels
-                ? html`<ha-skeleton-text
-                    style="--ha-skeleton-text-width: 80px"
-                  ></ha-skeleton-text>`
+                ? html`<ha-skeleton-text></ha-skeleton-text>`
                 : nothing
           }
         `,
@@ -671,10 +661,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         groupable: true,
         minWidth: "120px",
         template: (device) =>
-          device.integration ??
-          html`<ha-skeleton-text
-            style="--ha-skeleton-text-width: 100px"
-          ></ha-skeleton-text>`,
+          !this.entries
+            ? html`<ha-skeleton-text></ha-skeleton-text>`
+            : device.integration,
       },
       device_family_name: {
         title: localize("ui.panel.config.devices.data_table.parent_device"),
@@ -718,21 +707,21 @@ export class HaConfigDeviceDashboard extends LitElement {
         minWidth: "101px",
         valueColumn: "battery_level",
         template: (device) => {
-          const batteryEntityPair = device.battery_entity;
-          if (!batteryEntityPair) {
-            return html`<ha-skeleton-text
-              style="--ha-skeleton-text-width: 48px"
-            ></ha-skeleton-text>`;
+          if (!this.entities) {
+            return html`<ha-skeleton-text></ha-skeleton-text>`;
           }
-          const battery = batteryEntityPair[0]
-            ? this.hass.states[batteryEntityPair[0]]
-            : undefined;
+          const batteryEntityPair = device.battery_entity;
+          const battery =
+            batteryEntityPair && batteryEntityPair[0]
+              ? this.hass.states[batteryEntityPair[0]]
+              : undefined;
           const batteryDomain = battery
             ? computeStateDomain(battery)
             : undefined;
-          const batteryCharging = batteryEntityPair[1]
-            ? this.hass.states[batteryEntityPair[1]]
-            : undefined;
+          const batteryCharging =
+            batteryEntityPair && batteryEntityPair[1]
+              ? this.hass.states[batteryEntityPair[1]]
+              : undefined;
 
           return battery &&
             (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
@@ -928,9 +917,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                 )}
                 ${
                   !this.entries
-                    ? html`<ha-skeleton-text
-                        style="--ha-skeleton-text-width: 100px"
-                      ></ha-skeleton-text>`
+                    ? html`<ha-skeleton-text></ha-skeleton-text>`
                     : this.entries.find(
                         (entry) =>
                           entry.entry_id ===
@@ -1385,6 +1372,9 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-alert ha-skeleton-text {
+          --ha-skeleton-text-width: 100px;
         }
         ha-dropdown::part(menu),
         ha-dropdown::part(submenu) {
