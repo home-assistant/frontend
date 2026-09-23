@@ -36,6 +36,11 @@ export class HaSkeleton extends WaSkeleton {
             var(--ha-border-radius-sm)
           );
         }
+        @media (forced-colors: active) {
+          :host {
+            --color: GrayText;
+          }
+        }
       `,
     ];
   }
