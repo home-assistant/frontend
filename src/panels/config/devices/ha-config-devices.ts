@@ -35,9 +35,12 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _manifests: IntegrationManifest[] = [];
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this._loadData();
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._loadData();
+    }
   }
 
   protected updatePageEl(pageEl) {
@@ -55,8 +58,9 @@ class HaConfigDevices extends HassRouterPage {
   }
 
   private async _loadData() {
+    const manifests = fetchIntegrationManifests(this.hass);
     this._configEntries = await getConfigEntries(this.hass);
-    this._manifests = await fetchIntegrationManifests(this.hass);
+    this._manifests = await manifests;
   }
 }
 
