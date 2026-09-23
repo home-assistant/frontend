@@ -10,6 +10,7 @@ import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import "../../../components/ha-tooltip";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-entity-id-state";
 
 export function getEntityIdHiddenTableColumn<T>(): DataTableColumnData<T> {
   return {
@@ -28,6 +29,26 @@ export function getEntityIdTableColumn<T>(
     defaultHidden: defaultHidden,
     filterable: true,
     sortable: true,
+  };
+}
+
+export function getStateTableColumn<T extends { entity_id: string }>(
+  localize: LocalizeFunc
+): DataTableColumnData<T> {
+  return {
+    title: localize("ui.panel.config.generic.headers.state"),
+    defaultHidden: true,
+    // The cell subscribes to its own entity, so the state never reaches the row
+    // data that the sort and filter worker operates on. Sorting, grouping and
+    // filtering are all impossible here, not merely turned off.
+    sortable: false,
+    groupable: false,
+    filterable: false,
+    minWidth: "120px",
+    template: (entry) =>
+      html`<ha-entity-id-state
+        .entityId=${entry.entity_id}
+      ></ha-entity-id-state>`,
   };
 }
 

@@ -2737,6 +2737,7 @@
         "generic": {
           "headers": {
             "entity_id": "Entity ID",
+            "state": "State",
             "domain": "Domain",
             "area": "Area",
             "floor": "Floor",
