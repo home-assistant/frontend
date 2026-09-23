@@ -809,12 +809,19 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _pickItem = (ev: KeyboardEvent, newTab: boolean) => {
     ev.stopPropagation();
 
+    // Enter is bound to the host, so it arrives wherever focus sits inside the
+    // picker. Only the search field and the list drive the cursor; a focused
+    // section chip needs its own Enter to toggle its section.
+    const focused = this.shadowRoot?.activeElement;
+    if (focused !== this._searchFieldElement && focused !== this._listElement) {
+      return;
+    }
+
     const item = this._items[this._selectedItemIndex];
     if (this._selectedItemIndex === -1 || !isPickableItem(item)) {
       return;
     }
 
-    // if filter button is focused
     ev.preventDefault();
 
     this._fireSelectedEvents(item.id, this._selectedItemIndex, newTab);
