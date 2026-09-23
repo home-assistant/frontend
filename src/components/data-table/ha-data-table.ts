@@ -768,6 +768,10 @@ export class HaDataTable extends LitElement {
       return;
     }
 
+    if (startTime < this._lastUpdate) {
+      return;
+    }
+
     this._lastUpdate = startTime;
     this._filteredData = data;
     this._filteredDataSourceLength = sourceData.length;
