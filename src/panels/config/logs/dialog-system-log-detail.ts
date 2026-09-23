@@ -188,7 +188,9 @@ class DialogSystemLogDetail extends LitElement {
           integration &&
           this._manifest === undefined &&
           reportTarget !== "frontend"
-            ? html`<ha-alert alert-type="info">
+            ? html`<ha-alert
+                alert-type=${this.isCustomIntegration ? "warning" : "info"}
+              >
                 <ha-skeleton-text></ha-skeleton-text>
               </ha-alert>`
             : html`<ha-alert
@@ -422,7 +424,21 @@ class DialogSystemLogDetail extends LitElement {
           margin-block-start: var(--ha-space-2);
         }
         ha-skeleton-text {
-          --ha-skeleton-text-width: 100%;
+          --ha-skeleton-text-width: 320px;
+        }
+        ha-alert[alert-type="info"] ha-skeleton-text {
+          --ha-skeleton-color: color-mix(
+            in srgb,
+            var(--info-color) 24%,
+            transparent
+          );
+        }
+        ha-alert[alert-type="warning"] ha-skeleton-text {
+          --ha-skeleton-color: color-mix(
+            in srgb,
+            var(--warning-color) 24%,
+            transparent
+          );
         }
         .contents {
           outline: none;
