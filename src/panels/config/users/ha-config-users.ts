@@ -40,6 +40,8 @@ export class HaConfigUsers extends LitElement {
 
   @state() private _users: User[] = [];
 
+  @state() private _loading = true;
+
   @storage({ key: "users-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
 
@@ -179,6 +181,7 @@ export class HaConfigUsers extends LitElement {
         back-path="/config"
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._userData(this._users, this.hass.localize)}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
@@ -212,7 +215,11 @@ export class HaConfigUsers extends LitElement {
   );
 
   private async _fetchUsers() {
-    this._users = await fetchUsers(this.hass);
+    try {
+      this._users = await fetchUsers(this.hass);
+    } finally {
+      this._loading = false;
+    }
 
     this._users.forEach((user) => {
       if (user.is_owner) {

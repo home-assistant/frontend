@@ -38,6 +38,8 @@ class HaConfigHardwareAll extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _loading = true;
+
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer<HardwareDeviceRow> => ({
       name: {
@@ -98,6 +100,7 @@ class HaConfigHardwareAll extends LitElement {
         .tabs=${hardwareTabs(this.hass)}
         clickable
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._hardware ? this._data(this._hardware) : []}
         .noDataText=${
           this._error ||
@@ -113,6 +116,8 @@ class HaConfigHardwareAll extends LitElement {
       this._hardware = await fetchHassioHardwareInfo(this.hass);
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
+    } finally {
+      this._loading = false;
     }
   }
 
