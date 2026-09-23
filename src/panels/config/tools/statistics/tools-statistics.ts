@@ -74,7 +74,7 @@ import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistantRegistries } from "../../../../types";
-import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
