@@ -338,6 +338,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     return html`<ha-input-search
         appearance="outlined"
         .placeholder=${searchLabel}
+        @focus=${this._restoreCursor}
         @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
       >
@@ -370,7 +371,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         class="plain-list ${this._listScrolled ? "scrolled" : ""}"
         tabindex="0"
         @scroll=${this._onScrollList}
-        @focus=${this._focusList}
+        @focus=${this._restoreCursor}
         @blur=${this._resetSelectedItem}
       >
         ${repeat(
@@ -409,7 +410,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         }
         @unpinned=${this._handleUnpinned}
         @scroll=${this._onScrollList}
-        @focus=${this._focusList}
+        @focus=${this._restoreCursor}
         @blur=${this._resetSelectedItem}
         @visibilityChanged=${this._visibilityChanged}
       >
@@ -728,7 +729,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     });
   }
 
-  private _focusList() {
+  /**
+   * The blur handlers drop the cursor, so whichever of the search field and the
+   * list takes focus next puts it back. Enter acts on the cursor, and the row
+   * it points at is highlighted, so both have to survive focus moving between
+   * the two.
+   */
+  private _restoreCursor() {
     if (this._selectedItemIndex === -1) {
       this._selectedItemIndex = this._defaultSelectedIndex();
     }
