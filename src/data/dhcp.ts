@@ -81,6 +81,10 @@ const subscribeDHCPDiscoveryUpdates = (
     .then((unsubscribe) => () => {
       conn.removeEventListener("ready", handleReady);
       return unsubscribe();
+    })
+    .catch((error) => {
+      conn.removeEventListener("ready", handleReady);
+      throw error;
     });
 };
 
