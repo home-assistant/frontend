@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { setTimeout } from "node:timers/promises";
 import { demoConfig } from "../../src/fake_data/demo_config";
 import {
   completeAnalytics,
@@ -13,6 +14,29 @@ import {
 import { expectNoPageErrors, trackPageErrors } from "./helpers";
 
 test.use({ serviceWorkers: "block" });
+
+test("creates an owner when welcome translations load slowly", async ({
+  page,
+  baseURL,
+}) => {
+  const calls = await setupOnboardingMocks(page);
+  let translationsDelayed = false;
+  await page.route("**/translations/page-onboarding/*.json", async (route) => {
+    await expect(
+      page.locator("onboarding-welcome ha-button.start").getByRole("button")
+    ).toBeDisabled();
+    // Keep Start disabled long enough to exercise a click during loading.
+    await setTimeout(1000);
+    translationsDelayed = true;
+    await route.continue();
+  });
+
+  await openOnboarding(page, baseURL!);
+  await createOwner(page);
+
+  expect(translationsDelayed).toBe(true);
+  await expect.poll(() => calls.user).toMatchObject(onboardingData.user);
+});
 
 test("completes onboarding and opens the default dashboard", async ({
   page,
