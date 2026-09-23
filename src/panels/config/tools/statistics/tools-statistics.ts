@@ -13,7 +13,14 @@ import {
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { consume, type ContextType } from "@lit/context";
-import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  type CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type {
@@ -148,8 +155,12 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
-  protected firstUpdated() {
-    this._validateStatistics();
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._validateStatistics();
+    }
   }
 
   private _displayData = memoizeOne(
