@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import "../../src/components/ha-picker-combo-box";
+import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { HaInputSearch } from "../../src/components/input/ha-input-search";
 import type {
   HaPickerComboBox,
@@ -33,6 +34,22 @@ vi.mock("@lit-labs/observers/resize-controller", () => ({
 }));
 
 beforeAll(() => {
+  // The virtualizer constructs one of its own, separately from the mixin's.
+  if (!globalThis.ResizeObserver) {
+    globalThis.ResizeObserver = class {
+      public observe() {
+        // Layout is not observable under jsdom anyway.
+      }
+
+      public unobserve() {
+        // Layout is not observable under jsdom anyway.
+      }
+
+      public disconnect() {
+        // Layout is not observable under jsdom anyway.
+      }
+    } as unknown as typeof ResizeObserver;
+  }
   // jsdom implements ElementInternals without validation, which Web Awesome's
   // form-associated base class calls on connect.
   const internals = (
@@ -254,6 +271,52 @@ describe("keeping the cursor usable", () => {
 
     expect(cursorRow(el)).toBe("list-item-0");
     expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+  });
+
+  it("scrolls to the first match only once the virtualizer has the items", async () => {
+    // element(index) resolves against the items the virtualizer holds, and it
+    // takes the new ones in its own update, after this component's.
+    const el = await mount({
+      getItems: () =>
+        Array.from({ length: 40 }, (_unused, index) => ({
+          id: `light.${index}`,
+          primary: `Light ${index}`,
+        })),
+    });
+    // The virtualizer arrives by dynamic import, so it is not upgraded yet.
+    await customElements.whenDefined("lit-virtualizer");
+    await el.updateComplete;
+    const list =
+      el.shadowRoot!.querySelector<LitVirtualizer>("lit-virtualizer")!;
+    const proto = customElements.get("lit-virtualizer")!
+      .prototype as LitVirtualizer;
+    const order: string[] = [];
+    const originalRender = proto.render;
+    const render = vi.spyOn(proto, "render").mockImplementation(function (
+      this: LitVirtualizer
+    ) {
+      order.push("virtualizer render");
+      return originalRender.call(this);
+    });
+    const element = vi
+      .spyOn(proto, "element")
+      .mockImplementation((index: number) => {
+        order.push(`scroll to ${index}`);
+        // Not called through: the virtualizer's own scroll needs a layout,
+        // which it never builds without measurable rows.
+        return undefined;
+      });
+    searchField(el).focus();
+    await el.updateComplete;
+    order.length = 0;
+
+    await type(el, "Light 39");
+    await list.updateComplete;
+    await el.updateComplete;
+
+    expect(order).toEqual(["virtualizer render", "scroll to 0"]);
+    render.mockRestore();
+    element.mockRestore();
   });
 
   it("attaches the fade mixin's scroll observer", async () => {

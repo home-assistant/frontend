@@ -322,7 +322,20 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._resetListScroll();
       return;
     }
-    this._scrollRowIntoView(this._selectedItemIndex);
+    this._scrollCursorIntoView(this._selectedItemIndex);
+  }
+
+  private async _scrollCursorIntoView(index: number) {
+    if (!this._plainList) {
+      // The virtualizer takes its new items in its own update, which runs
+      // after this one, so scrolling now would address the old list.
+      await this.virtualizerElement?.updateComplete;
+      if (index !== this._selectedItemIndex) {
+        // The cursor moved on while we waited; that move scrolls itself.
+        return;
+      }
+    }
+    this._scrollRowIntoView(index);
   }
 
   disconnectedCallback() {
