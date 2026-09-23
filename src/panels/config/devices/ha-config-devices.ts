@@ -31,7 +31,7 @@ class HaConfigDevices extends HassRouterPage {
     },
   };
 
-  @state() private _configEntries: ConfigEntry[] = [];
+  @state() private _configEntries?: ConfigEntry[];
 
   @state() private _manifests: IntegrationManifest[] = [];
 
@@ -48,9 +48,11 @@ class HaConfigDevices extends HassRouterPage {
 
     if (this._currentPage === "device") {
       pageEl.deviceId = this.routeTail.path.substr(1);
+      pageEl.entries = this._configEntries ?? [];
+    } else {
+      pageEl.entries = this._configEntries;
     }
 
-    pageEl.entries = this._configEntries;
     pageEl.manifests = this._manifests;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
@@ -59,9 +61,13 @@ class HaConfigDevices extends HassRouterPage {
 
   private async _loadData() {
     await Promise.all([
-      getConfigEntries(this.hass).then((configEntries) => {
-        this._configEntries = configEntries;
-      }),
+      getConfigEntries(this.hass)
+        .then((configEntries) => {
+          this._configEntries = configEntries;
+        })
+        .finally(() => {
+          this._configEntries ??= [];
+        }),
       fetchIntegrationManifests(this.hass).then((manifests) => {
         this._manifests = manifests;
       }),
