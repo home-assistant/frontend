@@ -25,49 +25,64 @@ interface DHCPSubscriptionMessage {
 const subscribeDHCPDiscoveryUpdates = (
   conn: Connection,
   store: Store<DHCPDiscoveryData[]>
-): Promise<UnsubscribeFunc> =>
-  conn.subscribeMessage<DHCPSubscriptionMessage>(
-    (event) => {
-      const data = [...(store.state || [])];
-      if (event.add) {
-        for (const deviceData of event.add) {
-          const index = data.findIndex(
-            (d) => d.mac_address === deviceData.mac_address
-          );
-          if (index === -1) {
-            data.push(deviceData);
-          } else {
-            data[index] = deviceData;
-          }
-        }
-      }
-      if (event.change) {
-        for (const deviceData of event.change) {
-          const index = data.findIndex(
-            (d) => d.mac_address === deviceData.mac_address
-          );
-          if (index !== -1) {
-            data[index] = deviceData;
-          }
-        }
-      }
-      if (event.remove) {
-        for (const deviceData of event.remove) {
-          const index = data.findIndex(
-            (d) => d.mac_address === deviceData.mac_address
-          );
-          if (index !== -1) {
-            data.splice(index, 1);
-          }
-        }
-      }
+): Promise<UnsubscribeFunc> => {
+  // Core sends all current devices first on every (re)subscribe, so replace
+  // the list with that snapshot rather than merging into stale rows
+  let isSnapshot = true;
+  const handleReady = () => {
+    isSnapshot = true;
+  };
+  conn.addEventListener("ready", handleReady);
 
-      store.setState(data, true);
-    },
-    {
-      type: `dhcp/subscribe_discovery`,
-    }
-  );
+  return conn
+    .subscribeMessage<DHCPSubscriptionMessage>(
+      (event) => {
+        const data = isSnapshot ? [] : [...(store.state || [])];
+        isSnapshot = false;
+        if (event.add) {
+          for (const deviceData of event.add) {
+            const index = data.findIndex(
+              (d) => d.mac_address === deviceData.mac_address
+            );
+            if (index === -1) {
+              data.push(deviceData);
+            } else {
+              data[index] = deviceData;
+            }
+          }
+        }
+        if (event.change) {
+          for (const deviceData of event.change) {
+            const index = data.findIndex(
+              (d) => d.mac_address === deviceData.mac_address
+            );
+            if (index !== -1) {
+              data[index] = deviceData;
+            }
+          }
+        }
+        if (event.remove) {
+          for (const deviceData of event.remove) {
+            const index = data.findIndex(
+              (d) => d.mac_address === deviceData.mac_address
+            );
+            if (index !== -1) {
+              data.splice(index, 1);
+            }
+          }
+        }
+
+        store.setState(data, true);
+      },
+      {
+        type: `dhcp/subscribe_discovery`,
+      }
+    )
+    .then((unsubscribe) => () => {
+      conn.removeEventListener("ready", handleReady);
+      return unsubscribe();
+    });
+};
 
 export const subscribeDHCPDiscovery = (
   conn: Connection,
