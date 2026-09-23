@@ -289,6 +289,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _search = "";
 
+  private _cursorScrollPending = false;
+
   protected firstUpdated() {
     this._registerKeyboardShortcuts();
   }
@@ -305,6 +307,18 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         ? this._defaultSelectedIndex()
         : -1;
     }
+  }
+
+  protected updated() {
+    if (!this._cursorScrollPending) {
+      return;
+    }
+    this._cursorScrollPending = false;
+    if (this._selectedItemIndex === -1) {
+      this._resetListScroll();
+      return;
+    }
+    this._scrollRowIntoView(this._selectedItemIndex);
   }
 
   disconnectedCallback() {
@@ -628,6 +642,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const searchString = (textfield.value ?? "").trim();
     this._search = searchString;
     this._valuePinned = true;
+    // Filtering reseeds the cursor onto the first match, but an already
+    // scrolled list stays where it is, so that row can be off screen. Put it
+    // back in view once the filtered items have rendered.
+    this._cursorScrollPending = true;
 
     if (this.sections?.length) {
       this._items = this._getItems();
