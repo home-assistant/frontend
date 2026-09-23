@@ -146,6 +146,14 @@ export class HuiEnergySourcesTableCard
           }
         : undefined;
 
+    const label =
+      name ||
+      getStatisticLabel(
+        this.hass,
+        statId,
+        this._data?.statsMetadata[statId]
+      );
+
     return html`<tr
       class="mdc-data-table__row ${classMap({
         clickable: !isExternalStatistic(statId),
@@ -176,15 +184,12 @@ export class HuiEnergySourcesTableCard
           })}
         ></div>
       </td>
-      <th class="mdc-data-table__cell" scope="row">
-        ${
-          name ||
-          getStatisticLabel(
-            this.hass,
-            statId,
-            this._data?.statsMetadata[statId]
-          )
-        }
+      <th
+        class="mdc-data-table__cell cell-source"
+        scope="row"
+        .title=${label}
+      >
+        ${label}
       </th>
       ${
         compare
@@ -261,7 +266,13 @@ export class HuiEnergySourcesTableCard
             : nothing
         }
       </td>
-      <th class="mdc-data-table__cell" scope="row">${label}</th>
+      <th
+        class="mdc-data-table__cell cell-source"
+        scope="row"
+        .title=${label}
+      >
+        ${label}
+      </th>
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
@@ -571,9 +582,9 @@ export class HuiEnergySourcesTableCard
           <table class="mdc-data-table__table" aria-label="Energy sources">
             <thead>
               <tr class="mdc-data-table__header-row">
-                <th class="mdc-data-table__header-cell"></th>
+                <th class="mdc-data-table__header-cell cell-bullet"></th>
                 <th
-                  class="mdc-data-table__header-cell"
+                  class="mdc-data-table__header-cell cell-source"
                   role="columnheader"
                   scope="col"
                 >
@@ -941,10 +952,10 @@ export class HuiEnergySourcesTableCard
       width: 100%;
     }
     .mdc-data-table__table {
+      width: 100%;
       min-width: 100%;
       border: 0;
       border-spacing: 0;
-      table-layout: fixed;
       white-space: nowrap;
     }
     .mdc-data-table__header-row {
@@ -965,6 +976,13 @@ export class HuiEnergySourcesTableCard
       padding: 0 16px;
       text-align: var(--float-start);
       text-overflow: ellipsis;
+    }
+    .cell-source {
+      min-width: 100px;
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .mdc-data-table__header-cell {
       background-color: var(--card-background-color);
@@ -1005,7 +1023,8 @@ export class HuiEnergySourcesTableCard
       padding-top: 0;
     }
     .cell-bullet {
-      width: 32px;
+      box-sizing: border-box;
+      width: 48px;
       padding-right: 0;
       padding-inline-end: 0;
       padding-inline-start: 16px;
@@ -1021,9 +1040,13 @@ export class HuiEnergySourcesTableCard
     .mdc-data-table__cell--numeric {
       text-align: var(--float-end);
       direction: ltr;
+      white-space: nowrap;
+      width: 1%;
     }
     .mdc-data-table__header-cell--numeric {
       text-align: var(--float-end);
+      white-space: nowrap;
+      width: 1%;
     }
   `;
 }
