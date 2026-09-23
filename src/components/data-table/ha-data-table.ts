@@ -533,7 +533,7 @@ export class HaDataTable extends LitElement {
                           this.loading ||
                           !this._filteredData ||
                           (this.data.length && !this._filteredDataSourceLength)
-                            ? html`<ha-fade-in .delay=${500}>
+                            ? html`<ha-fade-in .delay=${1000}>
                                 <ha-spinner></ha-spinner>
                               </ha-fade-in>`
                             : this.data.length
