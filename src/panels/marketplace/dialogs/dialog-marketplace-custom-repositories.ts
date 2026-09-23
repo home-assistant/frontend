@@ -15,21 +15,21 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/progress/ha-progress-bar";
 import type { HomeAssistant } from "../../../types";
-import { StoreDispatchEvent } from "../data/common";
+import { MarketplaceDispatchEvent } from "../data/common";
 import {
   getRepositories,
   repositoryAdd,
   repositoryDelete,
   websocketSubscription,
 } from "../data/websocket";
-import { storeStyleVariables } from "../styles/variables";
-import type { StoreCustomRepositoriesDialogParams } from "./show-dialog-store";
+import { marketplaceStyleVariables } from "../styles/variables";
+import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace";
 
-@customElement("dialog-store-custom-repositories")
-export class DialogStoreCustomRepositories extends LitElement {
+@customElement("dialog-marketplace-custom-repositories")
+export class DialogMarketplaceCustomRepositories extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _dialogParams?: StoreCustomRepositoriesDialogParams;
+  @state() private _dialogParams?: MarketplaceCustomRepositoriesDialogParams;
 
   @state() private _waiting?: boolean;
 
@@ -40,7 +40,7 @@ export class DialogStoreCustomRepositories extends LitElement {
   private _errorSubscription?: UnsubscribeFunc;
 
   public async showDialog(
-    dialogParams: StoreCustomRepositoriesDialogParams
+    dialogParams: MarketplaceCustomRepositoriesDialogParams
   ): Promise<void> {
     this._dialogParams = dialogParams;
     this._errorSubscription = await websocketSubscription(
@@ -48,7 +48,7 @@ export class DialogStoreCustomRepositories extends LitElement {
       (data) => {
         this._errors = { base: data?.message || data };
       },
-      StoreDispatchEvent.ERROR
+      MarketplaceDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -71,16 +71,16 @@ export class DialogStoreCustomRepositories extends LitElement {
       <ha-dialog
         open
         .headerTitle=${this.hass.localize(
-          "ui.panel.store.dialog_custom_repositories.title"
+          "ui.panel.marketplace.dialog_custom_repositories.title"
         )}
         @closed=${this.closeDialog}
       >
         <div>
           <div class="list">
-            ${this._dialogParams.store.repositories
+            ${this._dialogParams.marketplace.repositories
               .filter((repository) => repository.custom)
               ?.filter((repository) =>
-                this._dialogParams!.store.info.categories.includes(
+                this._dialogParams!.marketplace.info.categories.includes(
                   repository.category
                 )
               )
@@ -94,7 +94,7 @@ export class DialogStoreCustomRepositories extends LitElement {
 
                     <ha-icon-button
                       .label=${this.hass.localize(
-                        "ui.panel.store.common.remove"
+                        "ui.panel.marketplace.common.remove"
                       )}
                       .repositoryId=${String(repository.id)}
                       @click=${this._handleRemoveClick}
@@ -120,11 +120,11 @@ export class DialogStoreCustomRepositories extends LitElement {
                 selector: {
                   select: {
                     mode: "dropdown",
-                    options: this._dialogParams.store.info.categories.map(
+                    options: this._dialogParams.marketplace.info.categories.map(
                       (category) => ({
                         value: category,
                         label: this.hass.localize(
-                          `ui.panel.store.common.type.${category}`
+                          `ui.panel.marketplace.common.type.${category}`
                         ),
                       })
                     ),
@@ -149,7 +149,7 @@ export class DialogStoreCustomRepositories extends LitElement {
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.panel.store.common.cancel")}
+            ${this.hass.localize("ui.panel.marketplace.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -162,7 +162,7 @@ export class DialogStoreCustomRepositories extends LitElement {
             }
             @click=${this._addRepository}
           >
-            ${this.hass.localize("ui.panel.store.common.add")}
+            ${this.hass.localize("ui.panel.marketplace.common.add")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -171,8 +171,10 @@ export class DialogStoreCustomRepositories extends LitElement {
 
   private _computeLabel = (schema: HaFormSchema): string =>
     schema.name === "category"
-      ? this.hass.localize("ui.panel.store.dialog_custom_repositories.type")
-      : this.hass.localize("ui.panel.store.common.repository");
+      ? this.hass.localize(
+          "ui.panel.marketplace.dialog_custom_repositories.type"
+        )
+      : this.hass.localize("ui.panel.marketplace.common.repository");
 
   private _valueChanged(ev: CustomEvent) {
     this._data = { ...this._data, ...ev.detail.value };
@@ -191,7 +193,7 @@ export class DialogStoreCustomRepositories extends LitElement {
     if (!this._data?.category) {
       this._errors = {
         base: this.hass.localize(
-          "ui.panel.store.dialog_custom_repositories.no_type"
+          "ui.panel.marketplace.dialog_custom_repositories.no_type"
         ),
       };
       return;
@@ -199,7 +201,7 @@ export class DialogStoreCustomRepositories extends LitElement {
     if (!this._data?.repository) {
       this._errors = {
         base: this.hass.localize(
-          "ui.panel.store.dialog_custom_repositories.no_repository"
+          "ui.panel.marketplace.dialog_custom_repositories.no_repository"
         ),
       };
       return;
@@ -238,22 +240,23 @@ export class DialogStoreCustomRepositories extends LitElement {
 
   private _errorMessage(err: { message?: string }): string {
     return (
-      err?.message || this.hass.localize("ui.panel.store.common.unknown_error")
+      err?.message ||
+      this.hass.localize("ui.panel.marketplace.common.unknown_error")
     );
   }
 
   private async _updateRepositories() {
     const repositories = await getRepositories(this.hass);
-    fireEvent(this, "store-refresh");
+    fireEvent(this, "marketplace-refresh");
     this._dialogParams = {
       ...this._dialogParams,
-      store: { ...this._dialogParams!.store, repositories },
+      marketplace: { ...this._dialogParams!.marketplace, repositories },
     };
   }
 
   static get styles() {
     return [
-      storeStyleVariables,
+      marketplaceStyleVariables,
       css`
         ha-progress-bar {
           margin-bottom: -8px;
@@ -263,7 +266,7 @@ export class DialogStoreCustomRepositories extends LitElement {
           padding: 0;
         }
         .delete {
-          color: var(--store-color-error);
+          color: var(--marketplace-color-error);
         }
       `,
     ];
@@ -272,6 +275,6 @@ export class DialogStoreCustomRepositories extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-store-custom-repositories": DialogStoreCustomRepositories;
+    "dialog-marketplace-custom-repositories": DialogMarketplaceCustomRepositories;
   }
 }

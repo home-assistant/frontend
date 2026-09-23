@@ -2766,8 +2766,8 @@
             "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
-          "store": {
-            "main": "Community store",
+          "marketplace": {
+            "main": "Marketplace",
             "secondary": "Download integrations, dashboard resources and themes shared by the community"
           },
           "dashboards": {
@@ -12116,8 +12116,8 @@
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
       },
-      "store": {
-        "not_loaded": "The Community store has not been set up yet. Add it from the integrations page in Settings.",
+      "marketplace": {
+        "not_loaded": "The Marketplace has not been set up yet. Add it from the integrations page in Settings.",
         "common": {
           "add": "Add",
           "cancel": "Cancel",
@@ -12162,7 +12162,7 @@
           "error": "An unknown error occurred",
           "repository_not_found": "Repository {repository} not found",
           "add_repository_title": "Add custom repository",
-          "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Community store. Do you want to add it?"
+          "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Marketplace. Do you want to add it?"
         },
         "dialog_overview": {
           "sections": {
@@ -12234,17 +12234,17 @@
             "message": "Do you really want to remove {name}?"
           },
           "disabled": {
-            "title": "The Community store is disabled",
+            "title": "The Marketplace is disabled",
             "reason": {
-              "invalid_token": "The GitHub token is not valid. Reconfigure the Community store integration to set a working token.",
-              "rate_limit": "The GitHub API rate limit has been reached. The Community store works again once the limit resets.",
-              "removed": "The Community store integration has been removed.",
-              "unknown": "The Community store is unavailable, check the Home Assistant logs for more information."
+              "invalid_token": "The GitHub token is not valid. Reconfigure the Marketplace integration to set a working token.",
+              "rate_limit": "The GitHub API rate limit has been reached. The Marketplace works again once the limit resets.",
+              "removed": "The Marketplace integration has been removed.",
+              "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."
             }
           },
           "configured": {
             "title": "Integration is configured",
-            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Community store."
+            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Marketplace."
           }
         }
       },

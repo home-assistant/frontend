@@ -7,19 +7,19 @@ import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../types";
-import { StoreDispatchEvent } from "./data/common";
-import type { StoreData, StoreInfo } from "./data/store";
+import { MarketplaceDispatchEvent } from "./data/common";
+import type { MarketplaceData, MarketplaceInfo } from "./data/marketplace";
 import type { RepositoryBase } from "./data/repository";
 import {
-  fetchStoreInfo,
+  fetchMarketplaceInfo,
   getRepositories,
   websocketSubscription,
 } from "./data/websocket";
-import "./ha-store-router";
-import { storeStyles } from "./styles/store-common-style";
+import "./ha-marketplace-router";
+import { marketplaceStyles } from "./styles/marketplace-common-style";
 
-@customElement("ha-panel-store")
-class HaPanelStore extends SubscribeMixin(LitElement) {
+@customElement("ha-panel-marketplace")
+class HaPanelMarketplace extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -28,7 +28,7 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   @state() private _repositories?: RepositoryBase[];
 
-  @state() private _info?: StoreInfo;
+  @state() private _info?: MarketplaceInfo;
 
   // The panel is registered on every install, the integration is not. Gate
   // the subscriptions on this so SubscribeMixin retries once it shows up.
@@ -36,8 +36,11 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   protected hassSubscribeRequiredHostProps = ["_integrationLoaded"];
 
-  private _store = memoizeOne(
-    (repositories: RepositoryBase[], info: StoreInfo): StoreData => ({
+  private _marketplace = memoizeOne(
+    (
+      repositories: RepositoryBase[],
+      info: MarketplaceInfo
+    ): MarketplaceData => ({
       repositories,
       info,
     })
@@ -47,12 +50,12 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     // Dialogs are appended outside of this panel, so their refresh requests
     // never bubble through here.
-    window.addEventListener("store-refresh", this._handleRefresh);
+    window.addEventListener("marketplace-refresh", this._handleRefresh);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener("store-refresh", this._handleRefresh);
+    window.removeEventListener("marketplace-refresh", this._handleRefresh);
   }
 
   public hassSubscribe() {
@@ -60,22 +63,22 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
       websocketSubscription(
         this.hass,
         this._refreshInfo,
-        StoreDispatchEvent.CONFIG
+        MarketplaceDispatchEvent.CONFIG
       ),
       websocketSubscription(
         this.hass,
         this._refreshInfo,
-        StoreDispatchEvent.STATUS
+        MarketplaceDispatchEvent.STATUS
       ),
       websocketSubscription(
         this.hass,
         this._refreshInfo,
-        StoreDispatchEvent.STAGE
+        MarketplaceDispatchEvent.STAGE
       ),
       websocketSubscription(
         this.hass,
         this._refreshRepositories,
-        StoreDispatchEvent.REPOSITORY
+        MarketplaceDispatchEvent.REPOSITORY
       ),
       this.hass.connection.subscribeEvents(
         this._refreshInfo,
@@ -110,7 +113,7 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
         <hass-error-screen
           .hass=${this.hass}
           .narrow=${this.narrow}
-          .error=${this.hass.localize("ui.panel.store.not_loaded")}
+          .error=${this.hass.localize("ui.panel.marketplace.not_loaded")}
         ></hass-error-screen>
       `;
     }
@@ -125,17 +128,17 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <ha-store-router
+      <ha-marketplace-router
         .hass=${this.hass}
-        .store=${this._store(this._repositories, this._info)}
+        .marketplace=${this._marketplace(this._repositories, this._info)}
         .route=${this.route}
         .narrow=${this.narrow}
-      ></ha-store-router>
+      ></ha-marketplace-router>
     `;
   }
 
   private get _isLoaded(): boolean {
-    return isComponentLoaded(this.hass.config, "store");
+    return isComponentLoaded(this.hass.config, "marketplace");
   }
 
   private _handleRefresh = (): void => {
@@ -144,10 +147,10 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   private _refreshInfo = async (): Promise<void> => {
     try {
-      this._info = await fetchStoreInfo(this.hass);
+      this._info = await fetchMarketplaceInfo(this.hass);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error("Failed to fetch Community store information", err);
+      console.error("Failed to fetch Community marketplace information", err);
     }
   };
 
@@ -156,17 +159,17 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
       this._repositories = await getRepositories(this.hass);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error("Failed to fetch Community store repositories", err);
+      console.error("Failed to fetch Community marketplace repositories", err);
     }
   };
 
   static get styles() {
-    return storeStyles;
+    return marketplaceStyles;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-store": HaPanelStore;
+    "ha-panel-marketplace": HaPanelMarketplace;
   }
 }

@@ -9,10 +9,10 @@ import {
 import "../../layouts/hass-error-screen";
 import type { Redirect, Redirects } from "../my/ha-panel-my";
 import type { HomeAssistant, Route } from "../../types";
-import type { StoreData } from "./data/store";
+import type { MarketplaceData } from "./data/marketplace";
 
 const repositoryRedirect: Redirect = {
-  redirect: "/store/repository",
+  redirect: "/marketplace/repository",
   params: {
     owner: "string",
     repository: "string",
@@ -22,14 +22,14 @@ const repositoryRedirect: Redirect = {
 
 export const REDIRECTS: Redirects = {
   hacs_repository: repositoryRedirect,
-  store_repository: repositoryRedirect,
+  marketplace_repository: repositoryRedirect,
 };
 
-@customElement("ha-store-my-redirect")
-class HaStoreMyRedirect extends LitElement {
+@customElement("ha-marketplace-my-redirect")
+class HaMarketplaceMyRedirect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public store!: StoreData;
+  @property({ attribute: false }) public marketplace!: MarketplaceData;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -45,15 +45,18 @@ class HaStoreMyRedirect extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = this.hass.localize("ui.panel.store.my.not_supported", {
-        link: html`<a
-          target="_blank"
-          rel="noreferrer noopener"
-          href="https://my.home-assistant.io/faq.html#supported-pages"
-        >
-          ${this.hass.localize("ui.panel.store.my.faq_link")}
-        </a>`,
-      });
+      this._error = this.hass.localize(
+        "ui.panel.marketplace.my.not_supported",
+        {
+          link: html`<a
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://my.home-assistant.io/faq.html#supported-pages"
+          >
+            ${this.hass.localize("ui.panel.marketplace.my.faq_link")}
+          </a>`,
+        }
+      );
       return;
     }
 
@@ -61,7 +64,7 @@ class HaStoreMyRedirect extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch {
-      this._error = this.hass.localize("ui.panel.store.my.error");
+      this._error = this.hass.localize("ui.panel.marketplace.my.error");
       return;
     }
 
@@ -105,6 +108,6 @@ class HaStoreMyRedirect extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-store-my-redirect": HaStoreMyRedirect;
+    "ha-marketplace-my-redirect": HaMarketplaceMyRedirect;
   }
 }

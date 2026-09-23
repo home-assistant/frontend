@@ -88,11 +88,11 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
-      path: "/store",
-      translationKey: "store",
+      path: "/marketplace",
+      translationKey: "marketplace",
       iconPath: mdiStore,
       iconColor: "#7C4DFF",
-      component: "store",
+      component: "marketplace",
       adminOnly: true,
     },
     {

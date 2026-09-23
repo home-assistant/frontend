@@ -14,15 +14,15 @@ import type {
 import "../../../components/ha-settings-row";
 import "../../../components/progress/ha-progress-bar";
 import type { HomeAssistant } from "../../../types";
-import { StoreDispatchEvent } from "../data/common";
+import { MarketplaceDispatchEvent } from "../data/common";
 import { websocketSubscription } from "../data/websocket";
-import type { StoreFormDialogParams } from "./show-dialog-store";
+import type { MarketplaceFormDialogParams } from "./show-dialog-marketplace";
 
-@customElement("dialog-store-form")
-class DialogStoreForm extends LitElement {
+@customElement("dialog-marketplace-form")
+class DialogMarketplaceForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _dialogParams?: StoreFormDialogParams;
+  @state() private _dialogParams?: MarketplaceFormDialogParams;
 
   @state() private _waiting?: boolean;
 
@@ -30,14 +30,16 @@ class DialogStoreForm extends LitElement {
 
   private _errorSubscription?: UnsubscribeFunc;
 
-  public async showDialog(dialogParams: StoreFormDialogParams): Promise<void> {
+  public async showDialog(
+    dialogParams: MarketplaceFormDialogParams
+  ): Promise<void> {
     this._dialogParams = dialogParams;
     this._errorSubscription = await websocketSubscription(
       this.hass,
       (data) => {
         this._errors = { base: data?.message || data };
       },
-      StoreDispatchEvent.ERROR
+      MarketplaceDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -93,7 +95,7 @@ class DialogStoreForm extends LitElement {
                   appearance="plain"
                   @click=${this.closeDialog}
                 >
-                  ${this.hass.localize("ui.panel.store.common.cancel")}
+                  ${this.hass.localize("ui.panel.marketplace.common.cancel")}
                 </ha-button>
                 <ha-button
                   slot="primaryAction"
@@ -110,7 +112,7 @@ class DialogStoreForm extends LitElement {
                 >
                   ${
                     this._dialogParams.saveLabel ||
-                    this.hass.localize("ui.panel.store.common.save")
+                    this.hass.localize("ui.panel.marketplace.common.save")
                   }
                 </ha-button>
               </ha-dialog-footer>`
@@ -139,7 +141,7 @@ class DialogStoreForm extends LitElement {
       this._errors = {
         base:
           err?.message ||
-          this.hass.localize("ui.panel.store.common.unknown_error"),
+          this.hass.localize("ui.panel.marketplace.common.unknown_error"),
       };
     }
     this._waiting = false;
@@ -180,6 +182,6 @@ class DialogStoreForm extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-store-form": DialogStoreForm;
+    "dialog-marketplace-form": DialogMarketplaceForm;
   }
 }

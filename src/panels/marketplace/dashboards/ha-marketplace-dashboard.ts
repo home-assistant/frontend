@@ -31,14 +31,14 @@ import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { showStoreCustomRepositoriesDialog } from "../dialogs/show-dialog-store";
-import type { StoreRepositoryMenuItem } from "../components/ha-store-repository-overflow-menu";
-import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
-import type { StoreData } from "../data/store";
+import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace";
+import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
+import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
+import type { MarketplaceData } from "../data/marketplace";
 import type { RepositoryBase, RepositoryType } from "../data/repository";
 import { repositoriesClearNew } from "../data/websocket";
-import { storeStyles } from "../styles/store-common-style";
-import { storeDocumentationUrl } from "../tools/documentation";
+import { marketplaceStyles } from "../styles/marketplace-common-style";
+import { marketplaceDocumentationUrl } from "../tools/documentation";
 import { typeIcon } from "../tools/type-icon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
@@ -56,7 +56,7 @@ const STATUS_ORDER = [
   "default",
 ] as const satisfies readonly RepositoryBase["status"][];
 
-// The backend reports why the store is disabled, mapped so it can be shown
+// The backend reports why the Marketplace is disabled, mapped so it can be shown
 // as a translated sentence.
 const DISABLED_REASONS = ["invalid_token", "rate_limit", "removed"] as const;
 
@@ -67,14 +67,14 @@ const isKnownDisabledReason = (reason: string): reason is DisabledReason =>
 
 const TABS: PageNavigation[] = [
   {
-    translationKey: "ui.panel.config.dashboard.store.main",
-    path: "/store",
+    translationKey: "ui.panel.config.dashboard.marketplace.main",
+    path: "/marketplace",
   },
 ];
 
-@customElement("ha-store-dashboard")
-export class HaStoreDashboard extends LitElement {
-  @property({ attribute: false }) public store!: StoreData;
+@customElement("ha-marketplace-dashboard")
+export class HaMarketplaceDashboard extends LitElement {
+  @property({ attribute: false }) public marketplace!: MarketplaceData;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -86,49 +86,49 @@ export class HaStoreDashboard extends LitElement {
   @property({ attribute: false }) public isWide!: boolean;
 
   @storage({
-    key: "store-dashboard-table-filtering",
+    key: "marketplace-dashboard-table-filtering",
     state: true,
     subscribe: false,
   })
   private _activeFilters?: string[] = [];
 
   @storage({
-    key: "store-dashboard-table-sorting",
+    key: "marketplace-dashboard-table-sorting",
     state: false,
     subscribe: false,
   })
   private _activeSorting?: { column: string; direction: SortingDirection };
 
   @storage({
-    key: "store-dashboard-table-grouping",
+    key: "marketplace-dashboard-table-grouping",
     state: true,
     subscribe: false,
   })
   private _activeGrouping?: string;
 
   @storage({
-    key: "store-dashboard-table-collapsed",
+    key: "marketplace-dashboard-table-collapsed",
     state: false,
     subscribe: false,
   })
   private _activeCollapsed?: string[];
 
   @storage({
-    key: "store-dashboard-active-search",
+    key: "marketplace-dashboard-active-search",
     state: true,
     subscribe: false,
   })
   private _activeSearch?: string;
 
   @storage({
-    key: "store-dashboard-table-hidden-columns",
+    key: "marketplace-dashboard-table-hidden-columns",
     state: true,
     subscribe: false,
   })
   private _hiddenTableColumns?: string[];
 
   @storage({
-    key: "store-dashboard-table-columns-ordering",
+    key: "marketplace-dashboard-table-columns-ordering",
     state: true,
     subscribe: false,
   })
@@ -144,7 +144,7 @@ export class HaStoreDashboard extends LitElement {
 
   protected render(): TemplateResult {
     const repositories = this._filterRepositories(
-      this.store.repositories,
+      this.marketplace.repositories,
       this.hass.localize,
       this._activeFilters
     );
@@ -170,7 +170,7 @@ export class HaStoreDashboard extends LitElement {
         .filter=${this._activeSearch || ""}
         has-filters
         .filters=${this._activeFilters?.length}
-        .noDataText=${this.hass.localize("ui.panel.store.dashboard.no_data")}
+        .noDataText=${this.hass.localize("ui.panel.marketplace.dashboard.no_data")}
         .initialGroupColumn=${this._activeGrouping || "translated_status"}
         .initialCollapsedGroups=${this._activeCollapsed || []}
         .groupOrder=${this._groupOrder(this.hass.localize, this._activeGrouping)}
@@ -193,17 +193,17 @@ export class HaStoreDashboard extends LitElement {
           ></ha-icon-button>
           <ha-dropdown-item value="documentation">
             <ha-svg-icon .path=${mdiFileDocument} slot="icon"></ha-svg-icon>
-            ${this.hass.localize("ui.panel.store.menu.documentation")}
+            ${this.hass.localize("ui.panel.marketplace.menu.documentation")}
           </ha-dropdown-item>
           <ha-dropdown-item value="custom_repositories">
             <ha-svg-icon .path=${mdiGit} slot="icon"></ha-svg-icon>
-            ${this.hass.localize("ui.panel.store.menu.custom_repositories")}
+            ${this.hass.localize("ui.panel.marketplace.menu.custom_repositories")}
           </ha-dropdown-item>
           ${
             repositoriesContainsNew
               ? html`<ha-dropdown-item value="dismiss_new">
                   <ha-svg-icon .path=${mdiNewBox} slot="icon"></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.store.menu.dismiss")}
+                  ${this.hass.localize("ui.panel.marketplace.menu.dismiss")}
                 </ha-dropdown-item>`
               : nothing
           }
@@ -223,7 +223,7 @@ export class HaStoreDashboard extends LitElement {
                 filter.startsWith("type_")
               ) || "",
           }}
-          .schema=${this._filterSchema(this.hass.localize, this.store.info.categories)}
+          .schema=${this._filterSchema(this.hass.localize, this.marketplace.info.categories)}
           .computeLabel=${this._computeFilterFormLabel}
           @value-changed=${this._handleFilterChanged}
         ></ha-form>
@@ -301,10 +301,10 @@ export class HaStoreDashboard extends LitElement {
           ...repository,
           translated_status:
             localizeFunc(
-              `ui.panel.store.repository_status.${repository.status}`
+              `ui.panel.marketplace.repository_status.${repository.status}`
             ) || repository.status,
           translated_category: localizeFunc(
-            `ui.panel.store.common.type.${repository.category}`
+            `ui.panel.marketplace.common.type.${repository.category}`
           ),
         }))
   );
@@ -317,7 +317,7 @@ export class HaStoreDashboard extends LitElement {
     ): DataTableColumnContainer<RepositoryBase> => ({
       icon: {
         title: "",
-        label: localizeFunc("ui.panel.store.column.icon"),
+        label: localizeFunc("ui.panel.marketplace.column.icon"),
         type: "icon",
         hidden: false,
         moveable: false,
@@ -347,7 +347,7 @@ export class HaStoreDashboard extends LitElement {
       },
       name: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.name"),
+        title: localizeFunc("ui.panel.marketplace.column.name"),
         main: true,
         hidden: false,
         sortable: true,
@@ -359,7 +359,7 @@ export class HaStoreDashboard extends LitElement {
       },
       downloads: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.downloads"),
+        title: localizeFunc("ui.panel.marketplace.column.downloads"),
         sortable: true,
         hidden: false,
         template: (repository: RepositoryBase) =>
@@ -367,13 +367,13 @@ export class HaStoreDashboard extends LitElement {
       },
       stars: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.stars"),
+        title: localizeFunc("ui.panel.marketplace.column.stars"),
         sortable: true,
         hidden: false,
       },
       last_updated: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.last_updated"),
+        title: localizeFunc("ui.panel.marketplace.column.last_updated"),
         sortable: true,
         hidden: false,
         template: (repository: RepositoryBase) => {
@@ -392,7 +392,7 @@ export class HaStoreDashboard extends LitElement {
       },
       installed_version: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.installed_version"),
+        title: localizeFunc("ui.panel.marketplace.column.installed_version"),
         sortable: true,
         defaultHidden: true,
         hidden: false,
@@ -401,7 +401,7 @@ export class HaStoreDashboard extends LitElement {
       },
       available_version: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.available_version"),
+        title: localizeFunc("ui.panel.marketplace.column.available_version"),
         sortable: true,
         defaultHidden: true,
         hidden: false,
@@ -410,7 +410,7 @@ export class HaStoreDashboard extends LitElement {
       },
       translated_status: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.status"),
+        title: localizeFunc("ui.panel.marketplace.column.status"),
         sortable: true,
         groupable: true,
         hidden: false,
@@ -418,7 +418,7 @@ export class HaStoreDashboard extends LitElement {
       },
       translated_category: {
         ...defaultKeyData,
-        title: localizeFunc("ui.panel.store.column.type"),
+        title: localizeFunc("ui.panel.marketplace.column.type"),
         sortable: true,
         groupable: true,
         hidden: false,
@@ -431,7 +431,7 @@ export class HaStoreDashboard extends LitElement {
       topics: defaultKeyData,
       actions: {
         title: "",
-        label: localizeFunc("ui.panel.store.column.actions"),
+        label: localizeFunc("ui.panel.marketplace.column.actions"),
         moveable: false,
         hideable: false,
         showNarrow: true,
@@ -479,7 +479,9 @@ export class HaStoreDashboard extends LitElement {
     }
 
     repositoryMenuItems(this, this._overflowMenuRepository, this.hass.localize)
-      .filter((entry): entry is StoreRepositoryMenuItem => "value" in entry)
+      .filter(
+        (entry): entry is MarketplaceRepositoryMenuItem => "value" in entry
+      )
       .find((entry) => entry.value === ev.detail.item.value)
       ?.action();
   };
@@ -498,35 +500,39 @@ export class HaStoreDashboard extends LitElement {
   };
 
   private _openDocumentation() {
-    window.open(storeDocumentationUrl(), "_blank", "noreferrer=true");
+    window.open(marketplaceDocumentationUrl(), "_blank", "noreferrer=true");
   }
 
   private _showCustomRepositories() {
-    const disabledReason = this.store.info.disabled_reason;
+    const disabledReason = this.marketplace.info.disabled_reason;
     if (disabledReason) {
       showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.store.dialog.disabled.title"),
+        title: this.hass.localize("ui.panel.marketplace.dialog.disabled.title"),
         text: isKnownDisabledReason(disabledReason)
           ? this.hass.localize(
-              `ui.panel.store.dialog.disabled.reason.${disabledReason}`
+              `ui.panel.marketplace.dialog.disabled.reason.${disabledReason}`
             )
-          : this.hass.localize("ui.panel.store.dialog.disabled.reason.unknown"),
+          : this.hass.localize(
+              "ui.panel.marketplace.dialog.disabled.reason.unknown"
+            ),
       });
       return;
     }
 
-    showStoreCustomRepositoriesDialog(this, { store: this.store });
+    showMarketplaceCustomRepositoriesDialog(this, {
+      marketplace: this.marketplace,
+    });
   }
 
   private async _dismissNew() {
     try {
-      await repositoriesClearNew(this.hass, this.store);
+      await repositoriesClearNew(this.hass, this.marketplace);
     } catch (err: any) {
       showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.store.dialog.error.title"),
+        title: this.hass.localize("ui.panel.marketplace.dialog.error.title"),
         text:
           err?.message ||
-          this.hass.localize("ui.panel.store.common.unknown_error"),
+          this.hass.localize("ui.panel.marketplace.common.unknown_error"),
       });
     }
   }
@@ -535,7 +541,7 @@ export class HaStoreDashboard extends LitElement {
     (localize: LocalizeFunc, activeGrouping: string | undefined) =>
       activeGrouping === "translated_status"
         ? STATUS_ORDER.map((filter) =>
-            localize(`ui.panel.store.repository_status.${filter}`)
+            localize(`ui.panel.marketplace.repository_status.${filter}`)
           )
         : undefined
   );
@@ -555,7 +561,7 @@ export class HaStoreDashboard extends LitElement {
               options: STATUS_ORDER.map((filter) => ({
                 value: `status_${filter}`,
                 label: localizeFunc(
-                  `ui.panel.store.repository_status.${filter}`
+                  `ui.panel.marketplace.repository_status.${filter}`
                 ),
               })),
               mode: "dropdown",
@@ -569,7 +575,7 @@ export class HaStoreDashboard extends LitElement {
             select: {
               options: types.map((type: string) => ({
                 label: localizeFunc(
-                  `ui.panel.store.common.type.${type as RepositoryType}`
+                  `ui.panel.marketplace.common.type.${type as RepositoryType}`
                 ),
                 value: `type_${type}`,
               })),
@@ -585,11 +591,15 @@ export class HaStoreDashboard extends LitElement {
     name: "filters" | "status" | "type";
   }): string =>
     schema.name === "filters"
-      ? this.hass.localize("ui.panel.store.dialog_overview.sections.filters")
-      : this.hass.localize(`ui.panel.store.dialog_overview.${schema.name}`);
+      ? this.hass.localize(
+          "ui.panel.marketplace.dialog_overview.sections.filters"
+        )
+      : this.hass.localize(
+          `ui.panel.marketplace.dialog_overview.${schema.name}`
+        );
 
   private _handleRowClicked(ev: CustomEvent) {
-    navigate(`/store/repository/${ev.detail.id}`);
+    navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
   private _handleFilterChanged(ev: CustomEvent) {
@@ -633,7 +643,7 @@ export class HaStoreDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      storeStyles,
+      marketplaceStyles,
       css`
         .repository-icon {
           height: 32px;
@@ -649,6 +659,6 @@ export class HaStoreDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-store-dashboard": HaStoreDashboard;
+    "ha-marketplace-dashboard": HaMarketplaceDashboard;
   }
 }

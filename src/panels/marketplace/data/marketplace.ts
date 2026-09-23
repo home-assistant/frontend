@@ -4,15 +4,15 @@ import type { RepositoryBase, RepositoryType } from "./repository";
 declare global {
   interface HASSDomEvents {
     // Fired when the repository list changed and has to be refetched.
-    "store-refresh": undefined;
+    "marketplace-refresh": undefined;
   }
 
   interface GlobalEventHandlersEventMap {
-    "store-refresh": HASSDomEvent<HASSDomEvents["store-refresh"]>;
+    "marketplace-refresh": HASSDomEvent<HASSDomEvents["marketplace-refresh"]>;
   }
 }
 
-export interface StoreInfo {
+export interface MarketplaceInfo {
   categories: RepositoryType[];
   country: string;
   debug: boolean;
@@ -23,7 +23,7 @@ export interface StoreInfo {
   version: string;
 }
 
-export interface StoreData {
+export interface MarketplaceData {
   repositories: RepositoryBase[];
-  info: StoreInfo;
+  info: MarketplaceInfo;
 }

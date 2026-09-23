@@ -1,16 +1,16 @@
 import type { HomeAssistant } from "../../../types";
-import type { StoreData, StoreInfo } from "./store";
-import type { StoreDispatchEvent } from "./common";
+import type { MarketplaceData, MarketplaceInfo } from "./marketplace";
+import type { MarketplaceDispatchEvent } from "./common";
 import type { RepositoryBase } from "./repository";
 
-export const fetchStoreInfo = async (hass: HomeAssistant) =>
-  hass.connection.sendMessagePromise<StoreInfo>({
-    type: "store/info",
+export const fetchMarketplaceInfo = async (hass: HomeAssistant) =>
+  hass.connection.sendMessagePromise<MarketplaceInfo>({
+    type: "marketplace/info",
   });
 
 export const getRepositories = async (hass: HomeAssistant) =>
   hass.connection.sendMessagePromise<RepositoryBase[]>({
-    type: "store/repositories/list",
+    type: "marketplace/repositories/list",
   });
 
 export const repositoryUninstall = async (
@@ -18,7 +18,7 @@ export const repositoryUninstall = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<unknown>({
-    type: "store/repository/remove",
+    type: "marketplace/repository/remove",
     repository,
   });
 
@@ -28,7 +28,7 @@ export const repositoryAdd = async (
   category: string
 ) =>
   hass.connection.sendMessagePromise<null | Record<string, string>>({
-    type: "store/repositories/add",
+    type: "marketplace/repositories/add",
     repository: repository,
     category,
   });
@@ -38,7 +38,7 @@ export const repositoryUpdate = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<unknown>({
-    type: "store/repository/refresh",
+    type: "marketplace/repository/refresh",
     repository,
   });
 
@@ -47,17 +47,17 @@ export const repositoryDelete = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<unknown>({
-    type: "store/repositories/remove",
+    type: "marketplace/repositories/remove",
     repository,
   });
 
 export const repositoriesClearNew = async (
   hass: HomeAssistant,
-  store: StoreData
+  marketplace: MarketplaceData
 ) =>
   hass.connection.sendMessagePromise<unknown>({
-    type: "store/repositories/clear_new",
-    categories: store.info.categories,
+    type: "marketplace/repositories/clear_new",
+    categories: marketplace.info.categories,
   });
 
 export const repositoriesClearNewRepository = async (
@@ -65,16 +65,16 @@ export const repositoriesClearNewRepository = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<unknown>({
-    type: "store/repositories/clear_new",
+    type: "marketplace/repositories/clear_new",
     repository,
   });
 
 export const websocketSubscription = (
   hass: HomeAssistant,
   onChange: (result: Record<any, any> | null) => void,
-  event: StoreDispatchEvent
+  event: MarketplaceDispatchEvent
 ) =>
   hass.connection.subscribeMessage(onChange, {
-    type: "store/subscribe",
+    type: "marketplace/subscribe",
     signal: event,
   });

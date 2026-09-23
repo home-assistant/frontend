@@ -22,15 +22,15 @@ import {
   repositoryUninstall,
   repositoryUpdate,
 } from "../data/websocket";
-import type { HaStoreDashboard } from "../dashboards/ha-store-dashboard";
-import type { HaStoreRepositoryDashboard } from "../dashboards/ha-store-repository-dashboard";
+import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
+import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
 import {
-  showStoreDownloadDialog,
-  showStoreFormDialog,
-} from "../dialogs/show-dialog-store";
+  showMarketplaceDownloadDialog,
+  showMarketplaceFormDialog,
+} from "../dialogs/show-dialog-marketplace";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 
-export interface StoreRepositoryMenuItem {
+export interface MarketplaceRepositoryMenuItem {
   value: string;
   path: string;
   label: string;
@@ -38,33 +38,34 @@ export interface StoreRepositoryMenuItem {
   variant?: "danger";
 }
 
-export type StoreRepositoryMenuEntry =
-  StoreRepositoryMenuItem | { divider: true };
+export type MarketplaceRepositoryMenuEntry =
+  MarketplaceRepositoryMenuItem | { divider: true };
 
-type StoreDashboardElement = HaStoreRepositoryDashboard | HaStoreDashboard;
+type MarketplaceDashboardElement =
+  HaMarketplaceRepositoryDashboard | HaMarketplaceDashboard;
 
 const showError = (
-  element: StoreDashboardElement,
+  element: MarketplaceDashboardElement,
   localize: LocalizeFunc,
   err: { message?: string }
 ) =>
   showAlertDialog(element, {
-    title: localize("ui.panel.store.dialog.error.title"),
-    text: err?.message || localize("ui.panel.store.common.unknown_error"),
+    title: localize("ui.panel.marketplace.dialog.error.title"),
+    text: err?.message || localize("ui.panel.marketplace.common.unknown_error"),
   });
 
 const removeRepository = async (
-  element: StoreDashboardElement,
+  element: MarketplaceDashboardElement,
   repository: RepositoryBase
 ) => {
   await repositoryUninstall(element.hass, String(repository.id));
-  if (element.nodeName === "HA-STORE-REPOSITORY-DASHBOARD") {
-    navigate("/store", { replace: true });
+  if (element.nodeName === "HA-MARKETPLACE-REPOSITORY-DASHBOARD") {
+    navigate("/marketplace", { replace: true });
   }
 };
 
 const confirmRemoveRepository = async (
-  element: StoreDashboardElement,
+  element: MarketplaceDashboardElement,
   repository: RepositoryBase,
   localize: LocalizeFunc
 ) => {
@@ -75,12 +76,12 @@ const confirmRemoveRepository = async (
 
     if (configured) {
       const navigateToIntegrations = await showConfirmationDialog(element, {
-        title: localize("ui.panel.store.dialog.configured.title"),
-        text: localize("ui.panel.store.dialog.configured.message", {
+        title: localize("ui.panel.marketplace.dialog.configured.title"),
+        text: localize("ui.panel.marketplace.dialog.configured.message", {
           name: repository.name,
         }),
-        dismissText: localize("ui.panel.store.common.ignore"),
-        confirmText: localize("ui.panel.store.common.navigate"),
+        dismissText: localize("ui.panel.marketplace.common.ignore"),
+        confirmText: localize("ui.panel.marketplace.common.navigate"),
         confirm: () => {
           navigate("/config/integrations", { replace: true });
         },
@@ -92,11 +93,11 @@ const confirmRemoveRepository = async (
     }
   }
 
-  showStoreFormDialog(element, {
-    store: element.store,
-    title: localize("ui.panel.store.dialog.remove.title"),
-    saveLabel: localize("ui.panel.store.dialog.remove.title"),
-    description: localize("ui.panel.store.dialog.remove.message", {
+  showMarketplaceFormDialog(element, {
+    marketplace: element.marketplace,
+    title: localize("ui.panel.marketplace.dialog.remove.title"),
+    saveLabel: localize("ui.panel.marketplace.dialog.remove.title"),
+    description: localize("ui.panel.marketplace.dialog.remove.message", {
       name: repository.name,
     }),
     saveAction: async () => {
@@ -107,18 +108,18 @@ const confirmRemoveRepository = async (
 };
 
 export const repositoryMenuItems = (
-  element: StoreDashboardElement,
+  element: MarketplaceDashboardElement,
   repository: RepositoryBase,
   localize: LocalizeFunc
-): StoreRepositoryMenuEntry[] => {
-  const entries: StoreRepositoryMenuEntry[] = [];
+): MarketplaceRepositoryMenuEntry[] => {
+  const entries: MarketplaceRepositoryMenuEntry[] = [];
 
-  if (element.nodeName === "HA-STORE-DASHBOARD") {
+  if (element.nodeName === "HA-MARKETPLACE-DASHBOARD") {
     entries.push({
       value: "show",
       path: mdiInformation,
-      label: localize("ui.panel.store.common.show"),
-      action: () => navigate(`/store/repository/${repository.id}`),
+      label: localize("ui.panel.marketplace.common.show"),
+      action: () => navigate(`/marketplace/repository/${repository.id}`),
     });
   }
 
@@ -126,7 +127,7 @@ export const repositoryMenuItems = (
     {
       value: "repository",
       path: mdiGithub,
-      label: localize("ui.panel.store.common.repository"),
+      label: localize("ui.panel.marketplace.common.repository"),
       action: () =>
         window.open(
           `https://github.com/${repository.full_name}`,
@@ -137,7 +138,9 @@ export const repositoryMenuItems = (
     {
       value: "update_information",
       path: mdiArrowDownCircle,
-      label: localize("ui.panel.store.repository_card.update_information"),
+      label: localize(
+        "ui.panel.marketplace.repository_card.update_information"
+      ),
       action: async () => {
         try {
           await repositoryUpdate(element.hass, String(repository.id));
@@ -151,12 +154,12 @@ export const repositoryMenuItems = (
       path: repository.installed_version ? mdiReload : mdiDownload,
       label: localize(
         repository.installed_version
-          ? "ui.panel.store.repository_card.redownload"
-          : "ui.panel.store.common.download"
+          ? "ui.panel.marketplace.repository_card.redownload"
+          : "ui.panel.marketplace.common.download"
       ),
       action: () =>
-        showStoreDownloadDialog(element, {
-          store: element.store,
+        showMarketplaceDownloadDialog(element, {
+          marketplace: element.marketplace,
           repositoryId: repository.id,
         }),
     }
@@ -166,7 +169,7 @@ export const repositoryMenuItems = (
     entries.push({
       value: "dismiss_new",
       path: mdiMoonNew,
-      label: localize("ui.panel.store.repository_card.dismiss_new"),
+      label: localize("ui.panel.marketplace.repository_card.dismiss_new"),
       action: async () => {
         try {
           await repositoriesClearNewRepository(element.hass, repository.id);
@@ -181,7 +184,7 @@ export const repositoryMenuItems = (
     entries.push({
       value: "open_source",
       path: mdiLanguageJavascript,
-      label: localize("ui.panel.store.repository_card.open_source"),
+      label: localize("ui.panel.marketplace.repository_card.open_source"),
       action: () =>
         window.open(
           `${generateFrontendResourceURL({ repository })}?v=${Date.now()}`,
@@ -196,7 +199,7 @@ export const repositoryMenuItems = (
     {
       value: "open_issue",
       path: mdiAlertCircleOutline,
-      label: localize("ui.panel.store.repository_card.open_issue"),
+      label: localize("ui.panel.marketplace.repository_card.open_issue"),
       action: () =>
         window.open(
           `https://github.com/${repository.full_name}/issues`,
@@ -210,7 +213,7 @@ export const repositoryMenuItems = (
     entries.push({
       value: "remove",
       path: mdiClose,
-      label: localize("ui.panel.store.common.remove"),
+      label: localize("ui.panel.marketplace.common.remove"),
       action: () => confirmRemoveRepository(element, repository, localize),
       variant: "danger",
     });

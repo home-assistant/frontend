@@ -231,10 +231,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           "_blank"
         );
 
-      if (!redirectEntry && targetPath.startsWith("/store/repository/")) {
-        // Store repository pages are addressed by id, the My link by name
+      if (!redirectEntry && targetPath.startsWith("/marketplace/repository/")) {
+        // Marketplace repository pages are addressed by id, the My link by name
         const { fetchRepositoryInformation } =
-          await import("../panels/store/data/repository");
+          await import("../panels/marketplace/data/repository");
         try {
           const repository = await fetchRepositoryInformation(
             this.hass,

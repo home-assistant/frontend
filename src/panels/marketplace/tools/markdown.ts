@@ -34,7 +34,7 @@ export const markdownWithRepositoryContext = (
 
     // Handle anchor references
     input = input.replace(/\[.*\]\(#.*\)/g, (x) => {
-      return x.replace("(#", `(/store/repository/${repository.id}#`);
+      return x.replace("(#", `(/marketplace/repository/${repository.id}#`);
     });
 
     // Add references to issues and PRs

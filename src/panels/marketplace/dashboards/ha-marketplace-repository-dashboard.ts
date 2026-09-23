@@ -34,19 +34,19 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { showStoreDownloadDialog } from "../dialogs/show-dialog-store";
-import type { StoreRepositoryMenuItem } from "../components/ha-store-repository-overflow-menu";
-import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
-import type { StoreData } from "../data/store";
+import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace";
+import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
+import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
+import type { MarketplaceData } from "../data/marketplace";
 import type { RepositoryBase, RepositoryInfo } from "../data/repository";
 import { fetchRepositoryInformation } from "../data/repository";
 import { getRepositories, repositoryAdd } from "../data/websocket";
-import { storeStyles } from "../styles/store-common-style";
+import { marketplaceStyles } from "../styles/marketplace-common-style";
 import { markdownWithRepositoryContext } from "../tools/markdown";
 
-@customElement("ha-store-repository-dashboard")
-export class HaStoreRepositoryDashboard extends LitElement {
-  @property({ attribute: false }) public store!: StoreData;
+@customElement("ha-marketplace-repository-dashboard")
+export class HaMarketplaceRepositoryDashboard extends LitElement {
+  @property({ attribute: false }) public marketplace!: MarketplaceData;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -72,7 +72,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
     if (Object.entries(params).length) {
       let existing: RepositoryBase | undefined;
       const requestedRepository = `${params.owner}/${params.repository}`;
-      existing = this.store.repositories.find(
+      existing = this.marketplace.repositories.find(
         (repository) =>
           repository.full_name.toLocaleLowerCase() ===
           requestedRepository.toLocaleLowerCase()
@@ -80,19 +80,23 @@ export class HaStoreRepositoryDashboard extends LitElement {
       if (!existing && params.category) {
         if (
           !(await showConfirmationDialog(this, {
-            title: this.hass.localize("ui.panel.store.my.add_repository_title"),
+            title: this.hass.localize(
+              "ui.panel.marketplace.my.add_repository_title"
+            ),
             text: this.hass.localize(
-              "ui.panel.store.my.add_repository_description",
+              "ui.panel.marketplace.my.add_repository_description",
               {
                 repository: requestedRepository,
               }
             ),
-            confirmText: this.hass.localize("ui.panel.store.common.add"),
-            dismissText: this.hass.localize("ui.panel.store.common.cancel"),
+            confirmText: this.hass.localize("ui.panel.marketplace.common.add"),
+            dismissText: this.hass.localize(
+              "ui.panel.marketplace.common.cancel"
+            ),
           }))
         ) {
           this._error = this.hass.localize(
-            "ui.panel.store.my.repository_not_found",
+            "ui.panel.marketplace.my.repository_not_found",
             {
               repository: requestedRepository,
             }
@@ -101,7 +105,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
         }
         try {
           await repositoryAdd(this.hass, requestedRepository, params.category);
-          fireEvent(this, "store-refresh");
+          fireEvent(this, "marketplace-refresh");
           const repositories = await getRepositories(this.hass);
           existing = repositories.find(
             (repository) =>
@@ -117,7 +121,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
         this._fetchRepository(String(existing.id));
       } else {
         this._error = this.hass.localize(
-          "ui.panel.store.my.repository_not_found",
+          "ui.panel.marketplace.my.repository_not_found",
           {
             repository: requestedRepository,
           }
@@ -128,7 +132,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
       const repositoryId = this.route.path.substr(dividerPos + 1);
       if (!repositoryId) {
         this._error = this.hass.localize(
-          "ui.panel.store.dashboard.repository_not_found"
+          "ui.panel.marketplace.dashboard.repository_not_found"
         );
         return;
       }
@@ -139,18 +143,18 @@ export class HaStoreRepositoryDashboard extends LitElement {
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
-    if (!changedProps.has("store") || !this._repository) {
+    if (!changedProps.has("marketplace") || !this._repository) {
       return;
     }
 
-    // The store data is refetched as a whole, so only pick up changes that
+    // The Marketplace data is refetched as a whole, so only pick up changes that
     // affect the repository shown here.
     const repositoryId = this._repository.id;
-    const listed = this.store.repositories.find(
+    const listed = this.marketplace.repositories.find(
       (repository) => repository.id === repositoryId
     );
     const previouslyListed = changedProps
-      .get("store")
+      .get("marketplace")
       ?.repositories.find((repository) => repository.id === repositoryId);
 
     if (previouslyListed && !deepEqual(previouslyListed, listed)) {
@@ -221,7 +225,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        back-path="/store"
+        back-path="/marketplace"
         .header=${this._repository.name}
       >
         <ha-icon-button
@@ -238,7 +242,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
                   ? html`
                       <ha-assist-chip
                         .label=${this._repository.installed_version}
-                        title=${this.hass.localize("ui.panel.store.dialog_info.version_installed")}
+                        title=${this.hass.localize("ui.panel.marketplace.dialog_info.version_installed")}
                       >
                         <ha-svg-icon slot="icon" .path=${mdiCube}></ha-svg-icon>
                       </ha-assist-chip>
@@ -251,7 +255,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
                     href="https://github.com/${author}"
                     target="_blank"
                     .label=${`@${author}`}
-                    title=${this.hass.localize("ui.panel.store.dialog_info.author")}
+                    title=${this.hass.localize("ui.panel.marketplace.dialog_info.author")}
                   >
                     <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
                   </ha-assist-chip>`
@@ -259,7 +263,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
               ${
                 this._repository.downloads
                   ? html` <ha-assist-chip
-                      title=${this.hass.localize("ui.panel.store.dialog_info.downloads")}
+                      title=${this.hass.localize("ui.panel.marketplace.dialog_info.downloads")}
                       .label=${String(this._repository.downloads)}
                     >
                       <ha-svg-icon
@@ -271,7 +275,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
               }
               <ha-assist-chip
                 .label=${String(this._repository.stars)}
-                title=${this.hass.localize("ui.panel.store.dialog_info.stars")}
+                title=${this.hass.localize("ui.panel.marketplace.dialog_info.stars")}
               >
                 <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
               </ha-assist-chip>
@@ -279,7 +283,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
                 href="https://github.com/${this._repository.full_name}/issues"
                 target="_blank"
                 .label=${String(this._repository.issues)}
-                title=${this.hass.localize("ui.panel.store.dialog_info.open_issues")}
+                title=${this.hass.localize("ui.panel.marketplace.dialog_info.open_issues")}
               >
                 <ha-svg-icon
                   slot="icon"
@@ -292,7 +296,8 @@ export class HaStoreRepositoryDashboard extends LitElement {
                 markdownWithRepositoryContext(
                   this._repository.additional_info,
                   this._repository
-                ) || this.hass.localize("ui.panel.store.dialog_info.no_info")
+                ) ||
+                this.hass.localize("ui.panel.marketplace.dialog_info.no_info")
               }
             ></ha-markdown>
           </ha-card>
@@ -306,7 +311,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
                 @click=${this._downloadRepositoryDialog}
               >
                 <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                ${this.hass.localize("ui.panel.store.common.download")}
+                ${this.hass.localize("ui.panel.marketplace.common.download")}
               </ha-button>`
             : nothing
         }
@@ -351,7 +356,9 @@ export class HaStoreRepositoryDashboard extends LitElement {
     }
 
     repositoryMenuItems(this, this._repository, this.hass.localize)
-      .filter((entry): entry is StoreRepositoryMenuItem => "value" in entry)
+      .filter(
+        (entry): entry is MarketplaceRepositoryMenuItem => "value" in entry
+      )
       .find((entry) => entry.value === ev.detail.item.value)
       ?.action();
   };
@@ -370,8 +377,8 @@ export class HaStoreRepositoryDashboard extends LitElement {
   };
 
   private _downloadRepositoryDialog() {
-    showStoreDownloadDialog(this, {
-      store: this.store,
+    showMarketplaceDownloadDialog(this, {
+      marketplace: this.marketplace,
       repositoryId: this._repository!.id,
       repository: this._repository!,
     });
@@ -379,7 +386,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
 
   static get styles() {
     return [
-      storeStyles,
+      marketplaceStyles,
       css`
         ha-card {
           display: block;
@@ -408,6 +415,6 @@ export class HaStoreRepositoryDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-store-repository-dashboard": HaStoreRepositoryDashboard;
+    "ha-marketplace-repository-dashboard": HaMarketplaceRepositoryDashboard;
   }
 }

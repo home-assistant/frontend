@@ -16,7 +16,7 @@ import "../../../components/progress/ha-progress-bar";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import { StoreDispatchEvent } from "../data/common";
+import { MarketplaceDispatchEvent } from "../data/common";
 import type { RepositoryBase, RepositoryInfo } from "../data/repository";
 import {
   fetchRepositoryInformation,
@@ -24,12 +24,12 @@ import {
   repositoryReleases,
 } from "../data/repository";
 import { websocketSubscription } from "../data/websocket";
-import { storeStyles } from "../styles/store-common-style";
+import { marketplaceStyles } from "../styles/marketplace-common-style";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
-import type { StoreDownloadDialogParams } from "./show-dialog-store";
+import type { MarketplaceDownloadDialogParams } from "./show-dialog-marketplace";
 
-@customElement("ha-store-release-item")
-export class HaStoreReleaseItem extends LitElement {
+@customElement("ha-marketplace-release-item")
+export class HaMarketplaceReleaseItem extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public release!: {
@@ -47,7 +47,7 @@ export class HaStoreReleaseItem extends LitElement {
           this.release.prerelease
             ? html`<span class="pre-release">
                 ${this.hass.localize(
-                  "ui.panel.store.dialog_download.pre_release"
+                  "ui.panel.marketplace.dialog_download.pre_release"
                 )}
               </span>`
             : nothing
@@ -96,8 +96,8 @@ const errorMessage = (error: unknown): string => {
   return typeof message === "string" ? message : String(error);
 };
 
-@customElement("dialog-store-download")
-export class DialogStoreDownload extends LitElement {
+@customElement("dialog-marketplace-download")
+export class DialogMarketplaceDownload extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _waiting = true;
@@ -115,14 +115,14 @@ export class DialogStoreDownload extends LitElement {
 
   @state() private _repository?: RepositoryInfo;
 
-  @state() private _dialogParams?: StoreDownloadDialogParams;
+  @state() private _dialogParams?: MarketplaceDownloadDialogParams;
 
   @state() private _selectedVersion?: string;
 
   private _errorSubscription?: UnsubscribeFunc;
 
   public async showDialog(
-    dialogParams: StoreDownloadDialogParams
+    dialogParams: MarketplaceDownloadDialogParams
   ): Promise<void> {
     this._dialogParams = dialogParams;
     this._waiting = false;
@@ -143,7 +143,7 @@ export class DialogStoreDownload extends LitElement {
         this._error = errorMessage(data);
         this._installing = false;
       },
-      StoreDispatchEvent.ERROR
+      MarketplaceDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -191,7 +191,7 @@ export class DialogStoreDownload extends LitElement {
         <ha-dialog
           open
           .headerTitle=${this.hass.localize(
-            "ui.panel.store.dialog_download.loading"
+            "ui.panel.marketplace.dialog_download.loading"
           )}
           @closed=${this.closeDialog}
         >
@@ -218,8 +218,8 @@ export class DialogStoreDownload extends LitElement {
           <p>
             ${this.hass.localize(
               this._repository.version_or_commit === "commit"
-                ? "ui.panel.store.dialog_download.will_download_commit"
-                : "ui.panel.store.dialog_download.will_download_version",
+                ? "ui.panel.marketplace.dialog_download.will_download_commit"
+                : "ui.panel.marketplace.dialog_download.will_download_version",
               {
                 ref: html`
                   <code
@@ -231,17 +231,17 @@ export class DialogStoreDownload extends LitElement {
           </p>
           <div class="note">
             ${this.hass.localize(
-              "ui.panel.store.dialog_download.note_downloaded",
+              "ui.panel.marketplace.dialog_download.note_downloaded",
               {
                 location: html`<code>'${installPath}'</code>`,
               }
             )}
             ${
               this._repository.category === "plugin" &&
-              this._dialogParams.store.info.lovelace_mode !== "storage"
+              this._dialogParams.marketplace.info.lovelace_mode !== "storage"
                 ? html`
                     <p>
-                      ${this.hass.localize(`ui.panel.store.dialog_download.lovelace_instruction`)}
+                      ${this.hass.localize(`ui.panel.marketplace.dialog_download.lovelace_instruction`)}
                     </p>
                     <pre class="frontend-resource">
                 url: ${generateFrontendResourceURL({ repository: this._repository })}
@@ -253,7 +253,7 @@ export class DialogStoreDownload extends LitElement {
             ${
               this._repository.category === "integration"
                 ? html`<p>
-                    ${this.hass.localize("ui.panel.store.dialog_download.restart")}
+                    ${this.hass.localize("ui.panel.marketplace.dialog_download.restart")}
                   </p>`
                 : nothing
             }
@@ -262,19 +262,19 @@ export class DialogStoreDownload extends LitElement {
             this._selectedVersion
               ? html`<ha-expansion-panel
                   @expanded-changed=${this._fetchReleases}
-                  .header=${this.hass.localize(`ui.panel.store.dialog_download.different_version`)}
+                  .header=${this.hass.localize(`ui.panel.marketplace.dialog_download.different_version`)}
                 >
                   <p>
-                    ${this.hass.localize("ui.panel.store.dialog_download.release_warning")}
+                    ${this.hass.localize("ui.panel.marketplace.dialog_download.release_warning")}
                   </p>
                   ${
                     this._releases === undefined
                       ? this.hass.localize(
-                          "ui.panel.store.dialog_download.fetching_releases"
+                          "ui.panel.marketplace.dialog_download.fetching_releases"
                         )
                       : this._releases.length === 0
                         ? this.hass.localize(
-                            "ui.panel.store.dialog_download.no_releases"
+                            "ui.panel.marketplace.dialog_download.no_releases"
                           )
                         : html`<ha-form
                             @value-changed=${this._versionChanged}
@@ -287,10 +287,10 @@ export class DialogStoreDownload extends LitElement {
                                     mode: "dropdown",
                                     options: this._releases?.map((release) => ({
                                       value: release.tag,
-                                      label: html`<ha-store-release-item
+                                      label: html`<ha-marketplace-release-item
                                         .hass=${this.hass}
                                         .release=${release}
-                                      ></ha-store-release-item>`,
+                                      ></ha-marketplace-release-item>`,
                                     })),
                                   },
                                 },
@@ -318,7 +318,7 @@ export class DialogStoreDownload extends LitElement {
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.panel.store.common.cancel")}
+            ${this.hass.localize("ui.panel.marketplace.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -326,7 +326,7 @@ export class DialogStoreDownload extends LitElement {
             ?disabled=${this._waiting || this._installing}
             @click=${this._installRepository}
           >
-            ${this.hass.localize("ui.panel.store.common.download")}
+            ${this.hass.localize("ui.panel.marketplace.common.download")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -335,7 +335,7 @@ export class DialogStoreDownload extends LitElement {
 
   private _computeLabel = (entry: any): string =>
     entry.name === "release"
-      ? this.hass.localize("ui.panel.store.dialog_download.release")
+      ? this.hass.localize("ui.panel.marketplace.dialog_download.release")
       : entry.name;
 
   private async _installRepository(): Promise<void> {
@@ -346,14 +346,14 @@ export class DialogStoreDownload extends LitElement {
 
     if (this._waiting) {
       this._error = this.hass.localize(
-        "ui.panel.store.dialog_download.waiting_for_information"
+        "ui.panel.marketplace.dialog_download.waiting_for_information"
       );
       return;
     }
 
     if (this._installing) {
       this._error = this.hass.localize(
-        "ui.panel.store.dialog_download.already_downloading"
+        "ui.panel.marketplace.dialog_download.already_downloading"
       );
       return;
     }
@@ -370,7 +370,9 @@ export class DialogStoreDownload extends LitElement {
     } catch (err) {
       this._error =
         errorMessage(err) ||
-        this.hass.localize("ui.panel.store.dialog_download.download_failed");
+        this.hass.localize(
+          "ui.panel.marketplace.dialog_download.download_failed"
+        );
       this._installing = false;
       return;
     }
@@ -385,12 +387,12 @@ export class DialogStoreDownload extends LitElement {
     // to be resolved before this dialog tears itself down.
     if (repository.category === "plugin") {
       await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.store.common.reload"),
+        title: this.hass.localize("ui.panel.marketplace.common.reload"),
         text: html`${this.hass.localize(
-            "ui.panel.store.dialog.reload.description"
-          )}<br />${this.hass.localize("ui.panel.store.dialog.reload.confirm")}`,
-        dismissText: this.hass.localize("ui.panel.store.common.cancel"),
-        confirmText: this.hass.localize("ui.panel.store.common.reload"),
+            "ui.panel.marketplace.dialog.reload.description"
+          )}<br />${this.hass.localize("ui.panel.marketplace.dialog.reload.confirm")}`,
+        dismissText: this.hass.localize("ui.panel.marketplace.common.cancel"),
+        confirmText: this.hass.localize("ui.panel.marketplace.common.reload"),
         confirm: () => {
           location.reload();
         },
@@ -420,7 +422,7 @@ export class DialogStoreDownload extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      storeStyles,
+      marketplaceStyles,
       css`
         .note {
           margin-top: 12px;
@@ -449,7 +451,7 @@ export class DialogStoreDownload extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-store-download": DialogStoreDownload;
-    "ha-store-release-item": HaStoreReleaseItem;
+    "dialog-marketplace-download": DialogMarketplaceDownload;
+    "ha-marketplace-release-item": HaMarketplaceReleaseItem;
   }
 }

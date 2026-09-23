@@ -4,19 +4,19 @@ import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../types";
 
-import type { StoreData } from "./data/store";
+import type { MarketplaceData } from "./data/marketplace";
 
-interface StorePageElement extends HTMLElement {
+interface MarketplacePageElement extends HTMLElement {
   hass: HomeAssistant;
-  store: StoreData;
+  marketplace: MarketplaceData;
   route: Route;
   narrow: boolean;
   isWide?: boolean;
 }
 
-@customElement("ha-store-router")
-class HaStoreRouter extends HassRouterPage {
-  @property({ attribute: false }) public store!: StoreData;
+@customElement("ha-marketplace-router")
+class HaMarketplaceRouter extends HassRouterPage {
+  @property({ attribute: false }) public marketplace!: MarketplaceData;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -51,11 +51,11 @@ class HaStoreRouter extends HassRouterPage {
     }
   }
 
-  protected updatePageEl(el: StorePageElement) {
+  protected updatePageEl(el: MarketplacePageElement) {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
     el.hass = this.hass;
-    el.store = this.store;
+    el.marketplace = this.marketplace;
     el.route = this.route;
     el.narrow = this.narrow;
     el.isWide = isWide;
@@ -68,17 +68,17 @@ class HaStoreRouter extends HassRouterPage {
       !["_my_redirect", "repository"].includes(page) ? "dashboard" : undefined,
     routes: {
       _my_redirect: {
-        tag: "ha-store-my-redirect",
-        load: () => import("./ha-store-my-redirect"),
+        tag: "ha-marketplace-my-redirect",
+        load: () => import("./ha-marketplace-my-redirect"),
       },
       dashboard: {
-        tag: "ha-store-dashboard",
-        load: () => import("./dashboards/ha-store-dashboard"),
+        tag: "ha-marketplace-dashboard",
+        load: () => import("./dashboards/ha-marketplace-dashboard"),
         cache: true,
       },
       repository: {
-        tag: "ha-store-repository-dashboard",
-        load: () => import("./dashboards/ha-store-repository-dashboard"),
+        tag: "ha-marketplace-repository-dashboard",
+        load: () => import("./dashboards/ha-marketplace-repository-dashboard"),
       },
     },
   };
@@ -86,6 +86,6 @@ class HaStoreRouter extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-store-router": HaStoreRouter;
+    "ha-marketplace-router": HaMarketplaceRouter;
   }
 }

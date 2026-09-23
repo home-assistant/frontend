@@ -4,14 +4,14 @@ import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../../../components/ha-form/types";
-import type { StoreData } from "../data/store";
+import type { MarketplaceData } from "../data/marketplace";
 import type { RepositoryInfo } from "../data/repository";
 
-interface BaseStoreDialogParams {
-  store: StoreData;
+interface BaseMarketplaceDialogParams {
+  marketplace: MarketplaceData;
 }
 
-export interface StoreFormDialogParams extends BaseStoreDialogParams {
+export interface MarketplaceFormDialogParams extends BaseMarketplaceDialogParams {
   title: string;
   schema?: readonly HaFormSchema[];
   data?: HaFormDataContainer;
@@ -30,42 +30,43 @@ export interface StoreFormDialogParams extends BaseStoreDialogParams {
   saveAction?: (data?: HaFormDataContainer) => Promise<void>;
 }
 
-export interface StoreDownloadDialogParams extends BaseStoreDialogParams {
+export interface MarketplaceDownloadDialogParams extends BaseMarketplaceDialogParams {
   repositoryId: string;
   repository?: RepositoryInfo;
 }
 
-export type StoreCustomRepositoriesDialogParams = BaseStoreDialogParams;
+export type MarketplaceCustomRepositoriesDialogParams =
+  BaseMarketplaceDialogParams;
 
-export const showStoreFormDialog = (
+export const showMarketplaceFormDialog = (
   element: HTMLElement,
-  dialogParams: StoreFormDialogParams
+  dialogParams: MarketplaceFormDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-store-form",
-    dialogImport: () => import("./dialog-store-form"),
+    dialogTag: "dialog-marketplace-form",
+    dialogImport: () => import("./dialog-marketplace-form"),
     dialogParams,
   });
 };
 
-export const showStoreDownloadDialog = (
+export const showMarketplaceDownloadDialog = (
   element: HTMLElement,
-  dialogParams: StoreDownloadDialogParams
+  dialogParams: MarketplaceDownloadDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-store-download",
-    dialogImport: () => import("./dialog-store-download"),
+    dialogTag: "dialog-marketplace-download",
+    dialogImport: () => import("./dialog-marketplace-download"),
     dialogParams,
   });
 };
 
-export const showStoreCustomRepositoriesDialog = (
+export const showMarketplaceCustomRepositoriesDialog = (
   element: HTMLElement,
-  dialogParams: StoreCustomRepositoriesDialogParams
+  dialogParams: MarketplaceCustomRepositoriesDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-store-custom-repositories",
-    dialogImport: () => import("./dialog-store-custom-repositories"),
+    dialogTag: "dialog-marketplace-custom-repositories",
+    dialogImport: () => import("./dialog-marketplace-custom-repositories"),
     dialogParams,
   });
 };
