@@ -32,8 +32,10 @@ import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
+import "../animation/ha-fade-in";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-spinner";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -123,6 +125,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
 
+  @property({ type: Boolean }) public loading = false;
+
   @property({ type: Boolean }) public selectable = false;
 
   @property({ type: Boolean }) public clickable = false;
@@ -164,6 +168,9 @@ export class HaDataTable extends LitElement {
   @state() private _filter = "";
 
   @state() private _filteredData?: DataTableRowData[];
+
+  // Row count of the data that _filteredData was computed from
+  @state() private _filteredDataSourceLength = 0;
 
   @state() private _headerHeight = 0;
 
@@ -523,9 +530,12 @@ export class HaDataTable extends LitElement {
                         role="cell"
                       >
                         ${
-                          !this._filteredData
-                            ? this._i18n?.localize?.("ui.common.loading") ||
-                              "Loading"
+                          this.loading ||
+                          !this._filteredData ||
+                          (this.data.length && !this._filteredDataSourceLength)
+                            ? html`<ha-fade-in .delay=${500}>
+                                <ha-spinner></ha-spinner>
+                              </ha-fade-in>`
                             : this.data.length
                               ? this._i18n?.localize?.(
                                   "ui.components.data-table.no_match_filter"
@@ -721,10 +731,11 @@ export class HaDataTable extends LitElement {
       !this._lastUpdate ||
       (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
-    let filteredData = this.data;
+    const sourceData = this.data;
+    let filteredData = sourceData;
     if (this._filter) {
       filteredData = await this._memFilterData(
-        this.data,
+        sourceData,
         this._sortColumns,
         this._filter.trim()
       );
@@ -762,6 +773,7 @@ export class HaDataTable extends LitElement {
 
     this._lastUpdate = startTime;
     this._filteredData = data;
+    this._filteredDataSourceLength = sourceData.length;
   }
 
   private _groupData = memoizeOne(

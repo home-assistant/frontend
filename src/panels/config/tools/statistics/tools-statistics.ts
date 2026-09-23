@@ -108,6 +108,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
+  @state() private _loading = true;
+
   @state() private filter = "";
 
   @state() private _selected: string[] = [];
@@ -554,6 +556,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
         <ha-data-table
           .narrow=${this.narrow}
+          .loading=${this._loading}
           .columns=${columns}
           .data=${this._displayData(
             this._data,
@@ -754,6 +757,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         });
       }
     });
+    this._loading = false;
   }
 
   private _clearSelected = async () => {
