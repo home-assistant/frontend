@@ -1,4 +1,4 @@
-import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
+import "../skeleton/ha-skeleton-text";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -49,7 +49,7 @@ export class HaTileInfo extends LitElement {
         ${
           this.secondaryLoading
             ? html`<div class="secondary">
-                <wa-skeleton class="placeholder" effect="pulse"></wa-skeleton>
+                <ha-skeleton-text></ha-skeleton-text>
               </div>`
             : html`<slot name="secondary" class="secondary">
                 <span>${this.secondary}</span>
@@ -149,14 +149,6 @@ export class HaTileInfo extends LitElement {
       line-height: var(--tile-info-secondary-line-height);
       letter-spacing: var(--tile-info-secondary-letter-spacing);
       color: var(--tile-info-secondary-color);
-    }
-    .placeholder {
-      width: 140px;
-      max-width: 100%;
-      height: var(--tile-info-secondary-font-size);
-      --wa-border-radius-pill: var(--ha-border-radius-sm);
-      --color: var(--ha-color-fill-neutral-normal-resting);
-      --sheen-color: var(--ha-color-fill-neutral-loud-resting);
     }
   `;
 }
