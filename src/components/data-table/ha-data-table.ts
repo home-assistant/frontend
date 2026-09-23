@@ -555,7 +555,51 @@ export class HaDataTable extends LitElement {
                             "Loading"
                           }
                         >
-                          ${this._renderSkeletonRows(columns)}
+                          ${Array.from(
+                            {
+                              length: this.autoHeight
+                                ? 1
+                                : Math.ceil(window.innerHeight / ROW_HEIGHT),
+                            },
+                            () => html`
+                              <div class="mdc-data-table__row">
+                                ${
+                                  this.selectable
+                                    ? html`<div
+                                        class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                      ></div>`
+                                    : nothing
+                                }
+                                ${Object.entries(columns).map(
+                                  ([key, column]) =>
+                                    (this.narrow &&
+                                      !column.main &&
+                                      !column.showNarrow) ||
+                                    !this._isColumnVisible(key, column)
+                                      ? nothing
+                                      : html`
+                                          <div
+                                            class="mdc-data-table__cell ${classMap(
+                                              cellClasses(column)
+                                            )}"
+                                            style=${styleMap(cellStyles(column))}
+                                          >
+                                            ${
+                                              column.type === "icon"
+                                                ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+                                                : column.type ===
+                                                      "icon-button" ||
+                                                    column.type ===
+                                                      "overflow-menu"
+                                                  ? nothing
+                                                  : html`<ha-skeleton-text></ha-skeleton-text>`
+                                            }
+                                          </div>
+                                        `
+                                )}
+                              </div>
+                            `
+                          )}
                         </div>
                       </ha-fade-in>
                     </div>
@@ -610,46 +654,6 @@ export class HaDataTable extends LitElement {
   }
 
   private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
-
-  private _renderSkeletonRows(columns: DataTableColumnContainer) {
-    const row = html`
-      <div class="mdc-data-table__row">
-        ${
-          this.selectable
-            ? html`<div
-                class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-              ></div>`
-            : nothing
-        }
-        ${Object.entries(columns).map(([key, column]) =>
-          (this.narrow && !column.main && !column.showNarrow) ||
-          !this._isColumnVisible(key, column)
-            ? nothing
-            : html`
-                <div
-                  class="mdc-data-table__cell ${classMap(cellClasses(column))}"
-                  style=${styleMap(cellStyles(column))}
-                >
-                  ${
-                    column.type === "icon"
-                      ? html`<ha-skeleton-icon></ha-skeleton-icon>`
-                      : column.type === "icon-button" ||
-                          column.type === "overflow-menu"
-                        ? nothing
-                        : html`<ha-skeleton-text></ha-skeleton-text>`
-                  }
-                </div>
-              `
-        )}
-      </div>
-    `;
-
-    const count = this.autoHeight
-      ? 1
-      : Math.ceil(window.innerHeight / ROW_HEIGHT);
-
-    return Array.from({ length: count }, () => row);
-  }
 
   private _renderRow = (
     columns: DataTableColumnContainer,
