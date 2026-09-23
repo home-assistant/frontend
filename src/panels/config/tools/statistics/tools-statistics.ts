@@ -736,39 +736,42 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _validateStatistics() {
-    const [statisticIds, issues] = await Promise.all([
-      getStatisticIds(this._api),
-      validateStatistics(this._api),
-    ]);
+    try {
+      const [statisticIds, issues] = await Promise.all([
+        getStatisticIds(this._api),
+        validateStatistics(this._api),
+      ]);
 
-    updateStatisticsIssues(this._api);
+      updateStatisticsIssues(this._api);
 
-    const statsIds = new Set();
+      const statsIds = new Set();
 
-    this._data = statisticIds.map((statistic) => {
-      statsIds.add(statistic.statistic_id);
-      return {
-        ...statistic,
-        state: this._states[statistic.statistic_id],
-        issues: issues[statistic.statistic_id],
-      };
-    });
+      this._data = statisticIds.map((statistic) => {
+        statsIds.add(statistic.statistic_id);
+        return {
+          ...statistic,
+          state: this._states[statistic.statistic_id],
+          issues: issues[statistic.statistic_id],
+        };
+      });
 
-    Object.keys(issues).forEach((statisticId) => {
-      if (!statsIds.has(statisticId)) {
-        this._data.push({
-          statistic_id: statisticId,
-          statistics_unit_of_measurement: "",
-          source: "",
-          state: this._states[statisticId],
-          issues: issues[statisticId],
-          mean_type: StatisticMeanType.NONE,
-          has_sum: false,
-          unit_class: null,
-        });
-      }
-    });
-    this._loading = false;
+      Object.keys(issues).forEach((statisticId) => {
+        if (!statsIds.has(statisticId)) {
+          this._data.push({
+            statistic_id: statisticId,
+            statistics_unit_of_measurement: "",
+            source: "",
+            state: this._states[statisticId],
+            issues: issues[statisticId],
+            mean_type: StatisticMeanType.NONE,
+            has_sum: false,
+            unit_class: null,
+          });
+        }
+      });
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _clearSelected = async () => {
