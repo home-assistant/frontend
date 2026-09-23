@@ -4,7 +4,8 @@ import { customElement } from "lit/decorators";
 import { HaSkeleton } from "./ha-skeleton";
 
 /**
- * Placeholder for an icon. Uses the same size as `ha-icon` and `ha-svg-icon`.
+ * Placeholder for an icon. Follows `ha-svg-icon`'s `--mdc-icon-size`
+ * (24px by default), including inherited size overrides.
  */
 @customElement("ha-skeleton-icon")
 export class HaSkeletonIcon extends HaSkeleton {
