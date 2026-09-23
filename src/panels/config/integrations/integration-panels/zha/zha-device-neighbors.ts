@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -27,6 +28,10 @@ export interface DeviceRowData extends DataTableRowData {
 
 @customElement("zha-device-neighbors")
 class ZHADeviceNeighbors extends LitElement {
+  private _table = new DataTableController<DeviceRowData>(this, {
+    autoHeight: true,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public device?: ZHADevice;
@@ -152,18 +157,19 @@ class ZHADeviceNeighbors extends LitElement {
       `;
     }
 
+    this._table.setConfig({
+      columns: this._columns(this._narrow),
+      data: neighbors,
+      searchLabel: this.hass.localize("ui.components.data-table.search"),
+      noDataText: this.hass.localize(
+        "ui.panel.config.zha.neighbors.no_neighbors"
+      ),
+    });
+
     return html`
       <ha-card class="device-page-card">
         ${this._renderCardHeader()}
-        <ha-data-table
-          .columns=${this._columns(this._narrow)}
-          .data=${neighbors}
-          auto-height
-          .searchLabel=${this.hass.localize("ui.components.data-table.search")}
-          .noDataText=${this.hass.localize(
-            "ui.panel.config.zha.neighbors.no_neighbors"
-          )}
-        ></ha-data-table>
+        <ha-data-table></ha-data-table>
       </ha-card>
     `;
   }

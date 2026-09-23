@@ -26,6 +26,7 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import "../../../components/ha-dropdown";
 import type {
   HaDropdown,
@@ -106,7 +107,12 @@ export class HaConfigLabels extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _labels: LabelRegistryEntry[] = [];
+  private _table = new DataTableController<LabelRegistryEntry>(this, {
+    state: "loading",
+    id: "label_id",
+    clickable: true,
+    selectionMode: false,
+  });
 
   @state()
   @storage({
@@ -208,13 +214,6 @@ export class HaConfigLabels extends LitElement {
     return columns;
   });
 
-  private _data = memoizeOne(
-    (labels: LabelRegistryEntry[]): LabelRegistryEntry[] =>
-      labels.map((label) => ({
-        ...label,
-      }))
-  );
-
   private _toggleOverflowMenu = (ev) => {
     if (!this._overflowMenu) {
       return;
@@ -249,6 +248,16 @@ export class HaConfigLabels extends LitElement {
   }
 
   protected render() {
+    this._table.setConfig({
+      columns: this._columns(this.hass.localize, this.narrow),
+      narrow: this.narrow,
+      noDataText: this.hass.localize("ui.panel.config.labels.no_labels"),
+      sortColumn: this._activeSorting?.column,
+      sortDirection: this._activeSorting?.direction ?? null,
+      columnOrder: this._activeColumnOrder,
+      hiddenColumns: this._activeHiddenColumns,
+      filter: this._filter,
+    });
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -256,20 +265,11 @@ export class HaConfigLabels extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.areas}
-        .columns=${this._columns(this.hass.localize, this.narrow)}
-        .data=${this._data(this._labels)}
-        .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         has-fab
-        .initialSorting=${this._activeSorting}
-        .columnOrder=${this._activeColumnOrder}
-        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
-        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editLabel}
-        clickable
-        id="label_id"
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -306,7 +306,9 @@ export class HaConfigLabels extends LitElement {
   }
 
   private _editLabel(ev: CustomEvent<RowClickedEvent>) {
-    const label = this._labels.find((lbl) => lbl.label_id === ev.detail.id);
+    const label = this._table.value.data.find(
+      (lbl) => lbl.label_id === ev.detail.id
+    );
     this._openDialog(label);
   }
 
@@ -321,7 +323,27 @@ export class HaConfigLabels extends LitElement {
   }
 
   private async _fetchLabels() {
-    this._labels = await fetchLabelRegistry(this.hass.connection);
+    this._table.update({
+      state: this._table.value.state === "ready" ? "refreshing" : "loading",
+    });
+    try {
+      const data = await fetchLabelRegistry(this.hass.connection);
+      this._table.update({
+        state: "ready",
+        data,
+      });
+    } catch (err: unknown) {
+      this._table.update({
+        state: "error",
+        error:
+          err &&
+          typeof err === "object" &&
+          "message" in err &&
+          typeof err.message === "string"
+            ? err.message
+            : this.hass.localize("ui.common.unknown_error"),
+      });
+    }
   }
 
   private _addLabel() {
@@ -343,7 +365,10 @@ export class HaConfigLabels extends LitElement {
     values: LabelRegistryEntryMutableParams
   ): Promise<LabelRegistryEntry> {
     const newTag = await createLabelRegistryEntry(this.hass, values);
-    this._labels = [...this._labels, newTag];
+    this._table.update({
+      state: "ready",
+      data: [...this._table.value.data, newTag],
+    });
     return newTag;
   }
 
@@ -356,9 +381,12 @@ export class HaConfigLabels extends LitElement {
       selectedLabel.label_id,
       values
     );
-    this._labels = this._labels.map((label) =>
-      label.label_id === selectedLabel.label_id ? updated : label
-    );
+    this._table.update({
+      state: "ready",
+      data: this._table.value.data.map((label) =>
+        label.label_id === selectedLabel.label_id ? updated : label
+      ),
+    });
     return updated;
   }
 
@@ -384,9 +412,12 @@ export class HaConfigLabels extends LitElement {
     }
     try {
       await deleteLabelRegistryEntry(this.hass, selectedLabel.label_id);
-      this._labels = this._labels.filter(
-        (label) => label.label_id !== selectedLabel.label_id
-      );
+      this._table.update({
+        state: "ready",
+        data: this._table.value.data.filter(
+          (label) => label.label_id !== selectedLabel.label_id
+        ),
+      });
       return true;
     } catch (_err: any) {
       return false;

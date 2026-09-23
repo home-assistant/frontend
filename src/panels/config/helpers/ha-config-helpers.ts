@@ -31,6 +31,7 @@ import type {
 } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { debounce } from "../../../common/util/debounce";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -178,6 +179,13 @@ const getConfigEntry = (
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends SubscribeMixin(LitElement) {
+  private _table = new DataTableController<HelperItem>(this, {
+    selectionMode: false,
+    selectable: true,
+    hasFilters: true,
+    clickable: true,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -199,7 +207,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed?: string;
+  private _activeCollapsed: string[] = [];
 
   @state()
   @storage({
@@ -233,8 +241,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _entitySource?: Record<string, string>;
 
   @state() private _selected: string[] = [];
-
-  @state() private _activeFilters?: string[];
 
   @state() private _helperManifests?: Record<string, IntegrationManifest>;
 
@@ -644,6 +650,32 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredHelperEntityIds
     );
+    this._table.setConfig({
+      narrow: this.narrow,
+      searchLabel: this.hass.localize("ui.panel.config.helpers.picker.search", {
+        number: helpers.length,
+      }),
+      filters: Object.values(this._filters).filter((filter) =>
+        Array.isArray(filter)
+          ? filter.length
+          : filter &&
+            Object.values(filter).some((val) =>
+              Array.isArray(val) ? val.length : val
+            )
+      ).length,
+      columns: this._columns(this.hass.localize, helpers),
+      data: helpers,
+      groupColumn: this._activeGrouping ?? "category",
+      collapsedGroups: this._activeCollapsed,
+      sortColumn: this._activeSorting?.column,
+      sortDirection: this._activeSorting?.direction ?? null,
+      columnOrder: this._activeColumnOrder,
+      hiddenColumns: this._activeHiddenColumns,
+      filter: this._filter,
+      noDataText: this.hass.localize(
+        "ui.panel.config.helpers.picker.no_helpers"
+      ),
+    });
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -651,45 +683,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
-        .searchLabel=${this.hass.localize(
-          "ui.panel.config.helpers.picker.search",
-          { number: helpers.length }
-        )}
-        selectable
-        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter)
-              ? filter.length
-              : filter &&
-                Object.values(filter).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
-        .columns=${this._columns(this.hass.localize, helpers)}
-        .data=${helpers}
-        .initialGroupColumn=${this._activeGrouping ?? "category"}
-        .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
-        .columnOrder=${this._activeColumnOrder}
-        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
-        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
-        clickable
-        .noDataText=${this.hass.localize(
-          "ui.panel.config.helpers.picker.no_helpers"
-        )}
         class=${this.narrow ? "narrow" : ""}
       >
         <ha-filter-floor-areas

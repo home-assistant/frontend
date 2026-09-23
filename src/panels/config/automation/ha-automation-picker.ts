@@ -40,6 +40,7 @@ import {
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
 import "../../../components/chips/ha-assist-chip";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -234,7 +235,15 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed?: string;
+  private _activeCollapsed: string[] = [];
+
+  private _table = new DataTableController<AutomationItem>(this, {
+    selectionMode: false,
+    id: "entity_id",
+    selectable: true,
+    hasFilters: true,
+    clickable: true,
+  });
 
   @storage({
     key: "automation-table-column-order",
@@ -493,53 +502,52 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredEntityIds
     );
+    this._table.setConfig({
+      narrow: this.narrow,
+      searchLabel: this.hass.localize(
+        "ui.panel.config.automation.picker.search",
+        {
+          number: automations.length,
+        }
+      ),
+      filters: Object.values(this._filters).filter((filter) =>
+        Array.isArray(filter.value)
+          ? filter.value.length
+          : filter.value &&
+            Object.values(filter.value).some((val) =>
+              Array.isArray(val) ? val.length : val
+            )
+      ).length,
+      columns: this._columns(this.narrow, this.hass.localize, automations),
+      groupColumn: this._activeGrouping ?? "category",
+      collapsedGroups: this._activeCollapsed,
+      sortColumn: this._activeSorting?.column,
+      sortDirection: this._activeSorting?.direction ?? null,
+      columnOrder: this._activeColumnOrder,
+      hiddenColumns: this._activeHiddenColumns,
+      data: automations,
+      empty: !this.automations.length,
+      noDataText: this.hass.localize(
+        "ui.panel.config.automation.picker.no_automations"
+      ),
+      filter: this._filter,
+    });
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
-        id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .searchLabel=${this.hass.localize(
-          "ui.panel.config.automation.picker.search",
-          { number: automations.length }
-        )}
-        selectable
-        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter.value)
-              ? filter.value.length
-              : filter.value &&
-                Object.values(filter.value).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
-        .columns=${this._columns(this.narrow, this.hass.localize, automations)}
-        .initialGroupColumn=${this._activeGrouping ?? "category"}
-        .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
-        .columnOrder=${this._activeColumnOrder}
-        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .data=${automations}
-        .empty=${!this.automations.length}
         @row-click=${this._handleRowClicked}
-        .noDataText=${this.hass.localize(
-          "ui.panel.config.automation.picker.no_automations"
-        )}
         @clear-filter=${this._clearFilter}
-        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
-        clickable
         class=${this.narrow ? "narrow" : ""}
       >
         <ha-icon-button

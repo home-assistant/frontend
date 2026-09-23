@@ -4,6 +4,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
+import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZwaveJSProvisioningEntry } from "../../../../../data/zwave_js";
@@ -20,6 +21,10 @@ import type { HomeAssistant, Route } from "../../../../../types";
 
 @customElement("zwave_js-provisioned")
 class ZWaveJSProvisioned extends LitElement {
+  private _table = new DataTableController<ZwaveJSProvisioningEntry>(this, {
+    selectionMode: false,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -33,6 +38,12 @@ class ZWaveJSProvisioned extends LitElement {
   @state() private _nodeIdToDevice: Record<number, DeviceRegistryEntry> = {};
 
   protected render() {
+    this._table.setConfig({
+      narrow: this.narrow,
+      columns: this._columns(this.hass.localize),
+      data: this._getData(this._provisioningEntries, this._nodeIdToDevice),
+    });
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -49,8 +60,6 @@ class ZWaveJSProvisioned extends LitElement {
         back-path="/config/zwave_js/dashboard?config_entry=${
           this.configEntryId
         }"
-        .columns=${this._columns(this.hass.localize)}
-        .data=${this._getData(this._provisioningEntries, this._nodeIdToDevice)}
       >
       </hass-tabs-subpage-data-table>
     `;

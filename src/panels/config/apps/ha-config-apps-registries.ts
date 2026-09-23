@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
@@ -30,6 +31,10 @@ interface RegistryRowData {
 
 @customElement("ha-config-apps-registries")
 export class HaConfigAppsRegistries extends LitElement {
+  private _table = new DataTableController<RegistryRowData>(this, {
+    id: "registry",
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -99,6 +104,14 @@ export class HaConfigAppsRegistries extends LitElement {
       `;
     }
 
+    this._table.setConfig({
+      columns: this._columns(this.hass.localize),
+      data: this._registries,
+      noDataText: this.hass.localize(
+        "ui.panel.config.apps.registries.no_registries"
+      ),
+    });
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -107,15 +120,7 @@ export class HaConfigAppsRegistries extends LitElement {
         back-path="/config/apps/available"
         .header=${this.hass.localize("ui.panel.config.apps.store.registries")}
       >
-        <ha-data-table
-          .columns=${this._columns(this.hass.localize)}
-          .data=${this._registries}
-          .noDataText=${this.hass.localize(
-            "ui.panel.config.apps.registries.no_registries"
-          )}
-          id="registry"
-          has-fab
-        ></ha-data-table>
+        <ha-data-table has-fab></ha-data-table>
         <ha-button size="l" @click=${this._showAddRegistryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.registries.add")}

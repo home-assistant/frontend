@@ -31,6 +31,7 @@ import { computeEntityEntryName } from "../../../../common/entity/compute_entity
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
+import { DataTableController } from "../../../../components/data-table/data-table-model";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -104,6 +105,11 @@ type DisplayedStatisticData = StatisticData & {
 
 @customElement("tools-statistics")
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
+  private _table = new DataTableController<DisplayedStatisticData>(this, {
+    id: "statistic_id",
+    clickable: true,
+  });
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
@@ -466,6 +472,33 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
     </ha-assist-chip>`;
 
+    this._table.setConfig({
+      narrow: this.narrow,
+      state: this._loading ? "loading" : "ready",
+      loadingText: this._i18n.localize(
+        "ui.components.statistics_charts.loading_statistics"
+      ),
+      columns,
+      data: this._displayData(
+        this._data,
+        this._i18n.localize,
+        this._registries.entities,
+        this._registries.devices,
+        this._registries.areas
+      ),
+      noDataText: this._i18n.localize(
+        "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"
+      ),
+      filter: this.filter,
+      selectable: this._selectMode,
+      sortColumn: this._sortColumn,
+      sortDirection: this._sortDirection,
+      groupColumn: this._groupColumn,
+      groupOrder: this.groupOrder,
+      columnOrder: this.columnOrder,
+      hiddenColumns: this.hiddenColumns,
+    });
+
     return html`
       <div class="table-with-toolbars">
         ${
@@ -555,32 +588,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         <ha-data-table
-          .narrow=${this.narrow}
-          .loading=${this._loading}
-          .loadingText=${this._i18n.localize(
-            "ui.components.statistics_charts.loading_statistics"
-          )}
-          .columns=${columns}
-          .data=${this._displayData(
-            this._data,
-            this._i18n.localize,
-            this._registries.entities,
-            this._registries.devices,
-            this._registries.areas
-          )}
-          .noDataText=${this._i18n.localize(
-            "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"
-          )}
-          .filter=${this.filter}
-          .selectable=${this._selectMode}
-          id="statistic_id"
-          clickable
-          .sortColumn=${this._sortColumn}
-          .sortDirection=${this._sortDirection}
-          .groupColumn=${this._groupColumn}
-          .groupOrder=${this.groupOrder}
-          .columnOrder=${this.columnOrder}
-          .hiddenColumns=${this.hiddenColumns}
           @row-click=${this._rowClicked}
           @selection-changed=${this._handleSelectionChanged}
           @sorting-changed=${this._handleTableSortingChanged}

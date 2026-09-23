@@ -3,13 +3,7 @@ import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, eventOptions, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { join } from "lit/directives/join";
@@ -32,11 +26,13 @@ import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
+import "../ha-alert";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
+import { dataTableModelContext, type DataTableModel } from "./data-table-model";
 
 export interface RowClickedEvent {
   id: string;
@@ -117,52 +113,6 @@ export class HaDataTable extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
-
-  @property({ type: Object }) public columns: DataTableColumnContainer = {};
-
-  @property({ type: Array }) public data: DataTableRowData[] = [];
-
-  @property({ type: Boolean }) public loading = false;
-
-  @property({ type: Boolean }) public selectable = false;
-
-  @property({ type: Boolean }) public clickable = false;
-
-  /**
-   * Add an extra row at the bottom of the data table
-   * @type {TemplateResult}
-   */
-  @property({ attribute: false }) public appendRow?;
-
-  @property({ type: Boolean, attribute: "auto-height" })
-  public autoHeight = false;
-
-  // eslint-disable-next-line lit/no-native-attributes
-  @property({ type: String }) public id = "id";
-
-  @property({ attribute: false }) public noDataText?: string;
-
-  @property({ attribute: false }) public loadingText?: string;
-
-  @property({ attribute: false }) public searchLabel?: string;
-
-  @property({ type: String }) public filter = "";
-
-  @property({ attribute: false }) public groupColumn?: string;
-
-  @property({ attribute: false }) public groupOrder?: string[];
-
-  @property({ attribute: false }) public sortColumn?: string;
-
-  @property({ attribute: false }) public sortDirection: SortingDirection = null;
-
-  @property({ attribute: false }) public initialCollapsedGroups?: string[];
-
-  @property({ attribute: false }) public hiddenColumns?: string[];
-
-  @property({ attribute: false }) public columnOrder?: string[];
-
   @state() private _filterable = false;
 
   @state() private _filter = "";
@@ -170,6 +120,10 @@ export class HaDataTable extends LitElement {
   @state() private _filteredData?: DataTableRowData[];
 
   @state() private _processing = false;
+
+  @state()
+  @consume({ context: dataTableModelContext, subscribe: true })
+  private _model!: ContextType<typeof dataTableModelContext>;
 
   @state() private _headerHeight = 0;
 
@@ -179,13 +133,9 @@ export class HaDataTable extends LitElement {
 
   @query("lit-virtualizer") private _scroller?: HTMLElement;
 
-  @state() private _collapsedGroups: string[] = [];
-
   @state() private _lastSelectedRowId: string | null = null;
 
   private _checkableRowsCount?: number;
-
-  private _checkedRows: string[] = [];
 
   private _sortColumns: SortableColumnContainer = {};
 
@@ -205,18 +155,19 @@ export class HaDataTable extends LitElement {
   );
 
   public clearSelection(): void {
-    this._checkedRows = [];
+    this._model.update({ selected: [] });
     this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
 
   public selectAll(extraFilter?: (row: DataTableRowData) => boolean): void {
-    this._checkedRows = (this._filteredData || [])
+    const selected = (this._filteredData || [])
       .filter(
         (data) =>
           data.selectable !== false && (!extraFilter || extraFilter(data))
       )
-      .map((data) => data[this.id]);
+      .map((data) => String(data[this._model.id]));
+    this._model.update({ selected });
     this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
@@ -233,7 +184,7 @@ export class HaDataTable extends LitElement {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  protected updated(changedProps: PropertyValues) {
     if (!this._headerRow) {
       return;
     }
@@ -250,8 +201,10 @@ export class HaDataTable extends LitElement {
     const activeElement = deepActiveElement();
 
     if (
-      changedProps.has("selectable") ||
-      (!this.autoHeight &&
+      (changedProps.has("_model") &&
+        changedProps.get("_model")?.selectionMode !==
+          this._model.selectionMode) ||
+      (!this._model.autoHeight &&
         activeElement &&
         AUTO_FOCUS_ALLOWED_ACTIVE_TAGS.includes(activeElement.tagName))
     ) {
@@ -262,25 +215,48 @@ export class HaDataTable extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    if (!this._model) {
+      return;
+    }
+
+    const previousModel: DataTableModel | undefined = properties.get("_model");
+    const columnsChanged =
+      properties.has("_model") &&
+      previousModel?.columns !== this._model.columns;
+    const dataChanged =
+      properties.has("_model") && previousModel?.data !== this._model.data;
+    const modelChanged = properties.has("_model");
+    const sortingChanged =
+      modelChanged &&
+      (previousModel?.sortColumn !== this._model.sortColumn ||
+        previousModel?.sortDirection !== this._model.sortDirection);
+
+    if (modelChanged) {
+      this.toggleAttribute("narrow", this._model.narrow);
+    }
+
     if (!this.hasUpdated) {
       loadVirtualizer();
     }
 
-    if (properties.has("columns")) {
-      this._filterable = Object.values(this.columns).some(
+    if (columnsChanged) {
+      this._filterable = Object.values(this._model.columns).some(
         (column) => column.filterable
       );
 
-      if (!this.sortColumn) {
-        for (const columnId in this.columns) {
-          if (this.columns[columnId].direction) {
-            this.sortDirection = this.columns[columnId].direction!;
-            this.sortColumn = columnId;
+      if (!this._model.sortColumn) {
+        for (const columnId of Object.keys(this._model.columns)) {
+          const direction = this._model.columns[columnId].direction;
+          if (direction) {
+            this._model.update({
+              sortDirection: direction,
+              sortColumn: columnId,
+            });
             this._lastSelectedRowId = null;
 
             fireEvent(this, "sorting-changed", {
               column: columnId,
-              direction: this.sortDirection,
+              direction,
             });
 
             break;
@@ -288,7 +264,9 @@ export class HaDataTable extends LitElement {
         }
       }
 
-      const clonedColumns: DataTableColumnContainer = deepClone(this.columns);
+      const clonedColumns: DataTableColumnContainer = deepClone(
+        this._model.columns
+      );
       Object.values(clonedColumns).forEach(
         (column: ClonedDataTableColumnData) => {
           delete column.title;
@@ -300,60 +278,64 @@ export class HaDataTable extends LitElement {
       this._sortColumns = clonedColumns;
     }
 
-    if (properties.has("filter")) {
-      this._debounceSearch(this.filter);
+    if (modelChanged && previousModel?.filter !== this._model.filter) {
+      this._debounceSearch(this._model.filter);
       this._lastSelectedRowId = null;
     }
 
-    if (properties.has("data")) {
+    if (dataChanged || (modelChanged && previousModel?.id !== this._model.id)) {
       // Clean up checked rows that no longer exist in the data
-      if (this._checkedRows.length) {
-        const validIds = new Set(this.data.map((row) => String(row[this.id])));
-        const validCheckedRows = this._checkedRows.filter((id) =>
+      if (this._model.selected.length) {
+        const validIds = new Set(
+          this._model.data.map((row) => String(row[this._model.id]))
+        );
+        const validCheckedRows = this._model.selected.filter((id) =>
           validIds.has(id)
         );
-        if (validCheckedRows.length !== this._checkedRows.length) {
-          this._checkedRows = validCheckedRows;
+        if (validCheckedRows.length !== this._model.selected.length) {
+          this._model.update({ selected: validCheckedRows });
           this._checkedRowsChanged();
         }
       }
 
-      this._checkableRowsCount = this.data.filter(
+      this._checkableRowsCount = this._model.data.filter(
         (row) => row.selectable !== false
       ).length;
     }
 
-    if (!this.hasUpdated && this.initialCollapsedGroups) {
-      this._collapsedGroups = this.initialCollapsedGroups;
+    if (
+      modelChanged &&
+      previousModel &&
+      previousModel.groupColumn !== this._model.groupColumn &&
+      previousModel.collapsedGroups === this._model.collapsedGroups
+    ) {
+      this._model.update({ collapsedGroups: [] });
       this._lastSelectedRowId = null;
-      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
-    } else if (properties.has("groupColumn")) {
-      this._collapsedGroups = [];
-      this._lastSelectedRowId = null;
-      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+      fireEvent(this, "collapsed-changed", {
+        value: this._model.collapsedGroups,
+      });
     }
 
     if (
-      properties.has("data") ||
-      properties.has("columns") ||
+      dataChanged ||
+      columnsChanged ||
       properties.has("_filter") ||
-      properties.has("sortColumn") ||
-      properties.has("sortDirection")
+      sortingChanged
     ) {
       this._sortFilterData();
     }
 
-    if (
-      properties.has("_filter") ||
-      properties.has("sortColumn") ||
-      properties.has("sortDirection")
-    ) {
+    if (properties.has("_filter") || sortingChanged) {
       this._lastSelectedRowId = null;
     }
 
     if (
       this._filteredData &&
-      (properties.has("selectable") || properties.has("hiddenColumns"))
+      modelChanged &&
+      (previousModel?.selectable !== this._model.selectable ||
+        previousModel?.selectionMode !== this._model.selectionMode ||
+        previousModel?.selected !== this._model.selected ||
+        previousModel?.hiddenColumns !== this._model.hiddenColumns)
     ) {
       this._filteredData = [...this._filteredData];
     }
@@ -392,10 +374,18 @@ export class HaDataTable extends LitElement {
   );
 
   protected render() {
-    const columns = this._sortedColumns(this.columns, this.columnOrder);
+    if (!this._model) {
+      return nothing;
+    }
+    const columns = this._sortedColumns(
+      this._model.columns,
+      this._model.columnOrder
+    );
+    const loading = this._model.state === "loading";
+    const error = this._model.state === "error" ? this._model.error : undefined;
 
     const renderRow = (row: DataTableRowData, index: number) =>
-      this._renderRow(columns, this.narrow, row, index);
+      this._renderRow(columns, this._model.narrow, row, index);
 
     const filteredDataLength = this._filteredData?.length || 0;
 
@@ -409,7 +399,8 @@ export class HaDataTable extends LitElement {
                     <ha-input-search
                       appearance="outlined"
                       @input=${this._handleSearchChange}
-                      .placeholder=${this.searchLabel}
+                      .placeholder=${this._model.searchLabel}
+                      .value=${this._model.filter}
                     ></ha-input-search>
                   </div>
                 `
@@ -418,12 +409,12 @@ export class HaDataTable extends LitElement {
         </slot>
         <div
           class="mdc-data-table__table ${classMap({
-            "auto-height": this.autoHeight,
+            "auto-height": this._model.autoHeight,
           })}"
           role="table"
           aria-rowcount=${filteredDataLength + 1}
           style=${styleMap({
-            height: this.autoHeight
+            height: this._model.autoHeight
               ? `${(filteredDataLength || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
@@ -436,7 +427,7 @@ export class HaDataTable extends LitElement {
           >
             <slot name="header-row">
               ${
-                this.selectable
+                this._model.selectable && this._model.selectionMode
                   ? html`
                       <div
                         class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox"
@@ -446,13 +437,13 @@ export class HaDataTable extends LitElement {
                           class="mdc-data-table__row-checkbox"
                           @change=${this._handleHeaderRowCheckboxClick}
                           .indeterminate=${
-                            !!this._checkedRows.length &&
-                            this._checkedRows.length !==
+                            !!this._model.selected.length &&
+                            this._model.selected.length !==
                               this._checkableRowsCount
                           }
                           .checked=${
-                            !!this._checkedRows.length &&
-                            this._checkedRows.length ===
+                            !!this._model.selected.length &&
+                            this._model.selected.length ===
                               this._checkableRowsCount
                           }
                         >
@@ -465,7 +456,7 @@ export class HaDataTable extends LitElement {
                 if (!this._isColumnVisible(key, column)) {
                   return nothing;
                 }
-                const sorted = key === this.sortColumn;
+                const sorted = key === this._model.sortColumn;
                 const classes = {
                   "mdc-data-table__header-cell--numeric":
                     column.type === "numeric",
@@ -491,7 +482,7 @@ export class HaDataTable extends LitElement {
                     role="columnheader"
                     aria-sort=${ifDefined(
                       sorted
-                        ? this.sortDirection === "desc"
+                        ? this._model.sortDirection === "desc"
                           ? "descending"
                           : "ascending"
                         : undefined
@@ -505,7 +496,7 @@ export class HaDataTable extends LitElement {
                         ? html`
                             <ha-svg-icon
                               .path=${
-                                sorted && this.sortDirection === "desc"
+                                sorted && this._model.sortDirection === "desc"
                                   ? mdiArrowDown
                                   : mdiArrowUp
                               }
@@ -520,63 +511,69 @@ export class HaDataTable extends LitElement {
             </slot>
           </div>
           ${
-            this.loading || !this._filteredData?.length
-              ? html`
-                  <div class="mdc-data-table__content">
-                    <div class="mdc-data-table__row" role="row">
-                      <div
-                        class="mdc-data-table__cell grows center"
-                        role="cell"
-                      >
-                        ${
-                          this.loading ||
-                          this._processing ||
-                          !this._filteredData
-                            ? this.loadingText ||
-                              this._i18n?.localize?.("ui.common.loading") ||
-                              "Loading"
-                            : this.data.length
-                              ? this._i18n?.localize?.(
-                                  "ui.components.data-table.no_match_filter"
-                                ) || "No rows matching current filters"
-                              : this.noDataText ||
-                                this._i18n?.localize?.(
-                                  "ui.components.data-table.no-data"
-                                ) ||
-                                "No data"
-                        }
+            error
+              ? html`<ha-alert alert-type="error">${error}</ha-alert>`
+              : nothing
+          }
+          ${
+            error && !this._filteredData?.length && !loading
+              ? nothing
+              : loading || !this._filteredData?.length
+                ? html`
+                    <div class="mdc-data-table__content">
+                      <div class="mdc-data-table__row" role="row">
+                        <div
+                          class="mdc-data-table__cell grows center"
+                          role="cell"
+                        >
+                          ${
+                            loading || this._processing || !this._filteredData
+                              ? this._model.loadingText ||
+                                this._i18n?.localize?.("ui.common.loading") ||
+                                "Loading"
+                              : this._model.data.length
+                                ? this._i18n?.localize?.(
+                                    "ui.components.data-table.no_match_filter"
+                                  ) || "No rows matching current filters"
+                                : this._model.noDataText ||
+                                  this._i18n?.localize?.(
+                                    "ui.components.data-table.no-data"
+                                  ) ||
+                                  "No data"
+                          }
+                        </div>
                       </div>
                     </div>
-                  </div>
-                `
-              : html`
-                  <lit-virtualizer
-                    scroller
-                    class="mdc-data-table__content scroller ha-scrollbar"
-                    tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
-                    @scroll=${this._saveScrollPos}
-                    .items=${this._groupData(
-                      this._filteredData,
-                      this._i18n?.localize,
-                      this._i18n?.locale,
-                      this.appendRow,
-                      this.groupColumn,
-                      this.groupOrder,
-                      this._collapsedGroups,
-                      this.sortColumn,
-                      this.sortDirection
-                    )}
-                    .keyFunction=${this._keyFunction}
-                    .renderItem=${renderRow}
-                  ></lit-virtualizer>
-                `
+                  `
+                : html`
+                    <lit-virtualizer
+                      scroller
+                      class="mdc-data-table__content scroller ha-scrollbar"
+                      tabindex=${ifDefined(!this._model.autoHeight ? "0" : undefined)}
+                      @scroll=${this._saveScrollPos}
+                      .items=${this._groupData(
+                        this._filteredData,
+                        this._i18n?.localize,
+                        this._i18n?.locale,
+                        this._model.appendRow,
+                        this._model.groupColumn,
+                        this._model.groupOrder,
+                        this._model.collapsedGroups,
+                        this._model.sortColumn,
+                        this._model.sortDirection
+                      )}
+                      .keyFunction=${this._keyFunction}
+                      .renderItem=${renderRow}
+                    ></lit-virtualizer>
+                  `
           }
         </div>
       </div>
     `;
   }
 
-  private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
+  private _keyFunction = (row: DataTableRowData) =>
+    row?.[this._model.id] || row;
 
   private _renderRow = (
     columns: DataTableColumnContainer,
@@ -598,21 +595,23 @@ export class HaDataTable extends LitElement {
       <div
         aria-rowindex=${index + 2}
         role="row"
-        .rowId=${row[this.id]}
+        .rowId=${row[this._model.id]}
         @click=${this._handleRowClick}
         class="mdc-data-table__row ${classMap({
-          "mdc-data-table__row--selected": this._checkedRows.includes(
-            String(row[this.id])
+          "mdc-data-table__row--selected": this._model.selected.includes(
+            String(row[this._model.id])
           ),
-          clickable: this.clickable,
+          clickable: this._model.clickable,
         })}"
         aria-selected=${ifDefined(
-          this._checkedRows.includes(String(row[this.id])) ? true : undefined
+          this._model.selected.includes(String(row[this._model.id]))
+            ? true
+            : undefined
         )}
         .selectable=${row.selectable !== false}
       >
         ${
-          this.selectable
+          this._model.selectable && this._model.selectionMode
             ? html`
                 <div
                   class="mdc-data-table__cell mdc-data-table__cell--checkbox"
@@ -621,9 +620,9 @@ export class HaDataTable extends LitElement {
                   <ha-checkbox
                     class="mdc-data-table__row-checkbox"
                     @click=${this._handleRowCheckboxClicked}
-                    .rowId=${row[this.id]}
+                    .rowId=${String(row[this._model.id])}
                     .disabled=${row.selectable === false}
-                    .checked=${this._checkedRows.includes(String(row[this.id]))}
+                    .checked=${this._model.selected.includes(String(row[this._model.id]))}
                   >
                   </ha-checkbox>
                 </div>
@@ -701,10 +700,10 @@ export class HaDataTable extends LitElement {
     if (column.hidden) {
       return false;
     }
-    if (!this.columnOrder?.includes(key)) {
+    if (!this._model.columnOrder?.includes(key)) {
       return !column.defaultHidden;
     }
-    return !(this.hiddenColumns?.includes(key) ?? column.defaultHidden);
+    return !(this._model.hiddenColumns?.includes(key) ?? column.defaultHidden);
   }
 
   private _isSecondaryColumnVisible(
@@ -731,10 +730,10 @@ export class HaDataTable extends LitElement {
       !this._lastUpdate ||
       (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
-    let filteredData = this.data;
+    let filteredData = this._model.data;
     if (this._filter) {
       filteredData = await this._memFilterData(
-        this.data,
+        this._model.data,
         this._sortColumns,
         this._filter.trim()
       );
@@ -745,12 +744,12 @@ export class HaDataTable extends LitElement {
     }
 
     const prom =
-      this.sortColumn && this._sortColumns[this.sortColumn]
+      this._model.sortColumn && this._sortColumns[this._model.sortColumn]
         ? sortData(
             filteredData,
-            this._sortColumns[this.sortColumn],
-            this.sortDirection,
-            this.sortColumn,
+            this._sortColumns[this._model.sortColumn],
+            this._model.sortDirection,
+            this._model.sortColumn,
             this._i18n?.locale?.language
           )
         : filteredData;
@@ -901,22 +900,21 @@ export class HaDataTable extends LitElement {
     ev: HASSDomCurrentTargetEvent<HTMLElement & { columnId: string }>
   ) {
     const columnId = ev.currentTarget.columnId;
-    if (!this.columns[columnId].sortable) {
+    if (!this._model.columns[columnId].sortable) {
       return;
     }
-    if (!this.sortDirection || this.sortColumn !== columnId) {
-      this.sortDirection = "asc";
-    } else if (this.sortDirection === "asc") {
-      this.sortDirection = "desc";
-    } else {
-      this.sortDirection = "asc";
-    }
-
-    this.sortColumn = columnId;
+    this._model.update({
+      sortColumn: columnId,
+      sortDirection:
+        this._model.sortColumn === columnId &&
+        this._model.sortDirection === "asc"
+          ? "desc"
+          : "asc",
+    });
 
     fireEvent(this, "sorting-changed", {
       column: columnId,
-      direction: this.sortDirection,
+      direction: this._model.sortDirection,
     });
 
     this._focusScroller();
@@ -926,7 +924,7 @@ export class HaDataTable extends LitElement {
     if (ev.target.checked) {
       this.selectAll();
     } else {
-      this._checkedRows = [];
+      this._model.update({ selected: [] });
       this._checkedRowsChanged();
     }
     this._lastSelectedRowId = null;
@@ -951,21 +949,24 @@ export class HaDataTable extends LitElement {
       this._filteredData || [],
       this._i18n?.localize,
       this._i18n?.locale,
-      this.appendRow,
-      this.groupColumn,
-      this.groupOrder,
-      this._collapsedGroups,
-      this.sortColumn,
-      this.sortDirection
+      this._model.appendRow,
+      this._model.groupColumn,
+      this._model.groupOrder,
+      this._model.collapsedGroups,
+      this._model.sortColumn,
+      this._model.sortDirection
     );
 
     if (
-      groupedData.find((data) => data[this.id] === rowId)?.selectable === false
+      groupedData.find((data) => String(data[this._model.id]) === rowId)
+        ?.selectable === false
     ) {
       return;
     }
 
-    const rowIndex = groupedData.findIndex((data) => data[this.id] === rowId);
+    const rowIndex = groupedData.findIndex(
+      (data) => String(data[this._model.id]) === rowId
+    );
 
     if (
       ev instanceof MouseEvent &&
@@ -973,21 +974,25 @@ export class HaDataTable extends LitElement {
       this._lastSelectedRowId !== null
     ) {
       const lastSelectedRowIndex = groupedData.findIndex(
-        (data) => data[this.id] === this._lastSelectedRowId
+        (data) => String(data[this._model.id]) === this._lastSelectedRowId
       );
 
       if (lastSelectedRowIndex > -1 && rowIndex > -1) {
-        this._checkedRows = [
-          ...this._checkedRows,
-          ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
-        ];
+        this._model.update({
+          selected: [
+            ...this._model.selected,
+            ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
+          ],
+        });
       }
     } else if (checkboxElement.checked) {
-      if (!this._checkedRows.includes(rowId)) {
-        this._checkedRows = [...this._checkedRows, rowId];
+      if (!this._model.selected.includes(rowId)) {
+        this._model.update({ selected: [...this._model.selected, rowId] });
       }
     } else {
-      this._checkedRows = this._checkedRows.filter((row) => row !== rowId);
+      this._model.update({
+        selected: this._model.selected.filter((row) => row !== rowId),
+      });
     }
 
     if (rowIndex > -1) {
@@ -1011,9 +1016,9 @@ export class HaDataTable extends LitElement {
       if (
         row &&
         row.selectable !== false &&
-        !this._checkedRows.includes(row[this.id])
+        !this._model.selected.includes(String(row[this._model.id]))
       ) {
-        checkedRows.push(row[this.id]);
+        checkedRows.push(String(row[this._model.id]));
       }
     }
 
@@ -1054,16 +1059,15 @@ export class HaDataTable extends LitElement {
       this._filteredData = [...this._filteredData];
     }
     fireEvent(this, "selection-changed", {
-      value: this._checkedRows,
+      value: this._model.selected,
     });
   }
 
-  private _handleSearchChange(ev: InputEvent): void {
-    if (this.filter) {
-      return;
-    }
+  private _handleSearchChange(
+    ev: InputEvent & HASSDomTargetEvent<HTMLInputElement>
+  ): void {
     this._lastSelectedRowId = null;
-    this._debounceSearch((ev.target as HTMLInputElement).value);
+    this._model.update({ filter: ev.target.value });
   }
 
   private _focusScroller(): void {
@@ -1073,11 +1077,11 @@ export class HaDataTable extends LitElement {
   }
 
   private async _calcTableHeight() {
-    if (this.autoHeight) {
+    if (!this._model || this._model.autoHeight) {
       return;
     }
     await this.updateComplete;
-    this._headerHeight = this._header.clientHeight;
+    this._headerHeight = this._header?.clientHeight ?? 0;
   }
 
   @eventOptions({ passive: true })
@@ -1102,39 +1106,52 @@ export class HaDataTable extends LitElement {
     ev: HASSDomCurrentTargetEvent<HTMLElement & { group: string }>
   ) => {
     const groupName = ev.currentTarget.group;
-    if (this._collapsedGroups.includes(groupName)) {
-      this._collapsedGroups = this._collapsedGroups.filter(
-        (grp) => grp !== groupName
-      );
+    if (this._model.collapsedGroups.includes(groupName)) {
+      this._model.update({
+        collapsedGroups: this._model.collapsedGroups.filter(
+          (grp) => grp !== groupName
+        ),
+      });
     } else {
-      this._collapsedGroups = [...this._collapsedGroups, groupName];
+      this._model.update({
+        collapsedGroups: [...this._model.collapsedGroups, groupName],
+      });
     }
     this._lastSelectedRowId = null;
-    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    fireEvent(this, "collapsed-changed", {
+      value: this._model.collapsedGroups,
+    });
   };
 
   public expandAllGroups() {
-    this._collapsedGroups = [];
+    this._model.update({ collapsedGroups: [] });
     this._lastSelectedRowId = null;
-    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    fireEvent(this, "collapsed-changed", {
+      value: this._model.collapsedGroups,
+    });
   }
 
   public collapseAllGroups() {
     if (
-      !this.groupColumn ||
-      !this.data.some((item) => item[this.groupColumn!])
+      !this._model.groupColumn ||
+      !this._model.data.some((item) => item[this._model.groupColumn!])
     ) {
       return;
     }
-    const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
+    const grouped = groupBy(
+      this._model.data,
+      (item) => item[this._model.groupColumn!]
+    );
     if (grouped.undefined) {
       // undefined is a reserved group name
       grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
       delete grouped.undefined;
     }
-    this._collapsedGroups = Object.keys(grouped);
+    this._model.update({ collapsedGroups: Object.keys(grouped) });
     this._lastSelectedRowId = null;
-    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    fireEvent(this, "collapsed-changed", {
+      value: this._model.collapsedGroups,
+    });
   }
 
   static get styles(): CSSResultGroup {

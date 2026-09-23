@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { navigate } from "../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { DataTableController } from "../../../../components/data-table/data-table-model";
 import "../../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../../components/data-table/ha-data-table";
 import type {
@@ -27,6 +28,12 @@ interface AssistDeviceExtra extends AssistDevice {
 
 @customElement("ha-config-voice-assistants-assist-devices")
 class AssistDevicesPage extends LitElement {
+  private _table = new DataTableController<AssistDeviceExtra>(this, {
+    id: "device_id",
+    clickable: true,
+    autoHeight: true,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -129,6 +136,19 @@ class AssistDevicesPage extends LitElement {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
+    this._table.setConfig({
+      columns: this._columns(this.hass.localize),
+      data: this._data(
+        this.hass.localize,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.states,
+        this._pipelines,
+        this._preferred,
+        this._devices
+      ),
+    });
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -138,22 +158,7 @@ class AssistDevicesPage extends LitElement {
           "ui.panel.config.voice_assistants.assistants.pipeline.devices.title"
         )}
       >
-        <ha-data-table
-          clickable
-          id="device_id"
-          .columns=${this._columns(this.hass.localize)}
-          .data=${this._data(
-            this.hass.localize,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.states,
-            this._pipelines,
-            this._preferred,
-            this._devices
-          )}
-          auto-height
-          @row-click=${this._handleRowClicked}
-        ></ha-data-table>
+        <ha-data-table @row-click=${this._handleRowClicked}></ha-data-table>
       </hass-subpage>
     `;
   }

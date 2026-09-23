@@ -7,6 +7,7 @@ import { storage } from "../../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
+import { DataTableController } from "../../../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -31,6 +32,11 @@ import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-in
 
 @customElement("bluetooth-advertisement-monitor")
 export class BluetoothAdvertisementMonitorPanel extends LitElement {
+  private _table = new DataTableController<BluetoothDeviceData>(this, {
+    selectionMode: false,
+    clickable: true,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -214,23 +220,26 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
   );
 
   protected render(): TemplateResult {
+    this._table.setConfig({
+      narrow: this.narrow,
+      columns: this._columns(this.hass.localize),
+      data: this._dataWithNamedSourceAndIds(this._data),
+      noDataText: this.hass.localize(
+        "ui.panel.config.bluetooth.no_advertisements_found"
+      ),
+      groupColumn: this._activeGrouping,
+      collapsedGroups: this._activeCollapsed,
+      filter: this.address || "",
+    });
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .columns=${this._columns(this.hass.localize)}
-        .data=${this._dataWithNamedSourceAndIds(this._data)}
-        .noDataText=${this.hass.localize(
-          "ui.panel.config.bluetooth.no_advertisements_found"
-        )}
         @row-click=${this._handleRowClicked}
-        .initialGroupColumn=${this._activeGrouping}
-        .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        filter=${this.address || ""}
-        clickable
         .tabs=${this._tabs}
         back-path="/config/bluetooth/dashboard"
       ></hass-tabs-subpage-data-table>

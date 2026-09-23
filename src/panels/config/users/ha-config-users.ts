@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -30,6 +31,11 @@ import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
+  private _table = new DataTableController<User>(this, {
+    selectionMode: false,
+    clickable: true,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -73,10 +79,13 @@ export class HaConfigUsers extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _activeCollapsed?: string;
+  private _activeCollapsed: string[] = [];
 
   private _columns = memoizeOne(
-    (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
+    (
+      narrow: boolean,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<User> => {
       const columns: DataTableColumnContainer<User> = {
         name: {
           title: localize("ui.panel.config.users.picker.headers.name"),
@@ -171,6 +180,18 @@ export class HaConfigUsers extends LitElement {
   }
 
   protected render() {
+    this._table.setConfig({
+      narrow: this.narrow,
+      columns: this._columns(this.narrow, this.hass.localize),
+      data: this._userData(this._users, this.hass.localize),
+      columnOrder: this._activeColumnOrder,
+      hiddenColumns: this._activeHiddenColumns,
+      groupColumn: this._activeGrouping,
+      collapsedGroups: this._activeCollapsed,
+      sortColumn: this._activeSorting?.column,
+      sortDirection: this._activeSorting?.direction ?? null,
+      filter: this._filter,
+    });
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -178,22 +199,13 @@ export class HaConfigUsers extends LitElement {
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.persons}
-        .columns=${this._columns(this.narrow, this.hass.localize)}
-        .data=${this._userData(this._users, this.hass.localize)}
-        .columnOrder=${this._activeColumnOrder}
-        .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        .initialGroupColumn=${this._activeGrouping}
-        .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
         has-fab
-        clickable
       >
         <ha-button slot="fab" size="l" @click=${this._addUser}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>

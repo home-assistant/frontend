@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -48,6 +49,12 @@ export interface TagRowData extends Tag {
 
 @customElement("ha-config-tags")
 export class HaConfigTags extends SubscribeMixin(LitElement) {
+  private _table = new DataTableController<TagRowData>(this, {
+    selectionMode: false,
+    id: "id",
+    clickable: true,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -187,6 +194,13 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    this._table.setConfig({
+      narrow: this.narrow,
+      columns: this._columns(this.hass.localize),
+      data: this._data(this._tags),
+      noDataText: this.hass.localize("ui.panel.config.tag.no_tags"),
+      filter: this._filter,
+    });
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -194,15 +208,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         back-path="/config/connectivity"
         .route=${this.route}
         .tabs=${configSections.tags}
-        .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this._tags)}
-        .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
-        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
-        clickable
         @row-click=${this._editTag}
-        id="id"
       >
         <ha-icon-button
           slot="toolbar-icon"

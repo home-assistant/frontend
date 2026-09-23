@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { DataTableController } from "../../../components/data-table/data-table-model";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
@@ -42,6 +43,10 @@ interface RepositoryRowData {
 
 @customElement("ha-config-apps-repositories")
 export class HaConfigAppsRepositories extends LitElement {
+  private _table = new DataTableController<RepositoryRowData>(this, {
+    id: "slug",
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -172,6 +177,14 @@ export class HaConfigAppsRepositories extends LitElement {
       this._addon.addons
     );
 
+    this._table.setConfig({
+      columns: this._columns(this.hass.localize, usedRepositories),
+      data: this._data(repositories),
+      noDataText: this.hass.localize(
+        "ui.panel.config.apps.repositories.no_repositories"
+      ),
+    });
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -180,15 +193,7 @@ export class HaConfigAppsRepositories extends LitElement {
         back-path="/config/apps/available"
         .header=${this.hass.localize("ui.panel.config.apps.store.repositories")}
       >
-        <ha-data-table
-          .columns=${this._columns(this.hass.localize, usedRepositories)}
-          .data=${this._data(repositories)}
-          .noDataText=${this.hass.localize(
-            "ui.panel.config.apps.repositories.no_repositories"
-          )}
-          id="slug"
-          has-fab
-        ></ha-data-table>
+        <ha-data-table has-fab></ha-data-table>
         <ha-button size="l" @click=${this._showAddRepositoryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.repositories.add")}
