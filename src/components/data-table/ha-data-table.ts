@@ -546,9 +546,17 @@ export class HaDataTable extends LitElement {
                 !this._filteredData ||
                 (this.data.length && !this._filteredDataSourceLength)
                 ? html`
-                    <div class="mdc-data-table__content">
-                      <ha-fade-in .duration=${300} easing="ease-in">
-                        <div>${this._renderSkeletonRows(columns)}</div>
+                    <div class="mdc-data-table__content" role="row">
+                      <ha-fade-in role="cell" .duration=${300} easing="ease-in">
+                        <div
+                          role="progressbar"
+                          aria-label=${
+                            this._i18n?.localize?.("ui.common.loading") ||
+                            "Loading"
+                          }
+                        >
+                          ${this._renderSkeletonRows(columns)}
+                        </div>
                       </ha-fade-in>
                     </div>
                   `
