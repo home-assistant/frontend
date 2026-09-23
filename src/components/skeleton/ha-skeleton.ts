@@ -41,6 +41,12 @@ export class HaSkeleton extends WaSkeleton {
             --color: GrayText;
           }
         }
+        @media (prefers-reduced-motion: reduce) {
+          :host([effect="pulse"]) .indicator,
+          :host([effect="sheen"]) .indicator {
+            animation: none;
+          }
+        }
       `,
     ];
   }
