@@ -859,7 +859,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           summary: newItem.value!,
           status: TodoItemStatus.NeedsAction,
         };
-        await showTodoItemEditDialog(this, {
+        showTodoItemEditDialog(this, {
           entity: this._entityId!,
           item,
         });
