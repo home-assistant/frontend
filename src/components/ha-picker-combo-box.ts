@@ -700,12 +700,29 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._resetListScroll();
   }
 
+  /**
+   * The shortcuts are bound to the host, so they arrive wherever focus sits
+   * inside the picker. The navigation keys move the cursor without moving
+   * focus, so off the search field and the list they would highlight a row
+   * that Enter refuses to pick. A section chip keeps its own keys.
+   *
+   * Enter guards inside `_pickItem` instead, which stops propagation before it
+   * bails.
+   */
+  private _cursorKey =
+    (handler: (ev: KeyboardEvent) => void) => (ev: KeyboardEvent) => {
+      if (!this._focusOwnsCursor) {
+        return;
+      }
+      handler(ev);
+    };
+
   private _registerKeyboardShortcuts() {
     this._removeKeyboardShortcuts = tinykeys(this, {
-      ArrowUp: this._selectPreviousItem,
-      ArrowDown: this._selectNextItem,
-      Home: this._selectFirstItem,
-      End: this._selectLastItem,
+      ArrowUp: this._cursorKey(this._selectPreviousItem),
+      ArrowDown: this._cursorKey(this._selectNextItem),
+      Home: this._cursorKey(this._selectFirstItem),
+      End: this._cursorKey(this._selectLastItem),
       Enter: this._pickSelectedItem,
       "$mod+Enter": this._pickSelectedItemNewTab,
     });
