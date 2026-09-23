@@ -40,6 +40,7 @@ export default [
           "ha-select-box",
           "ha-input",
           "ha-textarea",
+          "ha-picker-combo-box",
         ],
       },
       {
