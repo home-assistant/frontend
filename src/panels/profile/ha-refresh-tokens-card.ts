@@ -340,6 +340,9 @@ class HaRefreshTokens extends LitElement {
         ha-list-item-base {
           --ha-row-item-padding-inline: 0;
         }
+        [slot="supporting-text"] {
+          white-space: normal;
+        }
         ha-icon-button {
           color: var(--primary-text-color);
         }

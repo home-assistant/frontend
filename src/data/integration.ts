@@ -1,6 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { GITHUB_CORE_ISSUES_URL } from "../common/url/github";
+import {
+  createQueryString,
+  type QueryParamConfig,
+} from "../common/url/query-params";
 import { sanitizeHttpUrl } from "../common/url/sanitize-http-url";
 import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
@@ -108,12 +113,19 @@ const sanitizeManifest = <T extends IntegrationManifest | undefined>(
       } as T)
     : manifest;
 
+const integrationIssuesQueryParams = {
+  string: ["q"],
+} as const satisfies QueryParamConfig;
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
 ) =>
   sanitizeHttpUrl(manifest.issue_tracker) ||
-  `https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
+  `${GITHUB_CORE_ISSUES_URL}?${createQueryString(
+    { q: `is:issue is:open label:"integration: ${domain}"` },
+    integrationIssuesQueryParams
+  )}`;
 
 export const domainToName = (
   localize: LocalizeFunc,
@@ -155,7 +167,7 @@ export const fetchIntegrationManifestsCollection = async (
 };
 
 export const fetchIntegrationManifest = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   integration: string
 ) =>
   hass
