@@ -240,9 +240,6 @@ export class MCPPref extends LitElement {
       this._enabling = false;
     }
     await this._load();
-    if (this._entry) {
-      this._configure();
-    }
   }
 
   private _configure() {
