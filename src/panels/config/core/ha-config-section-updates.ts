@@ -60,6 +60,10 @@ interface UpdateGroup {
   showUpdateButton: boolean;
 }
 
+interface UpdateActionButtonElement extends HTMLElement {
+  group: UpdateGroup;
+}
+
 const SYSTEM_KEY = "__system__";
 const APPS_KEY = "__apps__";
 
@@ -374,7 +378,8 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   private async _updateGroup(ev: Event) {
-    const group = (ev.currentTarget as any).group as UpdateGroup;
+    const group = (ev.currentTarget as UpdateActionButtonElement)
+      .group as UpdateGroup;
     const entityIds = group.entities
       .filter((entity) => !updateIsInstalling(entity))
       .map((entity) => entity.entity_id);
@@ -426,16 +431,22 @@ class HaConfigSectionUpdates extends LitElement {
 
   private _hasSkippableEntities(entities: UpdateEntity[]): boolean {
     return entities.some(
-      (entity) => !updateIsInstalling(entity) && !latestVersionIsSkipped(entity)
+      (entity) =>
+        !updateIsInstalling(entity) &&
+        !latestVersionIsSkipped(entity) &&
+        !entity.attributes.auto_update
     );
   }
 
   private async _skipGroup(ev: Event) {
-    const group = (ev.currentTarget as any).group as UpdateGroup;
+    const group = (ev.currentTarget as UpdateActionButtonElement)
+      .group as UpdateGroup;
     const entityIds = group.entities
       .filter(
         (entity) =>
-          !updateIsInstalling(entity) && !latestVersionIsSkipped(entity)
+          !updateIsInstalling(entity) &&
+          !latestVersionIsSkipped(entity) &&
+          !entity.attributes.auto_update
       )
       .map((entity) => entity.entity_id);
 

@@ -149,8 +149,18 @@ export const filterUpdateEntitiesParameterized = (
     return updateCanInstall(entity, showSkipped);
   });
 
-export const skipUpdates = (hass: HomeAssistant, entityIds: string[]) =>
-  hass.callService("update", "skip", { entity_id: entityIds });
+export const skipUpdates = (
+  hass: HomeAssistant,
+  entityIds: string[],
+  notifyOnError = false
+) =>
+  hass.callService(
+    "update",
+    "skip",
+    { entity_id: entityIds },
+    undefined,
+    notifyOnError
+  );
 
 export const installUpdates = (
   hass: HomeAssistant,
