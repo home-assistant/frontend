@@ -2892,6 +2892,11 @@
           "group_system": "Home Assistant",
           "group_apps": "Apps",
           "update_all": "Update all",
+          "skip_all": "Skip all",
+          "skip": "Skip",
+          "confirm_skip_all_title": "Skip all updates?",
+          "confirm_skip_title": "Skip update?",
+          "confirm_skip_text": "This will skip {count} pending {count, plural,\n  one {update}\n  other {updates}\n} for {name}. You can undo this from the individual device later.",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",

@@ -37,12 +37,16 @@ import {
   filterUpdateEntities,
   filterUpdateEntitiesParameterized,
   installUpdates,
+  skipUpdates,
   isSystemUpdate,
   latestVersionIsSkipped,
   updateIsInstalling,
   UpdateEntityFeature,
 } from "../../../data/update";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -213,27 +217,48 @@ class HaConfigSectionUpdates extends LitElement {
                     <div class="title" role="heading" aria-level="2">
                       ${group.title}
                     </div>
-                    ${
-                      group.showUpdateButton
-                        ? html`
-                            <ha-button
-                              appearance="plain"
-                              size="s"
-                              .group=${group}
-                              .disabled=${group.entities.every((entity) =>
-                                updateIsInstalling(entity)
-                              )}
-                              @click=${this._updateGroup}
-                            >
-                              ${this.hass.localize(
-                                group.entities.length > 1
-                                  ? "ui.panel.config.updates.update_all"
-                                  : "ui.common.update"
-                              )}
-                            </ha-button>
-                          `
-                        : nothing
-                    }
+                    <div class="actions">
+                      ${
+                        group.showUpdateButton
+                          ? html`
+                              <ha-button
+                                appearance="plain"
+                                size="s"
+                                .group=${group}
+                                .disabled=${group.entities.every((entity) =>
+                                  updateIsInstalling(entity)
+                                )}
+                                @click=${this._updateGroup}
+                              >
+                                ${this.hass.localize(
+                                  group.entities.length > 1
+                                    ? "ui.panel.config.updates.update_all"
+                                    : "ui.common.update"
+                                )}
+                              </ha-button>
+                            `
+                          : nothing
+                      }
+                      ${
+                        group.showUpdateButton
+                          ? html`
+                              <ha-button
+                                appearance="plain"
+                                size="s"
+                                .group=${group}
+                                .disabled=${!this._hasSkippableEntities(group.entities)}
+                                @click=${this._skipGroup}
+                              >
+                                ${this.hass.localize(
+                                  group.entities.length > 1
+                                    ? "ui.panel.config.updates.skip_all"
+                                    : "ui.panel.config.updates.skip"
+                                )}
+                              </ha-button>
+                            `
+                          : nothing
+                      }
+                    </div>
                   </div>
                   <ha-config-updates
                     .narrow=${this.narrow}
@@ -399,6 +424,57 @@ class HaConfigSectionUpdates extends LitElement {
     }
   );
 
+  private _hasSkippableEntities(entities: UpdateEntity[]): boolean {
+    return entities.some(
+      (entity) => !updateIsInstalling(entity) && !latestVersionIsSkipped(entity)
+    );
+  }
+
+  private async _skipGroup(ev: Event) {
+    const group = (ev.currentTarget as any).group as UpdateGroup;
+    const entityIds = group.entities
+      .filter(
+        (entity) =>
+          !updateIsInstalling(entity) && !latestVersionIsSkipped(entity)
+      )
+      .map((entity) => entity.entity_id);
+
+    if (!entityIds.length) {
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        group.entities.length > 1
+          ? "ui.panel.config.updates.confirm_skip_all_title"
+          : "ui.panel.config.updates.confirm_skip_title"
+      ),
+      text: this.hass.localize("ui.panel.config.updates.confirm_skip_text", {
+        count: entityIds.length,
+        name: group.title,
+      }),
+      confirmText: this.hass.localize(
+        group.entities.length > 1
+          ? "ui.panel.config.updates.skip_all"
+          : "ui.panel.config.updates.skip"
+      ),
+      destructive: false,
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await skipUpdates(this.hass, entityIds);
+    } catch (err: any) {
+      showToast(this, {
+        message: extractApiErrorMessage(err),
+        duration: 10000,
+        dismissable: true,
+      });
+    }
+  }
+
   private _groupUpdates = memoizeOne(
     (
       entities: UpdateEntity[],
@@ -498,6 +574,11 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       padding: 0;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-1);
     }
 
     .card-header {
