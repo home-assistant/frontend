@@ -3,7 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { direction } from "direction";
+import { estimateDirection } from "../../common/util/estimate-direction";
 import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -180,7 +180,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
         class=${classMap({
           ltr:
             !("entity_id" in notification) &&
-            direction(notification.title) === "ltr",
+            estimateDirection(notification.title) !== "rtl",
         })}
       ></notification-item>
     </div>
