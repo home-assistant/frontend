@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant card components</title>
+    <%= renderTemplate("../../../src/html/_header.html.template") %>
+    <meta name="referrer" content="same-origin" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#03a9f4" />
+    <style>
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
+      }
+      body {
+        font-family: Roboto, Noto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0 16px 64px;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 32px 0 8px;
+      }
+      h2 {
+        margin: 48px 0 8px;
+      }
+      pre {
+        background: var(--secondary-background-color, #e5e5e5);
+        border-radius: 8px;
+        padding: 12px 16px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        text-align: start;
+        vertical-align: top;
+        padding: 8px;
+        border-bottom: 1px solid var(--divider-color, #ddd);
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        align-items: start;
+        margin: 16px 0;
+      }
+      .single {
+        max-width: 400px;
+        margin: 16px 0;
+      }
+      .log {
+        height: 160px;
+        overflow-y: auto;
+        margin: 0;
+      }
+      button {
+        font: inherit;
+        padding: 6px 12px;
+        margin-inline-end: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Home Assistant card components</h1>
+      <p>
+        Embed working Home Assistant dashboard cards in any page. The cards run
+        against a mocked backend in the browser. No Home Assistant server is
+        necessary.
+      </p>
+      <p>There are two components:</p>
+      <ul>
+        <li>
+          <code>&lt;ha-embed-provider&gt;</code> holds the mocked backend and
+          its entities.
+        </li>
+        <li>
+          <code>&lt;ha-embed-card&gt;</code> renders one card. It uses the
+          backend of the closest provider around it.
+        </li>
+      </ul>
+      <p>
+        All cards in the same provider share their entities. When you change
+        an entity in one card, the other cards show the change.
+      </p>
+
+      <h2>One card</h2>
+      <p>
+        Put the entities on the provider and the card configuration on the
+        card. Both attributes take JSON. The card configuration is the same as
+        in a dashboard.
+      </p>
+      <pre><code>&lt;ha-embed-provider entities='[
+  {
+    "entity_id": "light.kitchen",
+    "state": "on",
+    "attributes": {
+      "friendly_name": "Kitchen",
+      "supported_color_modes": ["brightness"],
+      "color_mode": "brightness",
+      "brightness": 180
+    }
+  }
+]'&gt;
+  &lt;ha-embed-card config='{
+    "type": "tile",
+    "entity": "light.kitchen",
+    "tap_action": { "action": "toggle" },
+    "features": [{ "type": "light-brightness" }]
+  }'&gt;&lt;/ha-embed-card&gt;
+&lt;/ha-embed-provider&gt;</code></pre>
+      <ha-embed-provider
+        entities='[
+          {
+            "entity_id": "light.kitchen",
+            "state": "on",
+            "attributes": {
+              "friendly_name": "Kitchen",
+              "supported_color_modes": ["brightness"],
+              "color_mode": "brightness",
+              "brightness": 180
+            }
+          }
+        ]'
+      >
+        <div class="single">
+          <ha-embed-card
+            config='{
+              "type": "tile",
+              "entity": "light.kitchen",
+              "tap_action": { "action": "toggle" },
+              "features": [{ "type": "light-brightness" }]
+            }'
+          ></ha-embed-card>
+        </div>
+      </ha-embed-provider>
+
+      <h2>Cards with shared state</h2>
+      <p>
+        These three cards are in one provider. Turn on a light in one card. The
+        other cards update. The log below shows the events of the provider.
+      </p>
+      <ha-embed-provider
+        id="shared"
+        entities='[
+          {
+            "entity_id": "light.living_room",
+            "state": "off",
+            "attributes": {
+              "friendly_name": "Living room",
+              "supported_color_modes": ["brightness"],
+              "color_mode": "brightness",
+              "brightness": 255
+            }
+          },
+          {
+            "entity_id": "switch.coffee_maker",
+            "state": "on",
+            "attributes": {
+              "friendly_name": "Coffee maker",
+              "device_class": "outlet"
+            }
+          },
+          {
+            "entity_id": "climate.hallway",
+            "state": "heat",
+            "attributes": {
+              "friendly_name": "Hallway",
+              "current_temperature": 19.5,
+              "temperature": 21,
+              "min_temp": 7,
+              "max_temp": 30,
+              "target_temp_step": 0.5,
+              "hvac_modes": ["heat", "off"],
+              "hvac_action": "heating",
+              "supported_features": 1
+            }
+          },
+          {
+            "entity_id": "sensor.outside_temperature",
+            "state": "12.3",
+            "attributes": {
+              "friendly_name": "Outside temperature",
+              "device_class": "temperature",
+              "state_class": "measurement",
+              "unit_of_measurement": "°C"
+            }
+          }
+        ]'
+      >
+        <div class="cards">
+          <ha-embed-card
+            config='{
+              "type": "tile",
+              "entity": "light.living_room",
+              "tap_action": { "action": "toggle" }
+            }'
+          ></ha-embed-card>
+          <ha-embed-card
+            config='{
+              "type": "entities",
+              "title": "Living room",
+              "entities": [
+                "light.living_room",
+                "switch.coffee_maker",
+                "sensor.outside_temperature"
+              ]
+            }'
+          ></ha-embed-card>
+          <ha-embed-card
+            config='{ "type": "thermostat", "entity": "climate.hallway" }'
+          ></ha-embed-card>
+        </div>
+      </ha-embed-provider>
+      <pre class="log" id="log"><code>Use the cards to see events here.</code></pre>
+
+      <h2>Change entities from the page</h2>
+      <p>
+        Set the <code>entities</code> property to change entities from
+        JavaScript. The provider adds or replaces the entities in the new list.
+        Other entities keep their state.
+      </p>
+      <p>
+        <button id="set-temperature">Set a random outside temperature</button>
+        <button id="toggle-coffee">Toggle the coffee maker</button>
+      </p>
+      <pre><code>const provider = document.querySelector("ha-embed-provider");
+provider.entities = [
+  {
+    entity_id: "sensor.outside_temperature",
+    state: "18.1",
+    attributes: {
+      friendly_name: "Outside temperature",
+      device_class: "temperature",
+      unit_of_measurement: "°C",
+    },
+  },
+];</code></pre>
+
+      <h2>Listen to changes</h2>
+      <p>
+        The provider fires a <code>state-changed</code> event for each entity
+        that changes. The event bubbles.
+      </p>
+      <pre><code>provider.addEventListener("state-changed", (ev) =&gt; {
+  const { entity_id, old_state, new_state } = ev.detail;
+  console.log(entity_id, old_state?.state, "→", new_state.state);
+});</code></pre>
+      <p>
+        Read the current state of all entities with
+        <code>provider.hass.states</code>.
+      </p>
+
+      <h2>Reference</h2>
+      <h3><code>&lt;ha-embed-provider&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>entities</code></td>
+          <td>Attribute and property</td>
+          <td>
+            A list of entities. Each entity has an <code>entity_id</code>, a
+            <code>state</code>, and <code>attributes</code>. The optional keys
+            <code>area_id</code>, <code>device_id</code>, and
+            <code>platform</code> set the entity registry entry.
+          </td>
+        </tr>
+        <tr>
+          <td><code>hass</code></td>
+          <td>Property, read-only</td>
+          <td>The mocked Home Assistant object that the cards use.</td>
+        </tr>
+        <tr>
+          <td><code>state-changed</code></td>
+          <td>Event</td>
+          <td>
+            Fires when the state of an entity changes. The detail has
+            <code>entity_id</code>, <code>old_state</code>, and
+            <code>new_state</code>.
+          </td>
+        </tr>
+      </table>
+      <h3><code>&lt;ha-embed-card&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>Attribute and property</td>
+          <td>The card configuration, the same as in a dashboard.</td>
+        </tr>
+      </table>
+      <p>
+        The mocked backend knows the actions of lights, switches, climate,
+        covers, fans, locks, media players, and more. Actions that open dialogs,
+        such as <code>more-info</code>, do nothing.
+      </p>
+    </main>
+    <script>
+      (function () {
+        var shared = document.getElementById("shared");
+        var log = document.getElementById("log");
+        var first = true;
+        shared.addEventListener("state-changed", function (ev) {
+          var d = ev.detail;
+          var line =
+            new Date().toLocaleTimeString() +
+            "  " +
+            d.entity_id +
+            ": " +
+            (d.old_state ? d.old_state.state : "none") +
+            " → " +
+            d.new_state.state;
+          if (first) {
+            log.textContent = "";
+            first = false;
+          }
+          log.textContent = line + "\n" + log.textContent;
+        });
+        document
+          .getElementById("set-temperature")
+          .addEventListener("click", function () {
+            shared.entities = [
+              {
+                entity_id: "sensor.outside_temperature",
+                state: (Math.random() * 30 - 5).toFixed(1),
+                attributes: shared.hass.states["sensor.outside_temperature"]
+                  .attributes,
+              },
+            ];
+          });
+        document
+          .getElementById("toggle-coffee")
+          .addEventListener("click", function () {
+            shared.hass.callService("switch", "toggle", {
+              entity_id: "switch.coffee_maker",
+            });
+          });
+      })();
+    </script>
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../src/html/_script_loader.html.template") %>
+  </body>
+</html>
