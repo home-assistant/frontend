@@ -1031,6 +1031,11 @@ export class HaDataTable extends LitElement {
   private _setTitle(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     if (ev.currentTarget.scrollWidth > ev.currentTarget.offsetWidth) {
       ev.currentTarget.setAttribute("title", ev.currentTarget.innerText);
+    } else {
+      // The title is set imperatively, so nothing else clears it when the cell
+      // stops overflowing: the virtualizer recycles this element for another
+      // row, the window widens, or the cell's own content changes.
+      ev.currentTarget.removeAttribute("title");
     }
   }
 
