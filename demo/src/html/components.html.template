@@ -110,130 +110,142 @@
 
       <h2>One card</h2>
       <p>
-        Put the entities on the provider and the card configuration on the
-        card. Both attributes take JSON. The card configuration is the same as
-        in a dashboard.
+        Put the entities in a script tag inside the provider. Put the card
+        configuration in a script tag inside the card. Both take JSON with
+        <code>type="application/json"</code> or YAML with
+        <code>type="text/yaml"</code>. The card configuration is the same as in
+        a dashboard. YAML needs its indentation. If your site minifies HTML,
+        make sure the minifier keeps the whitespace in script tags, or use
+        JSON.
       </p>
-      <pre><code>&lt;ha-embed-provider entities='[
-  {
-    "entity_id": "light.kitchen",
-    "state": "on",
-    "attributes": {
-      "friendly_name": "Kitchen",
-      "supported_color_modes": ["brightness"],
-      "color_mode": "brightness",
-      "brightness": 180
-    }
-  }
-]'&gt;
-  &lt;ha-embed-card config='{
-    "type": "tile",
-    "entity": "light.kitchen",
-    "tap_action": { "action": "toggle" },
-    "features": [{ "type": "light-brightness" }]
-  }'&gt;&lt;/ha-embed-card&gt;
+      <pre><code>&lt;ha-embed-provider&gt;
+  &lt;script type="text/yaml"&gt;
+    - entity_id: light.kitchen
+      state: "on"
+      attributes:
+        friendly_name: Kitchen
+        supported_color_modes: [brightness]
+        color_mode: brightness
+        brightness: 180
+  &lt;/script&gt;
+  &lt;ha-embed-card&gt;
+    &lt;script type="text/yaml"&gt;
+      type: tile
+      entity: light.kitchen
+      tap_action:
+        action: toggle
+      features:
+        - type: light-brightness
+    &lt;/script&gt;
+  &lt;/ha-embed-card&gt;
 &lt;/ha-embed-provider&gt;</code></pre>
-      <ha-embed-provider
-        entities='[
-          {
-            "entity_id": "light.kitchen",
-            "state": "on",
-            "attributes": {
-              "friendly_name": "Kitchen",
-              "supported_color_modes": ["brightness"],
-              "color_mode": "brightness",
-              "brightness": 180
-            }
-          }
-        ]'
-      >
+      <ha-embed-provider>
+        <!-- htmlmin:ignore --><script type="text/yaml">
+          - entity_id: light.kitchen
+            state: "on"
+            attributes:
+              friendly_name: Kitchen
+              supported_color_modes: [brightness]
+              color_mode: brightness
+              brightness: 180
+        </script><!-- htmlmin:ignore -->
         <div class="single">
-          <ha-embed-card
-            config='{
-              "type": "tile",
-              "entity": "light.kitchen",
-              "tap_action": { "action": "toggle" },
-              "features": [{ "type": "light-brightness" }]
-            }'
-          ></ha-embed-card>
+          <ha-embed-card>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              type: tile
+              entity: light.kitchen
+              tap_action:
+                action: toggle
+              features:
+                - type: light-brightness
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-card>
         </div>
       </ha-embed-provider>
+      <p>
+        The <code>entities</code> attribute of the provider and the
+        <code>config</code> attribute of the card also take JSON.
+      </p>
 
       <h2>Cards with shared state</h2>
       <p>
         These three cards are in one provider. Turn on a light in one card. The
         other cards update. The log below shows the events of the provider.
       </p>
-      <ha-embed-provider
-        id="shared"
-        entities='[
-          {
-            "entity_id": "light.living_room",
-            "state": "off",
-            "attributes": {
-              "friendly_name": "Living room",
-              "supported_color_modes": ["brightness"],
-              "color_mode": "brightness",
-              "brightness": 255
+      <ha-embed-provider id="shared">
+        <script type="application/json">
+          [
+            {
+              "entity_id": "light.living_room",
+              "state": "off",
+              "attributes": {
+                "friendly_name": "Living room",
+                "supported_color_modes": ["brightness"],
+                "color_mode": "brightness",
+                "brightness": 255
+              }
+            },
+            {
+              "entity_id": "switch.coffee_maker",
+              "state": "on",
+              "attributes": {
+                "friendly_name": "Coffee maker",
+                "device_class": "outlet"
+              }
+            },
+            {
+              "entity_id": "climate.hallway",
+              "state": "heat",
+              "attributes": {
+                "friendly_name": "Hallway",
+                "current_temperature": 19.5,
+                "temperature": 21,
+                "min_temp": 7,
+                "max_temp": 30,
+                "target_temp_step": 0.5,
+                "hvac_modes": ["heat", "off"],
+                "hvac_action": "heating",
+                "supported_features": 1
+              }
+            },
+            {
+              "entity_id": "sensor.outside_temperature",
+              "state": "12.3",
+              "attributes": {
+                "friendly_name": "Outside temperature",
+                "device_class": "temperature",
+                "state_class": "measurement",
+                "unit_of_measurement": "°C"
+              }
             }
-          },
-          {
-            "entity_id": "switch.coffee_maker",
-            "state": "on",
-            "attributes": {
-              "friendly_name": "Coffee maker",
-              "device_class": "outlet"
-            }
-          },
-          {
-            "entity_id": "climate.hallway",
-            "state": "heat",
-            "attributes": {
-              "friendly_name": "Hallway",
-              "current_temperature": 19.5,
-              "temperature": 21,
-              "min_temp": 7,
-              "max_temp": 30,
-              "target_temp_step": 0.5,
-              "hvac_modes": ["heat", "off"],
-              "hvac_action": "heating",
-              "supported_features": 1
-            }
-          },
-          {
-            "entity_id": "sensor.outside_temperature",
-            "state": "12.3",
-            "attributes": {
-              "friendly_name": "Outside temperature",
-              "device_class": "temperature",
-              "state_class": "measurement",
-              "unit_of_measurement": "°C"
-            }
-          }
-        ]'
-      >
+          ]
+        </script>
         <div class="cards">
-          <ha-embed-card
-            config='{
-              "type": "tile",
-              "entity": "light.living_room",
-              "tap_action": { "action": "toggle" }
-            }'
-          ></ha-embed-card>
-          <ha-embed-card
-            config='{
-              "type": "entities",
-              "title": "Living room",
-              "entities": [
-                "light.living_room",
-                "switch.coffee_maker",
-                "sensor.outside_temperature"
-              ]
-            }'
-          ></ha-embed-card>
-          <ha-embed-card
-            config='{ "type": "thermostat", "entity": "climate.hallway" }'
-          ></ha-embed-card>
+          <ha-embed-card>
+            <script type="application/json">
+              {
+                "type": "tile",
+                "entity": "light.living_room",
+                "tap_action": { "action": "toggle" }
+              }
+            </script>
+          </ha-embed-card>
+          <ha-embed-card>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              type: entities
+              title: Living room
+              entities:
+                - light.living_room
+                - switch.coffee_maker
+                - sensor.outside_temperature
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-card>
+          <ha-embed-card>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              type: thermostat
+              entity: climate.hallway
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-card>
         </div>
       </ha-embed-provider>
       <pre class="log" id="log"><code>Use the cards to see events here.</code></pre>
@@ -241,34 +253,36 @@
       <h2>Change entities from the page</h2>
       <p>
         Set the <code>entities</code> property to change entities from
-        JavaScript. The provider adds or replaces the entities in the new list.
-        Other entities keep their state.
+        JavaScript. The new list replaces all entities. To change one entity,
+        start from the current states.
       </p>
       <p>
         <button id="set-temperature">Set a random outside temperature</button>
         <button id="toggle-coffee">Toggle the coffee maker</button>
       </p>
       <pre><code>const provider = document.querySelector("ha-embed-provider");
-provider.entities = [
-  {
-    entity_id: "sensor.outside_temperature",
-    state: "18.1",
-    attributes: {
-      friendly_name: "Outside temperature",
-      device_class: "temperature",
-      unit_of_measurement: "°C",
-    },
-  },
-];</code></pre>
+provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
+  entity.entity_id === "sensor.outside_temperature"
+    ? { ...entity, state: "18.1" }
+    : entity
+);</code></pre>
+      <p>
+        To use the actions of an entity, call a service. The provider updates
+        the state and the cards.
+      </p>
+      <pre><code>provider.hass.callService("switch", "toggle", {
+  entity_id: "switch.coffee_maker",
+});</code></pre>
 
       <h2>Listen to changes</h2>
       <p>
-        The provider fires a <code>state-changed</code> event for each entity
-        that changes. The event bubbles.
+        The provider fires a <code>states-changed</code> event when the state
+        of one or more entities changes. The event has the states of all
+        entities. The event bubbles.
       </p>
-      <pre><code>provider.addEventListener("state-changed", (ev) =&gt; {
-  const { entity_id, old_state, new_state } = ev.detail;
-  console.log(entity_id, old_state?.state, "→", new_state.state);
+      <pre><code>provider.addEventListener("states-changed", (ev) =&gt; {
+  const { states } = ev.detail;
+  console.log(states["light.living_room"].state);
 });</code></pre>
       <p>
         Read the current state of all entities with
@@ -290,7 +304,9 @@ provider.entities = [
             A list of entities. Each entity has an <code>entity_id</code>, a
             <code>state</code>, and <code>attributes</code>. The optional keys
             <code>area_id</code>, <code>device_id</code>, and
-            <code>platform</code> set the entity registry entry.
+            <code>platform</code> set the entity registry entry. A new list
+            replaces all entities. A JSON or YAML script child sets the first
+            list.
           </td>
         </tr>
         <tr>
@@ -299,12 +315,11 @@ provider.entities = [
           <td>The mocked Home Assistant object that the cards use.</td>
         </tr>
         <tr>
-          <td><code>state-changed</code></td>
+          <td><code>states-changed</code></td>
           <td>Event</td>
           <td>
-            Fires when the state of an entity changes. The detail has
-            <code>entity_id</code>, <code>old_state</code>, and
-            <code>new_state</code>.
+            Fires when the state of one or more entities changes. The detail
+            has <code>states</code>, the states of all entities by entity ID.
           </td>
         </tr>
       </table>
@@ -318,7 +333,10 @@ provider.entities = [
         <tr>
           <td><code>config</code></td>
           <td>Attribute and property</td>
-          <td>The card configuration, the same as in a dashboard.</td>
+          <td>
+            The card configuration, the same as in a dashboard. A JSON or YAML
+            script child sets the first configuration.
+          </td>
         </tr>
       </table>
       <p>
@@ -332,16 +350,16 @@ provider.entities = [
         var shared = document.getElementById("shared");
         var log = document.getElementById("log");
         var first = true;
-        shared.addEventListener("state-changed", function (ev) {
-          var d = ev.detail;
+        shared.addEventListener("states-changed", function (ev) {
+          var states = ev.detail.states;
           var line =
             new Date().toLocaleTimeString() +
             "  " +
-            d.entity_id +
-            ": " +
-            (d.old_state ? d.old_state.state : "none") +
-            " → " +
-            d.new_state.state;
+            Object.keys(states)
+              .map(function (entityId) {
+                return entityId + "=" + states[entityId].state;
+              })
+              .join(", ");
           if (first) {
             log.textContent = "";
             first = false;
@@ -351,14 +369,18 @@ provider.entities = [
         document
           .getElementById("set-temperature")
           .addEventListener("click", function () {
-            shared.entities = [
-              {
-                entity_id: "sensor.outside_temperature",
-                state: (Math.random() * 30 - 5).toFixed(1),
-                attributes: shared.hass.states["sensor.outside_temperature"]
-                  .attributes,
-              },
-            ];
+            var states = shared.hass.states;
+            shared.entities = Object.keys(states).map(function (entityId) {
+              var entity = states[entityId];
+              return {
+                entity_id: entityId,
+                state:
+                  entityId === "sensor.outside_temperature"
+                    ? (Math.random() * 30 - 5).toFixed(1)
+                    : entity.state,
+                attributes: entity.attributes,
+              };
+            });
           });
         document
           .getElementById("toggle-coffee")
