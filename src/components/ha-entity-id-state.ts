@@ -10,7 +10,10 @@ import { formattersContext } from "../data/context";
 /** Longest state written into the cell; the cell's `text-overflow` shows the cut. */
 const MAX_CELL_LENGTH = 100;
 
-/** Longest state carried in the hover title, which is marked when it is cut. */
+/**
+ * Longest state kept in the hover title. `truncateWithEllipsis` appends its
+ * marker after this many characters, so a cut title is 256 characters long.
+ */
 const MAX_TITLE_LENGTH = 255;
 
 /**
