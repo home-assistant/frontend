@@ -258,4 +258,81 @@ describe("date-format", () => {
 
     assert.equal(result, "11 2024");
   });
+
+  it("applies the locale's contextual grammar when combining fields (Russian genitive month)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["day-numeric", "month-long"] },
+      "ru",
+      "UTC"
+    );
+
+    assert.equal(result, "8 ноября");
+  });
+
+  it("applies the locale's contextual grammar when combining fields (Finnish partitive month)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["day-numeric", "month-long"] },
+      "fi",
+      "UTC"
+    );
+
+    assert.equal(result, "8 marraskuuta");
+  });
+
+  it("applies contextual grammar across three combined fields (Finnish)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["weekday-long", "day-numeric", "month-long"] },
+      "fi",
+      "UTC"
+    );
+
+    assert.equal(result, "perjantai 8 marraskuuta");
+  });
+
+  it("applies contextual grammar when year is combined too (Finnish)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["day-numeric", "month-long", "year-numeric"] },
+      "fi",
+      "UTC"
+    );
+
+    assert.equal(result, "8 marraskuuta 2024");
+  });
+
+  it("keeps the contextual (combined) grammar even when the configured order differs from Intl's natural order (Finnish)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["month-long", "day-numeric"] },
+      "fi",
+      "UTC"
+    );
+
+    assert.equal(result, "marraskuuta 8");
+  });
+
+  it("uses the standalone (non-contextual) month form when the field has no other field to combine with (Finnish)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["month-long"] },
+      "fi",
+      "UTC"
+    );
+
+    assert.equal(result, "marraskuu");
+  });
+
+  it("falls back to independent standalone formatting when a field is duplicated, even though contextual grammar is unavailable there (Finnish)", () => {
+    const result = formatDateFromParts(
+      date,
+      { parts: ["month-short", "month-long"] },
+      "fi",
+      "UTC"
+    );
+
+    assert.equal(result, "marras marraskuu");
+  });
 });
