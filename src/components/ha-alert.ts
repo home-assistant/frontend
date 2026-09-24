@@ -8,6 +8,7 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { direction } from "direction";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
@@ -48,6 +49,7 @@ class HaAlert extends LitElement {
       <div
         class="issue-type ${classMap({
           [this.alertType]: true,
+          ltr: direction(this.title) === "ltr",
         })}"
         role="alert"
       >
@@ -174,6 +176,9 @@ class HaAlert extends LitElement {
     :host ::slotted(ul) {
       margin: 0;
       padding-inline-start: 20px;
+    }
+    .ltr {
+      direction: ltr;
     }
   `;
 }

@@ -2,6 +2,8 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { direction } from "direction";
 import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -175,6 +177,9 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       <notification-item
         .hass=${this.hass}
         .notification=${notification}
+        class=${classMap({
+          ltr: direction(notification.title) === "ltr",
+        })}
       ></notification-item>
     </div>
   `;
@@ -268,6 +273,10 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
     .empty {
       padding: var(--ha-space-4);
       text-align: center;
+    }
+
+    .ltr {
+      direction: ltr;
     }
   `;
 }

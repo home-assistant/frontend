@@ -99,6 +99,7 @@
     "date-fns": "4.4.0",
     "deep-clone-simple": "1.1.1",
     "deep-freeze": "0.0.1",
+    "direction": "2.0.1",
     "echarts": "6.1.0",
     "echarts-extension-chart2music": "0.1.1",
     "element-internals-polyfill": "3.0.2",
