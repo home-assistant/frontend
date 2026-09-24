@@ -15,6 +15,7 @@ import {
   computeDateText,
   computeMsUntilMidnight,
   computeResolvedTimeZone,
+  isValidTimeZone,
 } from "./hui-date-card-helpers";
 
 @customElement("hui-date-card")
@@ -39,6 +40,9 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
   private _midnightTimer?: number;
 
   public setConfig(config: DateCardConfig): void {
+    if (config.time_zone && !isValidTimeZone(config.time_zone)) {
+      throw new Error(`Invalid time zone: ${config.time_zone}`);
+    }
     this._config = config;
   }
 

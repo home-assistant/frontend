@@ -23,6 +23,20 @@ const formatDefaultDate = (
   }).format(dateObj);
 
 /**
+ * Whether Intl accepts `timeZone` as a valid IANA zone. YAML-authored
+ * configs bypass the editor's picker, so an unchecked bad value would
+ * otherwise only surface as a crash later, when the card formats a date.
+ */
+export const isValidTimeZone = (timeZone: string): boolean => {
+  try {
+    new Intl.DateTimeFormat(undefined, { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * Resolves the actual IANA time zone the card should display, honoring a
  * card-level override before falling back to the user's profile/server
  * setting (same fallback chain as the Clock card).

@@ -3,6 +3,7 @@ import {
   computeResolvedTimeZone,
   computeDateText,
   computeMsUntilMidnight,
+  isValidTimeZone,
 } from "../../../../src/panels/lovelace/cards/hui-date-card-helpers";
 import {
   NumberFormat,
@@ -24,6 +25,24 @@ const locale = {
 };
 
 const dateObj = new Date(2017, 10, 18, 11, 12, 13, 1400);
+
+describe("isValidTimeZone", () => {
+  it("accepts a valid IANA time zone", () => {
+    expect(isValidTimeZone("Europe/Paris")).toBe(true);
+  });
+
+  it("accepts UTC", () => {
+    expect(isValidTimeZone("UTC")).toBe(true);
+  });
+
+  it("rejects a made-up zone name", () => {
+    expect(isValidTimeZone("Europe/Pariss")).toBe(false);
+  });
+
+  it("rejects an empty string", () => {
+    expect(isValidTimeZone("")).toBe(false);
+  });
+});
 
 describe("computeResolvedTimeZone", () => {
   it("uses the card's time_zone override when set", () => {
