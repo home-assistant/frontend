@@ -51,10 +51,10 @@ Managed app, demo, gallery, and E2E app workflows share one lifetime lock, so on
 
 ## When To Add Tests
 
-- Write tests for code that computes something: data processing, utility functions, config validation, and what happens when the user interacts with a component.
-- Do not write tests that check what a component looks like: its text, CSS classes, styles, or slots. Do not write tests that check the default value of an option.
-- A component that only takes data from contexts and helpers and puts it in a template does not need a test.
-- If you are not sure a test is useful, describe the test and what it would catch, and let the user decide.
+- Write tests for code that computes something: data processing, utilities, config validation, and strategies.
+- Do not write rendering tests. This includes views, panels, and components whose text, styles, slots, or option defaults are checked, or that only put context and helper data into a template.
+- Do not try to cover every scenario, especially for behaviour that changes often.
+- If you are not sure a test is useful, describe it and what it would catch, and let the user decide.
 - Tests never talk to a real Home Assistant. Replace `callWS`, `callApi`, and the connection with fakes.
 
 ## Dev Servers
