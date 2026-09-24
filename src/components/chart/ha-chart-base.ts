@@ -534,6 +534,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
+            @keydown=${this._handleChartKeydown}
           ></div>
         </div>
         <div class="sonification-output"></div>
@@ -707,11 +708,28 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   // Chart2Music adds ~45 kB gzipped, so it is only fetched once someone actually
   // moves keyboard focus into a chart.
-  private async _handleChartFocus() {
+  private _handleChartFocus() {
     // Dropping tabindex off the active element resets focus to the document and
     // costs the user their place in the tab order, so stay programmatically
     // focusable for as long as we hold focus, however we stop being sonifiable.
     this._sonificationFocusHeld = true;
+    // Clicks and taps focus the chart too. Chart2Music only responds to the
+    // keyboard, and once connected it moves the tooltip to the first point, so
+    // pointer focus must not start it.
+    if (this._chartContainer?.matches(":focus-visible")) {
+      this._startSonification();
+    }
+  }
+
+  // A chart focused by pointer has not started Chart2Music, so start it once
+  // the keyboard is used there. Tab only leaves the chart.
+  private _handleChartKeydown(ev: KeyboardEvent) {
+    if (ev.key !== "Tab") {
+      this._startSonification();
+    }
+  }
+
+  private async _startSonification() {
     if (this._sonification || this._sonificationLoading) {
       return;
     }
@@ -748,8 +766,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this._chartContainer!.dispatchEvent(new FocusEvent("focus"));
       }
     } catch (_err) {
-      // Never let a failure here escape a focus handler. The tab stop stays, so
-      // focusing the chart again retries.
+      // Never let a failure here escape a focus or key handler. The tab stop
+      // stays, so focusing the chart again retries.
     } finally {
       this._sonificationLoading = false;
     }
