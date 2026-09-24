@@ -289,6 +289,180 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
         <code>provider.hass.states</code>.
       </p>
 
+      <h2>Custom cards</h2>
+      <p>
+        Custom cards work too. Load the script of the custom card on the page,
+        and use <code>custom:</code> and the element name as the card type.
+        The custom card gets the same mocked backend as the other cards.
+        <code>window.loadCardHelpers()</code> is available to create built-in
+        cards.
+      </p>
+      <p>
+        The mocked backend only knows a part of the Home Assistant API. A
+        custom card that asks for history, statistics, or templates gets an
+        error. From another site, the script of the custom card needs CORS
+        headers, like the embed script.
+      </p>
+      <pre><code>&lt;script type="module" src="https://example.com/embed-demo-custom-card.js"&gt;&lt;/script&gt;
+&lt;ha-embed-card&gt;
+  &lt;script type="text/yaml"&gt;
+    type: custom:embed-demo-custom-card
+    entity: light.office
+  &lt;/script&gt;
+&lt;/ha-embed-card&gt;</code></pre>
+      <ha-embed-provider>
+        <script type="application/json">
+          [
+            {
+              "entity_id": "light.office",
+              "state": "on",
+              "attributes": {
+                "friendly_name": "Office",
+                "supported_color_modes": ["brightness"],
+                "color_mode": "brightness",
+                "brightness": 120
+              }
+            }
+          ]
+        </script>
+        <div class="single">
+          <ha-embed-card
+            config='{ "type": "custom:embed-demo-custom-card", "entity": "light.office" }'
+          ></ha-embed-card>
+        </div>
+      </ha-embed-provider>
+      <p>This is the code of the custom card:</p>
+      <pre><code>class EmbedDemoCustomCard extends HTMLElement {
+  setConfig(config) {
+    if (!config.entity) {
+      throw new Error("Set an entity");
+    }
+    this._config = config;
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  getCardSize() {
+    return 3;
+  }
+
+  async _render() {
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: "open" }).innerHTML = `
+        &lt;style&gt;
+          ha-card { padding: 16px; }
+          .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: var(--accent-color);
+            color: var(--text-accent-color, #fff);
+            font-size: 12px;
+          }
+          .tile { margin: 12px 0; }
+        &lt;/style&gt;
+        &lt;ha-card&gt;
+          &lt;span class="badge"&gt;Custom card&lt;/span&gt;
+          &lt;p&gt;
+            This is a custom card. It is not part of Home Assistant. The page
+            defines it, and it creates the tile card below with the card
+            helpers.
+          &lt;/p&gt;
+          &lt;div class="tile"&gt;&lt;/div&gt;
+          &lt;button&gt;Toggle from the custom card&lt;/button&gt;
+        &lt;/ha-card&gt;`;
+      this.shadowRoot.querySelector("button").addEventListener("click", () =&gt;
+        this._hass.callService("homeassistant", "toggle", {
+          entity_id: this._config.entity,
+        })
+      );
+    }
+    // Keep the promise, so that a second update does not create a second tile.
+    if (!this._tile) {
+      this._tile = window.loadCardHelpers().then((helpers) => {
+        const tile = helpers.createCardElement({
+          type: "tile",
+          entity: this._config.entity,
+        });
+        this.shadowRoot.querySelector(".tile").append(tile);
+        return tile;
+      });
+    }
+    (await this._tile).hass = this._hass;
+  }
+}
+
+customElements.define("embed-demo-custom-card", EmbedDemoCustomCard);</code></pre>
+      <script type="module">
+        class EmbedDemoCustomCard extends HTMLElement {
+          setConfig(config) {
+            if (!config.entity) {
+              throw new Error("Set an entity");
+            }
+            this._config = config;
+          }
+
+          set hass(hass) {
+            this._hass = hass;
+            this._render();
+          }
+
+          getCardSize() {
+            return 3;
+          }
+
+          async _render() {
+            if (!this.shadowRoot) {
+              this.attachShadow({ mode: "open" }).innerHTML = `
+                <style>
+                  ha-card { padding: 16px; }
+                  .badge {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 8px;
+                    background: var(--accent-color);
+                    color: var(--text-accent-color, #fff);
+                    font-size: 12px;
+                  }
+                  .tile { margin: 12px 0; }
+                </style>
+                <ha-card>
+                  <span class="badge">Custom card</span>
+                  <p>
+                    This is a custom card. It is not part of Home Assistant. The page
+                    defines it, and it creates the tile card below with the card
+                    helpers.
+                  </p>
+                  <div class="tile"></div>
+                  <button>Toggle from the custom card</button>
+                </ha-card>`;
+              this.shadowRoot.querySelector("button").addEventListener("click", () =>
+                this._hass.callService("homeassistant", "toggle", {
+                  entity_id: this._config.entity,
+                })
+              );
+            }
+            // Keep the promise, so that a second update does not create a second tile.
+            if (!this._tile) {
+              this._tile = window.loadCardHelpers().then((helpers) => {
+                const tile = helpers.createCardElement({
+                  type: "tile",
+                  entity: this._config.entity,
+                });
+                this.shadowRoot.querySelector(".tile").append(tile);
+                return tile;
+              });
+            }
+            (await this._tile).hass = this._hass;
+          }
+        }
+
+        customElements.define("embed-demo-custom-card", EmbedDemoCustomCard);
+      </script>
+
       <h2>Reference</h2>
       <h3><code>&lt;ha-embed-provider&gt;</code></h3>
       <table>
