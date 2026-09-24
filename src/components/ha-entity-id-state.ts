@@ -10,11 +10,8 @@ import { formattersContext } from "../data/context";
 /** Longest state written into the cell; the cell's `text-overflow` shows the cut. */
 const MAX_CELL_LENGTH = 100;
 
-/**
- * Longest state kept in the hover title. `truncateWithEllipsis` appends its
- * marker after this many characters, so a cut title is 256 characters long.
- */
-const MAX_TITLE_LENGTH = 255;
+/** State characters kept in the hover title, before any ellipsis marker. */
+const TITLE_PREFIX_LENGTH = 255;
 
 /**
  * Formatted state for an entity ID, subscribing to that entity itself rather
@@ -50,7 +47,7 @@ export class HaEntityIdState extends ReactiveElement {
     this.textContent = truncateWithEllipsis(formatted, MAX_CELL_LENGTH, "");
 
     if (formatted.length > MAX_CELL_LENGTH) {
-      this.title = truncateWithEllipsis(formatted, MAX_TITLE_LENGTH, "…");
+      this.title = truncateWithEllipsis(formatted, TITLE_PREFIX_LENGTH, "…");
     } else {
       // `title=""` means "no advisory information" and would suppress the
       // cell's own overflow title as well.
