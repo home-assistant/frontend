@@ -148,11 +148,7 @@ export class HuiEnergySourcesTableCard
 
     const label =
       name ||
-      getStatisticLabel(
-        this.hass,
-        statId,
-        this._data?.statsMetadata[statId]
-      );
+      getStatisticLabel(this.hass, statId, this._data?.statsMetadata[statId]);
 
     return html`<tr
       class="mdc-data-table__row ${classMap({
@@ -184,11 +180,7 @@ export class HuiEnergySourcesTableCard
           })}
         ></div>
       </td>
-      <th
-        class="mdc-data-table__cell cell-source"
-        scope="row"
-        .title=${label}
-      >
+      <th class="mdc-data-table__cell cell-source" scope="row" .title=${label}>
         ${label}
       </th>
       ${
@@ -266,11 +258,7 @@ export class HuiEnergySourcesTableCard
             : nothing
         }
       </td>
-      <th
-        class="mdc-data-table__cell cell-source"
-        scope="row"
-        .title=${label}
-      >
+      <th class="mdc-data-table__cell cell-source" scope="row" .title=${label}>
         ${label}
       </th>
       ${
