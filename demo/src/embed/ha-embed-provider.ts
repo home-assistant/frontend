@@ -1,5 +1,5 @@
 import { provide } from "@lit/context";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -9,6 +9,7 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { mockIcons } from "../stubs/icons";
 import { embedHassContext } from "./context";
+import { readScriptData } from "./script-data";
 
 /**
  * Holds a mocked Home Assistant backend for all `ha-embed-card` elements
@@ -21,8 +22,8 @@ export class HaEmbedProvider extends LitElement {
   public hass!: MockHomeAssistant;
 
   /**
-   * Entities to add to the backend, as a JSON array in the attribute.
-   * Each change adds or replaces the listed entities. Other entities stay.
+   * All entities of the backend. Each change replaces all entities.
+   * Also read from a JSON or YAML script child, see `readScriptData`.
    */
   @property({ type: Array }) public entities: EntityInput[] = [];
 
@@ -36,9 +37,22 @@ export class HaEmbedProvider extends LitElement {
     mockIcons(hass);
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    const entities = readScriptData(this) as EntityInput[] | undefined;
+    if (entities) {
+      this.entities = entities;
+    }
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("entities")) {
-      this.hass.addEntities(this.entities);
+      // Remove the old entities, so that services cannot bring them back.
+      for (const entityId of Object.keys(this.hass.mockEntities)) {
+        delete this.hass.mockEntities[entityId];
+      }
+      this.hass.updateHass({ entities: {} });
+      this.hass.addEntities(this.entities, true);
     }
   }
 
@@ -48,15 +62,9 @@ export class HaEmbedProvider extends LitElement {
     if (!oldHass) {
       return;
     }
-    for (const [entityId, newState] of Object.entries(this.hass.states)) {
-      const oldState = oldHass.states[entityId];
-      if (oldState !== newState) {
-        fireEvent(this, "state-changed", {
-          entity_id: entityId,
-          old_state: oldState,
-          new_state: newState,
-        });
-      }
+    // Other updates, such as loaded translations, keep the same states object.
+    if (oldHass.states !== this.hass.states) {
+      fireEvent(this, "states-changed", { states: this.hass.states });
     }
   }
 
@@ -70,10 +78,6 @@ declare global {
     "ha-embed-provider": HaEmbedProvider;
   }
   interface HASSDomEvents {
-    "state-changed": {
-      entity_id: string;
-      old_state: HassEntity | undefined;
-      new_state: HassEntity;
-    };
+    "states-changed": { states: HassEntities };
   }
 }
