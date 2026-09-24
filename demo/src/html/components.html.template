@@ -101,6 +101,13 @@
         an entity in one card, the other cards show the change.
       </p>
 
+      <h2>Use on your site</h2>
+      <p>
+        Load the script from the demo site. The script loads all other files
+        from the demo site too.
+      </p>
+      <pre><code>&lt;script type="module" src="https://demo.home-assistant.io/embed.js"&gt;&lt;/script&gt;</code></pre>
+
       <h2>One card</h2>
       <p>
         Put the entities on the provider and the card configuration on the
