@@ -471,7 +471,9 @@ class HaConfigSectionUpdates extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.updates.confirm_skip_all_title"
+        group.entities.length > 1
+          ? "ui.panel.config.updates.confirm_skip_all_title"
+          : "ui.panel.config.updates.confirm_skip_title"
       ),
       text: autoUpdateCount
         ? this.hass.localize(
@@ -486,7 +488,11 @@ class HaConfigSectionUpdates extends LitElement {
             count: entityIds.length,
             name: group.title,
           }),
-      confirmText: this.hass.localize("ui.panel.config.updates.skip_all"),
+      confirmText: this.hass.localize(
+        group.entities.length > 1
+          ? "ui.panel.config.updates.skip_all"
+          : "ui.panel.config.updates.skip"
+      ),
       destructive: false,
     });
     if (!confirmed) return;
