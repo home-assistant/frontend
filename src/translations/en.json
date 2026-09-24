@@ -2982,7 +2982,10 @@
           "copy_url": "Copy URL",
           "configure": "Configure",
           "error_load": "Failed to load the Model Context Protocol configuration",
-          "error_delete_entry": "Failed to disable the Model Context Protocol server"
+          "error_delete_entry": "Failed to disable the Model Context Protocol server",
+          "error_enable": "Failed to enable the Model Context Protocol server",
+          "discovered_header": "Discovered MCP servers",
+          "discovered_description": "Apps on this system offer these MCP servers. Add one to use its tools with the AI agents in Home Assistant."
         },
         "apps": {
           "caption": "Apps",
