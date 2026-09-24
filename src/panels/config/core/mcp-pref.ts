@@ -1,5 +1,4 @@
 import { mdiCog, mdiContentCopy, mdiDotsVertical } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -17,15 +16,10 @@ import {
   deleteConfigEntry,
   getConfigEntries,
 } from "../../../data/config_entries";
-import type { ConfigFlowInProgressMessage } from "../../../data/config_flow";
 import {
   createConfigFlow,
   handleConfigFlowStep,
-  ignoreConfigFlow,
-  localizeConfigFlowTitle,
-  subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import type { LLMApi } from "../../../data/llm";
 import { fetchLLMApis } from "../../../data/llm";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -34,17 +28,15 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 
 const MCP_SERVER_DOMAIN = "mcp_server";
-const MCP_DOMAIN = "mcp";
 
 @customElement("mcp-pref")
-export class MCPPref extends SubscribeMixin(LitElement) {
+export class MCPPref extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -57,40 +49,12 @@ export class MCPPref extends SubscribeMixin(LitElement) {
 
   @state() private _enabling = false;
 
-  @state() private _discoveredFlows: DataEntryFlowProgress[] = [];
-
   private _sortedApis = memoizeOne((apis: LLMApi[], language: string) =>
     [...apis].sort((a, b) => a.name.localeCompare(b.name, language))
   );
 
   protected firstUpdated() {
     this._load();
-  }
-
-  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeConfigFlowInProgress(
-        this.hass,
-        (messages: ConfigFlowInProgressMessage[]) => {
-          // The first message lists all flows in progress with type null
-          let flows =
-            !messages.length || messages[0].type === null
-              ? []
-              : this._discoveredFlows;
-          for (const message of messages) {
-            if (message.type === "removed") {
-              flows = flows.filter((flow) => flow.flow_id !== message.flow_id);
-            } else if (
-              message.flow.handler === MCP_DOMAIN &&
-              message.flow.context.source === "hassio"
-            ) {
-              flows = [...flows, message.flow];
-            }
-          }
-          this._discoveredFlows = flows;
-        }
-      ),
-    ];
   }
 
   protected render() {
@@ -165,7 +129,6 @@ export class MCPPref extends SubscribeMixin(LitElement) {
               : nothing
           }
           ${this._entry ? this._renderEnabled() : nothing}
-          ${this._discoveredFlows.length ? this._renderDiscovered() : nothing}
         </div>
         ${
           this._entry === null
@@ -210,42 +173,6 @@ export class MCPPref extends SubscribeMixin(LitElement) {
             `
           : nothing
       }
-    `;
-  }
-
-  private _renderDiscovered() {
-    return html`
-      <p class="section">
-        ${this.hass.localize("ui.panel.config.mcp.discovered_header")}
-      </p>
-      <p class="hint">
-        ${this.hass.localize("ui.panel.config.mcp.discovered_description")}
-      </p>
-      ${this._discoveredFlows.map(
-        (flow) => html`
-          <div class="url-row">
-            <div class="url-info">
-              <span class="name"
-                >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
-              >
-            </div>
-            <ha-button
-              appearance="plain"
-              data-flow-id=${flow.flow_id}
-              @click=${this._ignoreFlow}
-            >
-              ${this.hass.localize("ui.panel.config.integrations.ignore.ignore")}
-            </ha-button>
-            <ha-button
-              appearance="filled"
-              data-flow-id=${flow.flow_id}
-              @click=${this._continueFlow}
-            >
-              ${this.hass.localize("ui.common.add")}
-            </ha-button>
-          </div>
-        `
-      )}
     `;
   }
 
@@ -349,36 +276,6 @@ export class MCPPref extends SubscribeMixin(LitElement) {
     this._apis = undefined;
   }
 
-  private _continueFlow(ev: Event) {
-    const flowId = (ev.currentTarget as HTMLElement).dataset.flowId!;
-    showConfigFlowDialog(this, { continueFlowId: flowId });
-  }
-
-  private async _ignoreFlow(ev: Event) {
-    const flowId = (ev.currentTarget as HTMLElement).dataset.flowId!;
-    const flow = this._discoveredFlows.find((f) => f.flow_id === flowId);
-    if (!flow) {
-      return;
-    }
-    const name = localizeConfigFlowTitle(this.hass.localize, flow);
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.ignore.confirm_ignore_title",
-        { name }
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.ignore.confirm_ignore"
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.config.integrations.ignore.ignore"
-      ),
-    });
-    if (!confirmed) {
-      return;
-    }
-    await ignoreConfigFlow(this.hass, flowId, name);
-  }
-
   private async _copyUrl(ev: Event) {
     const url = (ev.currentTarget as HTMLElement).getAttribute("data-url")!;
     await copyToClipboard(url);
@@ -431,11 +328,6 @@ export class MCPPref extends SubscribeMixin(LitElement) {
     }
     .section {
       margin: var(--ha-space-4) 0 var(--ha-space-2);
-    }
-    .hint {
-      margin: 0 0 var(--ha-space-2);
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
     }
     .loading {
       display: flex;
