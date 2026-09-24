@@ -455,9 +455,15 @@ class HaConfigSectionUpdates extends LitElement {
 
     if (!entityIds.length) {
       showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.config.updates.skip_all"),
+        title: this.hass.localize(
+          group.entities.length > 1
+            ? "ui.panel.config.updates.skip_all"
+            : "ui.dialogs.more_info_control.update.auto_update_enabled_title"
+        ),
         text: this.hass.localize(
-          "ui.panel.config.updates.auto_update_cannot_skip"
+          group.entities.length > 1
+            ? "ui.panel.config.updates.auto_update_cannot_skip"
+            : "ui.dialogs.more_info_control.update.auto_update_enabled_text"
         ),
       });
       return;

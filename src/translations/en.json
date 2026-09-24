@@ -2898,7 +2898,7 @@
           "confirm_skip_title": "Skip update?",
           "confirm_skip_text": "This will skip {count} pending {count, plural,\n  one {update}\n  other {updates}\n} for {name}. You can undo this later by selecting 'Show skipped updates' from the menu and opening the individual update.",
           "auto_update_cannot_skip": "These updates install automatically and can't be skipped.",
-          "confirm_skip_all_text_partial": "This will skip {count} pending {count, plural,\n  one {update}\n  other {updates}\n} for {name}. {excluded} update(s) with automatic updates enabled will not be skipped. You can undo this later by selecting 'Show skipped updates' from the menu and opening the individual update.",
+          "confirm_skip_all_text_partial": "This will skip {count} pending {count, plural,\n  one {update}\n  other {updates}\n} for {name}. {excluded} {excluded, plural,\n  one {update}\n  other {updates}\n} with automatic updates enabled will not be skipped. You can undo this later by selecting 'Show skipped updates' from the menu and opening the individual update.",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
