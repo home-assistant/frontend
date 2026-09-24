@@ -612,6 +612,8 @@ class HaConfigSectionUpdates extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--ha-space-1);
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .card-header {
