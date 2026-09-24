@@ -271,6 +271,7 @@ module.exports.config = {
       name: "demo" + nameSuffix(latestBuild),
       entry: {
         main: path.resolve(paths.demo_dir, "src/entrypoint.ts"),
+        embed: path.resolve(paths.demo_dir, "src/embed/entrypoint.ts"),
         ...module.exports.mapWorkerEntry(),
       },
       outputPath: outputPath(paths.demo_output_root, latestBuild),
