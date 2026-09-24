@@ -1,12 +1,13 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { getHistoryState } from "../common/navigate";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
-import { handleBackClick } from "./back-navigation";
+import { NativeBackButtonController } from "../external_app/external_back_button";
+import { handleBackClick, navigateBack } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { haStyleScrollbar } from "../resources/styles";
@@ -31,6 +32,18 @@ class HassSubpage extends LitElement {
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
+  private _nativeBackButton = new NativeBackButtonController(this, {
+    visible: () => this._showsBackButton,
+    back: () => navigateBack(this.backPath, this.backCallback),
+  });
+
+  private get _showsBackButton(): boolean {
+    return (
+      !this.mainPage &&
+      !(!sanitizeNavigationPath(this.backPath) && getHistoryState()?.root)
+    );
+  }
+
   protected render(): TemplateResult {
     const backPath = sanitizeNavigationPath(this.backPath);
 
@@ -38,14 +51,16 @@ class HassSubpage extends LitElement {
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
           ${
-            this.mainPage || (!backPath && getHistoryState()?.root)
+            !this._showsBackButton
               ? html`<ha-menu-button></ha-menu-button>`
-              : html`
-                  <ha-icon-button-arrow-prev
-                    .href=${backPath}
-                    @click=${this._backTapped}
-                  ></ha-icon-button-arrow-prev>
-                `
+              : this._nativeBackButton.native
+                ? nothing
+                : html`
+                    <ha-icon-button-arrow-prev
+                      .href=${backPath}
+                      @click=${this._backTapped}
+                    ></ha-icon-button-arrow-prev>
+                  `
           }
 
           <div class="main-title">
