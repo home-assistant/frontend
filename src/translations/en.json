@@ -3143,7 +3143,7 @@
               },
               "rating": {
                 "title": "Security rating",
-                "description": "This shows the security rating of the app. Higher is better."
+                "description": "This shows the security rating of the app on a scale from 1 to {max}. Higher is better."
               },
               "host_network": {
                 "title": "Host network",
