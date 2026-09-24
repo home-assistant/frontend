@@ -181,7 +181,13 @@ const createRspackConfig = ({
           test: /\.css$/,
           type: "asset/source",
         },
-      ],
+        // The demo embed reads its own URL at runtime to find its files.
+        // Keep import.meta.url instead of replacing it with the source path.
+        latestBuild && {
+          test: path.resolve(paths.demo_dir, "src/embed/public-path.ts"),
+          parser: { importMeta: false },
+        },
+      ].filter(Boolean),
     },
     optimization: {
       minimizer: [

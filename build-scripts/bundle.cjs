@@ -244,6 +244,8 @@ module.exports.config = {
       defineOverlay: {
         __VERSION__: JSON.stringify(`DEMO-${env.version()}`),
         __DEMO__: true,
+        // The embed sets the global to load static files from its own server.
+        __STATIC_PATH__: '(globalThis.__HA_STATIC_PATH__ || "/static/")',
       },
       isProdBuild,
       latestBuild,
