@@ -178,7 +178,9 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
         .hass=${this.hass}
         .notification=${notification}
         class=${classMap({
-          ltr: direction(notification.title) === "ltr",
+          ltr:
+            !("entity_id" in notification) &&
+            direction(notification.title) === "ltr",
         })}
       ></notification-item>
     </div>
