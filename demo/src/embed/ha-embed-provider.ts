@@ -27,6 +27,24 @@ export class HaEmbedProvider extends LitElement {
    */
   @property({ type: Array }) public entities: EntityInput[] = [];
 
+  /** Light or dark mode of the cards. Without it, the browser setting. */
+  @property({ attribute: "color-scheme" }) public colorScheme?:
+    "light" | "dark";
+
+  private _darkQuery = matchMedia("(prefers-color-scheme: dark)");
+
+  private _applyColorScheme = () => {
+    const dark = this.colorScheme
+      ? this.colorScheme === "dark"
+      : this._darkQuery.matches;
+    if (this.hass.themes.darkMode !== dark) {
+      this.hass.updateHass({
+        themes: { ...this.hass.themes, darkMode: dark },
+        selectedTheme: { ...this.hass.selectedTheme!, dark },
+      });
+    }
+  };
+
   constructor() {
     super();
     // Set up in the constructor so that the contexts exist before the
@@ -35,17 +53,27 @@ export class HaEmbedProvider extends LitElement {
     hass.updateTranslations(null);
     hass.updateTranslations("lovelace");
     mockIcons(hass);
+    this._applyColorScheme();
   }
 
   public connectedCallback() {
     super.connectedCallback();
+    this._darkQuery.addEventListener("change", this._applyColorScheme);
     const entities = readScriptData(this) as EntityInput[] | undefined;
     if (entities) {
       this.entities = entities;
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._darkQuery.removeEventListener("change", this._applyColorScheme);
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("colorScheme")) {
+      this._applyColorScheme();
+    }
     if (changedProps.has("entities")) {
       // Remove the old entities, so that services cannot bring them back.
       for (const entityId of Object.keys(this.hass.mockEntities)) {
