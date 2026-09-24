@@ -39,8 +39,7 @@ export function getStateTableColumn<T extends { entity_id: string }>(
     title: localize("ui.panel.config.generic.headers.state"),
     defaultHidden: true,
     // The cell subscribes to its own entity, so the state never reaches the row
-    // data that the sort and filter worker operates on. Sorting, grouping and
-    // filtering are all impossible here, not merely turned off.
+    // data that the sort and filter worker operates on.
     sortable: false,
     groupable: false,
     filterable: false,

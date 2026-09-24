@@ -1033,8 +1033,7 @@ export class HaDataTable extends LitElement {
       ev.currentTarget.setAttribute("title", ev.currentTarget.innerText);
     } else {
       // The title is set imperatively, so nothing else clears it when the cell
-      // stops overflowing: the virtualizer recycles this element for another
-      // row, the window widens, or the cell's own content changes.
+      // stops overflowing: a recycled row, a wider window, changed contents.
       ev.currentTarget.removeAttribute("title");
     }
   }
