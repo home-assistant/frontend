@@ -120,6 +120,15 @@ class HaConfigSectionUpdates extends LitElement {
     }
   );
 
+  private _getSkippableEntities(entities: UpdateEntity[]): UpdateEntity[] {
+    return entities.filter(
+      (entity) =>
+        !updateIsInstalling(entity) &&
+        !latestVersionIsSkipped(entity) &&
+        !entity.attributes.auto_update
+    );
+  }
+
   private async _loadIntegrationTitles() {
     const domains = this._collectUpdateDomains(
       this.hass.states,
@@ -250,7 +259,7 @@ class HaConfigSectionUpdates extends LitElement {
                                 appearance="plain"
                                 size="s"
                                 .group=${group}
-                                .disabled=${!this._hasSkippableEntities(group.entities)}
+                                .disabled=${!this._hasActionableEntities(group.entities)}
                                 @click=${this._skipGroup}
                               >
                                 ${this.hass.localize(
@@ -429,51 +438,52 @@ class HaConfigSectionUpdates extends LitElement {
     }
   );
 
-  private _hasSkippableEntities(entities: UpdateEntity[]): boolean {
+  private _hasActionableEntities(entities: UpdateEntity[]): boolean {
     return entities.some(
-      (entity) =>
-        !updateIsInstalling(entity) &&
-        !latestVersionIsSkipped(entity) &&
-        !entity.attributes.auto_update
+      (entity) => !updateIsInstalling(entity) && !latestVersionIsSkipped(entity)
     );
   }
 
   private async _skipGroup(ev: Event) {
-    const group = (ev.currentTarget as UpdateActionButtonElement)
-      .group as UpdateGroup;
-    const entityIds = group.entities
-      .filter(
-        (entity) =>
-          !updateIsInstalling(entity) &&
-          !latestVersionIsSkipped(entity) &&
-          !entity.attributes.auto_update
-      )
-      .map((entity) => entity.entity_id);
+    const group = (ev.currentTarget as UpdateActionButtonElement).group;
+    const autoUpdateCount = group.entities.filter(
+      (entity) => entity.attributes.auto_update
+    ).length;
+    const entityIds = this._getSkippableEntities(group.entities).map(
+      (entity) => entity.entity_id
+    );
 
     if (!entityIds.length) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.updates.skip_all"),
+        text: this.hass.localize(
+          "ui.panel.config.updates.auto_update_cannot_skip"
+        ),
+      });
       return;
     }
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
-        group.entities.length > 1
-          ? "ui.panel.config.updates.confirm_skip_all_title"
-          : "ui.panel.config.updates.confirm_skip_title"
+        "ui.panel.config.updates.confirm_skip_all_title"
       ),
-      text: this.hass.localize("ui.panel.config.updates.confirm_skip_text", {
-        count: entityIds.length,
-        name: group.title,
-      }),
-      confirmText: this.hass.localize(
-        group.entities.length > 1
-          ? "ui.panel.config.updates.skip_all"
-          : "ui.panel.config.updates.skip"
-      ),
+      text: autoUpdateCount
+        ? this.hass.localize(
+            "ui.panel.config.updates.confirm_skip_all_text_partial",
+            {
+              count: entityIds.length,
+              name: group.title,
+              excluded: autoUpdateCount,
+            }
+          )
+        : this.hass.localize("ui.panel.config.updates.confirm_skip_text", {
+            count: entityIds.length,
+            name: group.title,
+          }),
+      confirmText: this.hass.localize("ui.panel.config.updates.skip_all"),
       destructive: false,
     });
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     try {
       await skipUpdates(this.hass, entityIds);
