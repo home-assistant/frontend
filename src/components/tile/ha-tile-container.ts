@@ -1,0 +1,217 @@
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import type { ActionHandlerOptions } from "../../data/lovelace/action_handler";
+import { actionHandler } from "../../panels/lovelace/common/directives/action-handler-directive";
+import "../ha-ripple";
+
+@customElement("ha-tile-container")
+export class HaTileContainer extends LitElement {
+  @property({ attribute: false })
+  public featurePosition: "bottom" | "inline" = "bottom";
+
+  @property({ type: Boolean })
+  public vertical = false;
+
+  /* reserve a consistent height for the info block instead of sizing to content, so sibling tiles stay aligned */
+  @property({ type: Boolean, attribute: "fixed-info-height" })
+  public fixedInfoHeight = false;
+
+  @property({ attribute: false })
+  public interactive = false;
+
+  @property({ attribute: false })
+  public actionHandlerOptions?: ActionHandlerOptions;
+
+  @state() private _hasFeatures = false;
+
+  private _handleFeaturesSlotChange(ev: Event) {
+    this._hasFeatures =
+      (ev.target as HTMLSlotElement).assignedElements().length > 0;
+  }
+
+  private _handleFocus(ev: FocusEvent) {
+    if ((ev.target as HTMLElement).matches(":focus-visible")) {
+      this.setAttribute("focused", "");
+    }
+  }
+
+  private _handleBlur() {
+    this.removeAttribute("focused");
+  }
+
+  protected render() {
+    const isInline = this.featurePosition === "inline";
+    const containerClasses = {
+      inline: isInline,
+      "has-features-below": isInline && this._hasFeatures,
+      "fixed-height": this.fixedInfoHeight,
+    };
+    const contentClasses = {
+      vertical: this.vertical,
+      "fixed-info-height": this.fixedInfoHeight,
+    };
+
+    return html`
+      <div
+        class="background"
+        role=${ifDefined(this.interactive ? "button" : undefined)}
+        tabindex=${ifDefined(this.interactive ? "0" : undefined)}
+        aria-labelledby="info"
+        .actionHandler=${actionHandler(this.actionHandlerOptions)}
+        @focus=${this._handleFocus}
+        @blur=${this._handleBlur}
+      >
+        <ha-ripple .disabled=${!this.interactive}></ha-ripple>
+      </div>
+      <div
+        class="container ${classMap(containerClasses)}"
+        @action=${stopPropagation}
+        @click=${stopPropagation}
+      >
+        <div class="row">
+          <div class="content ${classMap(contentClasses)}">
+            <slot name="icon"></slot>
+            <slot name="info" id="info"></slot>
+          </div>
+          <slot name="features-inline"></slot>
+        </div>
+        <slot
+          name="features"
+          @slotchange=${this._handleFeaturesSlotChange}
+        ></slot>
+      </div>
+    `;
+  }
+
+  static styles = css`
+    :host {
+      -webkit-tap-highlight-color: transparent;
+      --ha-ripple-color: var(--tile-color);
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      margin: calc(-1 * var(--ha-card-border-width, 1px));
+      overflow: hidden;
+    }
+    .container {
+      margin: calc(-1 * var(--ha-card-border-width, 1px));
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .row {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .container.inline .row {
+      flex-direction: row;
+    }
+
+    .content {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0 10px;
+      min-height: var(--row-height, 56px);
+      flex: 1;
+      min-width: 0;
+      box-sizing: border-box;
+      pointer-events: none;
+      gap: 10px;
+    }
+
+    .vertical {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      padding: 10px var(--ha-space-2);
+    }
+    .vertical.fixed-info-height {
+      /* pin sizing so every tile in a grid reserves the same height, wrapping or not, secondary or not */
+      gap: 2px;
+      --ha-tile-info-gap: 2px;
+      --ha-tile-info-primary-line-height: var(--ha-space-4);
+      --ha-tile-info-primary-min-height: var(--ha-space-8);
+      --ha-tile-info-min-height: var(--ha-space-12);
+    }
+    .vertical ::slotted([slot="info"]) {
+      width: 100%;
+      flex: none;
+    }
+
+    ::slotted([slot="icon"]) {
+      position: relative;
+      padding: 6px;
+      margin: -6px;
+    }
+    ::slotted([slot="icon"]:focus) {
+      outline: none;
+    }
+
+    ::slotted([slot="info"]) {
+      position: relative;
+      min-width: 0;
+      transition: background-color 180ms ease-in-out;
+      box-sizing: border-box;
+    }
+    ::slotted([slot="features"]) {
+      padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
+    }
+
+    .container.inline ::slotted([slot="features-inline"]) {
+      /* size the feature on the 6 column grid track, so it lines up with neighbouring tiles */
+      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
+      flex: none;
+      padding: 0 var(--ha-space-3);
+      padding-inline-start: 0;
+    }
+    /* the inline feature keeps the icon height, unless the card reserves a row it can fill */
+    .container.inline:not(.has-features-below)
+      ::slotted([slot="features-inline"]),
+    .container.inline:not(.fixed-height) ::slotted([slot="features-inline"]) {
+      --feature-height: var(--ha-space-9);
+    }
+
+    .container.inline.has-features-below ::slotted([slot="features"]) {
+      /* keep both columns under the inline feature, which sits on the grid track */
+      --ha-card-feature-column-gap: calc(
+        var(--column-gap, 0px) + var(--ha-space-3) * 2
+      );
+      --ha-card-feature-divider: 1px solid var(--ha-color-border-neutral-quiet);
+      --ha-card-feature-divider-inset: calc(
+        var(--ha-space-3) + var(--column-gap, 0px) / 2
+      );
+    }
+    [role="button"] {
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    [role="button"]:focus {
+      outline: none;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-tile-container": HaTileContainer;
+  }
+}

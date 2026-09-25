@@ -1,0 +1,281 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { navigate } from "../common/navigate";
+import type { HomeAssistant } from "../types";
+import {
+  subscribeDeviceRegistry,
+  type DeviceRegistryEntry,
+} from "./device/device_registry";
+import { getThreadDataSetTLV, listThreadDataSets } from "./thread";
+
+export enum NetworkType {
+  THREAD = "thread",
+  WIFI = "wifi",
+  ETHERNET = "ethernet",
+  UNKNOWN = "unknown",
+}
+
+export enum NodeType {
+  END_DEVICE = "end_device",
+  SLEEPY_END_DEVICE = "sleepy_end_device",
+  ROUTING_END_DEVICE = "routing_end_device",
+  BRIDGE = "bridge",
+  UNKNOWN = "unknown",
+}
+
+export interface MatterFabricData {
+  fabric_id: number;
+  vendor_id: number;
+  fabric_index: number;
+  fabric_label?: string;
+  vendor_name?: string;
+}
+
+export interface MatterNodeDiagnostics {
+  node_id: number;
+  network_type: NetworkType;
+  node_type: NodeType;
+  network_name?: string;
+  ip_adresses: string[];
+  mac_address?: string;
+  available: boolean;
+  active_fabrics: MatterFabricData[];
+  active_fabric_index: number;
+}
+
+export type MatterPingResult = Record<string, boolean>;
+
+export type MatterTopologyNodeKind =
+  "matter" | "border_router" | "thread_unknown" | "wifi_ap";
+
+export type MatterTopologyStrength =
+  "strong" | "medium" | "weak" | "none" | "unknown";
+
+export interface MatterTopologyDirectionInfo {
+  strength: MatterTopologyStrength;
+  lqi?: number | null;
+  rssi?: number | null;
+}
+
+export interface MatterNetworkTopologyNode {
+  id: string;
+  kind: MatterTopologyNodeKind;
+  network_type: string;
+  node_id?: number | null;
+  ha_device_id?: string | null;
+  role?: string | null;
+  available?: boolean | null;
+  is_bridge?: boolean | null;
+  ext_address?: string | null;
+  rloc16?: number | null;
+  ext_pan_id?: string | null;
+  network_name?: string | null;
+  ssid?: string | null;
+  bssid?: string | null;
+  host_name?: string | null;
+  vendor_name?: string | null;
+  model_name?: string | null;
+  last_seen?: number | null;
+}
+
+export interface MatterNetworkTopologyConnection {
+  source: string;
+  target: string;
+  network: string;
+  strength: MatterTopologyStrength;
+  source_to_target?: MatterTopologyDirectionInfo | null;
+  target_to_source?: MatterTopologyDirectionInfo | null;
+  via_route_table?: boolean | null;
+  path_cost?: number | null;
+}
+
+export interface MatterNetworkTopology {
+  collected_at: number;
+  nodes: MatterNetworkTopologyNode[];
+  connections: MatterNetworkTopologyConnection[];
+}
+
+export const fetchMatterNetworkTopology = (
+  hass: HomeAssistant,
+  refresh = false
+): Promise<MatterNetworkTopology> =>
+  hass.callWS({
+    type: "matter/network_topology",
+    refresh,
+  });
+
+export const subscribeMatterNetworkTopology = (
+  hass: HomeAssistant,
+  callback: (topology: MatterNetworkTopology) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage<MatterNetworkTopology>(callback, {
+    type: "matter/subscribe_network_topology",
+  });
+
+export interface MatterCommissioningParameters {
+  setup_pin_code: number;
+  setup_manual_code: string;
+  setup_qr_code: string;
+}
+
+export const canCommissionMatterExternal = (hass: HomeAssistant) =>
+  hass.auth.external?.config.canCommissionMatter;
+
+export const startExternalCommissioning = async (hass: HomeAssistant) => {
+  if (isComponentLoaded(hass.config, "thread")) {
+    const datasets = await listThreadDataSets(hass);
+    const preferredDataset = datasets.datasets.find(
+      (dataset) => dataset.preferred
+    );
+    if (preferredDataset) {
+      return hass.auth.external!.fireMessage({
+        type: "matter/commission",
+        payload: {
+          active_operational_dataset: (
+            await getThreadDataSetTLV(hass, preferredDataset.dataset_id)
+          ).tlv,
+          border_agent_id: preferredDataset.preferred_border_agent_id,
+          mac_extended_address: preferredDataset.preferred_extended_address,
+          extended_pan_id: preferredDataset.extended_pan_id,
+        },
+      });
+    }
+  }
+
+  return hass.auth.external!.fireMessage({
+    type: "matter/commission",
+  });
+};
+
+export const watchForNewMatterDevice = (
+  hass: HomeAssistant,
+  callback: (device: DeviceRegistryEntry) => void
+): UnsubscribeFunc => {
+  let curMatterDevices: Set<string> | undefined;
+  const unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
+    if (!curMatterDevices) {
+      curMatterDevices = new Set(
+        Object.values(entries)
+          .filter((device) =>
+            device.identifiers.find((identifier) => identifier[0] === "matter")
+          )
+          .map((device) => device.id)
+      );
+      return;
+    }
+    const newMatterDevices = Object.values(entries).filter(
+      (device) =>
+        device.identifiers.find((identifier) => identifier[0] === "matter") &&
+        !curMatterDevices!.has(device.id)
+    );
+    if (newMatterDevices.length) {
+      unsubDeviceReg();
+      curMatterDevices = undefined;
+      callback(newMatterDevices[0]);
+    }
+  });
+  return () => {
+    unsubDeviceReg();
+    curMatterDevices = undefined;
+  };
+};
+
+export const redirectOnNewMatterDevice = (
+  hass: HomeAssistant,
+  callback?: () => void
+): UnsubscribeFunc =>
+  watchForNewMatterDevice(hass, (device) => {
+    callback?.();
+    navigate(`/config/devices/device/${device.id}`);
+  });
+
+export const addMatterDevice = (hass: HomeAssistant) => {
+  startExternalCommissioning(hass);
+};
+
+export const commissionMatterDevice = (
+  hass: HomeAssistant,
+  code: string,
+  networkOnly: boolean
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/commission",
+    code,
+    network_only: networkOnly,
+  });
+
+export const acceptSharedMatterDevice = (
+  hass: HomeAssistant,
+  pin: number
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/commission_on_network",
+    pin,
+  });
+
+export const matterSetWifi = (
+  hass: HomeAssistant,
+  network_name: string,
+  password: string
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/set_wifi_credentials",
+    network_name,
+    password,
+  });
+
+export const matterSetThread = (
+  hass: HomeAssistant,
+  thread_operation_dataset: string
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/set_thread",
+    thread_operation_dataset,
+  });
+
+export const getMatterNodeDiagnostics = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<MatterNodeDiagnostics> =>
+  hass.callWS({
+    type: "matter/node_diagnostics",
+    device_id,
+  });
+
+export const pingMatterNode = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<MatterPingResult> =>
+  hass.callWS({
+    type: "matter/ping_node",
+    device_id,
+  });
+
+export const openMatterCommissioningWindow = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<MatterCommissioningParameters> =>
+  hass.callWS({
+    type: "matter/open_commissioning_window",
+    device_id,
+  });
+
+export const removeMatterFabric = (
+  hass: HomeAssistant,
+  device_id: string,
+  fabric_index: number
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/remove_matter_fabric",
+    device_id,
+    fabric_index,
+  });
+
+export const interviewMatterNode = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/interview_node",
+    device_id,
+  });

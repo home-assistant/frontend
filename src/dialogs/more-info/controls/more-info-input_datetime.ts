@@ -1,0 +1,126 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { transform } from "../../../common/decorators/transform";
+import "../../../components/ha-date-input";
+import "../../../components/ha-time-input";
+import { apiContext, internationalizationContext } from "../../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import {
+  setInputDateTimeValue,
+  stateToIsoDateString,
+} from "../../../data/input_datetime";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../../types";
+
+@customElement("more-info-input_datetime")
+class MoreInfoInputDatetime extends LitElement {
+  @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  protected render() {
+    if (!this.stateObj) {
+      return nothing;
+    }
+
+    return html`
+      ${
+        this.stateObj.attributes.has_date
+          ? html`
+              <ha-date-input
+                .locale=${this._locale}
+                .value=${stateToIsoDateString(this.stateObj)}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                @value-changed=${this._dateChanged}
+              >
+              </ha-date-input>
+            `
+          : ``
+      }
+      ${
+        this.stateObj.attributes.has_time
+          ? html`
+              <ha-time-input
+                .value=${
+                  this.stateObj.state === UNKNOWN
+                    ? ""
+                    : this.stateObj.attributes.has_date
+                      ? this.stateObj.state.split(" ")[1]
+                      : this.stateObj.state
+                }
+                .locale=${this._locale}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                @value-changed=${this._timeChanged}
+                @click=${this._stopEventPropagation}
+              ></ha-time-input>
+            `
+          : ``
+      }
+    `;
+  }
+
+  private _stopEventPropagation(ev: Event): void {
+    ev.stopPropagation();
+  }
+
+  private _timeChanged(ev: ValueChangedEvent<string>): void {
+    setInputDateTimeValue(
+      this._api.callService,
+      this.stateObj!.entity_id,
+      ev.detail.value,
+      this.stateObj!.attributes.has_date
+        ? this.stateObj!.state.split(" ")[0]
+        : undefined
+    );
+  }
+
+  private _dateChanged(ev: ValueChangedEvent<string>): void {
+    setInputDateTimeValue(
+      this._api.callService,
+      this.stateObj!.entity_id,
+      this.stateObj!.attributes.has_time
+        ? this.stateObj!.state.split(" ")[1]
+        : undefined,
+      ev.detail.value
+    );
+  }
+
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      --ha-input-padding-bottom: 0;
+      flex-wrap: wrap;
+    }
+    ha-date-input {
+      flex: 1 1 160px;
+    }
+    ha-date-input + ha-time-input {
+      margin-left: var(--ha-space-1);
+      margin-inline-start: var(--ha-space-1);
+      margin-inline-end: initial;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-input_datetime": MoreInfoInputDatetime;
+  }
+}

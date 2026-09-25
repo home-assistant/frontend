@@ -1,0 +1,1031 @@
+import type GlobalModel from "echarts/types/src/model/Global";
+import type SankeySeriesModel from "echarts/types/src/chart/sankey/SankeySeries";
+import type {
+  SankeyEdgeItemOption,
+  SankeyNodeItemOption,
+} from "echarts/types/src/chart/sankey/SankeySeries";
+import type { GraphNode, GraphEdge } from "echarts/types/src/data/Graph";
+import type ExtensionAPI from "echarts/types/src/core/ExtensionAPI";
+import { createBoxLayoutReference } from "echarts/lib/util/layout";
+import type { SankeyPathShape } from "./sankey-path";
+
+interface PassThroughNode {
+  passThrough: boolean;
+  id: string;
+  value: number;
+  depth: number;
+  sourceId: string;
+  targetId: string;
+}
+
+interface GraphLink extends GraphEdge {
+  passThroughNodeIds: string[];
+}
+
+type Node = GraphNode | PassThroughNode;
+
+interface SectionNode {
+  node: Node;
+  id: string;
+  value: number;
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  size: number;
+}
+
+export function isPassThroughNode(node: Node): node is PassThroughNode {
+  return "passThrough" in node;
+}
+
+const MIN_SIZE = 1;
+
+interface CoordinateSystem {
+  breadth: "x" | "y";
+  depth: "x" | "y";
+  breadthSize: "dx" | "dy";
+  depthSize: "dx" | "dy";
+}
+
+export function getCoordinateSystem(
+  orient: "vertical" | "horizontal"
+): CoordinateSystem {
+  return orient === "vertical"
+    ? { breadth: "x", depth: "y", breadthSize: "dx", depthSize: "dy" }
+    : { breadth: "y", depth: "x", breadthSize: "dy", depthSize: "dx" };
+}
+
+export default function sankeyLayout(ecModel: GlobalModel, _api: ExtensionAPI) {
+  ecModel.eachSeriesByType("sankey", ((seriesModel: SankeySeriesModel) => {
+    if (seriesModel.get("nodeAlign") !== "justify") {
+      // Only handle justify nodes for now
+      return;
+    }
+
+    const nodeWidth = seriesModel.get("nodeWidth")!;
+    const nodeGap = seriesModel.get("nodeGap")!;
+
+    const refContainer = createBoxLayoutReference(
+      seriesModel,
+      _api
+    ).refContainer;
+
+    const { width, height } = refContainer;
+
+    const graph = seriesModel.getGraph();
+
+    const nodes = graph.nodes;
+    const edges = graph.edges;
+
+    const orient = seriesModel.get("orient")!;
+
+    layoutSankey(nodes, edges, nodeWidth, nodeGap, width, height, orient);
+  }) as any);
+}
+
+function layoutSankey(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  nodeWidth: number,
+  nodeGap: number,
+  width: number,
+  height: number,
+  orient: "vertical" | "horizontal"
+) {
+  const filteredNodes = nodes.filter((node) => node.getLayout().value > 0);
+  const depths = [
+    ...new Set(
+      filteredNodes.map(
+        (n) =>
+          (n.hostGraph.data.getRawDataItem(n.dataIndex) as SankeyNodeItemOption)
+            .depth || 0
+      )
+    ),
+  ].sort();
+  const passThroughNodes = generatePassThroughNodes(depths, edges);
+  const processedNodes = processNodes(
+    filteredNodes,
+    passThroughNodes,
+    edges,
+    depths,
+    width,
+    height,
+    orient,
+    nodeGap
+  );
+  applyLayout(processedNodes, nodeWidth, orient);
+}
+
+export function getNodeDepthInfo(
+  node: GraphNode,
+  depths: number[]
+): { depth: number; depthIndex: number } {
+  const nodeItem = node.hostGraph.data.getRawDataItem(
+    node.dataIndex
+  ) as SankeyNodeItemOption;
+  const depth = nodeItem.depth || 0;
+  const depthIndex = depths.findIndex((i) => i === depth);
+  return { depth, depthIndex };
+}
+
+export function getEdgeValue(edge: GraphEdge): number {
+  const edgeItem = edge.hostGraph.edgeData.getRawDataItem(
+    edge.dataIndex
+  ) as SankeyEdgeItemOption;
+  return edgeItem.value as number;
+}
+
+export function getPassThroughSections(
+  sourceDepthIndex: number,
+  targetDepthIndex: number,
+  depths: number[]
+): number[] {
+  return depths.slice(sourceDepthIndex + 1, targetDepthIndex);
+}
+
+export function passThroughNodeId(
+  sourceId: string,
+  targetId: string,
+  depth: number
+): string {
+  return `${sourceId}-${targetId}-${depth}`;
+}
+
+export function createPassThroughNode(
+  sourceId: string,
+  targetId: string,
+  depth: number,
+  value: number
+): PassThroughNode {
+  return {
+    passThrough: true,
+    id: passThroughNodeId(sourceId, targetId, depth),
+    value,
+    depth,
+    sourceId,
+    targetId,
+  };
+}
+
+function processEdgeForPassThrough(
+  edge: GraphEdge,
+  depths: number[],
+  passThroughNodes: PassThroughNode[]
+): string[] {
+  if (edge.getLayout().value === 0) {
+    return [];
+  }
+
+  const sourceInfo = getNodeDepthInfo(edge.node1, depths);
+  const targetInfo = getNodeDepthInfo(edge.node2, depths);
+  const edgeValue = getEdgeValue(edge);
+
+  const passThroughSections = getPassThroughSections(
+    sourceInfo.depthIndex,
+    targetInfo.depthIndex,
+    depths
+  );
+
+  const sourceNode = edge.node1.hostGraph.data.getRawDataItem(
+    edge.node1.dataIndex
+  ) as SankeyNodeItemOption;
+  const targetNode = edge.node2.hostGraph.data.getRawDataItem(
+    edge.node2.dataIndex
+  ) as SankeyNodeItemOption;
+
+  const passThroughNodeIds = passThroughSections.map((depth) => {
+    const node = createPassThroughNode(
+      sourceNode.id as string,
+      targetNode.id as string,
+      depth,
+      edgeValue
+    );
+    passThroughNodes.push(node);
+    return node.id;
+  });
+
+  return passThroughNodeIds;
+}
+
+function generatePassThroughNodes(depths: number[], edges: GraphEdge[]) {
+  const passThroughNodes: PassThroughNode[] = [];
+
+  edges.forEach((edge) => {
+    const passThroughNodeIds = processEdgeForPassThrough(
+      edge,
+      depths,
+      passThroughNodes
+    );
+    const link = edge as GraphLink;
+    link.passThroughNodeIds = passThroughNodeIds;
+  });
+
+  return passThroughNodes;
+}
+
+export function groupNodesBySection(
+  nodes: GraphNode[],
+  passThroughNodes: PassThroughNode[]
+): Record<number, Node[]> {
+  const nodesPerSection: Record<number, Node[]> = {};
+
+  nodes.forEach((node) => {
+    const depth = node.getLayout().depth;
+    if (!nodesPerSection[depth]) {
+      nodesPerSection[depth] = [node];
+    } else {
+      nodesPerSection[depth].push(node);
+    }
+  });
+
+  passThroughNodes.forEach((node) => {
+    if (!nodesPerSection[node.depth]) {
+      nodesPerSection[node.depth] = [node];
+    } else {
+      nodesPerSection[node.depth].push(node);
+    }
+  });
+
+  return nodesPerSection;
+}
+
+interface WeightedNeighbor {
+  id: string;
+  weight: number;
+}
+
+type NeighborDirection = "source" | "target";
+
+function getNeighborIds(
+  node: Node,
+  direction: NeighborDirection,
+  referenceDepth: number,
+  depths: number[]
+): WeightedNeighbor[] {
+  // Passthroughs have one real source and target; the matching neighbor at
+  // referenceDepth is either the real node (when referenceDepth is that end's
+  // depth) or another passthrough in the same chain. We return both candidates
+  // and let the id-index map pick whichever exists.
+  if (isPassThroughNode(node)) {
+    const realEnd = direction === "source" ? node.sourceId : node.targetId;
+    return [
+      { id: realEnd, weight: node.value },
+      {
+        id: passThroughNodeId(node.sourceId, node.targetId, referenceDepth),
+        weight: node.value,
+      },
+    ];
+  }
+
+  const edges = direction === "source" ? node.inEdges : node.outEdges;
+  const results: WeightedNeighbor[] = [];
+  edges.forEach((edge) => {
+    const sourceItem = edge.node1.hostGraph.data.getRawDataItem(
+      edge.node1.dataIndex
+    ) as SankeyNodeItemOption;
+    const targetItem = edge.node2.hostGraph.data.getRawDataItem(
+      edge.node2.dataIndex
+    ) as SankeyNodeItemOption;
+    const neighborEnd = direction === "source" ? edge.node1 : edge.node2;
+    const neighborDepth = getNodeDepthInfo(neighborEnd, depths).depth;
+    const edgeValue = getEdgeValue(edge);
+
+    if (neighborDepth === referenceDepth) {
+      const neighborItem = direction === "source" ? sourceItem : targetItem;
+      results.push({ id: neighborItem.id as string, weight: edgeValue });
+      return;
+    }
+    const spansPastReference =
+      direction === "source"
+        ? neighborDepth < referenceDepth
+        : neighborDepth > referenceDepth;
+    if (spansPastReference) {
+      results.push({
+        id: passThroughNodeId(
+          sourceItem.id as string,
+          targetItem.id as string,
+          referenceDepth
+        ),
+        weight: edgeValue,
+      });
+    }
+  });
+  return results;
+}
+
+export function computeBarycenter(
+  neighbors: WeightedNeighbor[],
+  referenceIdIndexMap: Map<string, number>,
+  fallback: number
+): number {
+  let weightedSum = 0;
+  let totalWeight = 0;
+  neighbors.forEach(({ id, weight }) => {
+    const idx = referenceIdIndexMap.get(id);
+    if (idx !== undefined) {
+      weightedSum += idx * weight;
+      totalWeight += weight;
+    }
+  });
+  return totalWeight > 0 ? weightedSum / totalWeight : fallback;
+}
+
+// Index of the single highest-weight neighbor present in the reference
+// section (ties on weight broken by the earliest edge). Used only as a
+// barycenter tie-break so a node stays beside its dominant neighbor's group
+// instead of falling back to a stale seed index. Falls back to the node's own
+// index when it has no resolvable neighbor, matching computeBarycenter.
+export function dominantNeighborIndex(
+  neighbors: WeightedNeighbor[],
+  referenceIdIndexMap: Map<string, number>,
+  fallback: number
+): number {
+  let bestIdx = fallback;
+  let bestWeight = -Infinity;
+  neighbors.forEach(({ id, weight }) => {
+    const idx = referenceIdIndexMap.get(id);
+    if (idx !== undefined && weight > bestWeight) {
+      bestWeight = weight;
+      bestIdx = idx;
+    }
+  });
+  return bestIdx;
+}
+
+function buildIdIndexMap(section: Node[]): Map<string, number> {
+  const map = new Map<string, number>();
+  section.forEach((node, index) => map.set(node.id, index));
+  return map;
+}
+
+function sortSectionByBarycenter(
+  section: Node[],
+  referenceMap: Map<string, number>,
+  getNeighbors: (node: Node) => WeightedNeighbor[]
+): { sorted: Node[]; changed: boolean } {
+  const decorated = section.map((node, index) => {
+    const neighbors = getNeighbors(node);
+    return {
+      node,
+      index,
+      barycenter: computeBarycenter(neighbors, referenceMap, index),
+      // Tie-break that keeps a node next to its dominant neighbor's group.
+      anchor: dominantNeighborIndex(neighbors, referenceMap, index),
+    };
+  });
+  decorated.sort(
+    (a, b) =>
+      a.barycenter - b.barycenter || a.anchor - b.anchor || a.index - b.index
+  );
+  const sorted = decorated.map((d) => d.node);
+  const changed = sorted.some((n, idx) => n !== section[idx]);
+  return { sorted, changed };
+}
+
+interface EdgeSegment {
+  sourceIdx: number;
+  targetIdx: number;
+}
+
+function getEdgeSegmentsBetween(
+  depthL: number,
+  depthR: number,
+  depths: number[],
+  edges: GraphEdge[],
+  lMap: Map<string, number>,
+  rMap: Map<string, number>
+): EdgeSegment[] {
+  const segments: EdgeSegment[] = [];
+  edges.forEach((edge) => {
+    if (edge.getLayout().value === 0) return;
+    const sourceItem = edge.node1.hostGraph.data.getRawDataItem(
+      edge.node1.dataIndex
+    ) as SankeyNodeItemOption;
+    const targetItem = edge.node2.hostGraph.data.getRawDataItem(
+      edge.node2.dataIndex
+    ) as SankeyNodeItemOption;
+    const sourceDepth = getNodeDepthInfo(edge.node1, depths).depth;
+    const targetDepth = getNodeDepthInfo(edge.node2, depths).depth;
+    if (sourceDepth > depthL || targetDepth < depthR) return;
+    const sourceIdInL =
+      sourceDepth === depthL
+        ? (sourceItem.id as string)
+        : passThroughNodeId(
+            sourceItem.id as string,
+            targetItem.id as string,
+            depthL
+          );
+    const targetIdInR =
+      targetDepth === depthR
+        ? (targetItem.id as string)
+        : passThroughNodeId(
+            sourceItem.id as string,
+            targetItem.id as string,
+            depthR
+          );
+    const s = lMap.get(sourceIdInL);
+    const t = rMap.get(targetIdInR);
+    if (s !== undefined && t !== undefined) {
+      segments.push({ sourceIdx: s, targetIdx: t });
+    }
+  });
+  return segments;
+}
+
+function countCrossings(segments: EdgeSegment[]): number {
+  let crossings = 0;
+  for (let i = 0; i < segments.length; i++) {
+    for (let j = i + 1; j < segments.length; j++) {
+      const a = segments[i];
+      const b = segments[j];
+      if ((a.sourceIdx - b.sourceIdx) * (a.targetIdx - b.targetIdx) < 0) {
+        crossings++;
+      }
+    }
+  }
+  return crossings;
+}
+
+function crossingsAdjacentTo(
+  sectionIndex: number,
+  sections: Node[][],
+  sectionMaps: Map<string, number>[],
+  depths: number[],
+  edges: GraphEdge[]
+): number {
+  let total = 0;
+  if (sectionIndex > 0) {
+    total += countCrossings(
+      getEdgeSegmentsBetween(
+        depths[sectionIndex - 1],
+        depths[sectionIndex],
+        depths,
+        edges,
+        sectionMaps[sectionIndex - 1],
+        sectionMaps[sectionIndex]
+      )
+    );
+  }
+  if (sectionIndex < sections.length - 1) {
+    total += countCrossings(
+      getEdgeSegmentsBetween(
+        depths[sectionIndex],
+        depths[sectionIndex + 1],
+        depths,
+        edges,
+        sectionMaps[sectionIndex],
+        sectionMaps[sectionIndex + 1]
+      )
+    );
+  }
+  return total;
+}
+
+function countAllCrossings(
+  sections: Node[][],
+  sectionMaps: Map<string, number>[],
+  depths: number[],
+  edges: GraphEdge[]
+): number {
+  let total = 0;
+  for (let i = 0; i < sections.length - 1; i++) {
+    total += countCrossings(
+      getEdgeSegmentsBetween(
+        depths[i],
+        depths[i + 1],
+        depths,
+        edges,
+        sectionMaps[i],
+        sectionMaps[i + 1]
+      )
+    );
+  }
+  return total;
+}
+
+// A section is "multi-parent" when at least one of its real nodes draws from
+// two or more distinct parents in the previous section. In the energy/power/
+// water cards only the source/home layers do this (grid/solar/battery feed
+// home + battery_in + grid_return); every later section (floors, areas,
+// devices) is a pure single-parent tree level. Pass-throughs are always
+// single-parent (one source/target chain) and never make a section multi-parent.
+function sectionHasMultipleParents(
+  section: Node[],
+  prevDepth: number,
+  depths: number[]
+): boolean {
+  return section.some((node) => {
+    if (isPassThroughNode(node)) {
+      return false;
+    }
+    const parentIds = new Set(
+      getNeighborIds(node, "source", prevDepth, depths).map((n) => n.id)
+    );
+    return parentIds.size > 1;
+  });
+}
+
+// The head barycenter sweep (STEP 1) only touches the multi-parent head
+// sections (the single-parent tree below is placed deterministically in
+// STEP 2), so a single forward+backward pass converges in practice and the loop
+// early-exits on the first no-change sweep. The cap is just headroom for unusual
+// topologies with several interacting head sections.
+const MAX_SORT_ITERATIONS = 4;
+
+export function sortNodesInSections(
+  nodesPerSection: Record<number, Node[]>,
+  depths: number[],
+  edges: GraphEdge[]
+): Record<number, Node[]> {
+  const sections: Node[][] = depths.map((d) => [...(nodesPerSection[d] || [])]);
+  // Id→index lookup per section, kept in sync with sections.
+  const sectionMaps: Map<string, number>[] = sections.map(buildIdIndexMap);
+
+  // Classify each section past the root. Multi-parent sections (the
+  // intentionally-ordered source/home layers) are minimized by barycenter in
+  // PASS 2; the rest are single-parent tree levels placed deterministically in
+  // PASS 1. Classification reads only the graph, so it is stable across passes.
+  const multiParent = depths.map(
+    (_d, i) =>
+      i >= 1 && sectionHasMultipleParents(sections[i], depths[i - 1], depths)
+  );
+
+  // Best (fewest-crossing) head ordering seen so far, seeded from the original
+  // input so the head is provably never worse than the seed.
+  const snapshot = (): Node[][] => sections.map((s) => s.slice());
+  let liveCrossings = countAllCrossings(sections, sectionMaps, depths, edges);
+  let bestCrossings = liveCrossings;
+  let bestSections = snapshot();
+
+  // Replace a multi-parent section with a candidate ordering when crossings on
+  // its adjacent boundaries do not increase. Accepting equal-crossing
+  // ("plateau") moves lets the sweep escape local optima; the best snapshot
+  // (captured only on a strict global decrease) is what seeds the head order,
+  // so the result is deterministic and never worse than the seed.
+  const tryReplace = (i: number, candidate: Node[]): boolean => {
+    const before = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
+    const sectionSnapshot = sections[i];
+    const mapSnapshot = sectionMaps[i];
+    sections[i] = candidate;
+    sectionMaps[i] = buildIdIndexMap(candidate);
+    const after = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
+    if (after <= before) {
+      liveCrossings += after - before;
+      if (liveCrossings < bestCrossings) {
+        bestCrossings = liveCrossings;
+        bestSections = snapshot();
+      }
+      return true;
+    }
+    sections[i] = sectionSnapshot;
+    sectionMaps[i] = mapSnapshot;
+    return false;
+  };
+
+  // STEP 1 — settle the multi-parent head sections (sources → home/battery_in/
+  // grid_return) by barycenter. These layers have nodes with several parents and
+  // so no single parent position to inherit; we minimize their crossings by the
+  // weighted average of neighbour positions, iterating forward then backward
+  // until the order is stable. The backward sweep is restricted to multi-parent
+  // neighbours, so the head order never depends on its single-parent children —
+  // that is what keeps the whole result idempotent, because STEP 2 re-derives
+  // those children purely from the settled head. The root section (index 0) is
+  // never reordered.
+  if (multiParent.some(Boolean)) {
+    for (let iter = 0; iter < MAX_SORT_ITERATIONS; iter++) {
+      let changed = false;
+
+      for (let i = 1; i < sections.length; i++) {
+        if (!multiParent[i]) {
+          continue;
+        }
+        const prevDepth = depths[i - 1];
+        const result = sortSectionByBarycenter(
+          sections[i],
+          sectionMaps[i - 1],
+          (node) => getNeighborIds(node, "source", prevDepth, depths)
+        );
+        if (result.changed && tryReplace(i, result.sorted)) {
+          changed = true;
+        }
+      }
+
+      for (let i = sections.length - 2; i >= 1; i--) {
+        if (!multiParent[i] || !multiParent[i + 1]) {
+          continue;
+        }
+        const nextDepth = depths[i + 1];
+        const result = sortSectionByBarycenter(
+          sections[i],
+          sectionMaps[i + 1],
+          (node) => getNeighborIds(node, "target", nextDepth, depths)
+        );
+        if (result.changed && tryReplace(i, result.sorted)) {
+          changed = true;
+        }
+      }
+
+      if (!changed || bestCrossings === 0) break;
+    }
+  }
+
+  // STEP 2 — deterministic hierarchy placement. Starting from the best head
+  // ordering, walk left to right and order every single-parent section by the
+  // position of each node's single parent in the already-final previous section
+  // (sortSectionByBarycenter with one parent reduces to a stable sort by that
+  // parent's index). This is the classic layered-tree drawing: each parent's
+  // children stay contiguous, every single-parent boundary is crossing-free,
+  // pass-throughs travel along their chain, and the user-configured floor/area
+  // order is preserved because same-parent siblings keep their seed index.
+  // It runs unconditionally — grouping a parent's children under it must win
+  // even on a crossing-neutral plateau (the #52852 fix) — and because it is a
+  // pure function of the settled head, re-running yields the identical layout.
+  const finalSections = bestSections.map((s) => s.slice());
+  const finalMaps = finalSections.map(buildIdIndexMap);
+  for (let i = 1; i < finalSections.length; i++) {
+    if (multiParent[i]) {
+      continue;
+    }
+    const prevDepth = depths[i - 1];
+    const { sorted } = sortSectionByBarycenter(
+      finalSections[i],
+      finalMaps[i - 1],
+      (node) => getNeighborIds(node, "source", prevDepth, depths)
+    );
+    finalSections[i] = sorted;
+    finalMaps[i] = buildIdIndexMap(sorted);
+  }
+
+  // Hierarchy placement makes every single-parent boundary crossing-free, so on
+  // the energy/water cards (multi-parent only at the head) it can only lower the
+  // total. Guard the general graph: if regrouping somehow raised crossings (only
+  // possible for a multi-parent section sitting *below* single-parent ones,
+  // which the cards never produce), fall back to the gated best head so the
+  // never-worse-than-seed guarantee always holds. Ties keep the grouped layout.
+  const finalCrossings = countAllCrossings(
+    finalSections,
+    finalMaps,
+    depths,
+    edges
+  );
+  const chosen = finalCrossings <= bestCrossings ? finalSections : bestSections;
+
+  const sortedSections: Record<number, Node[]> = {};
+  depths.forEach((depth, i) => {
+    sortedSections[depth] = chosen[i];
+  });
+  return sortedSections;
+}
+
+export function createSectionNodes(nodes: Node[]): SectionNode[] {
+  return nodes.map((node: Node): SectionNode => ({
+    node,
+    id: node.id,
+    value: isPassThroughNode(node) ? node.value : node.getLayout().value,
+    x: 0,
+    y: 0,
+    dx: 0,
+    dy: 0,
+    size: 0,
+  }));
+}
+
+export function calculateSectionDimensions(
+  orient: "vertical" | "horizontal",
+  width: number,
+  height: number,
+  depths: number[],
+  nodeGap: number
+) {
+  const sectionSize = (orient === "vertical" ? width : height) - nodeGap * 2;
+  const sectionDepthSize =
+    orient === "vertical" ? height / depths.length : width / depths.length;
+
+  return { sectionSize, sectionDepthSize };
+}
+
+/**
+ * Basically does `align-items: space-around`
+ * @param {{ nodes: SectionNode[]; depth: number; totalValue: number; valueToSizeRatio: number; }} section - The section to position nodes in
+ * @param {number} index - The index of the section
+ * @param {number} sectionSize - The size of the section
+ * @param {number} sectionDepthSize - The depth size of the section
+ * @param {number} globalValueToSizeRatio - The global value to size ratio
+ * @param {"vertical" | "horizontal"} orient - The orientation of the section (vertical or horizontal)
+ * @returns {void}
+ */
+function positionNodesInSection(
+  section: {
+    nodes: SectionNode[];
+    depth: number;
+    totalValue: number;
+    valueToSizeRatio: number;
+  },
+  index: number,
+  sectionSize: number,
+  sectionDepthSize: number,
+  globalValueToSizeRatio: number,
+  orient: "vertical" | "horizontal"
+) {
+  let totalSize = 0;
+
+  if (section.valueToSizeRatio !== globalValueToSizeRatio) {
+    section.nodes.forEach((node) => {
+      const size = Math.max(
+        MIN_SIZE,
+        Math.floor(node.value / globalValueToSizeRatio)
+      );
+      totalSize += size;
+      node.size = size;
+    });
+  } else {
+    totalSize = section.nodes.reduce((sum, node) => sum + node.size, 0);
+  }
+
+  const emptySpace = sectionSize - totalSize;
+  let offset = emptySpace / (section.nodes.length + 1);
+
+  section.nodes.forEach((node) => {
+    if (orient === "vertical") {
+      node.x = offset;
+      node.y = index * sectionDepthSize;
+    } else {
+      node.x = index * sectionDepthSize;
+      node.y = offset;
+    }
+    offset += node.size + emptySpace / (section.nodes.length + 1);
+  });
+}
+
+function processNodes(
+  nodes: GraphNode[],
+  passThroughNodes: PassThroughNode[],
+  edges: GraphEdge[],
+  depths: number[],
+  width: number,
+  height: number,
+  orient: "vertical" | "horizontal",
+  nodeGap: number
+) {
+  const { sectionSize, sectionDepthSize } = calculateSectionDimensions(
+    orient,
+    width,
+    height,
+    depths,
+    nodeGap
+  );
+
+  const nodesPerSection = groupNodesBySection(nodes, passThroughNodes);
+  const sortedNodesPerSection = sortNodesInSections(
+    nodesPerSection,
+    depths,
+    edges
+  );
+  let globalValueToSizeRatio = 0;
+
+  const sections = depths.map((depth) => {
+    const sectionNodes = createSectionNodes(sortedNodesPerSection[depth] || []);
+    const availableSpace = sectionSize - (sectionNodes.length + 1) * nodeGap;
+    const totalValue = sectionNodes.reduce(
+      (acc: number, node: SectionNode) => acc + node.value,
+      0
+    );
+    const { nodes: sizedNodes, valueToSizeRatio: sectionValueToSizeRatio } =
+      setNodeSizes(
+        sectionNodes,
+        availableSpace,
+        totalValue,
+        globalValueToSizeRatio
+      );
+
+    if (sectionValueToSizeRatio > globalValueToSizeRatio) {
+      globalValueToSizeRatio = sectionValueToSizeRatio;
+    }
+
+    return {
+      nodes: sizedNodes,
+      depth,
+      totalValue,
+      valueToSizeRatio: sectionValueToSizeRatio,
+    };
+  });
+
+  sections.forEach((section, index) => {
+    positionNodesInSection(
+      section,
+      index,
+      sectionSize,
+      sectionDepthSize,
+      globalValueToSizeRatio,
+      orient
+    );
+  });
+
+  return sections.flatMap((section) => section.nodes);
+}
+
+export function setNodeSizes(
+  nodes: SectionNode[],
+  availableSpace: number,
+  totalValue: number,
+  prevValueToSizeRatio = 0
+): { nodes: SectionNode[]; valueToSizeRatio: number } {
+  let valueToSizeRatio = totalValue / availableSpace;
+  if (valueToSizeRatio < prevValueToSizeRatio) {
+    valueToSizeRatio = prevValueToSizeRatio;
+  }
+  let deficitHeight = 0;
+  const result = nodes.map((node) => {
+    if (node.size === MIN_SIZE) {
+      return node;
+    }
+    let size = Math.floor(node.value / valueToSizeRatio);
+    if (size < MIN_SIZE) {
+      deficitHeight += MIN_SIZE - size;
+      size = MIN_SIZE;
+    }
+    return {
+      ...node,
+      size,
+    };
+  });
+  if (deficitHeight > 0) {
+    return setNodeSizes(
+      result,
+      availableSpace - deficitHeight,
+      totalValue,
+      valueToSizeRatio
+    );
+  }
+  return { nodes: result, valueToSizeRatio };
+}
+
+function applyNodeDimensions(
+  nodes: SectionNode[],
+  nodeWidth: number,
+  coords: CoordinateSystem
+) {
+  nodes.forEach((node) => {
+    node[coords.breadthSize] = node.size;
+    node[coords.depthSize] = nodeWidth;
+    if (isPassThroughNode(node.node)) {
+      return;
+    }
+    node.node.setLayout(
+      { x: node.x, y: node.y, dx: node.dx, dy: node.dy },
+      true
+    );
+  });
+}
+
+function applyEdgeSizes(nodes: SectionNode[], coords: CoordinateSystem) {
+  nodes.forEach((node) => {
+    if (isPassThroughNode(node.node)) {
+      return;
+    }
+    node.node.outEdges.forEach((edge) => {
+      const edgeItem = edge.hostGraph.edgeData.getRawDataItem(
+        edge.dataIndex
+      ) as SankeyEdgeItemOption;
+      const edgeSize = ((edgeItem.value as number) / node.value) * node.size;
+      edge.setLayout(
+        { [coords.breadthSize]: edgeSize, [coords.depthSize]: 0 },
+        true
+      );
+    });
+  });
+}
+
+function sortEdgesByTargetPosition(
+  nodes: SectionNode[],
+  coords: CoordinateSystem
+) {
+  nodes.forEach((node) => {
+    if (isPassThroughNode(node.node)) {
+      return;
+    }
+    node.node.outEdges.sort(
+      (a, b) =>
+        a.node2.getLayout()[coords.breadth] -
+        b.node2.getLayout()[coords.breadth]
+    );
+    node.node.inEdges.sort(
+      (a, b) =>
+        a.node1.getLayout()[coords.breadth] -
+        b.node1.getLayout()[coords.breadth]
+    );
+  });
+}
+
+function generatePassThroughPoints(
+  edge: GraphLink,
+  nodes: SectionNode[],
+  orient: "vertical" | "horizontal",
+  curveType: "curveVertical" | "curveHorizontal"
+): SankeyPathShape["targets"] {
+  const passthroughPoints: SankeyPathShape["targets"] = [];
+
+  edge.passThroughNodeIds.forEach((nodeId) => {
+    const passthroughNode = nodes.find((n) => n.id === nodeId)!;
+    passthroughPoints.push({
+      x: passthroughNode.x,
+      y: passthroughNode.y,
+      type: curveType,
+    });
+
+    if (orient === "vertical") {
+      passthroughPoints.push({
+        x: passthroughNode.x,
+        y: passthroughNode.y + passthroughNode.dy,
+        type: "line",
+      });
+    } else {
+      passthroughPoints.push({
+        x: passthroughNode.x + passthroughNode.dx,
+        y: passthroughNode.y,
+        type: "line",
+      });
+    }
+  });
+
+  return passthroughPoints;
+}
+
+function positionOutEdges(
+  node: SectionNode,
+  orient: "vertical" | "horizontal",
+  coords: CoordinateSystem
+) {
+  if (isPassThroughNode(node.node)) {
+    return;
+  }
+  let offset = 0;
+  node.node.outEdges.forEach((edge) => {
+    edge.setLayout(
+      {
+        x: orient === "vertical" ? node.x + offset : node.x + node.dx,
+        y: orient === "vertical" ? node.y + node.dy : node.y + offset,
+      },
+      true
+    );
+    offset += edge.getLayout()[coords.breadthSize];
+  });
+}
+
+function positionInEdges(
+  node: SectionNode,
+  nodes: SectionNode[],
+  orient: "vertical" | "horizontal",
+  coords: CoordinateSystem,
+  curveType: "curveVertical" | "curveHorizontal"
+) {
+  if (isPassThroughNode(node.node)) {
+    return;
+  }
+  let offset = 0;
+  node.node.inEdges.forEach((edge) => {
+    const passthroughPoints = generatePassThroughPoints(
+      edge as GraphLink,
+      nodes,
+      orient,
+      curveType
+    );
+
+    edge.setLayout(
+      {
+        targets: [
+          ...passthroughPoints,
+          {
+            x: orient === "vertical" ? node.x + offset : node.x,
+            y: orient === "vertical" ? node.y : node.y + offset,
+            type: curveType,
+          },
+        ] as SankeyPathShape["targets"],
+      },
+      true
+    );
+    offset += edge.getLayout()[coords.breadthSize];
+  });
+}
+
+function applyLayout(
+  nodes: SectionNode[],
+  nodeWidth: number,
+  orient: "vertical" | "horizontal"
+) {
+  const coords = getCoordinateSystem(orient);
+  const curveType = orient === "vertical" ? "curveVertical" : "curveHorizontal";
+
+  applyNodeDimensions(nodes, nodeWidth, coords);
+  applyEdgeSizes(nodes, coords);
+  sortEdgesByTargetPosition(nodes, coords);
+
+  nodes.forEach((node) => {
+    if (isPassThroughNode(node.node)) {
+      return;
+    }
+    positionOutEdges(node, orient, coords);
+    positionInEdges(node, nodes, orient, coords, curveType);
+  });
+}

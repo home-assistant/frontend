@@ -1,0 +1,54 @@
+import { deleteSync } from "del";
+import gulp from "gulp";
+import paths from "../paths.cjs";
+import "./translations.js";
+
+gulp.task(
+  "clean",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.app_output_root, paths.build_dir])
+  )
+);
+
+gulp.task(
+  "clean-demo",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.demo_output_root, paths.build_dir])
+  )
+);
+
+gulp.task(
+  "clean-cast",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.cast_output_root, paths.build_dir])
+  )
+);
+
+gulp.task(
+  "clean-gallery",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([
+      paths.gallery_output_root,
+      paths.gallery_build,
+      paths.build_dir,
+    ])
+  )
+);
+
+gulp.task(
+  "clean-landing-page",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([
+      paths.landingPage_output_root,
+      paths.landingPage_build,
+      paths.build_dir,
+    ])
+  )
+);
+
+gulp.task(
+  "clean-e2e-test-app",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.e2eTestApp_output_root, paths.build_dir])
+  )
+);

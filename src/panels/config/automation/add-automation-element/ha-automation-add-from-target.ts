@@ -1,0 +1,1682 @@
+import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import "@home-assistant/webawesome/dist/components/tree/tree";
+import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
+import { consume, type ContextType } from "@lit/context";
+import { mdiTextureBox } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
+import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/ha-floor-icon";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-next";
+import "../../../../components/ha-section-title";
+import "../../../../components/ha-state-icon";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/item/ha-row-item";
+import "../../../../components/list/ha-list-base";
+import { getAreaEntityLookup } from "../../../../data/area/area_registry";
+import {
+  getAreasNestedInFloors,
+  type AreaFloorValue,
+  type FloorComboBoxItem,
+  type FloorNestedComboBoxItem,
+  type UnassignedAreasFloorComboBoxItem,
+} from "../../../../data/area_floor_picker";
+import {
+  getConfigEntries,
+  type ConfigEntry,
+} from "../../../../data/config_entries";
+import {
+  internationalizationContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
+import {
+  getDeviceEntityLookup,
+  type DeviceRegistryEntry,
+} from "../../../../data/device/device_registry";
+import {
+  domainToName,
+  type DomainManifestLookup,
+} from "../../../../data/integration";
+import { getLabels } from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import {
+  TARGET_SEPARATOR,
+  type SingleHassServiceTarget,
+} from "../../../../data/target";
+import type { HomeAssistant } from "../../../../types";
+import { brandsUrl } from "../../../../util/brands-url";
+import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
+import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+import "./ha-automation-add-element-paste";
+
+interface Level1Entries {
+  open: boolean;
+  areas?: Record<string, Level2Entries>;
+  devices?: Record<string, Level3Entries>;
+}
+
+interface Level2Entries {
+  open: boolean;
+  devices: Record<string, Level3Entries>;
+  entities: string[];
+}
+
+interface Level3Entries {
+  open: boolean;
+  entities: string[];
+  devices?: Record<string, Level3Entries>;
+}
+
+@customElement("ha-automation-add-from-target")
+export default class HaAutomationAddFromTarget extends LitElement {
+  // #region properties
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false })
+  public value?: SingleHassServiceTarget;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public manifests?: DomainManifestLookup;
+
+  // Section title + group rows (Time, Location) for the targetless element
+  // groups. Picking a row drills into that group's items, just like selecting
+  // the matching group in the "by type" tab.
+  @property({ attribute: false }) public timeLocationLabel?: string;
+
+  @property({ attribute: false })
+  public timeLocationGroups?: AddAutomationElementListItem[];
+
+  @property({ attribute: false }) public selectedGroup?: string;
+
+  @property({ attribute: false }) public clipboardItem?: string;
+
+  @property({ attribute: "automation-element-type" })
+  public automationElementType!: AddAutomationElementDialogParams["type"];
+
+  // #endregion properties
+
+  // #region context
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private states!: ContextType<typeof statesContext>;
+
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  private _labelRegistry!: LabelRegistryEntry[];
+  // #endregion context
+
+  // #region state and variables
+
+  @state()
+  private _floorAreas: (
+    FloorNestedComboBoxItem | UnassignedAreasFloorComboBoxItem
+  )[] = [];
+
+  @state() private _entries: Record<string, Level1Entries> = {};
+
+  @state() private _showShowMoreButton?: boolean;
+
+  @state() private _fullHeight = false;
+
+  private _configEntryLookup: Record<string, ConfigEntry> = {};
+
+  // #endregion state and variables
+
+  // #region lifecycle
+
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._initialDataLoad();
+    }
+
+    if (changedProps.has("value") || changedProps.has("narrow")) {
+      this._fullHeight =
+        !this.narrow || !this.value || !Object.values(this.value)[0];
+      this.style.setProperty("--max-height", this._fullHeight ? "none" : "50%");
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    if (
+      changedProps.has("value") ||
+      changedProps.has("narrow") ||
+      this._showShowMoreButton === undefined
+    ) {
+      this._setShowTargetShowMoreButton();
+    }
+  }
+
+  private async _initialDataLoad() {
+    await this._loadConfigEntries();
+    this._getTreeData();
+  }
+
+  private async _setShowTargetShowMoreButton() {
+    await this.updateComplete;
+    this._showShowMoreButton =
+      this.narrow &&
+      this.value &&
+      !!Object.values(this.value)[0] &&
+      this.scrollHeight > this.clientHeight;
+  }
+
+  // #endregion lifecycle
+
+  // #region render
+  protected render() {
+    if (!this.manifests || !this._configEntryLookup) {
+      return nothing;
+    }
+
+    return html`
+      ${
+        this.narrow && this.value
+          ? this._renderNarrow(this._entries, this.value)
+          : html`
+              <ha-list-base>
+                <ha-automation-add-element-paste
+                  .automationElementType=${this.automationElementType}
+                  .clipboardItem=${this.clipboardItem}
+                ></ha-automation-add-element-paste>
+              </ha-list-base>
+              ${this._renderFloors(this.narrow, this._entries, this.value)}
+              ${this._renderTimeLocation(
+                this.narrow,
+                this.timeLocationLabel,
+                this.timeLocationGroups,
+                this.selectedGroup
+              )}
+              ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+              ${this._renderLabels(
+                this.narrow,
+                this.states,
+                this._registries,
+                this._labelRegistry,
+                this.value
+              )}
+            `
+      }
+      ${
+        this.narrow && this._showShowMoreButton && !this._fullHeight
+          ? html`
+              <div class="targets-show-more">
+                <ha-button appearance="filled" @click=${this._expandHeight}>
+                  ${this._i18n.localize(
+                    "ui.panel.config.automation.editor.show_more"
+                  )}
+                </ha-button>
+              </div>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  private _renderNarrow = memoizeOne(
+    (
+      entries: Record<string, Level1Entries>,
+      value: SingleHassServiceTarget
+    ) => {
+      const [valueTypeId, valueId] = Object.entries(value)[0];
+      const valueType = valueTypeId.replace("_id", "");
+
+      if (!valueType || valueType === "label") {
+        return nothing;
+      }
+
+      // floor areas, unassigned areas
+      if (valueType === "floor") {
+        return this._renderAreas(
+          entries[`floor${TARGET_SEPARATOR}${valueId ?? ""}`].areas!
+        );
+      }
+
+      if (valueType === "area" && valueId) {
+        const floor =
+          entries[
+            `floor${TARGET_SEPARATOR}${this._registries.areas[valueId]?.floor_id || ""}`
+          ];
+        const { devices, entities } =
+          floor.areas![`area${TARGET_SEPARATOR}${valueId}`];
+        const numberOfDevices = Object.keys(devices).length;
+
+        return html`
+          ${numberOfDevices ? this._renderDevices(devices) : nothing}
+          ${entities.length ? this._renderEntities(entities) : nothing}
+        `;
+      }
+
+      if ((!valueId && valueType === "area") || valueType === "service") {
+        const floor = entries[`${valueType}${TARGET_SEPARATOR}`];
+        const devices = floor.devices!;
+
+        return this._renderDevices(devices);
+      }
+
+      if (valueId && valueType === "device") {
+        const entry = this._getDeviceEntry(entries, valueId);
+        if (!entry) {
+          return nothing;
+        }
+        const numberOfDevices = Object.keys(entry.devices ?? {}).length;
+        return html`
+          ${numberOfDevices ? this._renderDevices(entry.devices!) : nothing}
+          ${
+            entry.entities.length
+              ? this._renderEntities(entry.entities)
+              : nothing
+          }
+        `;
+      }
+
+      if (valueType === "device" || valueType === "helper") {
+        const { devices } = entries[`${valueType}${TARGET_SEPARATOR}`];
+        return this._renderDomains(
+          devices!,
+          valueType === "device" ? "entity_" : "helper_"
+        );
+      }
+
+      if (
+        !valueId &&
+        (valueType.startsWith("entity") || valueType.startsWith("helper"))
+      ) {
+        const { entities } =
+          entries[
+            `${valueType.startsWith("entity") ? "device" : "helper"}${TARGET_SEPARATOR}`
+          ].devices![`${valueType}${TARGET_SEPARATOR}`];
+        return this._renderEntities(entities);
+      }
+
+      return nothing;
+    }
+  );
+
+  private _renderFloors = memoizeOne(
+    (
+      narrow: boolean,
+      entries: Record<string, Level1Entries>,
+      value?: SingleHassServiceTarget
+    ) => {
+      const emptyFloors =
+        !this._floorAreas.length ||
+        (!this._floorAreas[0].id && !this._floorAreas[0].areas.length);
+
+      const floorAreas = emptyFloors
+        ? undefined
+        : this._floorAreas.map((floor, index) => {
+            const floorEntry = entries[floor.id || `floor${TARGET_SEPARATOR}`];
+            return index === 0 && !floor.id
+              ? this._renderAreas(floorEntry.areas!)
+              : this._renderItem(
+                  !floor.id
+                    ? this._i18n.localize(
+                        "ui.panel.config.automation.editor.other_areas"
+                      )
+                    : floor.primary,
+                  floor.id || `floor${TARGET_SEPARATOR}`,
+                  !floor.id,
+                  !!floor.id && this._getSelectedTargetId(value) === floor.id,
+                  !floorEntry.open && !!Object.keys(floorEntry.areas!).length,
+                  floorEntry.open,
+                  this._renderFloorIcon(floor as FloorNestedComboBoxItem),
+                  floorEntry.open
+                    ? this._renderAreas(floorEntry.areas!)
+                    : undefined
+                );
+          });
+
+      return html`${
+        !narrow || (this._floorAreas.length >= 1 && this._floorAreas[0].id)
+          ? html`<ha-section-title
+              >${this._i18n.localize(
+                "ui.panel.config.automation.editor.home"
+              )}</ha-section-title
+            >`
+          : nothing
+      }
+      ${
+        emptyFloors
+          ? html`<ha-row-item>
+              <div slot="headline">
+                ${this._i18n.localize("ui.components.area-picker.no_areas")}
+              </div>
+            </ha-row-item>`
+          : html`${
+              narrow
+                ? html`<ha-list-base>${floorAreas}</ha-list-base>`
+                : html`<wa-tree
+                    @wa-selection-change=${this._handleSelectionChange}
+                    @dblclick=${this._handleDoubleClick}
+                    >${floorAreas}</wa-tree
+                  >`
+            }`
+      }`;
+    }
+  );
+
+  private _renderTimeLocation = memoizeOne(
+    (
+      narrow: boolean,
+      label?: string,
+      groups?: AddAutomationElementListItem[],
+      selectedGroup?: string
+    ) => {
+      if (!label || !groups?.length) {
+        return nothing;
+      }
+
+      return html`<ha-section-title>${label}</ha-section-title>
+        <ha-list-base>
+          ${groups.map(
+            (group) =>
+              html`<ha-list-item-button
+                .value=${group.key}
+                @click=${this._selectTimeLocationGroup}
+                class=${group.key === selectedGroup ? "selected" : ""}
+              >
+                ${
+                  group.icon
+                    ? html`<span slot="start">${group.icon}</span>`
+                    : group.iconPath
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${group.iconPath}
+                        ></ha-svg-icon>`
+                      : nothing
+                }
+                <div slot="headline">${group.name}</div>
+                ${
+                  narrow
+                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                    : nothing
+                }
+              </ha-list-item-button>`
+          )}
+        </ha-list-base>`;
+    }
+  );
+
+  private _renderLabels = memoizeOne(
+    (
+      narrow: boolean,
+      states: ContextType<typeof statesContext>,
+      registries: ContextType<typeof registriesContext>,
+      labelRegistry: LabelRegistryEntry[],
+      value?: SingleHassServiceTarget
+    ) => {
+      const labels = this._getLabelsMemoized(
+        states,
+        registries.areas,
+        registries.devices,
+        registries.entities,
+        labelRegistry,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        `label${TARGET_SEPARATOR}`
+      );
+
+      if (!labels.length) {
+        return nothing;
+      }
+
+      return html`<ha-section-title
+          >${this._i18n.localize(
+            "ui.components.label-picker.labels"
+          )}</ha-section-title
+        >
+        <ha-list-base>
+          ${labels.map(
+            (label) =>
+              html`<ha-list-item-button
+                .target=${label.id}
+                @click=${this._selectItem}
+                class=${
+                  this._getSelectedTargetId(value) === label.id
+                    ? "selected"
+                    : ""
+                }
+                >${
+                  label.icon
+                    ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
+                    : label.icon_path
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${label.icon_path}
+                        ></ha-svg-icon>`
+                      : nothing
+                }
+                <div slot="headline">${label.primary}</div>
+                ${
+                  narrow
+                    ? html`<ha-icon-next slot="end"></ha-icon-next> `
+                    : nothing
+                }
+              </ha-list-item-button>`
+          )}
+        </ha-list-base>`;
+    }
+  );
+
+  private _renderUnassigned = memoizeOne(
+    (
+      narrow: boolean,
+      entries: Record<string, Level1Entries>,
+      _value?: SingleHassServiceTarget
+    ) => {
+      const unassignedDevicesLength = Object.keys(
+        entries[`area${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+      const unassignedServicesLength = Object.keys(
+        entries[`service${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+      const unassignedEntitiesLength = Object.keys(
+        entries[`device${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+      const unassignedHelpersLength = Object.keys(
+        entries[`helper${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+
+      if (
+        !unassignedDevicesLength &&
+        !unassignedServicesLength &&
+        !unassignedEntitiesLength &&
+        !unassignedHelpersLength
+      ) {
+        return nothing;
+      }
+
+      const items: TemplateResult[] = [];
+
+      if (unassignedEntitiesLength) {
+        const entry = entries[`device${TARGET_SEPARATOR}`];
+        items.push(
+          this._renderItem(
+            this._i18n.localize("ui.components.target-picker.type.entities"),
+            `device${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !entry.open,
+            entry.open,
+            undefined,
+            entry.open
+              ? this._renderDomains(entry.devices!, "entity_")
+              : undefined
+          )
+        );
+      }
+
+      if (unassignedHelpersLength) {
+        const entry = entries[`helper${TARGET_SEPARATOR}`];
+        items.push(
+          this._renderItem(
+            this._i18n.localize("ui.panel.config.automation.editor.helpers"),
+            `helper${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !entry.open,
+            entry.open,
+            undefined,
+            entry.open
+              ? this._renderDomains(entry.devices!, "helper_")
+              : undefined
+          )
+        );
+      }
+
+      if (unassignedDevicesLength) {
+        const entry = entries[`area${TARGET_SEPARATOR}`];
+        items.push(
+          this._renderItem(
+            this._i18n.localize("ui.components.target-picker.type.devices"),
+            `area${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !entry.open,
+            entry.open,
+            undefined,
+            entry.open ? this._renderDevices(entry.devices!) : undefined
+          )
+        );
+      }
+
+      if (unassignedServicesLength) {
+        const entry = entries[`service${TARGET_SEPARATOR}`];
+        items.push(
+          this._renderItem(
+            this._i18n.localize("ui.panel.config.automation.editor.services"),
+            `service${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !entry.open,
+            entry.open,
+            undefined,
+            entry.open ? this._renderDevices(entry.devices!) : undefined
+          )
+        );
+      }
+
+      return html`<ha-section-title
+          >${this._i18n.localize(
+            "ui.panel.config.automation.editor.unassigned"
+          )}</ha-section-title
+        >${
+          narrow
+            ? html`<ha-list-base>${items}</ha-list-base>`
+            : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
+                ${items}
+              </wa-tree>`
+        } `;
+    }
+  );
+
+  private _renderAreas(areas: Record<string, Level2Entries>) {
+    const renderedAreas = Object.keys(areas)
+      .filter((areaTargetId) => {
+        const [, areaId] = areaTargetId.split(TARGET_SEPARATOR, 2);
+        return this._registries.areas[areaId];
+      })
+      .map((areaTargetId) => {
+        const [, areaId] = areaTargetId.split(TARGET_SEPARATOR, 2);
+        const area = this._registries.areas[areaId];
+        return [
+          areaTargetId,
+          computeAreaName(area) || area.area_id,
+          area.floor_id || undefined,
+          area.icon,
+        ] as [string, string, string | undefined, string | undefined];
+      })
+      .map(([areaTargetId, areaName, floorId, areaIcon]) => {
+        const { open, devices, entities } =
+          this._entries[`floor${TARGET_SEPARATOR}${floorId || ""}`].areas![
+            areaTargetId
+          ];
+        const numberOfDevices = Object.keys(devices).length;
+        const numberOfItems = numberOfDevices + entities.length;
+
+        return this._renderItem(
+          areaName,
+          areaTargetId,
+          false,
+          this._getSelectedTargetId(this.value) === areaTargetId,
+          !open && !!numberOfItems,
+          open,
+          this._renderAreaIcon(areaIcon),
+          open
+            ? html`
+                ${numberOfDevices ? this._renderDevices(devices) : nothing}
+                ${entities.length ? this._renderEntities(entities) : nothing}
+              `
+            : undefined
+        );
+      });
+
+    if (this.narrow) {
+      return html`<ha-section-title
+          >${this._i18n.localize(
+            "ui.components.target-picker.type.areas"
+          )}</ha-section-title
+        >
+        <ha-list-base>${renderedAreas}</ha-list-base>`;
+    }
+
+    return renderedAreas;
+  }
+
+  private _renderDevices(devices: Record<string, Level3Entries>) {
+    const renderedDevices = Object.keys(devices)
+      .filter((deviceId) => this._registries.devices[deviceId])
+      .map((deviceId) => {
+        const device = this._registries.devices[deviceId];
+        const configEntry = device.primary_config_entry
+          ? this._configEntryLookup?.[device.primary_config_entry]
+          : undefined;
+        const domain = configEntry?.domain;
+
+        const deviceName = computeDeviceName(device) || deviceId;
+
+        return [deviceId, deviceName, domain] as [
+          string,
+          string | undefined,
+          string | undefined,
+        ];
+      })
+      .sort(([, deviceNameA = "zzz"], [, deviceNameB = "zzz"]) =>
+        stringCompare(deviceNameA, deviceNameB, this.hass.locale.language)
+      )
+      .map(([deviceId, deviceName, domain]) => {
+        const { open, entities, devices: children } = devices[deviceId];
+        const numberOfChildren = Object.keys(children ?? {}).length;
+
+        return this._renderItem(
+          deviceName || deviceId,
+          `device${TARGET_SEPARATOR}${deviceId}`,
+          false,
+          this._getSelectedTargetId(this.value) ===
+            `device${TARGET_SEPARATOR}${deviceId}`,
+          !open && !!(entities.length || numberOfChildren),
+          open,
+          domain ? this._renderDomainIcon(domain) : undefined,
+          open
+            ? html`
+                ${numberOfChildren ? this._renderDevices(children!) : nothing}
+                ${this._renderEntities(entities)}
+              `
+            : undefined
+        );
+      });
+
+    if (this.narrow) {
+      return html`<ha-section-title
+          >${this._i18n.localize(
+            "ui.components.target-picker.type.devices"
+          )}</ha-section-title
+        >
+        <ha-list-base>${renderedDevices}</ha-list-base>`;
+    }
+
+    return renderedDevices;
+  }
+
+  private _renderDomains(
+    domains: Record<string, Level3Entries>,
+    prefix: "helper_" | "entity_"
+  ) {
+    const renderedDomains = Object.keys(domains)
+      .map((domainTargetId) => {
+        const domain = domainTargetId.substring(
+          prefix.length,
+          domainTargetId.length - TARGET_SEPARATOR.length
+        );
+        const label = domainToName(
+          this._i18n.localize,
+          domain,
+          this.manifests![domain]
+        );
+
+        return [domainTargetId, label, domain] as [string, string, string];
+      })
+      .sort(([, labelA = "zzz"], [, labelB = "zzz"]) =>
+        stringCompare(labelA, labelB, this.hass.locale.language)
+      )
+      .map(([domainTargetId, label, domain]) => {
+        const { open, entities } = domains[domainTargetId];
+        return this._renderItem(
+          label,
+          domainTargetId,
+          true,
+          false,
+          !open && !!entities.length,
+          open,
+          this._renderDomainIcon(domain),
+          open ? this._renderEntities(entities) : undefined
+        );
+      });
+
+    if (this.narrow) {
+      return html`<ha-section-title
+          >${this._i18n.localize(
+            "ui.components.target-picker.type.devices"
+          )}</ha-section-title
+        >
+        <ha-list-base>${renderedDomains}</ha-list-base>`;
+    }
+
+    return renderedDomains;
+  }
+
+  private _renderEntities(entities: string[] = []) {
+    if (!entities.length) {
+      return nothing;
+    }
+
+    const renderedEntites = entities
+      .filter((entityId) => this.states[entityId])
+      .map((entityId) => {
+        const stateObj = this.states[entityId];
+
+        const [entityName, deviceName] = computeEntityNameList(
+          stateObj,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          this._registries.entities,
+          this._registries.devices,
+          this._registries.areas,
+          this._registries.floors
+        );
+
+        let label = entityName || deviceName || entityId;
+
+        if (this._registries.entities[entityId]?.hidden) {
+          label += ` (${this._i18n.localize("ui.panel.config.automation.editor.entity_hidden")})`;
+        }
+
+        return [entityId, label, stateObj] as [string, string, HassEntity];
+      })
+      .sort(([, labelA], [, labelB]) =>
+        stringCompare(labelA, labelB, this.hass.locale.language)
+      )
+      .map(([entityId, label, stateObj]) =>
+        this._renderItem(
+          label,
+          `entity${TARGET_SEPARATOR}${entityId}`,
+          false,
+          this._getSelectedTargetId(this.value) ===
+            `entity${TARGET_SEPARATOR}${entityId}`,
+          false,
+          false,
+          this._renderEntityIcon(stateObj)
+        )
+      );
+
+    if (this.narrow) {
+      return html`<ha-section-title
+          >${this._i18n.localize(
+            "ui.components.target-picker.type.entities"
+          )}</ha-section-title
+        >
+        <ha-list-base>${renderedEntites}</ha-list-base>`;
+    }
+
+    return renderedEntites;
+  }
+
+  private _renderFloorIcon =
+    (floor: FloorNestedComboBoxItem) => (slot: string | undefined) => {
+      if (floor.id && floor.floor) {
+        return html`<ha-floor-icon
+          slot=${ifDefined(slot)}
+          .floor=${floor.floor}
+        ></ha-floor-icon>`;
+      }
+      return html`<ha-svg-icon
+        slot=${ifDefined(slot)}
+        .path=${mdiTextureBox}
+      ></ha-svg-icon>`;
+    };
+
+  private _renderAreaIcon =
+    (areaIcon?: string) => (slot: string | undefined) =>
+      areaIcon
+        ? html`<ha-icon slot=${ifDefined(slot)} .icon=${areaIcon}></ha-icon>`
+        : html`<ha-svg-icon
+            slot=${ifDefined(slot)}
+            .path=${mdiTextureBox}
+          ></ha-svg-icon>`;
+
+  private _renderDomainIcon =
+    (domain: string) => (slot: string | undefined) => html`
+      <img
+        slot=${ifDefined(slot)}
+        alt=""
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        src=${brandsUrl(
+          {
+            domain,
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          },
+          this.hass.auth.data.hassUrl
+        )}
+      />
+    `;
+
+  private _renderEntityIcon =
+    (stateObj: HassEntity) => (slot: string | undefined) =>
+      html`<ha-state-icon
+        slot=${ifDefined(slot)}
+        .stateObj=${stateObj}
+      ></ha-state-icon>`;
+
+  private _renderItem(
+    label: string,
+    target: string,
+    preventSelection = false,
+    selected = false,
+    lazy = false,
+    open = false,
+    icon?: (slot?: string) => TemplateResult,
+    children?: TemplateResult | TemplateResult[] | typeof nothing
+  ) {
+    if (this.narrow) {
+      return html`<ha-list-item-button
+        .target=${target}
+        @click=${this._selectItem}
+      >
+        ${icon?.("start")}
+        <div slot="headline">${label}</div>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-list-item-button>`;
+    }
+
+    return html`
+      <wa-tree-item
+        .preventSelection=${preventSelection}
+        .target=${target}
+        .selected=${selected}
+        .lazy=${lazy}
+        @wa-lazy-load=${this._expandItem}
+        @wa-collapse=${this._collapseItem}
+        .expanded=${open}
+        .title=${label}
+      >
+        ${icon?.()} ${label} ${children || nothing}
+      </wa-tree-item>
+    `;
+  }
+
+  // #endregion render
+
+  // #region memoized data helpers
+
+  private _getAreaDeviceLookupMemoized = memoizeOne(
+    (devices: HomeAssistant["devices"]) => {
+      const lookup: Record<string, DeviceRegistryEntry[]> = {};
+      for (const device of Object.values(devices)) {
+        const areaId = getDeviceAreaId(device, devices);
+        if (areaId) {
+          (lookup[areaId] ??= []).push(device);
+        }
+      }
+      return lookup;
+    }
+  );
+
+  private _getAreaEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getAreaEntityLookup(Object.values(entities))
+  );
+
+  private _getDeviceEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceEntityLookup(Object.values(entities))
+  );
+
+  private _getSelectedTargetId = memoizeOne(
+    (value: SingleHassServiceTarget | undefined) =>
+      value && Object.keys(value).length
+        ? `${Object.keys(value)[0].replace("_id", "")}${TARGET_SEPARATOR}${Object.values(value)[0]}`
+        : undefined
+  );
+
+  private _getLabelsMemoized = memoizeOne(getLabels);
+
+  private _formatId = memoizeOne((value: AreaFloorValue): string =>
+    [value.type, value.id].join(TARGET_SEPARATOR)
+  );
+
+  // #endregion memoized data helpers
+
+  // #region data
+
+  private _getTreeData() {
+    this._floorAreas = getAreasNestedInFloors(
+      this.states,
+      this._registries.floors,
+      this._registries.areas,
+      this._registries.devices,
+      this._registries.entities,
+      this._formatId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+
+    const filteredFloors = this._floorAreas.filter(
+      ({ id, areas }) => id !== undefined && areas.length
+    );
+    this._floorAreas.forEach((floor) => {
+      this._entries[floor.id || `floor${TARGET_SEPARATOR}`] = {
+        // auto expand if only one floor is present
+        open: filteredFloors.length === 1 && filteredFloors[0].id === floor.id,
+        areas: {},
+      };
+
+      floor.areas.forEach((area) => {
+        this._entries[floor.id || `floor${TARGET_SEPARATOR}`].areas![area.id] =
+          this._loadArea(area);
+      });
+    });
+
+    this._loadUnassignedDevices();
+    this._loadUnassignedEntities();
+    this._entries = { ...this._entries };
+
+    if (this.value) {
+      this._valueChanged(this._getSelectedTargetId(this.value)!, !this.narrow);
+    }
+  }
+
+  private _loadUnassignedDevices() {
+    const unassignedDevices = Object.values(this._registries.devices).filter(
+      (device) =>
+        !device.disabled_by &&
+        !getDeviceAreaId(device, this._registries.devices)
+    );
+
+    const devices = this._buildDeviceEntries(
+      unassignedDevices.filter((device) => device.entry_type !== "service")
+    );
+
+    const services = this._buildDeviceEntries(
+      unassignedDevices.filter((device) => device.entry_type === "service")
+    );
+
+    if (Object.keys(devices).length) {
+      this._entries = {
+        ...this._entries,
+        [`area${TARGET_SEPARATOR}`]: {
+          open: false,
+          devices,
+        },
+      };
+    }
+
+    if (Object.keys(services).length) {
+      this._entries = {
+        ...this._entries,
+        [`service${TARGET_SEPARATOR}`]: {
+          open: false,
+          devices: services,
+        },
+      };
+    }
+  }
+
+  private _loadUnassignedEntities() {
+    Object.values(this._registries.entities)
+      .filter((entity) => !entity.area_id && !entity.device_id)
+      .forEach(({ entity_id }) => {
+        const domain = entity_id.split(".", 2)[0];
+        const manifest = this.manifests ? this.manifests[domain] : undefined;
+        if (manifest?.integration_type === "helper") {
+          if (!this._entries[`helper${TARGET_SEPARATOR}`]) {
+            this._entries[`helper${TARGET_SEPARATOR}`] = {
+              open: false,
+              devices: {},
+            };
+          }
+          if (
+            !this._entries[`helper${TARGET_SEPARATOR}`].devices![
+              `helper_${domain}${TARGET_SEPARATOR}`
+            ]
+          ) {
+            this._entries[`helper${TARGET_SEPARATOR}`].devices![
+              `helper_${domain}${TARGET_SEPARATOR}`
+            ] = {
+              open: false,
+              entities: [],
+            };
+          }
+          this._entries[`helper${TARGET_SEPARATOR}`].devices![
+            `helper_${domain}${TARGET_SEPARATOR}`
+          ].entities.push(entity_id);
+          return;
+        }
+
+        if (!this._entries[`device${TARGET_SEPARATOR}`]) {
+          this._entries[`device${TARGET_SEPARATOR}`] = {
+            open: false,
+            devices: {},
+          };
+        }
+        if (
+          !this._entries[`device${TARGET_SEPARATOR}`].devices![
+            `entity_${domain}${TARGET_SEPARATOR}`
+          ]
+        ) {
+          this._entries[`device${TARGET_SEPARATOR}`].devices![
+            `entity_${domain}${TARGET_SEPARATOR}`
+          ] = {
+            open: false,
+            entities: [],
+          };
+        }
+        this._entries[`device${TARGET_SEPARATOR}`].devices![
+          `entity_${domain}${TARGET_SEPARATOR}`
+        ].entities.push(entity_id);
+      });
+  }
+
+  private _loadArea(area: FloorComboBoxItem) {
+    const [, id] = area.id.split(TARGET_SEPARATOR, 2);
+    const referenced_devices = (
+      this._getAreaDeviceLookupMemoized(this._registries.devices)[id] || []
+    ).filter((device) => !device.disabled_by);
+    const referenced_entities =
+      this._getAreaEntityLookupMemoized(this._registries.entities)[id] || [];
+
+    const devices = this._buildDeviceEntries(referenced_devices);
+    const areaDeviceIds = new Set(
+      referenced_devices.map((device) => device.id)
+    );
+
+    const entities: string[] = [];
+
+    referenced_entities.forEach((entity) => {
+      if (!entity.device_id || !areaDeviceIds.has(entity.device_id)) {
+        entities.push(entity.entity_id);
+      }
+    });
+
+    return {
+      open: false,
+      devices,
+      entities,
+    };
+  }
+
+  private _buildDeviceEntries(
+    devices: DeviceRegistryEntry[]
+  ): Record<string, Level3Entries> {
+    const deviceEntityLookup = this._getDeviceEntityLookupMemoized(
+      this._registries.entities
+    );
+    const entryFor = (deviceId: string): Level3Entries => ({
+      open: false,
+      entities:
+        deviceEntityLookup[deviceId]?.map((entity) => entity.entity_id) || [],
+    });
+
+    const deviceIds = new Set(devices.map((device) => device.id));
+    const nested = (device: DeviceRegistryEntry) =>
+      !!device.parent_device_id && deviceIds.has(device.parent_device_id);
+
+    const roots = devices.filter((device) => !nested(device));
+    const children = devices.filter(nested);
+
+    const entries: Record<string, Level3Entries> = {};
+    for (const device of roots) {
+      entries[device.id] = entryFor(device.id);
+    }
+    for (const device of children) {
+      (entries[device.parent_device_id!].devices ??= {})[device.id] = entryFor(
+        device.id
+      );
+    }
+    return entries;
+  }
+
+  private _deviceGroupPath(
+    device: DeviceRegistryEntry
+  ): [level1: string, level2?: string] {
+    const areaId = getDeviceAreaId(device, this._registries.devices);
+    if (areaId) {
+      return [
+        `floor${TARGET_SEPARATOR}${this._registries.areas[areaId]?.floor_id || ""}`,
+        `area${TARGET_SEPARATOR}${areaId}`,
+      ];
+    }
+    return [
+      `${device.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`,
+    ];
+  }
+
+  private _deviceGroup(
+    entries: Record<string, Level1Entries>,
+    device: DeviceRegistryEntry
+  ): Record<string, Level3Entries> | undefined {
+    const [level1, level2] = this._deviceGroupPath(device);
+    const entry = entries[level1];
+    return level2 ? entry?.areas?.[level2]?.devices : entry?.devices;
+  }
+
+  private _deviceChain(
+    group: Record<string, Level3Entries> | undefined,
+    device: DeviceRegistryEntry
+  ): string[] {
+    const parentId = device.parent_device_id;
+    return parentId && group?.[parentId]?.devices?.[device.id]
+      ? [parentId, device.id]
+      : [device.id];
+  }
+
+  private _getDeviceEntry(
+    entries: Record<string, Level1Entries>,
+    deviceId: string
+  ): Level3Entries | undefined {
+    const device = this._registries.devices[deviceId];
+    if (!device) {
+      return undefined;
+    }
+    const group = this._deviceGroup(entries, device);
+    let level = group;
+    let entry: Level3Entries | undefined;
+    for (const key of this._deviceChain(group, device)) {
+      entry = level?.[key];
+      level = entry?.devices;
+    }
+    return entry;
+  }
+
+  private _setDeviceOpen(
+    deviceId: string,
+    deviceOpen: boolean | undefined,
+    openAncestors: boolean
+  ) {
+    const device = this._registries.devices[deviceId];
+    if (!device) {
+      return;
+    }
+    const [level1, level2] = this._deviceGroupPath(device);
+    const group = this._deviceGroup(this._entries, device);
+    if (!group) {
+      return;
+    }
+    const chain = this._deviceChain(group, device);
+
+    const updateGroup = (
+      devices: Record<string, Level3Entries>,
+      [key, ...rest]: string[]
+    ): Record<string, Level3Entries> => {
+      const entry = devices[key];
+      if (!entry) {
+        return devices;
+      }
+      const isTarget = !rest.length;
+      return {
+        ...devices,
+        [key]: {
+          ...entry,
+          open: isTarget
+            ? (deviceOpen ?? entry.open)
+            : openAncestors || entry.open,
+          devices:
+            isTarget || !entry.devices
+              ? entry.devices
+              : updateGroup(entry.devices, rest),
+        },
+      };
+    };
+
+    const level1Entry = this._entries[level1];
+    if (!level2) {
+      this._entries = {
+        ...this._entries,
+        [level1]: {
+          ...level1Entry,
+          open: openAncestors || level1Entry.open,
+          devices: updateGroup(group, chain),
+        },
+      };
+      return;
+    }
+
+    const level2Entry = level1Entry.areas![level2];
+    this._entries = {
+      ...this._entries,
+      [level1]: {
+        ...level1Entry,
+        open: openAncestors || level1Entry.open,
+        areas: {
+          ...level1Entry.areas,
+          [level2]: {
+            ...level2Entry,
+            open: openAncestors || level2Entry.open,
+            devices: updateGroup(group, chain),
+          },
+        },
+      },
+    };
+  }
+
+  private _expandTreeToItem(type: string, id: string) {
+    if (type === "floor" || type === "label") {
+      return;
+    }
+
+    if (type === "entity") {
+      const deviceId = this._registries.entities[id]?.device_id;
+      if (deviceId && this._registries.devices[deviceId]) {
+        this._setDeviceOpen(deviceId, true, true);
+        return;
+      }
+
+      const entity = this._registries.entities[id];
+
+      if (entity?.area_id) {
+        const floor = `floor${TARGET_SEPARATOR}${this._registries.areas[entity.area_id]?.floor_id || ""}`;
+        const area = `area${TARGET_SEPARATOR}${entity.area_id}`;
+        const floorEntry = this._entries[floor];
+        this._entries = {
+          ...this._entries,
+          [floor]: {
+            ...floorEntry,
+            open: true,
+            areas: {
+              ...floorEntry.areas,
+              [area]: {
+                ...floorEntry.areas![area],
+                open: true,
+              },
+            },
+          },
+        };
+        return;
+      }
+
+      const domain = id.split(".", 1)[0];
+      const isHelper = this.manifests![domain]?.integration_type === "helper";
+      const group = isHelper
+        ? `helper${TARGET_SEPARATOR}`
+        : `device${TARGET_SEPARATOR}`;
+      const domainGroup = `${isHelper ? "helper_" : "entity_"}${domain}${TARGET_SEPARATOR}`;
+      const groupEntry = this._entries[group];
+      this._entries = {
+        ...this._entries,
+        [group]: {
+          ...groupEntry,
+          open: true,
+          devices: {
+            ...groupEntry.devices,
+            [domainGroup]: {
+              ...groupEntry.devices![domainGroup],
+              open: true,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "device") {
+      this._setDeviceOpen(id, undefined, true);
+      return;
+    }
+
+    if (type === "area") {
+      const floor = `floor${TARGET_SEPARATOR}${this._registries.areas[id]?.floor_id || ""}`;
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+        },
+      };
+    }
+  }
+
+  // #endregion data
+
+  // #region interactions
+
+  private _handleSelectionChange(ev: WaSelectionChangeEvent) {
+    const treeItem = ev.detail.selection[0] as unknown as
+      { target?: string } | undefined;
+
+    if (treeItem?.target) {
+      this._valueChanged(treeItem.target);
+    }
+  }
+
+  private _selectItem(ev: CustomEvent) {
+    const target = (ev.currentTarget as any).target;
+
+    if (target) {
+      this._valueChanged(target);
+    }
+  }
+
+  private _selectTimeLocationGroup(ev: CustomEvent) {
+    const value = (ev.currentTarget as any).value;
+    if (value) {
+      fireEvent(this, "time-location-group-selected", { value });
+    }
+  }
+
+  private async _valueChanged(itemId: string, expand = false) {
+    const [type, id] = itemId.split(TARGET_SEPARATOR, 2);
+
+    fireEvent(this, "value-changed", {
+      value: { [`${type}_id`]: id || undefined },
+    });
+
+    if (expand && id) {
+      this._expandTreeToItem(type, id);
+      await this.updateComplete;
+      if (type === "label") {
+        this.shadowRoot!.querySelector(
+          "ha-list-item-button.selected"
+        )?.scrollIntoView({
+          block: "center",
+        });
+      } else {
+        this.shadowRoot!.querySelector(
+          "wa-tree-item[selected]"
+        )?.scrollIntoView({
+          block: "center",
+        });
+      }
+    }
+  }
+
+  private _toggleItem(targetId: string, open: boolean) {
+    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
+
+    if (type === "floor") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "area" && id) {
+      const floorId = `floor${TARGET_SEPARATOR}${this._registries.areas[id]?.floor_id || ""}`;
+
+      this._entries = {
+        ...this._entries,
+        [floorId]: {
+          ...this._entries[floorId],
+          areas: {
+            ...this._entries[floorId].areas,
+            [targetId]: {
+              ...this._entries[floorId].areas![targetId],
+              open,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "area") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "service") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "device" && id) {
+      this._setDeviceOpen(id, open, false);
+      return;
+    }
+
+    // unassigned entities
+    if (type === "device") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "helper") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type.startsWith("entity_")) {
+      this._entries = {
+        ...this._entries,
+        [`device${TARGET_SEPARATOR}`]: {
+          ...this._entries[`device${TARGET_SEPARATOR}`],
+          devices: {
+            ...this._entries[`device${TARGET_SEPARATOR}`].devices,
+            [targetId]: {
+              ...this._entries[`device${TARGET_SEPARATOR}`].devices![targetId],
+              open,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type.startsWith("helper_")) {
+      this._entries = {
+        ...this._entries,
+        [`helper${TARGET_SEPARATOR}`]: {
+          ...this._entries[`helper${TARGET_SEPARATOR}`],
+          devices: {
+            ...this._entries[`helper${TARGET_SEPARATOR}`].devices,
+            [targetId]: {
+              ...this._entries[`helper${TARGET_SEPARATOR}`].devices![targetId],
+              open,
+            },
+          },
+        },
+      };
+    }
+  }
+
+  private _expandItem(ev) {
+    const targetId = ev.target.target;
+    this._toggleItem(targetId, true);
+  }
+
+  private _collapseItem(ev) {
+    const targetId = ev.target.target;
+    this._toggleItem(targetId, false);
+  }
+
+  private _handleDoubleClick(ev: MouseEvent) {
+    // the expand button and non-selectable items already toggle on single click
+    if (
+      ev
+        .composedPath()
+        .some((el) => (el as HTMLElement).classList?.contains("expand-button"))
+    ) {
+      return;
+    }
+    const item = (ev.target as HTMLElement).closest<
+      WaTreeItem & { target: string }
+    >("wa-tree-item");
+    if (!item || item.isLeaf || item.preventSelection) {
+      return;
+    }
+    // avoid leaving the label text selected by the double click
+    window.getSelection()?.removeAllRanges();
+    this._toggleItem(item.target, !item.expanded);
+  }
+
+  private async _loadConfigEntries() {
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
+    );
+  }
+
+  private _expandHeight() {
+    this._fullHeight = true;
+    this.style.setProperty("--max-height", "none");
+  }
+
+  // #endregion interactions
+
+  // #region styles
+
+  static styles = css`
+    :host {
+      --wa-color-neutral-fill-quiet: var(--ha-color-fill-primary-normal-active);
+      position: relative;
+    }
+
+    ha-section-title {
+      top: 0;
+      position: sticky;
+      z-index: 1;
+    }
+
+    wa-tree-item::part(item) {
+      height: var(--ha-space-10);
+      padding: var(--ha-space-1) var(--ha-space-3);
+      cursor: pointer;
+      border-inline-start: 0;
+    }
+    wa-tree-item::part(label) {
+      gap: var(--ha-space-3);
+      font-family: var(--ha-font-family-heading);
+      font-weight: var(--ha-font-weight-medium);
+      overflow: hidden;
+    }
+    ha-list-item-button::part(label) {
+      font-weight: var(--ha-font-weight-medium);
+      font-family: var(--ha-font-family-heading);
+    }
+
+    .item-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    ha-svg-icon,
+    ha-icon,
+    ha-state-icon,
+    ha-floor-icon {
+      padding: var(--ha-space-1);
+      color: var(--ha-color-on-neutral-quiet);
+    }
+
+    wa-tree-item::part(item):hover {
+      background-color: var(--ha-color-fill-neutral-quiet-hover);
+    }
+
+    img {
+      width: 24px;
+      height: 24px;
+      padding: var(--ha-space-1);
+    }
+
+    img.domain-icon {
+      filter: grayscale(100%);
+    }
+
+    state-badge {
+      width: 24px;
+      height: 24px;
+    }
+
+    wa-tree-item[selected]::part(item):hover {
+      background-color: var(--ha-color-fill-primary-normal-hover);
+    }
+
+    wa-tree-item::part(base).tree-item-selected .item {
+      background-color: yellow;
+    }
+
+    ha-list-base {
+      --ha-row-item-padding-inline: var(--ha-space-3);
+      --ha-row-item-padding-block: var(--ha-space-1);
+      --ha-row-item-min-height: 40px;
+    }
+
+    ha-list-item-button::part(end) {
+      color: var(--ha-color-on-neutral-quiet);
+    }
+
+    ha-list-item-button.selected {
+      background-color: var(--ha-color-fill-primary-normal-active);
+      --md-list-item-label-text-color: var(--ha-color-on-primary-normal);
+      --icon-primary-color: var(--ha-color-on-primary-normal);
+    }
+
+    ha-list-item-button.selected::part(headline) {
+      color: var(--ha-color-on-primary-normal);
+    }
+
+    wa-tree-item[selected],
+    wa-tree-item[selected] > ha-svg-icon,
+    wa-tree-item[selected] > ha-icon,
+    wa-tree-item[selected] > ha-state-icon,
+    wa-tree-item[selected] > ha-floor-icon,
+    ha-list-item-button.selected ha-icon,
+    ha-list-item-button.selected ha-svg-icon {
+      color: var(--ha-color-on-primary-normal);
+    }
+
+    .targets-show-more {
+      display: flex;
+      justify-content: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding-bottom: var(--ha-space-2);
+      box-shadow: inset 0 -8px 12px 0 rgba(0, 0, 0, 0.06);
+      z-index: 2;
+    }
+
+    @media all and (max-width: 870px), all and (max-height: 500px) {
+      :host {
+        max-height: var(--max-height, 50%);
+        overflow: hidden;
+      }
+    }
+  `;
+
+  // #endregion styles
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-add-from-target": HaAutomationAddFromTarget;
+  }
+  interface HASSDomEvents {
+    "time-location-group-selected": { value: string };
+  }
+}

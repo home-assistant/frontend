@@ -1,0 +1,1607 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { consume } from "@lit/context";
+import {
+  mdiAlertCircle,
+  mdiCancel,
+  mdiCog,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiDownload,
+  mdiMenuDown,
+  mdiPlus,
+  mdiProgressHelper,
+  mdiTag,
+  mdiTrashCan,
+} from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { storage } from "../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { getHistoryState, navigate } from "../../../common/navigate";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
+import { extractSearchParam } from "../../../common/url/search-params";
+import { debounce } from "../../../common/util/debounce";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+  SelectionChangedEvent,
+  SortingChangedEvent,
+} from "../../../components/data-table/ha-data-table";
+import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-filter-categories";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-voice-assistants";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-entity-id-icon";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+import { getSignedPath } from "../../../data/auth";
+import type { CategoryRegistryEntry } from "../../../data/category_registry";
+import {
+  createCategoryRegistryEntry,
+  subscribeCategoryRegistry,
+} from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
+import type { ConfigEntry } from "../../../data/config_entries";
+import {
+  ERROR_STATES,
+  deleteConfigEntry,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
+import { getConfigFlowHandlers } from "../../../data/config_flow";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
+import type {
+  DataTableFiltersItems,
+  DataTableFiltersValues,
+} from "../../../data/data_table_filters";
+import {
+  fetchDiagnosticHandlers,
+  getConfigEntryDiagnosticsDownloadUrl,
+} from "../../../data/diagnostics";
+import type {
+  EntityRegistryEntry,
+  UpdateEntityRegistryEntryResult,
+} from "../../../data/entity/entity_registry";
+import {
+  entityRegistryByEntityId,
+  updateEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
+import type { IntegrationManifest } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import {
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getEditableTableColumn,
+  getEntityIdTableColumn,
+  getLabelsTableColumn,
+} from "../common/data-table-columns";
+import { configSections } from "../config-sections";
+import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
+import "../integrations/ha-integration-overflow-menu";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  getAssistantsSortableKey,
+  getAssistantsTableColumn,
+} from "../voice-assistants/expose/assistants-table-column";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { isHelperDomain, type HelperDomain } from "./const";
+import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
+
+interface LimitedEntity {
+  entity_id: HassEntity["entity_id"];
+  attributes: {
+    friendly_name?: HassEntity["attributes"]["friendly_name"];
+    editable?: HassEntity["attributes"]["editable"];
+  };
+}
+function equalLimitedEntity(a: LimitedEntity, b: LimitedEntity): boolean {
+  return (
+    a === b ||
+    (a.entity_id === b.entity_id &&
+      a.attributes?.friendly_name === b.attributes?.friendly_name &&
+      a.attributes?.editable === b.attributes?.editable)
+  );
+}
+
+interface HelperItem {
+  id: string;
+  name: string;
+  icon?: string;
+  entity_id: string;
+  editable?: boolean;
+  type: string;
+  configEntry?: ConfigEntry;
+  entity?: LimitedEntity;
+  category: string | undefined;
+  area?: string;
+  label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
+  disabled?: boolean;
+}
+
+const getConfigEntry = (
+  entityEntries: Record<string, EntityRegistryEntry>,
+  configEntries: Record<string, ConfigEntry>,
+  entityId: string
+) => {
+  const configEntryId = entityEntries![entityId]?.config_entry_id;
+  return configEntryId ? configEntries![configEntryId] : undefined;
+};
+
+@customElement("ha-config-helpers")
+export class HaConfigHelpers extends SubscribeMixin(LitElement) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
+
+  @storage({ key: "helpers-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "helpers-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "helpers-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
+
+  @state()
+  @storage({
+    storage: "sessionStorage",
+    key: "helpers-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
+    key: "helpers-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "helpers-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @state() private _helperEntities?: LimitedEntity[];
+
+  @state() private _disabledEntityEntries?: EntityRegistryEntry[];
+
+  @state() private _configEntries?: Record<string, ConfigEntry>;
+
+  @state() private _entitySource?: Record<string, string>;
+
+  @state() private _selected: string[] = [];
+
+  @state() private _activeFilters?: string[];
+
+  @state() private _helperManifests?: Record<string, IntegrationManifest>;
+
+  @state() private _diagnosticHandlers?: Record<string, boolean>;
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
+  @state()
+  private _filters: DataTableFiltersValues = {};
+
+  @storage({
+    storage: "sessionStorage",
+    key: "helpers-table-filters",
+    state: false,
+    subscribe: false,
+  })
+  private _storageFilters: DataTableFiltersValues = {};
+
+  @state() private _filteredItems: DataTableFiltersItems = {};
+
+  @state() private _expandedFilter?: string;
+
+  @state()
+  _categories!: CategoryRegistryEntry[];
+
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  _labels?: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg?: EntityRegistryEntry[];
+
+  @state() private _filteredHelperEntityIds?: string[] | null;
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
+
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
+  private _debouncedFetchEntitySources = debounce(
+    () => this._fetchEntitySources(),
+    500,
+    false
+  );
+
+  public hassSubscribe() {
+    return [
+      subscribeConfigEntries(
+        this.hass,
+        async (messages) => {
+          const newEntries = this._configEntries
+            ? { ...this._configEntries }
+            : {};
+          messages.forEach((message) => {
+            if (message.type === null || message.type === "added") {
+              newEntries[message.entry.entry_id] = message.entry;
+            } else if (message.type === "removed") {
+              delete newEntries[message.entry.entry_id];
+            } else if (message.type === "updated") {
+              newEntries[message.entry.entry_id] = message.entry;
+            }
+            if (
+              this._entitySource &&
+              this._configEntries &&
+              message.entry.state === "loaded" &&
+              this._configEntries[message.entry.entry_id]?.state !== "loaded"
+            ) {
+              this._debouncedFetchEntitySources();
+            }
+          });
+          this._configEntries = newEntries;
+        },
+        { type: ["helper"] }
+      ),
+      subscribeCategoryRegistry(
+        this.hass.connection,
+        "helpers",
+        (categories) => {
+          this._categories = categories;
+        }
+      ),
+    ];
+  }
+
+  private _columns = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<HelperItem> => ({
+      icon: {
+        title: "",
+        label: localize("ui.panel.config.helpers.picker.headers.icon"),
+        type: "icon",
+        showNarrow: true,
+        moveable: false,
+        template: (helper) =>
+          helper.entity
+            ? html`<ha-entity-id-icon
+                .entityId=${helper.entity_id}
+                state-title
+              ></ha-entity-id-icon>`
+            : html`<ha-svg-icon
+                .path=${helper.icon}
+                style="color: var(--error-color)"
+              ></ha-svg-icon>`,
+      },
+      name: {
+        title: localize("ui.panel.config.helpers.picker.headers.name"),
+        main: true,
+        sortable: true,
+        filterable: true,
+        flex: 2,
+        direction: "asc",
+        extraTemplate: (helper) =>
+          helper.label_entries.length
+            ? html`
+                <ha-data-table-labels
+                  .labels=${helper.label_entries}
+                ></ha-data-table-labels>
+              `
+            : nothing,
+      },
+      entity_id: getEntityIdTableColumn(localize),
+      category: getCategoryTableColumn(localize),
+      area: getAreaTableColumn(localize),
+      labels: getLabelsTableColumn(),
+      localized_type: {
+        title: localize("ui.panel.config.helpers.picker.headers.type"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+      },
+      editable: getEditableTableColumn(
+        localize,
+        localize("ui.panel.config.entities.picker.status.unmanageable")
+      ),
+      actions: {
+        lastFixed: true,
+        title: "",
+        label: this.hass.localize("ui.panel.config.generic.headers.actions"),
+        type: "overflow-menu",
+        showNarrow: true,
+        template: (helper) => html`
+          <ha-icon-overflow-menu
+            narrow
+            .items=${[
+              ...(helper.configEntry &&
+              ERROR_STATES.includes(helper.configEntry.state)
+                ? [
+                    {
+                      path: mdiAlertCircle,
+                      label: this.hass.localize(
+                        "ui.panel.config.helpers.picker.error_information"
+                      ),
+                      warning: true,
+                      action: () => this._showError(helper),
+                    },
+                  ]
+                : []),
+              {
+                path: mdiCog,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.show_settings"
+                ),
+                action: () => this._openSettings(helper),
+              },
+              {
+                path: mdiTag,
+                label: this.hass.localize(
+                  `ui.panel.config.automation.picker.${helper.category ? "edit_category" : "assign_category"}`
+                ),
+                action: () => this._editCategory(helper),
+              },
+              ...(helper.configEntry &&
+              helper.editable &&
+              ERROR_STATES.includes(helper.configEntry.state) &&
+              helper.entity === undefined
+                ? [
+                    {
+                      path: mdiTrashCan,
+                      label: this.hass.localize("ui.common.delete"),
+                      warning: true,
+                      action: () => this._deleteEntry(helper),
+                    },
+                  ]
+                : []),
+              ...(this._diagnosticHandlers?.[helper.type] && helper.configEntry
+                ? [
+                    {
+                      path: mdiDownload,
+                      label: this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.download_diagnostics"
+                      ),
+                      action: () => this._downloadDiagnostics(helper),
+                    },
+                  ]
+                : []),
+              ...(helper.editable && helper.entity_id
+                ? [
+                    {
+                      divider: true,
+                    },
+                    {
+                      path: mdiDelete,
+                      label: this.hass.localize("ui.common.delete"),
+                      warning: true,
+                      action: () => this._deleteHelper(helper),
+                    },
+                  ]
+                : []),
+            ]}
+          >
+          </ha-icon-overflow-menu>
+        `,
+      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        this._availableAssistants,
+        entitiesToCheck
+      ),
+    })
+  );
+
+  private _helperEntityIds = memoizeOne(
+    (
+      entityReg: EntityRegistryEntry[],
+      entitySource: Record<string, string>,
+      helperManifests: Record<string, IntegrationManifest>
+    ) => {
+      const entityIds = new Set<string>();
+      //Entity registry entities have their source in the registry.
+      for (const entry of entityReg) {
+        if (entry.platform in helperManifests) {
+          entityIds.add(entry.entity_id);
+        }
+      }
+
+      //Entities without registry get their source from fetchEntitySources
+      for (const entityId of Object.keys(entitySource)) {
+        entityIds.add(entityId);
+      }
+
+      return entityIds;
+    }
+  );
+
+  private _getItems = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      stateItems: LimitedEntity[],
+      disabledEntries: EntityRegistryEntry[],
+      configEntries: Record<string, ConfigEntry>,
+      entityReg: EntityRegistryEntry[],
+      categoryReg?: CategoryRegistryEntry[],
+      labelReg?: LabelRegistryEntry[],
+      filteredStateItems?: string[] | null
+    ): HelperItem[] => {
+      if (filteredStateItems === null) {
+        return [];
+      }
+
+      const configEntriesCopy = { ...configEntries };
+
+      const states = stateItems.map((entityState) => {
+        const configEntry = getConfigEntry(
+          entityRegistryByEntityId(entityReg),
+          configEntries,
+          entityState.entity_id
+        );
+
+        if (configEntry) {
+          delete configEntriesCopy[configEntry!.entry_id];
+        }
+
+        return {
+          id: entityState.entity_id,
+          name: entityState.attributes.friendly_name || "",
+          entity_id: entityState.entity_id,
+          editable:
+            configEntry !== undefined || entityState.attributes.editable,
+          type: configEntry
+            ? configEntry.domain
+            : entityRegistryByEntityId(entityReg)[entityState.entity_id]
+                ?.platform ||
+              this._entitySource![entityState.entity_id] ||
+              computeDomain(entityState.entity_id),
+          configEntry,
+          entity: entityState,
+        };
+      });
+
+      const entries = Object.values(configEntriesCopy)
+        .map((configEntry) => {
+          const entityEntry = entityReg.find(
+            (entry) => entry.config_entry_id === configEntry.entry_id
+          );
+          return {
+            id: configEntry.entry_id,
+            entity_id: "",
+            icon:
+              configEntry.state === "setup_in_progress"
+                ? mdiProgressHelper
+                : mdiAlertCircle,
+            name: configEntry.title || "",
+            editable: true,
+            type: configEntry.domain,
+            configEntry,
+            entity: undefined,
+            selectable: false,
+            disabled: !!entityEntry?.disabled_by,
+          };
+        })
+        .filter((e) => !e.disabled);
+
+      const disabledItems = (disabledEntries || []).map((e) => ({
+        id: e.entity_id,
+        entity_id: e.entity_id,
+        icon: mdiCancel,
+        name: e.name || e.original_name || e.entity_id,
+        editable: true,
+        type: e.platform,
+        configEntry: undefined,
+        entity: undefined,
+        selectable: true,
+        disabled: true,
+      }));
+
+      return [...states, ...entries, ...disabledItems]
+        .filter((item) =>
+          filteredStateItems
+            ? filteredStateItems?.includes(item.entity_id)
+            : true
+        )
+        .map((item) => {
+          const entityRegEntry =
+            entityRegistryByEntityId(entityReg)[item.entity_id];
+          const labels = labelReg && entityRegEntry?.labels;
+          const label_entries = (labels || [])
+            .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+            .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
+          const category = entityRegEntry?.categories.helpers;
+          const deviceId = entityRegEntry?.device_id;
+          const areaId =
+            entityRegEntry?.area_id || this.hass.devices?.[deviceId!]?.area_id;
+          const area =
+            areaId && this.hass.areas?.[areaId]
+              ? computeAreaName(this.hass.areas[areaId])
+              : undefined;
+          const assistants = getEntityVoiceAssistantsIds(
+            entityReg,
+            item.entity_id
+          );
+          return {
+            ...item,
+            localized_type:
+              domainToName(localize, item.type) ||
+              localize(
+                `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
+              ) ||
+              item.type,
+            label_entries,
+            labels: label_entries.map((lbl) => lbl.name),
+            category: category
+              ? categoryReg?.find((cat) => cat.category_id === category)?.name
+              : undefined,
+            area,
+            assistants,
+            assistants_sortable_key: getAssistantsSortableKey(assistants),
+          };
+        });
+    }
+  );
+
+  private _labelsForEntity(entityId: string): string[] {
+    return (
+      this.hass.entities[entityId]?.labels ||
+      entityRegistryByEntityId(this._entityReg || [])[entityId]?.labels ||
+      []
+    );
+  }
+
+  protected render(): TemplateResult {
+    if (
+      !this.hass ||
+      this._helperEntities === undefined ||
+      this._entityReg === undefined ||
+      this._configEntries === undefined
+    ) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
+    const labelsInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+    const helpers = this._getItems(
+      this.hass.localize,
+      this._helperEntities,
+      this._disabledEntityEntries || [],
+      this._configEntries,
+      this._entityReg,
+      this._categories,
+      this._labels,
+      this._filteredHelperEntityIds
+    );
+    return html`
+      <hass-tabs-subpage-data-table
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections.devices}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.helpers.picker.search",
+          { number: helpers.length }
+        )}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
+        has-filters
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
+        .columns=${this._columns(this.hass.localize, helpers)}
+        .data=${helpers}
+        .initialGroupColumn=${this._activeGrouping ?? "category"}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
+        .activeFilters=${this._activeFilters}
+        @clear-filter=${this._clearFilter}
+        @row-click=${this._openEditDialog}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
+        has-fab
+        clickable
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.helpers.picker.no_helpers"
+        )}
+        class=${this.narrow ? "narrow" : ""}
+      >
+        <ha-filter-floor-areas
+          .type=${"entity"}
+          .value=${this._filters["ha-filter-floor-areas"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-floor-areas>
+        <ha-filter-devices
+          .type=${"entity"}
+          .value=${this._filters["ha-filter-devices"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-devices"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-devices>
+        <ha-filter-labels
+          .value=${this._filters["ha-filter-labels"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-labels"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-labels>
+        <ha-filter-categories
+          .hass=${this.hass}
+          scope="helpers"
+          .value=${this._filters["ha-filter-categories"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-categories"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-categories>
+        <ha-filter-voice-assistants
+          .value=${this._filters["ha-filter-voice-assistants"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
+
+        ${
+          !this.narrow
+            ? html`<ha-dropdown
+                  slot="selection-bar"
+                  @wa-select=${this._handleBulkCategory}
+                >
+                  <ha-assist-chip
+                    slot="trigger"
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.move_category"
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                  ${this._renderCategoryItems()}
+                </ha-dropdown>
+                ${
+                  labelsInOverflow
+                    ? nothing
+                    : html`<ha-dropdown
+                        slot="selection-bar"
+                        @wa-select=${this._handleBulkLabel}
+                      >
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.picker.bulk_actions.add_label"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${this._renderLabelItems()}
+                      </ha-dropdown>`
+                }`
+            : nothing
+        }
+        ${
+          this.narrow || labelsInOverflow
+            ? html` <ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._handleBulkAction}
+              >
+                ${
+                  this.narrow
+                    ? html`<ha-assist-chip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_action"
+                        )}
+                        slot="trigger"
+                      >
+                        <ha-svg-icon
+                          slot="trailing-icon"
+                          .path=${mdiMenuDown}
+                        ></ha-svg-icon>
+                      </ha-assist-chip>`
+                    : html`<ha-icon-button
+                        .path=${mdiDotsVertical}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_action"
+                        )}
+                        slot="trigger"
+                      ></ha-icon-button>`
+                }
+                ${
+                  this.narrow
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.move_category"
+                        )}
+                        ${this._renderCategoryItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+                ${
+                  this.narrow || this.hass.dockedSidebar === "docked"
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.add_label"
+                        )}
+                        ${this._renderLabelItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+              </ha-dropdown>`
+            : nothing
+        }
+
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          slot="toolbar-icon"
+        ></ha-integration-overflow-menu>
+        <ha-button slot="fab" size="l" @click=${this._createHelper}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
+        </ha-button>
+      </hass-tabs-subpage-data-table>
+    `;
+  }
+
+  private _filterExpanded(ev) {
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
+  }
+
+  private _filterChanged(ev) {
+    const type = ev.target.localName;
+
+    this._filters = { ...this._filters, [type]: ev.detail.value };
+    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
+    this._applyFilters();
+  }
+
+  private _applyFilters() {
+    if (!this._helperEntities) {
+      return;
+    }
+    const filters = Object.entries(this._filters);
+
+    let items: Set<string> | undefined;
+
+    Object.values(this._filteredItems).forEach((itms) => {
+      if (!itms) {
+        return;
+      }
+      if (!items) {
+        items = itms;
+        return;
+      }
+      items =
+        "intersection" in items
+          ? // @ts-ignore
+            items.intersection(itms)
+          : new Set([...items].filter((x) => itms!.has(x)));
+    });
+
+    for (const [key, filter] of filters) {
+      if (
+        key === "ha-filter-labels" &&
+        Array.isArray(filter) &&
+        filter.length
+      ) {
+        const labelItems = new Set<string>();
+        this._helperEntities
+          .filter((stateItem) =>
+            entityRegistryByEntityId(this._entityReg || [])[
+              stateItem.entity_id
+            ]?.labels.some((lbl) => filter.includes(lbl))
+          )
+          .forEach((stateItem) => labelItems.add(stateItem.entity_id));
+        (this._disabledEntityEntries || [])
+          .filter((entry) => entry.labels.some((lbl) => filter.includes(lbl)))
+          .forEach((entry) => labelItems.add(entry.entity_id));
+        if (!items) {
+          items = labelItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(labelItems)
+            : new Set([...items].filter((x) => labelItems!.has(x)));
+      } else if (
+        key === "ha-filter-categories" &&
+        Array.isArray(filter) &&
+        filter.length
+      ) {
+        const categoryItems = new Set<string>();
+        this._helperEntities
+          .filter(
+            (stateItem) =>
+              filter[0] ===
+              entityRegistryByEntityId(this._entityReg || [])[
+                stateItem.entity_id
+              ]?.categories.helpers
+          )
+          .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
+        (this._disabledEntityEntries || [])
+          .filter((entry) => filter[0] === entry.categories.helpers)
+          .forEach((entry) => categoryItems.add(entry.entity_id));
+        if (!items) {
+          items = categoryItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(categoryItems)
+            : new Set([...items].filter((x) => categoryItems!.has(x)));
+      } else if (
+        key === "ha-filter-voice-assistants" &&
+        Array.isArray(filter) &&
+        filter.length
+      ) {
+        const assistItems = new Set<string>();
+        this._helperEntities
+          .filter((stateItem) =>
+            getEntityVoiceAssistantsIds(
+              this._entityReg || [],
+              stateItem.entity_id
+            ).some((va) => (filter as string[]).includes(va))
+          )
+          .forEach((stateItem) => assistItems.add(stateItem.entity_id));
+        (this._disabledEntityEntries || [])
+          .filter((entry) =>
+            getEntityVoiceAssistantsIds(
+              this._entityReg || [],
+              entry.entity_id
+            ).some((va) => (filter as string[]).includes(va))
+          )
+          .forEach((entry) => assistItems.add(entry.entity_id));
+        if (!items) {
+          items = assistItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(assistItems)
+            : new Set([...items].filter((x) => assistItems!.has(x)));
+      }
+    }
+    this._filteredHelperEntityIds = items ? [...items] : undefined;
+  }
+
+  private _fromUrl = false;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
+    const category = this._searchParms.get("category");
+    const voiceAssistant = this._searchParms.get("voice_assistant");
+
+    if (!area && !category && !label && !device && !voiceAssistant) {
+      return;
+    }
+
+    this._fromUrl = true;
+    this._filter = getHistoryState()?.filter || "";
+
+    this._filters = {
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
+      "ha-filter-categories": category ? [category] : [],
+      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
+    };
+  }
+
+  private _clearFilter() {
+    this._filters = {};
+    this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
+    this._applyFilters();
+  }
+
+  private _editCategory(helper: any) {
+    const entityReg = entityRegistryByEntityId(this._entityReg || [])[
+      helper.entity_id
+    ];
+    if (!entityReg) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "helpers",
+      entityReg,
+    });
+  }
+
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
+    const value = ev.detail.item.value;
+    if (value === "category_create") {
+      this._bulkCreateCategory();
+      return;
+    }
+    if (value === "category_none") {
+      this._bulkAddCategory(null);
+      return;
+    }
+    if (value?.startsWith("category_")) {
+      this._bulkAddCategory(value.substring(9));
+    }
+  };
+
+  private async _bulkAddCategory(category: string | null) {
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          categories: { helpers: category },
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
+      });
+    }
+  }
+
+  private _handleBulkLabel = (ev: HaDropdownSelectEvent) => {
+    ev.preventDefault();
+    const value = ev.detail.item.value;
+    if (value === "label_create") {
+      this._bulkCreateLabel();
+      return;
+    }
+    if (value?.startsWith("label_")) {
+      const action = (ev.detail.item as any).action;
+      this._bulkLabel(value.substring(6), action);
+    }
+  };
+
+  private async _bulkLabel(label: string, action: "add" | "remove") {
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      const labels = this._labelsForEntity(entityId);
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          labels:
+            action === "add"
+              ? labels.concat(label)
+              : labels.filter((lbl) => lbl !== label),
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
+      });
+    }
+  }
+
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this._setFiltersFromUrl();
+    this._fetchEntitySources();
+
+    if (isComponentLoaded(this.hass.config, "diagnostics")) {
+      fetchDiagnosticHandlers(this.hass).then((infos) => {
+        const handlers = {};
+        for (const info of infos) {
+          handlers[info.domain] = info.handlers.config_entry;
+        }
+        this._diagnosticHandlers = handlers;
+      });
+    }
+
+    if (this.route.path === "/add") {
+      this._handleAdd();
+    }
+  }
+
+  private async _fetchEntitySources() {
+    const [entitySources, fetchedManifests] = await Promise.all([
+      fetchEntitySourcesWithCache(this.hass),
+      fetchIntegrationManifests(this.hass),
+    ]);
+
+    const manifests: Record<string, IntegrationManifest> = {};
+
+    for (const manifest of fetchedManifests) {
+      if (manifest.integration_type === "helper") {
+        manifests[manifest.domain] = manifest;
+      }
+    }
+
+    this._helperManifests = manifests;
+
+    const entityDomains = {};
+    const domains = new Set<string>();
+
+    for (const [entity, source] of Object.entries(entitySources)) {
+      const domain = source.domain;
+      if (!(domain in manifests)) {
+        continue;
+      }
+      entityDomains[entity] = domain;
+      domains.add(domain);
+    }
+
+    if (domains.size) {
+      this.hass.loadBackendTranslation("title", [...domains]);
+    }
+
+    this._entitySource = entityDomains;
+  }
+
+  private async _handleAdd() {
+    const domain = extractSearchParam("domain");
+    navigate("/config/helpers", { replace: true });
+    if (!domain) {
+      return;
+    }
+    if (isHelperDomain(domain)) {
+      showHelperDetailDialog(this, {
+        domain,
+      });
+      return;
+    }
+    const handlers = await getConfigFlowHandlers(this.hass, ["helper"]);
+
+    if (!handlers.includes(domain)) {
+      const integrations = await getConfigFlowHandlers(this.hass, [
+        "device",
+        "hub",
+        "service",
+      ]);
+      if (integrations.includes(domain)) {
+        navigate(`/config/integrations/add?domain=${domain}`, {
+          replace: true,
+        });
+        return;
+      }
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.no_config_flow"
+        ),
+      });
+      return;
+    }
+    const localize = await this.hass.loadBackendTranslation(
+      "title",
+      domain,
+      true
+    );
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.panel.config.integrations.confirm_new", {
+          integration: domainToName(localize, domain),
+        }),
+      }))
+    ) {
+      return;
+    }
+    showConfigFlowDialog(this, {
+      startFlowHandler: domain,
+      manifest: await fetchIntegrationManifest(this.hass, domain),
+    });
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
+      this._setFiltersFromUrl();
+    }
+
+    if (
+      !this._entityReg ||
+      !this._configEntries ||
+      !this._entitySource ||
+      !this._helperManifests
+    ) {
+      return;
+    }
+
+    if (
+      (changedProps.has("_helperManifests") ||
+        changedProps.has("_entityReg") ||
+        changedProps.has("_configEntries")) &&
+      this._helperManifests
+    ) {
+      this._disabledEntityEntries = this._entityReg.filter(
+        (e) =>
+          e.disabled_by &&
+          (e.platform in this._helperManifests! ||
+            (e.config_entry_id && e.config_entry_id in this._configEntries!))
+      );
+    }
+
+    let changed =
+      !this._helperEntities ||
+      changedProps.has("_entityReg") ||
+      changedProps.has("_configEntries") ||
+      changedProps.has("_entitySource");
+
+    if (!changed && changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      changed = !oldHass || oldHass.states !== this.hass.states;
+    }
+    if (!changed) {
+      return;
+    }
+
+    const entityIds = this._helperEntityIds(
+      this._entityReg,
+      this._entitySource,
+      this._helperManifests
+    );
+
+    const newHelpers = Object.values(this.hass!.states).filter(
+      (entity) =>
+        isHelperDomain(computeStateDomain(entity)) ||
+        (entityIds.has(entity.entity_id) && !entity.attributes.restored)
+    );
+
+    if (
+      !this._helperEntities ||
+      this._helperEntities.length !== newHelpers.length ||
+      !this._helperEntities.every((val, idx) =>
+        equalLimitedEntity(newHelpers[idx], val)
+      )
+    ) {
+      this._helperEntities = newHelpers;
+      if (Object.keys(this._filters).length > 0) {
+        this._applyFilters();
+      }
+    }
+  }
+
+  private async _openEditDialog(ev: CustomEvent): Promise<void> {
+    const id = (ev.detail as RowClickedEvent).id;
+    if (id.includes(".")) {
+      showMoreInfoDialog(this, { entityId: id });
+    } else {
+      showOptionsFlowDialog(this, this._configEntries![id]);
+    }
+  }
+
+  private _showError(helper: HelperItem) {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.errors.config.configuration_error"),
+      text: renderConfigEntryError(this.hass, helper.configEntry!),
+      warning: true,
+    });
+  }
+
+  private async _deleteEntry(helper: HelperItem) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_title",
+        { title: helper.configEntry!.title }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    deleteConfigEntry(this.hass, helper.id);
+  }
+
+  private async _downloadDiagnostics(helper: HelperItem) {
+    const url = getConfigEntryDiagnosticsDownloadUrl(
+      helper.configEntry!.entry_id
+    );
+    const signedUrl = await getSignedPath(this.hass, url);
+    fileDownload(signedUrl.path);
+  }
+
+  private _openSettings(helper: HelperItem) {
+    if (helper.entity) {
+      showMoreInfoDialog(this, {
+        entityId: helper.entity_id,
+        view: "settings",
+      });
+    } else {
+      showOptionsFlowDialog(this, helper.configEntry!);
+    }
+  }
+
+  private async _deleteHelper(helper: HelperItem) {
+    if (!helper.entity_id) {
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.helpers.picker.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.helpers.picker.delete_confirm_text",
+        { name: helper.name }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      // For old-style helpers (input_boolean, etc.), use HELPERS_CRUD
+      if (isHelperDomain(helper.type)) {
+        const entityReg = this._entityReg?.find(
+          (e) => e.entity_id === helper.entity_id
+        );
+        if (
+          !entityReg?.unique_id ||
+          !isComponentLoaded(this.hass.config, helper.type)
+        ) {
+          throw new Error(
+            this.hass.localize("ui.panel.config.helpers.picker.delete_failed")
+          );
+        }
+        await HELPERS_CRUD[helper.type as HelperDomain].delete(
+          this.hass,
+          entityReg.unique_id
+        );
+        return;
+      }
+
+      // For config entry-based helpers, delete the config entry
+      if (helper.configEntry) {
+        await deleteConfigEntry(this.hass, helper.configEntry.entry_id);
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text:
+          err.message ||
+          this.hass.localize("ui.panel.config.helpers.picker.delete_failed"),
+      });
+    }
+  }
+
+  private _createHelper() {
+    showHelperDetailDialog(this, {});
+  }
+
+  private _bulkCreateCategory = () => {
+    showCategoryRegistryDetailDialog(this, {
+      scope: "helpers",
+      createEntry: async (values) => {
+        const category = await createCategoryRegistryEntry(
+          this.hass,
+          "helpers",
+          values
+        );
+        this._bulkAddCategory(category.category_id);
+        return category;
+      },
+    });
+  };
+
+  private _bulkCreateLabel = () => {
+    showLabelDetailDialog(this, {
+      createEntry: async (values) => {
+        const label = await createLabelRegistryEntry(this.hass, values);
+        this._bulkLabel(label.label_id, "add");
+      },
+    });
+  };
+
+  private _renderCategoryItems = (slot = "") =>
+    html`${this._categories?.map(
+        (category) =>
+          html`<ha-dropdown-item
+            .slot=${slot}
+            .value=${`category_${category.category_id}`}
+          >
+            ${
+              category.icon
+                ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
+                : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`
+            }
+            ${category.name}
+          </ha-dropdown-item>`
+      )}
+      <ha-dropdown-item .slot=${slot} value="category_none">
+        ${this.hass.localize(
+          "ui.panel.config.automation.picker.bulk_actions.no_category"
+        )}
+      </ha-dropdown-item>
+      <wa-divider .slot=${slot}></wa-divider>
+      <ha-dropdown-item .slot=${slot} value="category_create">
+        ${this.hass.localize("ui.panel.config.category.editor.add")}
+      </ha-dropdown-item>`;
+
+  private _renderLabelItems = (slot = "") =>
+    html`${this._labels?.map((label) => {
+        const selected = this._selected.every((entityId) =>
+          this._labelsForEntity(entityId).includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((entityId) =>
+            this._labelsForEntity(entityId).includes(label.label_id)
+          );
+        return html`<ha-dropdown-item
+          .slot=${slot}
+          .value=${`label_${label.label_id}`}
+          .action=${selected ? "remove" : "add"}
+        >
+          <ha-checkbox
+            slot="icon"
+            .checked=${selected}
+            .indeterminate=${partial}
+          ></ha-checkbox>
+          <ha-label .color=${label.color} .description=${label.description}>
+            ${
+              label.icon
+                ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+                : nothing
+            }
+            ${label.name}
+          </ha-label>
+        </ha-dropdown-item>`;
+      })}
+      <wa-divider .slot=${slot}></wa-divider>
+      <ha-dropdown-item .slot=${slot} value="label_create">
+        ${this.hass.localize("ui.panel.config.labels.add_label")}
+      </ha-dropdown-item>`;
+
+  private _handleBulkAction = (ev) => {
+    const item = ev.detail.item;
+    const value = item.value;
+
+    if (!value) {
+      return;
+    }
+
+    if (value.startsWith("category_")) {
+      if (value === "category_create") {
+        this._bulkCreateCategory();
+      } else if (value === "category_none") {
+        this._bulkAddCategory(null);
+      } else {
+        this._bulkAddCategory(value.substring(9));
+      }
+      return;
+    }
+
+    if (value.startsWith("label_")) {
+      if (value === "label_create") {
+        this._bulkCreateLabel();
+      } else {
+        const action = item.action;
+        this._bulkLabel(value.substring(6), action);
+      }
+    }
+  };
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value ?? "";
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+        }
+        hass-tabs-subpage-data-table {
+          --data-table-row-height: 60px;
+        }
+        hass-tabs-subpage-data-table.narrow {
+          --data-table-row-height: 72px;
+        }
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
+        }
+        ha-dropdown ha-assist-chip {
+          --md-assist-chip-trailing-space: 8px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-helpers": HaConfigHelpers;
+  }
+}

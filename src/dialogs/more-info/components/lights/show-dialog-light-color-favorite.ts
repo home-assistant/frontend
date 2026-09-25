@@ -1,0 +1,35 @@
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { LightColor } from "../../../../data/light";
+
+export interface LightColorFavoriteDialogParams {
+  entry: ExtEntityRegistryEntry;
+  title: string;
+  initialColor?: LightColor;
+  submit?: (color?: LightColor) => void;
+}
+
+export const loadLightColorFavoriteDialog = () =>
+  import("./dialog-light-color-favorite");
+
+export const showLightColorFavoriteDialog = (
+  element: HTMLElement,
+  dialogParams: LightColorFavoriteDialogParams
+) =>
+  new Promise<LightColor | null>((resolve) => {
+    const origSubmit = dialogParams.submit;
+
+    fireEvent(element, "show-dialog", {
+      dialogTag: "dialog-light-color-favorite",
+      dialogImport: loadLightColorFavoriteDialog,
+      dialogParams: {
+        ...dialogParams,
+        submit: (color: LightColor) => {
+          resolve(color);
+          if (origSubmit) {
+            origSubmit(color);
+          }
+        },
+      },
+    });
+  });

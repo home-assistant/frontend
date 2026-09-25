@@ -1,0 +1,179 @@
+import type { TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/buttons/ha-progress-button";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-card";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
+import { cloudForgotPassword } from "../../../../data/cloud";
+import { forgotPasswordHaCloud } from "../../../../data/onboarding";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+
+@customElement("cloud-forgot-password-card")
+export class CloudForgotPasswordCard extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
+    | "page-onboarding.restore.ha-cloud.forgot_password"
+    | "config.cloud.forgot_password" = "config.cloud.forgot_password";
+
+  @property() public email?: string;
+
+  @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state() private _inProgress = false;
+
+  @state() private _error?: string;
+
+  @query("#email", true) public emailField!: HaInput;
+
+  protected render(): TemplateResult {
+    if (this.cardLess) {
+      return this._renderContent();
+    }
+
+    return html`
+      <ha-card
+        outlined
+        .header=${this._localize(
+          `ui.panel.${this.translationKeyPanel}.subtitle`
+        )}
+      >
+        ${this._renderContent()}
+      </ha-card>
+    `;
+  }
+
+  private _renderContent() {
+    return html`
+      <div class="card-content">
+        <p>
+          ${this._localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
+        </p>
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
+        <ha-input
+          autofocus
+          id="email"
+          label=${this._localize(`ui.panel.${this.translationKeyPanel}.email`)}
+          .value=${this.email ?? ""}
+          type="email"
+          required
+          .disabled=${this._inProgress}
+          @keydown=${this._keyDown}
+          .validationMessage=${this._localize(
+            `ui.panel.${this.translationKeyPanel}.email_error_msg`
+          )}
+        ></ha-input>
+      </div>
+      <div class="card-actions">
+        <ha-progress-button
+          @click=${this._handleEmailPasswordReset}
+          .progress=${this._inProgress}
+        >
+          ${this._localize(
+            `ui.panel.${this.translationKeyPanel}.send_reset_email`
+          )}
+        </ha-progress-button>
+      </div>
+    `;
+  }
+
+  private _keyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      this._handleEmailPasswordReset();
+    }
+  }
+
+  private _resetPassword = async (email: string) => {
+    this._inProgress = true;
+
+    try {
+      if (this.hass) {
+        await cloudForgotPassword(this.hass, email);
+      } else {
+        // for onboarding
+        await forgotPasswordHaCloud(email);
+      }
+      fireEvent(this, "cloud-email-changed", { value: email });
+      this._inProgress = false;
+      fireEvent(this, "cloud-done", {
+        flashMessage: this._localize(
+          `ui.panel.${this.translationKeyPanel}.check_your_email`
+        ),
+      });
+    } catch (err: any) {
+      this._inProgress = false;
+      const errCode = err && err.body && err.body.code;
+      if (errCode === "usernotfound" && email !== email.toLowerCase()) {
+        await this._resetPassword(email.toLowerCase());
+      } else {
+        this._error =
+          err && err.body && err.body.message
+            ? err.body.message
+            : "Unknown error";
+      }
+    }
+  };
+
+  private async _handleEmailPasswordReset() {
+    const emailField = this.emailField;
+
+    const email = emailField.value ?? "";
+
+    if (!emailField.reportValidity()) {
+      emailField.focus();
+      return;
+    }
+
+    this._inProgress = true;
+
+    this._resetPassword(email);
+  }
+
+  static get styles() {
+    return [
+      haStyle,
+      css`
+        ha-card {
+          max-width: 600px;
+          margin: 0 auto;
+          margin-top: 24px;
+        }
+        h1 {
+          margin: 0;
+        }
+        ha-input {
+          width: 100%;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "cloud-forgot-password-card": CloudForgotPasswordCard;
+  }
+
+  interface HASSDomEvents {
+    "cloud-done": { flashMessage: string };
+  }
+}

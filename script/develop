@@ -1,0 +1,9 @@
+#!/bin/sh
+# Run the frontend development server
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+./node_modules/.bin/gulp develop-app

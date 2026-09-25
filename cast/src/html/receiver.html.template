@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <% for (const entry of latestEntryJS) { %>
+    <script type="module" src="<%= entry %>"></script>
+  <% } %>
+  <%= renderTemplate("../../../src/html/_style_base.html.template") %>
+  <style>
+    body {
+      font-size: initial;
+    }
+  </style>
+</html>

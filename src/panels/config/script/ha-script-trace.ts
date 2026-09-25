@@ -1,0 +1,711 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
+import {
+  mdiDotsVertical,
+  mdiDownload,
+  mdiInformationOutline,
+  mdiPencil,
+  mdiRayEndArrow,
+  mdiRayStartArrow,
+  mdiRefresh,
+} from "@mdi/js";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import {
+  fireEvent,
+  type HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
+import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-tab-group";
+import "../../../components/ha-tab-group-tab";
+import "../../../components/trace/ha-trace-blueprint-config";
+import "../../../components/trace/ha-trace-config";
+import "../../../components/trace/ha-trace-logbook";
+import "../../../components/trace/ha-trace-path-details";
+import "../../../components/trace/ha-trace-timeline";
+import "../../../components/trace/hat-script-graph";
+import type {
+  HatScriptGraph,
+  NodeInfo,
+} from "../../../components/trace/hat-script-graph";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { LogbookEntry } from "../../../data/logbook";
+import { getLogbookDataForContext } from "../../../data/logbook";
+import type { ScriptEntity } from "../../../data/script";
+import type { ScriptTrace, ScriptTraceExtended } from "../../../data/trace";
+import { loadTrace, loadTraces } from "../../../data/trace";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-subpage";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
+import "../../../components/ha-trace-picker";
+import "../../../components/ha-split-panel";
+import type { HaSplitPanel } from "../../../components/ha-split-panel";
+
+const TABS = ["details", "timeline", "logbook", "config"] as const;
+
+const STORAGE_KEY_SPLIT_POSITION = "script-trace-split-position";
+const DEFAULT_SPLIT_POSITION = 20;
+
+@customElement("ha-script-trace")
+export class HaScriptTrace extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public scriptId!: string;
+
+  @property({ attribute: false }) public scripts!: ScriptEntity[];
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry?: EntityRegistryEntry[];
+
+  @state() private _entityId?: string;
+
+  @state() private _traces?: ScriptTrace[];
+
+  @state() private _runId?: string;
+
+  @state() private _selected?: NodeInfo;
+
+  @state() private _trace?: ScriptTraceExtended;
+
+  @state() private _logbookEntries?: LogbookEntry[];
+
+  @state() private _view: (typeof TABS)[number] | "blueprint" = "details";
+
+  @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
+
+  @query("hat-script-graph") private _graph?: HatScriptGraph;
+
+  protected render(): TemplateResult {
+    const stateObj = this._entityId
+      ? this.hass.states[this._entityId]
+      : undefined;
+
+    const title = stateObj?.attributes.friendly_name || this._entityId;
+
+    let devButtons: TemplateResult | string = "";
+    if (__DEV__) {
+      devButtons = html`<div style="position: absolute; right: 0;">
+        <button @click=${this._importTrace}>Import trace</button>
+        <button @click=${this._loadLocalStorageTrace}>Load stored trace</button>
+      </div>`;
+    }
+
+    return html`
+      ${devButtons}
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config/script/dashboard"
+        .header=${title}
+        .scrollable=${this.narrow}
+      >
+        ${
+          !this.narrow && this.scriptId
+            ? html`
+                <ha-button
+                  class="trace-link"
+                  @click=${this._navigateToScript}
+                  slot="toolbar-icon"
+                  appearance="plain"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.script.trace.edit_script"
+                  )}
+                </ha-button>
+              `
+            : nothing
+        }
+
+        <ha-dropdown
+          slot="toolbar-icon"
+          @wa-select=${this._handleDropdownSelect}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-dropdown-item .disabled=${!stateObj} value="show_info">
+            ${this.hass.localize("ui.panel.config.script.editor.show_info")}
+            <ha-svg-icon
+              slot="icon"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </ha-dropdown-item>
+
+          ${
+            this.narrow && this.scriptId
+              ? html`<ha-dropdown-item value="edit_script">
+                  ${this.hass.localize(
+                    "ui.panel.config.script.trace.edit_script"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+                </ha-dropdown-item> `
+              : nothing
+          }
+
+          <wa-divider></wa-divider>
+
+          <ha-dropdown-item value="refresh">
+            ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item .disabled=${!this._trace} value="download_trace">
+            ${this.hass.localize(
+              "ui.panel.config.automation.trace.download_trace"
+            )}
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
+
+        <div class="toolbar">
+          ${
+            this._traces && this._traces.length > 0
+              ? html`
+                  <ha-icon-button
+                    .disabled=${
+                      this._traces[this._traces.length - 1].run_id ===
+                      this._runId
+                    }
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.older_trace"
+                    )}
+                    @click=${this._pickOlderTrace}
+                    .path=${mdiRayEndArrow}
+                  ></ha-icon-button>
+                  <ha-trace-picker
+                    .hass=${this.hass}
+                    .traces=${this._traces}
+                    .value=${this._runId}
+                    @value-changed=${this._pickTrace}
+                  ></ha-trace-picker>
+                  <ha-icon-button
+                    .disabled=${this._traces[0].run_id === this._runId}
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.newer_trace"
+                    )}
+                    @click=${this._pickNewerTrace}
+                    .path=${mdiRayStartArrow}
+                  ></ha-icon-button>
+                `
+              : ""
+          }
+        </div>
+
+        ${
+          this._traces === undefined
+            ? html`<div class="container">
+                ${this.hass.localize("ui.panel.config.script.trace.loading")}…
+              </div>`
+            : this._traces.length === 0
+              ? html`<div class="container">
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.no_traces_found"
+                  )}
+                </div>`
+              : this._trace === undefined
+                ? ""
+                : html`
+                    <div class="main">
+                      ${
+                        this.narrow
+                          ? this._renderPanes()
+                          : html`
+                              <ha-split-panel
+                                class="split"
+                                .position=${this._splitPosition}
+                                @wa-reposition=${this._splitRepositioned}
+                              >
+                                ${this._renderPanes()}
+                              </ha-split-panel>
+                            `
+                      }
+                    </div>
+                  `
+        }
+      </hass-subpage>
+    `;
+  }
+
+  private _renderPanes(): TemplateResult {
+    const graph = this._graph;
+    const trackedNodes = graph?.trackedNodes;
+    const renderedNodes = graph?.renderedNodes;
+
+    return html`
+      <div class="graph" slot="start">
+        <hat-script-graph
+          .trace=${this._trace}
+          .selected=${this._selected?.path}
+          @graph-node-selected=${this._pickNode}
+        ></hat-script-graph>
+      </div>
+
+      <div class="info" slot="end">
+        <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+          ${TABS.map(
+            (view) => html`
+              <ha-tab-group-tab
+                slot="nav"
+                .active=${this._view === view}
+                .panel=${view}
+              >
+                ${this.hass.localize(
+                  `ui.panel.config.automation.trace.tabs.${
+                    view === "config" ? "script_config" : view
+                  }`
+                )}
+              </ha-tab-group-tab>
+            `
+          )}
+          ${
+            this._trace!.blueprint_inputs
+              ? html`
+                  <ha-tab-group-tab
+                    slot="nav"
+                    .active=${this._view === "blueprint"}
+                    panel="blueprint"
+                  >
+                    ${this.hass!.localize(
+                      `ui.panel.config.automation.trace.tabs.blueprint_config`
+                    )}
+                  </ha-tab-group-tab>
+                `
+              : ""
+          }
+        </ha-tab-group>
+        ${
+          this._selected === undefined ||
+          this._logbookEntries === undefined ||
+          trackedNodes === undefined
+            ? ""
+            : this._view === "details"
+              ? html`
+                  <ha-trace-path-details
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .trace=${this._trace}
+                    .selected=${this._selected}
+                    .logbookEntries=${this._logbookEntries}
+                    .trackedNodes=${trackedNodes}
+                    .renderedNodes=${renderedNodes!}
+                  ></ha-trace-path-details>
+                `
+              : this._view === "config"
+                ? html`
+                    <ha-trace-config .trace=${this._trace}></ha-trace-config>
+                  `
+                : this._view === "logbook"
+                  ? html`
+                      <ha-trace-logbook
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .trace=${this._trace}
+                        .logbookEntries=${this._logbookEntries}
+                      ></ha-trace-logbook>
+                    `
+                  : this._view === "blueprint"
+                    ? html`
+                        <ha-trace-blueprint-config
+                          .trace=${this._trace}
+                        ></ha-trace-blueprint-config>
+                      `
+                    : html`
+                        <ha-trace-timeline
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .logbookEntries=${this._logbookEntries}
+                          .selected=${this._selected}
+                          @value-changed=${this._timelinePathPicked}
+                        ></ha-trace-timeline>
+                      `
+        }
+      </div>
+    `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+
+    const storedPosition = localStorage?.[STORAGE_KEY_SPLIT_POSITION];
+    if (storedPosition) {
+      const parsed = parseFloat(storedPosition);
+      if (!isNaN(parsed) && parsed > 0 && parsed < 100) {
+        this._splitPosition = parsed;
+      }
+    }
+
+    if (!this.scriptId) {
+      return;
+    }
+
+    const params = new URLSearchParams(location.search);
+    this._loadTraces(params.get("run_id") || undefined);
+
+    this._entityId = this._entityRegistry?.find(
+      (entry) => entry.unique_id === this.scriptId
+    )?.entity_id;
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    // Only reset if scriptId has changed and we had one before.
+    if (changedProps.get("scriptId")) {
+      this._traces = undefined;
+      this._runId = undefined;
+      this._trace = undefined;
+      this._logbookEntries = undefined;
+      this._entityId = undefined;
+      if (this.scriptId) {
+        this._loadTraces();
+      }
+    }
+
+    if (
+      (changedProps.has("scriptId") || changedProps.has("_entityRegistry")) &&
+      this.scriptId
+    ) {
+      this._entityId = this._entityRegistry?.find(
+        (entry) => entry.unique_id === this.scriptId
+      )?.entity_id;
+    }
+
+    if (
+      changedProps.has("scriptId") ||
+      changedProps.has("_entityId") ||
+      changedProps.has("_entityRegistry")
+    ) {
+      this._setRelatedContext();
+    }
+
+    if (changedProps.has("_runId") && this._runId) {
+      this._trace = undefined;
+      this._logbookEntries = undefined;
+      this._loadTrace();
+    }
+  }
+
+  private _setRelatedContext() {
+    const areaId = this._entityId
+      ? this._entityRegistry?.find(
+          (entry) => entry.entity_id === this._entityId
+        )?.area_id
+      : undefined;
+    fireRelatedContext(
+      this,
+      areaId
+        ? {
+            itemType: "area",
+            itemId: areaId,
+          }
+        : undefined
+    );
+  }
+
+  private _pickOlderTrace() {
+    const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
+    this._runId = this._traces![curIndex + 1].run_id;
+    this._selected = undefined;
+  }
+
+  private _pickNewerTrace() {
+    const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
+    this._runId = this._traces![curIndex - 1].run_id;
+    this._selected = undefined;
+  }
+
+  private _pickTrace(ev) {
+    this._runId = ev.detail.value;
+    this._selected = undefined;
+  }
+
+  private _pickNode(ev) {
+    this._selected = ev.detail;
+  }
+
+  private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
+    this._splitPosition = ev.target.position;
+    this._storeSplitPosition();
+  }
+
+  private _storeSplitPosition = debounce(
+    () => {
+      localStorage[STORAGE_KEY_SPLIT_POSITION] = String(this._splitPosition);
+    },
+    500,
+    false
+  );
+
+  private _refreshTraces() {
+    this._loadTraces();
+  }
+
+  private async _loadTraces(runId?: string) {
+    this._traces = await loadTraces(this.hass, "script", this.scriptId);
+    // Newest will be on top.
+    this._traces.reverse();
+
+    if (runId) {
+      this._runId = runId;
+    }
+
+    // Check if current run ID still exists
+    if (
+      this._runId &&
+      !this._traces.some((trace) => trace.run_id === this._runId)
+    ) {
+      this._runId = undefined;
+      this._selected = undefined;
+
+      // If we came here from a trace passed into the url, clear it.
+      if (runId) {
+        const params = new URLSearchParams(location.search);
+        params.delete("run_id");
+        replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
+      }
+
+      await showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.automation.trace.trace_no_longer_available"
+        ),
+      });
+    }
+
+    // See if we can set a default runID
+    if (!this._runId && this._traces.length > 0) {
+      this._runId = this._traces[0].run_id;
+    }
+  }
+
+  private async _loadTrace() {
+    const trace = await loadTrace(
+      this.hass,
+      "script",
+      this.scriptId,
+      this._runId!
+    );
+    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
+      ? await getLogbookDataForContext(
+          this.hass,
+          trace.timestamp.start,
+          trace.context.id
+        )
+      : [];
+
+    this._trace = trace;
+  }
+
+  private _downloadTrace() {
+    const json = JSON.stringify(
+      {
+        trace: this._trace,
+        logbookEntries: this._logbookEntries,
+      },
+      undefined,
+      2
+    );
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    fileDownload(
+      url,
+      `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
+    );
+  }
+
+  private _importTrace() {
+    const traceText = prompt(
+      this.hass.localize(
+        "ui.panel.config.automation.trace.enter_downloaded_trace"
+      )
+    );
+    if (!traceText) {
+      return;
+    }
+
+    window.localStorage.setItem("devTrace", traceText);
+    this._loadLocalTrace(traceText);
+  }
+
+  private _loadLocalStorageTrace() {
+    const devTrace = window.localStorage.getItem("devTrace");
+    if (devTrace) {
+      this._loadLocalTrace(devTrace);
+    }
+  }
+
+  private _loadLocalTrace(traceText: string) {
+    const traceInfo = JSON.parse(traceText);
+    this._trace = traceInfo.trace;
+    this._logbookEntries = traceInfo.logbookEntries;
+  }
+
+  private _handleTabChanged(ev: CustomEvent) {
+    this._view = ev.detail.name as typeof this._view;
+  }
+
+  private _timelinePathPicked(ev: CustomEvent) {
+    const path = ev.detail.value;
+    const nodes = this._graph!.trackedNodes;
+    if (nodes[path]) {
+      this._selected = nodes[path];
+    }
+  }
+
+  private async _showInfo() {
+    if (!this._entityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
+  private _navigateToScript() {
+    if (this.scriptId) {
+      navigate(`/config/script/edit/${this.scriptId}`);
+    }
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "show_info":
+        this._showInfo();
+        break;
+      case "refresh":
+        this._refreshTraces();
+        break;
+      case "download_trace":
+        this._downloadTrace();
+        break;
+      case "edit_script":
+        this._navigateToScript();
+        break;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: var(--header-height);
+          background-color: var(--primary-background-color);
+          color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          box-sizing: border-box;
+        }
+
+        .main {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          overflow: hidden;
+          background-color: var(--card-background-color);
+        }
+
+        :host([narrow]) .main {
+          flex: none;
+          height: auto;
+          flex-direction: column;
+          overflow: visible;
+        }
+
+        .container {
+          padding: 16px;
+        }
+
+        ha-split-panel.split {
+          flex: 1;
+          min-height: 0;
+          min-width: 0;
+          --ha-split-panel-min: 10%;
+          --ha-split-panel-max: 80%;
+          --ha-split-panel-divider-hit-area: var(--ha-space-4);
+        }
+
+        .graph {
+          background-color: var(--primary-background-color);
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          min-width: 0;
+          min-height: 0;
+        }
+        hat-script-graph {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
+        }
+        :host([narrow]) .graph {
+          max-width: 100%;
+          overflow: visible;
+          height: auto;
+        }
+        :host([narrow]) hat-script-graph {
+          overflow: visible;
+          flex: none;
+        }
+        .info {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
+          overflow-y: auto;
+          background-color: var(--card-background-color);
+        }
+        ha-tab-group {
+          background-color: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+          direction: var(--direction);
+        }
+        ha-tab-group-tab::part(base) {
+          padding: 2px 16px;
+        }
+        :host([narrow]) .info {
+          overflow: visible;
+        }
+        .trace-link {
+          text-decoration: none;
+        }
+        ha-trace-picker {
+          flex-grow: 1;
+          max-width: 500px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-script-trace": HaScriptTrace;
+  }
+}

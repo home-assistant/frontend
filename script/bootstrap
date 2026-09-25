@@ -1,0 +1,32 @@
+#!/bin/bash -i
+# Resolve all frontend dependencies that the application requires to develop.
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Install/upgrade node when inside devcontainer
+if [[ -n "$DEVCONTAINER" ]]; then
+    nodeCurrent=$(nvm version default || :)
+    nodeLatest=$(nvm version-remote "$(cat .nvmrc)")
+    if [[ -z "$nodeCurrent" || "$nodeCurrent" == "N/A" ]]; then
+        nvm install
+    elif [[ "$nodeCurrent" != "$nodeLatest" ]]; then
+        nvm install --reinstall-packages-from="$nodeCurrent" --default
+        nvm uninstall "$nodeCurrent"
+    fi
+
+    # install yarn if not already available
+    if ! command -v yarn &> /dev/null; then
+        npm install -g corepack
+        yes | yarn
+    fi
+fi
+
+if ! command -v yarn &> /dev/null; then
+    echo "Error: yarn not found. Please install it following the official instructions: https://yarnpkg.com/getting-started/install" >&2
+    exit 1
+fi
+# Install node modules
+yarn install

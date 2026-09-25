@@ -1,0 +1,253 @@
+import type { CSSResultGroup } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { RepeatAction } from "../../../../../data/script";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
+import "../ha-automation-action";
+import type { ActionElement } from "../ha-automation-action-row";
+
+import { isTemplate } from "../../../../../common/string/has-template";
+import "../../../../../components/ha-form/ha-form";
+import type { HaForm } from "../../../../../components/ha-form/ha-form";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
+import type { HaSelector } from "../../../../../components/ha-selector/ha-selector";
+import type { HaActionSelector } from "../../../../../components/ha-selector/ha-selector-action";
+import type { HaConditionSelector } from "../../../../../components/ha-selector/ha-selector-condition";
+
+const OPTIONS = ["count", "while", "until", "for_each"] as const;
+type RepeatType = (typeof OPTIONS)[number];
+
+export const getRepeatType = (action: RepeatAction["repeat"]) =>
+  OPTIONS.find((option) => option in action);
+
+@customElement("ha-automation-action-repeat")
+export class HaRepeatAction extends LitElement implements ActionElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public action!: RepeatAction;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
+  @query("ha-form")
+  private _formElement?: HaForm;
+
+  public static get defaultConfig(): RepeatAction {
+    return { repeat: { count: 2, sequence: [] } };
+  }
+
+  private _schema = memoizeOne(
+    (
+      type: RepeatType,
+      template: boolean,
+      inSidebar: boolean,
+      indent: boolean
+    ) =>
+      [
+        ...(type === "count" && (inSidebar || (!inSidebar && !indent))
+          ? ([
+              {
+                name: "count",
+                required: true,
+                selector: template
+                  ? { template: {} }
+                  : { number: { mode: "box", min: 1 } },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...((type === "until" || type === "while") &&
+        (indent || (!inSidebar && !indent))
+          ? ([
+              {
+                name: type,
+                selector: {
+                  condition: {
+                    optionsInSidebar: indent,
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...(type === "for_each" && (inSidebar || (!inSidebar && !indent))
+          ? ([
+              {
+                name: "for_each",
+                required: true,
+                selector: { object: {} },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...(indent || (!inSidebar && !indent)
+          ? ([
+              {
+                name: "sequence",
+                selector: {
+                  action: {
+                    optionsInSidebar: indent,
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
+  protected render() {
+    const action = this.action.repeat;
+    const type = getRepeatType(action);
+    const schema = this._schema(
+      type ?? "count",
+      "count" in action && typeof action.count === "string"
+        ? isTemplate(action.count)
+        : false,
+      this.inSidebar,
+      this.indent
+    );
+
+    const data = { ...action, type };
+    return html`<ha-form
+      .hass=${this.hass}
+      .data=${data}
+      .schema=${schema}
+      .disabled=${this.disabled}
+      @value-changed=${this._valueChanged}
+      .computeLabel=${this._computeLabelCallback}
+      .narrow=${this.narrow}
+    ></ha-form>`;
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const newVal = ev.detail.value;
+
+    const newType = newVal.type;
+    delete newVal.type;
+    const oldType = getRepeatType(this.action.repeat);
+
+    if (newType !== oldType) {
+      if (newType === "count") {
+        newVal.count = 2;
+        delete newVal.while;
+        delete newVal.until;
+        delete newVal.for_each;
+      }
+      if (newType === "while") {
+        newVal.while = newVal.until ?? [];
+        delete newVal.count;
+        delete newVal.until;
+        delete newVal.for_each;
+      }
+      if (newType === "until") {
+        newVal.until = newVal.while ?? [];
+        delete newVal.count;
+        delete newVal.while;
+        delete newVal.for_each;
+      }
+      if (newType === "for_each") {
+        newVal.for_each = {};
+        delete newVal.count;
+        delete newVal.while;
+        delete newVal.until;
+      }
+    }
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.action,
+        repeat: { ...newVal },
+      },
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [haStyle];
+  }
+
+  private _getSelectorElements() {
+    if (this._formElement) {
+      const selectors =
+        this._formElement.shadowRoot?.querySelectorAll<HaSelector>(
+          "ha-selector"
+        );
+
+      const selectorElements: (HaConditionSelector | HaActionSelector)[] = [];
+
+      selectors?.forEach((selector) => {
+        selectorElements.push(
+          ...Array.from(
+            selector.shadowRoot?.querySelectorAll<
+              HaConditionSelector | HaActionSelector
+            >("ha-selector-condition, ha-selector-action") || []
+          )
+        );
+      });
+      return selectorElements;
+    }
+    return [];
+  }
+
+  public expandAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.expandAll?.();
+    });
+  }
+
+  public collapseAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.collapseAll?.();
+    });
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string => {
+    switch (schema.name) {
+      case "count":
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
+        );
+      case "while":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions"
+          ) + ":"
+        );
+      case "until":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions"
+          ) + ":"
+        );
+      case "for_each":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.type.for_each.items"
+          ) + ":"
+        );
+      case "sequence":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.sequence"
+          ) + ":"
+        );
+    }
+    return "";
+  };
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-action-repeat": HaRepeatAction;
+  }
+}

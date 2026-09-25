@@ -1,0 +1,142 @@
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { Trigger } from "../../../../data/automation";
+import {
+  TRIGGER_ROW_CONFIG_KEYS,
+  migrateAutomationTrigger,
+  pickRowConfig,
+} from "../../../../data/automation";
+import type { TriggerDescription } from "../../../../data/trigger";
+import { isTriggerList } from "../../../../data/trigger";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import "../ha-automation-editor-warning";
+import "./types/ha-automation-trigger-platform";
+
+@customElement("ha-automation-trigger-editor")
+export default class HaAutomationTriggerEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public trigger!: Trigger;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean, attribute: "yaml" }) public yamlMode = false;
+
+  @property({ type: Boolean, attribute: "supported" }) public uiSupported =
+    false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ attribute: false }) public description?: TriggerDescription;
+
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  protected render() {
+    const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
+
+    const yamlMode = this.yamlMode || !this.uiSupported;
+
+    return html`
+      <div
+        class=${classMap({
+          "card-content": true,
+          disabled: this.disabled,
+          yaml: yamlMode,
+          card: !this.inSidebar,
+        })}
+      >
+        ${
+          yamlMode
+            ? html`
+                ${
+                  !this.uiSupported
+                    ? html`
+                        <ha-automation-editor-warning
+                          .alertTitle=${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.unsupported_platform",
+                            { platform: type }
+                          )}
+                          .localize=${this.hass.localize}
+                        ></ha-automation-editor-warning>
+                      `
+                    : nothing
+                }
+                <ha-yaml-editor
+                  .defaultValue=${this.trigger}
+                  .readOnly=${this.disabled}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
+              `
+            : html`
+                <div @value-changed=${this._onUiChanged}>
+                  ${
+                    this.description
+                      ? html`<ha-automation-trigger-platform
+                          .hass=${this.hass}
+                          .trigger=${this.trigger}
+                          .description=${this.description}
+                          .disabled=${this.disabled}
+                        ></ha-automation-trigger-platform>`
+                      : dynamicElement(`ha-automation-trigger-${type}`, {
+                          hass: this.hass,
+                          trigger: this.trigger,
+                          disabled: this.disabled,
+                        })
+                  }
+                </div>
+              `
+        }
+      </div>
+    `;
+  }
+
+  private _onYamlChange(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
+      value: migrateAutomationTrigger(ev.detail.value),
+    });
+  }
+
+  private _onUiChanged(ev: CustomEvent) {
+    if (isTriggerList(this.trigger)) return;
+    ev.stopPropagation();
+    const value = {
+      ...ev.detail.value,
+      ...pickRowConfig(this.trigger, TRIGGER_ROW_CONFIG_KEYS),
+    };
+    fireEvent(this, "value-changed", { value });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .disabled {
+          pointer-events: none;
+        }
+
+        .card-content.yaml {
+          padding: 0 1px;
+          border-top: 1px solid var(--divider-color);
+          border-bottom: 1px solid var(--divider-color);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-editor": HaAutomationTriggerEditor;
+  }
+}

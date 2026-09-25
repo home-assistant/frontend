@@ -1,0 +1,9 @@
+#!/bin/sh
+# Build the cast receiver
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/../.."
+
+./node_modules/.bin/gulp build-cast

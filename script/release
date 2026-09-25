@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Install node modules
+yarn install
+
+script/build_frontend
+
+rm -rf dist home_assistant_frontend.egg-info
+python3 -m build -q

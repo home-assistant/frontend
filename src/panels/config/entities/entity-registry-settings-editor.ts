@@ -1,0 +1,1841 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
+import { mdiContentCopy, mdiRestore } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { until } from "lit/directives/until";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
+import { stringCompare } from "../../../common/string/compare";
+import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-alert";
+import "../../../components/ha-area-picker";
+import "../../../components/ha-color-picker";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
+import "../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
+import "../../../components/ha-state-icon";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/input/ha-input";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/item/ha-row-item";
+import "../../../components/list/ha-list-base";
+import {
+  CAMERA_ORIENTATIONS,
+  CameraEntityFeature,
+  type CameraPreferences,
+  fetchCameraCapabilities,
+  fetchCameraPrefs,
+  STREAM_TYPE_HLS,
+  updateCameraPrefs,
+} from "../../../data/camera";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { deleteConfigEntry } from "../../../data/config_entries";
+import {
+  createConfigFlow,
+  handleConfigFlowStep,
+} from "../../../data/config_flow";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
+import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
+import type {
+  AlarmControlPanelEntityOptions,
+  CalendarEntityOptions,
+  DeviceTrackerEntityOptions,
+  EntityRegistryEntry,
+  EntityRegistryEntryUpdateParams,
+  ExtEntityRegistryEntry,
+  LockEntityOptions,
+  SensorEntityOptions,
+} from "../../../data/entity/entity_registry";
+import {
+  getAutomaticEntityIds,
+  subscribeEntityRegistry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
+import { entityIcon, entryIcon } from "../../../data/icons";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+} from "../../../data/integration";
+import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
+import {
+  createOptionsFlow,
+  handleOptionsFlowStep,
+} from "../../../data/options_flow";
+import {
+  getSensorDeviceClassConvertibleUnits,
+  isNumericSensorDeviceClass,
+} from "../../../data/sensor";
+import { VacuumEntityFeature } from "../../../data/vacuum";
+import type { WeatherUnits } from "../../../data/weather";
+import { getWeatherConvertibleUnits } from "../../../data/weather";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import { showVacuumSegmentMappingView } from "../../../dialogs/more-info/components/vacuum/show-view-vacuum-segment-mapping";
+import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/voice/show-view-voice-assistants";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
+import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+
+export const OVERRIDE_DEVICE_CLASSES = {
+  cover: [
+    [
+      "awning",
+      "blind",
+      "curtain",
+      "damper",
+      "door",
+      "garage",
+      "gate",
+      "shade",
+      "shutter",
+      "window",
+    ],
+  ],
+  binary_sensor: [
+    ["lock"], // Lock
+    ["window", "door", "garage_door", "opening"], // Door
+    ["battery", "battery_charging"], // Battery
+    ["cold", "gas", "heat"], // Climate
+    ["running", "motion", "moving", "occupancy", "presence", "vibration"], // Presence
+    ["power", "plug", "light"], // Power
+    [
+      "smoke",
+      "safety",
+      "glass_break",
+      "sound",
+      "problem",
+      "tamper",
+      "carbon_monoxide",
+      "moisture",
+    ], // Alarm
+    ["connectivity"], // Connectivity
+    ["update"], // Update
+  ],
+};
+
+const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren", "valve"];
+const SWITCH_AS_DOMAINS_INVERT = ["cover", "lock", "valve"];
+
+const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
+
+const SCANNER_SOURCE_TYPES = ["router", "bluetooth", "bluetooth_le"];
+
+const ZONE_DOMAINS = ["zone"];
+
+export interface EntitySettingsState {
+  name: string | null;
+  icon: string | null;
+  entityId: string;
+  areaId: string | null;
+  labels: string[];
+  deviceClass: string | undefined;
+  disabledBy: EntityRegistryEntry["disabled_by"];
+  hiddenBy: EntityRegistryEntry["hidden_by"];
+  unitOfMeasurement: string | null | undefined;
+  precision: number | null | undefined;
+  defaultCode: string | null | undefined;
+  calendarColor: string | null;
+  precipitationUnit: string | null | undefined;
+  pressureUnit: string | null | undefined;
+  temperatureUnit: string | null | undefined;
+  visibilityUnit: string | null | undefined;
+  windSpeedUnit: string | null | undefined;
+  switchAsDomain: string;
+  switchAsInvert: boolean;
+}
+
+@customElement("entity-registry-settings-editor")
+export class EntityRegistrySettingsEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
+
+  @property({ type: Boolean, attribute: "hide-name" }) public hideName = false;
+
+  @property({ type: Boolean, attribute: "hide-icon" }) public hideIcon = false;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: false }) public helperConfigEntry?: ConfigEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<
+    EntitySettingsState,
+    "entity-registry"
+  >;
+
+  @state() private _name!: string;
+
+  @state() private _icon!: string;
+
+  @state() private _entityId!: EntitySettingsState["entityId"];
+
+  @state() private _deviceClass?: EntitySettingsState["deviceClass"];
+
+  @state() private _switchAsDomain: EntitySettingsState["switchAsDomain"] =
+    "switch";
+
+  @state() private _switchAsInvert: EntitySettingsState["switchAsInvert"] =
+    false;
+
+  @state() private _areaId?: string | null;
+
+  @state() private _labels?: string[] | null;
+
+  @state() private _disabledBy!: EntitySettingsState["disabledBy"];
+
+  @state() private _hiddenBy!: EntitySettingsState["hiddenBy"];
+
+  @state() private _device?: DeviceRegistryEntry;
+
+  @state()
+  private _unit_of_measurement?: EntitySettingsState["unitOfMeasurement"];
+
+  @state() private _precision?: EntitySettingsState["precision"];
+
+  @state()
+  private _precipitation_unit?: EntitySettingsState["precipitationUnit"];
+
+  @state() private _pressure_unit?: EntitySettingsState["pressureUnit"];
+
+  @state()
+  private _temperature_unit?: EntitySettingsState["temperatureUnit"];
+
+  @state() private _visibility_unit?: EntitySettingsState["visibilityUnit"];
+
+  @state() private _wind_speed_unit?: EntitySettingsState["windSpeedUnit"];
+
+  @state() private _cameraPrefs?: CameraPreferences;
+
+  @state() private _numberDeviceClassConvertibleUnits?: string[];
+
+  @state() private _sensorDeviceClassConvertibleUnits?: string[];
+
+  @state() private _weatherConvertibleUnits?: WeatherUnits;
+
+  @state() private _defaultCode?: EntitySettingsState["defaultCode"];
+
+  @state() private _calendarColor?: EntitySettingsState["calendarColor"];
+
+  @state() private _associatedZone?: string;
+
+  @state() private _noDeviceArea?: boolean;
+
+  private _origEntityId!: string;
+
+  private _deviceClassOptions?: string[][];
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (
+      !changedProperties.has("entry") ||
+      changedProperties.get("entry")?.id === this.entry.id
+    ) {
+      return;
+    }
+
+    this._name = this.entry.name || "";
+    this._icon = this.entry.icon || "";
+    this._deviceClass =
+      this.entry.device_class || this.entry.original_device_class;
+    this._origEntityId = this.entry.entity_id;
+    this._areaId = this.entry.area_id;
+    this._labels = this.entry.labels;
+    this._entityId = this.entry.entity_id;
+    this._disabledBy = this.entry.disabled_by;
+    this._hiddenBy = this.entry.hidden_by;
+    this._device = this.entry.device_id
+      ? this.hass.devices[this.entry.device_id]
+      : undefined;
+    this._switchAsInvert = this.entry.options?.switch_as_x?.invert === true;
+
+    const domain = computeDomain(this.entry.entity_id);
+
+    if (domain === "camera" && isComponentLoaded(this.hass.config, "stream")) {
+      const stateObj: HassEntity | undefined =
+        this.hass.states[this.entry.entity_id];
+      if (stateObj && supportsFeature(stateObj, CameraEntityFeature.STREAM)) {
+        this._fetchCameraPrefs();
+      }
+    }
+
+    if (domain === "number" || domain === "sensor") {
+      const stateObj: HassEntity | undefined =
+        this.hass.states[this.entry.entity_id];
+      this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
+    }
+
+    if (domain === "sensor") {
+      this._precision = this.entry.options?.sensor?.display_precision;
+    }
+
+    if (domain === "lock") {
+      this._defaultCode = this.entry.options?.lock?.default_code;
+    }
+
+    if (domain === "alarm_control_panel") {
+      this._defaultCode = this.entry.options?.alarm_control_panel?.default_code;
+    }
+
+    if (domain === "calendar") {
+      this._calendarColor = this.entry.options?.calendar?.color;
+    }
+
+    if (domain === "device_tracker") {
+      this._associatedZone =
+        this.entry.options?.device_tracker?.associated_zone ?? "zone.home";
+    }
+
+    if (domain === "weather") {
+      const stateObj: HassEntity | undefined =
+        this.hass.states[this.entry.entity_id];
+      this._precipitation_unit = stateObj?.attributes?.precipitation_unit;
+      this._pressure_unit = stateObj?.attributes?.pressure_unit;
+      this._temperature_unit = stateObj?.attributes?.temperature_unit;
+      this._visibility_unit = stateObj?.attributes?.visibility_unit;
+      this._wind_speed_unit = stateObj?.attributes?.wind_speed_unit;
+    }
+
+    const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
+
+    if (!deviceClasses || this._hideDeviceClassOverride(domain)) {
+      this._deviceClassOptions = undefined;
+      return;
+    }
+
+    this._deviceClassOptions = [[], []];
+    for (const deviceClass of deviceClasses) {
+      if (deviceClass.includes(this.entry.original_device_class!)) {
+        this._deviceClassOptions[0] = deviceClass;
+      } else {
+        this._deviceClassOptions[1].push(...deviceClass);
+      }
+    }
+  }
+
+  private _hideDeviceClassOverride(domain: string): boolean {
+    // Template binary sensor device_class should be edited via template options,
+    // not the entity registry override UI used by other binary sensors.
+    return (
+      domain === "binary_sensor" &&
+      this.entry.platform === "template" &&
+      !!this.entry.config_entry_id
+    );
+  }
+
+  private _precisionLabel(precision?: number, stateValue?: string) {
+    const stateValueNumber = Number(stateValue);
+    const value = !isNaN(stateValueNumber) ? stateValue! : 0;
+    return formatNumber(value, this.hass.locale, {
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision,
+    });
+  }
+
+  private _isInvalidDefaultCode(
+    codeFormat?: string,
+    value?: string | null
+  ): boolean {
+    if (codeFormat && value) {
+      return !RegExp(codeFormat).test(value);
+    }
+    return false;
+  }
+
+  protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("helperConfigEntry")) {
+      if (this.helperConfigEntry?.domain === "switch_as_x") {
+        this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      } else {
+        this._switchAsDomain = "switch";
+        this._switchAsInvert = false;
+      }
+    }
+
+    if (this._name === undefined || this._entityId === undefined) {
+      return;
+    }
+
+    this._dirtyState?.setState(
+      {
+        name: this._name || null,
+        icon: this._icon || null,
+        entityId: this._entityId,
+        areaId: this._areaId ?? null,
+        labels: this._labels ?? [],
+        deviceClass: this._deviceClass,
+        disabledBy: this._disabledBy,
+        hiddenBy: this._hiddenBy,
+        unitOfMeasurement: this._unit_of_measurement,
+        precision: this._precision,
+        defaultCode: this._defaultCode,
+        calendarColor: this._calendarColor ?? null,
+        precipitationUnit: this._precipitation_unit,
+        pressureUnit: this._pressure_unit,
+        temperatureUnit: this._temperature_unit,
+        visibilityUnit: this._visibility_unit,
+        windSpeedUnit: this._wind_speed_unit,
+        switchAsDomain: this._switchAsDomain,
+        switchAsInvert: this._switchAsInvert,
+      },
+      "entity-registry"
+    );
+
+    if (changedProps.has("_deviceClass")) {
+      const domain = computeDomain(this.entry.entity_id);
+
+      if (domain === "number" && this._deviceClass) {
+        const { units } = await getNumberDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._numberDeviceClassConvertibleUnits = units;
+      } else {
+        this._numberDeviceClassConvertibleUnits = [];
+      }
+      if (domain === "sensor" && this._deviceClass) {
+        const { units } = await getSensorDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._sensorDeviceClassConvertibleUnits = units;
+      } else {
+        this._sensorDeviceClassConvertibleUnits = [];
+      }
+    }
+    if (changedProps.has("_entityId")) {
+      const domain = computeDomain(this.entry.entity_id);
+      if (domain === "switch") {
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      }
+
+      if (domain === "weather") {
+        const { units } = await getWeatherConvertibleUnits(this.hass);
+        this._weatherConvertibleUnits = units;
+      } else {
+        this._weatherConvertibleUnits = undefined;
+      }
+    }
+  }
+
+  protected render() {
+    if (this.entry.entity_id !== this._origEntityId) {
+      return nothing;
+    }
+    const stateObj: HassEntity | undefined =
+      this.hass.states[this.entry.entity_id];
+
+    const domain = computeDomain(this.entry.entity_id);
+
+    const invalidDefaultCode =
+      domain === "lock" &&
+      this._isInvalidDefaultCode(
+        stateObj?.attributes?.code_format,
+        this._defaultCode
+      );
+
+    const defaultPrecision =
+      this.entry.options?.sensor?.suggested_display_precision ?? undefined;
+
+    return html`
+      ${
+        this.hideName
+          ? nothing
+          : html`<ha-input
+              inset-label
+              class="name"
+              .value=${this._name}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.name"
+              )}
+              .disabled=${this.disabled}
+              @input=${this._nameChanged}
+            >
+              ${
+                this._device
+                  ? html`<span slot="hint"
+                      >${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.device_name_tip",
+                        {
+                          link: html`<button
+                            class="link"
+                            @click=${this._resetNameAndOpenDeviceSettings}
+                          >
+                            ${this.hass.localize(
+                              "ui.dialogs.entity_registry.editor.open_device_settings"
+                            )}
+                          </button>`,
+                        }
+                      )}</span
+                    >`
+                  : nothing
+              }
+            </ha-input>`
+      }
+      ${
+        this.hideIcon
+          ? nothing
+          : html`
+              <ha-icon-picker
+                .value=${this._icon}
+                @value-changed=${this._iconChanged}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.icon"
+                )}
+                .placeholder=${
+                  this.entry.original_icon ||
+                  stateObj?.attributes.icon ||
+                  (stateObj &&
+                    until(
+                      entityIcon(
+                        this.hass.entities,
+                        this.hass.config,
+                        this.hass.connection,
+                        stateObj
+                      )
+                    )) ||
+                  until(entryIcon(this.hass, this.entry))
+                }
+                .disabled=${this.disabled}
+              >
+                ${
+                  !this._icon && !stateObj?.attributes.icon && stateObj
+                    ? html`
+                        <ha-state-icon
+                          slot="start"
+                          .stateObj=${stateObj}
+                        ></ha-state-icon>
+                      `
+                    : nothing
+                }
+              </ha-icon-picker>
+            `
+      }
+      ${
+        domain === "switch"
+          ? html`<ha-select
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.device_class"
+              )}
+              @selected=${this._switchAsDomainChanged}
+              value=${this._switchAsLabel(
+                this._switchAsDomain,
+                this._deviceClass
+              )}
+            >
+              <ha-dropdown-item
+                value="switch"
+                .selected=${
+                  this._switchAsDomain === "switch" &&
+                  (!this._deviceClass || this._deviceClass === "switch")
+                }
+              >
+                ${domainToName(this.hass.localize, "switch")}
+              </ha-dropdown-item>
+              <ha-dropdown-item
+                value="outlet"
+                .selected=${
+                  this._switchAsDomain === "switch" &&
+                  this._deviceClass === "outlet"
+                }
+              >
+                ${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
+                )}
+              </ha-dropdown-item>
+              <wa-divider></wa-divider>
+              ${this._switchAsDomainsSorted(
+                SWITCH_AS_DOMAINS,
+                this.hass.localize
+              ).map(
+                (entry) => html`
+                  <ha-dropdown-item
+                    .value=${entry.domain}
+                    .selected=${this._switchAsDomain === entry.domain}
+                  >
+                    ${entry.label}
+                  </ha-dropdown-item>
+                `
+              )}
+            </ha-select>`
+          : this.helperConfigEntry?.domain === "switch_as_x"
+            ? html`<ha-select
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.switch_as_x"
+                  )}
+                  .value=${this._switchAsLabel(this._switchAsDomain)}
+                  @selected=${this._switchAsDomainChanged}
+                >
+                  <ha-dropdown-item
+                    value="switch"
+                    .selected=${this._switchAsDomain === "switch"}
+                  >
+                    ${domainToName(this.hass.localize, "switch")}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item
+                    .value=${domain}
+                    .selected=${this._switchAsDomain === domain}
+                  >
+                    ${domainToName(this.hass.localize, domain)}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>
+                  ${this._switchAsDomainsSorted(
+                    SWITCH_AS_DOMAINS,
+                    this.hass.localize
+                  ).map((entry) =>
+                    domain === entry.domain
+                      ? nothing
+                      : html`
+                          <ha-dropdown-item
+                            .value=${entry.domain}
+                            .selected=${this._switchAsDomain === entry.domain}
+                          >
+                            ${entry.label}
+                          </ha-dropdown-item>
+                        `
+                  )}
+                </ha-select>
+                ${
+                  SWITCH_AS_DOMAINS_INVERT.includes(this._switchAsDomain)
+                    ? html`
+                        <ha-row-item>
+                          <span slot="headline"
+                            >${this.hass.localize(
+                              "ui.dialogs.entity_registry.editor.invert.label"
+                            )}</span
+                          >
+                          <span slot="supporting-text"
+                            >${this.hass.localize(
+                              `ui.dialogs.entity_registry.editor.invert.descriptions.${this._switchAsDomain}`
+                            )}</span
+                          >
+                          <ha-switch
+                            slot="end"
+                            .checked=${!!this.entry.options?.switch_as_x?.invert}
+                            @change=${this._switchAsInvertChanged}
+                          ></ha-switch>
+                        </ha-row-item>
+                      `
+                    : nothing
+                } `
+            : nothing
+      }
+      ${
+        this._deviceClassOptions && !this._hideDeviceClassOverride(domain)
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.device_class"
+                )}
+                .value=${
+                  this._deviceClass
+                    ? this.hass.localize(
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${this._deviceClass}`
+                      )
+                    : undefined
+                }
+                clearable
+                @selected=${this._deviceClassChanged}
+              >
+                ${this._deviceClassesSorted(
+                  domain,
+                  this._deviceClassOptions[0],
+                  this.hass.localize
+                ).map(
+                  (entry) => html`
+                    <ha-dropdown-item
+                      .value=${entry.deviceClass}
+                      .selected=${entry.deviceClass === this._deviceClass}
+                    >
+                      ${entry.label}
+                    </ha-dropdown-item>
+                  `
+                )}
+                ${
+                  this._deviceClassOptions[0].length &&
+                  this._deviceClassOptions[1].length
+                    ? html`<wa-divider></wa-divider>`
+                    : nothing
+                }
+                ${this._deviceClassesSorted(
+                  domain,
+                  this._deviceClassOptions[1],
+                  this.hass.localize
+                ).map(
+                  (entry) => html`
+                    <ha-dropdown-item
+                      .value=${entry.deviceClass}
+                      .selected=${entry.deviceClass === this._deviceClass}
+                    >
+                      ${entry.label}
+                    </ha-dropdown-item>
+                  `
+                )}
+              </ha-select>
+            `
+          : nothing
+      }
+      ${
+        domain === "number" &&
+        this._deviceClass &&
+        stateObj?.attributes.unit_of_measurement &&
+        this._numberDeviceClassConvertibleUnits?.includes(
+          stateObj?.attributes.unit_of_measurement
+        )
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.unit_of_measurement"
+                )}
+                .value=${
+                  this._unit_of_measurement ||
+                  stateObj.attributes.unit_of_measurement
+                }
+                @selected=${this._unitChanged}
+                .options=${this._numberDeviceClassConvertibleUnits}
+              >
+              </ha-select>
+            `
+          : nothing
+      }
+      ${
+        domain === "lock"
+          ? html`
+              <ha-input
+                .validationMessage=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.default_code_error"
+                )}
+                .value=${this._defaultCode == null ? "" : this._defaultCode}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.default_code"
+                )}
+                type="password"
+                .invalid=${invalidDefaultCode}
+                .disabled=${this.disabled}
+                @input=${this._defaultcodeChanged}
+                password-toggle
+              ></ha-input>
+            `
+          : nothing
+      }
+      ${
+        domain === "alarm_control_panel"
+          ? html`
+              <ha-input
+                .value=${this._defaultCode == null ? "" : this._defaultCode}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.default_code"
+                )}
+                type="password"
+                .disabled=${this.disabled}
+                @input=${this._defaultcodeChanged}
+                password-toggle
+              ></ha-input>
+            `
+          : nothing
+      }
+      ${
+        domain === "calendar"
+          ? html`
+              <ha-color-picker
+                .hass=${this.hass}
+                .value=${this._calendarColor ?? ""}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.calendar_color"
+                )}
+                .disabled=${this.disabled}
+                @value-changed=${this._calendarColorChanged}
+              ></ha-color-picker>
+            `
+          : nothing
+      }
+      ${
+        domain === "device_tracker" &&
+        SCANNER_SOURCE_TYPES.includes(stateObj?.attributes?.source_type)
+          ? html`
+              <ha-entity-picker
+                .value=${this._associatedZone}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.associated_zone"
+                )}
+                .includeDomains=${ZONE_DOMAINS}
+                .disabled=${this.disabled}
+                @value-changed=${this._associatedZoneChanged}
+              ></ha-entity-picker>
+            `
+          : nothing
+      }
+      ${
+        domain === "sensor" &&
+        this._deviceClass &&
+        stateObj?.attributes.unit_of_measurement &&
+        this._sensorDeviceClassConvertibleUnits?.includes(
+          stateObj?.attributes.unit_of_measurement
+        )
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.unit_of_measurement"
+                )}
+                .value=${
+                  this._unit_of_measurement ||
+                  stateObj.attributes.unit_of_measurement
+                }
+                @selected=${this._unitChanged}
+                .options=${this._sensorDeviceClassConvertibleUnits}
+              >
+              </ha-select>
+            `
+          : nothing
+      }
+      ${
+        domain === "sensor" &&
+        // Allow customizing the precision for a sensor with numerical device class,
+        // a unit of measurement or state class
+        (isNumericSensorDeviceClass(this._deviceClass) ||
+          stateObj?.attributes.unit_of_measurement ||
+          stateObj?.attributes.state_class)
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.precision"
+                )}
+                .value=${
+                  this._precision == null
+                    ? "default"
+                    : this._precision.toString()
+                }
+                @selected=${this._precisionChanged}
+                .options=${[
+                  {
+                    value: "default",
+                    label: this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.precision_default",
+                      {
+                        value: this._precisionLabel(
+                          defaultPrecision,
+                          stateObj?.state
+                        ),
+                      }
+                    ),
+                  },
+                  ...PRECISIONS.map((precision) => ({
+                    value: precision.toString(),
+                    label: this._precisionLabel(precision, stateObj?.state),
+                  })),
+                ]}
+              >
+              </ha-select>
+            `
+          : nothing
+      }
+      ${
+        domain === "weather"
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.precipitation_unit"
+                )}
+                .value=${this._precipitation_unit || undefined}
+                @selected=${this._precipitationUnitChanged}
+                .options=${this._weatherConvertibleUnits?.precipitation_unit}
+              >
+              </ha-select>
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.pressure_unit"
+                )}
+                .value=${this._pressure_unit || undefined}
+                @selected=${this._pressureUnitChanged}
+                .options=${this._weatherConvertibleUnits?.pressure_unit}
+              >
+              </ha-select>
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.temperature_unit"
+                )}
+                .value=${this._temperature_unit || undefined}
+                @selected=${this._temperatureUnitChanged}
+                .options=${this._weatherConvertibleUnits?.temperature_unit}
+              >
+              </ha-select>
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.visibility_unit"
+                )}
+                .value=${this._visibility_unit || undefined}
+                @selected=${this._visibilityUnitChanged}
+                .options=${this._weatherConvertibleUnits?.visibility_unit}
+              >
+              </ha-select>
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.wind_speed_unit"
+                )}
+                .value=${this._wind_speed_unit || undefined}
+                @selected=${this._windSpeedUnitChanged}
+                .options=${this._weatherConvertibleUnits?.wind_speed_unit}
+              >
+              </ha-select>
+            `
+          : nothing
+      }
+      <ha-input
+        class="entityId"
+        .value=${computeObjectId(this._entityId)}
+        inset-label
+        .label=${this.hass.localize(
+          "ui.dialogs.entity_registry.editor.entity_id"
+        )}
+        .disabled=${this.disabled}
+        required
+        @input=${this._entityIdChanged}
+        autocapitalize="none"
+        autocomplete="off"
+        .autocorrect=${false}
+        .spellcheck=${false}
+      >
+        <span class="input-prefix" slot="start">${domain + "."}</span>
+        <ha-icon-button
+          slot="end"
+          @click=${this._restoreEntityId}
+          .path=${mdiRestore}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.restore_entity_id"
+          )}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="end"
+          @click=${this._copyEntityId}
+          .path=${mdiContentCopy}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.copy_entity_id"
+          )}
+        ></ha-icon-button>
+      </ha-input>
+      ${
+        !this.entry.device_id
+          ? html`<ha-area-picker
+              .value=${this._areaId}
+              .disabled=${this.disabled}
+              @value-changed=${this._areaPicked}
+            ></ha-area-picker>`
+          : nothing
+      }
+      <ha-labels-picker
+        .hass=${this.hass}
+        .value=${this._labels}
+        .disabled=${!!this.disabled}
+        @value-changed=${this._labelsChanged}
+      ></ha-labels-picker>
+      ${
+        this._cameraPrefs
+          ? html`
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream"
+                  )}</span
+                >
+                <span slot="supporting-text"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream_description"
+                  )}</span
+                >
+                <ha-switch
+                  slot="end"
+                  .checked=${this._cameraPrefs.preload_stream}
+                  .disabled=${this.disabled}
+                  @change=${this._handleCameraPrefsChanged}
+                ></ha-switch>
+              </ha-row-item>
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+                  )}</span
+                >
+                <span slot="supporting-text"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation_description"
+                  )}</span
+                >
+                <ha-select
+                  slot="supporting-text"
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+                  )}
+                  .disabled=${this.disabled}
+                  @selected=${this._handleCameraOrientationChanged}
+                  .options=${CAMERA_ORIENTATIONS.map((num) => ({
+                    value: num.toString(),
+                    label: this.hass.localize(
+                      ("ui.dialogs.entity_registry.editor.stream.stream_orientation_" +
+                        num.toString()) as LocalizeKeys
+                    ),
+                  }))}
+                  .value=${this._cameraPrefs.orientation.toString()}
+                >
+                </ha-select>
+              </ha-row-item>
+            `
+          : nothing
+      }
+      <ha-list-base>
+        ${
+          this.helperConfigEntry &&
+          this.helperConfigEntry.supports_options &&
+          this.helperConfigEntry.domain !== "switch_as_x"
+            ? html`
+                <ha-list-item-button
+                  class="menu-item"
+                  .disabled=${this.disabled}
+                  @click=${this._showOptionsFlow}
+                >
+                  <span slot="headline"
+                    >${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.configure_state",
+                      {
+                        integration: domainToName(
+                          this.hass.localize,
+                          this.helperConfigEntry.domain
+                        ),
+                      }
+                    )}</span
+                  >
+                  <span slot="supporting-text"
+                    >${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.configure_state_secondary",
+                      {
+                        integration: domainToName(
+                          this.hass.localize,
+                          this.helperConfigEntry.domain
+                        ),
+                      }
+                    )}</span
+                  >
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>
+              `
+            : nothing
+        }
+        <ha-list-item-button
+          class="menu-item"
+          .disabled=${this.disabled}
+          @click=${this._handleVoiceAssistantsClicked}
+        >
+          <span slot="headline"
+            >${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.voice_assistants"
+            )}</span
+          >
+          <span slot="supporting-text">
+            ${
+              this.entry.aliases.filter((a) => a !== null).length
+                ? this.entry.aliases
+                    .filter((a): a is string => a !== null)
+                    .join(", ")
+                : this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.no_aliases"
+                  )
+            }
+          </span>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+        ${
+          domain === "vacuum" &&
+          stateObj &&
+          supportsFeature(stateObj, VacuumEntityFeature.CLEAN_AREA)
+            ? html`
+                <ha-list-item-button
+                  class="menu-item"
+                  .disabled=${this.disabled}
+                  @click=${this._handleVacuumSegmentMappingClicked}
+                >
+                  <span slot="headline"
+                    >${this.hass.localize(
+                      "ui.dialogs.vacuum_segment_mapping.title"
+                    )}</span
+                  >
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.dialogs.vacuum_segment_mapping.description"
+                    )}
+                  </span>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>
+              `
+            : nothing
+        }
+      </ha-list-base>
+      ${
+        this._disabledBy &&
+        this._disabledBy !== "user" &&
+        this._disabledBy !== "integration"
+          ? html`<ha-alert alert-type="warning"
+              >${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.enabled_cause",
+                {
+                  cause: this.hass.localize(
+                    `config_entry.disabled_by.${this._disabledBy!}`
+                  ),
+                }
+              )}</ha-alert
+            >`
+          : nothing
+      }
+
+      <ha-row-item>
+        <span slot="headline"
+          >${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_label"
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_description"
+          )}</span
+        >
+        <ha-switch
+          slot="end"
+          .checked=${!this._disabledBy}
+          .disabled=${
+            this.disabled ||
+            this._device?.disabled_by ||
+            (this._disabledBy &&
+              this._disabledBy !== "user" &&
+              this._disabledBy !== "integration")
+          }
+          @change=${this._enabledChanged}
+        ></ha-switch>
+      </ha-row-item>
+
+      ${
+        this._hiddenBy && this._hiddenBy !== "user"
+          ? html`<ha-alert alert-type="warning"
+              >${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.hidden_cause",
+                {
+                  cause: this.hass.localize(
+                    `config_entry.hidden_by.${this._hiddenBy!}`
+                  ),
+                }
+              )}</ha-alert
+            >`
+          : nothing
+      }
+
+      <ha-row-item>
+        <span slot="headline"
+          >${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.visible_label"
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.hidden_explanation"
+          )}</span
+        >
+        <ha-switch
+          slot="end"
+          .checked=${!this._disabledBy && !this._hiddenBy}
+          .disabled=${this.disabled || this._disabledBy}
+          @change=${this._hiddenChanged}
+        ></ha-switch>
+      </ha-row-item>
+
+      ${
+        this.entry.device_id
+          ? html`
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.use_device_area"
+                  )}
+                  ${
+                    this.hass.devices[this.entry.device_id].area_id
+                      ? `(${
+                          this.hass.areas[
+                            this.hass.devices[this.entry.device_id].area_id!
+                          ]?.name
+                        })`
+                      : nothing
+                  }</span
+                >
+                <span slot="supporting-text"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.change_device_settings",
+                    {
+                      link: html`<button
+                        class="link"
+                        @click=${this._openDeviceSettings}
+                      >
+                        ${this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.change_device_area_link"
+                        )}
+                      </button>`,
+                    }
+                  )}</span
+                >
+                <ha-switch
+                  slot="end"
+                  .checked=${!this._areaId || this._noDeviceArea}
+                  .disabled=${this.disabled}
+                  @change=${this._useDeviceAreaChanged}
+                ></ha-switch>
+              </ha-row-item>
+              ${
+                this._areaId || this._noDeviceArea
+                  ? html`<ha-area-picker
+                      .value=${this._areaId}
+                      .disabled=${this.disabled}
+                      @value-changed=${this._areaPicked}
+                    ></ha-area-picker>`
+                  : nothing
+              }
+            `
+          : nothing
+      }
+    `;
+  }
+
+  public async updateEntry(): Promise<{
+    close: boolean;
+    entry: ExtEntityRegistryEntry;
+  }> {
+    let close = true;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let parent: HTMLElement = this;
+    while (parent?.localName !== "home-assistant") {
+      parent = (parent.getRootNode() as ShadowRoot).host as HTMLElement;
+    }
+
+    const params: Partial<EntityRegistryEntryUpdateParams> = {
+      name: this._name.trim() || null,
+      icon: this._icon.trim() || null,
+      area_id: this._areaId || null,
+      labels: this._labels || [],
+      new_entity_id: this._entityId.trim(),
+    };
+
+    // Only update device class if changed by user
+    if (
+      this._deviceClass !==
+      (this.entry.device_class || this.entry.original_device_class)
+    ) {
+      params.device_class = this._deviceClass ?? null;
+    }
+
+    const stateObj: HassEntity | undefined =
+      this.hass.states[this.entry.entity_id];
+    const domain = computeDomain(this.entry.entity_id);
+
+    if (
+      this.entry.disabled_by !== this._disabledBy &&
+      (this._disabledBy === null || this._disabledBy === "user")
+    ) {
+      params.disabled_by = this._disabledBy;
+    }
+    if (
+      this.entry.hidden_by !== this._hiddenBy &&
+      (this._hiddenBy === null || this._hiddenBy === "user")
+    ) {
+      params.hidden_by = this._hiddenBy;
+    }
+    if (
+      (domain === "number" || domain === "sensor") &&
+      stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
+    ) {
+      params.options_domain = domain;
+      params.options = this.entry.options?.[domain] || {};
+      params.options.unit_of_measurement = this._unit_of_measurement;
+    }
+    if (
+      domain === "sensor" &&
+      this.entry.options?.[domain]?.display_precision !== this._precision
+    ) {
+      params.options_domain = domain;
+      params.options = params.options || this.entry.options?.[domain] || {};
+      (params.options as SensorEntityOptions).display_precision =
+        this._precision;
+    }
+    if (
+      domain === "lock" &&
+      this.entry.options?.[domain]?.default_code !== this._defaultCode
+    ) {
+      params.options_domain = domain;
+      params.options = this.entry.options?.[domain] || {};
+      (params.options as LockEntityOptions).default_code = this._defaultCode;
+    }
+    if (
+      domain === "alarm_control_panel" &&
+      this.entry.options?.[domain]?.default_code !== this._defaultCode
+    ) {
+      params.options_domain = domain;
+      params.options = this.entry.options?.[domain] || {};
+      (params.options as AlarmControlPanelEntityOptions).default_code =
+        this._defaultCode;
+    }
+    if (domain === "calendar") {
+      const currentColor = this.entry.options?.calendar?.color ?? null;
+      const newColor = this._calendarColor ?? null;
+      if (currentColor !== newColor) {
+        params.options_domain = domain;
+        params.options = this.entry.options?.calendar || {};
+        (params.options as CalendarEntityOptions).color = this._calendarColor;
+      }
+    }
+    if (
+      domain === "device_tracker" &&
+      this._associatedZone !== undefined &&
+      (this.entry.options?.device_tracker?.associated_zone ?? "zone.home") !==
+        this._associatedZone
+    ) {
+      params.options_domain = "device_tracker";
+      params.options = {
+        associated_zone: this._associatedZone,
+      } as DeviceTrackerEntityOptions;
+    }
+    if (
+      domain === "weather" &&
+      (stateObj?.attributes?.precipitation_unit !== this._precipitation_unit ||
+        stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
+        stateObj?.attributes?.temperature_unit !== this._temperature_unit ||
+        stateObj?.attributes?.visbility_unit !== this._visibility_unit ||
+        stateObj?.attributes?.wind_speed_unit !== this._wind_speed_unit)
+    ) {
+      params.options_domain = "weather";
+      params.options = {
+        precipitation_unit: this._precipitation_unit,
+        pressure_unit: this._pressure_unit,
+        temperature_unit: this._temperature_unit,
+        visibility_unit: this._visibility_unit,
+        wind_speed_unit: this._wind_speed_unit,
+      };
+    }
+
+    const result = await updateEntityRegistryEntry(
+      this.hass!,
+      this.entry.entity_id,
+      params
+    );
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.enabled_restart_confirm"
+        ),
+      });
+    }
+    if (result.reload_delay) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
+          { delay: result.reload_delay }
+        ),
+      });
+    }
+
+    if (domain === "switch" && this._switchAsDomain !== "switch") {
+      // generate config flow for switch_as_x
+      if (
+        await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
+            {
+              domain: autoCaseNoun(
+                domainToName(this.hass.localize, this._switchAsDomain),
+                this.hass.locale.language
+              ),
+            }
+          ),
+        })
+      ) {
+        const configFlow = await createConfigFlow(this.hass, "switch_as_x");
+        const configFlowResult = (await handleConfigFlowStep(
+          this.hass,
+          configFlow.flow_id,
+          {
+            entity_id: this._entityId.trim(),
+            invert: this._switchAsInvert,
+            target_domain: this._switchAsDomain,
+          }
+        )) as DataEntryFlowStepCreateEntry<ConfigEntry>;
+        if (configFlowResult.result?.entry_id) {
+          try {
+            const entry = await this._waitForEntityRegistryUpdate(
+              configFlowResult.result.entry_id
+            );
+            showMoreInfoDialog(parent, { entityId: entry.entity_id });
+            close = false;
+          } catch (_err) {
+            // ignore
+          }
+        }
+      }
+    } else if (
+      this.helperConfigEntry?.domain === "switch_as_x" &&
+      this._switchAsDomain !== domain
+    ) {
+      // change a current switch as x to something else
+      if (
+        await showConfirmationDialog(this, {
+          text:
+            this._switchAsDomain === "switch"
+              ? this.hass!.localize(
+                  "ui.dialogs.entity_registry.editor.switch_as_x_remove_confirm",
+                  {
+                    domain: autoCaseNoun(
+                      domainToName(this.hass.localize, domain),
+                      this.hass.locale.language
+                    ),
+                  }
+                )
+              : this.hass!.localize(
+                  "ui.dialogs.entity_registry.editor.switch_as_x_change_confirm",
+                  {
+                    domain_1: autoCaseNoun(
+                      domainToName(this.hass.localize, domain),
+                      this.hass.locale.language
+                    ),
+                    domain_2: autoCaseNoun(
+                      domainToName(this.hass.localize, this._switchAsDomain),
+                      this.hass.locale.language
+                    ),
+                  }
+                ),
+        })
+      ) {
+        const origEntityId = this.entry.options?.switch_as_x?.entity_id;
+        // remove current helper
+        await deleteConfigEntry(this.hass, this.helperConfigEntry.entry_id);
+
+        if (!origEntityId) {
+          // should not happen, guard for types
+        } else if (this._switchAsDomain === "switch") {
+          // done, original switch is back
+          showMoreInfoDialog(parent, { entityId: origEntityId });
+          close = false;
+        } else {
+          const configFlow = await createConfigFlow(this.hass, "switch_as_x");
+          const configFlowResult = (await handleConfigFlowStep(
+            this.hass,
+            configFlow.flow_id,
+            {
+              entity_id: origEntityId,
+              invert: this._switchAsInvert,
+              target_domain: this._switchAsDomain,
+            }
+          )) as DataEntryFlowStepCreateEntry<ConfigEntry>;
+          if (configFlowResult.result?.entry_id) {
+            try {
+              const entry = await this._waitForEntityRegistryUpdate(
+                configFlowResult.result.entry_id
+              );
+              showMoreInfoDialog(parent, { entityId: entry.entity_id });
+              close = false;
+            } catch (_err) {
+              // ignore
+            }
+          }
+        }
+      }
+    } else if (
+      this.helperConfigEntry?.domain === "switch_as_x" &&
+      this._switchAsDomain === domain &&
+      this._switchAsInvert !== this.entry.options?.switch_as_x?.invert
+    ) {
+      // Change invert setting
+      const origEntityId = this.entry.options?.switch_as_x?.entity_id;
+      if (!origEntityId) {
+        // should not happen, guard for types
+      } else {
+        const configFlow = await createOptionsFlow(
+          this.hass,
+          this.helperConfigEntry.entry_id
+        );
+        await handleOptionsFlowStep(this.hass, configFlow.flow_id, {
+          invert: this._switchAsInvert,
+        });
+      }
+    }
+
+    return { close, entry: result.entity_entry };
+  }
+
+  private async _waitForEntityRegistryUpdate(config_entry_id: string) {
+    return new Promise<EntityRegistryEntry>((resolve, reject) => {
+      const timeout = setTimeout(reject, 5000);
+      const unsub = subscribeEntityRegistry(
+        this.hass.connection,
+        (entityRegistry) => {
+          const entity = entityRegistry.find(
+            (reg) => reg.config_entry_id === config_entry_id
+          );
+          if (entity) {
+            clearTimeout(timeout);
+            unsub();
+            resolve(entity);
+          }
+        }
+      );
+      // @ts-ignore Force refresh
+      this.hass.connection._entityRegistry?.refresh();
+    });
+  }
+
+  private _nameChanged(ev: InputEvent): void {
+    this._name = (ev.target as HTMLInputElement).value;
+  }
+
+  private _iconChanged(ev: CustomEvent): void {
+    this._icon = ev.detail.value;
+  }
+
+  private async _restoreEntityId(): Promise<void> {
+    const entityIds = await getAutomaticEntityIds(this.hass, [
+      this._origEntityId,
+    ]);
+    this._entityId = entityIds[this._origEntityId] || this._origEntityId;
+  }
+
+  private async _copyEntityId(): Promise<void> {
+    await copyToClipboard(this._entityId);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
+  private _entityIdChanged(ev: InputEvent): void {
+    this._entityId = `${computeDomain(this._origEntityId)}.${(ev.target as HTMLInputElement).value}`;
+  }
+
+  private _deviceClassChanged(ev: HaSelectSelectEvent<string, true>): void {
+    this._deviceClass = ev.detail.value;
+  }
+
+  private _unitChanged(ev: HaSelectSelectEvent): void {
+    this._unit_of_measurement = ev.detail.value;
+  }
+
+  private _defaultcodeChanged(ev: InputEvent): void {
+    this._defaultCode =
+      (ev.target as HTMLInputElement).value === ""
+        ? null
+        : (ev.target as HTMLInputElement).value;
+  }
+
+  private _calendarColorChanged(ev: CustomEvent): void {
+    this._calendarColor = ev.detail.value || null;
+  }
+
+  private _associatedZoneChanged(ev: CustomEvent): void {
+    this._associatedZone = ev.detail.value || "zone.home";
+  }
+
+  private _precipitationUnitChanged(ev: HaSelectSelectEvent): void {
+    this._precipitation_unit = ev.detail.value;
+  }
+
+  private _precisionChanged(ev: HaSelectSelectEvent): void {
+    this._precision =
+      ev.detail.value === "default" ? null : Number(ev.detail.value);
+  }
+
+  private _pressureUnitChanged(ev: HaSelectSelectEvent): void {
+    this._pressure_unit = ev.detail.value;
+  }
+
+  private _temperatureUnitChanged(ev: HaSelectSelectEvent): void {
+    this._temperature_unit = ev.detail.value;
+  }
+
+  private _visibilityUnitChanged(ev: HaSelectSelectEvent): void {
+    this._visibility_unit = ev.detail.value;
+  }
+
+  private _windSpeedUnitChanged(ev: HaSelectSelectEvent): void {
+    this._wind_speed_unit = ev.detail.value;
+  }
+
+  private _switchAsDomainChanged(ev: HaSelectSelectEvent): void {
+    const value = ev.detail.value;
+    if (value === "") {
+      return;
+    }
+
+    // If value is "outlet" that means the user kept the "switch" domain, but actually changed
+    // the device_class of the switch to "outlet".
+    this._switchAsDomain = value === "outlet" ? "switch" : value;
+
+    if (
+      (computeDomain(this.entry.entity_id) === "switch" &&
+        value === "outlet") ||
+      value === "switch"
+    ) {
+      this._deviceClass = value;
+    }
+  }
+
+  private _switchAsInvertChanged(ev): void {
+    this._switchAsInvert = ev.target.checked;
+  }
+
+  private _useDeviceAreaChanged(ev): void {
+    this._noDeviceArea = !ev.target.checked;
+    if (!this._noDeviceArea) {
+      this._areaId = undefined;
+    }
+  }
+
+  private _areaPicked(ev: CustomEvent) {
+    this._areaId = ev.detail.value;
+  }
+
+  private _labelsChanged(ev: CustomEvent) {
+    this._labels = ev.detail.value;
+  }
+
+  private async _fetchCameraPrefs() {
+    const capabilities = await fetchCameraCapabilities(
+      this.hass,
+      this.entry.entity_id
+    );
+
+    // The stream component for HLS streams supports a server-side pre-load
+    // option that client initiated WebRTC streams do not
+
+    if (!capabilities.frontend_stream_types.includes(STREAM_TYPE_HLS)) {
+      this._cameraPrefs = undefined;
+      return;
+    }
+
+    this._cameraPrefs = await fetchCameraPrefs(this.hass, this.entry.entity_id);
+  }
+
+  private async _handleCameraPrefsChanged(ev) {
+    const checkbox = ev.currentTarget as HaSwitch;
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass,
+        this.entry.entity_id,
+        {
+          preload_stream: checkbox.checked!,
+        }
+      );
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
+      checkbox.checked = !checkbox.checked;
+    }
+  }
+
+  private async _handleCameraOrientationChanged(ev: HaSelectSelectEvent) {
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass,
+        this.entry.entity_id,
+        {
+          orientation: Number(ev.detail.value),
+        }
+      );
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
+    }
+  }
+
+  private _enabledChanged(ev: CustomEvent): void {
+    if ((ev.target as any).checked) {
+      this._disabledBy = null;
+    } else {
+      this._disabledBy = "user";
+    }
+  }
+
+  private _hiddenChanged(ev: CustomEvent): void {
+    if ((ev.target as any).checked) {
+      this._hiddenBy = null;
+    } else {
+      this._hiddenBy = "user";
+    }
+  }
+
+  private _resetNameAndOpenDeviceSettings() {
+    this._name = this.entry.name || "";
+    this._openDeviceSettings();
+  }
+
+  private _openDeviceSettings() {
+    showDeviceRegistryDetailDialog(this, {
+      device: this._device!,
+      updateEntry: async (updates) => {
+        await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+      },
+    });
+  }
+
+  private _handleVoiceAssistantsClicked() {
+    showVoiceAssistantsView(
+      this,
+      this.hass.localize("ui.dialogs.entity_registry.editor.voice_assistants")
+    );
+  }
+
+  private _handleVacuumSegmentMappingClicked() {
+    showVacuumSegmentMappingView(
+      this,
+      this.hass.localize,
+      this.entry.entity_id
+    );
+  }
+
+  private async _showOptionsFlow() {
+    showOptionsFlowDialog(this, this.helperConfigEntry!, {
+      manifest: await fetchIntegrationManifest(
+        this.hass,
+        this.helperConfigEntry!.domain
+      ),
+    });
+  }
+
+  private _switchAsDomainsSorted = memoizeOne(
+    (domains: string[], localize: LocalizeFunc) =>
+      domains
+        .map((domain) => ({
+          domain,
+          label: domainToName(localize, domain),
+        }))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        )
+  );
+
+  private _deviceClassesSorted = memoizeOne(
+    (domain: string, deviceClasses: string[], localize: LocalizeFunc) =>
+      deviceClasses
+        .map((entry) => ({
+          deviceClass: entry,
+          label: localize(
+            `ui.dialogs.entity_registry.editor.device_classes.${domain}.${entry}`
+          ),
+        }))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        )
+  );
+
+  private _switchAsLabel = memoizeOne(
+    (switchAsDomain: string, deviceClass?: string) => {
+      if (switchAsDomain !== "switch") {
+        const switchAsDomains = this._switchAsDomainsSorted(
+          SWITCH_AS_DOMAINS,
+          this.hass.localize
+        );
+
+        for (const entry of switchAsDomains) {
+          if (entry.domain === switchAsDomain) {
+            return entry.label;
+          }
+        }
+      }
+
+      if (!deviceClass || deviceClass === "switch") {
+        return domainToName(this.hass.localize, "switch");
+      }
+
+      if (deviceClass === "outlet") {
+        return this.hass.localize(
+          "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
+        );
+      }
+
+      return switchAsDomain;
+    }
+  );
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+        }
+        .input-prefix {
+          color: var(--secondary-text-color);
+          margin: var(--ha-space-3) 0 0;
+        }
+
+        ha-input.entityId,
+        ha-input.name {
+          --ha-icon-button-size: 36px;
+          --mdc-icon-size: 20px;
+        }
+
+        ha-input.name {
+          --ha-input-start-max-width: 35%;
+        }
+        ha-input.entityId ha-icon-button:last-child {
+          margin-inline-start: 0;
+        }
+
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
+        }
+        ha-row-item ha-select {
+          width: auto;
+        }
+        ha-input,
+        ha-icon-picker,
+        ha-select,
+        ha-area-picker {
+          display: block;
+          margin: var(--ha-space-2) 0;
+          width: 100%;
+        }
+        .menu-item {
+          --ha-row-item-padding-inline: 0;
+          border-radius: var(--ha-border-radius-sm);
+          margin-top: 3px;
+          margin-bottom: 3px;
+          overflow: hidden;
+        }
+        .entityId {
+          direction: ltr;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "entity-registry-settings-editor": EntityRegistrySettingsEditor;
+  }
+}

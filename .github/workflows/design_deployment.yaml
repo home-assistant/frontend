@@ -1,0 +1,41 @@
+name: Design deployment
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+permissions:
+  contents: read
+
+env:
+  NODE_OPTIONS: --max_old_space_size=6144
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Design
+      url: ${{ steps.deploy.outputs.netlify_url }}
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
+      - name: Build Gallery
+        uses: ./.github/actions/build
+        with:
+          target: build-gallery
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Netlify
+        id: deploy
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: gallery/dist
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}

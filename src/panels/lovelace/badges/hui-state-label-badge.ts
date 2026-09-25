@@ -1,0 +1,30 @@
+import { customElement } from "lit/decorators";
+import type { HuiStateLabelBadgeEditor } from "../editor/config-elements/hui-state-label-badge-editor";
+import { HuiEntityBadge } from "./hui-entity-badge";
+import type { EntityBadgeConfig, StateLabelBadgeConfig } from "./types";
+
+@customElement("hui-state-label-badge")
+export class HuiStateLabelBadge extends HuiEntityBadge {
+  public static async getConfigElement(): Promise<HuiStateLabelBadgeEditor> {
+    await import("../editor/config-elements/hui-state-label-badge-editor");
+    return document.createElement("hui-state-label-badge-editor");
+  }
+
+  // @ts-ignore
+  public override setConfig(config: StateLabelBadgeConfig): void {
+    const entityBadgeConfig: EntityBadgeConfig = {
+      type: "entity",
+      entity: config.entity,
+      color: config.color,
+      show_name: config.show_name ?? true,
+    };
+
+    super.setConfig(entityBadgeConfig);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-state-label-badge": HuiStateLabelBadge;
+  }
+}

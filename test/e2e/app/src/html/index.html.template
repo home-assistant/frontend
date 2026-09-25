@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant E2E Test App</title>
+    <%= renderTemplate("../../../../../src/html/_header.html.template") %>
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="referrer" content="same-origin" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#03a9f4" />
+    <style>
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
+      }
+      body {
+        font-family: Roboto, Noto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-weight: 400;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <ha-test></ha-test>
+    <%= renderTemplate("../../../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../../../src/html/_preload_roboto.html.template") %>
+    <%= renderTemplate("../../../../../src/html/_script_loader.html.template") %>
+  </body>
+</html>

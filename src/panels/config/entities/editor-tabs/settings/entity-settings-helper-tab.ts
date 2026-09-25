@@ -1,0 +1,274 @@
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "@lit/context";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
+import "../../../../../components/ha-button";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../../../data/context/dirty-state";
+import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
+import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
+import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
+import type { Helper } from "../../../helpers/const";
+import "../../../helpers/forms/ha-counter-form";
+import "../../../helpers/forms/ha-input_boolean-form";
+import "../../../helpers/forms/ha-input_button-form";
+import "../../../helpers/forms/ha-input_datetime-form";
+import "../../../helpers/forms/ha-input_number-form";
+import "../../../helpers/forms/ha-input_select-form";
+import "../../../helpers/forms/ha-input_text-form";
+import "../../../helpers/forms/ha-schedule-form";
+import "../../../helpers/forms/ha-timer-form";
+import "../../entity-registry-settings-editor";
+import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
+import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
+
+@customElement("entity-settings-helper-tab")
+export class EntitySettingsHelperTab extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<Helper | null, "helper">;
+
+  @state() private _error?: string;
+
+  @state() private _item?: Helper | null;
+
+  @state() private _submitting = false;
+
+  @state() private _componentLoaded?: boolean;
+
+  @query("entity-registry-settings-editor")
+  private _registryEditor?: EntityRegistrySettingsEditor;
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this._componentLoaded = isComponentLoaded(
+      this.hass.config,
+      this.entry.platform
+    );
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has("entry")) {
+      this._error = undefined;
+      if (this.entry.unique_id !== changedProperties.get("entry")?.unique_id) {
+        this._item = undefined;
+      }
+      this._getItem();
+    }
+  }
+
+  protected render() {
+    if (this._item === undefined) {
+      return nothing;
+    }
+    const stateObj = this.hass.states[this.entry.entity_id];
+    return html`
+      <div class="form">
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
+        ${
+          this._item === null
+            ? html`<ha-alert alert-type="info"
+                >${this.hass.localize(
+                  "ui.dialogs.helper_settings.yaml_not_editable"
+                )}</ha-alert
+              >`
+            : nothing
+        }
+        ${
+          !this._componentLoaded
+            ? this.hass.localize(
+                "ui.dialogs.helper_settings.platform_not_loaded",
+                { platform: this.entry.platform }
+              )
+            : html`
+                <span @value-changed=${this._valueChanged}>
+                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                    hass: this.hass,
+                    item: this._item,
+                    entry: this.entry,
+                    disabled: this._item === null,
+                  })}
+                </span>
+              `
+        }
+        <entity-registry-settings-editor
+          .hass=${this.hass}
+          .entry=${this.entry}
+          .disabled=${!!this._submitting}
+          hide-name
+          hide-icon
+        ></entity-registry-settings-editor>
+      </div>
+      <div class="buttons">
+        <ha-button
+          variant="danger"
+          appearance="plain"
+          @click=${this._confirmDeleteItem}
+          .disabled=${
+            this._submitting || (!this._item && !stateObj?.attributes.restored)
+          }
+        >
+          ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
+        </ha-button>
+        <ha-button
+          @click=${this._updateItem}
+          .disabled=${
+            !this._dirtyState?.isDirty ||
+            !!this._submitting ||
+            !!(this._item && !this._item.name)
+          }
+        >
+          ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
+        </ha-button>
+      </div>
+    `;
+  }
+
+  private _valueChanged(ev: ValueChangedEvent<Helper>): void {
+    if (this._item === null) {
+      return;
+    }
+    this._error = undefined;
+    this._item = ev.detail.value;
+    this._dirtyState?.setState(this._item, "helper");
+  }
+
+  private async _getItem() {
+    const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
+    const item =
+      items.find((helper) => helper.id === this.entry.unique_id) || null;
+    this._item = item;
+    this._dirtyState?.setState(item, "helper");
+  }
+
+  private async _updateItem(): Promise<void> {
+    this._submitting = true;
+    this._error = undefined;
+    try {
+      if (this._componentLoaded && this._item) {
+        await HELPERS_CRUD[this.entry.platform].update(
+          this.hass,
+          this._item.id,
+          this._item
+        );
+      }
+      const result = await this._registryEditor!.updateEntry();
+      this._dirtyState?.markClean();
+      if (result.close) {
+        fireEvent(this, "close-dialog");
+      }
+    } catch (err: any) {
+      this._error = err.message || "Unknown error";
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  private async _confirmDeleteItem(): Promise<void> {
+    const name = computeEntityEntryName(this.entry, this.hass.devices);
+    const confirmationText = await getDeleteConfirmationText(
+      this.hass,
+      this.entry,
+      name
+    );
+
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete_title"
+        ),
+        text: confirmationText,
+        confirmText: this.hass.localize("ui.common.delete"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
+
+    this._submitting = true;
+
+    try {
+      if (this._componentLoaded && this._item) {
+        await HELPERS_CRUD[this.entry.platform].delete(
+          this.hass!,
+          this._item.id
+        );
+      } else {
+        const stateObj = this.hass.states[this.entry.entity_id];
+        if (!stateObj?.attributes.restored) {
+          return;
+        }
+        await removeEntityRegistryEntry(this.hass!, this.entry.entity_id);
+      }
+      fireEvent(this, "close-dialog");
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+          padding: 0 !important;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: var(--ha-space-4);
+        }
+        .form {
+          padding: 20px 24px;
+          z-index: 0;
+        }
+        .buttons {
+          box-sizing: border-box;
+          display: flex;
+          justify-content: space-between;
+          padding: 16px;
+          background-color: var(--mdc-theme-surface, #fff);
+          position: sticky;
+          bottom: 0px;
+          z-index: 1;
+        }
+        .error {
+          color: var(--error-color);
+          margin-bottom: 8px;
+        }
+        .row {
+          margin-top: 8px;
+          color: var(--primary-text-color);
+        }
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "entity-settings-helper-tab": EntitySettingsHelperTab;
+  }
+}

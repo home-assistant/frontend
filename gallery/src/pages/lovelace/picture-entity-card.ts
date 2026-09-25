@@ -1,0 +1,128 @@
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { PictureEntityCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import "../../components/demo-cards";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
+
+const ENTITIES = [
+  {
+    entity_id: "light.kitchen_lights",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen Lights",
+    },
+  },
+  {
+    entity_id: "light.bed_light",
+    state: "off",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "person.paulus",
+    state: "home",
+    attributes: {
+      friendly_name: "Paulus",
+      entity_picture: "/images/paulus.jpg",
+    },
+  },
+];
+
+const CONFIGS = [
+  {
+    heading: "State on",
+    config: {
+      type: "picture-entity",
+      image: "/images/kitchen.png",
+      entity: "light.kitchen_lights",
+      tap_action: { action: "toggle" },
+    },
+  },
+  {
+    heading: "State off",
+    config: {
+      type: "picture-entity",
+      image: "/images/bed.png",
+      entity: "light.bed_light",
+      tap_action: { action: "toggle" },
+    },
+  },
+  {
+    heading: "Entity unavailable",
+    config: {
+      type: "picture-entity",
+      image: "/images/living_room.png",
+      entity: "light.non_existing",
+    },
+  },
+  {
+    heading: "Camera entity",
+    config: {
+      type: "picture-entity",
+      entity: "camera.demo_camera",
+    },
+  },
+  {
+    heading: "Person entity",
+    config: {
+      type: "picture-entity",
+      entity: "person.paulus",
+    },
+  },
+  {
+    heading: "Hidden name",
+    config: {
+      type: "picture-entity",
+      image: "/images/kitchen.png",
+      entity: "light.kitchen_lights",
+      show_name: false,
+    },
+  },
+  {
+    heading: "Hidden state",
+    config: {
+      type: "picture-entity",
+      image: "/images/kitchen.png",
+      entity: "light.kitchen_lights",
+      show_state: false,
+    },
+  },
+  {
+    heading: "Both hidden",
+    config: {
+      type: "picture-entity",
+      image: "/images/kitchen.png",
+      entity: "light.kitchen_lights",
+      show_name: false,
+      show_state: false,
+    },
+  },
+] satisfies DemoCardConfig<PictureEntityCardConfig>[];
+
+@customElement("demo-lovelace-picture-entity-card")
+class DemoPictureEntity extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
+    hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
+    hass.addEntities(ENTITIES);
+    mockIcons(hass);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-lovelace-picture-entity-card": DemoPictureEntity;
+  }
+}

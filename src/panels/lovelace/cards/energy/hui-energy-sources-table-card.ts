@@ -1,0 +1,1035 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { formatNumber } from "../../../../common/number/format_number";
+import { getEnergyColor } from "./common/color";
+import "../../../../components/ha-card";
+import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
+import {
+  energySourcesByType,
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
+import {
+  calculateStatisticSumGrowth,
+  getStatisticLabel,
+  isExternalStatistic,
+} from "../../../../data/recorder";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergySourcesTableCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
+import { fireEvent } from "../../../../common/dom/fire_event";
+
+const colorPropertyMap = {
+  grid_return: "--energy-grid-return-color",
+  grid_consumption: "--energy-grid-consumption-color",
+  battery_in: "--energy-battery-in-color",
+  battery_out: "--energy-battery-out-color",
+  solar: "--energy-solar-color",
+  gas: "--energy-gas-color",
+  water: "--energy-water-color",
+};
+
+@customElement("hui-energy-sources-table-card")
+export class HuiEnergySourcesTableCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sources-table-card-editor");
+    return document.createElement("hui-energy-sources-table-card-editor");
+  }
+
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _config?: EnergySourcesTableCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySourcesTableCardConfig {
+    return {
+      type: "energy-sources-table",
+      show_only_totals: false,
+      types: ["grid", "solar", "battery"],
+    };
+  }
+
+  @state() private _data?: EnergyData;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
+  }
+
+  public getCardSize(): Promise<number> | number {
+    return 3;
+  }
+
+  public setConfig(config: EnergySourcesTableCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
+    this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
+    if (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    ) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
+
+    if (
+      this._data &&
+      energySourcesByType(this._data.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  protected _renderRow(
+    computedStyles: CSSStyleDeclaration,
+    type: string,
+    statId: string,
+    idx: number,
+    energy: number,
+    compareEnergy: number,
+    energyUnit: string,
+    cost: number | null,
+    compareCost: number | null,
+    showCosts: boolean,
+    compare: boolean,
+    name?: string
+  ) {
+    const displayPrecision =
+      type === "gas" &&
+      this.hass.states[statId]?.attributes.unit_of_measurement === energyUnit
+        ? this.hass.entities[statId]?.display_precision
+        : undefined;
+
+    const formatOptions =
+      displayPrecision !== undefined
+        ? {
+            minimumFractionDigits: displayPrecision,
+            maximumFractionDigits: displayPrecision,
+          }
+        : undefined;
+
+    return html`<tr
+      class="mdc-data-table__row ${classMap({
+        clickable: !isExternalStatistic(statId),
+      })}"
+      @click=${this._handleMoreInfo}
+      .entity=${statId}
+    >
+      <td class="mdc-data-table__cell cell-bullet">
+        <div
+          class="bullet"
+          style=${styleMap({
+            borderColor: getEnergyColor(
+              computedStyles,
+              this.hass.themes.darkMode,
+              false,
+              false,
+              colorPropertyMap[type],
+              idx
+            ),
+            backgroundColor: getEnergyColor(
+              computedStyles,
+              this.hass.themes.darkMode,
+              true,
+              false,
+              colorPropertyMap[type],
+              idx
+            ),
+          })}
+        ></div>
+      </td>
+      <th class="mdc-data-table__cell" scope="row">
+        ${
+          name ||
+          getStatisticLabel(
+            this.hass,
+            statId,
+            this._data?.statsMetadata[statId]
+          )
+        }
+      </th>
+      ${
+        compare
+          ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+                ${formatNumber(compareEnergy, this.hass.locale, formatOptions)}
+                ${energyUnit}
+              </td>
+              ${
+                showCosts
+                  ? html`<td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${
+                        compareCost !== null
+                          ? formatNumber(compareCost, this.hass.locale, {
+                              style: "currency",
+                              currency: this.hass.config.currency!,
+                            })
+                          : ""
+                      }
+                    </td>`
+                  : ""
+              }`
+          : ""
+      }
+      <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+        ${formatNumber(energy, this.hass.locale, formatOptions)} ${energyUnit}
+      </td>
+      ${
+        showCosts
+          ? html` <td
+              class="mdc-data-table__cell mdc-data-table__cell--numeric"
+            >
+              ${
+                cost !== null
+                  ? formatNumber(cost, this.hass.locale, {
+                      style: "currency",
+                      currency: this.hass.config.currency!,
+                    })
+                  : ""
+              }
+            </td>`
+          : ""
+      }
+    </tr>`;
+  }
+
+  protected _renderTotalRow(
+    label: string,
+    energy: number | null,
+    compareEnergy: number | null,
+    energyUnit: string,
+    cost: number | null,
+    compareCost: number | null,
+    showCosts: boolean,
+    compare: boolean,
+    bulletColor?: { border: string; background: string },
+    isFinalTotal?: boolean,
+    formatOptions?: Intl.NumberFormatOptions
+  ) {
+    return html` <tr
+      class="mdc-data-table__row ${bulletColor && !isFinalTotal ? "" : "total"}"
+    >
+      <td class="mdc-data-table__cell cell-bullet">
+        ${
+          bulletColor
+            ? html`<div
+                class="bullet"
+                style=${styleMap({
+                  borderColor: bulletColor.border,
+                  backgroundColor: bulletColor.background,
+                })}
+              ></div>`
+            : nothing
+        }
+      </td>
+      <th class="mdc-data-table__cell" scope="row">${label}</th>
+      ${
+        compare
+          ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+                ${
+                  compareEnergy === null
+                    ? ""
+                    : `${formatNumber(
+                        compareEnergy,
+                        this.hass.locale,
+                        formatOptions
+                      )} ${energyUnit}`
+                }
+              </td>
+              ${
+                showCosts
+                  ? html`<td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${
+                        compareCost !== null
+                          ? formatNumber(compareCost, this.hass.locale, {
+                              style: "currency",
+                              currency: this.hass.config.currency!,
+                            })
+                          : ""
+                      }
+                    </td>`
+                  : ""
+              }`
+          : ""
+      }
+      <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+        ${
+          energy === null
+            ? ""
+            : `${formatNumber(
+                energy,
+                this.hass.locale,
+                formatOptions
+              )} ${energyUnit}`
+        }
+      </td>
+      ${
+        showCosts
+          ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+              ${
+                cost !== null
+                  ? formatNumber(cost, this.hass.locale, {
+                      style: "currency",
+                      currency: this.hass.config.currency!,
+                    })
+                  : ""
+              }
+            </td>`
+          : ""
+      }
+    </tr>`;
+  }
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    if (!this._data) {
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
+    }
+
+    let totalGrid = 0;
+    let totalGridCost = 0;
+    let totalBattery = 0;
+
+    let hasGridCost = false;
+
+    let totalGridCompare = 0;
+    let totalGridCostCompare = 0;
+    let totalBatteryCompare = 0;
+
+    const totals = {
+      gas: 0,
+      water: 0,
+      solar: 0,
+    };
+    const totalsCompare = {
+      gas: 0,
+      water: 0,
+      solar: 0,
+    };
+    const totalCosts = {
+      gas: 0,
+      water: 0,
+    };
+    const totalCostsCompare = {
+      gas: 0,
+      water: 0,
+    };
+    const hasCosts = {
+      gas: false,
+      water: false,
+    };
+
+    const allTypes = energySourcesByType(this._data.prefs);
+    const pickedTypes = this._config?.types;
+    const types = pickedTypes
+      ? Object.fromEntries(
+          Object.entries(allTypes).filter(([key]) =>
+            pickedTypes.includes(key as keyof EnergySourceByType)
+          )
+        )
+      : allTypes;
+
+    const computedStyles = getComputedStyle(this);
+
+    // Check if any source has cost configuration
+    const gridHasCosts = types.grid?.some(
+      (source) =>
+        source.stat_cost ||
+        source.entity_energy_price ||
+        source.number_energy_price ||
+        source.stat_compensation ||
+        source.entity_energy_price_export ||
+        source.number_energy_price_export
+    );
+
+    const showCosts = !!(
+      gridHasCosts ||
+      types.gas?.some(
+        (flow) =>
+          flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
+      ) ||
+      types.water?.some(
+        (flow) =>
+          flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
+      )
+    );
+
+    const units = {
+      solar: "kWh",
+      gas: this._data.gasUnit,
+      water: this._data.waterUnit,
+    };
+
+    const gasDisplayPrecisions = types.gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === units.gas
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
+
+    const gasFormatOptions =
+      gasDisplayPrecision !== undefined
+        ? {
+            minimumFractionDigits: gasDisplayPrecision,
+            maximumFractionDigits: gasDisplayPrecision,
+          }
+        : undefined;
+
+    const compare = this._data.statsCompare !== undefined;
+
+    const _extractStatData = (
+      statId: string,
+      costStatId: string | null
+    ): {
+      hasData: boolean;
+      energy: number;
+      energyCompare: number;
+      cost: number;
+      costCompare: number;
+    } => {
+      const energy = calculateStatisticSumGrowth(this._data!.stats[statId]);
+
+      const compareEnergy =
+        compare &&
+        calculateStatisticSumGrowth(this._data!.statsCompare[statId]);
+
+      const cost =
+        (costStatId &&
+          calculateStatisticSumGrowth(this._data!.stats[costStatId])) ||
+        0;
+
+      const costCompare =
+        (compare &&
+          costStatId &&
+          calculateStatisticSumGrowth(this._data!.statsCompare[costStatId])) ||
+        0;
+
+      if (energy === null && (!compare || compareEnergy === null)) {
+        return {
+          hasData: false,
+          energy: energy || 0,
+          energyCompare: compareEnergy || 0,
+          cost,
+          costCompare,
+        };
+      }
+
+      return {
+        hasData: true,
+        energy: energy || 0,
+        energyCompare: compareEnergy || 0,
+        cost,
+        costCompare,
+      };
+    };
+
+    const showOnlyTotals = this._config.show_only_totals;
+
+    const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
+      html` ${types[type]?.map((source, idx) => {
+        const cost_stat =
+          type in hasCosts &&
+          (source.stat_cost ||
+            this._data!.info.cost_sensors[source.stat_energy_from]);
+
+        const { hasData, energy, energyCompare, cost, costCompare } =
+          _extractStatData(source.stat_energy_from, cost_stat || null);
+
+        if (!hasData && !cost && !costCompare) {
+          return nothing;
+        }
+
+        totals[type] += energy;
+        totalsCompare[type] += energyCompare;
+        if (cost_stat) {
+          hasCosts[type] = true;
+          totalCosts[type] += cost;
+          totalCostsCompare[type] += costCompare;
+        }
+
+        if (showOnlyTotals) {
+          return nothing;
+        }
+
+        return this._renderRow(
+          computedStyles,
+          type,
+          source.stat_energy_from,
+          idx,
+          energy,
+          energyCompare,
+          units[type],
+          cost_stat ? cost : null,
+          cost_stat ? costCompare : null,
+          showCosts,
+          compare,
+          source.name
+        );
+      })}
+      ${
+        types[type]
+          ? this._renderTotalRow(
+              this.hass.localize(
+                `ui.panel.lovelace.cards.energy.energy_sources_table.${type}_total`
+              ),
+              totals[type],
+              totalsCompare[type],
+              units[type],
+              hasCosts[type] ? totalCosts[type] : null,
+              hasCosts[type] ? totalCostsCompare[type] : null,
+              showCosts,
+              compare,
+              showOnlyTotals
+                ? {
+                    border: getEnergyColor(
+                      computedStyles,
+                      this.hass.themes.darkMode,
+                      false,
+                      false,
+                      colorPropertyMap[type],
+                      0
+                    ),
+                    background: getEnergyColor(
+                      computedStyles,
+                      this.hass.themes.darkMode,
+                      true,
+                      false,
+                      colorPropertyMap[type],
+                      0
+                    ),
+                  }
+                : undefined,
+              false,
+              type === "gas" ? gasFormatOptions : undefined
+            )
+          : ""
+      }`;
+
+    return html` <ha-card>
+      ${
+        this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : ""
+      }
+      <div class="mdc-data-table">
+        <div class="mdc-data-table__table-container">
+          <table class="mdc-data-table__table" aria-label="Energy sources">
+            <thead>
+              <tr class="mdc-data-table__header-row">
+                <th class="mdc-data-table__header-cell"></th>
+                <th
+                  class="mdc-data-table__header-cell"
+                  role="columnheader"
+                  scope="col"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_sources_table.source"
+                  )}
+                </th>
+                ${
+                  compare
+                    ? html`<th
+                          class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
+                          role="columnheader"
+                          scope="col"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.lovelace.cards.energy.energy_sources_table.previous_energy"
+                          )}
+                        </th>
+                        ${
+                          showCosts
+                            ? html`<th
+                                class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
+                                role="columnheader"
+                                scope="col"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.lovelace.cards.energy.energy_sources_table.previous_cost"
+                                )}
+                              </th>`
+                            : ""
+                        }`
+                    : ""
+                }
+                <th
+                  class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
+                  role="columnheader"
+                  scope="col"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_sources_table.energy"
+                  )}
+                </th>
+                ${
+                  showCosts
+                    ? html` <th
+                        class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
+                        role="columnheader"
+                        scope="col"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.cost"
+                        )}
+                      </th>`
+                    : ""
+                }
+              </tr>
+            </thead>
+            <tbody class="mdc-data-table__content">
+              ${_renderSimpleCategory("solar")}
+              ${types.battery?.map((source, idx) => {
+                const {
+                  hasData: hasFromData,
+                  energy: energyFrom,
+                  energyCompare: energyFromCompare,
+                } = _extractStatData(source.stat_energy_from, null);
+                const {
+                  hasData: hasToData,
+                  energy: energyTo,
+                  energyCompare: energyToCompare,
+                } = _extractStatData(source.stat_energy_to, null);
+
+                if (!hasFromData && !hasToData) {
+                  return nothing;
+                }
+
+                totalBattery += energyFrom - energyTo;
+                totalBatteryCompare += energyFromCompare - energyToCompare;
+
+                if (showOnlyTotals) {
+                  return nothing;
+                }
+
+                return html` ${this._renderRow(
+                  computedStyles,
+                  "battery_out",
+                  source.stat_energy_from,
+                  idx,
+                  energyFrom,
+                  energyFromCompare,
+                  "kWh",
+                  null,
+                  null,
+                  showCosts,
+                  compare,
+                  source.name
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+                        { name: source.name }
+                      )
+                    : ""
+                )}${this._renderRow(
+                  computedStyles,
+                  "battery_in",
+                  source.stat_energy_to,
+                  idx,
+                  -energyTo,
+                  -energyToCompare,
+                  "kWh",
+                  null,
+                  null,
+                  showCosts,
+                  compare,
+                  source.name
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+                        { name: source.name }
+                      )
+                    : ""
+                )}`;
+              })}
+              ${
+                types.battery
+                  ? this._renderTotalRow(
+                      this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.battery_total"
+                      ),
+                      totalBattery,
+                      totalBatteryCompare,
+                      "kWh",
+                      null,
+                      null,
+                      showCosts,
+                      compare,
+                      showOnlyTotals
+                        ? {
+                            border: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              false,
+                              false,
+                              colorPropertyMap.battery_out,
+                              0
+                            ),
+                            background: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              true,
+                              false,
+                              colorPropertyMap.battery_out,
+                              0
+                            ),
+                          }
+                        : undefined
+                    )
+                  : ""
+              }
+              ${types.grid?.map((source, idx) => {
+                const importResult = (() => {
+                  if (!source.stat_energy_from) return nothing;
+
+                  const cost_stat =
+                    source.stat_cost ||
+                    this._data!.info.cost_sensors[source.stat_energy_from];
+                  const { hasData, energy, energyCompare, cost, costCompare } =
+                    _extractStatData(
+                      source.stat_energy_from,
+                      cost_stat || null
+                    );
+
+                  if (!hasData && !cost && !costCompare) {
+                    return nothing;
+                  }
+
+                  totalGrid += energy;
+                  totalGridCompare += energyCompare;
+
+                  if (cost_stat) {
+                    hasGridCost = true;
+                    totalGridCost += cost;
+                    totalGridCostCompare += costCompare;
+                  }
+
+                  if (showOnlyTotals) {
+                    return nothing;
+                  }
+
+                  const name = !source.name
+                    ? ""
+                    : source.stat_energy_to
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_imported",
+                          { name: source.name }
+                        )
+                      : source.name;
+
+                  return this._renderRow(
+                    computedStyles,
+                    "grid_consumption",
+                    source.stat_energy_from,
+                    idx,
+                    energy,
+                    energyCompare,
+                    "kWh",
+                    cost,
+                    costCompare,
+                    showCosts,
+                    compare,
+                    name
+                  );
+                })();
+
+                const exportResult = (() => {
+                  if (!source.stat_energy_to) return nothing;
+
+                  const cost_stat =
+                    source.stat_compensation ||
+                    this._data!.info.cost_sensors[source.stat_energy_to];
+                  const { hasData, energy, energyCompare, cost, costCompare } =
+                    _extractStatData(source.stat_energy_to, cost_stat || null);
+
+                  if (!hasData && !cost && !costCompare) {
+                    return nothing;
+                  }
+                  totalGrid -= energy;
+                  totalGridCompare -= energyCompare;
+
+                  if (cost_stat) {
+                    hasGridCost = true;
+                    totalGridCost -= cost;
+                    totalGridCostCompare -= costCompare;
+                  }
+
+                  if (showOnlyTotals) {
+                    return nothing;
+                  }
+
+                  const name = !source.name
+                    ? ""
+                    : source.stat_energy_from
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+                          { name: source.name }
+                        )
+                      : source.name;
+
+                  return this._renderRow(
+                    computedStyles,
+                    "grid_return",
+                    source.stat_energy_to,
+                    idx,
+                    -energy,
+                    -energyCompare,
+                    "kWh",
+                    -cost,
+                    -costCompare,
+                    showCosts,
+                    compare,
+                    name
+                  );
+                })();
+
+                return html`${importResult}${exportResult}`;
+              })}
+              ${
+                types.grid &&
+                types.grid.some(
+                  (s) => !!s.stat_energy_from || !!s.stat_energy_to
+                )
+                  ? this._renderTotalRow(
+                      this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
+                      ),
+                      totalGrid,
+                      totalGridCompare,
+                      "kWh",
+                      hasGridCost ? totalGridCost : null,
+                      hasGridCost ? totalGridCostCompare : null,
+                      showCosts,
+                      compare,
+                      showOnlyTotals
+                        ? {
+                            border: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              false,
+                              false,
+                              colorPropertyMap.grid_consumption,
+                              0
+                            ),
+                            background: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              true,
+                              false,
+                              colorPropertyMap.grid_consumption,
+                              0
+                            ),
+                          }
+                        : undefined
+                    )
+                  : ""
+              }
+              ${_renderSimpleCategory("gas")} ${_renderSimpleCategory("water")}
+              ${
+                [hasCosts.gas, hasCosts.water, hasGridCost].filter(Boolean)
+                  .length > 1
+                  ? this._renderTotalRow(
+                      this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
+                      ),
+                      null,
+                      null,
+                      "",
+                      totalCosts.gas + totalGridCost + totalCosts.water,
+                      totalCostsCompare.gas +
+                        totalGridCostCompare +
+                        totalCostsCompare.water,
+                      showCosts,
+                      compare,
+                      undefined,
+                      true
+                    )
+                  : ""
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ha-card>`;
+  }
+
+  private _handleMoreInfo(ev): void {
+    const entityId = ev.currentTarget?.entity;
+    if (entityId && !isExternalStatistic(entityId)) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
+  }
+
+  static styles: CSSResultGroup = css`
+    .mdc-data-table__content,
+    .mdc-data-table__cell {
+      font-family: var(--ha-font-family-body);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-normal);
+      font-weight: var(--ha-font-weight-normal);
+      letter-spacing: 0.0178571429em;
+      text-decoration: inherit;
+      text-transform: inherit;
+    }
+    .mdc-data-table {
+      background-color: var(--card-background-color);
+      border-radius: var(--ha-border-radius-sm);
+      border: 0;
+      box-sizing: border-box;
+      display: inline-flex;
+      flex-direction: column;
+      position: relative;
+      width: 100%;
+    }
+    .mdc-data-table__table-container {
+      -webkit-overflow-scrolling: touch;
+      overflow-x: auto;
+      width: 100%;
+    }
+    .mdc-data-table__table {
+      min-width: 100%;
+      border: 0;
+      border-spacing: 0;
+      table-layout: fixed;
+      white-space: nowrap;
+    }
+    .mdc-data-table__header-row {
+      height: 56px;
+    }
+    .mdc-data-table__row {
+      background-color: inherit;
+      height: 52px;
+    }
+    .mdc-data-table__header-cell,
+    .mdc-data-table__cell {
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      box-sizing: border-box;
+      color: var(--primary-text-color);
+      border-bottom-color: var(--divider-color);
+      overflow: hidden;
+      padding: 0 16px;
+      text-align: var(--float-start);
+      text-overflow: ellipsis;
+    }
+    .mdc-data-table__header-cell {
+      background-color: var(--card-background-color);
+      font-family: var(--ha-font-family-body);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-normal);
+      font-weight: var(--ha-font-weight-medium);
+      letter-spacing: 0.0071428571em;
+      text-decoration: inherit;
+      text-transform: inherit;
+    }
+    .mdc-data-table__row:last-child .mdc-data-table__cell {
+      border-bottom: none;
+    }
+    .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+    .clickable {
+      cursor: pointer;
+    }
+    .total .mdc-data-table__cell {
+      border-top: 1px solid var(--divider-color);
+      font-weight: var(--ha-font-weight-medium);
+    }
+    ha-card {
+      max-height: 100%;
+      overflow: auto;
+    }
+    .card-header {
+      padding-bottom: 0;
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+    .cell-bullet {
+      width: 32px;
+      padding-right: 0;
+      padding-inline-end: 0;
+      padding-inline-start: 16px;
+      direction: var(--direction);
+    }
+    .bullet {
+      border-width: 1px;
+      border-style: solid;
+      border-radius: var(--ha-border-radius-sm);
+      height: 16px;
+      width: 32px;
+    }
+    .mdc-data-table__cell--numeric {
+      text-align: var(--float-end);
+      direction: ltr;
+    }
+    .mdc-data-table__header-cell--numeric {
+      text-align: var(--float-end);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-energy-sources-table-card": HuiEnergySourcesTableCard;
+  }
+}

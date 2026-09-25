@@ -1,0 +1,206 @@
+import "@home-assistant/webawesome/dist/components/tag/tag";
+import { mdiCheckCircle, mdiHelpCircleOutline } from "@mdi/js";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import "../../../../components/ha-app-icon";
+import "../../../../components/ha-svg-icon";
+import type { AddonStage, AddonState } from "../../../../data/hassio/addon";
+import type { HomeAssistant } from "../../../../types";
+import { getAppDisplayName } from "../common/app";
+import "./supervisor-apps-state";
+import "./supervisor-apps-tag";
+
+export interface AppTag {
+  label: string;
+  variant: "brand" | "success" | "warning" | "danger" | "neutral";
+  iconPath?: string;
+}
+
+@customElement("supervisor-apps-card-content")
+class SupervisorAppsCardContent extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // eslint-disable-next-line lit/no-native-attributes
+  @property() public title!: string;
+
+  @property() public stage: AddonStage = "stable";
+
+  @property() public state?: AddonState;
+
+  @property({ type: Boolean }) public installed = false;
+
+  @property() public description?: string;
+
+  @property({ type: Boolean }) public available = true;
+
+  @property({ attribute: false }) public tags?: AppTag[];
+
+  @property({ attribute: false }) public iconTitle?: string;
+
+  @property({ attribute: false }) public iconClass?: string;
+
+  @property() public icon = mdiHelpCircleOutline;
+
+  @property({ attribute: false }) public appSlug?: string;
+
+  @property({ attribute: false }) public hasAppIcon?: boolean;
+
+  protected render(): TemplateResult {
+    return html`
+      <div class="app">
+        <div class="icon-wrapper">
+          ${
+            this.appSlug
+              ? html`
+                  <ha-app-icon
+                    .slug=${this.appSlug}
+                    .hasIcon=${this.hasAppIcon}
+                    .alt=${this.iconTitle ?? ""}
+                    .title=${this.iconTitle ?? ""}
+                  >
+                    <ha-svg-icon
+                      class="app-icon"
+                      .path=${this.icon}
+                    ></ha-svg-icon>
+                  </ha-app-icon>
+                `
+              : html`
+                  <ha-svg-icon
+                    class="app-icon"
+                    .path=${this.icon}
+                    .title=${this.iconTitle}
+                  ></ha-svg-icon>
+                `
+          }
+        </div>
+        <div>
+          <div class="title-row">
+            <div class="title">
+              ${getAppDisplayName(this.title, this.stage)}
+            </div>
+          </div>
+          <div class="addition">
+            ${this.description}
+            ${
+              /* treat as available when undefined */
+              this.available === false ? " (Not available)" : ""
+            }
+          </div>
+        </div>
+      </div>
+      ${
+        this.tags?.length || this.state !== undefined || this.installed
+          ? html`
+              <div class="footer">
+                ${
+                  this.state !== undefined
+                    ? html`<supervisor-apps-state
+                        .state=${this.state || "unknown"}
+                      ></supervisor-apps-state>`
+                    : this.installed
+                      ? html`<div class="installed">
+                          <ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.apps.state.installed"
+                            )}</span
+                          >
+                        </div>`
+                      : html`<span></span>`
+                }
+                ${
+                  this.tags?.length
+                    ? html`<div class="tags">
+                        ${this.tags.map(
+                          (tag) =>
+                            html`<supervisor-apps-tag
+                              .variant=${tag.variant}
+                              .iconPath=${tag.iconPath}
+                              .label=${tag.label}
+                            ></supervisor-apps-tag>`
+                        )}
+                      </div>`
+                    : nothing
+                }
+              </div>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  static styles = css`
+    .app {
+      margin-bottom: var(--ha-space-2);
+      gap: var(--ha-space-4);
+      display: flex;
+    }
+    .icon-wrapper {
+      position: relative;
+      margin-top: var(--ha-space-1);
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .app-icon {
+      color: var(--secondary-text-color);
+    }
+    ha-app-icon {
+      --ha-app-icon-size: 40px;
+    }
+    .title {
+      flex: 1;
+      min-width: 0;
+      color: var(--primary-text-color);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      min-width: 0;
+    }
+    .addition {
+      color: var(--secondary-text-color);
+      margin-top: var(--ha-space-1);
+      overflow: hidden;
+      position: relative;
+      height: 2.4em;
+      line-height: var(--ha-line-height-condensed);
+    }
+    .footer {
+      padding-top: var(--ha-space-2);
+      display: flex;
+      gap: var(--ha-space-2);
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .tags {
+      display: flex;
+      gap: var(--ha-space-2);
+    }
+    .installed {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      color: var(--ha-color-text-secondary);
+      font-size: var(--ha-font-size-m);
+    }
+    .installed ha-svg-icon {
+      --mdc-icon-size: 16px;
+      color: var(--ha-color-on-success-normal);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "supervisor-apps-card-content": SupervisorAppsCardContent;
+  }
+}

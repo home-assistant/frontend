@@ -1,0 +1,168 @@
+import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+/**
+ * Home Assistant tile info component
+ *
+ * @element ha-tile-info
+ *
+ * @summary
+ * A tile info component, used in tile card in Home Assistant to display primary and secondary text.
+ *
+ * @slot primary - The primary text container.
+ * @slot secondary - The secondary text container.
+ *
+ * @property {boolean} secondaryLoading - Whether the secondary text is loading. Shows a skeleton placeholder.
+ *
+ * @csspart primary - The primary text. Style it to opt into another truncation, such as a multi line clamp.
+ *
+ * @cssprop --ha-tile-info-gap - The vertical gap between the primary and secondary text. defaults to `0`.
+ * @cssprop --ha-tile-info-min-height - Minimum height of the primary/secondary block. Set this to reserve space for a missing secondary so it doesn't shift surrounding content. defaults to `auto`.
+ * @cssprop --ha-tile-info-primary-min-height - Minimum height of the primary text block, independent of the number of rendered lines. Lets tiles that never wrap still match the height of tiles that do. defaults to `auto` (sizes to the actual rendered lines).
+ * @cssprop --ha-tile-info-primary-font-size - The font size of the primary text. defaults to `var(--ha-font-size-m)`.
+ * @cssprop --ha-tile-info-primary-font-weight - The font weight of the primary text. defaults to `var(--ha-font-weight-medium)`.
+ * @cssprop --ha-tile-info-primary-line-height - The line height of the primary text. defaults to `var(--ha-line-height-normal)`.
+ * @cssprop --ha-tile-info-primary-letter-spacing - The letter spacing of the primary text. defaults to `0.1px`.
+ * @cssprop --ha-tile-info-primary-color - The color of the primary text. defaults to `var(--primary-text-color)`.
+ * @cssprop --ha-tile-info-secondary-font-size - The font size of the secondary text. defaults to `var(--ha-font-size-s)`.
+ * @cssprop --ha-tile-info-secondary-font-weight - The font weight of the secondary text. defaults to `var(--ha-font-weight-normal)`.
+ * @cssprop --ha-tile-info-secondary-line-height - The line height of the secondary text. defaults to `var(--ha-line-height-condensed)`.
+ * @cssprop --ha-tile-info-secondary-letter-spacing - The letter spacing of the secondary text. defaults to `0.4px`.
+ * @cssprop --ha-tile-info-secondary-color - The color of the secondary text. defaults to `var(--primary-text-color)`.
+ */
+@customElement("ha-tile-info")
+export class HaTileInfo extends LitElement {
+  @property() public primary?: string;
+
+  @property() public secondary?: string;
+
+  @property({ type: Boolean, attribute: "secondary-loading" })
+  public secondaryLoading = false;
+
+  protected render() {
+    return html`
+      <div class="info">
+        <slot name="primary" class="primary">
+          <span part="primary">${this.primary}</span>
+        </slot>
+        ${
+          this.secondaryLoading
+            ? html`<div class="secondary">
+                <wa-skeleton class="placeholder" effect="pulse"></wa-skeleton>
+              </div>`
+            : html`<slot name="secondary" class="secondary">
+                <span>${this.secondary}</span>
+              </slot>`
+        }
+      </div>
+    `;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      --tile-info-gap: var(--ha-tile-info-gap, 0);
+      --tile-info-min-height: var(--ha-tile-info-min-height, auto);
+      --tile-info-primary-font-size: var(
+        --ha-tile-info-primary-font-size,
+        var(--ha-font-size-m)
+      );
+      --tile-info-primary-font-weight: var(
+        --ha-tile-info-primary-font-weight,
+        var(--ha-font-weight-medium)
+      );
+      --tile-info-primary-line-height: var(
+        --ha-tile-info-primary-line-height,
+        var(--ha-line-height-normal)
+      );
+      --tile-info-primary-min-height: var(
+        --ha-tile-info-primary-min-height,
+        auto
+      );
+      --tile-info-primary-letter-spacing: var(
+        --ha-tile-info-primary-letter-spacing,
+        0.1px
+      );
+      --tile-info-primary-color: var(
+        --ha-tile-info-primary-color,
+        var(--primary-text-color)
+      );
+      --tile-info-secondary-font-size: var(
+        --ha-tile-info-secondary-font-size,
+        var(--ha-font-size-s)
+      );
+      --tile-info-secondary-font-weight: var(
+        --ha-tile-info-secondary-font-weight,
+        var(--ha-font-weight-normal)
+      );
+      --tile-info-secondary-line-height: var(
+        --ha-tile-info-secondary-line-height,
+        var(--ha-line-height-condensed)
+      );
+      --tile-info-secondary-letter-spacing: var(
+        --ha-tile-info-secondary-letter-spacing,
+        0.4px
+      );
+      --tile-info-secondary-color: var(
+        --ha-tile-info-secondary-color,
+        var(--primary-text-color)
+      );
+    }
+    .info {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: var(--tile-info-gap);
+      min-height: var(--tile-info-min-height);
+    }
+    .primary span,
+    ::slotted([slot="primary"]),
+    .secondary span,
+    ::slotted([slot="secondary"]) {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .primary {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      font-size: var(--tile-info-primary-font-size);
+      font-weight: var(--tile-info-primary-font-weight);
+      line-height: var(--tile-info-primary-line-height);
+      letter-spacing: var(--tile-info-primary-letter-spacing);
+      color: var(--tile-info-primary-color);
+      min-height: var(--tile-info-primary-min-height);
+    }
+    .secondary {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      font-size: var(--tile-info-secondary-font-size);
+      font-weight: var(--tile-info-secondary-font-weight);
+      line-height: var(--tile-info-secondary-line-height);
+      letter-spacing: var(--tile-info-secondary-letter-spacing);
+      color: var(--tile-info-secondary-color);
+    }
+    .placeholder {
+      width: 140px;
+      max-width: 100%;
+      height: var(--tile-info-secondary-font-size);
+      --wa-border-radius-pill: var(--ha-border-radius-sm);
+      --color: var(--ha-color-fill-neutral-normal-resting);
+      --sheen-color: var(--ha-color-fill-neutral-loud-resting);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-tile-info": HaTileInfo;
+  }
+}

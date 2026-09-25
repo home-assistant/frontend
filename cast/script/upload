@@ -1,0 +1,5 @@
+# Run it twice, second time we just delete.
+aws s3 sync dist s3://cast.home-assistant.io --acl public-read
+# Don't delete as it might break open sites that need to load code splitted things.
+# aws s3 sync dist s3://cast.home-assistant.io --acl public-read --delete
+# Todo : update JS first, HTML last.

@@ -1,0 +1,203 @@
+import { consume, type ContextType } from "@lit/context";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
+import { formatNumber } from "../../common/number/format_number";
+import "../../components/ha-control-select";
+import type { ControlSelectOption } from "../../components/ha-control-select";
+import "../../components/ha-control-slider";
+import {
+  apiContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
+import { UNAVAILABLE } from "../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
+import type { FanEntity, FanSpeed } from "../../data/fan";
+import {
+  computeFanSpeedIcon,
+  computeFanSpeeds,
+  fanPercentageToSpeed,
+  fanSpeedToPercentage,
+  isNumberedFanSpeed,
+} from "../../data/fan";
+
+@customElement("ha-state-control-fan-speed")
+export class HaStateControlFanSpeed extends LitElement {
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @property({ attribute: false }) public stateObj!: FanEntity;
+
+  @state() sliderValue?: number;
+
+  @state() speedValue?: FanSpeed;
+
+  protected updated(changedProp: PropertyValues<this>): void {
+    if (changedProp.has("stateObj")) {
+      const percentage = stateActive(this.stateObj)
+        ? (this.stateObj.attributes.percentage ?? 0)
+        : 0;
+      this.sliderValue = Math.max(Math.round(percentage), 0);
+      this.speedValue = fanPercentageToSpeed(this.stateObj, percentage);
+    }
+  }
+
+  private _speedValueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const speed = ev.detail.value as FanSpeed;
+
+    this.speedValue = speed;
+
+    const percentage = fanSpeedToPercentage(this.stateObj, speed);
+
+    this._api.callService("fan", "set_percentage", {
+      entity_id: this.stateObj!.entity_id,
+      percentage: percentage,
+    });
+  }
+
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
+
+    this.sliderValue = value;
+
+    this._api.callService("fan", "set_percentage", {
+      entity_id: this.stateObj!.entity_id,
+      percentage: value,
+    });
+  }
+
+  private _localizeSpeed(speed: FanSpeed) {
+    if (speed === "on" || speed === "off") {
+      return this._formatters.formatEntityState(this.stateObj, speed);
+    }
+    if (isNumberedFanSpeed(speed)) {
+      return this._i18n.localize("ui.card.fan.speed.numbered", {
+        speed: formatNumber(speed, this._i18n.locale),
+      });
+    }
+    return this._i18n.localize(`ui.card.fan.speed.${speed}`) || speed;
+  }
+
+  protected render() {
+    const color = stateColorCss(this.stateObj);
+
+    const speeds = computeFanSpeeds(this.stateObj);
+
+    if (speeds) {
+      const options = speeds
+        .map<ControlSelectOption>((speed) =>
+          isNumberedFanSpeed(speed)
+            ? {
+                value: speed,
+                label: formatNumber(speed, this._i18n.locale),
+                ariaLabel: this._localizeSpeed(speed),
+              }
+            : {
+                value: speed,
+                label: this._localizeSpeed(speed),
+                path: computeFanSpeedIcon(this.stateObj, speed),
+              }
+        )
+        .reverse();
+
+      return html`
+        <ha-control-select
+          vertical
+          .options=${options}
+          .value=${this.speedValue}
+          @value-changed=${this._speedValueChanged}
+          .label=${computeAttributeNameDisplay(
+            this._i18n.localize,
+            this.stateObj,
+            this._entities,
+            "percentage"
+          )}
+          style=${styleMap({
+            "--control-select-color": color,
+            "--control-select-background": color,
+          })}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+        >
+        </ha-control-select>
+      `;
+    }
+
+    return html`
+      <ha-control-slider
+        touch-action="none"
+        vertical
+        min="0"
+        max="100"
+        .value=${this.sliderValue}
+        .step=${this.stateObj.attributes.percentage_step ?? 1}
+        round-value
+        @value-changed=${this._valueChanged}
+        .label=${computeAttributeNameDisplay(
+          this._i18n.localize,
+          this.stateObj,
+          this._entities,
+          "percentage"
+        )}
+        style=${styleMap({
+          "--control-slider-color": color,
+          "--control-slider-background": color,
+        })}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+        .locale=${this._i18n.locale}
+      >
+      </ha-control-slider>
+    `;
+  }
+
+  static styles = css`
+    ha-control-slider {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-slider-thickness: 130px;
+      --control-slider-border-radius: var(--ha-border-radius-6xl);
+      --control-slider-color: var(--primary-color);
+      --control-slider-background: var(--disabled-color);
+      --control-slider-background-opacity: 0.2;
+      --control-slider-tooltip-font-size: var(--ha-font-size-xl);
+    }
+    ha-control-select {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-select-thickness: 130px;
+      --control-select-border-radius: var(--ha-border-radius-6xl);
+      --control-select-color: var(--primary-color);
+      --control-select-background: var(--disabled-color);
+      --control-select-background-opacity: 0.2;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-state-control-fan-speed": HaStateControlFanSpeed;
+  }
+}

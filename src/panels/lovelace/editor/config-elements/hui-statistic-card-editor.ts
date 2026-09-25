@@ -1,0 +1,296 @@
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import {
+  any,
+  assert,
+  assign,
+  boolean,
+  object,
+  optional,
+  string,
+} from "superstruct";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type {
+  StatisticsMetaData,
+  StatisticType,
+} from "../../../../data/recorder";
+import {
+  getStatisticMetadata,
+  StatisticMeanType,
+  statisticsMetaHasType,
+} from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
+import type { StatisticCardConfig } from "../../cards/types";
+import { headerFooterConfigStructs } from "../../header-footer/structs";
+import type { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
+import {
+  PERIOD_ENERGY,
+  STATISTIC_CARD_DEFAULT_PERIOD,
+} from "../../cards/hui-statistic-card";
+
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(entityNameStruct),
+    icon: optional(string()),
+    unit: optional(string()),
+    stat_type: optional(string()),
+    period: optional(any()),
+    theme: optional(string()),
+    footer: optional(headerFooterConfigStructs),
+    energy_date_selection: optional(boolean()),
+    collection_key: optional(string()),
+  })
+);
+
+const stat_types = ["mean", "min", "max", "change"] as const;
+
+const statTypeMap: Record<(typeof stat_types)[number], StatisticType> = {
+  mean: "mean",
+  min: "min",
+  max: "max",
+  change: "sum",
+};
+
+@customElement("hui-statistic-card-editor")
+export class HuiStatisticCardEditor
+  extends LitElement
+  implements LovelaceCardEditor
+{
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: StatisticCardConfig;
+
+  @state() private _metadata?: StatisticsMetaData;
+
+  public setConfig(config: StatisticCardConfig): void {
+    assert(config, cardConfigStruct);
+    // Migrate legacy period option to new key
+    if (config.period === PERIOD_ENERGY) {
+      config = {
+        energy_date_selection: true,
+        ...config,
+        period: STATISTIC_CARD_DEFAULT_PERIOD,
+      };
+    }
+    this._config = config;
+    this._fetchMetadata();
+  }
+
+  firstUpdated() {
+    this._fetchMetadata().then(() => {
+      if (!this._config?.stat_type && this._config?.entity) {
+        fireEvent(this, "config-changed", {
+          config: {
+            ...this._config,
+            stat_type: this._metadata?.has_sum ? "change" : "mean",
+          },
+        });
+      }
+    });
+  }
+
+  private _schema = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      enableDateSelect: boolean,
+      metadata?: StatisticsMetaData
+    ) =>
+      [
+        { name: "entity", required: true, selector: { statistic: {} } },
+        {
+          name: "stat_type",
+          required: true,
+          selector: {
+            select: {
+              multiple: false,
+              options: stat_types.map((stat_type) => ({
+                value: stat_type,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.statistic.stat_type_labels.${stat_type}`
+                ),
+                disabled:
+                  !metadata ||
+                  !statisticsMetaHasType(metadata, statTypeMap[stat_type]),
+              })),
+            },
+          },
+        },
+        ...(!enableDateSelect
+          ? [
+              {
+                name: "period",
+                required: true,
+                selector: {
+                  period: {
+                    options: [
+                      "today",
+                      "yesterday",
+                      "this_week",
+                      "last_week",
+                      "this_month",
+                      "last_month",
+                      "this_year",
+                      "last_year",
+                    ],
+                  },
+                },
+              },
+            ]
+          : []),
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            ...(enableDateSelect
+              ? ([
+                  {
+                    type: "string",
+                    name: "collection_key",
+                    required: false,
+                  },
+                ] as HaFormSchema[])
+              : []),
+            {
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
+            },
+          ],
+        },
+        {
+          name: "name",
+          selector: { entity_name: {} },
+          context: { entity: "entity" },
+        },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            {
+              name: "icon",
+              selector: {
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
+              },
+            },
+            { name: "unit", selector: { text: {} } },
+            { name: "theme", selector: { theme: {} } },
+          ],
+        },
+      ] as const
+  );
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    const data = this._config;
+
+    const schema = this._schema(
+      this.hass.localize,
+      !!this._config!.energy_date_selection,
+      this._metadata
+    );
+
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeHelper=${this._computeHelperCallback}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
+  }
+
+  private async _fetchMetadata() {
+    if (!this.hass || !this._config) {
+      return;
+    }
+    this._metadata = (
+      await getStatisticMetadata(this.hass, [this._config.entity])
+    )[0];
+  }
+
+  private async _valueChanged(ev: CustomEvent) {
+    const config = { ...ev.detail.value } as StatisticCardConfig;
+    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
+
+    if (
+      config.stat_type &&
+      config.entity &&
+      config.entity !== this._metadata?.statistic_id
+    ) {
+      const metadata = (
+        await getStatisticMetadata(this.hass!, [config.entity])
+      )?.[0];
+      if (metadata && !metadata.has_sum && config.stat_type === "change") {
+        config.stat_type = "mean";
+      }
+      if (
+        metadata &&
+        metadata.mean_type === StatisticMeanType.NONE &&
+        config.stat_type !== "change"
+      ) {
+        config.stat_type = "change";
+      }
+    }
+
+    if (!config.stat_type && config.entity) {
+      const metadata = (
+        await getStatisticMetadata(this.hass!, [config.entity])
+      )?.[0];
+      config.stat_type = metadata?.has_sum ? "change" : "mean";
+    }
+
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _computeHelperCallback = (schema) => {
+    switch (schema.name) {
+      case "collection_key":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+        );
+      default:
+        return undefined;
+    }
+  };
+
+  private _computeLabelCallback = (schema) => {
+    switch (schema.name) {
+      case "period":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.statistic.period"
+        );
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-statistic-card-editor": HuiStatisticCardEditor;
+  }
+}

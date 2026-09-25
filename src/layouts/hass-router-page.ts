@@ -1,0 +1,394 @@
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
+import { property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { navigate } from "../common/navigate";
+import { computeRouteTail } from "../common/url/route";
+import type { Route } from "../types";
+import { recoverFromStaleBuild } from "../util/recover-stale-build";
+import { PanelReady } from "./panel-ready";
+
+const extractPage = (path: string, defaultPage: string) => {
+  if (path === "") {
+    return defaultPage;
+  }
+  const subpathStart = path.indexOf("/", 1);
+  return subpathStart === -1
+    ? path.substr(1)
+    : path.substr(1, subpathStart - 1);
+};
+
+export interface RouteOptions {
+  // HTML tag of the route page.
+  tag: string;
+  // Function to load the page.
+  load?: () => Promise<unknown>;
+  cache?: boolean;
+  // Recreate the page when the remaining path (the item id) changes.
+  itemId?: boolean;
+  waitForReady?: boolean;
+}
+
+export interface RouterOptions {
+  // The default route to show if path does not define a page.
+  defaultPage?: string;
+  // If all routes should be preloaded
+  preloadAll?: boolean;
+  // If a route has been shown, should we keep the element in memory
+  cacheAll?: boolean;
+  // Should we show a loading spinner while we load the element for the route
+  showLoading?: boolean;
+  // Promise that resolves when the initial data is loaded which is needed to show any route.
+  initialLoad?: () => Promise<unknown>;
+  // Hook that is called before rendering a new route. Allowing redirects.
+  // If string returned, that page will be rendered instead.
+  beforeRender?: (page: string) => string | undefined;
+  routes: Record<string, RouteOptions | string>;
+}
+
+// Time to wait for code to load before we show loading screen.
+const LOADING_SCREEN_THRESHOLD = 400; // ms
+
+export class HassRouterPage extends ReactiveElement {
+  @property({ attribute: false }) public route?: Route;
+
+  protected routerOptions!: RouterOptions;
+
+  protected _currentPage = "";
+
+  private _currentLoadProm?: Promise<void>;
+
+  // True while a route change is loading and the outgoing panel (or a loading
+  // screen) is still shown, waiting to be replaced. While true we don't forward
+  // property updates, because they are meant for the incoming panel. It stays
+  // false when the new panel is shown immediately (no loading screen), so that
+  // panel keeps receiving updates while its module finishes loading.
+  private _replacingPanel = false;
+
+  private _panelReady = new PanelReady();
+
+  private _cache = {};
+
+  private _initialLoadDone = false;
+
+  private _showLoadingScreenTimeout?: number;
+
+  private _computeTail = memoizeOne(computeRouteTail);
+
+  protected createRenderRoot() {
+    return this;
+  }
+
+  protected update(changedProps: PropertyValues<this>) {
+    super.update(changedProps);
+
+    const routerOptions = this.routerOptions || { routes: {} };
+
+    if (routerOptions && routerOptions.initialLoad && !this._initialLoadDone) {
+      return;
+    }
+
+    if (!changedProps.has("route")) {
+      // Skip while the outgoing panel is still shown for a pending route
+      // change; the update is meant for the incoming panel, not this one.
+      if (this.lastChild && !this._replacingPanel) {
+        this.updatePageEl(this.lastChild, changedProps);
+      }
+      return;
+    }
+
+    const route = this.route;
+    const defaultPage = routerOptions.defaultPage;
+
+    if (route && route.path === "" && defaultPage !== undefined) {
+      const queryParams = window.location.search;
+      navigate(`${route.prefix}/${defaultPage}${queryParams}`, {
+        replace: true,
+      });
+    }
+
+    let newPage = route
+      ? extractPage(route.path, defaultPage || "")
+      : "not_found";
+    let routeOptions = routerOptions.routes[newPage];
+
+    // Handle redirects
+    while (typeof routeOptions === "string") {
+      newPage = routeOptions;
+      routeOptions = routerOptions.routes[newPage];
+    }
+
+    if (routerOptions.beforeRender) {
+      const result = routerOptions.beforeRender(newPage);
+      if (result !== undefined) {
+        newPage = result;
+        routeOptions = routerOptions.routes[newPage];
+
+        // Handle redirects
+        while (typeof routeOptions === "string") {
+          newPage = routeOptions;
+          routeOptions = routerOptions.routes[newPage];
+        }
+
+        // Update the url if we know where we're mounted.
+        if (route) {
+          navigate(`${route.prefix}/${result}${location.search}`, {
+            replace: true,
+          });
+        }
+      }
+    }
+
+    if (this._currentPage === newPage) {
+      const oldRoute = changedProps.get("route");
+      const oldTail = oldRoute ? computeRouteTail(oldRoute).path : undefined;
+      const newTail = route ? this._computeTail(route).path : undefined;
+      if (
+        typeof routeOptions === "object" &&
+        routeOptions.itemId &&
+        oldTail !== newTail
+      ) {
+        // Fall through to the normal create path so `load` / loading screen
+        // still run. itemId pages are not cached, so this is a new element.
+        this._currentPage = "";
+      } else {
+        if (this.lastChild) {
+          this.updatePageEl(this.lastChild, changedProps);
+        }
+        return;
+      }
+    }
+
+    if (!routeOptions) {
+      this._currentPage = "";
+      if (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
+      return;
+    }
+
+    this._currentPage = newPage;
+    const loadProm = routeOptions.load
+      ? routeOptions.load()
+      : Promise.resolve();
+
+    // Clear any existing loading screen timeout from previous navigation
+    if (this._showLoadingScreenTimeout) {
+      clearTimeout(this._showLoadingScreenTimeout);
+      this._showLoadingScreenTimeout = undefined;
+    }
+
+    // Check when loading the page source failed.
+    loadProm.catch((err) => {
+      // eslint-disable-next-line
+      console.error("Error loading page", newPage, err);
+
+      // Verify that we're still trying to show the same page.
+      if (this._currentPage !== newPage) {
+        return;
+      }
+
+      // Removes either loading screen or the panel
+      if (this.lastChild) {
+        this.removeChild(this.lastChild!);
+      }
+
+      if (this._showLoadingScreenTimeout) {
+        clearTimeout(this._showLoadingScreenTimeout);
+        this._showLoadingScreenTimeout = undefined;
+      }
+
+      // A stale build (the panel's hashed chunk 404s after an upgrade while
+      // the app stayed open) is recoverable: reload onto the current build
+      // (or prompt when there are unsaved edits) instead of dead-ending.
+      const message = err instanceof Error ? err.message : String(err ?? "");
+      const recovery = recoverFromStaleBuild(message, this);
+
+      // Show error screen, offering a reload action for a stale build. Set
+      // `showReload` on the returned element rather than through
+      // createErrorScreen's signature, so router subclasses that override
+      // createErrorScreen (e.g. ToolsRouter) can't drop it.
+      const errorScreen = this.createErrorScreen(
+        `Error while loading page ${newPage}.`
+      );
+      this.appendChild(errorScreen);
+      // That action drops the caches, so only offer it once the probe has
+      // confirmed the chunk is really gone.
+      void Promise.resolve(recovery).then((stale) => {
+        errorScreen.showReload = stale;
+      });
+    });
+
+    // If we don't show loading screen, just show the panel.
+    // It will be automatically upgraded when loading done.
+    if (!routerOptions.showLoading) {
+      const loadComplete = () => {
+        // Ignore a stale load that resolves after a newer navigation took over.
+        if (this._currentPage === newPage) {
+          this._currentLoadProm = undefined;
+        }
+      };
+      this._currentLoadProm = loadProm.then(loadComplete, loadComplete);
+      // The new panel is shown right away, so keep forwarding updates to it
+      // while its module loads.
+      this._replacingPanel = false;
+      this._createPanel(routerOptions, newPage, routeOptions);
+      return;
+    }
+
+    // We are only going to show the loading screen after some time.
+    // That way we won't have a double fast flash on fast connections.
+    let created = false;
+    // The outgoing panel stays shown until the new one has loaded; don't
+    // forward updates to it in the meantime.
+    this._replacingPanel = true;
+
+    this._showLoadingScreenTimeout = window.setTimeout(() => {
+      if (created || this._currentPage !== newPage) {
+        return;
+      }
+
+      // Show a loading screen.
+      if (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
+      this.appendChild(this.createLoadingScreen());
+    }, LOADING_SCREEN_THRESHOLD);
+
+    this._currentLoadProm = loadProm.then(
+      () => {
+        // Ignore a stale load that resolves after a newer navigation took over.
+        if (this._currentPage !== newPage) {
+          return;
+        }
+        this._currentLoadProm = undefined;
+
+        created = true;
+        this._createPanel(
+          routerOptions,
+          newPage,
+          // @ts-ignore TS forgot this is not a string.
+          routeOptions
+        );
+        // The new panel is now shown; resume forwarding updates to it.
+        this._replacingPanel = false;
+      },
+      () => {
+        if (this._currentPage === newPage) {
+          this._currentLoadProm = undefined;
+          this._replacingPanel = false;
+        }
+      }
+    );
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+
+    const options = this.routerOptions;
+
+    if (!options) {
+      return;
+    }
+
+    if (options.preloadAll) {
+      Object.values(options.routes).forEach(
+        (route) => typeof route === "object" && route.load && route.load()
+      );
+    }
+
+    if (options.initialLoad) {
+      setTimeout(() => {
+        if (!this._initialLoadDone) {
+          this.appendChild(this.createLoadingScreen());
+        }
+      }, LOADING_SCREEN_THRESHOLD);
+
+      options.initialLoad().then(() => {
+        this._initialLoadDone = true;
+        this.requestUpdate("route");
+      });
+    }
+  }
+
+  protected createLoadingScreen() {
+    import("./hass-loading-screen");
+    return document.createElement("hass-loading-screen");
+  }
+
+  protected createErrorScreen(error: string) {
+    import("./hass-error-screen");
+    const errorEl = document.createElement("hass-error-screen");
+    errorEl.error = error;
+    return errorEl;
+  }
+
+  /**
+   * Rebuild the current panel.
+   *
+   * Promise will resolve when rebuilding is done and DOM updated.
+   */
+  protected async rebuild(): Promise<void> {
+    const oldRoute = this.route;
+
+    if (oldRoute === undefined) {
+      return;
+    }
+
+    this.route = undefined;
+    await this.updateComplete;
+    // Make sure that the parent didn't override this in the meanwhile.
+    if (this.route === undefined) {
+      this.route = oldRoute;
+    }
+  }
+
+  /**
+   * Promise that resolves when the page has rendered.
+   */
+  protected get pageRendered(): Promise<void> {
+    return this.updateComplete
+      .then(() => this._currentLoadProm)
+      .then(() => {
+        const page = this.lastElementChild;
+        return Promise.all([
+          this._panelReady.ready,
+          page instanceof HassRouterPage ? page.pageRendered : undefined,
+        ]).then(() => undefined);
+      });
+  }
+
+  protected createElement(tag: string) {
+    return document.createElement(tag);
+  }
+
+  protected updatePageEl(_pageEl, _changedProps?: PropertyValues) {
+    // default we do nothing
+  }
+
+  protected get routeTail(): Route {
+    return this._computeTail(this.route!);
+  }
+
+  private _createPanel(
+    routerOptions: RouterOptions,
+    page: string,
+    routeOptions: RouteOptions
+  ) {
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+
+    const panelEl = this._cache[page] || this.createElement(routeOptions.tag);
+    this._panelReady.track(panelEl, routeOptions.waitForReady);
+    this.updatePageEl(panelEl);
+    this.appendChild(panelEl);
+
+    if (
+      (routerOptions.cacheAll || routeOptions.cache) &&
+      !routeOptions.itemId
+    ) {
+      this._cache[page] = panelEl;
+    }
+  }
+}

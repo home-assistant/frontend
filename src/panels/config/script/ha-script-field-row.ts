@@ -1,0 +1,540 @@
+import {
+  mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiPlaylistEdit,
+} from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { truncateWithEllipsis } from "../../../common/string/truncate-with-ellipsis";
+import type { LocalizeKeys } from "../../../common/translations/localize";
+import "../../../components/automation/ha-automation-row";
+import type { HaAutomationRow } from "../../../components/automation/ha-automation-row";
+import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { ScriptFieldSidebarConfig } from "../../../data/automation";
+import type { Field } from "../../../data/script";
+import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
+import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../types";
+import { isMac } from "../../../util/is_mac";
+import { showEditorToast } from "../automation/editor-toast";
+import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
+import "./ha-script-field-selector-editor";
+import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
+
+@customElement("ha-script-field-row")
+export default class HaScriptFieldRow extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property() public key!: string;
+
+  @property({ attribute: false }) public excludeKeys: string[] = [];
+
+  @property({ attribute: false }) public field!: Field;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean }) public highlight?: boolean;
+
+  @state() private _yamlMode = false;
+
+  @state() private _selected = false;
+
+  @state() private _collapsed = false;
+
+  @state() private _selectorRowSelected = false;
+
+  @state() private _selectorRowCollapsed = false;
+
+  @query("ha-script-field-selector-editor")
+  private _selectorEditor?: HaScriptFieldSelectorEditor;
+
+  @query("ha-automation-row:first-of-type")
+  private _fieldRowElement?: HaAutomationRow;
+
+  @query(".selector-row ha-automation-row")
+  private _selectorRowElement?: HaAutomationRow;
+
+  protected render() {
+    const hasSelector =
+      this.field.selector && typeof this.field.selector === "object";
+
+    const noteTooltipText = truncateWithEllipsis(
+      this.field.description?.trim() || "",
+      250
+    );
+
+    return html`
+      <ha-card outlined>
+        <ha-automation-row
+          .disabled=${this.disabled}
+          @click=${this._toggleSidebar}
+          .selected=${this._selected}
+          .leftChevron=${hasSelector}
+          @toggle-collapsed=${this._toggleCollapse}
+          .collapsed=${this._collapsed}
+          .highlight=${this.highlight}
+          @delete-row=${this._onDelete}
+        >
+          <ha-dropdown
+            slot="icons"
+            @click=${preventDefaultStopPropagation}
+            @keydown=${stopPropagation}
+            @wa-select=${this._handleDropdownSelect}
+            placement="bottom-end"
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+
+            <ha-dropdown-item value="edit_note">
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiCommentEditOutline}
+              ></ha-svg-icon>
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.note.${this.field.description ? "edit" : "add"}`
+              )}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="toggle_yaml_mode">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              value="delete"
+              .disabled=${this.disabled}
+              variant="danger"
+            >
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.delete"
+                )}
+                ${
+                  !this.narrow
+                    ? html`<span class="shortcut">
+                        <span
+                          >${
+                            isMac
+                              ? html`<ha-svg-icon
+                                  .path=${mdiAppleKeyboardCommand}
+                                ></ha-svg-icon>`
+                              : this.hass.localize(
+                                  "ui.panel.config.automation.editor.ctrl"
+                                )
+                          }</span
+                        >
+                        <span>+</span>
+                        <span
+                          >${this.hass.localize(
+                            "ui.panel.config.automation.editor.del"
+                          )}</span
+                        >
+                      </span>`
+                    : nothing
+                }
+              </div>
+            </ha-dropdown-item>
+          </ha-dropdown>
+
+          <h3 slot="header">
+            ${this.field.name ?? this.key}
+            ${
+              this.field.description?.trim()
+                ? html`
+                    <ha-svg-icon
+                      id="note-icon"
+                      tabindex="0"
+                      .path=${mdiCommentTextOutline}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.note.label"
+                      )}
+                      class="note-indicator"
+                    ></ha-svg-icon>
+                    <ha-tooltip for="note-icon"
+                      ><p>${noteTooltipText}</p></ha-tooltip
+                    >
+                  `
+                : nothing
+            }
+          </h3>
+
+          <slot name="icons" slot="icons"></slot>
+        </ha-automation-row>
+      </ha-card>
+      ${
+        hasSelector
+          ? html`
+              <div
+                class=${classMap({
+                  "selector-row": true,
+                  "parent-selected": this._selected,
+                  hidden: this._collapsed,
+                })}
+              >
+                <ha-card>
+                  <ha-automation-row
+                    .selected=${this._selectorRowSelected}
+                    @click=${this._toggleSelectorSidebar}
+                    .collapsed=${this._selectorRowCollapsed}
+                    @toggle-collapsed=${this._toggleSelectorRowCollapse}
+                    .leftChevron=${SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+                      Object.keys(this.field.selector)[0]
+                    )}
+                    .highlight=${this.highlight}
+                  >
+                    <h3 slot="header">
+                      ${this.hass.localize(
+                        `ui.components.selectors.selector.types.${Object.keys(this.field.selector)[0]}` as LocalizeKeys
+                      )}
+                      ${this.hass.localize(
+                        "ui.panel.config.script.editor.field.selector"
+                      )}
+                    </h3>
+                    <ha-dropdown
+                      slot="icons"
+                      @click=${preventDefaultStopPropagation}
+                      @keydown=${stopPropagation}
+                      @wa-select=${this._handleDropdownSelect}
+                      placement="bottom-end"
+                    >
+                      <ha-icon-button
+                        slot="trigger"
+                        .label=${this.hass.localize("ui.common.menu")}
+                        .path=${mdiDotsVertical}
+                      ></ha-icon-button>
+                      <ha-dropdown-item value="toggle_yaml_mode" selector-row>
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiPlaylistEdit}
+                        ></ha-svg-icon>
+                        <div class="overflow-label">
+                          ${this.hass.localize(
+                            `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+                          )}
+                          <span
+                            class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                          ></span>
+                        </div>
+                      </ha-dropdown-item>
+                      <ha-dropdown-item
+                        value="delete"
+                        .disabled=${this.disabled}
+                        variant="danger"
+                      >
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiDelete}
+                        ></ha-svg-icon>
+                        <div class="overflow-label">
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.delete"
+                          )}
+                          ${
+                            !this.narrow
+                              ? html`<span class="shortcut">
+                                  <span
+                                    >${
+                                      isMac
+                                        ? html`<ha-svg-icon
+                                            .path=${mdiAppleKeyboardCommand}
+                                          ></ha-svg-icon>`
+                                        : this.hass.localize(
+                                            "ui.panel.config.automation.editor.ctrl"
+                                          )
+                                    }</span
+                                  >
+                                  <span>+</span>
+                                  <span
+                                    >${this.hass.localize(
+                                      "ui.panel.config.automation.editor.del"
+                                    )}</span
+                                  >
+                                </span>`
+                              : nothing
+                          }
+                        </div>
+                      </ha-dropdown-item>
+                    </ha-dropdown>
+                  </ha-automation-row>
+                </ha-card>
+                ${
+                  typeof this.field.selector === "object" &&
+                  SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+                    Object.keys(this.field.selector)[0]
+                  )
+                    ? html`
+                        <ha-script-field-selector-editor
+                          class=${this._selectorRowCollapsed ? "hidden" : ""}
+                          .selected=${this._selectorRowSelected}
+                          .hass=${this.hass}
+                          .field=${this.field}
+                          .disabled=${this.disabled}
+                          indent
+                          @value-changed=${this._selectorValueChanged}
+                          .narrow=${this.narrow}
+                        ></ha-script-field-selector-editor>
+                      `
+                    : nothing
+                }
+              </div>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  private _toggleCollapse() {
+    this._collapsed = !this._collapsed;
+  }
+
+  public expand() {
+    this._collapsed = false;
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandSelectorRow() {
+    this._selectorRowCollapsed = false;
+  }
+
+  public collapseSelectorRow() {
+    this._selectorRowCollapsed = true;
+  }
+
+  private _toggleSelectorRowCollapse() {
+    this._selectorRowCollapsed = !this._selectorRowCollapsed;
+  }
+
+  public expandAll() {
+    this.expand();
+    this.expandSelectorRow();
+
+    this._selectorEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+    this.collapseSelectorRow();
+
+    this._selectorEditor?.collapseAll();
+  }
+
+  private _toggleSidebar(ev: Event) {
+    ev?.stopPropagation();
+
+    if (this._selected) {
+      fireEvent(this, "request-close-sidebar");
+      return;
+    }
+
+    this._selected = true;
+    this._collapsed = false;
+    this.openSidebar();
+  }
+
+  private _toggleSelectorSidebar(ev: Event) {
+    ev?.stopPropagation();
+
+    if (this._selectorRowSelected) {
+      fireEvent(this, "request-close-sidebar");
+      return;
+    }
+
+    this._selectorRowSelected = true;
+    this._selectorRowCollapsed = false;
+    this.openSidebar(true);
+  }
+
+  private _selectorValueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.field,
+        key: this.key,
+        ...ev.detail.value,
+      },
+    });
+  }
+
+  private _editNote = async (): Promise<void> => {
+    const note = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.note.${this.field.description ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.note.label"
+      ),
+      inputType: "string",
+      defaultValue: this.field.description,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (note !== null) {
+      const value = { ...this.field };
+      if (note === "") {
+        delete value.description;
+      } else {
+        value.description = note;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected) {
+        this.openSidebar(false, value); // refresh sidebar
+      }
+    }
+  };
+
+  public openSidebar(
+    selectorEditor = false,
+    fieldValue?: HaScriptFieldRow["field"]
+  ): void {
+    if (!selectorEditor) {
+      this._selected = true;
+    }
+
+    const field = fieldValue ?? this.field;
+
+    fireEvent(this, "open-sidebar", {
+      save: (value) => {
+        fireEvent(this, "value-changed", { value });
+      },
+      close: (focus?: boolean) => {
+        if (selectorEditor) {
+          this._selectorRowSelected = false;
+          if (focus) {
+            this.focusSelector();
+          }
+        } else {
+          this._selected = false;
+          if (focus) {
+            this.focus();
+          }
+        }
+        fireEvent(this, "close-sidebar");
+      },
+      toggleYamlMode: () => {
+        this._toggleYamlMode();
+        this.openSidebar();
+      },
+      delete: this._onDelete,
+      config: {
+        field,
+        selector: selectorEditor,
+        key: this.key,
+        excludeKeys: this.excludeKeys,
+      },
+      yamlMode: this._yamlMode,
+      editNote: this._editNote,
+    } satisfies ScriptFieldSidebarConfig);
+
+    if (this.narrow) {
+      window.setTimeout(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
+      }, 180); // duration of transition of added padding for bottom sheet
+    }
+  }
+
+  private _toggleYamlMode = (item?: HTMLElement) => {
+    this._yamlMode = !this._yamlMode;
+
+    if (item) {
+      this.openSidebar(item.hasAttribute("selector-row"));
+    }
+  };
+
+  private _onDelete = () => {
+    fireEvent(this, "value-changed", { value: null });
+    if (this._selected || this._selectorRowSelected) {
+      fireEvent(this, "close-sidebar");
+    }
+
+    showEditorToast(this, {
+      message: this.hass.localize("ui.common.successfully_deleted"),
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
+    });
+  };
+
+  public focus() {
+    this._fieldRowElement?.focus();
+  }
+
+  public focusSelector() {
+    this._selectorRowElement?.focus();
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle_yaml_mode":
+        this._toggleYamlMode(ev.target as HTMLElement);
+        break;
+      case "delete":
+        this._onDelete();
+        break;
+      case "edit_note":
+        this._editNote();
+        break;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      rowStyles,
+      indentStyle,
+      overflowStyles,
+      css`
+        .selector-row {
+          padding-top: 12px;
+          padding-bottom: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: 0px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-script-field-row": HaScriptFieldRow;
+  }
+}

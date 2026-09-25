@@ -1,0 +1,89 @@
+import { css } from "lit";
+import { customElement, property } from "lit/decorators";
+import { HaMdListItem, haMdListStyles } from "./ha-md-list-item";
+
+@customElement("ha-combo-box-item")
+export class HaComboBoxItem extends HaMdListItem {
+  @property({ type: Boolean, reflect: true, attribute: "border-top" })
+  public borderTop = false;
+
+  // Allow the headline/supporting text to wrap onto multiple lines instead of
+  // truncating with an ellipsis. Off by default to preserve single-line rows.
+  @property({ type: Boolean, reflect: true })
+  public multiline = false;
+
+  static override styles = [
+    ...haMdListStyles,
+    css`
+      :host {
+        --md-list-item-one-line-container-height: 48px;
+        --md-list-item-two-line-container-height: 64px;
+      }
+      :host([border-top]) md-item {
+        border-top: 1px solid var(--divider-color);
+      }
+      [slot="start"] {
+        --state-icon-color: var(--secondary-text-color);
+      }
+      [slot="overline"] {
+        /* mimicing a floating label of mdc-select */
+        line-height: 1.15rem;
+        font-size: calc(var(--mdc-typography-subtitle1-font-size, 1rem) * 0.75);
+        font-weight: var(--mdc-typography-subtitle1-font-weight, 400);
+        font-family: var(
+          --mdc-typography-subtitle1-font-family,
+          var(--mdc-typography-font-family)
+        );
+        color: var(--mdc-select-label-ink-color, rgba(0, 0, 0, 0.6));
+      }
+      [slot="headline"] {
+        line-height: var(--ha-line-height-normal);
+        font-size: var(--ha-font-size-m);
+        white-space: nowrap;
+      }
+      [slot="supporting-text"] {
+        line-height: var(--ha-line-height-normal);
+        font-size: var(--ha-font-size-s);
+        white-space: nowrap;
+      }
+      :host([multiline]) [slot="headline"],
+      :host([multiline]) [slot="supporting-text"] {
+        white-space: normal;
+      }
+      ::slotted(state-badge),
+      ::slotted(img),
+      ::slotted(ha-app-icon) {
+        width: 32px;
+        height: 32px;
+      }
+      ::slotted(ha-app-icon.colored) {
+        width: 24px;
+        height: 24px;
+        padding: var(--ha-space-1);
+        border-radius: var(--ha-border-radius-circle);
+        background-color: var(--app-icon-background-color);
+        color: var(--white-color);
+      }
+      ::slotted(.code) {
+        font-family: var(--ha-font-family-code);
+        font-size: var(--ha-font-size-xs);
+      }
+      ::slotted(.domain) {
+        font-size: var(--ha-font-size-s);
+        font-weight: var(--ha-font-weight-normal);
+        line-height: var(--ha-line-height-normal);
+        align-self: flex-end;
+        max-width: 30%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    `,
+  ];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-combo-box-item": HaComboBoxItem;
+  }
+}

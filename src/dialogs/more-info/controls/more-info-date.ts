@@ -1,0 +1,72 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { transform } from "../../../common/decorators/transform";
+import "../../../components/ha-date-input";
+import { apiContext, internationalizationContext } from "../../../data/context";
+import { setDateValue } from "../../../data/date";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../../types";
+
+@customElement("more-info-date")
+class MoreInfoDate extends LitElement {
+  @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  protected render() {
+    if (!this.stateObj || this.stateObj.state === UNAVAILABLE) {
+      return nothing;
+    }
+
+    return html`
+      <ha-date-input
+        .locale=${this._locale}
+        .value=${
+          this.stateObj.state === UNKNOWN ? undefined : this.stateObj.state
+        }
+        @value-changed=${this._dateChanged}
+      >
+      </ha-date-input>
+    `;
+  }
+
+  private _dateChanged(ev: ValueChangedEvent<string>): void {
+    if (ev.detail.value) {
+      setDateValue(
+        this._api.callService,
+        this.stateObj!.entity_id,
+        ev.detail.value
+      );
+    }
+  }
+
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-date": MoreInfoDate;
+  }
+}

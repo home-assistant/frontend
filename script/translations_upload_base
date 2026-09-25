@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Safe bash settings
+# -e            Exit on command fail
+# -u            Exit on unset variable
+# -o pipefail   Exit if piped command has error code
+set -eu -o pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ -z "${LOKALISE_TOKEN-}" ] && [ ! -f .lokalise_token ] ; then
+    echo "Lokalise API token is required to download the latest set of" \
+        "translations. Please create an account by using the following link:" \
+        "https://lokalise.co/signup/3420425759f6d6d241f598.13594006/all/" \
+        "Place your token in a new file \".lokalise_token\" in the repo" \
+        "root directory."
+    exit 1
+fi
+
+# Load token from file if not already in the environment
+[ -z "${LOKALISE_TOKEN-}" ] && LOKALISE_TOKEN="$(<.lokalise_token)"
+
+PROJECT_ID="3420425759f6d6d241f598.13594006"
+LOCAL_FILE="$(pwd)/src/translations/en.json"
+LANG_ISO=en
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "${CURRENT_BRANCH-}" != "dev" ] && [ "${AZURE_BRANCH-}" != "dev" ] ; then
+  echo "Please only run the translations upload script from a clean checkout of dev."
+  exit 1
+fi
+
+docker run \
+    -v ${LOCAL_FILE}:/opt/src/${LOCAL_FILE} \
+     lokalise/lokalise-cli-2:v3.1.4 lokalise2 \
+    --token ${LOKALISE_TOKEN} \
+    --project-id ${PROJECT_ID} \
+    file upload \
+    --file /opt/src/${LOCAL_FILE} \
+    --lang-iso ${LANG_ISO} \
+    --convert-placeholders=false \
+    --replace-modified=true \
+#    --cleanup-mode=true

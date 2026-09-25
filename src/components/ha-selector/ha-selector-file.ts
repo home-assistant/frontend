@@ -1,0 +1,108 @@
+import { mdiFile } from "@mdi/js";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import { removeFile, uploadFile } from "../../data/file_upload";
+import type { FileSelector } from "../../data/selector";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import "../ha-file-upload";
+
+@customElement("ha-selector-file")
+export class HaFileSelector extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public selector!: FileSelector;
+
+  @property() public value?: string;
+
+  @property() public label?: string;
+
+  @property() public helper?: string;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = true;
+
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
+
+  @state() private _filename?: { fileId: string; name: string };
+
+  @state() private _busy = false;
+
+  protected render() {
+    return html`
+      <ha-file-upload
+        .accept=${this.selector.file?.accept}
+        .icon=${mdiFile}
+        .label=${this.label}
+        .required=${this.required}
+        .disabled=${this.disabled}
+        .supports=${this.helper}
+        .uploading=${this._busy}
+        .value=${
+          this.value
+            ? this._filename?.name ||
+              this._localize!("ui.components.selectors.file.unknown_file")
+            : undefined
+        }
+        @file-picked=${this._uploadFile}
+        @change=${this._removeFile}
+      ></ha-file-upload>
+    `;
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("value") &&
+      this._filename &&
+      this.value !== this._filename.fileId
+    ) {
+      this._filename = undefined;
+    }
+  }
+
+  private async _uploadFile(ev) {
+    this._busy = true;
+
+    const file = ev.detail.files![0];
+
+    try {
+      const fileId = await uploadFile(this.hass, file);
+      this._filename = { fileId, name: file.name };
+      fireEvent(this, "value-changed", { value: fileId });
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: this._localize!("ui.components.selectors.file.upload_failed", {
+          reason: err.message || err,
+        }),
+      });
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  private _removeFile = async () => {
+    this._busy = true;
+    try {
+      await removeFile(this.hass, this.value!);
+    } catch (_err) {
+      // Not ideal if removal fails, but will be cleaned up later
+    } finally {
+      this._busy = false;
+    }
+    this._filename = undefined;
+    fireEvent(this, "value-changed", { value: "" });
+  };
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-selector-file": HaFileSelector;
+  }
+}

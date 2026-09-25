@@ -1,0 +1,221 @@
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/input/ha-input";
+import type { Counter } from "../../../../data/counter";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+
+@customElement("ha-counter-form")
+class HaCounterForm extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public new = false;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  private _item?: Partial<Counter>;
+
+  @state() private _name!: string;
+
+  @state() private _icon!: string;
+
+  @state() private _maximum?: number;
+
+  @state() private _minimum?: number;
+
+  @state() private _restore?: boolean;
+
+  @state() private _initial?: number;
+
+  @state() private _step?: number;
+
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
+  set item(item: Counter) {
+    this._item = item;
+    if (item) {
+      this._name = item.name || "";
+      this._icon = item.icon || "";
+      this._maximum = item.maximum ?? undefined;
+      this._minimum = item.minimum ?? undefined;
+      this._restore = item.restore ?? true;
+      this._step = item.step ?? 1;
+      this._initial = item.initial ?? 0;
+    } else {
+      this._name = "";
+      this._icon = "";
+      this._maximum = undefined;
+      this._minimum = undefined;
+      this._restore = true;
+      this._step = 1;
+      this._initial = 0;
+    }
+  }
+
+  public focus() {
+    this.updateComplete.then(() => this._focusElement?.focus());
+  }
+
+  protected render() {
+    if (!this.hass) {
+      return nothing;
+    }
+
+    return html`
+      <div class="form">
+        <ha-input
+          .value=${this._name}
+          .configValue=${"name"}
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.name"
+          )}
+          auto-validate
+          required
+          .validationMessage=${this.hass!.localize(
+            "ui.dialogs.helper_settings.required_error_msg"
+          )}
+          dialogInitialFocus
+          .disabled=${this.disabled}
+        ></ha-input>
+        <ha-icon-picker
+          .value=${this._icon}
+          .configValue=${"icon"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.icon"
+          )}
+          .disabled=${this.disabled}
+        ></ha-icon-picker>
+        <ha-input
+          .value=${this._minimum !== undefined ? String(this._minimum) : ""}
+          .configValue=${"minimum"}
+          type="number"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.counter.minimum"
+          )}
+          .disabled=${this.disabled}
+        ></ha-input>
+        <ha-input
+          .value=${this._maximum !== undefined ? String(this._maximum) : ""}
+          .configValue=${"maximum"}
+          type="number"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.counter.maximum"
+          )}
+          .disabled=${this.disabled}
+        ></ha-input>
+        <ha-input
+          .value=${this._initial !== undefined ? String(this._initial) : ""}
+          .configValue=${"initial"}
+          type="number"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.counter.initial"
+          )}
+          .disabled=${this.disabled}
+        ></ha-input>
+        <ha-expansion-panel
+          header=${this.hass.localize(
+            "ui.dialogs.helper_settings.generic.more_options"
+          )}
+          outlined
+        >
+          <ha-input
+            .value=${this._step !== undefined ? String(this._step) : ""}
+            .configValue=${"step"}
+            type="number"
+            @input=${this._valueChanged}
+            .label=${this.hass!.localize(
+              "ui.dialogs.helper_settings.counter.step"
+            )}
+            .disabled=${this.disabled}
+          ></ha-input>
+          <div class="row">
+            <ha-switch
+              .checked=${this._restore}
+              .configValue=${"restore"}
+              @change=${this._valueChanged}
+              .disabled=${this.disabled}
+            >
+            </ha-switch>
+            <div>
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.counter.restore"
+              )}
+            </div>
+          </div>
+        </ha-expansion-panel>
+      </div>
+    `;
+  }
+
+  private _valueChanged(ev: CustomEvent) {
+    if (!this.new && !this._item) {
+      return;
+    }
+    ev.stopPropagation();
+    const target = ev.target as any;
+    const configValue = target.configValue;
+    const value =
+      target.type === "number"
+        ? target.value !== ""
+          ? Number(target.value)
+          : undefined
+        : target.localName === "ha-switch"
+          ? (ev.target as HaSwitch).checked
+          : ev.detail?.value || target.value;
+    if (this[`_${configValue}`] === value) {
+      return;
+    }
+    const newValue = { ...this._item };
+    if (value === undefined || value === "") {
+      delete newValue[configValue];
+    } else {
+      newValue[configValue] = value;
+    }
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .form {
+          color: var(--primary-text-color);
+        }
+        .row {
+          margin-top: 12px;
+          margin-bottom: 12px;
+          color: var(--primary-text-color);
+          display: flex;
+          align-items: center;
+        }
+        .row div {
+          margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
+        }
+        ha-input {
+          margin: var(--ha-space-2) 0;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-counter-form": HaCounterForm;
+  }
+}

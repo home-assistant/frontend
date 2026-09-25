@@ -1,0 +1,4 @@
+include README.md
+graft hass_frontend
+graft hass_frontend_es5
+recursive-exclude * *.py[co]

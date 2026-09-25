@@ -1,0 +1,26 @@
+import type { HomeAssistant } from "../types";
+
+export const uploadFile = async (hass: HomeAssistant, file: File) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  const resp = await hass.fetchWithAuth("/api/file_upload", {
+    method: "POST",
+    body: fd,
+  });
+  if (resp.status === 413) {
+    throw new Error(
+      hass.localize("ui.common.upload_file_too_large", {
+        name: file.name,
+      })
+    );
+  } else if (resp.status !== 200) {
+    throw new Error(hass.localize("ui.common.unknown_error"));
+  }
+  const data = await resp.json();
+  return data.file_id;
+};
+
+export const removeFile = async (hass: HomeAssistant, file_id: string) =>
+  hass.callApi("DELETE", "file_upload", {
+    file_id,
+  });

@@ -1,0 +1,469 @@
+import { consume } from "@lit/context";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+import { canShowPage } from "../common/config/can_show_page";
+import { restoreScroll } from "../common/decorators/restore-scroll";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { getHistoryState, navigate } from "../common/navigate";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
+import { handleBackClick } from "./back-navigation";
+import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
+import "../components/ha-svg-icon";
+import "../components/ha-tab";
+import { narrowViewportContext } from "../data/context";
+import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant, Route } from "../types";
+
+const normalizePathname = (pathname: string): string =>
+  pathname.endsWith("/") && pathname.length > 1
+    ? pathname.slice(0, -1)
+    : pathname;
+
+export interface PageNavigation {
+  path: string;
+  translationKey?: string;
+  component?: string | string[];
+  name?: string;
+  core?: boolean;
+  /** Hide from non-admin users in filtered navigation and quick bar. */
+  adminOnly?: boolean;
+  iconPath?: string;
+  iconSecondaryPath?: string;
+  iconViewBox?: string;
+  description?: string;
+  iconColor?: string;
+  info?: any;
+  filter?: (hass: HomeAssistant) => boolean;
+}
+
+@customElement("hass-tabs-subpage")
+export class HassTabsSubpage extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
+  @property({ type: String, attribute: "back-path" }) public backPath?: string;
+
+  @property({ attribute: false }) public backCallback?: () => void;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public tabs!: PageNavigation[];
+
+  @state()
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "is-wide" })
+  public isWide = false;
+
+  @property({ type: Boolean }) public pane = false;
+
+  /**
+   * Do we need to add padding for a fab.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean, attribute: "has-fab" }) public hasFab = false;
+
+  /**
+   * Whether tabs are shown (2 or more tabs visible).
+   * When both, show-tabs and narrow are true, tabs are shown as bottom bar.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean, attribute: "show-tabs", reflect: true })
+  public showTabs = false;
+
+  @state() private _activeTab?: PageNavigation;
+
+  @query(".content") private _content?: HTMLDivElement;
+
+  // @ts-ignore
+  @restoreScroll(".content") private _savedScrollPos?: number;
+
+  private _getTabs = memoizeOne(
+    (
+      tabs: PageNavigation[],
+      activeTab: PageNavigation | undefined,
+      _components,
+      _language,
+      _userData,
+      _narrow,
+      localizeFunc
+    ) => {
+      const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
+
+      if (shownTabs.length < 2) {
+        this.showTabs = false;
+        if (shownTabs.length === 1) {
+          const page = shownTabs[0];
+          return [
+            page.translationKey ? localizeFunc(page.translationKey) : page.name,
+          ];
+        }
+        return [""];
+      }
+
+      this.showTabs = true;
+      return shownTabs.map(
+        (page) => html`
+          <a href=${page.path} @click=${this._tabClicked}>
+            <ha-tab
+              .active=${page.path === activeTab?.path}
+              .narrow=${this._narrow}
+              .name=${
+                page.translationKey
+                  ? localizeFunc(page.translationKey)
+                  : page.name
+              }
+            >
+              ${
+                page.iconPath
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${page.iconPath}
+                    ></ha-svg-icon>`
+                  : ""
+              }
+            </ha-tab>
+          </a>
+        `
+      );
+    }
+  );
+
+  public willUpdate(changedProperties: PropertyValues<this>) {
+    this.toggleAttribute("narrow", this._narrow);
+
+    if (changedProperties.has("route")) {
+      const currentPath = `${this.route.prefix}${this.route.path}`;
+      this._activeTab = this.tabs.find((tab) =>
+        this._isActiveTabPath(tab.path, currentPath)
+      );
+    }
+    super.willUpdate(changedProperties);
+  }
+
+  protected render(): TemplateResult {
+    const tabs = this._getTabs(
+      this.tabs,
+      this._activeTab,
+      this.hass.config.components,
+      this.hass.language,
+      this.hass.userData,
+      this._narrow,
+      this.localizeFunc || this.hass.localize
+    );
+    const backPath = sanitizeNavigationPath(this.backPath);
+
+    return html`
+      <div class="toolbar ${classMap({ narrow: this._narrow })}">
+        <slot name="toolbar">
+          <div class="toolbar-content">
+            ${
+              this.mainPage || (!backPath && getHistoryState()?.root)
+                ? html`<ha-menu-button></ha-menu-button>`
+                : html`
+                    <ha-icon-button-arrow-prev
+                      .href=${backPath}
+                      @click=${this._backTapped}
+                    ></ha-icon-button-arrow-prev>
+                  `
+            }
+            ${
+              this._narrow || !this.showTabs
+                ? html`<div class="main-title">
+                    <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                  </div>`
+                : ""
+            }
+            ${
+              this.showTabs && !this._narrow
+                ? html`<div id="tabbar">${tabs}</div>`
+                : ""
+            }
+            <div id="toolbar-icon">
+              <slot name="toolbar-icon"></slot>
+            </div>
+          </div>
+        </slot>
+        ${
+          this.showTabs && this._narrow
+            ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
+            : ""
+        }
+      </div>
+      <div class="container">
+        ${
+          this.pane
+            ? html`<div class="pane">
+                <div class="shadow-container"></div>
+                <div class="ha-scrollbar">
+                  <slot name="pane"></slot>
+                </div>
+              </div>`
+            : nothing
+        }
+        <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+          <slot></slot>
+          ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
+        </div>
+      </div>
+      <div id="fab">
+        <slot name="fab"></slot>
+      </div>
+    `;
+  }
+
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  public focusContentScroller() {
+    if (!this._content) {
+      return;
+    }
+
+    this._content.style.outline = "none";
+    this._content.focus({ preventScroll: true });
+  }
+
+  private _backTapped(ev: MouseEvent): void {
+    handleBackClick(ev, this.backPath, this.backCallback);
+  }
+
+  private _isActiveTabPath(tabPath: string, currentPath: string): boolean {
+    try {
+      const tabUrl = new URL(tabPath, window.location.origin);
+      const currentUrl = new URL(currentPath, window.location.origin);
+
+      const tabPathname = normalizePathname(tabUrl.pathname);
+      const currentPathname = normalizePathname(currentUrl.pathname);
+
+      if (
+        currentPathname === tabPathname ||
+        currentPathname.startsWith(`${tabPathname}/`)
+      ) {
+        return true;
+      }
+
+      return false;
+    } catch (_err) {
+      return currentPath === tabPath || currentPath.startsWith(`${tabPath}/`);
+    }
+  }
+
+  private async _tabClicked(ev: MouseEvent): Promise<void> {
+    const href = isNavigationClick(ev);
+    if (!href) {
+      return;
+    }
+
+    await navigate(href, { replace: true });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+          background-color: var(--primary-background-color);
+        }
+
+        :host([narrow]) {
+          width: 100%;
+          position: fixed;
+        }
+
+        .container {
+          display: flex;
+          height: calc(
+            100% - var(--header-height, 0px) - var(--safe-area-inset-top, 0px)
+          );
+        }
+
+        ha-menu-button {
+          margin-right: 24px;
+          margin-inline-end: 24px;
+          margin-inline-start: initial;
+        }
+
+        .toolbar {
+          font-size: var(--ha-font-size-xl);
+          height: calc(
+            var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
+          );
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
+          background-color: var(--sidebar-background-color);
+          font-weight: var(--ha-font-weight-normal);
+          border-bottom: 1px solid var(--divider-color);
+          box-sizing: border-box;
+        }
+        :host([narrow]) .toolbar {
+          padding-left: var(--safe-area-inset-left);
+        }
+        .toolbar-content {
+          padding: 8px 12px;
+          display: flex;
+          align-items: center;
+          height: 100%;
+          box-sizing: border-box;
+        }
+        :host([narrow]) .toolbar-content {
+          padding: 4px;
+        }
+        .toolbar a {
+          color: var(--sidebar-text-color);
+          text-decoration: none;
+        }
+        .bottom-bar a {
+          width: 25%;
+        }
+
+        #tabbar {
+          display: flex;
+          font-size: var(--ha-font-size-m);
+          overflow: hidden;
+        }
+
+        #tabbar > a {
+          overflow: hidden;
+          max-width: 45%;
+        }
+
+        #tabbar.bottom-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          padding: 0 calc(16px + var(--safe-area-inset-right))
+            var(--safe-area-inset-bottom)
+            calc(16px + var(--safe-area-inset-left));
+          box-sizing: border-box;
+          background-color: var(--sidebar-background-color);
+          border-top: 1px solid var(--divider-color);
+          justify-content: space-around;
+          z-index: 2;
+          font-size: var(--ha-font-size-s);
+          width: 100%;
+        }
+
+        #tabbar:not(.bottom-bar) {
+          flex: 1;
+          justify-content: center;
+        }
+
+        :host(:not([narrow])) #toolbar-icon {
+          min-width: 40px;
+        }
+
+        ha-menu-button,
+        ha-icon-button-arrow-prev,
+        ::slotted([slot="toolbar-icon"]) {
+          display: flex;
+          flex-shrink: 0;
+          pointer-events: auto;
+          color: var(--sidebar-icon-color);
+        }
+
+        .main-title {
+          min-width: 0;
+          flex: 1;
+          max-height: var(--header-height);
+          line-height: var(--ha-line-height-normal);
+          color: var(--sidebar-text-color);
+          margin-inline-start: var(--main-title-margin, var(--ha-space-6));
+        }
+        .narrow .main-title {
+          margin-inline-start: var(--main-title-margin, var(--ha-space-2));
+        }
+
+        .content {
+          position: relative;
+          width: 100%;
+          box-sizing: border-box;
+          padding-right: var(--safe-area-inset-right);
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        :host([narrow]) .content {
+          padding-left: var(--safe-area-inset-left);
+        }
+        :host([narrow][show-tabs]) .content {
+          /* Bottom bar reuses header height */
+          margin-bottom: calc(
+            var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
+          );
+        }
+
+        .content .fab-bottom-space {
+          height: calc(64px + var(--safe-area-inset-bottom, 0px));
+        }
+
+        :host([narrow][show-tabs]) .content .fab-bottom-space {
+          height: calc(80px + var(--safe-area-inset-bottom, 0px));
+        }
+
+        #fab {
+          position: fixed;
+          right: calc(16px + var(--safe-area-inset-right, 0px));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right));
+          inset-inline-start: initial;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+          z-index: 1;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
+        }
+        :host([narrow][show-tabs]) #fab {
+          bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
+        }
+        #fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+          inset-inline-end: 24px;
+          inset-inline-start: initial;
+        }
+
+        .pane {
+          border-right: 1px solid var(--divider-color);
+          border-inline-end: 1px solid var(--divider-color);
+          border-inline-start: initial;
+          box-sizing: border-box;
+          display: flex;
+          flex: 0 0 var(--sidepane-width, 250px);
+          width: var(--sidepane-width, 250px);
+          flex-direction: column;
+          position: relative;
+        }
+        .pane .ha-scrollbar {
+          flex: 1;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hass-tabs-subpage": HassTabsSubpage;
+  }
+}

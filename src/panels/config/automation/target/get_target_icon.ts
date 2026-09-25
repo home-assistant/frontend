@@ -1,0 +1,75 @@
+import { mdiLabel, mdiTextureBox } from "@mdi/js";
+import { html, nothing, type TemplateResult } from "lit";
+import "../../../../components/ha-domain-icon";
+import "../../../../components/ha-floor-icon";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-state-icon";
+import "../../../../components/ha-svg-icon";
+import type { ConfigEntry } from "../../../../data/config_entries";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
+
+export const getTargetIcon = (
+  registries: HomeAssistantRegistries,
+  states: HomeAssistant["states"],
+  targetType: string,
+  targetId: string | undefined,
+  configEntryLookup: Record<string, ConfigEntry>,
+  getLabel?: (id: string) => LabelRegistryEntry | undefined,
+  slot?: string
+): TemplateResult | typeof nothing => {
+  if (!targetId) {
+    return nothing;
+  }
+
+  if (targetType === "floor" && registries.floors[targetId]) {
+    return html`<ha-floor-icon
+      .slot=${slot}
+      .floor=${registries.floors[targetId]}
+    ></ha-floor-icon>`;
+  }
+
+  if (targetType === "area") {
+    const area = registries.areas[targetId];
+    if (area?.icon) {
+      return html`<ha-icon .slot=${slot} .icon=${area.icon}></ha-icon>`;
+    }
+    return html`<ha-svg-icon
+      .slot=${slot}
+      .path=${mdiTextureBox}
+    ></ha-svg-icon>`;
+  }
+
+  if (targetType === "device" && registries.devices[targetId]) {
+    const device = registries.devices[targetId];
+    const configEntry = device.primary_config_entry
+      ? configEntryLookup[device.primary_config_entry]
+      : undefined;
+    const domain = configEntry?.domain;
+
+    if (domain) {
+      return html`<ha-domain-icon
+        .domain=${domain}
+        brand-fallback
+        .slot=${slot}
+      ></ha-domain-icon>`;
+    }
+  }
+
+  if (targetType === "entity" && states[targetId]) {
+    return html`<ha-state-icon
+      .stateObj=${states[targetId]}
+      .slot=${slot}
+    ></ha-state-icon>`;
+  }
+
+  if (targetType === "label" && getLabel) {
+    const label = getLabel(targetId);
+    if (label?.icon) {
+      return html`<ha-icon .slot=${slot} .icon=${label.icon}></ha-icon>`;
+    }
+    return html`<ha-svg-icon .slot=${slot} .path=${mdiLabel}></ha-svg-icon>`;
+  }
+
+  return nothing;
+};

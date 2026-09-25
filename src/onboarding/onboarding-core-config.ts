@@ -1,0 +1,278 @@
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import {
+  HAS_RESOLVED_IANA_TIME_ZONE,
+  LOCAL_TIME_ZONE,
+} from "../common/datetime/resolve-time-zone";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
+import "../components/ha-alert";
+import "../components/ha-button";
+import { COUNTRIES } from "../components/ha-country-picker";
+import "../components/ha-form/ha-form";
+import type { HaForm } from "../components/ha-form/ha-form";
+import type { HaFormSchema } from "../components/ha-form/types";
+import "../components/ha-spinner";
+import type { ConfigUpdateValues } from "../data/core";
+import { saveCoreConfig } from "../data/core";
+import { countryCurrency } from "../data/currency";
+import { onboardCoreConfigStep } from "../data/onboarding";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import { getLocalLanguage } from "../util/common-translation";
+import "./onboarding-location";
+
+@customElement("onboarding-core-config")
+class OnboardingCoreConfig extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state() private _working = false;
+
+  @state() private _location?: [number, number];
+
+  private _elevation = "0";
+
+  @state() private _timeZone: ConfigUpdateValues["time_zone"] = LOCAL_TIME_ZONE;
+
+  @state() private _timeZoneDetected = HAS_RESOLVED_IANA_TIME_ZONE;
+
+  private _language: ConfigUpdateValues["language"] = getLocalLanguage();
+
+  @state() private _country?: ConfigUpdateValues["country"];
+
+  private _unitSystem?: ConfigUpdateValues["unit_system"];
+
+  private _currency?: ConfigUpdateValues["currency"];
+
+  @state() private _error?: string;
+
+  @state() private _skipCore = false;
+
+  @query("ha-form") private _form?: HaForm;
+
+  private _schema = memoizeOne((includeTimeZone: boolean): HaFormSchema[] => [
+    {
+      name: "country",
+      required: true,
+      selector: { country: null },
+    },
+    ...(includeTimeZone
+      ? ([
+          {
+            name: "time_zone",
+            required: true,
+            selector: { timezone: null },
+          },
+        ] satisfies HaFormSchema[])
+      : []),
+  ]);
+
+  private _computeLabel = (schema: HaFormSchema) =>
+    this.hass.localize(
+      `ui.panel.config.core.section.core.core_config.${schema.name}` as any
+    );
+
+  protected render(): TemplateResult {
+    if (!this._location) {
+      return html`<onboarding-location
+        .hass=${this.hass}
+        @value-changed=${this._locationChanged}
+      ></onboarding-location>`;
+    }
+    if (this._skipCore) {
+      return html`<div class="row center">
+        <ha-spinner></ha-spinner>
+      </div>`;
+    }
+    return html`
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+
+      <p>
+        ${this._localize("ui.panel.page-onboarding.core-config.country_intro")}
+      </p>
+
+      <ha-form
+        .hass=${this.hass}
+        .data=${{
+          country: this._country ?? "",
+          time_zone: this._timeZone,
+        }}
+        .schema=${this._schema(!this._timeZoneDetected)}
+        .computeLabel=${this._computeLabel}
+        .disabled=${this._working}
+        @value-changed=${this._handleFormChanged}
+      ></ha-form>
+
+      <div class="footer">
+        <ha-button @click=${this._save} .disabled=${this._working}>
+          ${this._localize("ui.panel.page-onboarding.core-config.finish")}
+        </ha-button>
+      </div>
+    `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("keyup", (ev) => {
+      if (this._location && ev.key === "Enter") {
+        this._save(ev);
+      }
+    });
+  }
+
+  private _handleFormChanged(
+    ev: ValueChangedEvent<{ country?: string; time_zone?: string }>
+  ) {
+    const value = ev.detail.value as { country?: string; time_zone?: string };
+    this._country = value.country || undefined;
+    if (value.time_zone) {
+      this._timeZone = value.time_zone;
+    }
+  }
+
+  private async _locationChanged(ev) {
+    this._location = ev.detail.value.location;
+    if (ev.detail.value.country) {
+      this._country = ev.detail.value.country;
+    }
+    if (ev.detail.value.elevation) {
+      this._elevation = ev.detail.value.elevation;
+    }
+    if (ev.detail.value.currency) {
+      this._currency = ev.detail.value.currency;
+    }
+    if (ev.detail.value.language) {
+      this._language = ev.detail.value.language;
+    }
+    if (ev.detail.value.timezone) {
+      this._timeZone = ev.detail.value.timezone;
+      this._timeZoneDetected = true;
+    }
+    if (ev.detail.value.unit_system) {
+      this._unitSystem = ev.detail.value.unit_system;
+    }
+    if (this._country && this._timeZoneDetected) {
+      this._skipCore = true;
+      this._save(ev);
+      return;
+    }
+
+    // Set suggested country
+    let suggested: string | undefined;
+    if (navigator.language) {
+      const lang = navigator.language.split("-").pop()!.toUpperCase();
+      if (COUNTRIES.includes(lang)) {
+        suggested = lang;
+      }
+    }
+    this._country = suggested;
+
+    fireEvent(this, "onboarding-progress", { increase: 0.5 });
+    await this.updateComplete;
+    setTimeout(() => this._form?.focus(), 100);
+  }
+
+  private async _save(ev) {
+    if (!this._location || !this._country || !this._timeZone) {
+      return;
+    }
+    ev.preventDefault();
+    this._working = true;
+    try {
+      await saveCoreConfig(this.hass, {
+        location_name: this._localize(
+          "ui.panel.page-onboarding.core-config.location_name_default"
+        ),
+        latitude: this._location[0],
+        longitude: this._location[1],
+        elevation: Number(this._elevation),
+        unit_system:
+          this._unitSystem || ["US", "MM", "LR"].includes(this._country)
+            ? "us_customary"
+            : "metric",
+        time_zone: this._timeZone,
+        currency: this._currency || countryCurrency[this._country] || "EUR",
+        country: this._country,
+        language: this._language,
+      });
+      const result = await onboardCoreConfigStep(this.hass);
+      fireEvent(this, "onboarding-step", {
+        type: "core_config",
+        result,
+      });
+    } catch (err: any) {
+      this._skipCore = false;
+      this._working = false;
+      this._error = err.message;
+    }
+  }
+
+  static styles = css`
+    .row {
+      display: flex;
+      flex-direction: row;
+      margin: 0 -8px;
+      align-items: center;
+      --ha-select-min-width: 100px;
+    }
+
+    .secondary {
+      color: var(--secondary-text-color);
+    }
+
+    p {
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-condensed);
+    }
+
+    .flex {
+      flex: 1;
+    }
+
+    .middle-text {
+      margin: 16px 0;
+    }
+
+    .row {
+      margin-top: 16px;
+    }
+
+    .center {
+      justify-content: center;
+    }
+
+    .row > * {
+      margin: 0 8px;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .footer {
+      margin-top: 16px;
+      text-align: right;
+    }
+    a {
+      color: var(--primary-color);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "onboarding-core-config": OnboardingCoreConfig;
+  }
+}

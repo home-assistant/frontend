@@ -1,0 +1,45 @@
+import type {
+  TimeCondition,
+  VisibilityCondition,
+} from "../../panels/lovelace/common/validate-condition";
+import { ensureArray } from "../array/ensure-array";
+
+/**
+ * Extract media queries from conditions recursively
+ */
+export function extractMediaQueries(
+  conditions: VisibilityCondition[]
+): string[] {
+  return conditions.reduce<string[]>((array, c) => {
+    if ("conditions" in c && c.conditions) {
+      array.push(...extractMediaQueries(ensureArray(c.conditions)));
+    }
+    if (
+      "condition" in c &&
+      c.condition === "screen" &&
+      "media_query" in c &&
+      c.media_query
+    ) {
+      array.push(c.media_query);
+    }
+    return array;
+  }, []);
+}
+
+/**
+ * Extract time conditions from conditions recursively
+ */
+export function extractTimeConditions(
+  conditions: VisibilityCondition[]
+): TimeCondition[] {
+  return conditions.reduce<TimeCondition[]>((array, c) => {
+    if ("conditions" in c && c.conditions) {
+      array.push(...extractTimeConditions(ensureArray(c.conditions)));
+    }
+    if ("condition" in c && c.condition === "time") {
+      // Dashboard `time` is always the client lovelace shape.
+      array.push(c as TimeCondition);
+    }
+    return array;
+  }, []);
+}

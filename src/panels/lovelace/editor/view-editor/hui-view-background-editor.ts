@@ -1,0 +1,323 @@
+import memoizeOne from "memoize-one";
+import { LitElement, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  LovelaceDashboardBackgroundConfig,
+  LovelaceViewBackgroundConfig,
+} from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+
+import {
+  isMediaSourceContentId,
+  resolveMediaSourceWithCache,
+} from "../../../../data/media_source";
+
+export interface BackgroundConfigTarget {
+  background?: LovelaceDashboardBackgroundConfig;
+}
+
+@customElement("hui-view-background-editor")
+export class HuiViewBackgroundEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public config?: BackgroundConfigTarget;
+
+  @state({ attribute: false }) private _resolvedImage?: string;
+
+  private _localizeValueCallback = (key: string) =>
+    this.hass.localize(key as Parameters<LocalizeFunc>[0]);
+
+  private _schema = memoizeOne(
+    (showSettings: boolean) =>
+      [
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: this.hass.localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
+        ...(showSettings
+          ? ([
+              {
+                name: "settings",
+                flatten: true,
+                expanded: true,
+                type: "expandable" as const,
+                schema: [
+                  {
+                    name: "opacity",
+                    selector: {
+                      number: { min: 0, max: 100, mode: "slider", step: 10 },
+                    },
+                  },
+                  {
+                    name: "attachment",
+                    selector: {
+                      button_toggle: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.attachment",
+                        options: ["scroll", "fixed"],
+                      },
+                    },
+                  },
+                  {
+                    name: "size",
+                    required: true,
+                    selector: {
+                      select: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.size",
+                        options: ["auto", "cover", "contain"],
+                        mode: "dropdown",
+                      },
+                    },
+                  },
+                  {
+                    name: "alignment",
+                    required: true,
+                    selector: {
+                      select: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.alignment",
+                        options: [
+                          "top left",
+                          "top center",
+                          "top right",
+                          "center left",
+                          "center",
+                          "center right",
+                          "bottom left",
+                          "bottom center",
+                          "bottom right",
+                        ],
+                        mode: "dropdown",
+                      },
+                    },
+                  },
+                  {
+                    name: "repeat",
+                    required: true,
+                    selector: {
+                      select: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.repeat",
+                        options: ["repeat", "no-repeat"],
+                        mode: "dropdown",
+                      },
+                    },
+                  },
+                ],
+              },
+            ] as const)
+          : []),
+      ] as const
+  );
+
+  protected updated(changedProps: PropertyValues<this>) {
+    if (
+      this.config &&
+      this.hass &&
+      (changedProps.has("config") ||
+        (changedProps.has("hass") && !changedProps.get("hass")))
+    ) {
+      const background = this._backgroundData(this.config);
+      this.style.setProperty(
+        "--picture-opacity",
+        `${(background.opacity ?? 100) / 100}`
+      );
+
+      const backgroundImage = this._currentBackgroundImage();
+
+      if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
+        resolveMediaSourceWithCache(this.hass, backgroundImage).then(
+          (result) => {
+            // Discard if the image changed while resolving
+            if (this._currentBackgroundImage() === backgroundImage) {
+              this._resolvedImage = result.url;
+            }
+          },
+          () => {
+            if (this._currentBackgroundImage() === backgroundImage) {
+              this._resolvedImage = undefined;
+            }
+          }
+        );
+      } else {
+        this._resolvedImage = backgroundImage;
+      }
+    }
+  }
+
+  private _currentBackgroundImage(): string | undefined {
+    const background = this._backgroundData(this.config);
+    return typeof background.image === "object"
+      ? background.image.media_content_id
+      : background.image;
+  }
+
+  protected render() {
+    if (!this.hass) {
+      return nothing;
+    }
+
+    const background = this._backgroundData(this.config);
+
+    return html`
+      ${
+        this._resolvedImage
+          ? html`<div class="previewContainer">
+              <img
+                src=${this._resolvedImage}
+                alt=${this.hass.localize(
+                  "ui.components.picture-upload.current_image_alt"
+                )}
+              />
+            </div>`
+          : nothing
+      }
+      <ha-form
+        .hass=${this.hass}
+        .data=${background}
+        .schema=${this._schema(true)}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+        .localizeValue=${this._localizeValueCallback}
+      ></ha-form>
+    `;
+  }
+
+  private _backgroundData = memoizeOne(
+    (backgroundConfig?: BackgroundConfigTarget) => {
+      let background = backgroundConfig?.background;
+      if (typeof background === "string") {
+        const backgroundUrl = background.match(
+          /url\(['"]?([^'"]+)['"]?\)/
+        )?.[1];
+
+        background = {
+          image: backgroundUrl,
+        };
+      }
+
+      if (!background) {
+        background = {
+          opacity: 33,
+          alignment: "center",
+          size: "cover",
+          repeat: "repeat",
+          attachment: "fixed",
+        };
+      } else {
+        background = {
+          opacity: 100,
+          alignment: "center",
+          size: "cover",
+          repeat: "no-repeat",
+          attachment: "scroll",
+          ...background,
+          ...(typeof background.image === "string"
+            ? { image: { media_content_id: background.image } }
+            : {}),
+        };
+      }
+      return background;
+    }
+  );
+
+  private _valueChanged(
+    ev: HASSDomEvent<{ value: LovelaceViewBackgroundConfig }>
+  ) {
+    fireEvent(this, "background-config-changed", {
+      config: {
+        ...(this.config || {}),
+        background: ev.detail.value,
+      },
+    });
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "image":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.image"
+        );
+      case "opacity":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.opacity"
+        );
+      case "alignment":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.alignment.name"
+        );
+      case "size":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.size.name"
+        );
+      case "repeat":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.repeat.name"
+        );
+      case "attachment":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.attachment.name"
+        );
+      default:
+        return this.hass.localize(
+          `ui.panel.lovelace.editor.edit_view.background.${schema.name}`
+        );
+    }
+  };
+
+  static styles = css`
+    :host {
+      display: block;
+      --file-upload-image-border-radius: var(--ha-border-radius-sm);
+    }
+    .previewContainer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      margin-bottom: 4px;
+      border-radius: var(--file-upload-image-border-radius);
+      transition: opacity 0.3s;
+      opacity: var(--picture-opacity, 1);
+    }
+    img:hover {
+      opacity: 1;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-view-background-editor": HuiViewBackgroundEditor;
+  }
+
+  interface HASSDomEvents {
+    "background-config-changed": {
+      config: BackgroundConfigTarget;
+    };
+  }
+}

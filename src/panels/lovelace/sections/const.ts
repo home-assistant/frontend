@@ -1,0 +1,2 @@
+export const GRID_SECTION_LAYOUT = "grid";
+export const DEFAULT_SECTION_LAYOUT = GRID_SECTION_LAYOUT;

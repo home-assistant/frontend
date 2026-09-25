@@ -1,0 +1,243 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import "../../components/ha-badge";
+import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
+import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
+import { supportsLightColorTempCardFeature } from "../../panels/lovelace/card-features/hui-light-color-temp-card-feature";
+import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";
+import type { TileCardConfig } from "../../panels/lovelace/cards/types";
+import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
+import "../../panels/lovelace/sections/hui-section";
+import type { HomeAssistant } from "../../types";
+import { stateMoreInfoType } from "./state_more_info_control";
+
+interface EntityInfo {
+  entityId: string;
+  entityName: string | undefined;
+  areaId: string | undefined;
+  deviceId: string | undefined;
+}
+
+type LightMainControl = HASSDomEvents["light-main-control-changed"]["control"];
+
+@customElement("more-info-content")
+class MoreInfoContent extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
+
+  @property({ attribute: false }) public data?: Record<string, any>;
+
+  // Mirrors the mode selected in the light control so group members
+  // show the matching slider.
+  @state() private _lightMainControl: LightMainControl = "brightness";
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("light-main-control-changed", (ev) => {
+      this._lightMainControl = ev.detail.control;
+    });
+  }
+
+  protected render() {
+    let moreInfoType: string | undefined;
+
+    if (!this.stateObj || !this.hass) return nothing;
+    if (
+      this.stateObj.attributes &&
+      "custom_ui_more_info" in this.stateObj.attributes
+    ) {
+      moreInfoType = this.stateObj.attributes.custom_ui_more_info;
+    } else {
+      const type = stateMoreInfoType(this.stateObj);
+      importMoreInfoControl(type);
+      moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
+    }
+
+    if (!moreInfoType) return nothing;
+
+    const memberIds = this._getEntityMemberIds(
+      this.stateObj,
+      this.entry,
+      this.hass.entities
+    );
+
+    return html`
+      ${dynamicElement(moreInfoType, {
+        hass: this.hass,
+        stateObj: this.stateObj,
+        entry: this.entry,
+        editMode: this.editMode,
+        data: this.data,
+      })}
+      ${
+        memberIds?.length
+          ? html`
+              <hui-section
+                .hass=${this.hass}
+                .config=${this._entitiesSectionConfig(
+                  memberIds,
+                  this._lightMainControl
+                )}
+              >
+              </hui-section>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  private _getEntityMemberIds = memoizeOne(
+    (
+      stateObj: HassEntity,
+      entry: ExtEntityRegistryEntry | null | undefined,
+      entities: HomeAssistant["entities"]
+    ): string[] | undefined => {
+      if (computeStateDomain(stateObj) === "group") {
+        // Don't show entity members for legacy groups as they already show
+        // the members in their more info dialog.
+        return undefined;
+      }
+
+      const memberIds =
+        (entry?.capabilities?.group_entities as string[] | undefined) ??
+        (Array.isArray(stateObj.attributes.entity_id)
+          ? (stateObj.attributes.entity_id as string[])
+          : undefined);
+
+      return memberIds?.filter((entityId) => !entities[entityId]?.hidden);
+    }
+  );
+
+  private _entitiesSectionConfig = memoizeOne(
+    (entityIds: string[], lightMainControl: LightMainControl) => {
+      const hass = this.hass!;
+
+      // Get entity names and areas for all visible entities
+      const entityInfos = entityIds
+        .map<EntityInfo | null>((entityId) => {
+          const entry = hass.entities[entityId];
+          if (entry?.hidden) {
+            return null;
+          }
+          const stateObj = hass.states[entityId];
+          if (!stateObj) {
+            return null;
+          }
+          const entityName = computeEntityName(
+            stateObj,
+            hass.entities,
+            hass.devices
+          );
+          const { area, device } = getEntityContext(
+            stateObj,
+            hass.entities,
+            hass.devices,
+            hass.areas,
+            hass.floors
+          );
+          const areaId = area?.area_id;
+          const deviceId = device?.id;
+          return { entityId, entityName, areaId, deviceId };
+        })
+        .filter(Boolean) as EntityInfo[];
+
+      // Check if all entities have the same entity name
+      const entityNames = new Set(entityInfos.map((info) => info.entityName));
+      const allSameEntityName = entityNames.size === 1;
+
+      // Check if all entities have the same area
+      const areaIds = new Set(entityInfos.map((info) => info.areaId));
+      const allSameArea = areaIds.size === 1;
+
+      // Check if all entities belong to the same device
+      const deviceIds = new Set(entityInfos.map((info) => info.deviceId));
+      const allSameDevice = deviceIds.size === 1;
+
+      // Build name and state content config based on conditions. The device name
+      // is redundant when every member belongs to the same device, so omit it
+      // (and fall back to the entity name so the tile still has a label).
+      const name: EntityNameItem[] = [];
+
+      if (!allSameDevice) {
+        name.push({ type: "device" });
+      }
+
+      if (!allSameEntityName || allSameDevice) {
+        name.push({ type: "entity" });
+      }
+
+      const stateContent = ["state"];
+      if (!allSameArea) {
+        stateContent.push("area_name");
+      }
+
+      const cards = entityInfos.map(({ entityId }) => {
+        const features: LovelaceCardFeatureConfig[] = [];
+        const context = { entity_id: entityId };
+        if (supportsCoverPositionCardFeature(hass, context)) {
+          features.push({
+            type: "cover-position",
+          });
+        } else if (lightMainControl === "color") {
+          // There is no RGB tile feature yet, so when the group is set to
+          // color the members show no control rather than a mismatched
+          // brightness slider.
+        } else if (
+          lightMainControl === "color_temp" &&
+          supportsLightColorTempCardFeature(hass, context)
+        ) {
+          features.push({
+            type: "light-color-temp",
+          });
+        } else if (supportsLightBrightnessCardFeature(hass, context)) {
+          features.push({
+            type: "light-brightness",
+          });
+        }
+
+        return {
+          type: "tile",
+          entity: entityId,
+          name,
+          state_content: stateContent,
+          features_position: "inline",
+          features,
+          grid_options: { columns: 12 },
+        } as TileCardConfig;
+      });
+
+      return {
+        type: "grid",
+        cards,
+      };
+    }
+  );
+
+  static styles = css`
+    hui-section {
+      width: 100%;
+      display: block;
+      margin-top: var(--ha-space-4);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-content": MoreInfoContent;
+  }
+}

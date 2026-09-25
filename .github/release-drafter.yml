@@ -1,0 +1,9 @@
+categories:
+  - title: "Dependency updates"
+    collapse-after: 3
+    labels:
+      - "Dependencies"
+template: |
+  ## What's Changed
+
+  $CHANGES

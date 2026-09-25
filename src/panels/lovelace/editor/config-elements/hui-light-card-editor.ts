@@ -1,0 +1,162 @@
+import { mdiGestureTap } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { assert, assign, object, optional, string } from "superstruct";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LightCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
+import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
+import { configElementStyle } from "./config-elements-style";
+
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    name: optional(entityNameStruct),
+    entity: optional(string()),
+    theme: optional(string()),
+    icon: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+  })
+);
+
+const SCHEMA = [
+  {
+    name: "entity",
+    required: true,
+    selector: { entity: { domain: "light" } },
+  },
+  {
+    name: "name",
+    selector: {
+      entity_name: {},
+    },
+    context: { entity: "entity" },
+  },
+  {
+    type: "grid",
+    name: "",
+    schema: [
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+        context: {
+          icon_entity: "entity",
+        },
+      },
+    ],
+  },
+  { name: "theme", selector: { theme: {} } },
+  {
+    name: "interactions",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiGestureTap,
+    schema: [
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "toggle",
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
+      },
+      {
+        name: "hold_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: [
+          {
+            name: "double_tap_action",
+            selector: {
+              ui_action: {
+                default_action: "none",
+              },
+            },
+            context: ACTION_RELATED_CONTEXT,
+          },
+        ],
+      },
+    ],
+  },
+] as const;
+
+@customElement("hui-light-card-editor")
+export class HuiLightCardEditor
+  extends LitElement
+  implements LovelaceCardEditor
+{
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: LightCardConfig;
+
+  public setConfig(config: LightCardConfig): void {
+    assert(config, cardConfigStruct);
+    this._config = config;
+  }
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
+    fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "theme":
+      case "hold_action":
+      case "double_tap_action":
+        return `${this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
+
+  static styles: CSSResultGroup = configElementStyle;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-light-card-editor": HuiLightCardEditor;
+  }
+}

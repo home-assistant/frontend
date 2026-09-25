@@ -1,0 +1,368 @@
+import { css } from "lit";
+
+export const SIDEBAR_MIN_WIDTH = 375;
+export const CONTENT_MIN_WIDTH = 350;
+
+export const rowSummaryStyles = css`
+  :host {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+    vertical-align: middle;
+    color: var(--ha-color-text-secondary);
+  }
+  :host([hidden]) {
+    display: none;
+  }
+  .dot-separator {
+    width: 2px;
+    height: 2px;
+    border-radius: var(--ha-border-radius-circle);
+    background-color: currentColor;
+  }
+`;
+
+export const rowStyles = css`
+  ha-icon-button {
+    --mdc-theme-text-primary-on-background: var(--primary-text-color);
+  }
+  ha-expansion-panel {
+    position: relative;
+    --expansion-panel-summary-padding: 0 0 0 8px;
+    --expansion-panel-content-padding: 0;
+  }
+  h3 {
+    font-size: inherit;
+    font-weight: inherit;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ha-space-2);
+    padding: var(--ha-space-2) 0;
+    min-height: 32px;
+    max-width: 100%;
+  }
+
+  ha-card {
+    transition: outline 0.2s;
+  }
+  .warning ul {
+    margin: 4px 0;
+  }
+  ha-tooltip {
+    cursor: default;
+  }
+  .hidden {
+    display: none;
+  }
+
+  ha-automation-row-event-chip.event-chip {
+    position: absolute;
+  }
+
+  .icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .trigger-leading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+  }
+
+  .trigger-leading {
+    color: var(--ha-color-on-neutral-quiet);
+  }
+
+  .trigger-leading ha-trigger-icon,
+  .trigger-leading ha-svg-icon {
+    --mdc-icon-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .trigger-index-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px dotted var(--ha-color-border-neutral-normal);
+    border-radius: var(--ha-border-radius-circle);
+    box-sizing: border-box;
+    color: var(--ha-color-text-secondary);
+    font-size: var(--ha-font-size-s);
+    line-height: 1;
+    text-box-trim: both;
+    text-box-edge: cap alphabetic;
+    overflow: hidden;
+    transition:
+      opacity var(--ha-animation-duration-fast) ease-out,
+      transform var(--ha-animation-duration-fast) ease-out,
+      width var(--ha-animation-duration-fast) ease-out,
+      margin-inline-end var(--ha-animation-duration-fast) ease-out,
+      border-width var(--ha-animation-duration-fast) ease-out;
+  }
+
+  .trigger-index-badge.hidden {
+    opacity: 0;
+    transform: translateX(calc(-8px * var(--scale-direction)));
+    width: 0;
+    margin-inline-end: 0;
+    border-width: 0;
+    pointer-events: none;
+  }
+
+  .note-indicator {
+    color: var(--ha-color-on-neutral-normal);
+  }
+  .note-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .note-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
+  }
+`;
+
+export const editorStyles = css`
+  .disabled {
+    pointer-events: none;
+  }
+
+  .card-content.card {
+    padding: 16px;
+  }
+  .card-content.yaml {
+    padding: 0 1px;
+    border-top: 1px solid var(--divider-color);
+    border-bottom: 1px solid var(--divider-color);
+  }
+`;
+
+export const indentStyle = css`
+  .card-content.indent,
+  .selector-row,
+  :host([indent]) ha-form {
+    margin-inline-start: 12px;
+    padding-top: 12px;
+    padding-bottom: 16px;
+    padding-inline-start: 16px;
+    padding-inline-end: 0px;
+    border-inline-start: 2px solid var(--ha-color-border-neutral-quiet);
+    border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
+    border-radius: var(--ha-border-radius-square);
+    border-end-start-radius: var(--ha-border-radius-lg);
+  }
+  .card-content.indent.selected,
+  :host([selected]) .card-content.indent,
+  .selector-row.parent-selected,
+  :host([selected]) ha-form {
+    border-color: var(--primary-color);
+    background: var(--ha-color-fill-primary-quiet-resting);
+    background: linear-gradient(
+      to right,
+      var(--ha-color-fill-primary-quiet-resting) 0%,
+      var(--ha-color-fill-primary-quiet-resting) 80%,
+      rgba(var(--rgb-primary-color), 0) 100%
+    );
+  }
+`;
+
+export const saveFabStyles = css`
+  :host {
+    overflow: hidden;
+  }
+  ha-button[slot="fab"] {
+    position: absolute;
+    right: calc(16px + var(--safe-area-inset-right, 0px));
+    bottom: calc(-80px - var(--safe-area-inset-bottom));
+    transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
+  }
+  ha-button[slot="fab"].dirty {
+    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+  }
+`;
+
+export const manualEditorStyles = css`
+  :host {
+    display: block;
+    --sidebar-width: 0;
+    --sidebar-gap: 0;
+  }
+
+  .has-sidebar {
+    --sidebar-width: min(
+      max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
+      var(--ha-automation-editor-max-width) -
+        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
+    );
+    --sidebar-gap: var(--ha-space-4);
+  }
+
+  .fab-positioner {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .fab-positioner ha-button[slot="fab"] {
+    position: fixed;
+    right: unset;
+    left: unset;
+    bottom: calc(-80px - var(--safe-area-inset-bottom));
+    transition: bottom 0.3s;
+  }
+  .fab-positioner ha-button[slot="fab"].dirty {
+    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+  }
+
+  .content-wrapper {
+    padding-right: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-end: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-start: 0;
+  }
+
+  .content {
+    padding-top: var(--ha-space-3);
+    padding-bottom: max(var(--safe-area-inset-bottom), 32px);
+    transition: padding-bottom 180ms ease-in-out;
+  }
+
+  .content.has-bottom-sheet {
+    padding-bottom: calc(90vh - max(var(--safe-area-inset-bottom), 32px));
+  }
+
+  ha-automation-sidebar {
+    position: fixed;
+    top: calc(var(--header-height) + 16px);
+    height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
+    height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
+    width: var(--sidebar-width);
+    display: block;
+  }
+
+  ha-automation-sidebar.hidden {
+    display: none;
+  }
+
+  .sidebar-positioner {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .description {
+    margin: 0;
+  }
+  .header a {
+    color: var(--secondary-text-color);
+  }
+`;
+
+export const automationRowsStyles = css`
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ha-space-4);
+  }
+  .rows.no-sidebar {
+    margin-inline-end: 0;
+  }
+  .sortable-ghost {
+    background: none;
+    border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+  }
+  .sortable-drag {
+    background: none;
+  }
+  ha-automation-action-row {
+    display: block;
+    scroll-margin-top: 48px;
+  }
+  .handle {
+    padding: 4px;
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    border-radius: var(--ha-border-radius-pill);
+  }
+  .handle:focus {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-quiet-resting);
+  }
+  .handle.active {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-normal-active);
+  }
+  .handle ha-svg-icon {
+    pointer-events: none;
+    height: 24px;
+  }
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ha-space-2);
+    order: 1;
+  }
+`;
+
+export const sidebarEditorStyles = css`
+  .sidebar-editor {
+    display: block;
+  }
+  .description {
+    padding-top: 16px;
+  }
+`;
+
+export const overflowStyles = css`
+  .overflow-label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ha-space-3);
+    white-space: nowrap;
+  }
+  .overflow-label .shortcut {
+    direction: ltr;
+    --mdc-icon-size: 12px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+  }
+  .overflow-label .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
+  }
+  .shortcut-placeholder {
+    display: inline-block;
+    width: 60px;
+  }
+  .shortcut-placeholder.mac {
+    width: 46px;
+  }
+  @media all and (max-width: 870px) {
+    .shortcut-placeholder {
+      display: none;
+    }
+  }
+`;
+
+export const shortcutStyles = css`
+  .shortcut {
+    direction: ltr;
+    --mdc-icon-size: var(--ha-space-3);
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    margin-right: var(--ha-space-4);
+  }
+  .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
+  }
+`;

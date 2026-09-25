@@ -1,0 +1,588 @@
+import { mdiHelpCircleOutline } from "@mdi/js";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { afterNextRender } from "../../../../../common/util/render-status";
+import "../../../../../components/ha-checkbox";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
+import "../../../../../components/ha-selector/ha-selector";
+import "../../../../../components/ha-settings-row";
+import type { PlatformTrigger } from "../../../../../data/automation";
+import { TRIGGER_ROW_CONFIG_KEYS } from "../../../../../data/automation";
+import type { IntegrationManifest } from "../../../../../data/integration";
+import { fetchIntegrationManifest } from "../../../../../data/integration";
+import type { TargetSelector } from "../../../../../data/selector";
+import { getTargetEntityCount } from "../../../../../data/target";
+import {
+  getTriggerDomain,
+  getTriggerObjectId,
+  type TriggerDescription,
+} from "../../../../../data/trigger";
+import type { HomeAssistant } from "../../../../../types";
+import { documentationUrl } from "../../../../../util/documentation-url";
+
+const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
+  field.selector &&
+  !field.required &&
+  !("boolean" in field.selector && field.default);
+
+const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
+  ...TRIGGER_ROW_CONFIG_KEYS,
+  "trigger",
+  "target",
+  "options",
+];
+
+@customElement("ha-automation-trigger-platform")
+export class HaPlatformTrigger extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public trigger!: PlatformTrigger;
+
+  @property({ attribute: false }) public description?: TriggerDescription;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @state() private _checkedKeys = new Set();
+
+  @state() private _manifest?: IntegrationManifest;
+
+  @state() private _resolvedTargetEntityCount?: number;
+
+  public static get defaultConfig(): PlatformTrigger {
+    return { trigger: "" };
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (!this.hasUpdated) {
+      this.hass.loadBackendTranslation("triggers");
+      this.hass.loadBackendTranslation("selector");
+    }
+    if (!changedProperties.has("trigger")) {
+      return;
+    }
+
+    let newValue: PlatformTrigger | undefined;
+
+    for (const key in this.trigger) {
+      // Migrate old options to `options`
+      if (DEFAULT_KEYS.includes(key as keyof PlatformTrigger)) {
+        continue;
+      }
+      if (newValue === undefined) {
+        newValue = {
+          ...this.trigger,
+          options: { [key]: this.trigger[key] },
+        };
+      } else {
+        newValue.options![key] = this.trigger[key];
+      }
+      delete newValue[key];
+    }
+    if (newValue !== undefined) {
+      fireEvent(this, "value-changed", {
+        value: newValue,
+      });
+      this.trigger = newValue;
+    }
+
+    const oldValue = changedProperties.get("trigger") as
+      undefined | this["trigger"];
+
+    // Fetch the manifest if we have a trigger selected and the trigger domain changed.
+    // If no trigger is selected, clear the manifest.
+    if (this.trigger?.trigger) {
+      const domain = getTriggerDomain(this.trigger.trigger);
+
+      const oldDomain = getTriggerDomain(oldValue?.trigger || "");
+
+      if (domain !== oldDomain) {
+        this._fetchManifest(domain);
+      }
+    } else {
+      this._manifest = undefined;
+    }
+
+    if (
+      this.trigger &&
+      oldValue?.trigger !== this.trigger.trigger &&
+      this.description?.fields
+    ) {
+      const hadOptions = "options" in this.trigger;
+      const updatedOptions = this.trigger.options
+        ? { ...this.trigger.options }
+        : {};
+      const loadDefaults = !hadOptions;
+      let updatedDefaultValue = false;
+      // Set mandatory bools without a default value to false
+      Object.entries(this.description.fields).forEach(([key, field]) => {
+        if (
+          field.selector &&
+          field.required &&
+          field.default === undefined &&
+          "boolean" in field.selector &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = false;
+        } else if (
+          loadDefaults &&
+          field.selector &&
+          field.default !== undefined &&
+          updatedOptions[key] === undefined &&
+          !(
+            field.selector &&
+            "automation_behavior" in field.selector &&
+            this.description?.target &&
+            !this.trigger?.target
+          )
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = field.default;
+        }
+      });
+
+      if (!hadOptions || updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.trigger,
+            options: updatedOptions,
+          },
+        });
+      }
+    }
+
+    if (oldValue?.target !== this.trigger?.target) {
+      this._updateTargetEntityCount();
+      this._setDefaultBehavior();
+    }
+  }
+
+  protected render() {
+    const domain = getTriggerDomain(this.trigger.trigger);
+    const triggerName = getTriggerObjectId(this.trigger.trigger);
+
+    const description = this.hass.localize(
+      `component.${domain}.triggers.${triggerName}.description`
+    );
+
+    const triggerDesc = this.description;
+
+    const shouldRenderDataYaml = !triggerDesc?.fields;
+
+    const hasOptional = Boolean(
+      triggerDesc?.fields &&
+      Object.values(triggerDesc.fields).some((field) =>
+        showOptionalToggle(field)
+      )
+    );
+
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/triggers/${this.trigger.trigger}`)
+      : this._manifest?.documentation;
+
+    return html`
+      <div class="description">
+        ${description ? html`<p>${description}</p>` : nothing}
+        ${
+          documentationLink
+            ? html`<a
+                href=${documentationLink}
+                title=${this.hass.localize(
+                  "ui.components.service-control.integration_doc"
+                )}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  class="help-icon"
+                  .label=${this.hass.localize(
+                    "ui.components.service-control.integration_doc"
+                  )}
+                ></ha-icon-button>
+              </a>`
+            : nothing
+        }
+      </div>
+      ${
+        triggerDesc && "target" in triggerDesc
+          ? html`<ha-selector
+              class="target-selector"
+              .hass=${this.hass}
+              .selector=${this._targetSelector(triggerDesc.target)}
+              .disabled=${this.disabled}
+              @value-changed=${this._targetChanged}
+              .value=${this.trigger?.target}
+            ></ha-selector>`
+          : nothing
+      }
+      ${
+        shouldRenderDataYaml
+          ? html`<ha-yaml-editor
+              .label=${this.hass.localize(
+                "ui.components.service-control.action_data"
+              )}
+              .name=${"data"}
+              .readOnly=${this.disabled}
+              .defaultValue=${this.trigger?.options}
+              @value-changed=${this._dataChanged}
+            ></ha-yaml-editor>`
+          : Object.entries(triggerDesc.fields).map(([fieldName, dataField]) =>
+              this._renderField(
+                fieldName,
+                dataField,
+                hasOptional,
+                domain,
+                triggerName
+              )
+            )
+      }
+    `;
+  }
+
+  private _targetSelector = memoizeOne(
+    (targetSelector: TargetSelector["target"] | null | undefined) =>
+      targetSelector ? { target: { ...targetSelector } } : { target: {} }
+  );
+
+  private _renderField = (
+    fieldName: string,
+    dataField: TriggerDescription["fields"][string],
+    hasOptional: boolean,
+    domain: string | undefined,
+    triggerName: string | undefined
+  ) => {
+    const selector = dataField?.selector ?? { text: null };
+
+    const showOptional = showOptionalToggle(dataField);
+
+    if (!dataField.selector) {
+      return nothing;
+    }
+
+    if (
+      "automation_behavior" in selector &&
+      this.description?.target &&
+      (!this.trigger?.target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1))
+    ) {
+      return nothing;
+    }
+
+    const description = this.hass.localize(
+      `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
+    );
+
+    return html`<ha-settings-row narrow>
+      ${
+        !showOptional
+          ? hasOptional
+            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+            : nothing
+          : html`<ha-checkbox
+              .key=${fieldName}
+              .checked=${
+                this._checkedKeys.has(fieldName) ||
+                (this.trigger?.options &&
+                  this.trigger.options[fieldName] !== undefined)
+              }
+              .disabled=${this.disabled}
+              @change=${this._checkboxChanged}
+              slot="prefix"
+            ></ha-checkbox>`
+      }
+      <span
+        slot="heading"
+        class=${showOptional ? "clickable" : ""}
+        @click=${showOptional ? this._toggleCheckbox : undefined}
+        >${
+          this.hass.localize(
+            `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
+          ) || fieldName
+        }</span
+      >
+      ${
+        description
+          ? html`<span
+              class=${showOptional ? "clickable" : ""}
+              @click=${showOptional ? this._toggleCheckbox : undefined}
+              slot="description"
+              >${description}</span
+            >`
+          : nothing
+      }
+      <ha-selector
+        .disabled=${
+          this.disabled ||
+          (showOptional &&
+            !this._checkedKeys.has(fieldName) &&
+            (!this.trigger?.options ||
+              this.trigger.options[fieldName] === undefined))
+        }
+        .hass=${this.hass}
+        .selector=${selector}
+        .context=${this._generateContext(dataField)}
+        .key=${fieldName}
+        @value-changed=${this._dataChanged}
+        .value=${
+          this.trigger?.options ? this.trigger.options[fieldName] : undefined
+        }
+        .placeholder=${dataField.default}
+        .localizeValue=${this._localizeValueCallback}
+        .required=${dataField.required}
+      ></ha-selector>
+    </ha-settings-row>`;
+  };
+
+  private _generateContext(
+    field: TriggerDescription["fields"][string]
+  ): Record<string, any> | undefined {
+    if (!field.context) {
+      return undefined;
+    }
+
+    const context: Record<string, any> = {};
+    for (const [context_key, data_key] of Object.entries(field.context)) {
+      if (data_key === "target" && this.description?.target) {
+        context.target_selector = this._targetSelector(this.description.target);
+      }
+      context[context_key] =
+        data_key === "target"
+          ? this.trigger.target
+          : this.trigger.options?.[data_key];
+    }
+    return context;
+  }
+
+  private _dataChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (ev.detail.isValid === false) {
+      // Don't clear an object selector that returns invalid YAML
+      return;
+    }
+    const key = (ev.currentTarget as any).key;
+    const value = ev.detail.value;
+    if (
+      this.trigger?.options?.[key] === value ||
+      ((!this.trigger?.options || !(key in this.trigger.options)) &&
+        (value === "" || value === undefined))
+    ) {
+      return;
+    }
+
+    const options = { ...this.trigger?.options, [key]: value };
+
+    if (
+      value === "" ||
+      value === undefined ||
+      (typeof value === "object" && !Object.keys(value).length)
+    ) {
+      delete options[key];
+    }
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.trigger,
+        options,
+      },
+    });
+  }
+
+  private _targetChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.trigger,
+        target: ev.detail.value,
+      },
+    });
+  }
+
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
+  }
+
+  private _checkboxChanged(ev) {
+    const checked = ev.currentTarget.checked;
+    const key = ev.currentTarget.key;
+    let options;
+
+    if (checked) {
+      this._checkedKeys.add(key);
+      const field =
+        this.description &&
+        Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
+      let defaultValue = field?.default;
+
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
+      }
+
+      if (defaultValue != null) {
+        options = {
+          ...this.trigger?.options,
+          [key]: defaultValue,
+        };
+      }
+    } else {
+      this._checkedKeys.delete(key);
+      options = { ...this.trigger?.options };
+      delete options[key];
+    }
+    if (options) {
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.trigger,
+          options,
+        },
+      });
+    }
+    this.requestUpdate("_checkedKeys");
+  }
+
+  private _localizeValueCallback = (key: string) => {
+    if (!this.trigger?.trigger) {
+      return "";
+    }
+    return this.hass.localize(
+      `component.${getTriggerDomain(this.trigger.trigger)}.selector.${key}`
+    );
+  };
+
+  private async _fetchManifest(integration: string) {
+    this._manifest = undefined;
+    try {
+      this._manifest = await fetchIntegrationManifest(this.hass, integration);
+    } catch (_err: any) {
+      // eslint-disable-next-line no-console
+      console.log(`Unable to fetch integration manifest for ${integration}`);
+      // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
+  }
+
+  private _updateTargetEntityCount() {
+    const target = this.trigger?.target;
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
+  }
+
+  private _setDefaultBehavior() {
+    // set default behavior after next render to prevent race conditions with the initial render
+    afterNextRender(() => {
+      if (!this.isConnected) {
+        return;
+      }
+
+      const behaviorFieldEntry = Object.entries(
+        this.description?.fields ?? {}
+      ).find(
+        ([, field]) => field.selector && "automation_behavior" in field.selector
+      );
+
+      if (
+        !behaviorFieldEntry ||
+        this._resolvedTargetEntityCount === undefined
+      ) {
+        return;
+      }
+
+      const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+      if (
+        this.trigger?.target &&
+        this._resolvedTargetEntityCount > 1 &&
+        this.trigger.options?.[behaviorFieldName] === undefined
+      ) {
+        const behaviorDefault = behaviorField.default;
+        if (behaviorDefault !== undefined) {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this.trigger,
+              options: {
+                ...this.trigger.options,
+                [behaviorFieldName]: behaviorDefault,
+              },
+            },
+          });
+        }
+      }
+    });
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      margin: 0px calc(-1 * var(--ha-space-4));
+    }
+    ha-settings-row {
+      padding: 0 var(--ha-space-4);
+    }
+    ha-settings-row[narrow] {
+      padding-bottom: var(--ha-space-2);
+    }
+    ha-settings-row {
+      --settings-row-content-width: 100%;
+      --settings-row-prefix-display: contents;
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-service-picker,
+    ha-entity-picker,
+    ha-yaml-editor {
+      display: block;
+      margin: 0 var(--ha-space-4);
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-yaml-editor {
+      padding: var(--ha-space-4) 0;
+    }
+    p {
+      margin: 0 var(--ha-space-4);
+      padding: var(--ha-space-4) 0;
+    }
+    :host([hide-picker]) p {
+      padding-top: 0;
+    }
+    .checkbox-spacer {
+      width: 32px;
+    }
+    .help-icon {
+      color: var(--secondary-text-color);
+    }
+    .description {
+      justify-content: space-between;
+      display: flex;
+      align-items: center;
+      padding-right: 2px;
+      padding-inline-end: 2px;
+      padding-inline-start: initial;
+    }
+    .description p {
+      direction: ltr;
+    }
+    .clickable {
+      cursor: pointer;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-platform": HaPlatformTrigger;
+  }
+}

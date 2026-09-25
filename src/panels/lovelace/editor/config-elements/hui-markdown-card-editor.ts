@@ -1,0 +1,197 @@
+import { mdiGestureTap } from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { MarkdownCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  type UiAction,
+  supportedActions,
+} from "../../components/hui-action-editor";
+
+const TAP_ACTIONS: UiAction[] = ["navigate", "url", "perform-action", "none"];
+
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    text_only: optional(boolean()),
+    title: optional(string()),
+    content: string(),
+    tap_action: optional(supportedActions(actionConfigStruct, TAP_ACTIONS)),
+    hold_action: optional(supportedActions(actionConfigStruct, TAP_ACTIONS)),
+    double_tap_action: optional(
+      supportedActions(actionConfigStruct, TAP_ACTIONS)
+    ),
+  })
+);
+
+@customElement("hui-markdown-card-editor")
+export class HuiMarkdownCardEditor
+  extends LitElement
+  implements LovelaceCardEditor
+{
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: MarkdownCardConfig;
+
+  public setConfig(config: MarkdownCardConfig): void {
+    assert(config, cardConfigStruct);
+    this._config = config;
+  }
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "style",
+          required: true,
+          selector: {
+            select: {
+              mode: "box",
+              options: ["card", "text-only"].map((style) => ({
+                label: localize(
+                  `ui.panel.lovelace.editor.card.markdown.style_options.${style}`
+                ),
+                image: {
+                  src: `/static/images/form/markdown_${style.replace("-", "_")}.svg`,
+                  src_dark: `/static/images/form/markdown_${style.replace("-", "_")}_dark.svg`,
+                  flip_rtl: true,
+                },
+                value: style,
+              })),
+            },
+          },
+        },
+        {
+          name: "title",
+          visible: { field: "style", operator: "not_eq", value: "text-only" },
+          selector: { text: {} },
+        },
+        {
+          name: "content",
+          required: true,
+          selector: { template: { preview: false } },
+        },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "actions_warning",
+              type: "constant",
+            },
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  actions: TAP_ACTIONS,
+                  default_action: "none",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      actions: TAP_ACTIONS,
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
+          ],
+        },
+      ] as const satisfies HaFormSchema[]
+  );
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    const data = {
+      ...this._config,
+      style: this._config.text_only ? "text-only" : "card",
+    };
+
+    const schema = this._schema(this.hass.localize);
+
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
+    const config = { ...ev.detail.value };
+
+    if (config.style === "text-only") {
+      config.text_only = true;
+    } else {
+      delete config.text_only;
+    }
+    delete config.style;
+
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "style":
+      case "content":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.markdown.${schema.name}`
+        );
+      case "interactions":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.interactions"
+        );
+      case "actions_warning":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.markdown.actions_warning"
+        );
+      case "tap_action":
+      case "hold_action":
+      case "double_tap_action":
+        return `${this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        )} (${this.hass!.localize("ui.panel.lovelace.editor.card.config.optional")})`;
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-markdown-card-editor": HuiMarkdownCardEditor;
+  }
+}

@@ -1,0 +1,546 @@
+import { ensureArray } from "../../../common/array/ensure-array";
+import {
+  checkTimeInRange,
+  isValidTimeString,
+} from "../../../common/datetime/check_time";
+import {
+  WEEKDAYS_SHORT,
+  type WeekdayShort,
+} from "../../../common/datetime/weekday";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import type {
+  NumericStateCondition as CoreNumericStateCondition,
+  PlatformCondition as CorePlatformCondition,
+  StateCondition as CoreStateCondition,
+  SunCondition,
+  TemplateCondition,
+  ZoneCondition,
+} from "../../../data/automation";
+import type { DeviceCondition } from "../../../data/device/device_automation";
+import { UNKNOWN } from "../../../data/entity/entity";
+import { getUserPerson } from "../../../data/person";
+import type { HomeAssistant } from "../../../types";
+
+export type Condition =
+  | ViewColumnsCondition
+  | LocationCondition
+  | NumericStateCondition
+  | StateCondition
+  | ScreenCondition
+  | TimeCondition
+  | UserCondition
+  | OrCondition
+  | AndCondition
+  | NotCondition;
+
+// Legacy conditional card condition
+export interface LegacyCondition {
+  entity?: string;
+  state?: string | string[];
+  state_not?: string | string[];
+}
+
+interface BaseCondition {
+  condition: string;
+}
+
+export interface ConditionContext {
+  max_columns?: number;
+  entity_id?: string;
+}
+
+export interface ViewColumnsCondition extends BaseCondition {
+  condition: "view_columns";
+  min?: number;
+  max?: number;
+}
+
+export interface LocationCondition extends BaseCondition {
+  condition: "location";
+  locations?: string[];
+}
+
+export interface NumericStateCondition extends BaseCondition {
+  condition: "numeric_state";
+  entity?: string;
+  attribute?: string;
+  below?: string | number;
+  above?: string | number;
+}
+
+export interface StateCondition extends BaseCondition {
+  condition: "state";
+  entity?: string;
+  attribute?: string;
+  state?: string | string[];
+  state_not?: string | string[];
+}
+
+export interface ScreenCondition extends BaseCondition {
+  condition: "screen";
+  media_query?: string;
+}
+
+export interface TimeCondition extends BaseCondition {
+  condition: "time";
+  after?: string;
+  before?: string;
+  weekdays?: WeekdayShort[];
+}
+
+export interface UserCondition extends BaseCondition {
+  condition: "user";
+  users?: string[];
+}
+
+export interface OrCondition extends BaseCondition {
+  condition: "or";
+  conditions?: Condition[];
+}
+
+export interface AndCondition extends BaseCondition {
+  condition: "and";
+  conditions?: Condition[];
+}
+
+export interface NotCondition extends BaseCondition {
+  condition: "not";
+  conditions?: Condition[];
+}
+
+/**
+ * Dashboard visibility: client-only lovelace types (`screen`, `user`,
+ * `view_columns`, `location`, `time`) plus core automation conditions.
+ * Lovelace `state`/`numeric_state` (`entity`) and core (`entity_id`) both
+ * exist; existing dashboards keep the old shape until edited.
+ * See `common/condition/translate.ts`.
+ */
+export type VisibilityCondition =
+  | ScreenCondition
+  | UserCondition
+  | ViewColumnsCondition
+  | LocationCondition
+  | TimeCondition
+  | StateCondition
+  | NumericStateCondition
+  | LegacyCondition
+  | CoreVisibilityCondition
+  | VisibilityLogicalCondition;
+
+/**
+ * Core conditions used for dashboard visibility. Omits client `time` and
+ * `trigger`. `PlatformCondition` also covers core `state` / `numeric_state`.
+ */
+export type CoreVisibilityCondition =
+  | CoreStateCondition
+  | CoreNumericStateCondition
+  | SunCondition
+  | ZoneCondition
+  | TemplateCondition
+  | DeviceCondition
+  | CorePlatformCondition;
+
+/**
+ * Mixed `and` / `or` / `not`. `conditions` may be one item or a list.
+ */
+export interface VisibilityLogicalCondition extends BaseCondition {
+  condition: "and" | "or" | "not";
+  conditions?: VisibilityCondition | VisibilityCondition[];
+}
+
+function getValueFromEntityId(
+  hass: HomeAssistant,
+  value: string
+): string | undefined {
+  if (isValidEntityId(value) && hass.states[value]) {
+    return hass.states[value]?.state;
+  }
+  return undefined;
+}
+
+function checkStateCondition(
+  condition: StateCondition | LegacyCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
+  // Prefer core `entity_id` over lovelace `entity` / the host entity.
+  const entityId =
+    ("entity_id" in condition
+      ? (condition as { entity_id?: string }).entity_id
+      : undefined) ||
+    condition.entity ||
+    context.entity_id;
+  const stateObj = entityId ? hass.states[entityId] : undefined;
+  const attribute = "attribute" in condition ? condition.attribute : undefined;
+  let state: string;
+  if (!stateObj) {
+    state = UNKNOWN;
+  } else if (attribute) {
+    const attrValue = stateObj.attributes[attribute];
+    state = attrValue == null ? UNKNOWN : String(attrValue);
+  } else {
+    state = stateObj.state;
+  }
+  let value = condition.state ?? condition.state_not;
+
+  // Guard against invalid/incomplete condition configuration
+  if (value === undefined) {
+    return false;
+  }
+
+  // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
+  if (Array.isArray(value)) {
+    const entityValues = value
+      .map((v) => getValueFromEntityId(hass, v))
+      .filter((v): v is string => v !== undefined);
+    value = [...value, ...entityValues];
+  } else if (typeof value === "string") {
+    const entityValue = getValueFromEntityId(hass, value);
+    value = [value];
+    if (entityValue) {
+      value.push(entityValue);
+    }
+  }
+
+  return condition.state != null
+    ? ensureArray(value).includes(state)
+    : !ensureArray(value).includes(state);
+}
+
+function checkStateNumericCondition(
+  condition: NumericStateCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
+  // Prefer core `entity_id` over lovelace `entity` / the host entity.
+  const entityId =
+    ("entity_id" in condition
+      ? (condition as { entity_id?: string }).entity_id
+      : undefined) ||
+    condition.entity ||
+    context.entity_id;
+  const stateObj = entityId ? hass.states[entityId] : undefined;
+  const state = condition.attribute
+    ? stateObj?.attributes[condition.attribute]
+    : stateObj?.state;
+  let above = condition.above;
+  let below = condition.below;
+
+  // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
+  if (typeof above === "string") {
+    above = getValueFromEntityId(hass, above) ?? above;
+  }
+  if (typeof below === "string") {
+    below = getValueFromEntityId(hass, below) ?? below;
+  }
+
+  const numericState = Number(state);
+  const numericAbove = Number(above);
+  const numericBelow = Number(below);
+
+  if (isNaN(numericState)) {
+    return false;
+  }
+
+  return (
+    (condition.above == null ||
+      isNaN(numericAbove) ||
+      numericAbove < numericState) &&
+    (condition.below == null ||
+      isNaN(numericBelow) ||
+      numericBelow > numericState)
+  );
+}
+
+function checkViewColumnsCondition(
+  condition: ViewColumnsCondition,
+  context: ConditionContext
+) {
+  if (!context.max_columns) return true;
+  return (
+    (condition.min == null || context.max_columns >= condition.min) &&
+    (condition.max == null || context.max_columns <= condition.max)
+  );
+}
+
+function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
+  return condition.media_query
+    ? matchMedia(condition.media_query).matches
+    : false;
+}
+
+function checkTimeCondition(
+  condition: Omit<TimeCondition, "condition">,
+  hass: HomeAssistant
+) {
+  return checkTimeInRange(hass, condition);
+}
+
+function checkLocationCondition(
+  condition: LocationCondition,
+  hass: HomeAssistant
+) {
+  const stateObj = getUserPerson(hass);
+  if (!stateObj) {
+    return false;
+  }
+  return condition.locations?.includes(stateObj.state);
+}
+
+function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
+  return condition.users && hass.user?.id
+    ? condition.users.includes(hass.user.id)
+    : false;
+}
+
+function checkAndCondition(
+  condition: AndCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
+  if (!condition.conditions) return true;
+  return checkConditionsMet(condition.conditions, hass, context);
+}
+
+function checkNotCondition(
+  condition: NotCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
+  if (!condition.conditions) return true;
+  return !checkConditionsMet(condition.conditions, hass, context);
+}
+
+function checkOrCondition(
+  condition: OrCondition,
+  hass: HomeAssistant,
+  context: ConditionContext
+) {
+  if (!condition.conditions) return true;
+  return condition.conditions.some((c) =>
+    checkConditionsMet([c], hass, context)
+  );
+}
+
+/**
+ * Return the result of applying conditions
+ * @param conditions conditions to apply
+ * @param hass Home Assistant object
+ * @param context optional context for conditions that need runtime information
+ * @returns true if conditions are respected
+ */
+export function checkConditionsMet(
+  conditions: (Condition | LegacyCondition)[],
+  hass: HomeAssistant,
+  context: ConditionContext
+): boolean {
+  return conditions.every((c) => {
+    if ("condition" in c) {
+      switch (c.condition) {
+        case "view_columns":
+          return checkViewColumnsCondition(c, context);
+        case "time":
+          return checkTimeCondition(c, hass);
+        case "screen":
+          return checkScreenCondition(c, hass);
+        case "user":
+          return checkUserCondition(c, hass);
+        case "location":
+          return checkLocationCondition(c, hass);
+        case "numeric_state":
+          return checkStateNumericCondition(c, hass, context);
+        case "and":
+          return checkAndCondition(c, hass, context);
+        case "not":
+          return checkNotCondition(c, hass, context);
+        case "or":
+          return checkOrCondition(c, hass, context);
+        default:
+          return checkStateCondition(c, hass, context);
+      }
+    }
+    return checkStateCondition(c, hass, context);
+  });
+}
+
+export function extractConditionEntityIds(
+  conditions: Condition[]
+): Set<string> {
+  const entityIds = new Set<string>();
+  for (const condition of conditions) {
+    if (condition.condition === "numeric_state") {
+      if (condition.entity) {
+        entityIds.add(condition.entity);
+      }
+      if (
+        typeof condition.above === "string" &&
+        isValidEntityId(condition.above)
+      ) {
+        entityIds.add(condition.above);
+      }
+      if (
+        typeof condition.below === "string" &&
+        isValidEntityId(condition.below)
+      ) {
+        entityIds.add(condition.below);
+      }
+    } else if (condition.condition === "state") {
+      if (condition.entity) {
+        entityIds.add(condition.entity);
+      }
+      [
+        ...(ensureArray(condition.state) ?? []),
+        ...(ensureArray(condition.state_not) ?? []),
+      ].forEach((state) => {
+        if (!!state && isValidEntityId(state)) {
+          entityIds.add(state);
+        }
+      });
+    } else if ("conditions" in condition && condition.conditions) {
+      return new Set([
+        ...entityIds,
+        ...extractConditionEntityIds(condition.conditions),
+      ]);
+    }
+  }
+  return entityIds;
+}
+
+function validateStateCondition(condition: StateCondition | LegacyCondition) {
+  return condition.state != null || condition.state_not != null;
+}
+
+function validateScreenCondition(condition: ScreenCondition) {
+  return condition.media_query != null;
+}
+
+function validateTimeCondition(condition: TimeCondition) {
+  // Check if time strings are present and non-empty
+  const hasAfter = condition.after != null && condition.after !== "";
+  const hasBefore = condition.before != null && condition.before !== "";
+  const hasTime = hasAfter || hasBefore;
+
+  const hasWeekdays =
+    condition.weekdays != null && condition.weekdays.length > 0;
+  const weekdaysValid =
+    !hasWeekdays ||
+    condition.weekdays!.every((w: WeekdayShort) => WEEKDAYS_SHORT.includes(w));
+
+  // Validate time string formats if present
+  const timeStringsValid =
+    (!hasAfter || isValidTimeString(condition.after!)) &&
+    (!hasBefore || isValidTimeString(condition.before!));
+
+  // Prevent after and before being identical (creates zero-length interval)
+  const timeRangeValid =
+    !hasAfter || !hasBefore || condition.after !== condition.before;
+
+  return (
+    (hasTime || hasWeekdays) &&
+    weekdaysValid &&
+    timeStringsValid &&
+    timeRangeValid
+  );
+}
+
+function validateUserCondition(condition: UserCondition) {
+  return condition.users != null;
+}
+
+function validateLocationCondition(condition: LocationCondition) {
+  return condition.locations != null;
+}
+
+function validateAndCondition(condition: AndCondition) {
+  return condition.conditions != null;
+}
+
+function validateNotCondition(condition: NotCondition) {
+  return condition.conditions != null;
+}
+
+function validateOrCondition(condition: OrCondition) {
+  return condition.conditions != null;
+}
+
+function validateViewColumnsCondition(condition: ViewColumnsCondition) {
+  return condition.min != null || condition.max != null;
+}
+
+function validateNumericStateCondition(condition: NumericStateCondition) {
+  return condition.above != null || condition.below != null;
+}
+/**
+ * Validate the conditions config for the UI
+ * @param conditions conditions to apply
+ * @returns true if conditions are validated
+ */
+export function validateConditionalConfig(
+  conditions: VisibilityCondition[]
+): boolean {
+  return conditions.every((visibilityCondition) => {
+    const c = visibilityCondition as Condition | LegacyCondition;
+    if ("condition" in c) {
+      switch (c.condition) {
+        case "view_columns":
+          return validateViewColumnsCondition(c);
+        case "screen":
+          return validateScreenCondition(c);
+        case "time":
+          return validateTimeCondition(c);
+        case "user":
+          return validateUserCondition(c);
+        case "location":
+          return validateLocationCondition(c);
+        case "numeric_state":
+          return validateNumericStateCondition(c);
+        case "state":
+          return validateStateCondition(c);
+        case "and":
+          return validateAndCondition(c);
+        case "not":
+          return validateNotCondition(c);
+        case "or":
+          return validateOrCondition(c);
+        default:
+          // template / sun / zone / device / integrations: core validates these.
+          return true;
+      }
+    }
+    return validateStateCondition(c);
+  });
+}
+
+/**
+ * Build a condition for filters
+ * @param condition condition to apply
+ * @param entityId base the condition on that entity
+ * @returns a new condition with entity id
+ */
+export function addEntityToCondition<T extends VisibilityCondition>(
+  condition: T,
+  entityId: string
+): T {
+  if ("conditions" in condition && condition.conditions) {
+    return {
+      ...condition,
+      conditions: ensureArray(
+        condition.conditions as VisibilityCondition | VisibilityCondition[]
+      ).map((c) => addEntityToCondition(c, entityId)),
+    } as T;
+  }
+
+  // Entity-less lovelace state/numeric_state (including `{ entity, state }`)
+  // target the host entity. Don't stamp `entity` onto a core `entity_id` leaf.
+  const type = (condition as { condition?: string }).condition ?? "state";
+  if (
+    (type === "state" || type === "numeric_state") &&
+    !("entity_id" in condition)
+  ) {
+    return {
+      ...condition,
+      entity: (condition as { entity?: string }).entity || entityId,
+    };
+  }
+  return condition;
+}

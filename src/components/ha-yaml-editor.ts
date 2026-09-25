@@ -1,0 +1,244 @@
+import type { Schema } from "js-yaml";
+import { dump, load, YAML11_SCHEMA } from "js-yaml";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import type { ContextType } from "@lit/context";
+import { consume } from "@lit/context";
+import { fireEvent } from "../common/dom/fire_event";
+import { copyToClipboard } from "../common/util/copy-clipboard";
+import { haStyle } from "../resources/styles";
+import { showToast } from "../util/toast";
+import "./ha-button";
+import "./ha-code-editor";
+import type { HaCodeEditor } from "./ha-code-editor";
+import { internationalizationContext } from "../data/context";
+
+const isEmpty = (obj: Record<string, unknown>): boolean => {
+  if (typeof obj !== "object" || obj === null) {
+    return false;
+  }
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+@customElement("ha-yaml-editor")
+export class HaYamlEditor extends LitElement {
+  @property() public value?: any;
+
+  @property({ attribute: false }) public yamlSchema: Schema = YAML11_SCHEMA;
+
+  @property({ attribute: false }) public defaultValue?: any;
+
+  @property({ attribute: "is-valid", type: Boolean }) public isValid = true;
+
+  @property() public label?: string;
+
+  @property({ attribute: "auto-update", type: Boolean }) public autoUpdate =
+    false;
+
+  @property({ attribute: "read-only", type: Boolean }) public readOnly = false;
+
+  @property({ type: Boolean, attribute: "disable-fullscreen" })
+  public disableFullscreen = false;
+
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
+  @property({ type: Boolean }) public required = false;
+
+  @property({ attribute: "copy-clipboard", type: Boolean })
+  public copyClipboard = false;
+
+  @property({ attribute: "has-extra-actions", type: Boolean })
+  public hasExtraActions = false;
+
+  @state() private _yaml = "";
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
+  @query("ha-code-editor") _codeEditor?: HaCodeEditor;
+
+  public setValue(value): void {
+    try {
+      this._yaml = !isEmpty(value)
+        ? dump(value, {
+            schema: this.yamlSchema,
+            noRefs: true,
+          })
+        : "";
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err, value);
+      alert(`There was an error converting to YAML: ${err}`);
+    }
+  }
+
+  protected firstUpdated(): void {
+    if (this.defaultValue !== undefined) {
+      this.setValue(this.defaultValue);
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (this.autoUpdate && changedProperties.has("value")) {
+      this.setValue(this.value);
+    }
+  }
+
+  public focus(): void {
+    if (this._codeEditor?.codemirror) {
+      this._codeEditor?.codemirror.focus();
+    }
+  }
+
+  public disableCodeEditorFullscreen(): void {
+    this.disableFullscreen = true;
+    if (this._codeEditor) {
+      this._codeEditor.disableFullscreen = true;
+    }
+  }
+
+  protected render() {
+    if (this._yaml === undefined) {
+      return nothing;
+    }
+    return html`
+      ${
+        this.label
+          ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
+          : nothing
+      }
+      <ha-code-editor
+        .value=${this._yaml}
+        .readOnly=${this.readOnly}
+        .disableFullscreen=${this.disableFullscreen}
+        .inDialog=${this.inDialog}
+        mode="yaml"
+        lint
+        autocomplete-entities
+        autocomplete-icons
+        .error=${this.isValid === false}
+        @value-changed=${this._onChange}
+        @editor-save=${this._onEditorSave}
+        dir="ltr"
+      ></ha-code-editor>
+      ${
+        this.copyClipboard || this.hasExtraActions
+          ? html`
+              <div class="card-actions">
+                ${
+                  this.copyClipboard
+                    ? html`
+                        <ha-button appearance="plain" @click=${this._copyYaml}>
+                          ${this._i18n!.localize(
+                            "ui.components.yaml-editor.copy_to_clipboard"
+                          )}
+                        </ha-button>
+                      `
+                    : nothing
+                }
+                <slot name="extra-actions"></slot>
+              </div>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  private _onChange(ev: CustomEvent): void {
+    ev.stopPropagation();
+    this._yaml = ev.detail.value;
+    let parsed: unknown;
+    let isValid = true;
+    let errorMsg: string | undefined;
+    let yamlError: {
+      mark?: { position: number; line: number; column: number };
+      message?: string;
+    } | null = null;
+
+    if (this._yaml) {
+      try {
+        parsed = load(this._yaml, { schema: this.yamlSchema });
+      } catch (err: any) {
+        // Invalid YAML
+        isValid = false;
+        yamlError = err;
+        errorMsg = `${this._i18n!.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this._i18n!.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+      }
+    } else {
+      parsed = {};
+    }
+    this._codeEditor?.setYamlError(yamlError);
+
+    this.value = parsed;
+    this.isValid = isValid;
+
+    fireEvent(this, "value-changed", {
+      value: parsed,
+      isValid,
+      errorMsg,
+    } as any);
+  }
+
+  get yaml() {
+    return this._yaml;
+  }
+
+  get codemirror() {
+    return this._codeEditor?.codemirror;
+  }
+
+  get hasComments(): boolean {
+    return this._codeEditor?.hasComments ?? false;
+  }
+
+  private _onEditorSave(ev: CustomEvent): void {
+    fireEvent(this, "editor-save");
+    ev.stopPropagation();
+  }
+
+  private async _copyYaml(): Promise<void> {
+    if (this.yaml) {
+      await copyToClipboard(this.yaml);
+      showToast(this, {
+        message: this._i18n!.localize("ui.common.copied_clipboard"),
+      });
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .card-actions {
+          border-radius: var(
+            --actions-border-radius,
+            var(--ha-border-radius-square) var(--ha-border-radius-square)
+              var(--ha-card-border-radius, var(--ha-border-radius-lg))
+              var(--ha-card-border-radius, var(--ha-border-radius-lg))
+          );
+          border: 1px solid var(--divider-color);
+          padding: 5px 16px;
+        }
+        ha-code-editor {
+          flex-grow: 1;
+          min-height: 0;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-yaml-editor": HaYamlEditor;
+  }
+}

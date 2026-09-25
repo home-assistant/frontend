@@ -1,0 +1,202 @@
+import type { TemplateResult } from "lit";
+import { fireEvent } from "../../common/dom/fire_event";
+import type { HaFormSchema } from "../../components/ha-form/types";
+import type {
+  DataEntryFlowStep,
+  DataEntryFlowStepAbort,
+  DataEntryFlowStepCreateEntry,
+  DataEntryFlowStepExternal,
+  DataEntryFlowStepForm,
+  DataEntryFlowStepMenu,
+  DataEntryFlowStepProgress,
+  FlowType,
+} from "../../data/data_entry_flow";
+import type { IntegrationManifest } from "../../data/integration";
+import type { HomeAssistant } from "../../types";
+
+export interface FlowConfig {
+  flowType: FlowType;
+
+  showDevices: boolean;
+
+  createFlow(hass: HomeAssistant, handler: string): Promise<DataEntryFlowStep>;
+
+  fetchFlow(hass: HomeAssistant, flowId: string): Promise<DataEntryFlowStep>;
+
+  handleFlowStep(
+    hass: HomeAssistant,
+    flowId: string,
+    data: Record<string, any>
+  ): Promise<DataEntryFlowStep>;
+
+  deleteFlow(hass: HomeAssistant, flowId: string): Promise<unknown>;
+
+  renderAbortHeader?(hass: HomeAssistant, step: DataEntryFlowStepAbort): string;
+
+  renderAbortSubheader?(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepAbort
+  ): string | TemplateResult;
+
+  renderAbortDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepAbort
+  ): TemplateResult | string;
+
+  renderShowFormStepHeader(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm
+  ): string;
+
+  renderShowFormStepSubheader?(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm
+  ): string | TemplateResult;
+
+  renderShowFormStepDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm
+  ): TemplateResult | "";
+
+  renderShowFormStepFieldLabel(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    field: HaFormSchema,
+    options: { path?: string[]; [key: string]: any }
+  ): string;
+
+  renderShowFormStepFieldHelper(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    field: HaFormSchema,
+    options: { path?: string[]; [key: string]: any }
+  ): TemplateResult | string;
+
+  renderShowFormStepFieldError(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    error: string
+  ): string;
+
+  renderShowFormStepFieldLocalizeValue(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    key: string
+  ): string;
+
+  renderShowFormStepSubmitButton(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm
+  ): string;
+
+  renderExternalStepHeader(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepExternal
+  ): string;
+
+  renderExternalStepDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepExternal
+  ): TemplateResult | "";
+
+  renderCreateEntryDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepCreateEntry
+  ): TemplateResult | "";
+
+  renderShowFormProgressHeader(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepProgress
+  ): string;
+
+  renderShowFormProgressSubheader?(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepProgress
+  ): string | TemplateResult;
+
+  renderShowFormProgressDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepProgress
+  ): TemplateResult | "";
+
+  renderMenuHeader(hass: HomeAssistant, step: DataEntryFlowStepMenu): string;
+
+  renderMenuSubheader?(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu
+  ): string | TemplateResult;
+
+  renderMenuDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu
+  ): TemplateResult | "";
+
+  renderMenuOption(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu,
+    option: string
+  ): string;
+
+  renderMenuOptionDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu,
+    option: string
+  ): string;
+
+  renderLoadingDescription(
+    hass: HomeAssistant,
+    loadingReason: LoadingReason,
+    handler?: string,
+    step?: DataEntryFlowStep | null
+  ): string;
+}
+
+export type LoadingReason =
+  "loading_handlers" | "loading_flow" | "loading_step";
+
+/**
+ * Load the translations a step resolves against when it points at another
+ * integration, which owns strings shared between integrations.
+ */
+export const loadFlowStepTranslations = async (
+  hass: HomeAssistant,
+  step: DataEntryFlowStep
+): Promise<void> => {
+  if ("translation_domain" in step && step.translation_domain) {
+    await hass.loadBackendTranslation("config", step.translation_domain);
+  }
+};
+
+export interface DataEntryFlowDialogParams {
+  startFlowHandler?: string;
+  searchQuery?: string;
+  continueFlowId?: string;
+  manifest?: IntegrationManifest | null;
+  domain?: string;
+  dialogClosedCallback?: (params: {
+    flowFinished: boolean;
+    entryId?: string;
+  }) => void;
+  flowConfig: FlowConfig;
+  dialogParentElement?: HTMLElement;
+  navigateToResult?: boolean;
+  carryOverDevices?: string[];
+}
+
+export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");
+
+export const showFlowDialog = (
+  element: HTMLElement,
+  dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig">,
+  flowConfig: FlowConfig
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-data-entry-flow",
+    dialogImport: loadDataEntryFlowDialog,
+    dialogParams: {
+      ...dialogParams,
+      flowConfig,
+      dialogParentElement: element,
+    },
+  });
+};

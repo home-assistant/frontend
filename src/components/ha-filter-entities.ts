@@ -1,0 +1,295 @@
+import { consume, type ContextType } from "@lit/context";
+import { mdiFilterVariantRemove } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
+import memoizeOne from "memoize-one";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { fireEvent } from "../common/dom/fire_event";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { deepEqual } from "../common/util/deep-equal";
+import {
+  apiContext,
+  internationalizationContext,
+  statesContext,
+} from "../data/context";
+import type { RelatedResult } from "../data/search";
+import { findRelated } from "../data/search";
+import { haStyleScrollbar } from "../resources/styles";
+import { loadVirtualizer } from "../resources/virtualizer";
+import "./ha-check-list-item";
+import "./ha-expansion-panel";
+import "./ha-list";
+import "./ha-state-icon";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
+
+@customElement("ha-filter-entities")
+export class HaFilterEntities extends LitElement {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @property({ attribute: false }) public value?: string[];
+
+  @property() public type?: keyof RelatedResult;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, reflect: true }) public expanded = false;
+
+  @state() private _filter?: string;
+
+  private _content = createRef<HTMLElement>();
+
+  private _panel = new FilterPanelController(this, this._content);
+
+  public willUpdate(properties: PropertyValues<this>) {
+    super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+
+    if (
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"))
+    ) {
+      this._findRelated();
+    }
+  }
+
+  protected render() {
+    return html`
+      <ha-expansion-panel
+        left-chevron
+        .expanded=${this.expanded}
+        @expanded-changed=${this._expandedChanged}
+      >
+        <div slot="header" class="header">
+          ${this._localize("ui.panel.config.entities.caption")}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
+        </div>
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`
+              <div class="content" ${ref(this._content)}>
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                >
+                </ha-input-search>
+                <ha-list class="ha-scrollbar" multi>
+                  <lit-virtualizer
+                    .items=${this._entities(
+                      this._states,
+                      this.type,
+                      this._filter || "",
+                      this._i18n.locale.language,
+                      this.value
+                    )}
+                    .keyFunction=${this._keyFunction}
+                    .renderItem=${this._renderItem}
+                    @click=${this._handleItemClick}
+                    @keydown=${this._handleItemKeydown}
+                  >
+                  </lit-virtualizer>
+                </ha-list>
+              </div>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  private _keyFunction = (entity) => entity?.entity_id;
+
+  private _renderItem = (entity) =>
+    !entity
+      ? nothing
+      : html`<ha-check-list-item
+          tabindex="0"
+          .value=${entity.entity_id}
+          .selected=${this.value?.includes(entity.entity_id) ?? false}
+          graphic="icon"
+        >
+          <ha-state-icon slot="graphic" .stateObj=${entity}></ha-state-icon>
+          ${computeStateName(entity)}
+        </ha-check-list-item>`;
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
+  }
+
+  private _handleItemClick(ev) {
+    const listItem = ev.target.closest("ha-check-list-item");
+    const value = listItem?.value;
+    if (!value) {
+      return;
+    }
+    if (this.value?.includes(value)) {
+      this.value = this.value?.filter((val) => val !== value);
+    } else {
+      this.value = [...(this.value || []), value];
+    }
+    listItem.selected = this.value?.includes(value);
+  }
+
+  private _expandedChanged(ev) {
+    this.expanded = ev.detail.expanded;
+  }
+
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
+  }
+
+  private _entities = memoizeOne(
+    (
+      states: ContextType<typeof statesContext>,
+      type: this["type"],
+      filter: string,
+      language: string | undefined,
+      _value
+    ) => {
+      const values = Object.values(states);
+      return values
+        .filter(
+          (entityState) =>
+            (!type || computeStateDomain(entityState) !== type) &&
+            (!filter ||
+              entityState.entity_id.toLowerCase().includes(filter) ||
+              entityState.attributes.friendly_name
+                ?.toLowerCase()
+                .includes(filter))
+        )
+        .sort((a, b) =>
+          stringCompare(computeStateName(a), computeStateName(b), language)
+        );
+    }
+  );
+
+  private async _findRelated() {
+    const relatedPromises: Promise<RelatedResult>[] = [];
+
+    if (!this.value?.length) {
+      this.value = [];
+      fireEvent(this, "data-table-filter-changed", {
+        value: [],
+        items: undefined,
+      });
+      return;
+    }
+
+    for (const entityId of this.value) {
+      if (this.type) {
+        relatedPromises.push(findRelated(this._api, "entity", entityId));
+      }
+    }
+
+    const results = await Promise.all(relatedPromises);
+    const items = new Set<string>();
+    for (const result of results) {
+      if (result[this.type!]) {
+        result[this.type!]!.forEach((item) => items.add(item));
+      }
+    }
+
+    fireEvent(this, "data-table-filter-changed", {
+      value: this.value,
+      items: this.type ? items : undefined,
+    });
+  }
+
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      filterPanelStyles,
+      css`
+        ha-list {
+          flex: 1;
+          min-height: 0;
+        }
+        .header {
+          display: flex;
+          align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
+        }
+        .badge {
+          display: inline-block;
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: 0;
+          min-width: 16px;
+          box-sizing: border-box;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          background-color: var(--primary-color);
+          line-height: var(--ha-line-height-normal);
+          text-align: center;
+          padding: 0px 2px;
+          color: var(--text-primary-color);
+        }
+        ha-check-list-item {
+          --mdc-list-item-graphic-margin: 16px;
+          width: 100%;
+        }
+        ha-input-search {
+          display: block;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-filter-entities": HaFilterEntities;
+  }
+}

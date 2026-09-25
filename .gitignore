@@ -1,0 +1,77 @@
+.DS_Store
+.reify-cache
+
+# build
+build/
+dist/
+/hass_frontend/
+/translations/
+/.compress-cache/
+/.rspack-cache/
+# Composite action source, not build output
+!/.github/actions/build/
+
+# yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+node_modules/
+yarn-error.log
+npm-debug.log
+
+# Python stuff
+*.py[cod]
+*.egg
+*.egg-info
+
+# venv stuff
+pyvenv.cfg
+pip-selfcheck.json
+/venv/
+.venv
+
+# vscode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Cast dev settings
+src/cast/dev_const.ts
+
+# Secrets
+.lokalise_token
+
+# asdf
+.tool-versions
+
+# Home Assistant config
+/config/
+
+# Jetbrains
+/.idea/
+
+# test coverage
+test/coverage/
+
+# Playwright e2e output
+test/e2e/reports/
+test/e2e/test-results/
+# E2E test app build output
+test/e2e/app/dist/
+# MCP server
+.playwright-mcp/
+
+# AI tooling
+.claude/*
+!.claude/skills
+.cursor
+.opencode
+.serena
+
+test/benchmarks/results/
+

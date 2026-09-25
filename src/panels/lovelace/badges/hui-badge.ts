@@ -1,0 +1,198 @@
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-svg-icon";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { HomeAssistant } from "../../../types";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
+import { getConfigEntityId } from "../common/get-config-entity-id";
+import { createBadgeElement } from "../create-element/create-badge-element";
+import { createErrorBadgeConfig } from "../create-element/create-element-base";
+import type { LovelaceBadge } from "../types";
+
+declare global {
+  interface HASSDomEvents {
+    "badge-visibility-changed": { value: boolean };
+    "badge-updated": undefined;
+  }
+}
+
+@customElement("hui-badge")
+export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
+  ReactiveElement
+) {
+  @property({ type: Boolean }) public preview = false;
+
+  @property({ attribute: false }) public config?: LovelaceBadgeConfig;
+
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  private _elementConfig?: LovelaceBadgeConfig;
+
+  public load() {
+    if (!this.config) {
+      throw new Error("Cannot build badge without config");
+    }
+    this._loadElement(this.config);
+  }
+
+  private _element?: LovelaceBadge;
+
+  protected createRenderRoot() {
+    return this;
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._updateVisibility();
+  }
+
+  protected _updateElement(config: LovelaceBadgeConfig) {
+    if (!this._element) {
+      return;
+    }
+    this._element.setConfig(config);
+    this._elementConfig = config;
+    fireEvent(this, "badge-updated");
+  }
+
+  private _loadElement(config: LovelaceBadgeConfig) {
+    this._element = createBadgeElement(config);
+    this._elementConfig = config;
+    if (this.hass) {
+      this._element.hass = this.hass;
+    }
+    this._element.preview = this.preview;
+    // Update element when the visibility of the badge changes, e.g. custom badge
+    this._element.addEventListener("badge-visibility-changed", (ev: Event) => {
+      ev.stopPropagation();
+      this._updateVisibility();
+    });
+    this._element.addEventListener(
+      "ll-upgrade",
+      (ev: Event) => {
+        ev.stopPropagation();
+        if (this.hass) {
+          this._element!.hass = this.hass;
+        }
+        fireEvent(this, "badge-updated");
+      },
+      { once: true }
+    );
+    this._element.addEventListener(
+      "ll-rebuild",
+      (ev: Event) => {
+        ev.stopPropagation();
+        this._loadElement(config);
+        fireEvent(this, "badge-updated");
+      },
+      { once: true }
+    );
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+    this._updateVisibility();
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+
+    if (changedProps.has("config")) {
+      this._conditionContext = {
+        ...this._conditionContext,
+        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+      };
+    }
+
+    if (!this._element) {
+      this.load();
+    }
+  }
+
+  protected update(changedProps: PropertyValues<this>) {
+    super.update(changedProps);
+
+    if (this._element) {
+      if (changedProps.has("config")) {
+        const elementConfig = this._elementConfig;
+        if (this.config !== elementConfig && this.config) {
+          const typeChanged = this.config?.type !== elementConfig?.type;
+          if (typeChanged) {
+            this._loadElement(this.config);
+          } else {
+            this._updateElement(this.config);
+          }
+        }
+      }
+      if (changedProps.has("hass") || changedProps.has("preview")) {
+        try {
+          if (this.hass) {
+            this._element.hass = this.hass;
+          }
+          this._element.preview = this.preview;
+        } catch (e: any) {
+          this._loadElement(createErrorBadgeConfig(e.message, null));
+        }
+      }
+    }
+
+    if (changedProps.has("hass") || changedProps.has("preview")) {
+      this._updateVisibility();
+    }
+  }
+
+  protected _updateVisibility(conditionsMet?: boolean) {
+    if (!this._element || !this.hass) {
+      return;
+    }
+
+    if (this._element.hidden) {
+      this._setElementVisibility(false);
+      return;
+    }
+
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config?.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
+    const visible = conditionsMet ?? this._conditionsVisible();
+    this._setElementVisibility(visible);
+  }
+
+  private _setElementVisibility(visible: boolean) {
+    if (!this._element) return;
+
+    if (this.hidden !== !visible) {
+      this.style.setProperty("display", visible ? "" : "none");
+      this.toggleAttribute("hidden", !visible);
+      fireEvent(this, "badge-visibility-changed", { value: visible });
+    }
+
+    if (this._element.connectedWhileHidden === true) {
+      if (!this._element.parentElement) {
+        this.appendChild(this._element);
+      }
+    } else if (!visible && this._element.parentElement) {
+      this.removeChild(this._element);
+    } else if (visible && !this._element.parentElement) {
+      this.appendChild(this._element);
+    }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-badge": HuiBadge;
+  }
+}

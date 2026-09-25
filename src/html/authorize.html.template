@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant</title>
+    <%= renderTemplate("_header.html.template") %>
+    <%= renderTemplate("_style_base.html.template") %>
+    <style>
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
+      }
+      body {
+        box-sizing: border-box;
+        padding: 32px 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .content {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: var(--safe-area-inset-top, 0px)
+          calc(16px + var(--safe-area-inset-right, 0px))
+          var(--safe-area-inset-bottom, 0px)
+          calc(16px + var(--safe-area-inset-left, 0px));
+        box-sizing: content-box;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 32px;
+      }
+
+      .header img {
+        height: 56px;
+        width: 56px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div class="header">
+        <img src="/static/icons/favicon-192x192.png" alt="Home Assistant" />
+      </div>
+      <ha-authorize></ha-authorize>
+    </div>
+    <%= renderTemplate("_js_base.html.template") %>
+    <%= renderTemplate("_preload_roboto.html.template") %>
+    <%= renderTemplate("_script_loader.html.template") %>
+    <script crossorigin="use-credentials">
+      if (window.latestJS) {
+        window.providersPromise = fetch("<%= hassUrl %>/auth/providers", {
+          credentials: "same-origin",
+        });
+      }
+    </script>
+  </body>
+</html>

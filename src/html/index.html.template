@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant</title>
+    <% if (useCacheRecovery) { %><%= renderTemplate("_bootstrap_recovery.html.template") %><% } %>
+    <%= renderTemplate("_header.html.template") %>
+    <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#18bcf2" />
+    <link
+      rel="apple-touch-icon"
+      href="/static/icons/favicon-apple-180x180.png"
+    />
+    <meta name="apple-itunes-app" content="app-id=1099568401" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Home Assistant">
+    <meta name="msapplication-config" content="/static/icons/browserconfig.xml" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Home Assistant">
+    <meta name="referrer" content="same-origin" />
+    <meta name="theme-color" content="{{ theme_color }}" />
+    <meta name="color-scheme" content="dark light" />
+    <%= renderTemplate("_style_base.html.template") %>
+    <style>
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
+        height: 100vh;
+      }
+      #ha-launch-screen {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        -webkit-user-select: none;
+        background-color: var(--primary-background-color, #fafafa);
+        z-index: 100;
+        transition: opacity var(--ha-animation-duration-normal, 250ms) ease-out;
+      }
+      #ha-launch-screen.removing {
+        opacity: 0;
+      }
+      @keyframes launch-lockup-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      #ha-launch-screen .ha-lockup {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
+      }
+      #ha-launch-screen-info-box > *,
+      #ha-launch-screen .ohf-logo {
+        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
+      }
+      #ha-launch-screen .ha-logo {
+        width: 96px;
+        height: 96px;
+      }
+      #ha-launch-screen .ha-launch-screen-spacer-top {
+        flex: 1;
+        margin-top: calc( 2 * max(var(--safe-area-inset-top, 0px), 48px) + 46px );
+        padding-top: 48px;
+      }
+      #ha-launch-screen .ha-launch-screen-spacer-bottom {
+        flex: 1;
+        padding-top: 16px;
+      }
+      .ohf-logo {
+        margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        opacity: .66;
+      }
+      .ohf-logo span {
+        font-size: 12px;
+        line-height: 12px;
+        text-transform: uppercase;
+      }
+      .ohf-logo picture {
+        display: flex;
+      }
+      .ohf-logo img {
+        width: 237px;
+        aspect-ratio: 237 / 24;
+        height: auto;
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
+        /* body selector to avoid minification causing bad jinja2 */
+        body #ha-launch-screen {
+          background-color: var(--primary-background-color, #111111);
+        }
+      }
+      @media (max-height: 560px) {
+        /* body selector to avoid minification causing bad jinja2 */
+        body #ha-launch-screen .ha-launch-screen-spacer-top {
+          margin-top: 24px;
+          padding-top: 24px;
+        }
+        body #ha-launch-screen .ha-launch-screen-spacer-bottom {
+          padding-top: 16px;
+        }
+        .ohf-logo {
+          margin-block: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ha-launch-screen">
+      <div class="ha-launch-screen-spacer-top"></div>
+      <div class="ha-lockup">
+        <img class="ha-logo" src="/static/images/home-assistant-logo-loading.svg" alt="Home Assistant">
+      </div>
+      <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
+      <div class="ohf-logo">
+        <span id="ha-launch-screen-attribution">A project from the</span>
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="/static/images/open-home-foundation-on-dark.svg">
+          <img src="/static/images/open-home-foundation-on-light.svg" alt="Open Home Foundation" width="237" height="24">
+        </picture>
+      </div>
+    </div>
+    <home-assistant></home-assistant>
+    <%= renderTemplate("_js_base.html.template") %>
+    <%= renderTemplate("_preload_roboto.html.template") %>
+    <script crossorigin="use-credentials">
+      if (isModern) {
+        <% for (const entry of latestEntryJS) { %>
+          import("<%= entry %>");
+        <% } %>
+        window.customPanelJS = "<%= latestCustomPanelJS %>";
+        window.latestJS = true;
+      }
+    </script>
+    <% if (obj.hassUrl === "") { %>
+      <script>
+        {%- for extra_module in extra_modules -%}
+        // Caught, or the boot recovery guard reads it as a stale build.
+        import("{{ extra_module }}").catch(function (err) {
+          console.error("Failed to load extra module {{ extra_module }}", err);
+        });
+        {%- endfor -%}
+      </script>
+    <% } %>
+    <script>
+        if (!window.latestJS) {
+          window.customPanelJS = "<%= es5CustomPanelJS %>";
+          <% for (const entry of es5EntryJS) { %>
+            _ls("<%= entry %>", true);
+          <% } %>
+        }
+    </script>
+
+    <% if (obj.hassUrl === "") { %>
+      <script>
+        if (!window.latestJS) {
+          {%- for extra_script in extra_js_es5 -%}
+          _ls("{{ extra_script }}");
+          {%- endfor -%}
+        }
+      </script>
+    <% } %>
+  </body>
+</html>

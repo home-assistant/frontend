@@ -1,0 +1,76 @@
+import type { CSSResultGroup } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { Action, ParallelAction } from "../../../../../data/script";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
+import "../ha-automation-action";
+import type HaAutomationAction from "../ha-automation-action";
+import type { ActionElement } from "../ha-automation-action-row";
+
+@customElement("ha-automation-action-parallel")
+export class HaParallelAction extends LitElement implements ActionElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public action!: ParallelAction;
+
+  @property({ type: Boolean }) public indent = false;
+
+  @query("ha-automation-action")
+  private _actionElement?: HaAutomationAction;
+
+  public static get defaultConfig(): ParallelAction {
+    return {
+      parallel: [],
+    };
+  }
+
+  protected render() {
+    const action = this.action;
+
+    return html`
+      <ha-automation-action
+        .actions=${action.parallel}
+        .narrow=${this.narrow}
+        .disabled=${this.disabled}
+        @value-changed=${this._actionsChanged}
+        .hass=${this.hass}
+        .optionsInSidebar=${this.indent}
+      ></ha-automation-action>
+    `;
+  }
+
+  private _actionsChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = ev.detail.value as Action[];
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.action,
+        parallel: value,
+      },
+    });
+  }
+
+  public expandAll() {
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._actionElement?.collapseAll();
+  }
+
+  static get styles(): CSSResultGroup {
+    return haStyle;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-action-parallel": HaParallelAction;
+  }
+}

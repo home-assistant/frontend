@@ -1,0 +1,322 @@
+import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../../components/ha-marquee-text";
+import type { ClockCardConfig } from "../types";
+import type { HomeAssistant } from "../../../../types";
+import { useAmPm } from "../../../../common/datetime/use_am_pm";
+import {
+  formatClockCardDate,
+  getClockCardDateConfig,
+  hasClockCardDate,
+  resolveClockCardLocale,
+} from "./clock-date-format";
+
+const INTERVAL = 1000;
+
+@customElement("hui-clock-card-digital")
+export class HuiClockCardDigital extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public config?: ClockCardConfig;
+
+  @state() private _dateTimeFormat?: Intl.DateTimeFormat;
+
+  @state() private _timeHour?: string;
+
+  @state() private _timeMinute?: string;
+
+  @state() private _timeSecond?: string;
+
+  @state() private _timeAmPm?: string;
+
+  @state() private _date?: string;
+
+  private _tickInterval?: undefined | number;
+
+  private _lastDateMinute?: string;
+
+  private _timeZone?: string;
+
+  private _language?: string;
+
+  private _initDate() {
+    if (!this.config || !this.hass) {
+      this._date = undefined;
+      this._lastDateMinute = undefined;
+      return;
+    }
+
+    const { locale, timeZone } = resolveClockCardLocale(this.hass, this.config);
+
+    const h12 = useAmPm(locale);
+    this._language = this.hass.locale.language;
+    this._timeZone = timeZone;
+
+    this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
+      hour: h12 ? "numeric" : "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: h12 ? "h12" : "h23",
+      timeZone,
+    });
+
+    this._lastDateMinute = undefined;
+
+    this._tick();
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    if (changedProps.has("config") || changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass");
+      if (
+        changedProps.has("config") ||
+        !oldHass ||
+        oldHass.locale !== this.hass?.locale
+      ) {
+        this._initDate();
+      }
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._startTick();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._stopTick();
+  }
+
+  private _startTick() {
+    this._stopTick();
+    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
+    this._tick();
+  }
+
+  private _stopTick() {
+    if (this._tickInterval) {
+      clearInterval(this._tickInterval);
+      this._tickInterval = undefined;
+    }
+  }
+
+  private _tick() {
+    if (!this._dateTimeFormat) return;
+
+    const date = new Date();
+    const parts = this._dateTimeFormat.formatToParts(date);
+
+    this._timeHour = parts.find((part) => part.type === "hour")?.value;
+    this._timeMinute = parts.find((part) => part.type === "minute")?.value;
+    this._timeSecond = this.config?.show_seconds
+      ? parts.find((part) => part.type === "second")?.value
+      : undefined;
+    this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
+
+    this._updateDate(date);
+  }
+
+  private _updateDate(date: Date) {
+    if (!this.config || !hasClockCardDate(this.config) || !this._language) {
+      this._date = undefined;
+      this._lastDateMinute = undefined;
+      return;
+    }
+
+    if (
+      this._timeMinute !== undefined &&
+      this._timeMinute === this._lastDateMinute &&
+      this._date !== undefined
+    ) {
+      return;
+    }
+
+    const dateConfig = getClockCardDateConfig(this.config);
+    this._date = formatClockCardDate(
+      date,
+      dateConfig,
+      this._language,
+      this._timeZone
+    );
+    this._lastDateMinute = this._timeMinute;
+  }
+
+  render() {
+    if (!this.config) return nothing;
+
+    const sizeClass = this.config.clock_size
+      ? `size-${this.config.clock_size}`
+      : "";
+    const showDate = hasClockCardDate(this.config);
+
+    return html`
+      <div class="clock-container">
+        <div class="time-parts ${sizeClass}">
+          <div class="time-part hour">${this._timeHour}</div>
+          <div class="time-part minute">${this._timeMinute}</div>
+          ${
+            this._timeSecond !== undefined
+              ? html`<div class="time-part second">${this._timeSecond}</div>`
+              : nothing
+          }
+          ${
+            this._timeAmPm !== undefined
+              ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
+              : nothing
+          }
+        </div>
+      </div>
+      ${
+        showDate
+          ? html`<div class="date-container">
+              <div class="date ${sizeClass}">
+                ${this._date
+                  ?.split("\n")
+                  .map(
+                    (line) => html`
+                      <ha-marquee-text
+                        class="date-line"
+                        speed="10"
+                        pause-duration="1500"
+                        pause-on-hover
+                      >
+                        ${line}
+                      </ha-marquee-text>
+                    `
+                  )}
+              </div>
+            </div>`
+          : nothing
+      }
+    `;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+    }
+
+    .clock-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .date-container {
+      width: 100%;
+      margin-top: var(--ha-space-1);
+    }
+
+    .time-parts {
+      align-items: center;
+      display: grid;
+      grid-template-areas:
+        "hour minute second"
+        "hour minute am-pm";
+
+      font-size: var(
+        --ha-clock-card-digital-font-size-small,
+        var(--ha-font-size-2xl)
+      );
+      font-weight: var(--ha-font-weight-medium);
+      line-height: 0.8;
+      direction: ltr;
+    }
+
+    .time-title + .time-parts {
+      font-size: var(
+        --ha-clock-card-digital-font-size-small,
+        var(--ha-font-size-2xl)
+      );
+    }
+
+    .time-parts.size-medium {
+      font-size: var(
+        --ha-clock-card-digital-font-size-medium,
+        calc(48px * var(--ha-font-size-scale))
+      );
+    }
+
+    .time-parts.size-large {
+      font-size: var(
+        --ha-clock-card-digital-font-size-large,
+        calc(64px * var(--ha-font-size-scale))
+      );
+    }
+
+    .time-parts.size-medium .time-part.second,
+    .time-parts.size-medium .time-part.am-pm {
+      font-size: var(--ha-font-size-l);
+      margin-left: 6px;
+    }
+
+    .time-parts.size-large .time-part.second,
+    .time-parts.size-large .time-part.am-pm {
+      font-size: var(--ha-font-size-2xl);
+      margin-left: 8px;
+    }
+
+    .time-parts .time-part.hour {
+      grid-area: hour;
+    }
+
+    .time-parts .time-part.minute {
+      grid-area: minute;
+    }
+
+    .time-parts .time-part.second {
+      grid-area: second;
+      line-height: 0.9;
+      opacity: 0.4;
+    }
+
+    .time-parts .time-part.am-pm {
+      grid-area: am-pm;
+      line-height: 0.9;
+      opacity: 0.6;
+    }
+
+    .time-parts .time-part.second,
+    .time-parts .time-part.am-pm {
+      font-size: var(--ha-font-size-xs);
+      margin-left: 4px;
+    }
+
+    .time-parts .time-part.hour:after {
+      content: ":";
+      margin: 0 2px;
+    }
+
+    .date {
+      margin-inline: auto;
+      text-align: center;
+      opacity: 0.8;
+      font-size: var(--ha-font-size-s);
+      line-height: 1.1;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .date-line {
+      width: 100%;
+    }
+
+    .date.size-medium {
+      font-size: var(--ha-font-size-l);
+    }
+
+    .date.size-large {
+      font-size: var(--ha-font-size-2xl);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-clock-card-digital": HuiClockCardDigital;
+  }
+}

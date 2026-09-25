@@ -1,0 +1,622 @@
+import {
+  mdiAlertCircleOutline,
+  mdiCheck,
+  mdiDevices,
+  mdiDownload,
+  mdiFolderMultipleOutline,
+  mdiInformationOutline,
+  mdiPlus,
+  mdiShape,
+  mdiTune,
+  mdiVectorPolyline,
+} from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
+import { navigate } from "../../../../../common/navigate";
+import "../../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-alert";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-card";
+import { animationStyles } from "../../../../../resources/theme/animations.globals";
+
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
+import "../../../../../components/list/ha-list-nav";
+import type { ConfigEntry } from "../../../../../data/config_entries";
+import { getConfigEntries } from "../../../../../data/config_entries";
+import type {
+  ZHAConfiguration,
+  ZHANetworkBackupAndMetadata,
+} from "../../../../../data/zha";
+import {
+  createZHANetworkBackup,
+  fetchDevices,
+  fetchGroups,
+  fetchZHAConfiguration,
+} from "../../../../../data/zha";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import "../../../../../layouts/hass-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
+import { fileDownload } from "../../../../../util/file_download";
+
+@customElement("zha-config-dashboard")
+class ZHAConfigDashboard extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @state() private _configEntry?: ConfigEntry;
+
+  @state() private _configuration?: ZHAConfiguration;
+
+  @state() private _offlineDevices = 0;
+
+  @state() private _totalGroups?: number;
+
+  @state() private _asyncDataLoaded = false;
+
+  @state() private _error?: string;
+
+  @state() private _generatingBackup = false;
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    if (!this.hass) {
+      return;
+    }
+    if (!isComponentLoaded(this.hass.config, "zha")) {
+      navigate("/config/integrations", { replace: true });
+      return;
+    }
+    this.hass.loadBackendTranslation("config_panel", "zha", false);
+    this._load();
+  }
+
+  private async _load(): Promise<void> {
+    await this._fetchConfigEntry();
+    if (!this._configEntry) {
+      return;
+    }
+    this._fetchConfiguration();
+    this._fetchDevicesAndGroups();
+  }
+
+  protected render(): TemplateResult {
+    if (!this._configEntry) {
+      return html`
+        <hass-subpage
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
+          back-path="/config/connectivity"
+        >
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </hass-subpage>
+      `;
+    }
+
+    const configEntry = this._configEntry;
+    const devices = Object.values(this.hass.devices).filter((device) =>
+      device.config_entries.includes(configEntry.entry_id)
+    );
+    const deviceCount = devices.length;
+
+    let entityCount = 0;
+    for (const entity of Object.values(this.hass.entities)) {
+      if (entity.platform === "zha") {
+        entityCount++;
+      }
+    }
+    const deviceOnline =
+      this._offlineDevices < deviceCount || deviceCount === 0;
+    return html`
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
+        back-path="/config/connectivity"
+        has-fab
+      >
+        <div class="container">
+          ${this._renderNetworkStatus(deviceOnline, deviceCount)}
+          ${this._renderMyNetworkCard(deviceCount, entityCount)}
+          ${this._renderNavigationCard()} ${this._renderBackupCard()}
+        </div>
+
+        <a href="/config/zha/add" slot="fab">
+          <ha-button size="l">
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.zha.add_device")}
+          </ha-button>
+        </a>
+      </hass-subpage>
+    `;
+  }
+
+  private _renderNetworkStatus(deviceOnline: boolean, totalDevices: number) {
+    return html`
+      <ha-card class="content network-status">
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
+        <div class="card-content">
+          <div class="heading">
+            <div class="icon ${deviceOnline ? "success" : "error"}">
+              <ha-svg-icon
+                .path=${deviceOnline ? mdiCheck : mdiAlertCircleOutline}
+              ></ha-svg-icon>
+            </div>
+            <div class="details">
+              ${this.hass.localize(
+                `ui.panel.config.zha.configuration_page.status_${deviceOnline ? "online" : "offline"}`
+              )}<br />
+              <small>
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.devices",
+                  { count: totalDevices }
+                )}
+              </small>
+              <small class="offline">
+                ${
+                  this._asyncDataLoaded && this._offlineDevices > 0
+                    ? html`(${this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.devices_offline",
+                        { count: this._offlineDevices }
+                      )})`
+                    : nothing
+                }
+              </small>
+            </div>
+            <img
+              class="logo"
+              alt="Zigbee"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: "zha",
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+            />
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderMyNetworkCard(deviceCount: number, entityCount: number) {
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-header">
+          ${this.hass.localize(
+            "ui.panel.config.zha.configuration_page.my_network_title"
+          )}
+          <ha-button appearance="filled" href="/config/zha/visualization">
+            <ha-svg-icon slot="start" .path=${mdiVectorPolyline}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.show_map"
+            )}
+          </ha-button>
+        </div>
+        <div class="card-content">
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.my_network_title"
+            )}
+          >
+            <ha-list-item-button
+              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.device_count",
+                  { count: deviceCount }
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+            <ha-list-item-button
+              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.entity_count",
+                  { count: entityCount }
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/zha/groups">
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiFolderMultipleOutline}
+              ></ha-svg-icon>
+              <div
+                slot="headline"
+                class=${
+                  this._asyncDataLoaded && this._totalGroups !== undefined
+                    ? "fade-in"
+                    : ""
+                }
+              >
+                ${
+                  this._asyncDataLoaded && this._totalGroups !== undefined
+                    ? this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.group_count",
+                        { count: this._totalGroups }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.zha.groups.groups.caption"
+                      )
+                }
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+          </ha-list-nav>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderNavigationCard() {
+    const dynamicSections = this._configuration
+      ? Object.keys(this._configuration.schemas).filter(
+          (section) => section !== "zha_options"
+        )
+      : [];
+
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-content">
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.options_title"
+            )}
+          >
+            <ha-list-item-button href="/config/zha/options">
+              <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.options_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.options_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/zha/network-info">
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiInformationOutline}
+              ></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.network_info_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.network_info_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+            ${dynamicSections.map(
+              (section) => html`
+                <ha-list-item-button href=${`/config/zha/section/${section}`}>
+                  <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
+                  <div slot="headline">
+                    ${
+                      this.hass.localize(
+                        `component.zha.config_panel.${section}.title`
+                      ) || section
+                    }
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>
+              `
+            )}
+          </ha-list-nav>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderBackupCard() {
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-content">
+          <ha-list-base>
+            <ha-list-item-base>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.download_backup"
+                )}
+              </span>
+              <span slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.download_backup_description"
+                )}
+              </span>
+              <ha-progress-button
+                appearance="plain"
+                slot="end"
+                size="s"
+                .iconPath=${mdiDownload}
+                .progress=${this._generatingBackup}
+                @click=${this._createAndDownloadBackup}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.download_backup_action"
+                )}
+              </ha-progress-button>
+            </ha-list-item-base>
+            <ha-list-item-base>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.migrate_radio"
+                )}
+              </span>
+              <span slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.migrate_radio_description"
+                )}
+              </span>
+              <ha-button
+                appearance="plain"
+                slot="end"
+                size="s"
+                @click=${this._openOptionFlow}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.migrate_radio_action"
+                )}
+              </ha-button>
+            </ha-list-item-base>
+          </ha-list-base>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private async _fetchConfigEntry(): Promise<void> {
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zha",
+    });
+    this._configEntry = configEntries.find(
+      (entry) => entry.disabled_by === null && entry.source !== "ignore"
+    );
+  }
+
+  private async _fetchConfiguration(): Promise<void> {
+    this._configuration = await fetchZHAConfiguration(this.hass!);
+  }
+
+  private async _createAndDownloadBackup(
+    ev: HASSDomCurrentTargetEvent<HaProgressButton>
+  ): Promise<void> {
+    // Captured up front: currentTarget is null once the first await resolves.
+    const button = ev.currentTarget;
+    let backup_and_metadata: ZHANetworkBackupAndMetadata;
+
+    // Reading the backup from the coordinator can take 5-30 seconds.
+    this._generatingBackup = true;
+
+    try {
+      backup_and_metadata = await createZHANetworkBackup(this.hass!);
+    } catch (err: any) {
+      button.actionError();
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.backup_failed"
+        ),
+        text: err.message,
+        warning: true,
+      });
+      return;
+    } finally {
+      this._generatingBackup = false;
+    }
+
+    const backupTime: Date = new Date(
+      Date.parse(backup_and_metadata.backup.backup_time)
+    );
+    let basename = `ZHA backup ${backupTime.toISOString().replace(/:/g, "-")}`;
+
+    if (!backup_and_metadata.is_complete) {
+      basename = `Incomplete ${basename}`;
+    }
+
+    const blob = new Blob(
+      [JSON.stringify(backup_and_metadata.backup, null, 4)],
+      { type: "application/json" }
+    );
+    fileDownload(URL.createObjectURL(blob), `${basename}.json`);
+    button.actionSuccess();
+
+    if (!backup_and_metadata.is_complete) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.backup_incomplete_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.backup_incomplete_text"
+        ),
+      });
+    }
+  }
+
+  private _openOptionFlow() {
+    if (!this._configEntry) {
+      return;
+    }
+    showOptionsFlowDialog(this, this._configEntry);
+  }
+
+  private async _fetchDevicesAndGroups(): Promise<void> {
+    const [devicesResult, groupsResult] = await Promise.allSettled([
+      fetchDevices(this.hass),
+      fetchGroups(this.hass),
+    ]);
+
+    if (devicesResult.status === "fulfilled") {
+      this._offlineDevices = devicesResult.value.filter(
+        (d) => !d.available
+      ).length;
+    } else {
+      this._error = devicesResult.reason?.message || devicesResult.reason;
+    }
+
+    if (groupsResult.status === "fulfilled") {
+      this._totalGroups = groupsResult.value.length;
+    }
+
+    this._asyncDataLoaded = true;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      animationStyles,
+      css`
+        ha-card {
+          margin: auto;
+          margin-top: var(--ha-space-4);
+          max-width: 600px;
+        }
+
+        .nav-card .card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: var(--ha-space-2);
+        }
+
+        .nav-card {
+          overflow: hidden;
+        }
+
+        .nav-card .card-content {
+          padding: 0;
+        }
+
+        .content {
+          margin-top: var(--ha-space-6);
+        }
+
+        .loading {
+          display: flex;
+          justify-content: center;
+          padding: var(--ha-space-12);
+        }
+
+        .network-status div.heading {
+          display: flex;
+          align-items: center;
+          column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          object-fit: contain;
+        }
+
+        .network-status div.heading .icon {
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
+        }
+
+        .network-status div.heading .icon.success {
+          --icon-color: var(--success-color);
+        }
+
+        .network-status div.heading .icon.error {
+          --icon-color: var(--error-color);
+        }
+
+        .network-status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color);
+          opacity: 0.2;
+        }
+
+        .network-status div.heading .icon ha-svg-icon {
+          color: var(--icon-color);
+          width: 24px;
+          height: 24px;
+        }
+
+        .network-status div.heading .details {
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
+        }
+
+        .network-status small {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
+          color: var(--secondary-text-color);
+        }
+
+        .network-status small.offline,
+        .fade-in {
+          animation: fade-in var(--ha-animation-duration-slow) ease-in;
+        }
+
+        .container {
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-config-dashboard": ZHAConfigDashboard;
+  }
+}

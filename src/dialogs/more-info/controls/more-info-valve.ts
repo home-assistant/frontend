@@ -1,0 +1,215 @@
+import { consume } from "@lit/context";
+import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
+import { formattersContext } from "../../../data/context";
+import {
+  shouldShowFavoriteOptions,
+  type ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
+import type { ValveEntity } from "../../../data/valve";
+import {
+  valveSupportsPosition,
+  ValveEntityFeature,
+  computeValvePositionStateDisplay,
+} from "../../../data/valve";
+import "../../../state-control/valve/ha-state-control-valve-buttons";
+import "../../../state-control/valve/ha-state-control-valve-position";
+import "../../../state-control/valve/ha-state-control-valve-toggle";
+import type { HomeAssistantFormatters } from "../../../types";
+import "../components/valves/ha-more-info-valve-favorite-positions";
+import "../components/ha-more-info-state-header";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
+
+type Mode = "position" | "button";
+
+@customElement("more-info-valve")
+class MoreInfoValve extends LitElement {
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @property({ attribute: false }) public stateObj?: ValveEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
+
+  @state() private _mode?: Mode;
+
+  private _setMode(ev) {
+    this._mode = ev.currentTarget.mode;
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("stateObj") && this.stateObj) {
+      const entityId = this.stateObj.entity_id;
+      const oldEntityId = changedProps.get("stateObj")?.entity_id;
+      if (!this._mode || entityId !== oldEntityId) {
+        this._mode = valveSupportsPosition(this.stateObj)
+          ? "position"
+          : "button";
+      }
+    }
+  }
+
+  private get _stateOverride() {
+    const stateDisplay = this._formatters.formatEntityState(this.stateObj!);
+
+    const positionStateDisplay = computeValvePositionStateDisplay(
+      this.stateObj!,
+      this._formatters.formatEntityAttributeValue
+    );
+
+    if (positionStateDisplay) {
+      return `${stateDisplay} · ${positionStateDisplay}`;
+    }
+    return stateDisplay;
+  }
+
+  protected render() {
+    if (!this.stateObj) {
+      return nothing;
+    }
+
+    const supportsPosition = valveSupportsPosition(this.stateObj);
+
+    const showFavoriteControls = Boolean(
+      this.entry &&
+      (this.editMode ||
+        (supportsPosition &&
+          shouldShowFavoriteOptions(
+            this.entry.options?.valve?.favorite_positions
+          )))
+    );
+
+    const supportsOpenClose =
+      supportsFeature(this.stateObj, ValveEntityFeature.OPEN) ||
+      supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) ||
+      supportsFeature(this.stateObj, ValveEntityFeature.STOP);
+
+    const supportsOpenCloseOnly =
+      supportsFeature(this.stateObj, ValveEntityFeature.OPEN) &&
+      supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) &&
+      !supportsFeature(this.stateObj, ValveEntityFeature.STOP) &&
+      !supportsPosition;
+
+    return html`
+      <ha-more-info-state-header
+        .stateObj=${this.stateObj}
+        .stateOverride=${this._stateOverride}
+      ></ha-more-info-state-header>
+      <div class="controls">
+        <div class="main-control">
+          ${
+            this._mode === "position"
+              ? html`
+                  ${
+                    supportsPosition
+                      ? html`
+                          <ha-state-control-valve-position
+                            .stateObj=${this.stateObj}
+                          ></ha-state-control-valve-position>
+                        `
+                      : nothing
+                  }
+                `
+              : nothing
+          }
+          ${
+            this._mode === "button"
+              ? html`
+                  ${
+                    supportsOpenCloseOnly
+                      ? html`
+                          <ha-state-control-valve-toggle
+                            .stateObj=${this.stateObj}
+                          ></ha-state-control-valve-toggle>
+                        `
+                      : supportsOpenClose
+                        ? html`
+                            <ha-state-control-valve-buttons
+                              .stateObj=${this.stateObj}
+                            ></ha-state-control-valve-buttons>
+                          `
+                        : nothing
+                  }
+                `
+              : nothing
+          }
+            </div>
+          ${
+            supportsPosition && supportsOpenClose
+              ? html`
+                  <ha-icon-button-group>
+                    <ha-icon-button-toggle
+                      .label=${this._localize(
+                        `ui.dialogs.more_info_control.valve.switch_mode.position`
+                      )}
+                      .selected=${this._mode === "position"}
+                      .path=${mdiMenu}
+                      .mode=${"position"}
+                      @click=${this._setMode}
+                    ></ha-icon-button-toggle>
+                    <ha-icon-button-toggle
+                      .label=${this._localize(
+                        `ui.dialogs.more_info_control.valve.switch_mode.button`
+                      )}
+                      .selected=${this._mode === "button"}
+                      .path=${mdiSwapVertical}
+                      .mode=${"button"}
+                      @click=${this._setMode}
+                    ></ha-icon-button-toggle>
+                  </ha-icon-button-group>
+                `
+              : nothing
+          }
+        </div>
+        ${
+          showFavoriteControls
+            ? html`
+                <ha-more-info-valve-favorite-positions
+                  .stateObj=${this.stateObj}
+                  .entry=${this.entry}
+                  .editMode=${this.editMode}
+                ></ha-more-info-valve-favorite-positions>
+              `
+            : nothing
+        }
+      </div>
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      moreInfoControlStyle,
+      css`
+        .main-control {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+        .main-control > * {
+          margin: 0 var(--ha-space-2);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-valve": MoreInfoValve;
+  }
+}

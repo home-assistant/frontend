@@ -1,0 +1,384 @@
+import { startOfYesterday } from "date-fns";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
+import { createSearchParam } from "../../../common/url/search-params";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
+import { resolveEntityIDs } from "../../../data/selector";
+import type { HomeAssistant } from "../../../types";
+import "../../logbook/ha-logbook";
+import type { HaLogbook } from "../../logbook/ha-logbook";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
+import { findEntities } from "../common/find-entities";
+import { processConfigEntities } from "../common/process-config-entities";
+import "../components/hui-warning";
+import type { EntityConfig } from "../entity-rows/types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
+import type { LogbookCardConfig } from "./types";
+
+export const DEFAULT_HOURS_TO_SHOW = 24;
+
+@customElement("hui-logbook-card")
+export class HuiLogbookCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-logbook-card-editor");
+    return document.createElement("hui-logbook-card-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFill: string[]
+  ) {
+    const includeDomains = ["light", "switch"];
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return {
+      target: {
+        entity_id: foundEntities,
+      },
+    };
+  }
+
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
+
+  @state() private _config?: LogbookCardConfig;
+
+  @state() private _time?: HaLogbook["time"];
+
+  @state() private _targetPickerValue: HassServiceTarget = {};
+
+  @state() private _stateFilter?: string[];
+
+  private _showMoreLinkId = `logbook-${Math.random().toString(36).substring(2, 9)}`;
+
+  public getCardSize(): number {
+    return 9 + (this._config?.title ? 1 : 0);
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      rows: 6,
+      columns: 12,
+      min_columns: 6,
+      min_rows: this._config?.title ? 4 : 3,
+    };
+  }
+
+  public validateTarget(
+    config: LogbookCardConfig
+  ): HassServiceTarget | undefined {
+    if (
+      (config.entities && !config.entities.length) ||
+      (config.target &&
+        !config.target.area_id?.length &&
+        !config.target.device_id?.length &&
+        !config.target.entity_id?.length &&
+        !config.target.floor_id?.length &&
+        !config.target.label_id?.length)
+    ) {
+      return undefined;
+    }
+
+    if (config.entities) {
+      return {
+        entity_id: processConfigEntities<EntityConfig>(config.entities).map(
+          (entity) => entity.entity
+        ),
+      };
+    }
+
+    if (config.target?.entity_id) {
+      return {
+        ...config.target,
+        entity_id: processConfigEntities<EntityConfig>(
+          ensureArray(config.target!.entity_id)
+        ).map((entity) => entity.entity),
+      };
+    }
+
+    return config.target;
+  }
+
+  public setConfig(config: LogbookCardConfig): void {
+    const target = this.validateTarget(config);
+    if (!target) {
+      throw new Error(
+        "The provided target in the logbook card has no entities. Targets can include entities, devices, labels, or areas, with devices, areas, and labels resolving to entities."
+      );
+    }
+
+    this._config = {
+      hours_to_show: DEFAULT_HOURS_TO_SHOW,
+      ...config,
+    };
+    this._time = {
+      recent: this._config!.hours_to_show! * 60 * 60,
+    };
+
+    this._targetPickerValue = target;
+
+    this._stateFilter = ensureArray(config.state_filter);
+  }
+
+  private _showMoreUrl(): string {
+    const target = this._targetPickerValue;
+    const params: Record<string, string> = {
+      start_date: startOfYesterday().toISOString(),
+      back: "1",
+    };
+    if (target.entity_id) {
+      params.entity_id = ensureArray(target.entity_id).join(",");
+    }
+    if (target.device_id) {
+      params.device_id = ensureArray(target.device_id).join(",");
+    }
+    if (target.area_id) {
+      params.area_id = ensureArray(target.area_id).join(",");
+    }
+    if (target.floor_id) {
+      params.floor_id = ensureArray(target.floor_id).join(",");
+    }
+    if (target.label_id) {
+      params.label_id = ensureArray(target.label_id).join(",");
+    }
+    return `/logbook?${createSearchParam(params)}`;
+  }
+
+  private _getEntityIds(): string[] | undefined {
+    const entities = this._getMemoizedEntityIds(
+      this._targetPickerValue,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas
+    );
+    if (entities.length === 0) {
+      return undefined;
+    }
+    return entities;
+  }
+
+  private _getMemoizedEntityIds = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
+    ): string[] =>
+      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+  );
+
+  private _getNameDetail(): LogbookNameDetail | undefined {
+    const nameDetail = this._config?.name_detail ?? "auto";
+    if (nameDetail !== "auto") {
+      return nameDetail;
+    }
+    const entityIds = this._getEntityIds();
+    if (!entityIds) {
+      return undefined;
+    }
+    return this._getAutoNameDetail(
+      entityIds,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
+  }
+
+  // Pick the least detail the targeted entities need to stay unambiguous: a
+  // single entity needs no name, a shared device needs only the entity name, a
+  // shared area needs the device, otherwise show the full context.
+  private _getAutoNameDetail = memoizeOne(
+    (
+      entityIds: string[],
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"]
+    ): LogbookNameDetail => {
+      if (entityIds.length <= 1) {
+        return "none";
+      }
+      const deviceIds = new Set<string | undefined>();
+      const areaIds = new Set<string | undefined>();
+      for (const entityId of entityIds) {
+        const entry = entities[entityId];
+        const { device, area } = entry
+          ? getEntityEntryContext(entry, entities, devices, areas, floors)
+          : { device: null, area: null };
+        deviceIds.add(device?.id);
+        areaIds.add(area?.area_id);
+      }
+      // An entity without a device or area counts as its own group: it does not
+      // share the context, so it must not collapse the level.
+      if (deviceIds.size === 1 && !deviceIds.has(undefined)) {
+        return "entity";
+      }
+      if (areaIds.size === 1 && !areaIds.has(undefined)) {
+        return "device";
+      }
+      return "area";
+    }
+  );
+
+  protected update(changedProperties: PropertyValues<this>) {
+    super.update(changedProperties);
+    if (changedProperties.has("layout")) {
+      this.toggleAttribute("ispanel", this.layout === "panel");
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const configChanged = changedProperties.has("_config");
+    const hassChanged = changedProperties.has("hass");
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProperties.get("_config") as LogbookCardConfig;
+
+    if (
+      (hassChanged && oldHass?.themes !== this.hass.themes) ||
+      (configChanged && oldConfig?.theme !== this._config.theme)
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    if (!isComponentLoaded(this.hass.config, "logbook")) {
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${this.hass.localize("ui.components.logbook.not_loaded", {
+            platform: "logbook",
+          })}</hui-warning
+        >
+      `;
+    }
+
+    return html`
+      <ha-card class=${classMap({ "no-header": !this._config!.title })}>
+        ${
+          this._config!.title
+            ? html`<h1 class="card-header">
+                ${this._config!.title}
+                <a
+                  id=${this._showMoreLinkId}
+                  href=${this._showMoreUrl()}
+                  aria-label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._showMoreLinkId} placement="left">
+                  ${this.hass.localize("ui.dialogs.more_info_control.show_more")}
+                </ha-tooltip>
+              </h1>`
+            : nothing
+        }
+        <div class="content">
+          <ha-logbook
+            class=${classMap({
+              "is-grid": this.layout === "grid",
+              "is-panel": this.layout === "panel",
+            })}
+            .hass=${this.hass}
+            .time=${this._time}
+            .entityIds=${this._getEntityIds()}
+            .stateFilter=${this._stateFilter}
+            .nameDetail=${this._getNameDetail()}
+            narrow
+            no-icon
+            virtualize
+          ></ha-logbook>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      css`
+        ha-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 0;
+        }
+
+        .card-header ha-icon-next {
+          --ha-icon-button-size: 24px;
+          line-height: 24px;
+          color: var(--primary-text-color);
+        }
+
+        .content {
+          height: 100%;
+          padding: 0 0 16px;
+        }
+
+        .no-header .content {
+          padding-top: 16px;
+        }
+
+        ha-logbook {
+          height: 385px;
+          display: block;
+        }
+
+        ha-logbook.is-grid,
+        ha-logbook.is-panel {
+          height: 100%;
+        }
+
+        :host([ispanel]) .content,
+        :host([ispanel]) ha-logbook {
+          height: 100%;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-logbook-card": HuiLogbookCard;
+  }
+}

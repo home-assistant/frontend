@@ -1,0 +1,441 @@
+import { endOfDay, startOfDay } from "date-fns";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
+import { calcDate } from "../../../common/datetime/calc_date";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../common/entity/entity_filter";
+import { formatNumber } from "../../../common/number/format_number";
+import "../../../components/ha-card";
+import "../../../components/tile/ha-tile-container";
+import "../../../components/tile/ha-tile-icon";
+import "../../../components/tile/ha-tile-info";
+import type { EnergyData } from "../../../data/energy";
+import {
+  computeConsumptionData,
+  formatConsumptionShort,
+  getEnergyDataCollection,
+  getSummedData,
+} from "../../../data/energy";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant } from "../../../types";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import {
+  getSummaryLabel,
+  HOME_SUMMARIES_COLORS,
+  HOME_SUMMARIES_FILTERS,
+  HOME_SUMMARIES_ICONS,
+  type HomeSummary,
+} from "../strategies/home/helpers/home-summaries";
+import {
+  filterLowBatteryEntities,
+  filterUnavailableBatteryEntities,
+} from "../../maintenance/strategies/maintenance-view-strategy";
+import {
+  isSecurityAlertActive,
+  resolveSecurityAlertSeverity,
+} from "../../security/strategies/security-alerts";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import { tileCardStyle } from "./tile/tile-card-style";
+import type { HomeSummaryCard } from "./types";
+
+@customElement("hui-home-summary-card")
+export class HuiHomeSummaryCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: HomeSummaryCard;
+
+  @state() private _energyData?: EnergyData;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    if (this._config?.summary !== "energy") {
+      return [];
+    }
+    const collection = getEnergyDataCollection(this.hass!, {
+      key: "energy_home_dashboard",
+    });
+    // Ensure we always show today's energy data
+    collection.setPeriod(
+      calcDate(new Date(), startOfDay, this.hass!.locale, this.hass!.config),
+      calcDate(new Date(), endOfDay, this.hass!.locale, this.hass!.config)
+    );
+    return [
+      collection.subscribe((data) => {
+        this._energyData = data;
+      }),
+    ];
+  }
+
+  public setConfig(config: HomeSummaryCard): void {
+    this._config = config;
+  }
+
+  public getCardSize(): number {
+    return this._config?.vertical ? 2 : 1;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 6;
+    let min_columns = 6;
+    let rows = 1;
+
+    if (this._config?.vertical) {
+      rows++;
+      min_columns = 3;
+    }
+    return {
+      columns,
+      rows,
+      min_columns,
+      min_rows: rows,
+    };
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private get _hasCardAction() {
+    return (
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
+  }
+
+  private _computeSecondaryLoading = memoizeOne(
+    (summary: HomeSummary, energyData: EnergyData | undefined): boolean =>
+      summary === "energy" && !energyData
+  );
+
+  private _computeSummaryState(): string {
+    if (!this._config || !this.hass) {
+      return "";
+    }
+    const allEntities = Object.keys(this.hass!.states);
+
+    const areas = Object.values(this.hass.areas);
+
+    switch (this._config.summary) {
+      case "light": {
+        // Number of lights on
+        const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+
+        const lightEntities = findEntities(allEntities, lightsFilters);
+
+        const onLights = lightEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "on";
+        });
+
+        return onLights.length
+          ? this.hass.localize("ui.card.home-summary.count_lights_on", {
+              count: onLights.length,
+            })
+          : this.hass.localize("ui.card.home-summary.all_lights_off");
+      }
+      case "climate": {
+        // Min/Max temperature of the areas
+        const areaSensors = areas
+          .map((area) => area.temperature_entity_id)
+          .filter(Boolean);
+
+        const sensorsValues = areaSensors
+          .map(
+            (entityId) => parseFloat(this.hass!.states[entityId!]?.state) || NaN
+          )
+          .filter((value) => !isNaN(value));
+
+        if (sensorsValues.length === 0) {
+          return "";
+        }
+        const minTemp = Math.min(...sensorsValues);
+        const maxTemp = Math.max(...sensorsValues);
+
+        if (isNaN(minTemp) || isNaN(maxTemp)) {
+          return "";
+        }
+
+        const formattedMinTemp = formatNumber(minTemp, this.hass?.locale, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        });
+        const formattedMaxTemp = formatNumber(maxTemp, this.hass?.locale, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        });
+        return formattedMinTemp === formattedMaxTemp
+          ? `${formattedMinTemp}°`
+          : `${formattedMinTemp} - ${formattedMaxTemp}°`;
+      }
+      case "alerts": {
+        const count = (this._config.alert_entities ?? []).filter(
+          (alertEntity) => isSecurityAlertActive(this.hass!, alertEntity.entity)
+        ).length;
+        return count
+          ? this.hass.localize("ui.card.home-summary.count_active_alerts", {
+              count,
+            })
+          : "";
+      }
+      case "security": {
+        // Alarm and lock status
+        const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+
+        const securityEntities = findEntities(allEntities, securityFilters);
+
+        const locks = securityEntities.filter((entityId) => {
+          const domain = computeDomain(entityId);
+          return domain === "lock";
+        });
+
+        const alarms = securityEntities.filter((entityId) => {
+          const domain = computeDomain(entityId);
+          return domain === "alarm_control_panel";
+        });
+
+        const disarmedAlarms = alarms.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "disarmed";
+        });
+
+        const warningCount = (this._config.alert_entities ?? []).filter(
+          (alertEntity) =>
+            resolveSecurityAlertSeverity(
+              alertEntity,
+              this.hass!.states[alertEntity.entity]
+            ) === "warning" &&
+            isSecurityAlertActive(this.hass!, alertEntity.entity)
+        ).length;
+        const warningText = warningCount
+          ? this.hass.localize("ui.card.home-summary.count_warnings", {
+              count: warningCount,
+            })
+          : undefined;
+
+        if (!locks.length && !alarms.length) {
+          return warningText ?? "";
+        }
+
+        const unlockedLocks = locks.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "unlocked" || s === "jammed" || s === "open";
+        });
+
+        const statusText = unlockedLocks.length
+          ? this.hass.localize("ui.card.home-summary.count_locks_unlocked", {
+              count: unlockedLocks.length,
+            })
+          : disarmedAlarms.length
+            ? this.hass.localize("ui.card.home-summary.count_alarms_disarmed", {
+                count: disarmedAlarms.length,
+              })
+            : warningText
+              ? undefined
+              : this.hass.localize("ui.card.home-summary.all_secure");
+        return [warningText, statusText].filter(Boolean).join(", ");
+      }
+      case "media_players": {
+        // Playing media
+        const mediaPlayerFilters = HOME_SUMMARIES_FILTERS.media_players.map(
+          (filter) => generateEntityFilter(this.hass!, filter)
+        );
+
+        const mediaPlayerEntities = findEntities(
+          allEntities,
+          mediaPlayerFilters
+        );
+
+        const playingMedia = mediaPlayerEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "playing";
+        });
+
+        return playingMedia.length
+          ? this.hass.localize("ui.card.home-summary.count_media_playing", {
+              count: playingMedia.length,
+            })
+          : this.hass.localize("ui.card.home-summary.no_media_playing");
+      }
+      case "maintenance": {
+        const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
+          (filter) => generateEntityFilter(this.hass!, filter)
+        );
+
+        const maintenanceEntities = findEntities(
+          allEntities,
+          maintenanceFilters
+        );
+
+        const lowBatteryEntities = filterLowBatteryEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        const unavailableBatteryEntities = filterUnavailableBatteryEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        const lowBatteryText =
+          lowBatteryEntities.length > 0
+            ? this.hass.localize(
+                "ui.card.home-summary.count_maintenance_low_battery_issues",
+                {
+                  count: lowBatteryEntities.length,
+                }
+              )
+            : undefined;
+
+        const unavailableText =
+          unavailableBatteryEntities.length > 0
+            ? this.hass.localize(
+                "ui.card.home-summary.count_maintenance_issues_unavailable_battery_entities",
+                {
+                  count: unavailableBatteryEntities.length,
+                }
+              )
+            : undefined;
+
+        if (lowBatteryText && unavailableText) {
+          return `${lowBatteryText}, ${unavailableText}`;
+        }
+
+        if (lowBatteryText) {
+          return lowBatteryText;
+        }
+
+        if (unavailableText) {
+          return unavailableText;
+        }
+
+        return this.hass.localize("ui.card.home-summary.all_maintenance_good");
+      }
+      case "energy": {
+        if (!this._energyData) {
+          return "";
+        }
+        const { summedData } = getSummedData(this._energyData);
+        const { consumption } = computeConsumptionData(summedData, undefined);
+        const totalConsumption = consumption.total.used_total;
+        return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+      }
+      case "persons": {
+        const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+        const personEntities = findEntities(allEntities, personsFilters);
+        const personsHome = personEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s === "home";
+        });
+        return personsHome.length
+          ? this.hass.localize("ui.card.home-summary.count_persons_home", {
+              count: personsHome.length,
+            })
+          : this.hass.localize("ui.card.home-summary.nobody_home");
+      }
+    }
+    return "";
+  }
+
+  protected render() {
+    if (!this._config || !this.hass) {
+      return nothing;
+    }
+
+    const summary = this._config.summary;
+    const isAlertsSummary = summary === "alerts";
+    const color = computeCssColor(HOME_SUMMARIES_COLORS[summary]);
+
+    const style = {
+      "--tile-color": color,
+      "--ha-alert-color": isAlertsSummary ? color : undefined,
+    };
+
+    const secondary = this._computeSummaryState();
+    const secondaryLoading = this._computeSecondaryLoading(
+      summary,
+      this._energyData
+    );
+
+    const label = getSummaryLabel(this.hass.localize, summary);
+    const icon = HOME_SUMMARIES_ICONS[summary];
+
+    return html`
+      <ha-card
+        class=${classMap({ alert: isAlertsSummary })}
+        style=${styleMap(style)}
+      >
+        <ha-tile-container
+          .vertical=${Boolean(this._config.vertical)}
+          .interactive=${this._hasCardAction}
+          .actionHandlerOptions=${{
+            hasHold: hasAction(this._config!.hold_action),
+            hasDoubleClick: hasAction(this._config!.double_tap_action),
+          }}
+          @action=${this._handleAction}
+        >
+          <ha-tile-icon slot="icon" .icon=${icon}></ha-tile-icon>
+          <ha-tile-info
+            slot="info"
+            .primary=${label}
+            .secondary=${secondary}
+            .secondaryLoading=${secondaryLoading}
+          ></ha-tile-info>
+        </ha-tile-container>
+      </ha-card>
+    `;
+  }
+
+  static styles = [
+    tileCardStyle,
+    css`
+      :host {
+        --tile-color: var(--state-inactive-color);
+        --ha-alert-pulse-opacity: 0.3;
+      }
+      ha-card.alert {
+        position: relative;
+        overflow: hidden;
+        --tile-color: var(--ha-alert-color);
+      }
+      ha-card.alert::before {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+        background-color: var(--ha-alert-color);
+        content: "";
+        opacity: var(--ha-alert-pulse-opacity);
+        pointer-events: none;
+      }
+      ha-card.alert ha-tile-container {
+        position: relative;
+      }
+    `,
+  ];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-home-summary-card": HuiHomeSummaryCard;
+  }
+}

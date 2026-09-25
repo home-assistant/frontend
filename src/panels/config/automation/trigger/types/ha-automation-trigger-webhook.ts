@@ -1,0 +1,251 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { mdiCog, mdiContentCopy } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { slugify } from "../../../../../common/string/slugify";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import type {
+  AutomationConfig,
+  WebhookTrigger,
+} from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import { showEditorToast } from "../../editor-toast";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
+
+const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
+const DEFAULT_METHODS = ["POST", "PUT"];
+const DEFAULT_WEBHOOK_ID = "";
+
+@customElement("ha-automation-trigger-webhook")
+export class HaWebhookTrigger extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public trigger!: WebhookTrigger;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @state() private _config?: AutomationConfig;
+
+  private _unsub?: UnsubscribeFunc;
+
+  public static get defaultConfig(): WebhookTrigger {
+    return {
+      trigger: "webhook",
+      allowed_methods: [...DEFAULT_METHODS],
+      local_only: true,
+      webhook_id: DEFAULT_WEBHOOK_ID,
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    const details = {
+      callback: (config) => {
+        this._config = config;
+      },
+    };
+    fireEvent(this, "subscribe-automation-config", details);
+    this._unsub = (details as any).unsub;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsub) {
+      this._unsub();
+    }
+  }
+
+  private _generateWebhookId(): string {
+    // The webhook_id should be treated like a password. Generate a default
+    // value that would be hard for someone to guess. This generates a
+    // 144-bit random value. The output is a 24 character url-safe string.
+    const randomBytes = crypto.getRandomValues(new Uint8Array(18));
+    const base64Str = btoa(String.fromCharCode(...randomBytes));
+    const urlSafeId = base64Str.replace(/\+/g, "-").replace(/\//g, "_");
+
+    // Include the automation name to give the user context about what the
+    // webhook_id is used for.
+    const urlSafeAlias = slugify(this._config?.alias || "", "-");
+
+    return `${urlSafeAlias}-${urlSafeId}`;
+  }
+
+  public willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("trigger")) {
+      if (this.trigger.allowed_methods === undefined) {
+        this.trigger.allowed_methods = [...DEFAULT_METHODS];
+      }
+      if (this.trigger.local_only === undefined) {
+        this.trigger.local_only = true;
+      }
+      if (this.trigger.webhook_id === DEFAULT_WEBHOOK_ID) {
+        this.trigger.webhook_id = this._generateWebhookId();
+      }
+    }
+  }
+
+  protected render() {
+    const {
+      allowed_methods: allowedMethods,
+      local_only: localOnly,
+      webhook_id: webhookId,
+    } = this.trigger;
+
+    return html`
+      <div class="flex">
+        <ha-input
+          name="webhook_id"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
+          )}
+          .hint=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
+          )}
+          .disabled=${this.disabled}
+          .value=${webhookId || ""}
+          @input=${this._valueChanged}
+        >
+          <ha-icon-button
+            @click=${this._copyUrl}
+            slot="end"
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
+            )}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
+        </ha-input>
+        <ha-dropdown
+          @wa-select=${this._handleDropdownSelect}
+          placement="bottom-end"
+          distance="-24"
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass!.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.webhook_settings"
+            )}
+            .path=${mdiCog}
+          ></ha-icon-button>
+          ${SUPPORTED_METHODS.map(
+            (method) => html`
+              <ha-dropdown-item
+                .value=${method}
+                type="checkbox"
+                @request-selected=${this._allowedMethodsChanged}
+                .checked=${allowedMethods!.includes(method)}
+              >
+                ${method}
+              </ha-dropdown-item>
+            `
+          )}
+          ${
+            SUPPORTED_METHODS.length ? html`<wa-divider></wa-divider>` : nothing
+          }
+          <ha-dropdown-item
+            type="checkbox"
+            .checked=${localOnly!}
+            value="local_only"
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.local_only"
+            )}
+          </ha-dropdown-item>
+        </ha-dropdown>
+      </div>
+    `;
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
+    handleChangeEvent(this, ev);
+  }
+
+  private _localOnlyChanged(local_only: boolean): void {
+    if (this.trigger.local_only === local_only) {
+      return;
+    }
+    const newTrigger = {
+      ...this.trigger,
+      local_only,
+    };
+    fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _allowedMethodsChanged(method: string, selected: boolean): void {
+    if (selected === this.trigger.allowed_methods?.includes(method)) {
+      return;
+    }
+
+    const methods = this.trigger.allowed_methods ?? [];
+    const newMethods = [...methods];
+
+    if (selected) {
+      newMethods.push(method);
+    } else {
+      newMethods.splice(newMethods.indexOf(method), 1);
+    }
+    const newTrigger = { ...this.trigger, allowed_methods: newMethods };
+    fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private async _copyUrl(ev): Promise<void> {
+    const inputElement = ev.target.parentElement as HaInput;
+    const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
+
+    await copyToClipboard(url);
+    showEditorToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    ev.preventDefault(); // don't close the dropdown to select multiple options
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    if (action === "local_only") {
+      this._localOnlyChanged(ev.detail.item.checked);
+      return;
+    }
+
+    this._allowedMethodsChanged(ev.detail.item.value, ev.detail.item.checked);
+  }
+
+  static styles = css`
+    .flex {
+      display: flex;
+    }
+
+    ha-input {
+      flex: 1;
+    }
+
+    ha-input > ha-icon-button {
+      --ha-icon-button-size: 24px;
+      --mdc-icon-size: 18px;
+      color: var(--secondary-text-color);
+    }
+
+    ha-dropdown ha-icon-button {
+      padding-top: 4px;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-webhook": HaWebhookTrigger;
+  }
+}

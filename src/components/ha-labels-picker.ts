@@ -1,0 +1,259 @@
+import { consume } from "@lit/context";
+import { mdiPlaylistPlus } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../common/dom/fire_event";
+import { stringCompare } from "../common/string/compare";
+import { labelsContext } from "../data/context";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
+import { updateLabelRegistryEntry } from "../data/label/label_registry";
+import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./chips/ha-chip-set";
+import "./chips/ha-input-chip";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import { getLabelColorStyle } from "./ha-label";
+import "./ha-label-picker";
+import type { HaLabelPicker } from "./ha-label-picker";
+import "./ha-tooltip";
+
+@customElement("ha-labels-picker")
+export class HaLabelsPicker extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property() public label?: string;
+
+  @property({ attribute: false }) public value?: string[];
+
+  @property() public helper?: string;
+
+  @property() public placeholder?: string;
+
+  @property({ type: Boolean, attribute: "no-add" })
+  public noAdd = false;
+
+  /**
+   * Show only labels with entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+
+  /**
+   * Show no labels with entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
+
+  /**
+   * Show only labels with entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+
+  /**
+   * List of labels to be excluded.
+   * @type {Array}
+   * @attr exclude-labels
+   */
+  @property({ type: Array, attribute: "exclude-label" })
+  public excludeLabels?: string[];
+
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
+  @property({ attribute: false })
+  public entityFilter?: (entity: HassEntity) => boolean;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
+
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
+
+  @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
+
+  public async open() {
+    await this.updateComplete;
+    await this.labelPicker?.open();
+  }
+
+  public async focus() {
+    await this.updateComplete;
+    await this.labelPicker?.focus();
+  }
+
+  private _sortedLabels = memoizeOne(
+    (
+      value: string[] | undefined,
+      labels: LabelRegistryEntry[] | undefined,
+      language: string
+    ) =>
+      value
+        ?.map((id) => labels?.find((label) => label.label_id === id))
+        .filter((label): label is LabelRegistryEntry => label !== undefined)
+        .sort((a, b) => stringCompare(a.name, b.name, language))
+        .map((label) => ({
+          ...label,
+          style: getLabelColorStyle(label.color),
+        }))
+  );
+
+  protected render(): TemplateResult {
+    const labels = this._sortedLabels(
+      this.value,
+      this._labels,
+      this.hass.locale.language
+    );
+    return html`
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-label-picker
+        .hass=${this.hass}
+        .helper=${this.helper}
+        .disabled=${this.disabled}
+        .required=${this.required}
+        .placeholder=${this.placeholder}
+        .excludeLabels=${this.value}
+        @value-changed=${this._labelChanged}
+      >
+        <ha-chip-set>
+          ${
+            labels?.length
+              ? repeat(
+                  labels,
+                  (label) => label?.label_id,
+                  (label) => {
+                    if (!label) return nothing;
+                    const elementId = "label-" + label.label_id;
+                    return html`
+                      <ha-tooltip
+                        .for=${elementId}
+                        .disabled=${!label.description?.trim()}
+                      >
+                        ${label.description}
+                      </ha-tooltip>
+                      <ha-input-chip
+                        .item=${label}
+                        .id=${elementId}
+                        @remove=${this._removeItem}
+                        @click=${this._openDetail}
+                        .disabled=${this.disabled}
+                        .label=${label.name}
+                        selected
+                        style=${label.style}
+                      >
+                        ${
+                          label.icon
+                            ? html`<ha-icon
+                                slot="icon"
+                                .icon=${label.icon}
+                              ></ha-icon>`
+                            : nothing
+                        }
+                      </ha-input-chip>
+                    `;
+                  }
+                )
+              : nothing
+          }
+          <ha-button
+            id="picker"
+            size="s"
+            appearance="filled"
+            @click=${this._openPicker}
+            .disabled=${this.disabled}
+          >
+            <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
+            ${this.hass.localize("ui.components.label-picker.add")}
+          </ha-button>
+        </ha-chip-set>
+      </ha-label-picker>
+    `;
+  }
+
+  private get _value() {
+    return this.value || [];
+  }
+
+  private _removeItem(ev) {
+    const label = ev.currentTarget.item;
+    this._setValue(this._value.filter((id) => id !== label.label_id));
+  }
+
+  private _openDetail(ev) {
+    const label = ev.currentTarget.item;
+    showLabelDetailDialog(this, {
+      entry: label,
+      updateEntry: async (values) => {
+        await updateLabelRegistryEntry(this.hass, label.label_id, values);
+      },
+    });
+  }
+
+  private _labelChanged(ev: ValueChangedEvent<string>) {
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+    if (!newValue || this._value.includes(newValue)) {
+      return;
+    }
+    this._setValue([...this._value, newValue]);
+    this.labelPicker.value = "";
+  }
+
+  private _setValue(value?: string[]) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
+  }
+
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this.labelPicker.open();
+  }
+
+  static styles = css`
+    ha-chip-set {
+      background-color: var(--mdc-text-field-fill-color);
+      border-bottom: 1px solid var(--ha-color-border-neutral-normal);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      padding: var(--ha-space-3);
+    }
+    .placeholder {
+      color: var(--mdc-text-field-label-ink-color);
+      display: flex;
+      align-items: center;
+      height: var(--ha-space-8);
+    }
+    ha-input-chip {
+      --md-input-chip-selected-container-color: var(
+        --ha-label-background-color,
+        var(--grey-color)
+      );
+      --md-input-chip-selected-outline-width: 1px;
+    }
+    label {
+      display: block;
+      margin: 0 0 8px;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-labels-picker": HaLabelsPicker;
+  }
+}

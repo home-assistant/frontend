@@ -1,0 +1,141 @@
+import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
+import { configContext } from "../../../data/context";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { ErrorCardConfig } from "./types";
+
+const ERROR_ICONS = {
+  warning: mdiAlertOutline,
+  error: mdiAlertCircleOutline,
+};
+
+@customElement("hui-error-card")
+export class HuiErrorCard extends LitElement implements LovelaceCard {
+  @state()
+  @consumeLocalize()
+  private _localize?: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
+
+  @property({ attribute: false }) public preview = false;
+
+  @property({ attribute: "severity" }) public severity: "warning" | "error" =
+    "error";
+
+  @state() private _config?: ErrorCardConfig;
+
+  public getCardSize(): number {
+    return 1;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 6,
+      rows: this.preview ? "auto" : 1,
+      min_rows: 1,
+      min_columns: 6,
+    };
+  }
+
+  public setConfig(config: ErrorCardConfig): void {
+    this._config = config;
+    this.severity = config.severity || "error";
+  }
+
+  protected render() {
+    const error =
+      this._config?.error ||
+      (this.severity === "warning" &&
+        this._localize?.("ui.errors.config.configuration_warning")) ||
+      this._localize?.("ui.errors.config.configuration_error");
+    const showTitle =
+      this._hassConfig === undefined ||
+      this._hassConfig.user?.is_admin ||
+      this.preview;
+    const showMessage = this.preview;
+
+    return html`
+      <ha-card class="${this.severity} ${showTitle ? "" : "no-title"}">
+        <div class="header">
+          <div class="icon">
+            <slot name="icon">
+              <ha-svg-icon .path=${ERROR_ICONS[this.severity]}></ha-svg-icon>
+            </slot>
+          </div>
+          ${
+            showTitle
+              ? html`<div class="title"><slot>${error}</slot></div>`
+              : nothing
+          }
+        </div>
+        ${
+          showMessage && this._config?.message
+            ? html`<div class="message">${this._config.message}</div>`
+            : nothing
+        }
+      </ha-card>
+    `;
+  }
+
+  static styles = css`
+    ha-card {
+      height: 100%;
+      border-width: 0;
+    }
+    ha-card::after {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0.12;
+      pointer-events: none;
+      content: "";
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      padding: 16px;
+    }
+    .message {
+      padding: 0 16px 16px 16px;
+    }
+    .no-title {
+      justify-content: center;
+    }
+    .title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: var(--ha-font-weight-bold);
+    }
+    ha-card.warning .icon {
+      color: var(--warning-color);
+    }
+    ha-card.warning::after {
+      background-color: var(--warning-color);
+    }
+    ha-card.error .icon {
+      color: var(--error-color);
+    }
+    ha-card.error::after {
+      background-color: var(--error-color);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-error-card": HuiErrorCard;
+  }
+}

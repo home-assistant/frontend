@@ -1,0 +1,200 @@
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
+import type { NumberSelector } from "../../data/selector";
+import { isSafari } from "../../util/is_safari";
+import "../ha-input-helper-text";
+import "../ha-slider";
+import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
+
+@customElement("ha-selector-number")
+export class HaNumberSelector extends LitElement {
+  @property({ attribute: false }) public selector!: NumberSelector;
+
+  @property({ type: Number }) public value?: number;
+
+  @property({ type: Number }) public placeholder?: number;
+
+  @property() public label?: string;
+
+  @property() public helper?: string;
+
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
+
+  @property({ type: Boolean }) public required = true;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @query("ha-input", true) private _input?: HaInput;
+
+  private _valueStr = "";
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("value")) {
+      if (this._valueStr === "" || this.value !== Number(this._valueStr)) {
+        this._valueStr =
+          this.value == null || isNaN(this.value) ? "" : this.value.toString();
+      }
+    }
+  }
+
+  protected render() {
+    const isBox =
+      this.selector.number?.mode === "box" ||
+      this.selector.number?.min === undefined ||
+      this.selector.number?.max === undefined;
+
+    let sliderStep;
+
+    if (!isBox) {
+      sliderStep = this.selector.number!.step ?? 1;
+      if (sliderStep === "any") {
+        sliderStep = 1;
+        // divide the range of the slider by 100 steps
+        const step =
+          (this.selector.number!.max! - this.selector.number!.min!) / 100;
+        // biggest step size is 1, round the step size to a division of 1
+        while (sliderStep > step) {
+          sliderStep /= 10;
+        }
+      }
+    }
+
+    // On iOS/iPadOS the numeric and decimal on-screen keypads have no minus key.
+    // Leaving inputmode unset on a number input gives the "Numbers and
+    // Punctuation" keyboard there, which does include a minus. Other platforms
+    // include a minus on their number keypads, so restrict this workaround to
+    // Safari/WebKit and only when the selector allows negatives: either an
+    // explicit negative min, or no min at all (e.g. the numeric threshold
+    // selector used by the power triggers).
+    const useSafariNegativeKeyboard =
+      isSafari &&
+      (this.selector.number?.min === undefined || this.selector.number.min < 0);
+
+    const translationKey = this.selector.number?.translation_key;
+    let unit = this.selector.number?.unit_of_measurement;
+    if (isBox && unit && this.localizeValue && translationKey) {
+      unit =
+        this.localizeValue(`${translationKey}.unit_of_measurement.${unit}`) ||
+        unit;
+    }
+
+    return html`
+      ${
+        this.label && !isBox
+          ? html`${this.label}${this.required ? "*" : ""}`
+          : nothing
+      }
+      <div class="input">
+        ${
+          !isBox
+            ? html`
+                <ha-slider
+                  labeled
+                  .min=${this.selector.number!.min}
+                  .max=${this.selector.number!.max}
+                  .value=${this.value}
+                  .step=${sliderStep}
+                  .disabled=${this.disabled}
+                  .required=${this.required}
+                  @change=${this._handleSliderChange}
+                  .withMarkers=${this.selector.number?.slider_ticks || false}
+                >
+                </ha-slider>
+              `
+            : nothing
+        }
+        <ha-input
+          .inputmode=${
+            useSafariNegativeKeyboard
+              ? undefined
+              : this.selector.number?.step === "any" ||
+                  (this.selector.number?.step ?? 1) % 1 !== 0
+                ? "decimal"
+                : "numeric"
+          }
+          .label=${!isBox ? undefined : this.label}
+          .placeholder=${
+            this.placeholder !== undefined ? this.placeholder.toString() : ""
+          }
+          class=${isBox ? "single" : ""}
+          .min=${this.selector.number?.min}
+          .max=${this.selector.number?.max}
+          .value=${this._valueStr ?? ""}
+          .step=${this.selector.number?.step ?? 1}
+          .hint=${isBox ? this.helper : undefined}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .validationMessage=${this.selector.number?.validation_message}
+          type="number"
+          autoValidate
+          .withoutSpinButtons=${!isBox}
+          @input=${this._handleInputChange}
+        >
+          ${unit ? html`<span slot="end">${unit}</span>` : nothing}
+        </ha-input>
+      </div>
+      ${
+        !isBox && this.helper
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          : nothing
+      }
+    `;
+  }
+
+  private _handleInputChange(ev) {
+    ev.stopPropagation();
+    this._valueStr = ev.target.value;
+    const value =
+      ev.target.value === "" || isNaN(ev.target.value)
+        ? undefined
+        : Number(ev.target.value);
+    if (this.value === value) {
+      return;
+    }
+    fireEvent(this, "value-changed", { value });
+  }
+
+  private _handleSliderChange(ev) {
+    ev.stopPropagation();
+    const value = Number(ev.target.value);
+    if (this.value === value) {
+      return;
+    }
+    fireEvent(this, "value-changed", { value });
+  }
+
+  static styles = css`
+    .input {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      direction: var(--direction);
+    }
+    ha-slider {
+      flex: 1;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: 0;
+    }
+    ha-input::part(wa-input) {
+      width: 40px;
+    }
+    ha-input.single {
+      flex: 1;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-selector-number": HaNumberSelector;
+  }
+}

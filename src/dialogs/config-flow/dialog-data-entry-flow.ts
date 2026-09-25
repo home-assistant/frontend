@@ -1,0 +1,799 @@
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
+import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
+import { sanitizeHttpUrl } from "../../common/url/sanitize-http-url";
+import "../../components/ha-button";
+import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
+import "../../components/ha-icon-button";
+import type { ConfigEntry } from "../../data/config_entries";
+import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import {
+  subscribeDataEntryFlowProgress,
+  subscribeDataEntryFlowProgressed,
+} from "../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { RepairsIssue } from "../../data/repairs";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
+import { showAlertDialog } from "../generic/show-dialog-box";
+import { showConfigFlowDialog } from "./show-dialog-config-flow";
+import type {
+  DataEntryFlowDialogParams,
+  LoadingReason,
+} from "./show-dialog-data-entry-flow";
+import { showOptionsFlowDialog } from "./show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
+import { showRepairsFlowDialog } from "../repairs-flow/show-dialog-repair-flow";
+import "./step-flow-abort";
+import "./step-flow-create-entry";
+import "./step-flow-external";
+import "./step-flow-form";
+import "./step-flow-loading";
+import "./step-flow-menu";
+import "./step-flow-progress";
+
+let instance = 0;
+
+interface FlowUpdateEvent {
+  step?: DataEntryFlowStep;
+  stepPromise?: Promise<DataEntryFlowStep>;
+}
+
+interface FlowStepFooterStateChangedEvent {
+  loading?: boolean;
+  hasPendingUpdates?: boolean;
+}
+
+interface FormStepElement extends HTMLElement {
+  submit(): Promise<void>;
+}
+
+interface AbortStepElement extends HTMLElement {
+  close(): void;
+}
+
+interface CreateEntryStepElement extends HTMLElement {
+  finish(): Promise<void>;
+}
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "flow-update": FlowUpdateEvent;
+    "flow-step-footer-state-changed": FlowStepFooterStateChangedEvent;
+  }
+  // for add event listener
+  interface HTMLElementEventMap {
+    "flow-update": HASSDomEvent<HASSDomEvents["flow-update"]>;
+    "flow-step-footer-state-changed": HASSDomEvent<
+      HASSDomEvents["flow-step-footer-state-changed"]
+    >;
+  }
+}
+
+@customElement("dialog-data-entry-flow")
+class DataEntryFlowDialog extends DirtyStateProviderMixin<
+  Record<string, unknown>,
+  "form"
+>()(LitElement) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _params?: DataEntryFlowDialogParams;
+
+  @state() private _loading?: LoadingReason;
+
+  @state() private _progress?: number;
+
+  private _instance = instance;
+
+  @state() private _open = false;
+
+  @state() private _step:
+    | DataEntryFlowStep
+    | undefined
+    // Null means we need to pick a config flow
+    | null;
+
+  @state() private _handler?: string;
+
+  @state() private _formStepLoading = false;
+
+  @state() private _createEntryHasPendingUpdates = false;
+
+  @state() private _flowHasProgressed = false;
+
+  private _formStepRef = createRef<FormStepElement>();
+
+  private _abortStepRef = createRef<AbortStepElement>();
+
+  private _createEntryStepRef = createRef<CreateEntryStepElement>();
+
+  private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
+
+  public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
+    this._initDirtyTracking({ type: "deep" });
+    this._flowHasProgressed = Boolean(params.continueFlowId);
+    this._params = params;
+    this._instance = instance++;
+    this._open = true;
+
+    const curInstance = this._instance;
+    let step: DataEntryFlowStep;
+
+    if (params.startFlowHandler) {
+      this._loading = "loading_flow";
+      this._handler = params.startFlowHandler;
+      try {
+        step = await this._params!.flowConfig.createFlow(
+          this.hass,
+          params.startFlowHandler
+        );
+      } catch (err: any) {
+        this.closeDialog();
+        let message = err.message || err.body || "Unknown error";
+        if (typeof message !== "string") {
+          message = JSON.stringify(message);
+        }
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: `${this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          )}: ${message}`,
+        });
+        return;
+      }
+      // Happens if second showDialog called
+      if (curInstance !== this._instance) {
+        return;
+      }
+    } else if (params.continueFlowId) {
+      this._loading = "loading_flow";
+      try {
+        step = await params.flowConfig.fetchFlow(
+          this.hass,
+          params.continueFlowId
+        );
+      } catch (err: any) {
+        this.closeDialog();
+        let message = err.message || err.body || "Unknown error";
+        if (typeof message !== "string") {
+          message = JSON.stringify(message);
+        }
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: `${this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          )}: ${message}`,
+        });
+        return;
+      }
+    } else {
+      return;
+    }
+
+    // Happens if second showDialog called
+    if (curInstance !== this._instance) {
+      return;
+    }
+
+    this._processStep(step, this._flowHasProgressed);
+    this._loading = undefined;
+  }
+
+  public closeDialog() {
+    if (!this._params) {
+      return;
+    }
+    if (!this._open) {
+      this._dialogClosed();
+      return;
+    }
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    if (!this._params) {
+      return;
+    }
+    const flowFinished = Boolean(
+      this._step && ["create_entry", "abort"].includes(this._step.type)
+    );
+
+    // If we created this flow, delete it now.
+    if (this._step && !flowFinished && !this._params.continueFlowId) {
+      this._params.flowConfig.deleteFlow(this.hass, this._step.flow_id);
+    }
+
+    if (this._step && this._params.dialogClosedCallback) {
+      this._params.dialogClosedCallback({
+        flowFinished,
+        entryId:
+          "result" in this._step
+            ? (this._step.result as ConfigEntry)?.entry_id
+            : undefined,
+      });
+    }
+
+    this._loading = undefined;
+    this._step = undefined;
+    this._flowHasProgressed = false;
+    this._params = undefined;
+    this._handler = undefined;
+    if (this._unsubDataEntryFlowProgress) {
+      this._unsubDataEntryFlowProgress();
+      this._unsubDataEntryFlowProgress = undefined;
+    }
+    this._open = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _devices = memoizeOne(
+    (
+      showDevices: boolean,
+      devices: DeviceRegistryEntry[],
+      entry_id?: string,
+      carryOverDevices?: string[]
+    ) =>
+      showDevices && entry_id
+        ? devices.filter(
+            (device) =>
+              device.config_entries.includes(entry_id) ||
+              carryOverDevices?.includes(device.id)
+          )
+        : []
+  );
+
+  private _getDialogTitle(): string {
+    if (this._loading || !this._step || !this._params) {
+      return "";
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return this._params.flowConfig.renderShowFormStepHeader(
+          this.hass,
+          this._step
+        );
+      case "abort":
+        return this._params.flowConfig.renderAbortHeader
+          ? this._params.flowConfig.renderAbortHeader(this.hass, this._step)
+          : this.hass.localize(
+              `component.${this._params.domain ?? this._step.handler}.title`
+            );
+      case "progress":
+        return this._params.flowConfig.renderShowFormProgressHeader(
+          this.hass,
+          this._step
+        );
+      case "menu":
+        return this._params.flowConfig.renderMenuHeader(this.hass, this._step);
+      case "create_entry": {
+        const devicesLength = this._devices(
+          this._params.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          (this._step.result as ConfigEntry)?.entry_id,
+          this._params.carryOverDevices
+        ).length;
+        return this.hass.localize(
+          `ui.panel.config.integrations.config_flow.${
+            devicesLength ? "device_created" : "success"
+          }`
+        );
+      }
+      default:
+        return "";
+    }
+  }
+
+  private _getDialogSubtitle(): string | TemplateResult | undefined {
+    if (this._loading || !this._step || !this._params) {
+      return "";
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return this._params.flowConfig.renderShowFormStepSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "abort":
+        return this._params.flowConfig.renderAbortSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "progress":
+        return this._params.flowConfig.renderShowFormProgressSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "menu":
+        return this._params.flowConfig.renderMenuSubheader?.(
+          this.hass,
+          this._step
+        );
+      default:
+        return "";
+    }
+  }
+
+  protected render() {
+    if (!this._params) {
+      return nothing;
+    }
+
+    const showDocumentationLink =
+      ([
+        "form",
+        "menu",
+        "external",
+        "progress",
+        "data_entry_flow_progressed",
+      ].includes(this._step?.type as any) &&
+        this._params.manifest?.is_built_in) ||
+      !!this._params.manifest?.documentation;
+
+    const documentationLink = this._params.manifest?.is_built_in
+      ? documentationUrl(
+          this.hass,
+          `/integrations/${this._params.manifest.domain}`
+        )
+      : this._params.manifest?.documentation;
+
+    const dialogTitle = this._getDialogTitle();
+    const dialogSubtitle = this._getDialogSubtitle();
+
+    return html`
+      <ha-dialog
+        .open=${this._open}
+        .preventScrimClose=${this._preventScrimClose}
+        @after-show=${this._focusFormStep}
+        @closed=${this._dialogClosed}
+      >
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${this.hass.localize("ui.common.close")}
+          .path=${mdiClose}
+          data-dialog="close"
+        ></ha-icon-button>
+
+        <div
+          slot="headerTitle"
+          class="dialog-title${this._step?.type === "form" ? " form" : ""}"
+          title=${dialogTitle}
+        >
+          ${dialogTitle}
+        </div>
+
+        ${
+          dialogSubtitle
+            ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
+            : nothing
+        }
+        ${
+          showDocumentationLink &&
+          documentationLink &&
+          !this._loading &&
+          this._step
+            ? html`
+                <a
+                  slot="headerActionItems"
+                  class="help"
+                  href=${documentationLink}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.help")}
+                    .path=${mdiHelpCircleOutline}
+                  >
+                  </ha-icon-button
+                ></a>
+              `
+            : nothing
+        }
+        <div>
+          ${
+            this._loading || this._step === null
+              ? html`
+                  <step-flow-loading
+                    .flowConfig=${this._params.flowConfig}
+                    .hass=${this.hass}
+                    .loadingReason=${this._loading!}
+                    .handler=${this._handler}
+                    .step=${this._step}
+                  ></step-flow-loading>
+                `
+              : this._step === undefined
+                ? // When we are going to next step, we render 1 round of empty
+                  // to reset the element.
+                  nothing
+                : html`
+                    ${
+                      this._step.type === "form"
+                        ? html`
+                            <step-flow-form
+                              ${ref(this._formStepRef)}
+                              autofocus
+                              narrow
+                              .flowConfig=${this._params.flowConfig}
+                              .step=${this._step}
+                              .hass=${this.hass}
+                              .domain=${this._params.domain ?? this._step.handler}
+                              @flow-step-footer-state-changed=${
+                                this._handleFooterStateChanged
+                              }
+                            ></step-flow-form>
+                          `
+                        : this._step.type === "external"
+                          ? html`
+                              <step-flow-external
+                                .flowConfig=${this._params.flowConfig}
+                                .step=${this._step}
+                                .hass=${this.hass}
+                              ></step-flow-external>
+                            `
+                          : this._step.type === "abort"
+                            ? html`
+                                <step-flow-abort
+                                  ${ref(this._abortStepRef)}
+                                  .params=${this._params}
+                                  .step=${this._step}
+                                  .hass=${this.hass}
+                                  .handler=${this._step.handler}
+                                  .domain=${
+                                    this._params.domain ?? this._step.handler
+                                  }
+                                ></step-flow-abort>
+                              `
+                            : this._step.type === "progress"
+                              ? html`
+                                  <step-flow-progress
+                                    .flowConfig=${this._params.flowConfig}
+                                    .step=${this._step}
+                                    .hass=${this.hass}
+                                    .progress=${this._progress}
+                                  ></step-flow-progress>
+                                `
+                              : this._step.type === "menu"
+                                ? html`
+                                    <step-flow-menu
+                                      .flowConfig=${this._params.flowConfig}
+                                      .step=${this._step}
+                                      .hass=${this.hass}
+                                    ></step-flow-menu>
+                                  `
+                                : html`
+                                    <step-flow-create-entry
+                                      ${ref(this._createEntryStepRef)}
+                                      .flowConfig=${this._params.flowConfig}
+                                      .step=${this._step}
+                                      .hass=${this.hass}
+                                      .navigateToResult=${
+                                        this._params.navigateToResult ?? false
+                                      }
+                                      @flow-step-footer-state-changed=${
+                                        this._handleFooterStateChanged
+                                      }
+                                      .devices=${this._devices(
+                                        this._params.flowConfig.showDevices,
+                                        Object.values(this.hass.devices),
+                                        (this._step.result as ConfigEntry)
+                                          ?.entry_id,
+                                        this._params.carryOverDevices
+                                      )}
+                                    ></step-flow-create-entry>
+                                  `
+                    }
+                  `
+          }
+        </div>
+        ${this._renderFooter()}
+      </ha-dialog>
+    `;
+  }
+
+  private get _preventScrimClose(): boolean {
+    return (
+      this.isDirtyState ||
+      this._flowHasProgressed ||
+      this._loading !== undefined ||
+      this._formStepLoading ||
+      this._createEntryHasPendingUpdates ||
+      this._step?.type === "external" ||
+      this._step?.type === "progress"
+    );
+  }
+
+  private _renderFooter() {
+    if (!this._step || this._loading) {
+      return nothing;
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return html`
+          <ha-dialog-footer slot="footer">
+            <ha-button
+              slot="primaryAction"
+              .loading=${this._formStepLoading}
+              @click=${this._submitFormStep}
+            >
+              ${this._params!.flowConfig.renderShowFormStepSubmitButton(
+                this.hass,
+                this._step
+              )}
+            </ha-button>
+          </ha-dialog-footer>
+        `;
+      case "abort":
+        return this._step.reason === "missing_credentials"
+          ? nothing
+          : html`
+              <ha-dialog-footer slot="footer">
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this._closeAbortStep}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.close"
+                  )}
+                </ha-button>
+              </ha-dialog-footer>
+            `;
+      case "external": {
+        const externalUrl = sanitizeHttpUrl(this._step.url);
+        return html`
+          <ha-dialog-footer slot="footer">
+            ${
+              externalUrl
+                ? html`
+                    <ha-button
+                      slot="primaryAction"
+                      href=${externalUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_flow.external_step.open_site"
+                      )}
+                    </ha-button>
+                  `
+                : nothing
+            }
+          </ha-dialog-footer>
+        `;
+      }
+      case "create_entry": {
+        const devices = this._devices(
+          this._params!.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          (this._step.result as ConfigEntry)?.entry_id,
+          this._params!.carryOverDevices
+        );
+
+        return html`
+          <ha-dialog-footer slot="footer">
+            <ha-button
+              slot="primaryAction"
+              @click=${this._finishCreateEntryStep}
+            >
+              ${this.hass.localize(
+                `ui.panel.config.integrations.config_flow.${
+                  !devices.length ||
+                  this._createEntryHasPendingUpdates ||
+                  devices.some((device) => device.area_id)
+                    ? "finish"
+                    : "finish_skip"
+                }`
+              )}
+            </ha-button>
+          </ha-dialog-footer>
+        `;
+      }
+      default:
+        return nothing;
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("flow-update", (ev) => {
+      const { step, stepPromise } = ev.detail;
+      this._processStep(step || stepPromise);
+    });
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("_step") || !this._step) {
+      return;
+    }
+    if (["external", "progress"].includes(this._step.type)) {
+      // external and progress step will send update event from the backend, so we should subscribe to them
+      this._subscribeDataEntryFlowProgressed();
+    }
+  }
+
+  private async _processStep(
+    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>,
+    flowHasProgressed = true
+  ): Promise<void> {
+    if (step === undefined) {
+      this.closeDialog();
+      return;
+    }
+
+    this._flowHasProgressed ||= flowHasProgressed;
+    const delayedLoading = setTimeout(() => {
+      // only show loading for slow steps to avoid flickering
+      this._loading = "loading_step";
+    }, 250);
+    let _step: DataEntryFlowStep;
+    try {
+      _step = await step;
+    } catch (err: any) {
+      this.closeDialog();
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error"
+        ),
+        text: err?.body?.message,
+      });
+      return;
+    } finally {
+      clearTimeout(delayedLoading);
+      this._loading = undefined;
+    }
+    this._step = undefined;
+    this._formStepLoading = false;
+    this._createEntryHasPendingUpdates = false;
+    await this.updateComplete;
+    this._initDirtyTracking({ type: "deep" });
+    this._step = _step;
+    if (
+      (_step.type === "create_entry" || _step.type === "abort") &&
+      _step.next_flow
+    ) {
+      // skip device rename if there is a chained flow
+      this._step = undefined;
+      this._handler = undefined;
+      if (this._unsubDataEntryFlowProgress) {
+        this._unsubDataEntryFlowProgress();
+        this._unsubDataEntryFlowProgress = undefined;
+      }
+      if (_step.next_flow[0] === "config_flow") {
+        showConfigFlowDialog(this, {
+          continueFlowId: _step.next_flow[1],
+          carryOverDevices: this._devices(
+            this._params!.flowConfig.showDevices,
+            Object.values(this.hass.devices),
+            _step.type === "create_entry" ? _step.result?.entry_id : undefined,
+            this._params!.carryOverDevices
+          ).map((device) => device.id),
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
+      } else if (_step.next_flow[0] === "options_flow") {
+        showOptionsFlowDialog(this, _step.result!, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
+      } else if (_step.next_flow[0] === "config_subentries_flow") {
+        showSubConfigFlowDialog(this, _step.result!, "", {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
+      } else if (_step.next_flow[0] === "repair_flow") {
+        showRepairsFlowDialog(this, _step.result as unknown as RepairsIssue, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
+      } else {
+        this.closeDialog();
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error",
+            { error: `Unsupported next flow type: ${_step.next_flow[0]}` }
+          ),
+        });
+      }
+    }
+  }
+
+  private async _subscribeDataEntryFlowProgressed() {
+    if (this._unsubDataEntryFlowProgress) {
+      return;
+    }
+    this._progress = undefined;
+    const unsubs = [
+      subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
+        if (ev.data.flow_id !== this._step?.flow_id) {
+          return;
+        }
+        this._processStep(
+          this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
+        );
+        this._progress = undefined;
+      }),
+      subscribeDataEntryFlowProgress(this.hass.connection, (ev) => {
+        // ha-progress-ring has an issue with 0 so we round up
+        this._progress = Math.ceil(ev.data.progress * 100);
+      }),
+    ];
+    this._unsubDataEntryFlowProgress = async () => {
+      (await Promise.all(unsubs)).map((unsub) => unsub());
+    };
+  }
+
+  private _focusFormStep = async (): Promise<void> => {
+    if (this._step?.type !== "form" || !this._open) {
+      return;
+    }
+
+    await this.updateComplete;
+    this._formStepRef.value?.focus();
+  };
+
+  private _handleFooterStateChanged = (
+    ev: HASSDomEvent<HASSDomEvents["flow-step-footer-state-changed"]>
+  ) => {
+    if (ev.detail.loading !== undefined) {
+      this._formStepLoading = ev.detail.loading;
+    }
+    if (ev.detail.hasPendingUpdates !== undefined) {
+      this._createEntryHasPendingUpdates = ev.detail.hasPendingUpdates;
+    }
+  };
+
+  private _submitFormStep = () => {
+    this._formStepRef.value?.submit();
+  };
+
+  private _closeAbortStep = () => {
+    this._abortStepRef.value?.close();
+  };
+
+  private _finishCreateEntryStep = () => {
+    this._createEntryStepRef.value?.finish();
+  };
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleDialog,
+      css`
+        .dialog-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .dialog-title.form {
+          white-space: normal;
+        }
+        .help {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-data-entry-flow": DataEntryFlowDialog;
+  }
+}

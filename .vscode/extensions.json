@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "runem.lit-plugin",
+    "github.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "vitest.explorer",
+    "yeion7.styled-global-variables-autocomplete"
+  ]
+}

@@ -1,0 +1,28 @@
+name: Translations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+    paths:
+      - .github/workflows/translations.yaml
+      - src/translations/en.json
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    name: Upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Upload Translations
+        run: ./script/translations_upload_base
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}

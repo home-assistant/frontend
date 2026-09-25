@@ -1,0 +1,124 @@
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import type { AreasDisplayValue } from "../../../../components/ha-areas-display-editor";
+import { getEnergyPreferences } from "../../../../data/energy";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+import type { EmptyStateCardConfig } from "../../cards/types";
+import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import type { LovelaceStrategyDependency } from "../types";
+
+export interface OriginalStatesViewStrategyConfig {
+  type: "original-states";
+  areas?: AreasDisplayValue;
+  hide_entities_without_area?: boolean;
+  hide_energy?: boolean;
+}
+
+@customElement("original-states-view-strategy")
+export class OriginalStatesViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+  ];
+
+  static async generate(
+    config: OriginalStatesViewStrategyConfig,
+    hass: HomeAssistant
+  ): Promise<LovelaceViewConfig> {
+    if (hass.config.state === STATE_NOT_RUNNING) {
+      return {
+        cards: [{ type: "starting" }],
+      };
+    }
+
+    if (hass.config.recovery_mode) {
+      return {
+        cards: [{ type: "recovery-mode" }],
+      };
+    }
+
+    const [localize, energyPrefs] = await Promise.all([
+      hass.loadBackendTranslation("title"),
+      isComponentLoaded(hass.config, "energy")
+        ? // It raises if not configured, just swallow that.
+          getEnergyPreferences(hass).catch(() => undefined)
+        : undefined,
+    ]);
+
+    // User can override default view. If they didn't, we will add one
+    // that contains all entities.
+    const view = generateDefaultViewConfig(
+      hass,
+      localize,
+      energyPrefs,
+      config.areas,
+      config.hide_entities_without_area,
+      config.hide_energy
+    );
+
+    // Add map of geo locations if any exist
+    if (
+      Object.values(hass.states).some(
+        (state) => computeDomain(state.entity_id) === "geo_location"
+      )
+    ) {
+      if (view && view.cards) {
+        view.cards.push({
+          type: "map",
+          geo_location_sources: ["all"],
+        });
+      }
+    }
+
+    // User has no entities
+    if (view.cards!.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.original-states.empty_state_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.original-states.empty_state_content"
+            ),
+            ...(hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.original-states.empty_state_action"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/integrations/dashboard",
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
+    }
+
+    return view;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "original-states-view-strategy": OriginalStatesViewStrategy;
+  }
+}

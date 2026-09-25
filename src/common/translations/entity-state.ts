@@ -1,0 +1,102 @@
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
+import type { FrontendLocaleData } from "../../data/translation";
+import type { HomeAssistant, ValuePart } from "../../types";
+import {
+  computeEntityNameDisplay,
+  type EntityNameItem,
+  type EntityNameOptions,
+} from "../entity/compute_entity_name_display";
+import type { LocalizeFunc } from "./localize";
+
+export type FormatEntityStateFunc = (
+  stateObj: HassEntity,
+  state?: string
+) => string;
+export type FormatEntityStateToPartsFunc = (
+  stateObj: HassEntity,
+  state?: string
+) => ValuePart[];
+export type FormatEntityAttributeValueFunc = (
+  stateObj: HassEntity,
+  attribute: string,
+  value?: any
+) => string;
+export type FormatEntityAttributeValueToPartsFunc = (
+  stateObj: HassEntity,
+  attribute: string,
+  value?: any
+) => ValuePart[];
+export type FormatEntityAttributeNameFunc = (
+  stateObj: HassEntity,
+  attribute: string
+) => string;
+
+export type FormatEntityNameFunc = (
+  stateObj: HassEntity,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
+  options?: EntityNameOptions
+) => string;
+
+export const computeFormatFunctions = async (
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
+  config: HassConfig,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+): Promise<{
+  formatEntityState: FormatEntityStateFunc;
+  formatEntityStateToParts: FormatEntityStateToPartsFunc;
+  formatEntityAttributeValue: FormatEntityAttributeValueFunc;
+  formatEntityAttributeValueToParts: FormatEntityAttributeValueToPartsFunc;
+  formatEntityAttributeName: FormatEntityAttributeNameFunc;
+  formatEntityName: FormatEntityNameFunc;
+}> => {
+  const { computeStateDisplay, computeStateToParts } =
+    await import("../entity/compute_state_display");
+  const {
+    computeAttributeValueDisplay,
+    computeAttributeValueToParts,
+    computeAttributeNameDisplay,
+  } = await import("../entity/compute_attribute_display");
+
+  return {
+    formatEntityState: (stateObj, state) =>
+      computeStateDisplay(localize, stateObj, locale, config, entities, state),
+    formatEntityStateToParts: (stateObj, state) =>
+      computeStateToParts(localize, stateObj, locale, config, entities, state),
+    formatEntityAttributeValue: (stateObj, attribute, value) =>
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        locale,
+        config,
+        entities,
+        attribute,
+        value
+      ),
+    formatEntityAttributeValueToParts: (stateObj, attribute, value) =>
+      computeAttributeValueToParts(
+        localize,
+        stateObj,
+        locale,
+        config,
+        entities,
+        attribute,
+        value
+      ),
+    formatEntityAttributeName: (stateObj, attribute) =>
+      computeAttributeNameDisplay(localize, stateObj, entities, attribute),
+    formatEntityName: (stateObj, name, options) =>
+      computeEntityNameDisplay(
+        stateObj,
+        name,
+        entities,
+        devices,
+        areas,
+        floors,
+        options
+      ),
+  };
+};

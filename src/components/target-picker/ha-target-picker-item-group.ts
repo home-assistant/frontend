@@ -1,0 +1,136 @@
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import type { DeviceCompositeSplits } from "../../data/device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
+import type { TargetType, TargetTypeFloorless } from "../../data/target";
+import type { HomeAssistant } from "../../types";
+import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
+import "../ha-expansion-panel";
+import "../list/ha-list-base";
+import "./ha-target-picker-item-row";
+
+const TYPE_PLURAL = {
+  entity: "entities",
+  device: "devices",
+  area: "areas",
+  label: "labels",
+} as const satisfies Record<TargetTypeFloorless, string>;
+
+@customElement("ha-target-picker-item-group")
+export class HaTargetPickerItemGroup extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property() public type!: TargetTypeFloorless;
+
+  @property({ attribute: false }) public items!: Partial<
+    Record<TargetType, string[]>
+  >;
+
+  @property({ type: Boolean, reflect: true }) public collapsed = false;
+
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
+
+  /**
+   * Show only targets with entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+
+  /**
+   * Show only targets with entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
+  @property({ attribute: false })
+  public compositeSplits?: DeviceCompositeSplits;
+
+  protected render() {
+    let count = 0;
+    Object.values(this.items).forEach((items) => {
+      if (items) {
+        count += items.length;
+      }
+    });
+
+    return html`<ha-expansion-panel
+      .expanded=${!this.collapsed}
+      left-chevron
+      @expanded-changed=${this._expandedChanged}
+    >
+      <div slot="header" class="heading">
+        ${this.hass.localize(
+          `ui.components.target-picker.type.${TYPE_PLURAL[this.type]}`
+        )}
+        ${
+          this.collapsed ? html`<span class="count">(${count})</span>` : nothing
+        }
+      </div>
+      <ha-list-base>
+        ${Object.entries(this.items).map(([type, items]) =>
+          items
+            ? items.map(
+                (item) =>
+                  html`<ha-target-picker-item-row
+                    .hass=${this.hass}
+                    .type=${type as TargetTypeFloorless}
+                    .itemId=${item}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .activeFilter=${this.activeFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
+                    .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                    .compositeSplits=${this.compositeSplits}
+                  ></ha-target-picker-item-row>`
+              )
+            : nothing
+        )}
+      </ha-list-base>
+    </ha-expansion-panel>`;
+  }
+
+  private _expandedChanged(ev: CustomEvent) {
+    this.collapsed = !ev.detail.expanded;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      --expansion-panel-content-padding: 0;
+    }
+    ha-expansion-panel::part(summary) {
+      background-color: var(--ha-color-surface-low);
+      padding: var(--ha-space-1) var(--ha-space-2);
+      font-weight: var(--ha-font-weight-bold);
+      color: var(--secondary-text-color);
+      display: flex;
+      justify-content: space-between;
+      min-height: unset;
+    }
+    .count {
+      color: var(--secondary-text-color);
+      font-weight: var(--ha-font-weight-normal);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-target-picker-item-group": HaTargetPickerItemGroup;
+  }
+}

@@ -1,0 +1,130 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-button";
+import "../../../components/ha-state-icon";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import type { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
+
+const EMPTY_STATE_OBJ = {
+  state: "unavailable",
+  attributes: {
+    friendly_name: "",
+  },
+  entity_id: "___.empty",
+  context: {
+    id: "",
+    parent_id: null,
+    user_id: null,
+  },
+  last_changed: "",
+  last_updated: "",
+} satisfies HassEntity;
+
+@customElement("hui-button-row")
+export class HuiButtonRow extends LitElement implements LovelaceRow {
+  public hass?: HomeAssistant;
+
+  @state() private _config?: ButtonRowConfig;
+
+  public setConfig(config: ButtonRowConfig): void {
+    if (!config) {
+      throw new Error("Invalid configuration");
+    }
+
+    if (!config.name && !config.entity) {
+      throw new Error("No name and no entity specified");
+    }
+
+    this._config = {
+      tap_action: {
+        action:
+          config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))
+            ? "toggle"
+            : "more-info",
+      },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
+  }
+
+  protected render() {
+    if (!this._config) {
+      return nothing;
+    }
+
+    const stateObj =
+      this._config.entity && this.hass
+        ? this.hass.states[this._config.entity]
+        : undefined;
+
+    const name = this.hass!.formatEntityName(
+      stateObj || EMPTY_STATE_OBJ,
+      this._config.name
+    );
+
+    return html`
+      <ha-state-icon .icon=${this._config.icon} .stateObj=${stateObj}>
+      </ha-state-icon>
+      <div class="flex">
+        <div .title=${name}>${name}</div>
+        <ha-button
+          appearance="filled"
+          size="s"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config!.hold_action),
+            hasDoubleClick: hasAction(this._config!.double_tap_action),
+          })}
+          >${
+            this._config.action_name
+              ? this._config.action_name
+              : this.hass!.localize("ui.card.service.run")
+          }</ha-button
+        >
+      </div>
+    `;
+  }
+
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+    }
+    ha-state-icon {
+      padding: 8px;
+      color: var(--state-icon-color);
+    }
+    .flex {
+      flex: 1;
+      overflow: hidden;
+      margin-left: 16px;
+      margin-inline-start: 16px;
+      margin-inline-end: initial;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .flex div {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  `;
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-button-row": HuiButtonRow;
+  }
+}

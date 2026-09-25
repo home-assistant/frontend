@@ -1,0 +1,121 @@
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-svg-icon";
+import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
+
+@customElement("demo-components-ha-progress-button")
+export class DemoHaProgressButton extends LitElement {
+  protected render(): TemplateResult {
+    return html`
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot}>
+              <div class="card-content">
+                <ha-progress-button @click=${this._clickedSuccess}>
+                  Success
+                </ha-progress-button>
+                <ha-progress-button @click=${this._clickedFail}>
+                  Fail
+                </ha-progress-button>
+                <ha-progress-button size="s" @click=${this._clickedSuccess}>
+                  small
+                </ha-progress-button>
+                <ha-progress-button
+                  appearance="filled"
+                  @click=${this._clickedSuccess}
+                >
+                  filled
+                </ha-progress-button>
+                <ha-progress-button
+                  appearance="plain"
+                  @click=${this._clickedSuccess}
+                >
+                  plain
+                </ha-progress-button>
+                <ha-progress-button
+                  variant="warning"
+                  @click=${this._clickedSuccess}
+                >
+                  warning
+                </ha-progress-button>
+                <ha-progress-button
+                  variant="neutral"
+                  @click=${this._clickedSuccess}
+                  label="with icon"
+                  .iconPath=${mdiHomeAssistant}
+                >
+                  With Icon
+                </ha-progress-button>
+                <ha-progress-button progress @click=${this._clickedSuccess}>
+                  progress
+                </ha-progress-button>
+                <ha-progress-button disabled @click=${this._clickedSuccess}>
+                  disabled
+                </ha-progress-button>
+              </div>
+            </ha-card>
+          `
+        )}
+      </demo-theme-comparison>
+    `;
+  }
+
+  private _clickedSuccess(
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-progress-button"]>
+  ) {
+    console.log("Clicked success");
+    const button = ev.currentTarget;
+    button.progress = true;
+
+    setTimeout(() => {
+      button.actionSuccess();
+      button.progress = false;
+    }, 1000);
+  }
+
+  private _clickedFail(
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-progress-button"]>
+  ) {
+    const button = ev.currentTarget;
+    button.progress = true;
+
+    setTimeout(() => {
+      button.actionError();
+      button.progress = false;
+    }, 1000);
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .button {
+      padding: unset;
+    }
+    ha-card {
+      margin: 0;
+      width: 100%;
+    }
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-6);
+    }
+    .card-content div {
+      display: flex;
+      gap: var(--ha-space-2);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-components-ha-progress-button": DemoHaProgressButton;
+  }
+}

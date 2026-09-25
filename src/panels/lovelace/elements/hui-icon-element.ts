@@ -1,0 +1,119 @@
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import "../../../components/ha-icon";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
+import { computeTooltip } from "../common/compute-tooltip";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import type { LovelacePictureElementEditor } from "../types";
+import type {
+  IconElementConfig,
+  LovelaceElement,
+  LovelaceElementHitInfo,
+} from "./types";
+
+@customElement("hui-icon-element")
+export class HuiIconElement extends LitElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import("../editor/config-elements/elements/hui-icon-element-editor");
+    return document.createElement("hui-icon-element-editor");
+  }
+
+  public static getStubConfig(): IconElementConfig {
+    return { type: "icon", icon: "mdi:alert-circle" };
+  }
+
+  public hass?: HomeAssistant;
+
+  // Pointer gestures are delegated to the picture-elements card's routing;
+  // this element keeps keyboard activation (see LovelaceElement).
+  public delegatedActions = false;
+
+  @state() private _config?: IconElementConfig;
+
+  public constructor() {
+    super();
+    // Listen on the host so both the own (keyboard) gesture path and an
+    // action delegated by the picture-elements card land here.
+    this.addEventListener("action", (ev) =>
+      this._handleAction(ev as ActionHandlerEvent)
+    );
+  }
+
+  public setConfig(config: IconElementConfig): void {
+    if (!config.icon) {
+      throw Error("Icon required");
+    }
+
+    this._config = {
+      tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
+  }
+
+  public getHitInfo(): LovelaceElementHitInfo | null {
+    if (!this._config) {
+      return null;
+    }
+    const options = {
+      hasTap: hasAction(this._config.tap_action),
+      hasHold: hasAction(this._config.hold_action),
+      hasDoubleClick: hasAction(this._config.double_tap_action),
+    };
+    if (!options.hasTap && !options.hasHold && !options.hasDoubleClick) {
+      return null;
+    }
+    return { rect: this.getBoundingClientRect(), options };
+  }
+
+  protected render() {
+    if (!this._config || !this.hass) {
+      return nothing;
+    }
+
+    return html`
+      <ha-icon
+        .icon=${this._config.icon}
+        .title=${computeTooltip(this.hass, this._config)}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+          keyboardOnly: this.delegatedActions || undefined,
+        })}
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
+      ></ha-icon>
+    `;
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    ha-icon {
+      /* Size the box to the glyph (not the taller inline line box that leaves
+         the icon edges unclickable) while staying inline-level. */
+      display: inline-flex;
+    }
+    ha-icon:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: var(--ha-border-radius-pill);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-icon-element": HuiIconElement;
+  }
+}

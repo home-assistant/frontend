@@ -1,0 +1,50 @@
+name: Design preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+    branches:
+      - dev
+
+permissions:
+  contents: read
+
+env:
+  NODE_OPTIONS: --max_old_space_size=6144
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    # Skip running on forks since it won't have access to secrets
+    # Skip running PRs without 'needs design preview' label
+    if: github.repository == 'home-assistant/frontend' && contains(github.event.pull_request.labels.*.name, 'needs design preview')
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
+      - name: Build Gallery
+        uses: ./.github/actions/build
+        with:
+          target: build-gallery
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy preview to Netlify
+        id: deploy
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: gallery/dist
+          alias: deploy-preview-${{ github.event.number }}
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
+
+      - name: Generate summary
+        run: echo "${{ steps.deploy.outputs.netlify_url }}" >> "$GITHUB_STEP_SUMMARY"

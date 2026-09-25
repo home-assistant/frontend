@@ -1,0 +1,22 @@
+diff --git a/mwc-formfield-base.js b/mwc-formfield-base.js
+index 7b763326d7d51835ad52646bfbc80fe21989abd3..f2baa8224e6d03df1fdb0b9fd03f5c6d77fc8747 100644
+--- a/mwc-formfield-base.js
++++ b/mwc-formfield-base.js
+@@ -9,7 +9,7 @@ import { BaseElement } from '@material/mwc-base/base-element.js';
+ import { FormElement } from '@material/mwc-base/form-element.js';
+ import { observer } from '@material/mwc-base/observer.js';
+ import { html } from 'lit';
+-import { property, query, queryAssignedNodes } from 'lit/decorators.js';
++import { property, query, queryAssignedElements } from 'lit/decorators.js';
+ import { classMap } from 'lit/directives/class-map.js';
+ export class FormfieldBase extends BaseElement {
+     constructor() {
+@@ -96,7 +96,7 @@ __decorate([
+     query('.mdc-form-field')
+ ], FormfieldBase.prototype, "mdcRoot", void 0);
+ __decorate([
+-    queryAssignedNodes('', true, '*')
++    queryAssignedElements({ slot: "", flatten: true, selector: "*" })
+ ], FormfieldBase.prototype, "slottedInputs", void 0);
+ __decorate([
+     query('label')

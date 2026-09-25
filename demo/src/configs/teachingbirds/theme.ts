@@ -1,0 +1,18 @@
+export const demoThemeTeachingbirds = () => ({
+  "paper-grey-50": "var(--primary-text-color)",
+  "divider-color": "rgba(255, 255, 255, 0.12)",
+  "primary-color": "#389638",
+  "light-primary-color": "#6f956f",
+  "label-badge-red": "var(--primary-color)",
+  "switch-unchecked-track-color": "var(--primary-text-color)",
+  "card-background-color": "#4e4e4e",
+  "label-badge-text-color": "var(--text-primary-color)",
+  "primary-background-color": "#303030",
+  "sidebar-icon-color": "#d3d3d3",
+  "secondary-background-color": "#2b2b2b",
+  "switch-checked-color": "var(--primary-color)",
+  "secondary-text-color": "#389638",
+  "disabled-text-color": "#545454",
+  "paper-grey-200": "#191919",
+  "label-badge-background-color": "var(--secondary-background-color)",
+});

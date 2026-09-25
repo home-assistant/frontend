@@ -1,0 +1,49 @@
+{
+  "name": "Home Assistant Frontend",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "appPort": "8124:8123",
+  "postCreateCommand": "./.devcontainer/post_create.sh",
+  "postStartCommand": "script/bootstrap",
+  "containerEnv": {
+    "DEV_CONTAINER": "1",
+    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
+  },
+  "remoteEnv": {
+    "NODE_OPTIONS": "--max_old_space_size=8192"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "runem.lit-plugin",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "yeion7.styled-global-variables-autocomplete"
+      ],
+      "settings": {
+        "files.eol": "\n",
+        "editor.tabSize": 2,
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.renderWhitespace": "boundary",
+        "editor.rulers": [80],
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.shell.linux": "/usr/bin/zsh",
+        "gitlens.showWelcomeOnInstall": false,
+        "gitlens.showWhatsNewAfterUpgrades": false,
+        "workbench.startupEditor": "none"
+      }
+    }
+  }
+}

@@ -1,0 +1,179 @@
+import { consume, type ContextType } from "@lit/context";
+import { mdiFlash, mdiFlashOff } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { STATES_OFF } from "../../common/const";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { apiContext } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
+import { forwardHaptic } from "../../data/haptics";
+import "../ha-formfield";
+import "../ha-icon-button";
+import "../ha-switch";
+import { getToggleAction } from "../../common/entity/get_toggle_action";
+
+const isOn = (stateObj?: HassEntity) =>
+  stateObj !== undefined &&
+  !STATES_OFF.includes(stateObj.state) &&
+  stateObj.state !== UNAVAILABLE &&
+  stateObj.state !== UNKNOWN;
+
+/**
+ * @element ha-entity-toggle
+ *
+ * @cssprop --ha-entity-toggle-switch-width - Width of the switch track. Defaults to `38px`.
+ * @cssprop --ha-entity-toggle-switch-size - Height of the switch track. Defaults to `20px`.
+ * @cssprop --ha-entity-toggle-switch-thumb-size - Size of the switch thumb. Defaults to `14px`.
+ */
+
+@customElement("ha-entity-toggle")
+export class HaEntityToggle extends LitElement {
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
+
+  @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @property() public label?: string;
+
+  @state() private _isOn = false;
+
+  protected render(): TemplateResult {
+    if (!this.stateObj) {
+      return html`<ha-switch disabled></ha-switch> `;
+    }
+
+    if (
+      this.stateObj.attributes.assumed_state ||
+      this.stateObj.state === UNKNOWN
+    ) {
+      return html`
+        <ha-icon-button
+          .label=${`Turn ${computeStateName(this.stateObj)} off`}
+          .path=${mdiFlashOff}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          @click=${this._turnOff}
+          class=${
+            !this._isOn && this.stateObj.state !== UNKNOWN ? "state-active" : ""
+          }
+        ></ha-icon-button>
+        <ha-icon-button
+          .label=${`Turn ${computeStateName(this.stateObj)} on`}
+          .path=${mdiFlash}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          @click=${this._turnOn}
+          class=${this._isOn ? "state-active" : ""}
+        ></ha-icon-button>
+      `;
+    }
+
+    const switchTemplate = html`<ha-switch
+      aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
+        this._isOn ? "off" : "on"
+      }`}
+      .checked=${this._isOn}
+      .disabled=${this.stateObj.state === UNAVAILABLE}
+      @change=${this._toggleChanged}
+    ></ha-switch>`;
+
+    if (!this.label) {
+      return switchTemplate;
+    }
+
+    return html`
+      <ha-formfield .label=${this.label}>${switchTemplate}</ha-formfield>
+    `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("click", (ev) => ev.stopPropagation());
+  }
+
+  public willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("stateObj")) {
+      this._isOn = isOn(this.stateObj);
+    }
+  }
+
+  private _toggleChanged(ev) {
+    const newVal = ev.target.checked;
+
+    if (newVal !== this._isOn) {
+      this._callService(newVal);
+    }
+  }
+
+  private _turnOn() {
+    this._callService(true);
+  }
+
+  private _turnOff() {
+    this._callService(false);
+  }
+
+  // We will force a re-render after a successful call to re-sync the toggle
+  // with the state. It will be out of sync if our service call did not
+  // result in the entity to be turned on. Since the state is not changing,
+  // the resync is not called automatic.
+  private async _callService(turnOn): Promise<void> {
+    if (!this._api || !this.stateObj) {
+      return;
+    }
+    forwardHaptic(this, "light");
+    const stateDomain = computeStateDomain(this.stateObj);
+
+    const serviceDomain =
+      stateDomain === "group" ? "homeassistant" : stateDomain;
+    const service = getToggleAction(stateDomain, turnOn);
+
+    const currentState = this.stateObj;
+
+    // Optimistic update.
+    this._isOn = turnOn;
+
+    try {
+      await this._api.callService(serviceDomain, service, {
+        entity_id: this.stateObj.entity_id,
+      });
+    } finally {
+      setTimeout(async () => {
+        // If after 2 seconds we have not received a state update
+        // reset the switch to it's original state.
+        if (this.stateObj === currentState) {
+          this._isOn = isOn(this.stateObj);
+        }
+      }, 2000);
+    }
+  }
+
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+    ha-switch {
+      --ha-switch-width: var(--ha-entity-toggle-switch-width, 38px);
+      --ha-switch-size: var(--ha-entity-toggle-switch-size, 20px);
+      --ha-switch-thumb-size: var(--ha-entity-toggle-switch-thumb-size, 14px);
+    }
+    ha-icon-button {
+      --ha-icon-button-size: 40px;
+      color: var(--ha-icon-button-inactive-color, var(--primary-text-color));
+      transition: color 0.5s;
+    }
+    ha-icon-button.state-active {
+      color: var(--ha-icon-button-active-color, var(--primary-color));
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-entity-toggle": HaEntityToggle;
+  }
+}

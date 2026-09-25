@@ -1,0 +1,94 @@
+import type { Auth } from "home-assistant-js-websocket";
+import { fetchWithAuth } from "./fetch-with-auth";
+
+export const handleFetchPromise = async <T>(
+  fetchPromise: Promise<Response>
+): Promise<T> => {
+  let response;
+
+  try {
+    response = await fetchPromise;
+  } catch (_err: any) {
+    throw {
+      error: "Request error",
+      status_code: undefined,
+      body: undefined,
+    };
+  }
+
+  let body: any;
+
+  const contentType = response.headers.get("content-type");
+
+  if (contentType && contentType.includes("application/json")) {
+    try {
+      body = await response.json();
+    } catch (err: any) {
+      throw {
+        error: "Unable to parse JSON response",
+        status_code: err.status,
+        body: null,
+      };
+    }
+  } else {
+    body = await response.text();
+  }
+
+  if (!response.ok) {
+    throw {
+      error: `Response error: ${response.status}`,
+      status_code: response.status,
+      body,
+    };
+  }
+
+  return body as unknown as T;
+};
+
+export default async function hassCallApi<T>(
+  auth: Auth,
+  method: string,
+  path: string,
+  parameters?: Record<string, unknown>,
+  headers?: Record<string, string>
+) {
+  const url = `${auth.data.hassUrl}/api/${path}`;
+
+  const init: RequestInit = {
+    method,
+    headers: headers || {},
+  };
+
+  if (parameters) {
+    // @ts-ignore
+    init.headers["Content-Type"] = "application/json;charset=UTF-8";
+    init.body = JSON.stringify(parameters);
+  }
+
+  return handleFetchPromise<T>(fetchWithAuth(auth, url, init));
+}
+
+export async function hassCallApiRaw(
+  auth: Auth,
+  method: string,
+  path: string,
+  parameters?: Record<string, unknown>,
+  headers?: Record<string, string>,
+  signal?: AbortSignal
+) {
+  const url = `${auth.data.hassUrl}/api/${path}`;
+
+  const init: RequestInit = {
+    method,
+    headers: headers || {},
+    signal: signal,
+  };
+
+  if (parameters) {
+    // @ts-ignore
+    init.headers["Content-Type"] = "application/json;charset=UTF-8";
+    init.body = JSON.stringify(parameters);
+  }
+
+  return fetchWithAuth(auth, url, init);
+}

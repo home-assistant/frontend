@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant</title>
+    <%= renderTemplate("_header.html.template") %>
+    <%= renderTemplate("_style_base.html.template") %>
+    <style>
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
+      }
+      body {
+        height: auto;
+        padding: 32px 0;
+      }
+
+      .content {
+        max-width: min(560px, calc(100vw - var(--safe-area-inset-right, 0px) - var(--safe-area-inset-left, 0px)));
+        margin: 0 auto;
+        padding: 0 16px;
+        box-sizing: content-box;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 32px;
+        margin-left: 32px;
+        padding-top: var(--safe-area-inset-top);
+      }
+
+      .header img {
+        height: 56px;
+        width: 56px;
+      }
+    </style>
+  </head>
+  <body id="particles">
+    <div class="content">
+      <div class="header">
+        <img src="/static/icons/favicon-192x192.png" alt="Home Assistant" />
+      </div>
+      <ha-onboarding></ha-onboarding>
+    </div>
+    <%= renderTemplate("_js_base.html.template") %>
+    <%= renderTemplate("_preload_roboto.html.template") %>
+    <%= renderTemplate("_script_loader.html.template") %>
+    <script crossorigin="use-credentials">
+      if (window.latestJS) {
+        window.stepsPromise = fetch("<%= hassUrl %>/api/onboarding", {
+          credentials: "same-origin",
+        });
+      }
+    </script>
+  </body>
+</html>

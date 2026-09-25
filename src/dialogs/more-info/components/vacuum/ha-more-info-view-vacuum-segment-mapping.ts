@@ -1,0 +1,168 @@
+import { consume } from "@lit/context";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
+import "../../../../components/ha-spinner";
+import "../../../../components/ha-vacuum-segment-area-mapper";
+import type { HaVacuumSegmentAreaMapper } from "../../../../components/ha-vacuum-segment-area-mapper";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../../data/context/dirty-state";
+import type {
+  ExtEntityRegistryEntry,
+  VacuumEntityOptions,
+} from "../../../../data/entity/entity_registry";
+import {
+  getExtendedEntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../../data/entity/entity_registry";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+
+@customElement("ha-more-info-view-vacuum-segment-mapping")
+export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public params!: { entityId: string };
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<
+    Record<string, string[]>,
+    "vacuum-segment-mapping"
+  >;
+
+  @state() private _areaMapping?: Record<string, string[]>;
+
+  @state() private _submitting = false;
+
+  @state() private _error?: string;
+
+  private _entry?: ExtEntityRegistryEntry;
+
+  protected firstUpdated() {
+    this._loadCurrentMapping();
+  }
+
+  private async _loadCurrentMapping() {
+    if (!this.params.entityId) return;
+
+    this._entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      this.params.entityId
+    );
+
+    const mapping: Record<string, string[]> =
+      this._entry?.options?.vacuum?.area_mapping || {};
+    this._areaMapping = mapping;
+    this._dirtyState?.setState(mapping, "vacuum-segment-mapping");
+  }
+
+  private _valueChanged(ev: ValueChangedEvent<Record<string, string[]>>) {
+    this._areaMapping = ev.detail.value;
+    this._dirtyState?.setState(ev.detail.value, "vacuum-segment-mapping");
+  }
+
+  private async _save() {
+    if (!this.params.entityId || !this._areaMapping) return;
+    this._error = undefined;
+    this._submitting = true;
+
+    // Get current segments from the mapper component
+    const mapper = this.shadowRoot!.querySelector(
+      "ha-vacuum-segment-area-mapper"
+    ) as HaVacuumSegmentAreaMapper;
+
+    const options: VacuumEntityOptions = {
+      ...(this._entry?.options?.vacuum ?? {}),
+      area_mapping: this._areaMapping,
+      last_seen_segments: mapper.lastSeenSegments,
+    };
+
+    try {
+      await updateEntityRegistryEntry(this.hass, this.params.entityId, {
+        options_domain: "vacuum",
+        options: options,
+      });
+      this._dirtyState?.markClean();
+      fireEvent(this, "close-child-view");
+    } catch (err: any) {
+      this._error = err.message;
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  protected render() {
+    if (!this._areaMapping) {
+      return html`<ha-spinner active></ha-spinner>`;
+    }
+
+    return html`
+      <div class="content">
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
+
+        <ha-vacuum-segment-area-mapper
+          .hass=${this.hass}
+          .entityId=${this.params.entityId}
+          .value=${this._areaMapping}
+          @value-changed=${this._valueChanged}
+        ></ha-vacuum-segment-area-mapper>
+
+        <div class="footer">
+          <ha-button @click=${this._save} .disabled=${this._submitting}>
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </div>
+      </div>
+    `;
+  }
+
+  static styles: CSSResultGroup = css`
+    :host {
+      display: block;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    ha-spinner {
+      margin: var(--ha-space-8);
+      display: flex;
+      justify-self: center;
+    }
+
+    ha-vacuum-segment-area-mapper {
+      flex: 1;
+      padding-inline-start: var(--ha-space-2);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: var(--ha-space-4);
+      border-top: 1px solid var(--divider-color);
+      background: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-more-info-view-vacuum-segment-mapping": HaMoreInfoViewVacuumSegmentMapping;
+  }
+}

@@ -1,0 +1,243 @@
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../../../components/buttons/ha-call-service-button";
+import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { Cluster, Command, ZHADevice } from "../../../../../data/zha";
+import { fetchCommandsForCluster } from "../../../../../data/zha";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
+import { formatAsPaddedHex } from "./functions";
+import type { IssueCommandServiceData } from "./types";
+
+@customElement("zha-cluster-commands")
+export class ZHAClusterCommands extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ attribute: false }) public device?: ZHADevice;
+
+  @property({ attribute: false })
+  public selectedCluster?: Cluster;
+
+  @state() private _commands: Command[] | undefined;
+
+  @state() private _selectedCommandId?: number;
+
+  @state() private _manufacturerCodeOverride?: number;
+
+  @state()
+  private _issueClusterCommandServiceData?: IssueCommandServiceData;
+
+  @state()
+  private _canIssueCommand = false;
+
+  @state()
+  private _commandData: Record<string, any> = {};
+
+  protected updated(changedProperties: PropertyValues<this>): void {
+    if (changedProperties.has("selectedCluster")) {
+      this._commands = undefined;
+      this._selectedCommandId = undefined;
+      this._fetchCommandsForCluster();
+    }
+    super.updated(changedProperties);
+  }
+
+  protected render() {
+    if (!this.device || !this.selectedCluster || !this._commands) {
+      return nothing;
+    }
+    return html`
+      <div class="content">
+        <div class="command-picker">
+          <ha-select
+            .label=${this.hass!.localize(
+              "ui.panel.config.zha.cluster_commands.commands_of_cluster"
+            )}
+            class="menu"
+            .value=${String(this._selectedCommandId)}
+            @selected=${this._selectedCommandChanged}
+            .options=${this._commands.map((entry) => ({
+              value: String(entry.id),
+              label: `${entry.name} (id: ${formatAsPaddedHex(entry.id)})`,
+            }))}
+          >
+          </ha-select>
+        </div>
+        ${
+          this._selectedCommandId !== undefined
+            ? html`
+                <div class="input-text">
+                  <ha-input
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.zha.common.manufacturer_code_override"
+                    )}
+                    type="number"
+                    .value=${this._manufacturerCodeOverride}
+                    @change=${this._onManufacturerCodeOverrideChanged}
+                    .placeholder=${this.hass!.localize(
+                      "ui.panel.config.zha.common.value"
+                    )}
+                  ></ha-input>
+                </div>
+                <div class="command-form">
+                  <ha-form
+                    .hass=${this.hass}
+                    .schema=${
+                      this._commands.find(
+                        (command) => command.id === this._selectedCommandId
+                      )!.schema
+                    }
+                    @value-changed=${this._commandDataChanged}
+                    .data=${this._commandData}
+                  ></ha-form>
+                </div>
+                <div class="card-actions">
+                  <ha-call-service-button
+                    domain="zha"
+                    service="issue_zigbee_cluster_command"
+                    .data=${this._issueClusterCommandServiceData}
+                    .disabled=${!this._canIssueCommand}
+                    appearance="accent"
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.cluster_commands.issue_zigbee_command"
+                    )}
+                  </ha-call-service-button>
+                </div>
+              `
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  private async _fetchCommandsForCluster(): Promise<void> {
+    if (this.device && this.selectedCluster && this.hass) {
+      this._commands = await fetchCommandsForCluster(
+        this.hass,
+        this.device!.ieee,
+        this.selectedCluster!.endpoint_id,
+        this.selectedCluster!.id,
+        this.selectedCluster!.type
+      );
+      this._commands.sort((a, b) => a.name.localeCompare(b.name));
+      if (this._commands.length > 0) {
+        this._selectedCommandId = this._commands[0].id;
+      }
+    }
+  }
+
+  private _computeIssueClusterCommandServiceData():
+    IssueCommandServiceData | undefined {
+    if (!this.device || !this.selectedCluster || !this._commands) {
+      return undefined;
+    }
+    const selectedCommand = this._commands.find(
+      (command) => command.id === this._selectedCommandId
+    );
+
+    this._canIssueCommand =
+      this._commandData &&
+      selectedCommand!.schema.every(
+        (field) =>
+          !field.required ||
+          !["", undefined].includes(this._commandData![field.name])
+      );
+
+    return {
+      ieee: this.device!.ieee,
+      endpoint_id: this.selectedCluster!.endpoint_id,
+      cluster_id: this.selectedCluster!.id,
+      cluster_type: this.selectedCluster!.type,
+      command: this._selectedCommandId!,
+      command_type: selectedCommand!.type,
+      params: this._commandData,
+    };
+  }
+
+  private async _commandDataChanged(ev: CustomEvent): Promise<void> {
+    this._commandData = ev.detail.value;
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
+  }
+
+  private _onManufacturerCodeOverrideChanged(event: InputEvent): void {
+    this._manufacturerCodeOverride = Number(
+      (event.target as HTMLInputElement).value
+    );
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
+  }
+
+  private _selectedCommandChanged(event: HaSelectSelectEvent): void {
+    this._selectedCommandId = Number(event.detail.value);
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+        }
+
+        .content {
+          padding-top: var(--ha-space-4);
+        }
+
+        ha-select {
+          margin-top: 16px;
+        }
+        .menu,
+        ha-input {
+          width: 100%;
+        }
+
+        .command-picker {
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
+          padding-bottom: 10px;
+        }
+
+        .input-text {
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
+          padding-bottom: 10px;
+        }
+
+        .command-form {
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
+          padding-bottom: 10px;
+        }
+
+        .card-actions {
+          display: flex;
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2);
+          justify-content: flex-end;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-cluster-commands": ZHAClusterCommands;
+  }
+}

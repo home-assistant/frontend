@@ -1,0 +1,67 @@
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import "../../../../src/components/ha-card";
+import "../../../../src/dialogs/more-info/more-info-content";
+import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import "../../components/demo-more-infos";
+
+const ENTITIES = [
+  {
+    entity_id: "timer.timer",
+    state: "idle",
+    attributes: {
+      friendly_name: "Timer",
+      duration: "0:05:00",
+    },
+  },
+  {
+    entity_id: "timer.active_timer",
+    state: "active",
+    attributes: {
+      friendly_name: "Active timer",
+      duration: "0:10:00",
+      remaining: "0:10:00",
+      finishes_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    },
+  },
+  {
+    entity_id: "timer.paused_timer",
+    state: "paused",
+    attributes: {
+      friendly_name: "Paused timer",
+      duration: "0:10:00",
+      remaining: "0:03:21",
+    },
+  },
+];
+
+@customElement("demo-more-info-timer")
+class DemoMoreInfoTimer extends LitElement {
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
+
+  @query("demo-more-infos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`
+      <demo-more-infos
+        .hass=${this.hass}
+        .entities=${ENTITIES.map((ent) => ent.entity_id)}
+      ></demo-more-infos>
+    `;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
+    hass.updateTranslations(null, "en");
+    hass.addEntities(ENTITIES);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-more-info-timer": DemoMoreInfoTimer;
+  }
+}

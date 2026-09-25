@@ -1,0 +1,118 @@
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-button";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-settings-row";
+import "../../../components/input/ha-input";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
+import {
+  changeHostOptions,
+  fetchHassioHostInfo,
+} from "../../../data/hassio/host";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../types";
+
+@customElement("supervisor-hostname")
+export class HassioHostname extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @state() private _processing = false;
+
+  @state() private _hostname?: string;
+
+  protected firstUpdated() {
+    this._fetchHostInfo();
+  }
+
+  private async _fetchHostInfo() {
+    const hostInfo = await fetchHassioHostInfo(this.hass);
+    this._hostname = hostInfo.hostname ?? undefined;
+  }
+
+  protected render() {
+    if (!this._hostname) {
+      return nothing;
+    }
+
+    return html`
+      <ha-card
+        class="no-padding"
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.config.network.supervisor.hostname.title"
+        )}
+      >
+        <div class="card-content">
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.network.supervisor.hostname.description"
+            )}
+          </p>
+          <ha-input
+            .disabled=${this._processing}
+            .value=${this._hostname}
+            @change=${this._handleChange}
+            placeholder="homeassistant"
+          >
+          </ha-input>
+        </div>
+        <div class="card-actions">
+          <ha-button
+            .loading=${this._processing}
+            @click=${this._save}
+            .disabled=${this._processing}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _handleChange(ev: InputEvent) {
+    this._hostname = (ev.target as HTMLInputElement).value;
+  }
+
+  private async _save() {
+    this._processing = true;
+    try {
+      await changeHostOptions(this.hass, { hostname: this._hostname });
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.network.supervisor.hostname.failed_to_set_hostname"
+        ),
+        text: extractApiErrorMessage(err),
+      });
+    } finally {
+      this._processing = false;
+    }
+  }
+
+  static styles: CSSResultGroup = css`
+    ha-input {
+      width: 100%;
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-content > p {
+      padding-bottom: 1em;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "supervisor-hostname": HassioHostname;
+  }
+}

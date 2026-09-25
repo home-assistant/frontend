@@ -1,0 +1,9 @@
+# These redirects are handled by Netlify
+#
+
+# Some custom cards are not prefixing the instance URL when fetching data
+# and can end up fetching the data from the Cast domain instead of HA.
+# This will make sure that some common ones are replaced with a placeholder.
+/api/camera_proxy/* /images/google-nest-hub.png
+/api/camera_proxy_stream/* /images/google-nest-hub.png
+/api/media_player_proxy/* /images/google-nest-hub.png

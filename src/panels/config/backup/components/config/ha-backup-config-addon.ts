@@ -1,0 +1,142 @@
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
+import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
+
+const MIN_RETENTION_VALUE = 1;
+
+@customElement("ha-backup-config-addon")
+class HaBackupConfigAddon extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false })
+  public supervisorUpdateConfig?: SupervisorUpdateConfig;
+
+  protected render() {
+    return html`
+      <ha-list-base>
+        <ha-list-item-base>
+          <span slot="headline">
+            ${this.hass.localize(
+              `ui.panel.config.backup.schedule.update_preference.label`
+            )}
+          </span>
+          <span slot="supporting-text">
+            ${this.hass.localize(
+              `ui.panel.config.backup.schedule.update_preference.supporting_text`
+            )}
+          </span>
+          <ha-select
+            slot="end"
+            @selected=${this._updatePreferenceChanged}
+            .value=${
+              this.supervisorUpdateConfig?.add_on_backup_before_update?.toString() ||
+              "false"
+            }
+            .options=${[
+              {
+                value: "false",
+                label: this.hass.localize(
+                  "ui.panel.config.backup.schedule.update_preference.skip_backups"
+                ),
+              },
+              {
+                value: "true",
+                label: this.hass.localize(
+                  "ui.panel.config.backup.schedule.update_preference.backup_before_update"
+                ),
+              },
+            ]}
+          ></ha-select>
+        </ha-list-item-base>
+        <ha-list-item-base>
+          <span slot="headline">
+            ${this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
+          </span>
+          <span slot="supporting-text">
+            ${this.hass.localize(
+              `ui.panel.config.backup.settings.app_update_backup.retention_description`
+            )}
+          </span>
+          <ha-input
+            slot="end"
+            @change=${this._backupRetentionChanged}
+            .value=${
+              this.supervisorUpdateConfig?.add_on_backup_retain_copies?.toString() ||
+              "1"
+            }
+            type="number"
+            min=${MIN_RETENTION_VALUE.toString()}
+            step="1"
+          >
+            <span slot="end">
+              ${this.hass.localize(
+                "ui.panel.config.backup.schedule.retention_units.copies"
+              )}
+            </span>
+          </ha-input>
+        </ha-list-item-base>
+      </ha-list-base>
+    `;
+  }
+
+  private _updatePreferenceChanged(ev: ValueChangedEvent<string | undefined>) {
+    ev.stopPropagation();
+    const target = ev.detail.value;
+    const add_on_backup_before_update = target === "true";
+    fireEvent(this, "update-config-changed", {
+      value: {
+        add_on_backup_before_update,
+      },
+    });
+  }
+
+  private _backupRetentionChanged(ev) {
+    const target = ev.currentTarget as HaInput;
+    const add_on_backup_retain_copies = Number(target.value);
+    if (add_on_backup_retain_copies >= MIN_RETENTION_VALUE) {
+      fireEvent(this, "update-config-changed", {
+        value: {
+          add_on_backup_retain_copies,
+        },
+      });
+    }
+  }
+
+  static styles = css`
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
+    }
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
+    }
+    ha-select {
+      min-width: 210px;
+    }
+    ha-input {
+      width: 210px;
+    }
+    @media all and (max-width: 450px) {
+      ha-select {
+        min-width: 160px;
+        width: 160px;
+      }
+      ha-input {
+        width: 160px;
+      }
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-backup-config-addon": HaBackupConfigAddon;
+  }
+}

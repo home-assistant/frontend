@@ -1,0 +1,307 @@
+import { consume, type ContextType } from "@lit/context";
+import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import { fireEvent } from "../../common/dom/fire_event";
+import { uid } from "../../common/util/uid";
+import { internationalizationContext } from "../../data/context";
+import { haStyle } from "../../resources/styles";
+import "../ha-button";
+import "../ha-icon-button";
+import "../ha-input-helper-text";
+import "../ha-sortable";
+import "./ha-input";
+import type { HaInput, InputType } from "./ha-input";
+
+/**
+ * Home Assistant multi-value input component
+ *
+ * @element ha-input-multi
+ * @extends {LitElement}
+ *
+ * @summary
+ * A dynamic list of text inputs that allows adding, removing, and optionally reordering values.
+ * Useful for managing arrays of strings such as URLs, tags, or other repeated text values.
+ *
+ * @attr {boolean} disabled - Disables all inputs and buttons.
+ * @attr {boolean} sortable - Enables drag-and-drop reordering of items.
+ * @attr {boolean} item-index - Appends a 1-based index number to each item's label.
+ * @attr {boolean} update-on-blur - Fires value-changed on blur instead of on input.
+ *
+ * @fires value-changed - Fired when the list of values changes. `event.detail.value` contains the new string array.
+ */
+@customElement("ha-input-multi")
+class HaInputMulti extends LitElement {
+  @property({ attribute: false }) public value?: string[];
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property() public label?: string;
+
+  @property() public helper?: string;
+
+  @property({ attribute: "input-type" }) public inputType?: InputType;
+
+  @property({ attribute: "input-suffix" }) public inputSuffix?: string;
+
+  @property({ attribute: "input-prefix" }) public inputPrefix?: string;
+
+  @property() public autocomplete?: string;
+
+  /** Regular expression each entry is validated against (HTML `pattern`). */
+  @property() public pattern?: string;
+
+  /** Message shown on an entry when it fails `pattern` validation. */
+  @property({ attribute: "validation-message" })
+  public validationMessage?: string;
+
+  @property({ attribute: "add-label" }) public addLabel?: string;
+
+  @property({ attribute: "remove-label" }) public removeLabel?: string;
+
+  @property({ attribute: "item-index", type: Boolean })
+  public itemIndex = false;
+
+  @property({ type: Number }) public max?: number;
+
+  @property({ type: Boolean }) public sortable = false;
+
+  @property({ type: Boolean, attribute: "update-on-blur" })
+  public updateOnBlur = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
+  @query("ha-input[data-last]") private _lastInput?: HaInput;
+
+  @queryAll("ha-input") private _inputs?: NodeListOf<HaInput>;
+
+  // Stable key per row, kept in sync with `value`. Because items are plain
+  // strings we cannot use a WeakMap (as the object-based sortable lists do),
+  // so we track keys in a parallel array. Keys stay fixed while a row is
+  // edited (preserving input focus) and travel with the row when reordered.
+  @state() private _keys: string[] = [];
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("value") && this._keys.length !== this._items.length) {
+      // Reconcile keys when `value` is (re)set from outside, reusing existing
+      // keys and minting new ones for added rows. Internal add/remove/reorder
+      // keep `_keys` in sync themselves, so this is skipped in those cases.
+      this._keys = Array.from(
+        { length: this._items.length },
+        (_, i) => this._keys[i] ?? uid()
+      );
+    }
+  }
+
+  public reportValidity(): boolean {
+    let valid = true;
+    this._inputs?.forEach((input) => {
+      if (!input.reportValidity()) {
+        valid = false;
+      }
+    });
+    return valid;
+  }
+
+  protected render() {
+    return html`
+      <ha-sortable
+        handle-selector=".handle"
+        draggable-selector=".row"
+        .disabled=${!this.sortable || this.disabled}
+        @item-moved=${this._itemMoved}
+      >
+        <div class="items">
+          ${repeat(
+            this._items,
+            (_item, index) => this._keys[index],
+            (item, index) => {
+              const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
+              return html`
+                <div class="layout horizontal center-center row">
+                  <ha-input
+                    .type=${this.inputType}
+                    .autocomplete=${this.autocomplete}
+                    .disabled=${this.disabled}
+                    .pattern=${this.pattern}
+                    .validationMessage=${this.validationMessage}
+                    .autoValidate=${this.pattern !== undefined}
+                    dialogInitialFocus=${index}
+                    .index=${index}
+                    class="flex-auto"
+                    .label=${`${this.label ? `${this.label}${indexSuffix}` : ""}`}
+                    .value=${item}
+                    ?data-last=${index === this._items.length - 1}
+                    @input=${this._editItem}
+                    @change=${this._editItem}
+                    @keydown=${this._keyDown}
+                  >
+                    ${
+                      this.inputPrefix
+                        ? html`<span slot="start">${this.inputPrefix}</span>`
+                        : nothing
+                    }
+                    ${
+                      this.inputSuffix
+                        ? html`<span slot="end">${this.inputSuffix}</span>`
+                        : nothing
+                    }
+                  </ha-input>
+                  <ha-icon-button
+                    .disabled=${this.disabled}
+                    .index=${index}
+                    slot="navigationIcon"
+                    .label=${
+                      this.removeLabel ??
+                      this._i18n?.localize("ui.common.remove") ??
+                      "Remove"
+                    }
+                    @click=${this._removeItem}
+                    .path=${mdiDeleteOutline}
+                  ></ha-icon-button>
+                  ${
+                    this.sortable
+                      ? html`<ha-svg-icon
+                          class="handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>`
+                      : nothing
+                  }
+                </div>
+              `;
+            }
+          )}
+        </div>
+      </ha-sortable>
+      <div class="layout horizontal add-row">
+        <ha-button
+          size="s"
+          appearance="filled"
+          @click=${this._addItem}
+          .disabled=${
+            this.disabled ||
+            (this.max != null && this._items.length >= this.max)
+          }
+        >
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${
+            this.addLabel ??
+            (this.label
+              ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
+                  item: this.label,
+                })
+              : this._i18n?.localize("ui.common.add")) ??
+            "Add"
+          }
+        </ha-button>
+      </div>
+      ${
+        this.helper
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          : nothing
+      }
+    `;
+  }
+
+  private get _items() {
+    return this.value ?? [];
+  }
+
+  private async _addItem() {
+    if (this.max != null && this._items.length >= this.max) {
+      return;
+    }
+    this._keys = [...this._keys, uid()];
+    const items = [...this._items, ""];
+    this._fireChanged(items);
+    await this.updateComplete;
+    this._lastInput?.focus();
+  }
+
+  private async _editItem(ev: Event) {
+    if (this.updateOnBlur && ev.type === "input") {
+      return;
+    }
+    if (!this.updateOnBlur && ev.type === "change") {
+      return;
+    }
+    const index = (ev.target as any).index;
+    const items = [...this._items];
+    items[index] = (ev.target as any).value;
+    this._fireChanged(items);
+  }
+
+  private async _keyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      ev.stopPropagation();
+      this._addItem();
+    }
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    const items = [...this._items];
+    const [moved] = items.splice(oldIndex, 1);
+    items.splice(newIndex, 0, moved);
+    // Move the row's key with it so its DOM (and identity) is preserved.
+    const keys = [...this._keys];
+    const [movedKey] = keys.splice(oldIndex, 1);
+    keys.splice(newIndex, 0, movedKey);
+    this._keys = keys;
+    this._fireChanged(items);
+  }
+
+  private async _removeItem(ev: Event) {
+    const index = (ev.target as any).index;
+    this._keys = this._keys.filter((_, i) => i !== index);
+    const items = [...this._items];
+    items.splice(index, 1);
+    this._fireChanged(items);
+  }
+
+  private _fireChanged(value) {
+    this.value = value;
+    fireEvent(this, "value-changed", { value });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .row {
+          margin-bottom: 8px;
+          --ha-input-padding-bottom: 0;
+        }
+        .add-row:has(+ ha-input-helper-text) {
+          margin-bottom: var(--ha-space-1);
+        }
+        ha-icon-button {
+          display: block;
+        }
+        .handle {
+          cursor: grab;
+          padding: 8px;
+          margin: -8px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-input-multi": HaInputMulti;
+  }
+}

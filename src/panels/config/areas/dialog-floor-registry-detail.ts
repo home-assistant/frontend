@@ -1,0 +1,428 @@
+import { mdiTextureBox } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import "../../../components/chips/ha-chip-set";
+import "../../../components/chips/ha-input-chip";
+import "../../../components/ha-alert";
+import "../../../components/ha-aliases-editor";
+import "../../../components/ha-area-picker";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-floor-icon";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-svg-icon";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
+import { updateAreaRegistryEntry } from "../../../data/area/area_registry";
+import type {
+  FloorRegistryEntry,
+  FloorRegistryEntryMutableParams,
+} from "../../../data/floor_registry";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
+import { haStyle, haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
+import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
+
+interface FloorFormState {
+  name: string;
+  aliases: string[];
+  icon: string | null;
+  level: number | null;
+  addedAreas: string[];
+  removedAreas: string[];
+}
+
+@customElement("dialog-floor-registry-detail")
+class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
+  LitElement
+) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _name!: string;
+
+  @state() private _aliases!: string[];
+
+  @state() private _icon!: string | null;
+
+  @state() private _level!: number | null;
+
+  @state() private _error?: string;
+
+  @state() private _params?: FloorRegistryDetailDialogParams;
+
+  @state() private _submitting?: boolean;
+
+  @state() private _addedAreas = new Set<string>();
+
+  @state() private _removedAreas = new Set<string>();
+
+  @state() private _open = false;
+
+  public showDialog(params: FloorRegistryDetailDialogParams): void {
+    this._params = params;
+    this._error = undefined;
+    this._name = this._params.entry
+      ? this._params.entry.name
+      : this._params.suggestedName || "";
+    this._aliases = this._params.entry?.aliases || [];
+    this._icon = this._params.entry?.icon || null;
+    this._level = this._params.entry?.level ?? null;
+    this._addedAreas.clear();
+    this._removedAreas.clear();
+    this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): FloorFormState {
+    return {
+      name: this._name,
+      aliases: this._aliases,
+      icon: this._icon,
+      level: this._level,
+      addedAreas: [...this._addedAreas].sort(),
+      removedAreas: [...this._removedAreas].sort(),
+    };
+  }
+
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._error = "";
+    this._params = undefined;
+    this._addedAreas.clear();
+    this._removedAreas.clear();
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _floorAreas = memoizeOne(
+    (
+      entry: FloorRegistryEntry | undefined,
+      areas: HomeAssistant["areas"],
+      added: Set<string>,
+      removed: Set<string>
+    ) =>
+      Object.values(areas).filter(
+        (area) =>
+          (area.floor_id === entry?.floor_id || added.has(area.area_id)) &&
+          !removed.has(area.area_id)
+      )
+  );
+
+  protected render() {
+    const areas = this._floorAreas(
+      this._params?.entry,
+      this.hass.areas,
+      this._addedAreas,
+      this._removedAreas
+    );
+
+    if (!this._params) {
+      return nothing;
+    }
+    const entry = this._params.entry;
+
+    return html`
+      <ha-dialog
+        .open=${this._open}
+        header-title=${
+          entry
+            ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
+            : this.hass.localize("ui.panel.config.floors.editor.create_floor")
+        }
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
+      >
+        <div>
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
+          <div class="form">
+            ${
+              entry
+                ? html`
+                    <ha-settings-row>
+                      <span slot="heading">
+                        ${this.hass.localize(
+                          "ui.panel.config.floors.editor.floor_id"
+                        )}
+                      </span>
+                      <span slot="description">${entry.floor_id}</span>
+                    </ha-settings-row>
+                  `
+                : nothing
+            }
+
+            <ha-input
+              autofocus
+              .value=${this._name}
+              @input=${this._nameChanged}
+              .label=${this.hass.localize("ui.panel.config.floors.editor.name")}
+              .validationMessage=${this.hass.localize(
+                "ui.panel.config.floors.editor.name_required"
+              )}
+              required
+              auto-validate
+            ></ha-input>
+
+            <ha-input
+              .value=${this._level}
+              @input=${this._levelChanged}
+              .label=${this.hass.localize(
+                "ui.panel.config.floors.editor.level"
+              )}
+              type="number"
+              .hint=${this.hass.localize(
+                "ui.panel.config.floors.editor.level_helper"
+              )}
+            ></ha-input>
+
+            <ha-icon-picker
+              .hass=${this.hass}
+              .value=${this._icon}
+              @value-changed=${this._iconChanged}
+              .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
+            >
+              ${
+                !this._icon
+                  ? html`
+                      <ha-floor-icon
+                        slot="start"
+                        .floor=${{ level: this._level }}
+                      ></ha-floor-icon>
+                    `
+                  : nothing
+              }
+            </ha-icon-picker>
+
+            <h3 class="header">
+              ${this.hass.localize(
+                "ui.panel.config.floors.editor.areas_section"
+              )}
+            </h3>
+
+            ${
+              areas.length
+                ? html`<ha-chip-set>
+                    ${repeat(
+                      areas,
+                      (area) => area.area_id,
+                      (area) =>
+                        html`<ha-input-chip
+                          .area=${area}
+                          @click=${this._openArea}
+                          @remove=${this._removeArea}
+                          .label=${area?.name}
+                        >
+                          ${
+                            area.icon
+                              ? html`<ha-icon
+                                  slot="icon"
+                                  .icon=${area.icon}
+                                ></ha-icon>`
+                              : html`<ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiTextureBox}
+                                ></ha-svg-icon>`
+                          }
+                        </ha-input-chip>`
+                    )}
+                  </ha-chip-set>`
+                : html`<p class="description">
+                    ${this.hass.localize(
+                      "ui.panel.config.floors.editor.areas_description"
+                    )}
+                  </p>`
+            }
+            <ha-area-picker
+              no-add
+              @value-changed=${this._addArea}
+              .excludeAreas=${areas.map((a) => a.area_id)}
+              .addButtonLabel=${this.hass.localize(
+                "ui.panel.config.floors.editor.add_area"
+              )}
+            ></ha-area-picker>
+
+            <h3 class="header">
+              ${this.hass.localize(
+                "ui.panel.config.floors.editor.aliases_section"
+              )}
+            </h3>
+
+            <p class="description">
+              ${this.hass.localize(
+                "ui.panel.config.floors.editor.aliases_description"
+              )}
+            </p>
+            <ha-aliases-editor
+              .aliases=${this._aliases}
+              @value-changed=${this._aliasesChanged}
+            ></ha-aliases-editor>
+          </div>
+        </div>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${
+              !!this._submitting ||
+              (!!this._params?.entry && !this.isDirtyState)
+            }
+          >
+            ${
+              entry
+                ? this.hass.localize("ui.common.save")
+                : this.hass.localize("ui.common.create")
+            }
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
+    `;
+  }
+
+  private _openArea(ev) {
+    const area = ev.target.area;
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: (values) =>
+        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+    });
+  }
+
+  private _removeArea(ev) {
+    const areaId = ev.target.area.area_id;
+    if (this._addedAreas.has(areaId)) {
+      this._addedAreas.delete(areaId);
+      this._addedAreas = new Set(this._addedAreas);
+      this._updateDirtyState(this._currentState());
+      return;
+    }
+    this._removedAreas.add(areaId);
+    this._removedAreas = new Set(this._removedAreas);
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _addArea(ev) {
+    const areaId = ev.detail.value;
+    if (!areaId) {
+      return;
+    }
+    ev.target.value = "";
+    if (this._removedAreas.has(areaId)) {
+      this._removedAreas.delete(areaId);
+      this._removedAreas = new Set(this._removedAreas);
+      this._updateDirtyState(this._currentState());
+      return;
+    }
+    this._addedAreas.add(areaId);
+    this._addedAreas = new Set(this._addedAreas);
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _nameChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
+    this._error = undefined;
+    this._name = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _levelChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
+    this._error = undefined;
+    this._level =
+      (ev.target as HaInput).value === ""
+        ? null
+        : Number((ev.target as HaInput).value);
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _iconChanged(ev) {
+    this._error = undefined;
+    this._icon = ev.detail.value;
+    this._updateDirtyState(this._currentState());
+  }
+
+  private async _updateEntry() {
+    if (this._name.trim() === "") {
+      this._error = this.hass.localize(
+        "ui.panel.config.floors.editor.name_required"
+      );
+      return;
+    }
+    this._error = undefined;
+
+    this._submitting = true;
+
+    const create = !this._params!.entry;
+    try {
+      const values: FloorRegistryEntryMutableParams = {
+        name: this._name.trim(),
+        icon: this._icon || (create ? undefined : null),
+        level: this._level,
+        aliases: this._aliases,
+      };
+      if (create) {
+        await this._params!.createEntry!(values, this._addedAreas);
+      } else {
+        await this._params!.updateEntry!(
+          values,
+          this._addedAreas,
+          this._removedAreas
+        );
+      }
+      this._markDirtyStateClean();
+      this.closeDialog();
+    } catch (err: any) {
+      this._error =
+        err.message ||
+        this.hass.localize("ui.panel.config.floors.editor.unknown_error");
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  private _aliasesChanged(ev: CustomEvent): void {
+    this._aliases = ev.detail.value;
+    this._updateDirtyState(this._currentState());
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        ha-input {
+          --ha-input-padding-bottom: var(--ha-space-4);
+        }
+        ha-floor-icon {
+          color: var(--secondary-text-color);
+        }
+        ha-chip-set {
+          margin-bottom: var(--ha-space-2);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-floor-registry-detail": DialogFloorDetail;
+  }
+}

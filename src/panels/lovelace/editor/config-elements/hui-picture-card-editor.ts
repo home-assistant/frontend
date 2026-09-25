@@ -1,0 +1,153 @@
+import { mdiGestureTap } from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { assert, assign, object, optional, string, union } from "superstruct";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { PictureCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
+import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    image: optional(union([string(), object()])),
+    image_entity: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+    theme: optional(string()),
+    alt_text: optional(string()),
+  })
+);
+
+@customElement("hui-picture-card-editor")
+export class HuiPictureCardEditor
+  extends LitElement
+  implements LovelaceCardEditor
+{
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: PictureCardConfig;
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
+        {
+          name: "image_entity",
+          selector: { entity: { domain: ["image", "person"] } },
+        },
+        { name: "alt_text", selector: { text: {} } },
+        { name: "theme", selector: { theme: {} } },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {},
+              },
+              context: ACTION_RELATED_CONTEXT,
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      default_action: "none" as const,
+                    },
+                  },
+                  context: ACTION_RELATED_CONTEXT,
+                })
+              ),
+            },
+          ],
+        },
+      ] as const
+  );
+
+  public setConfig(config: PictureCardConfig): void {
+    assert(config, cardConfigStruct);
+    this._config = config;
+  }
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._processData(this._config)}
+        .schema=${this._schema(this.hass.localize)}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
+  }
+
+  private _processData = memoizeOne((config: PictureCardConfig) => ({
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+  }));
+
+  private _valueChanged(ev: CustomEvent): void {
+    fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      default:
+        return (
+          this.hass!.localize(
+            `ui.panel.lovelace.editor.card.picture-card.${schema.name}`
+          ) ||
+          this.hass!.localize(
+            `ui.panel.lovelace.editor.card.generic.${schema.name}`
+          )
+        );
+    }
+  };
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-picture-card-editor": HuiPictureCardEditor;
+  }
+}

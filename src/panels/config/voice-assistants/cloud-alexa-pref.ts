@@ -1,0 +1,308 @@
+import { mdiHelpCircleOutline } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
+import "../../../components/voice-assistant-brand-icon";
+import type { CloudStatusLoggedIn } from "../../../data/cloud";
+import { updateCloudPref } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import {
+  getExposeNewEntities,
+  setExposeNewEntities,
+} from "../../../data/expose";
+import type { HomeAssistant } from "../../../types";
+
+@customElement("cloud-alexa-pref")
+export class CloudAlexaPref extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public exposedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
+
+  @state() private _exposeNew?: boolean;
+
+  private _exposedEntitiesCount = memoizeOne(
+    (exposedEntities: Record<string, ExposeEntitySettings>) =>
+      Object.entries(exposedEntities).filter(
+        ([entityId, expose]) =>
+          expose["cloud.alexa"] && entityId in this.hass.states
+      ).length
+  );
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      getExposeNewEntities(this.hass, "cloud.alexa").then((value) => {
+        this._exposeNew = value.expose_new;
+      });
+    }
+  }
+
+  protected render() {
+    if (!this.cloudStatus) {
+      return nothing;
+    }
+
+    const alexa_registered = this.cloudStatus.alexa_registered;
+    const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
+
+    const manualConfig = !isEmptyEntityDomainFilter(
+      this.cloudStatus.alexa_entities
+    );
+
+    return html`
+      <ha-card outlined>
+        <h1 class="card-header">
+          <voice-assistant-brand-icon .voiceAssistantId=${"cloud.alexa"}>
+          </voice-assistant-brand-icon
+          >${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
+        </h1>
+        <div class="header-actions">
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircleOutline}
+            href="https://www.nabucasa.com/config/amazon_alexa/"
+            target="_blank"
+            rel="noreferrer"
+            class="icon-link"
+          ></ha-icon-button>
+          <ha-switch
+            .checked=${alexa_enabled}
+            @change=${this._enabledToggleChanged}
+          ></ha-switch>
+        </div>
+        <div class="card-content">
+          <p>
+            ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
+          </p>
+          ${
+            manualConfig
+              ? html`<ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.alexa.manual_config"
+                  )}
+                </ha-alert>`
+              : nothing
+          }
+          ${
+            !alexa_enabled
+              ? nothing
+              : html`
+                  ${
+                    !alexa_registered
+                      ? html`<ha-alert
+                          .title=${this.hass.localize(
+                            "ui.panel.config.cloud.account.alexa.not_configured_title"
+                          )}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.cloud.account.alexa.not_configured_text"
+                          )}
+
+                          <ul>
+                            <li>
+                              <a
+                                href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                ${this.hass!.localize(
+                                  "ui.panel.config.cloud.account.alexa.enable_ha_skill"
+                                )}
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                href="https://www.nabucasa.com/config/amazon_alexa/"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                ${this.hass!.localize(
+                                  "ui.panel.config.cloud.account.alexa.config_documentation"
+                                )}
+                              </a>
+                            </li>
+                          </ul>
+                        </ha-alert>`
+                      : nothing
+                  }
+                  <ha-row-item>
+                    <span slot="headline"
+                      >${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities"
+                      )}</span
+                    >
+                    <span slot="supporting-text"
+                      >${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
+                      )}</span
+                    >
+                    <ha-switch
+                      slot="end"
+                      .checked=${this._exposeNew}
+                      .disabled=${this._exposeNew === undefined}
+                      @change=${this._exposeNewToggleChanged}
+                    ></ha-switch>
+                  </ha-row-item>
+                  ${
+                    alexa_registered
+                      ? html`
+                          <ha-row-item>
+                            <span slot="headline"
+                              >${this.hass!.localize(
+                                "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                              )}</span
+                            >
+                            <span slot="supporting-text"
+                              >${this.hass!.localize(
+                                "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                              )}</span
+                            >
+                            <ha-switch
+                              slot="end"
+                              .checked=${alexa_report_state}
+                              @change=${this._reportToggleChanged}
+                            ></ha-switch>
+                          </ha-row-item>
+                        `
+                      : nothing
+                  }
+                `
+          }
+        </div>
+        ${
+          alexa_enabled
+            ? html`<div class="card-actions">
+                <ha-button
+                  appearance="plain"
+                  href="/config/voice-assistants/expose?assistants=cloud.alexa&historyBack"
+                >
+                  ${
+                    manualConfig
+                      ? this.hass!.localize(
+                          "ui.panel.config.cloud.account.alexa.show_entities"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.alexa.exposed_entities",
+                          {
+                            number: this.exposedEntities
+                              ? this._exposedEntitiesCount(this.exposedEntities)
+                              : 0,
+                          }
+                        )
+                  }
+                </ha-button>
+              </div>`
+            : nothing
+        }
+      </ha-card>
+    `;
+  }
+
+  private async _exposeNewToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    if (this._exposeNew === undefined || this._exposeNew === toggle.checked) {
+      return;
+    }
+    try {
+      await setExposeNewEntities(this.hass, "cloud.alexa", toggle.checked);
+    } catch (_err: any) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _enabledToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    try {
+      await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (_err: any) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _reportToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    try {
+      await updateCloudPref(this.hass!, {
+        alexa_report_state: toggle.checked!,
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.account.alexa.state_reporting_error",
+          {
+            enable_disable: this.hass!.localize(
+              toggle.checked
+                ? "ui.panel.config.cloud.account.alexa.enable"
+                : "ui.panel.config.cloud.account.alexa.disable"
+            ),
+          }
+        )} ${err.message}`
+      );
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    ha-row-item {
+      --ha-row-item-padding-inline: 0;
+    }
+    .header-actions {
+      position: absolute;
+      right: 24px;
+      inset-inline-end: 24px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+    .card-actions {
+      display: flex;
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+    }
+    voice-assistant-brand-icon {
+      height: 28px;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "cloud-alexa-pref": CloudAlexaPref;
+  }
+}

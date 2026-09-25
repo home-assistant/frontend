@@ -1,0 +1,384 @@
+import { customElement, property, state } from "lit/decorators";
+import { LitElement, html, css } from "lit";
+import type { EChartsType } from "echarts/core";
+import type { SankeySeriesOption } from "echarts/types/dist/echarts";
+import type { CallbackDataParams } from "echarts/types/src/util/types";
+import memoizeOne from "memoize-one";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import SankeyChart from "../../resources/echarts/components/sankey/install";
+import type { HomeAssistant } from "../../types";
+import type { HaECOption } from "../../resources/echarts/echarts";
+import { measureTextWidth } from "../../util/text";
+import "./ha-chart-base";
+import "./ha-chart-tooltip-marker";
+import "../ha-alert";
+
+export interface Node {
+  id: string;
+  value: number;
+  index: number; // like z-index but for x/y
+  label?: string;
+  color?: string;
+  passThrough?: boolean;
+  entityId?: string;
+}
+export interface Link {
+  source: string;
+  target: string;
+  value?: number;
+}
+
+export interface SankeyChartData {
+  nodes: Node[];
+  links: Link[];
+}
+
+type ProcessedLink = Link & {
+  value: number;
+};
+
+const OVERFLOW_MARGIN = 5;
+const FONT_SIZE = 12;
+const NODE_GAP = 6;
+const LABEL_DISTANCE = 5;
+const NODE_SIZE = 30;
+const LABEL_MIN_MARGIN = 5;
+const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
+
+@customElement("ha-sankey-chart")
+export class HaSankeyChart extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public data: SankeyChartData = {
+    nodes: [],
+    links: [],
+  };
+
+  @property({ type: Boolean }) public vertical = false;
+
+  @property({ type: Boolean, attribute: "show-values" }) public showValues =
+    false;
+
+  @property({ attribute: false }) public valueFormatter?: (
+    value: number
+  ) => string;
+
+  public chart?: EChartsType;
+
+  private _currentZoom = 1;
+
+  @state() private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect,
+  });
+
+  render() {
+    const options: HaECOption = {
+      grid: {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      },
+      tooltip: {
+        trigger: "item",
+        formatter: this._renderTooltip,
+        appendTo: document.body,
+      },
+    };
+
+    return html`<ha-chart-base
+      .hass=${this.hass}
+      .data=${this._createData(
+        this.data,
+        this._sizeController.value?.width,
+        this.showValues
+      )}
+      .options=${options}
+      height="100%"
+      .extraComponents=${[SankeyChart]}
+      @chart-click=${this._handleChartClick}
+      @chart-sankeyroam=${this._handleChartSankeyRoam}
+    ></ha-chart-base>`;
+  }
+
+  private _renderTooltip = (params: CallbackDataParams) => {
+    const data = params.data as Record<string, any>;
+    const value = this.valueFormatter
+      ? this.valueFormatter(data.value)
+      : data.value;
+    // Keep numbers and units left-to-right, even in RTL locales.
+    const formattedValue = html`<div style="direction:ltr; display: inline;">
+      ${value}
+    </div>`;
+    if (data.id) {
+      const node = this.data.nodes.find((n) => n.id === data.id);
+      return html`<ha-chart-tooltip-marker
+          .color=${String(params.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${node?.label ?? data.id}<br />${formattedValue}`;
+    }
+    if (data.source && data.target) {
+      const source = this.data.nodes.find((n) => n.id === data.source);
+      const target = this.data.nodes.find((n) => n.id === data.target);
+      return html`${source?.label ?? data.source} →
+        ${target?.label ?? data.target}<br />${formattedValue}`;
+    }
+    return null;
+  };
+
+  private _handleChartSankeyRoam = (
+    ev: HASSDomEvent<HASSDomEvents["chart-sankeyroam"]>
+  ) => {
+    this._currentZoom = ev.detail.zoom;
+  };
+
+  private _handleChartClick = (
+    ev: HASSDomEvent<HASSDomEvents["chart-click"]>
+  ) => {
+    const detail = ev.detail;
+    // Only handle node clicks (not links)
+    if (detail.dataType !== "node") {
+      return;
+    }
+    const nodeId = (detail.data as Record<string, any>)?.id;
+    if (!nodeId) {
+      return;
+    }
+    const node = this.data.nodes.find((n) => n.id === nodeId);
+    if (node?.entityId) {
+      fireEvent(this, "node-click", { node });
+    }
+  };
+
+  private _computeData = (
+    data: SankeyChartData,
+    width = 0,
+    showValues = false
+  ) => {
+    const filteredNodes = data.nodes.filter((n) => n.value > 0);
+    const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
+    const depthMap = new Map<number, number>();
+    const sections: Node[][] = [];
+    indexes.forEach((index, i) => {
+      depthMap.set(index, i);
+      const nodesWithIndex = filteredNodes.filter((n) => n.index === index);
+      if (nodesWithIndex.length > 0) {
+        sections.push(
+          sections.length > 0
+            ? nodesWithIndex.sort((a, b) => {
+                // sort by the order of their parents in the previous section with orphans at the end
+                const aParentIndex = this._findParentIndex(
+                  a.id,
+                  data.links,
+                  sections
+                );
+                const bParentIndex = this._findParentIndex(
+                  b.id,
+                  data.links,
+                  sections
+                );
+                if (aParentIndex === bParentIndex) {
+                  return 0;
+                }
+                if (aParentIndex === -1) {
+                  return 1;
+                }
+                if (bParentIndex === -1) {
+                  return -1;
+                }
+                return aParentIndex - bParentIndex;
+              })
+            : nodesWithIndex
+        );
+      }
+    });
+    const links = this._processLinks(filteredNodes, data.links);
+    const sectionWidth = width / indexes.length;
+    const labelSpace = sectionWidth - NODE_SIZE - LABEL_DISTANCE;
+    // Two-line values can wrap the unit onto a third line; keep that text inside the chart.
+    const verticalBottom = showValues
+      ? LABEL_DISTANCE + FONT_SIZE * 3 + OVERFLOW_MARGIN
+      : 25;
+
+    return {
+      id: "sankey",
+      type: "sankey",
+      nodes: sections.flat().map((node) => ({
+        id: node.id,
+        value: node.value,
+        itemStyle: {
+          color: node.color,
+        },
+        depth: depthMap.get(node.index),
+      })),
+      links,
+      draggable: false,
+      scaleLimit: { min: 1, max: 4 },
+      orient: this.vertical ? "vertical" : "horizontal",
+      nodeWidth: 15,
+      nodeGap: NODE_GAP,
+      lineStyle: {
+        color: "gradient",
+        opacity: 0.4,
+        curveness: 0.5,
+      },
+      layoutIterations: 0,
+      animationDuration: 500,
+      label: {
+        formatter: (params) => {
+          const nodeData = params.data as { id: string; value: number };
+          const node = data.nodes.find((n) => n.id === nodeData.id);
+          const label = node?.label ?? nodeData.id;
+          if (!showValues || !nodeData.id) return label;
+          const formatted = this.valueFormatter
+            ? this.valueFormatter(nodeData.value).trim()
+            : String(nodeData.value);
+          // LRM keeps numeric values LTR on the canvas without creating wrap points.
+          return `${label}\n\u200E${formatted}`;
+        },
+        position: this.vertical ? "bottom" : "right",
+        distance: LABEL_DISTANCE,
+        minMargin: LABEL_MIN_MARGIN,
+        overflow: "break",
+      },
+      labelLayout: (params) => {
+        if (this.vertical) {
+          // reduce the label font size so the longest word fits on one line
+          const longestWord = params.text
+            .replace(BIDI_MARKS, "")
+            .split(/[ \n]+/)
+            .reduce((longest, current) => {
+              if (!current) {
+                return longest;
+              }
+              if (!longest) {
+                return current;
+              }
+              return measureTextWidth(current, FONT_SIZE) >
+                measureTextWidth(longest, FONT_SIZE)
+                ? current
+                : longest;
+            }, "");
+          const wordWidth = measureTextWidth(longestWord, FONT_SIZE) || 1;
+          const availableWidth = (params.rect.width + 6) * this._currentZoom;
+          // minMargin is applied as padding on the label box, so words must
+          // fit in the inner wrap width or overflow:break splits them.
+          const wrapWidth = Math.max(availableWidth - LABEL_MIN_MARGIN, 1);
+          const fontSize = Math.min(
+            FONT_SIZE,
+            (wrapWidth / wordWidth) * FONT_SIZE
+          );
+          return {
+            fontSize: fontSize > 1 ? fontSize : 0,
+            width: availableWidth,
+            align: "center",
+            dy: -2, // shift up or the lowest row labels may be cut off
+          };
+        }
+
+        const availableHeight = (params.rect.height + 8) * this._currentZoom; // account for the margin
+        const fontSize = Math.min(
+          (availableHeight / params.labelRect.height) * FONT_SIZE,
+          FONT_SIZE
+        );
+        return {
+          fontSize,
+          lineHeight: fontSize,
+          width: labelSpace,
+          height: params.rect.height,
+        };
+      },
+      top: this.vertical ? 0 : OVERFLOW_MARGIN,
+      bottom: this.vertical ? verticalBottom : OVERFLOW_MARGIN,
+      left: this.vertical ? OVERFLOW_MARGIN : 0,
+      right: this.vertical ? OVERFLOW_MARGIN : labelSpace + LABEL_DISTANCE,
+      emphasis: {
+        focus: "adjacency",
+      },
+    } as SankeySeriesOption;
+  };
+
+  private _createData = memoizeOne(this._computeData);
+
+  private _processLinks(nodes: Node[], rawLinks: Link[]) {
+    const accountedIn = new Map<string, number>();
+    const accountedOut = new Map<string, number>();
+    const links: ProcessedLink[] = [];
+    rawLinks.forEach((link) => {
+      const sourceNode = nodes.find((n) => n.id === link.source);
+      const targetNode = nodes.find((n) => n.id === link.target);
+      if (!sourceNode || !targetNode) {
+        return;
+      }
+      const sourceAccounted = accountedOut.get(sourceNode.id) || 0;
+      const targetAccounted = accountedIn.get(targetNode.id) || 0;
+
+      // if no value is provided, we infer it from the remaining capacity of the source and target nodes
+      const sourceRemaining = sourceNode.value - sourceAccounted;
+      const targetRemaining = targetNode.value - targetAccounted;
+      // ensure the value is not greater than the remaining capacity of the nodes
+      const value = Math.min(
+        link.value ?? sourceRemaining,
+        sourceRemaining,
+        targetRemaining
+      );
+
+      accountedIn.set(targetNode.id, targetAccounted + value);
+      accountedOut.set(sourceNode.id, sourceAccounted + value);
+
+      if (value > 0) {
+        links.push({
+          ...link,
+          value,
+        });
+      }
+    });
+    return links;
+  }
+
+  private _findParentIndex(id: string, links: Link[], sections: Node[][]) {
+    const parents = links.filter((l) => l.target === id).map((l) => l.source);
+    if (parents.length === 0) {
+      return -1;
+    }
+    let sum = 0;
+    let count = 0;
+    for (const parent of parents) {
+      let offset = 0;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        const index = section.findIndex((n) => n.id === parent);
+        if (index !== -1) {
+          sum += offset + index;
+          count++;
+          break;
+        }
+        offset += section.length;
+      }
+    }
+    return count > 0 ? sum / count : -1;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      flex: 1;
+      max-width: 100%;
+      background: var(--ha-card-background, var(--card-background-color));
+    }
+    ha-chart-base {
+      width: 100%;
+      height: 100%;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-sankey-chart": HaSankeyChart;
+  }
+  interface HASSDomEvents {
+    "node-click": { node: Node };
+  }
+}

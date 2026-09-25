@@ -1,0 +1,227 @@
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { PictureElementsCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type {
+  ImageElementConfig,
+  LovelaceElementConfig,
+} from "../../../../src/panels/lovelace/elements/types";
+import "../../components/demo-cards";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
+
+const ENTITIES = [
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "group.all_lights",
+    state: "on",
+    attributes: {
+      entity_id: ["light.bed_light"],
+      order: 8,
+      friendly_name: "All Lights",
+    },
+  },
+  {
+    entity_id: "camera.demo_camera",
+    state: "idle",
+    attributes: {
+      access_token:
+        "2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
+      friendly_name: "Demo camera",
+      entity_picture:
+        "/api/camera_proxy/camera.demo_camera?token=2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
+    },
+  },
+  {
+    entity_id: "binary_sensor.movement_backyard",
+    state: "on",
+    attributes: {
+      friendly_name: "Movement Backyard",
+      device_class: "motion",
+    },
+  },
+  {
+    entity_id: "person.paulus",
+    state: "home",
+    attributes: {
+      friendly_name: "Paulus",
+      entity_picture: "/images/paulus.jpg",
+    },
+  },
+  {
+    entity_id: "sensor.battery",
+    state: "35",
+    attributes: {
+      device_class: "battery",
+      friendly_name: "Battery",
+      unit_of_measurement: "%",
+    },
+  },
+];
+
+type LegacyImageElementConfig = Omit<
+  ImageElementConfig,
+  "state_filter" | "state_image"
+> & {
+  state_filter?: Record<string, string>;
+  state_image?: Record<string, string>;
+};
+
+type GalleryPictureElementsCardConfig = Omit<
+  PictureElementsCardConfig,
+  "elements"
+> & {
+  type: PictureElementsCardConfig["type"];
+  elements: (LovelaceElementConfig | LegacyImageElementConfig)[];
+};
+
+const CONFIGS = [
+  {
+    heading: "Card with few elements",
+    config: {
+      type: "picture-elements",
+      image: "/images/floorplan.png",
+      elements: [
+        {
+          type: "service-button",
+          title: "Lights Off",
+          style: { top: "97%", left: "90%", padding: "0px" },
+          service: "light.turn_off",
+          data: { entity_id: "group.all_lights" },
+        },
+        {
+          type: "icon",
+          icon: "mdi:cctv",
+          entity: "camera.demo_camera",
+          style: {
+            top: "12%",
+            left: "6%",
+            transform: "rotate(-60deg) scaleX(-1)",
+            "--mdc-icon-size": "30px",
+            "--mdc-icon-stroke-color": "black",
+            "--mdc-icon-fill-color": "rgba(50, 50, 50, .75)",
+          },
+        },
+        {
+          type: "image",
+          entity: "light.bed_light",
+          tap_action: { action: "toggle" },
+          image: "/images/light_bulb_off.png",
+          state_image: { on: "/images/light_bulb_on.png" },
+          state_filter: {
+            on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+            off: "brightness(80%) saturate(0.8)",
+          },
+          style: {
+            top: "35%",
+            left: "65%",
+            width: "7%",
+            padding: "50px 50px 100px 50px",
+          },
+        },
+        {
+          type: "state-icon",
+          entity: "binary_sensor.movement_backyard",
+          style: { top: "8%", left: "35%" },
+        },
+      ],
+    },
+  },
+  {
+    heading: "Card with header",
+    config: {
+      type: "picture-elements",
+      image: "/images/floorplan.png",
+      title: "My House",
+      elements: [
+        {
+          type: "service-button",
+          title: "Lights Off",
+          style: { top: "97%", left: "90%", padding: "0px" },
+          service: "light.turn_off",
+          data: { entity_id: "group.all_lights" },
+        },
+        {
+          type: "icon",
+          icon: "mdi:cctv",
+          entity: "camera.demo_camera",
+          style: {
+            top: "12%",
+            left: "6%",
+            transform: "rotate(-60deg) scaleX(-1)",
+            "--mdc-icon-size": "30px",
+            "--mdc-icon-stroke-color": "black",
+            "--mdc-icon-fill-color": "rgba(50, 50, 50, .75)",
+          },
+        },
+        {
+          type: "image",
+          entity: "light.bed_light",
+          tap_action: { action: "toggle" },
+          image: "/images/light_bulb_off.png",
+          state_image: { on: "/images/light_bulb_on.png" },
+          state_filter: {
+            on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+            off: "brightness(80%) saturate(0.8)",
+          },
+          style: {
+            top: "35%",
+            left: "65%",
+            width: "7%",
+            padding: "50px 50px 100px 50px",
+          },
+        },
+        {
+          type: "state-icon",
+          entity: "binary_sensor.movement_backyard",
+          style: { top: "8%", left: "35%" },
+        },
+      ],
+    },
+  },
+  {
+    heading: "Person entity",
+    config: {
+      type: "picture-elements",
+      image_entity: "person.paulus",
+      elements: [
+        {
+          type: "state-icon",
+          entity: "sensor.battery",
+          style: { top: "8%", left: "8%" },
+        },
+      ],
+    },
+  },
+] satisfies DemoCardConfig<GalleryPictureElementsCardConfig>[];
+
+@customElement("demo-lovelace-picture-elements-card")
+class DemoPictureElements extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
+    hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
+    hass.addEntities(ENTITIES);
+    mockIcons(hass);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-lovelace-picture-elements-card": DemoPictureElements;
+  }
+}

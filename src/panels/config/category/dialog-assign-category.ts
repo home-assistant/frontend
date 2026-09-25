@@ -1,0 +1,161 @@
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
+import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import "./ha-category-picker";
+import type { AssignCategoryDialogParams } from "./show-dialog-assign-category";
+
+interface AssignCategoryFormState {
+  category: string | undefined;
+}
+
+@customElement("dialog-assign-category")
+class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormState>()(
+  LitElement
+) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _scope?: string;
+
+  @state() private _category?: string;
+
+  @state() private _error?: string;
+
+  @state() private _params?: AssignCategoryDialogParams;
+
+  @state() private _submitting?: boolean;
+
+  @state() private _open = false;
+
+  public showDialog(params: AssignCategoryDialogParams): void {
+    this._params = params;
+    this._scope = params.scope;
+    this._category = params.entityReg.categories[params.scope];
+    this._error = undefined;
+    this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): AssignCategoryFormState {
+    return { category: this._category };
+  }
+
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._error = "";
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected render() {
+    if (!this._params) {
+      return nothing;
+    }
+    const entry = this._params.entityReg.categories[this._params.scope];
+    return html`
+      <ha-dialog
+        .open=${this._open}
+        header-title=${
+          entry
+            ? this.hass.localize("ui.panel.config.category.assign.edit")
+            : this.hass.localize("ui.panel.config.category.assign.assign")
+        }
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
+      >
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
+        <div class="form">
+          <ha-category-picker
+            .hass=${this.hass}
+            .scope=${this._scope}
+            .label=${this.hass.localize(
+              "ui.components.category-picker.category"
+            )}
+            .value=${this._category}
+            @value-changed=${this._categoryChanged}
+            autofocus
+          ></ha-category-picker>
+        </div>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!!this._submitting || !this.isDirtyState}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
+    `;
+  }
+
+  private _categoryChanged(ev: CustomEvent): void {
+    if (!ev.detail.value) {
+      this._category = undefined;
+    }
+    this._category = ev.detail.value;
+    this._updateDirtyState(this._currentState());
+  }
+
+  private async _updateEntry() {
+    this._submitting = true;
+    this._error = undefined;
+    try {
+      await updateEntityRegistryEntry(
+        this.hass,
+        this._params!.entityReg.entity_id,
+        {
+          categories: { [this._scope!]: this._category || null },
+        }
+      );
+      this._markDirtyStateClean();
+      this.closeDialog();
+    } catch (err: any) {
+      this._error =
+        err.message ||
+        this.hass.localize("ui.panel.config.category.assign.unknown_error");
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleDialog,
+      css`
+        ha-icon-picker {
+          display: block;
+          margin-bottom: 16px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-assign-category": DialogAssignCategory;
+  }
+}

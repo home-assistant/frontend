@@ -1,0 +1,79 @@
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import "../../../../../../components/ha-icon-next";
+import "../../../../../../components/input/ha-input";
+import type { HomeAssistant } from "../../../../../../types";
+import { sharedStyles } from "./matter-add-device-shared-styles";
+
+@customElement("matter-add-device-apple-home")
+class MatterAddDeviceAppleHome extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _code = "";
+
+  render() {
+    return html`
+      <div class="content">
+        <ol>
+          <li>
+            ${this.hass.localize(
+              "ui.dialogs.matter-add-device.apple_home.step_1",
+              {
+                accessory_settings: html`<b
+                  >${this.hass.localize(
+                    "ui.dialogs.matter-add-device.apple_home.accessory_settings"
+                  )}</b
+                >`,
+              }
+            )}
+          </li>
+          <li>
+            ${this.hass.localize(
+              "ui.dialogs.matter-add-device.apple_home.step_2",
+              {
+                turn_on_pairing_mode: html`<b
+                  >${this.hass.localize(
+                    "ui.dialogs.matter-add-device.apple_home.turn_on_pairing_mode"
+                  )}</b
+                >`,
+              }
+            )}
+          </li>
+          <li>
+            ${this.hass.localize(
+              "ui.dialogs.matter-add-device.apple_home.step_3"
+            )}
+          </li>
+        </ol>
+        <br />
+        <p>
+          ${this.hass.localize(
+            "ui.dialogs.matter-add-device.apple_home.code_instructions"
+          )}
+        </p>
+        <ha-input
+          label=${this.hass.localize(
+            "ui.dialogs.matter-add-device.apple_home.setup_code"
+          )}
+          .value=${this._code}
+          @input=${this._onCodeChanged}
+        ></ha-input>
+      </div>
+    `;
+  }
+
+  private _onCodeChanged(ev: InputEvent) {
+    const value = (ev.target as HTMLInputElement).value;
+    this._code = value;
+    fireEvent(this, "pairing-code-changed", { code: value });
+  }
+
+  static styles = [sharedStyles];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "matter-add-device-apple-home": MatterAddDeviceAppleHome;
+  }
+}

@@ -1,0 +1,156 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import { stateColorCss } from "../../common/entity/state_color";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import "../../components/ha-control-button";
+import "../../components/ha-control-switch";
+import "../../components/ha-state-icon";
+import { apiContext } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
+import { forwardHaptic } from "../../data/haptics";
+import { stateControlToggleStyle } from "../../resources/state-control-styles";
+import type { HomeAssistantApi } from "../../types";
+
+@customElement("ha-state-control-valve-toggle")
+export class HaStateControlValveToggle extends LitElement {
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @property({ attribute: false }) public stateObj!: HassEntity;
+
+  private _valueChanged(ev) {
+    const checked = ev.target.checked as boolean;
+
+    if (checked) {
+      this._turnOn();
+    } else {
+      this._turnOff();
+    }
+  }
+
+  private _turnOn() {
+    this._callService(true);
+  }
+
+  private _turnOff() {
+    this._callService(false);
+  }
+
+  private async _callService(turnOn): Promise<void> {
+    if (!this.stateObj) {
+      return;
+    }
+    forwardHaptic(this, "light");
+
+    await this._api.callService(
+      "valve",
+      turnOn ? "open_valve" : "close_valve",
+      {
+        entity_id: this.stateObj.entity_id,
+      }
+    );
+  }
+
+  protected render(): TemplateResult {
+    const onColor = stateColorCss(this.stateObj, "open");
+    const offColor = stateColorCss(this.stateObj, "closed");
+
+    const isOn =
+      this.stateObj.state === "open" ||
+      this.stateObj.state === "closing" ||
+      this.stateObj.state === "opening";
+    const isOff = this.stateObj.state === "closed";
+
+    if (
+      this.stateObj.attributes.assumed_state ||
+      this.stateObj.state === UNKNOWN
+    ) {
+      return html`
+        <div class="buttons">
+          <ha-control-button
+            .label=${this._localize("ui.card.valve.open_valve")}
+            @click=${this._turnOn}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
+            class=${classMap({
+              active: isOn,
+            })}
+            style=${styleMap({
+              "--color": onColor,
+            })}
+          >
+            <ha-state-icon
+              .stateObj=${this.stateObj}
+              stateValue="open"
+            ></ha-state-icon>
+          </ha-control-button>
+          <ha-control-button
+            .label=${this._localize("ui.card.valve.close_valve")}
+            @click=${this._turnOff}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
+            class=${classMap({
+              active: isOff,
+            })}
+            style=${styleMap({
+              "--color": offColor,
+            })}
+          >
+            <ha-state-icon
+              .stateObj=${this.stateObj}
+              stateValue="closed"
+            ></ha-state-icon>
+          </ha-control-button>
+        </div>
+      `;
+    }
+
+    return html`
+      <ha-control-switch
+        touch-action="none"
+        vertical
+        reversed
+        .checked=${isOn}
+        @change=${this._valueChanged}
+        .label=${
+          isOn
+            ? this._localize("ui.card.valve.close_valve")
+            : this._localize("ui.card.valve.open_valve")
+        }
+        style=${styleMap({
+          "--control-switch-on-color": onColor,
+          "--control-switch-off-color": offColor,
+        })}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+      >
+        <ha-state-icon
+          slot="icon-on"
+          .stateObj=${this.stateObj}
+          stateValue="open"
+        ></ha-state-icon>
+        <ha-state-icon
+          slot="icon-off"
+          .stateObj=${this.stateObj}
+          stateValue="closed"
+        ></ha-state-icon>
+      </ha-control-switch>
+    `;
+  }
+
+  static styles = [stateControlToggleStyle];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-state-control-valve-toggle": HaStateControlValveToggle;
+  }
+}

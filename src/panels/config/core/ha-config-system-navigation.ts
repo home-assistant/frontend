@@ -1,0 +1,296 @@
+import { mdiPower } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { canShowPage } from "../../../common/config/can_show_page";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import type { BackupContent } from "../../../data/backup";
+import { fetchBackupInfo } from "../../../data/backup";
+import type { CloudStatus } from "../../../data/cloud";
+import { fetchCloudStatus } from "../../../data/cloud";
+import type { HardwareInfo } from "../../../data/hardware";
+import { BOARD_NAMES } from "../../../data/hardware";
+import type {
+  HassioHassOSInfo,
+  HassioHostInfo,
+} from "../../../data/hassio/host";
+import {
+  fetchHassioHassOsInfo,
+  fetchHassioHostInfo,
+} from "../../../data/hassio/host";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { fetchLabFeatures } from "../../../data/labs";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
+import "../../../layouts/hass-subpage";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-config-navigation-list";
+import "../ha-config-section";
+import { configSections } from "../config-sections";
+
+@customElement("ha-config-system-navigation")
+class HaConfigSystemNavigation extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
+
+  @state() private _latestBackupDate?: Date;
+
+  @state() private _boardName?: string;
+
+  @state() private _storageInfo?: { used: number; free: number; total: number };
+
+  @state() private _externalAccess = false;
+
+  @state() private _labFeatures?: LabPreviewFeature[];
+
+  protected render(): TemplateResult {
+    const pages = configSections.general
+      .filter((page) => canShowPage(this.hass, page))
+      .map((page) => {
+        let description: string;
+
+        switch (page.translationKey) {
+          case "backup":
+            description = this._latestBackupDate
+              ? this.hass.localize("ui.panel.config.backup.description", {
+                  relative_time: relativeTime(
+                    this._latestBackupDate,
+                    this.hass.locale
+                  ),
+                })
+              : this.hass.localize(
+                  "ui.panel.config.backup.description_no_backup"
+                );
+            break;
+          case "network":
+            description = this.hass.localize(
+              "ui.panel.config.network.description",
+              {
+                state: this._externalAccess
+                  ? this.hass.localize("ui.panel.config.network.enabled")
+                  : this.hass.localize("ui.panel.config.network.disabled"),
+              }
+            );
+            break;
+          case "storage":
+            description = this._storageInfo
+              ? this.hass.localize("ui.panel.config.storage.description", {
+                  percent_used: `${Math.round(
+                    ((this._storageInfo.total - this._storageInfo.free) /
+                      this._storageInfo.total) *
+                      100
+                  )}${blankBeforePercent(this.hass.locale)}%`,
+                  free_space: `${this._storageInfo.free} GB`,
+                })
+              : "";
+            break;
+          case "hardware":
+            description =
+              this._boardName ||
+              this.hass.localize("ui.panel.config.hardware.description");
+            break;
+          case "labs":
+            description =
+              this._labFeatures && this._labFeatures.some((f) => f.enabled)
+                ? this.hass.localize("ui.panel.config.labs.description_enabled")
+                : this.hass.localize("ui.panel.config.labs.description");
+            break;
+
+          default:
+            description = this.hass.localize(
+              `ui.panel.config.${page.translationKey}.description`
+            );
+            break;
+        }
+
+        return {
+          ...page,
+          name: page.translationKey
+            ? this.hass.localize(
+                `ui.panel.config.${page.translationKey}.caption`
+              )
+            : page.name,
+          description,
+        };
+      });
+
+    return html`
+      <hass-subpage
+        .hass=${this.hass}
+        back-path="/config"
+        .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
+        .narrow=${this.narrow}
+      >
+        <ha-icon-button
+          slot="toolbar-icon"
+          .path=${mdiPower}
+          .label=${this.hass.localize(
+            "ui.panel.config.system_dashboard.restart_homeassistant"
+          )}
+          @click=${this._showRestartDialog}
+        ></ha-icon-button>
+        <ha-config-section
+          .narrow=${this.narrow}
+          .isWide=${this.isWide}
+          full-width
+        >
+          <ha-card outlined>
+            <ha-config-navigation-list
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .pages=${pages}
+              has-secondary
+              .label=${this.hass.localize(
+                "ui.panel.config.dashboard.system.main"
+              )}
+            ></ha-config-navigation-list>
+          </ha-card>
+        </ha-config-section>
+      </hass-subpage>
+    `;
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
+    super.firstUpdated(_changedProperties);
+
+    this._fetchNetworkStatus();
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
+    this._fetchBackupInfo();
+    this._fetchHardwareInfo(isHassioLoaded);
+    this._fetchLabFeatures();
+    if (isHassioLoaded) {
+      this._fetchStorageInfo();
+    }
+  }
+
+  private async _fetchBackupInfo() {
+    const backups: BackupContent[] = isComponentLoaded(
+      this.hass.config,
+      "backup"
+    )
+      ? await fetchBackupInfo(this.hass).then(
+          (backupData) => backupData.backups
+        )
+      : [];
+
+    if (backups.length > 0) {
+      this._latestBackupDate = backups
+        .map((backup) => new Date(backup.date))
+        .reduce((a, b) => (a > b ? a : b));
+    }
+  }
+
+  private async _fetchHardwareInfo(isHassioLoaded: boolean) {
+    if (isComponentLoaded(this.hass.config, "hardware")) {
+      const hardwareInfo: HardwareInfo = await this.hass.callWS({
+        type: "hardware/info",
+      });
+      this._boardName =
+        hardwareInfo?.hardware.find((hw) => hw.board !== null)?.name ??
+        undefined;
+    } else if (isHassioLoaded) {
+      const osData: HassioHassOSInfo = await fetchHassioHassOsInfo(this.hass);
+      if (osData.board) {
+        this._boardName = BOARD_NAMES[osData.board];
+      }
+    }
+  }
+
+  private async _fetchStorageInfo() {
+    const hostInfo: HassioHostInfo = await fetchHassioHostInfo(this.hass);
+    this._storageInfo = {
+      used: hostInfo.disk_used,
+      free: hostInfo.disk_free,
+      total: hostInfo.disk_total,
+    };
+  }
+
+  private async _fetchNetworkStatus() {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
+      const cloudStatus = await fetchCloudStatus(this.hass);
+      if (cloudStatus.logged_in) {
+        this._externalAccess = true;
+        return;
+      }
+    }
+    this._externalAccess = this.hass.config.external_url != null;
+  }
+
+  private async _fetchLabFeatures() {
+    if (isComponentLoaded(this.hass.config, "labs")) {
+      this._labFeatures = await fetchLabFeatures(this.hass);
+    }
+  }
+
+  private async _showRestartDialog() {
+    showRestartDialog(this);
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host(:not([narrow])) ha-card {
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
+        }
+
+        ha-config-section {
+          margin: auto;
+          margin-top: -32px;
+          max-width: 600px;
+        }
+
+        ha-card {
+          overflow: hidden;
+          margin-bottom: 24px;
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
+        }
+
+        ha-card a {
+          text-decoration: none;
+          color: var(--primary-text-color);
+        }
+
+        .title {
+          font-size: var(--ha-font-size-l);
+          padding: 16px;
+          padding-bottom: 0;
+        }
+
+        .restart-section {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          margin-bottom: 24px;
+        }
+
+        @media all and (max-width: 600px) {
+          ha-card {
+            border-width: 1px 0;
+            border-radius: var(--ha-border-radius-square);
+            box-shadow: unset;
+          }
+          ha-config-section {
+            margin-top: -42px;
+          }
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-system-navigation": HaConfigSystemNavigation;
+  }
+}

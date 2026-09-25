@@ -1,0 +1,273 @@
+import {
+  mdiAlphaABoxOutline,
+  mdiClose,
+  mdiDotsVertical,
+  mdiGrid,
+  mdiListBoxOutline,
+} from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import type {
+  MediaPickedEvent,
+  MediaPlayerBrowseAction,
+  MediaPlayerItem,
+  MediaPlayerLayoutType,
+} from "../../data/media-player";
+import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import "../ha-dialog-header";
+import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
+import "../ha-dropdown-item";
+import "../ha-icon-button-arrow-prev";
+import "../ha-dialog";
+import "./ha-media-manage-button";
+import "./ha-media-player-browse";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "./ha-media-player-browse";
+import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
+
+@customElement("dialog-media-player-browse")
+class DialogMediaPlayerBrowse extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _currentItem?: MediaPlayerItem;
+
+  @state() private _navigateIds?: MediaPlayerItemId[];
+
+  @state() private _params?: MediaPlayerBrowseDialogParams;
+
+  @state() _preferredLayout: MediaPlayerLayoutType = "auto";
+
+  @state() private _open = false;
+
+  @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
+
+  public showDialog(params: MediaPlayerBrowseDialogParams): void {
+    this._params = params;
+    this._navigateIds = params.navigateIds || [
+      {
+        media_content_id: undefined,
+        media_content_type: undefined,
+      },
+    ];
+    this._open = true;
+  }
+
+  public closeDialog() {
+    this._open = false;
+    this._params = undefined;
+    this._navigateIds = undefined;
+    this._currentItem = undefined;
+    this._preferredLayout = "auto";
+    this.classList.remove("opened");
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected render() {
+    if (!this._params || !this._navigateIds) {
+      return nothing;
+    }
+
+    return html`
+      <ha-dialog
+        .open=${this._open}
+        width="large"
+        flexcontent
+        @closed=${this.closeDialog}
+        @opened=${this._dialogOpened}
+      >
+        <ha-dialog-header show-border slot="header">
+          ${
+            this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    slot="navigationIcon"
+                    @click=${this._goBack}
+                  ></ha-icon-button-arrow-prev>
+                `
+              : nothing
+          }
+          <span slot="title">
+            ${
+              !this._currentItem
+                ? this.hass.localize(
+                    "ui.components.media-browser.media-player-browser"
+                  )
+                : this._currentItem.title
+            }
+          </span>
+          <ha-media-manage-button
+            slot="actionItems"
+            .currentItem=${this._currentItem}
+            @media-refresh=${this._refreshMedia}
+          ></ha-media-manage-button>
+          <ha-dropdown
+            slot="actionItems"
+            @wa-select=${this._handleMenuAction}
+            @closed=${stopPropagation}
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-dropdown-item value="auto">
+              <ha-svg-icon
+                class=${
+                  this._preferredLayout === "auto" ? "selected_menu_item" : ""
+                }
+                slot="icon"
+                .path=${mdiAlphaABoxOutline}
+              ></ha-svg-icon>
+              ${this.hass.localize("ui.components.media-browser.auto")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="grid">
+              <ha-svg-icon
+                class=${
+                  this._preferredLayout === "grid" ? "selected_menu_item" : ""
+                }
+                slot="icon"
+                .path=${mdiGrid}
+              ></ha-svg-icon>
+              ${this.hass.localize("ui.components.media-browser.grid")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="list">
+              <ha-svg-icon
+                slot="icon"
+                class=${
+                  this._preferredLayout === "list" ? "selected_menu_item" : ""
+                }
+                .path=${mdiListBoxOutline}
+              ></ha-svg-icon>
+              ${this.hass.localize("ui.components.media-browser.list")}
+            </ha-dropdown-item>
+          </ha-dropdown>
+          <ha-icon-button
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+            data-dialog="close"
+            slot="actionItems"
+          ></ha-icon-button>
+        </ha-dialog-header>
+        <ha-media-player-browse
+          dialog
+          .hass=${this.hass}
+          .entityId=${this._params.entityId}
+          .navigateIds=${this._navigateIds}
+          .action=${this._action}
+          .preferredLayout=${this._preferredLayout}
+          .accept=${this._params.accept}
+          .defaultId=${this._params.defaultId}
+          .defaultType=${this._params.defaultType}
+          .hideContentType=${this._params.hideContentType}
+          .contentIdHelper=${this._params.contentIdHelper}
+          @close-dialog=${this.closeDialog}
+          @media-picked=${this._mediaPicked}
+          @media-browsed=${this._mediaBrowsed}
+        ></ha-media-player-browse>
+      </ha-dialog>
+    `;
+  }
+
+  private _dialogOpened() {
+    this.classList.add("opened");
+  }
+
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+    switch (action) {
+      case "auto":
+        this._preferredLayout = "auto";
+        break;
+      case "grid":
+        this._preferredLayout = "grid";
+        break;
+      case "list":
+        this._preferredLayout = "list";
+        break;
+    }
+  }
+
+  private _goBack() {
+    this._navigateIds = this._navigateIds?.slice(0, -1);
+    this._currentItem = undefined;
+  }
+
+  private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
+    this._navigateIds = ev.detail.ids;
+    this._currentItem = ev.detail.current;
+  }
+
+  private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
+    this._params!.mediaPickedCallback(ev.detail);
+    if (this._action !== "play") {
+      this.closeDialog();
+    }
+  }
+
+  private get _action(): MediaPlayerBrowseAction {
+    return this._params!.action || "play";
+  }
+
+  private _refreshMedia() {
+    this._browser.refresh();
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleDialog,
+      haStyleDialogFixedTop,
+      css`
+        ha-dialog {
+          --dialog-content-padding: 0;
+        }
+
+        ha-media-player-browse {
+          --media-browser-max-height: calc(
+            100vh - 65px - var(--safe-area-inset-y)
+          );
+          height: 100vh;
+          height: 100dvh;
+        }
+
+        :host(.opened) ha-media-player-browse {
+          height: calc(100vh - 65px - var(--safe-area-inset-y));
+        }
+
+        @media (min-width: 800px) {
+          ha-dialog {
+            --ha-dialog-max-width: 800px;
+            --ha-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
+          }
+          ha-media-player-browse {
+            position: initial;
+            --media-browser-max-height: calc(
+              100vh - 145px - var(--safe-area-inset-y)
+            );
+          }
+        }
+
+        ha-dialog-header ha-media-manage-button {
+          --mdc-theme-primary: var(--primary-text-color);
+          margin: 6px;
+          display: block;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-media-player-browse": DialogMediaPlayerBrowse;
+  }
+}

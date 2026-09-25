@@ -1,0 +1,132 @@
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import type {
+  BackupContentExtended,
+  BackupData,
+} from "../../../../data/backup";
+import type { HomeAssistant } from "../../../../types";
+import "./ha-backup-data-picker";
+
+@customElement("ha-backup-details-restore")
+class HaBackupDetailsRestore extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @property({ type: Object }) public backup!: BackupContentExtended;
+
+  @property({ type: Boolean, attribute: "ha-required" })
+  public haRequired = false;
+
+  @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
+    "page-onboarding.restore" | "config.backup" = "config.backup";
+
+  @state() private _selectedData?: BackupData;
+
+  protected willUpdate() {
+    if (!this.hasUpdated && this.haRequired) {
+      this._selectedData = {
+        homeassistant_included: true,
+        folders: [],
+        addons: [],
+        homeassistant_version: this.backup.homeassistant_version,
+        database_included: this.backup.database_included,
+      };
+    }
+  }
+
+  render() {
+    return html`
+      <ha-card>
+        <div class="card-header">
+          ${this._localize(
+            `ui.panel.${this.translationKeyPanel}.details.restore.title`
+          )}
+        </div>
+        <div class="card-content">
+          <ha-backup-data-picker
+            .translationKeyPanel=${this.translationKeyPanel}
+            .hass=${this.hass}
+            .data=${this.backup}
+            .value=${this._selectedData}
+            @value-changed=${this._selectedBackupChanged}
+            .requiredItems=${this._isHomeAssistantRequired(this.haRequired)}
+          >
+          </ha-backup-data-picker>
+        </div>
+        <div class="card-actions">
+          <ha-button
+            @click=${this._restore}
+            .disabled=${this._isRestoreDisabled}
+            variant="danger"
+            appearance="plain"
+          >
+            ${this._localize(
+              `ui.panel.${this.translationKeyPanel}.details.restore.action`
+            )}
+          </ha-button>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _restore() {
+    fireEvent(this, "backup-restore", { selectedData: this._selectedData });
+  }
+
+  private _selectedBackupChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._selectedData = ev.detail.value;
+  }
+
+  private _isHomeAssistantRequired = memoizeOne((required: boolean) =>
+    required ? ["config"] : []
+  );
+
+  private get _isRestoreDisabled(): boolean {
+    return (
+      !this._selectedData ||
+      (this.haRequired && !this._selectedData.homeassistant_included) ||
+      !(
+        this._selectedData?.database_included ||
+        this._selectedData?.homeassistant_included ||
+        this._selectedData.addons.length ||
+        this._selectedData.folders.length
+      )
+    );
+  }
+
+  static styles = css`
+    :host {
+      max-width: 690px;
+      width: 100%;
+      margin: 0 auto;
+      gap: var(--ha-space-6);
+      display: grid;
+    }
+    .card-content {
+      padding: 0 20px;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-backup-details-restore": HaBackupDetailsRestore;
+  }
+  interface HASSDomEvents {
+    "backup-restore": { selectedData?: BackupData };
+  }
+}

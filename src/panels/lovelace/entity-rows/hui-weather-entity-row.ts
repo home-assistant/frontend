@@ -1,0 +1,282 @@
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import "../../../components/ha-state-icon";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
+import {
+  getDefaultForecastType,
+  getForecast,
+  getSecondaryWeatherAttribute,
+  getWeatherStateIcon,
+  subscribeForecast,
+  weatherSVGStyles,
+} from "../../../data/weather";
+import type { HomeAssistant } from "../../../types";
+import type { EntitiesCardEntityConfig } from "../cards/types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
+import type { LovelaceRow } from "./types";
+import "../../../state-display/state-display";
+
+@customElement("hui-weather-entity-row")
+class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: EntitiesCardEntityConfig;
+
+  @state() private _forecastEvent?: ForecastEvent;
+
+  @state() private _subscribed?: Promise<() => void>;
+
+  private _unsubscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  private async _subscribeForecastEvents() {
+    this._unsubscribeForecastEvents();
+    if (!this.hass || !this._config || !this.isConnected) {
+      return;
+    }
+    const stateObj = this.hass!.states[this._config!.entity];
+    const forecastType = getDefaultForecastType(stateObj);
+    if (forecastType) {
+      this._subscribed = subscribeForecast(
+        this.hass!.connection,
+        stateObj.entity_id,
+        forecastType,
+        (event) => {
+          this._forecastEvent = event;
+        }
+      );
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeForecastEvents();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeForecastEvents();
+  }
+
+  public setConfig(config: EntitiesCardEntityConfig): void {
+    if (!config?.entity) {
+      throw new Error("Entity must be specified");
+    }
+
+    this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_config") || !this._subscribed) {
+      this._subscribeForecastEvents();
+    }
+  }
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
+
+    if (!stateObj) {
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
+      `;
+    }
+
+    const pointer = hasAnyAction(this._config);
+
+    const hasSecondary = this._config.secondary_info;
+    const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
+
+    const forecastData = getForecast(stateObj.attributes, this._forecastEvent);
+    const forecast = forecastData?.forecast;
+
+    const name = this.hass!.formatEntityName(stateObj, this._config.name);
+
+    return html`
+      <div
+        class="icon-image ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+        tabindex=${ifDefined(
+          !this._config.tap_action || hasAction(this._config.tap_action)
+            ? "0"
+            : undefined
+        )}
+      >
+        ${
+          weatherStateIcon ||
+          html`
+            <ha-state-icon
+              class="weather-icon"
+              .stateObj=${stateObj}
+            ></ha-state-icon>
+          `
+        }
+      </div>
+      <div
+        class="info ${classMap({
+          pointer,
+          "text-content": !hasSecondary,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
+        ${name}
+        ${
+          hasSecondary
+            ? html`
+                <div class="secondary">
+                  <state-display
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                    .content=${this._config.secondary_info}
+                    .timeFormat=${this._config.time_format}
+                    .name=${name}
+                    timestamp-tooltip
+                  >
+                  </state-display>
+                </div>
+              `
+            : ""
+        }
+      </div>
+      <div
+        class="attributes ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
+        <div>
+          ${
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN ||
+            stateObj.attributes.temperature === undefined ||
+            stateObj.attributes.temperature === null
+              ? this.hass.formatEntityState(stateObj)
+              : this.hass.formatEntityAttributeValue(stateObj, "temperature")
+          }
+        </div>
+        <div class="secondary">
+          ${getSecondaryWeatherAttribute(this.hass!, stateObj, forecast!)}
+        </div>
+      </div>
+    `;
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      weatherSVGStyles,
+      css`
+        :host {
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+        }
+
+        .info {
+          margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
+          flex: 1 0 60px;
+        }
+
+        .info,
+        .info > * {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .icon-image {
+          display: flex;
+          align-items: center;
+          min-width: 40px;
+        }
+
+        .icon-image > * {
+          flex: 0 0 40px;
+          height: 40px;
+        }
+
+        .icon-image:focus {
+          outline: none;
+          background-color: var(--divider-color);
+          border-radius: var(--ha-border-radius-circle);
+        }
+
+        .weather-icon {
+          --mdc-icon-size: 40px;
+        }
+
+        .pointer {
+          cursor: pointer;
+        }
+
+        .attributes {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: right;
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+        }
+
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-weather-entity-row": HuiWeatherEntityRow;
+  }
+}

@@ -1,0 +1,86 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { AreaRegistryEntry } from "../../../data/area/area_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
+import type { FloorRegistryEntry } from "../../../data/floor_registry";
+import type { HomeAssistant } from "../../../types";
+import { getDeviceAreaId } from "./get_device_context";
+
+interface EntityContext {
+  entity: EntityRegistryDisplayEntry | null;
+  device: DeviceRegistryEntry | null;
+  parentDevice: DeviceRegistryEntry | null;
+  area: AreaRegistryEntry | null;
+  floor: FloorRegistryEntry | null;
+}
+
+export const getEntityContext = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+): EntityContext => {
+  const entry = entities[stateObj.entity_id] as
+    EntityRegistryDisplayEntry | undefined;
+
+  if (!entry) {
+    return {
+      entity: null,
+      device: null,
+      parentDevice: null,
+      area: null,
+      floor: null,
+    };
+  }
+  return getEntityEntryContext(entry, entities, devices, areas, floors);
+};
+
+export const getEntityAreaId = (
+  entityId: string,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"]
+): string | undefined => {
+  const entry = entities[entityId];
+  if (!entry) return undefined;
+  const deviceId = entry.device_id;
+  const device = deviceId ? devices[deviceId] : undefined;
+  return (
+    entry.area_id ||
+    (device ? getDeviceAreaId(device, devices) : undefined) ||
+    undefined
+  );
+};
+
+export const getEntityEntryContext = (
+  entry:
+    EntityRegistryDisplayEntry | EntityRegistryEntry | ExtEntityRegistryEntry,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+): EntityContext => {
+  const entity = entities[entry.entity_id];
+  const deviceId = entry?.device_id;
+  const device = deviceId ? devices[deviceId] : undefined;
+  const parentDevice = device?.parent_device_id
+    ? devices[device.parent_device_id]
+    : undefined;
+  const areaId =
+    entry?.area_id || (device ? getDeviceAreaId(device, devices) : undefined);
+  const area = areaId ? areas[areaId] : undefined;
+  const floorId = area?.floor_id;
+  const floor = floorId ? floors[floorId] : undefined;
+
+  return {
+    entity: entity,
+    device: device || null,
+    parentDevice: parentDevice || null,
+    area: area || null,
+    floor: floor || null,
+  };
+};

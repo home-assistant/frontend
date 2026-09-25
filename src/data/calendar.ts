@@ -1,0 +1,293 @@
+import {
+  computeCssColor,
+  isValidColorString,
+  resolveThemeColor,
+} from "../common/color/compute-color";
+import { getColorByIndex } from "../common/color/colors";
+import { getContrastedColorHex, isOpaqueColor } from "../common/color/rgb";
+import { computeDomain } from "../common/entity/compute_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
+import type { HomeAssistant } from "../types";
+import { UNAVAILABLE } from "./entity/entity";
+import type { EntityRegistryEntry } from "./entity/entity_registry";
+
+export interface Calendar {
+  entity_id: string;
+  name?: string;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
+/** Object used to render a calendar event in fullcalendar. */
+export interface CalendarEvent {
+  title: string;
+  start: string;
+  end?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  textColor?: string;
+  calendar: string;
+  eventData: CalendarEventData;
+  [key: string]: any;
+}
+
+/** Data returned from the core APIs. */
+export interface CalendarEventData {
+  uid?: string;
+  recurrence_id?: string;
+  summary: string;
+  dtstart: string;
+  dtend: string;
+  rrule?: string;
+  description?: string;
+  location?: string;
+}
+
+export interface CalendarEventMutableParams {
+  summary: string;
+  dtstart: string;
+  dtend: string;
+  rrule?: string;
+  description?: string;
+  location?: string;
+}
+
+// The scope of a delete/update for a recurring event
+export enum RecurrenceRange {
+  THISEVENT = "",
+  THISANDFUTURE = "THISANDFUTURE",
+}
+
+export enum CalendarEntityFeature {
+  CREATE_EVENT = 1,
+  DELETE_EVENT = 2,
+  UPDATE_EVENT = 4,
+}
+
+/** Type for date values that can come from REST API or subscription */
+type CalendarDateValue = string | { dateTime: string } | { date: string };
+
+export const fetchCalendarEvents = async (
+  hass: HomeAssistant,
+  start: Date,
+  end: Date,
+  calendars: Calendar[]
+): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
+  const params = encodeURI(
+    `?start=${start.toISOString()}&end=${end.toISOString()}`
+  );
+
+  const calEvents: CalendarEvent[] = [];
+  const errors: string[] = [];
+  const promises: Promise<CalendarEventApiData[]>[] = [];
+
+  calendars.forEach((cal) => {
+    promises.push(
+      hass.callApi<CalendarEventApiData[]>(
+        "GET",
+        `calendars/${cal.entity_id}${params}`
+      )
+    );
+  });
+
+  for (const [idx, promise] of promises.entries()) {
+    let result: CalendarEventApiData[];
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      result = await promise;
+    } catch (_err) {
+      errors.push(calendars[idx].entity_id);
+      continue;
+    }
+    const cal = calendars[idx];
+    result.forEach((ev) => {
+      const normalized = normalizeSubscriptionEventData(ev, cal);
+      if (normalized) {
+        calEvents.push(normalized);
+      }
+    });
+  }
+
+  return { events: calEvents, errors };
+};
+
+export const getCalendarColors = (
+  color: string | null | undefined,
+  index: number,
+  computedStyles: CSSStyleDeclaration
+): { backgroundColor: string; textColor?: string } => {
+  // Fall back to a color by index when the entity has none set
+  const resolved =
+    color && isValidColorString(color)
+      ? color
+      : getColorByIndex(index, computedStyles);
+  // A theme color stays a CSS variable in the background, so the text color
+  // comes from what that variable holds for this element.
+  const background = resolveThemeColor(resolved, computedStyles);
+  return {
+    backgroundColor: computeCssColor(resolved),
+    // A background we cannot measure keeps the color fullcalendar picks itself
+    textColor: isOpaqueColor(background)
+      ? getContrastedColorHex(background)
+      : undefined,
+  };
+};
+
+export const getCalendars = (
+  hass: HomeAssistant,
+  element: Element,
+  entityRegistry?: EntityRegistryEntry[]
+): Calendar[] => {
+  const computedStyles = getComputedStyle(element);
+  const entityOptionsMap = new Map(
+    entityRegistry?.map((entry) => [entry.entity_id, entry.options]) ?? []
+  );
+  return Object.keys(hass.states)
+    .filter(
+      (eid) =>
+        computeDomain(eid) === "calendar" &&
+        hass.states[eid].state !== UNAVAILABLE &&
+        hass.entities[eid]?.hidden !== true
+    )
+    .sort()
+    .map((eid, idx) => {
+      const stateObj = hass.states[eid];
+      const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
+      return {
+        ...stateObj,
+        name: computeStateName(stateObj),
+        ...getCalendarColors(entityColor, idx, computedStyles),
+      };
+    });
+};
+
+export const createCalendarEvent = (
+  hass: HomeAssistant,
+  entityId: string,
+  event: CalendarEventMutableParams
+) =>
+  hass.callWS<undefined>({
+    type: "calendar/event/create",
+    entity_id: entityId,
+    event: event,
+  });
+
+export const updateCalendarEvent = (
+  hass: HomeAssistant,
+  entityId: string,
+  uid: string,
+  event: CalendarEventMutableParams,
+  recurrence_id?: string,
+  recurrence_range?: RecurrenceRange
+) =>
+  hass.callWS<undefined>({
+    type: "calendar/event/update",
+    entity_id: entityId,
+    uid,
+    recurrence_id,
+    recurrence_range,
+    event,
+  });
+
+export const deleteCalendarEvent = (
+  hass: HomeAssistant,
+  entityId: string,
+  uid: string,
+  recurrence_id?: string,
+  recurrence_range?: RecurrenceRange
+) =>
+  hass.callWS<undefined>({
+    type: "calendar/event/delete",
+    entity_id: entityId,
+    uid,
+    recurrence_id,
+    recurrence_range,
+  });
+
+/**
+ * Calendar event data from both REST API and WebSocket subscription.
+ * Both APIs use the same data format.
+ */
+export interface CalendarEventApiData {
+  summary: string;
+  start: CalendarDateValue;
+  end: CalendarDateValue;
+  description?: string | null;
+  location?: string | null;
+  uid?: string | null;
+  recurrence_id?: string | null;
+  rrule?: string | null;
+}
+
+export interface CalendarEventSubscription {
+  events: CalendarEventApiData[] | null;
+}
+
+export const subscribeCalendarEvents = (
+  hass: HomeAssistant,
+  entity_id: string,
+  start: Date,
+  end: Date,
+  callback: (update: CalendarEventSubscription) => void
+) =>
+  hass.connection.subscribeMessage<CalendarEventSubscription>(callback, {
+    type: "calendar/event/subscribe",
+    entity_id,
+    start: start.toISOString(),
+    end: end.toISOString(),
+  });
+
+const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
+  if (typeof dateObj === "string") {
+    return dateObj;
+  }
+
+  if ("dateTime" in dateObj) {
+    return dateObj.dateTime;
+  }
+
+  if ("date" in dateObj) {
+    return dateObj.date;
+  }
+
+  return undefined;
+};
+
+/**
+ * Normalize calendar event data from API format to internal format.
+ * Handles both REST API format (with dateTime/date objects) and subscription format (strings).
+ * Converts to internal format with { dtstart, dtend, ... }
+ */
+export const normalizeSubscriptionEventData = (
+  eventData: CalendarEventApiData,
+  calendar: Calendar
+): CalendarEvent | null => {
+  const eventStart = getCalendarDate(eventData.start);
+  const eventEnd = getCalendarDate(eventData.end);
+
+  if (!eventStart || !eventEnd) {
+    return null;
+  }
+
+  const normalizedEventData: CalendarEventData = {
+    summary: eventData.summary,
+    dtstart: eventStart,
+    dtend: eventEnd,
+    description: eventData.description ?? undefined,
+    location: eventData.location ?? undefined,
+    uid: eventData.uid ?? undefined,
+    recurrence_id: eventData.recurrence_id ?? undefined,
+    rrule: eventData.rrule ?? undefined,
+  };
+
+  return {
+    start: eventStart,
+    end: eventEnd,
+    title: eventData.summary,
+    backgroundColor: calendar.backgroundColor,
+    borderColor: calendar.backgroundColor,
+    textColor: calendar.textColor,
+    calendar: calendar.entity_id,
+    eventData: normalizedEventData,
+  };
+};

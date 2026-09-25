@@ -1,0 +1,251 @@
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-picker";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
+import "../../../../components/ha-selector/ha-selector-select";
+import "../../../../components/input/ha-input";
+import type { InputNumber } from "../../../../data/input_number";
+import { unitOfMeasurementOptions } from "../../../../data/number";
+import type { SelectSelector } from "../../../../data/selector";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+
+const UNIT_SELECTOR: SelectSelector = {
+  select: {
+    mode: "dropdown",
+    translation_key: "sensor_unit_of_measurement",
+    custom_value: true,
+    sort: true,
+    options: unitOfMeasurementOptions,
+  },
+} as const;
+
+@customElement("ha-input_number-form")
+class HaInputNumberForm extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public new = false;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  private _item?: Partial<InputNumber>;
+
+  @state() private _name!: string;
+
+  @state() private _icon!: string;
+
+  @state() private _max?: number;
+
+  @state() private _min?: number;
+
+  @state() private _mode?: string;
+
+  @state() private _step?: number;
+
+  // eslint-disable-next-line: variable-name
+  @state() private _unit_of_measurement?: string;
+
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
+  /* Configuring initial value is intentionally not supported because the behavior
+     compared to restoring the value after restart is hard to explain */
+  set item(item: InputNumber) {
+    this._item = item;
+    if (item) {
+      this._name = item.name || "";
+      this._icon = item.icon || "";
+      this._max = item.max ?? 100;
+      this._min = item.min ?? 0;
+      this._mode = item.mode || "slider";
+      this._step = item.step ?? 1;
+      this._unit_of_measurement = item.unit_of_measurement;
+    } else {
+      this._item = {
+        min: 0,
+        max: 100,
+      };
+      this._name = "";
+      this._icon = "";
+      this._max = 100;
+      this._min = 0;
+      this._mode = "slider";
+      this._step = 1;
+    }
+  }
+
+  public focus() {
+    this.updateComplete.then(() => this._focusElement?.focus());
+  }
+
+  protected render() {
+    if (!this.hass) {
+      return nothing;
+    }
+
+    return html`
+      <div class="form">
+        <ha-input
+          .value=${this._name}
+          .configValue=${"name"}
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.name"
+          )}
+          auto-validate
+          required
+          .validationMessage=${this.hass!.localize(
+            "ui.dialogs.helper_settings.required_error_msg"
+          )}
+          dialogInitialFocus
+          .disabled=${this.disabled}
+        ></ha-input>
+        <ha-icon-picker
+          .value=${this._icon}
+          .configValue=${"icon"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.icon"
+          )}
+          .disabled=${this.disabled}
+        ></ha-icon-picker>
+        <ha-input
+          .value=${this._min !== undefined ? String(this._min) : ""}
+          .configValue=${"min"}
+          type="number"
+          step="any"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_number.min"
+          )}
+          .disabled=${this.disabled}
+        ></ha-input>
+        <ha-input
+          .value=${this._max !== undefined ? String(this._max) : ""}
+          .configValue=${"max"}
+          type="number"
+          step="any"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_number.max"
+          )}
+          .disabled=${this.disabled}
+        ></ha-input>
+
+        <ha-radio-group
+          orientation="horizontal"
+          class="mode"
+          .label=${this.hass.localize(
+            "ui.dialogs.helper_settings.input_number.mode"
+          )}
+          .value=${this._mode}
+          .disabled=${this.disabled}
+          name="mode"
+          @change=${this._modeChanged}
+        >
+          <ha-radio-option value="slider">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_number.slider"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="box">
+            ${this.hass.localize("ui.dialogs.helper_settings.input_number.box")}
+          </ha-radio-option>
+        </ha-radio-group>
+        <ha-input
+          .value=${this._step !== undefined ? String(this._step) : ""}
+          .configValue=${"step"}
+          type="number"
+          step="any"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_number.step"
+          )}
+          .disabled=${this.disabled}
+        ></ha-input>
+
+        <ha-selector-select
+          .hass=${this.hass}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_number.unit_of_measurement"
+          )}
+          .selector=${UNIT_SELECTOR}
+          .disabled=${this.disabled}
+          .value=${this._unit_of_measurement || ""}
+          .configValue=${"unit_of_measurement"}
+          @value-changed=${this._valueChanged}
+        >
+        </ha-selector-select>
+      </div>
+    `;
+  }
+
+  private _modeChanged(ev: Event) {
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this._item,
+        mode: (ev.currentTarget as HaRadioGroup).value,
+      },
+    });
+  }
+
+  private _valueChanged(ev: CustomEvent) {
+    if (!this.new && !this._item) {
+      return;
+    }
+    ev.stopPropagation();
+    const target = ev.target as any;
+    const configValue = target.configValue;
+    const value =
+      target.type === "number"
+        ? Number(target.value)
+        : ev.detail?.value || target.value;
+
+    if (this[`_${configValue}`] === value) {
+      return;
+    }
+    const newValue = { ...this._item };
+    if (value === undefined || value === "") {
+      delete newValue[configValue];
+    } else {
+      newValue[configValue] = value;
+    }
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .form {
+          color: var(--primary-text-color);
+        }
+        ha-input {
+          --ha-input-padding-bottom: 0;
+        }
+
+        ha-icon-picker,
+        ha-input:not([required]) {
+          display: block;
+          margin-bottom: var(--ha-space-5);
+          --ha-input-padding-bottom: 0;
+        }
+
+        .mode {
+          margin-bottom: var(--ha-space-4);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-input_number-form": HaInputNumberForm;
+  }
+}

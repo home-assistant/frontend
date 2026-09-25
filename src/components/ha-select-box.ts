@@ -1,0 +1,268 @@
+import { consume, type ContextType } from "@lit/context";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
+import { fireEvent } from "../common/dom/fire_event";
+import { computeRTL } from "../common/util/compute_rtl";
+import { internationalizationContext, uiContext } from "../data/context";
+import "./radio/ha-radio-group";
+import type { HaRadioGroup } from "./radio/ha-radio-group";
+import "./radio/ha-radio-option";
+
+interface SelectBoxOptionImage {
+  src: string;
+  src_dark?: string;
+  flip_rtl?: boolean;
+}
+
+export interface SelectBoxOption {
+  label?: string;
+  description?: string;
+  image?: string | SelectBoxOptionImage;
+  value: string;
+  disabled?: boolean;
+}
+
+@customElement("ha-select-box")
+export class HaSelectBox extends LitElement {
+  @property({ attribute: false }) public options: SelectBoxOption[] = [];
+
+  @property({ attribute: false }) public value?: string;
+
+  @property({ type: Boolean }) public disabled?: boolean;
+
+  @property({ type: Number, attribute: "max_columns" })
+  public maxColumns?: number;
+
+  @property({ type: Boolean, attribute: "stacked_image" })
+  public stackedImage = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n?: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  protected _ui?: ContextType<typeof uiContext>;
+
+  render() {
+    const maxColumns = this.maxColumns ?? 3;
+    const columns = Math.min(maxColumns, this.options.length);
+
+    return html`
+      <ha-radio-group
+        class="list"
+        style=${styleMap({ "--columns": columns })}
+        .value=${this.value}
+        ?disabled=${this.disabled}
+        @change=${this._radioChanged}
+      >
+        ${this.options.map((option) => this._renderOption(option))}
+      </ha-radio-group>
+    `;
+  }
+
+  private _renderOption(option: SelectBoxOption) {
+    const horizontal = this.maxColumns === 1 && !this.stackedImage;
+    const stacked = this.maxColumns === 1 && this.stackedImage;
+    const disabled = option.disabled || this.disabled || false;
+    const selected = option.value === this.value;
+
+    const isDark = this._ui?.themes.darkMode || false;
+    const isRTL = this._i18n
+      ? computeRTL(
+          this._i18n.language,
+          this._i18n.translationMetadata.translations
+        )
+      : false;
+
+    const imageSrc =
+      typeof option.image === "object"
+        ? (isDark && option.image.src_dark) || option.image.src
+        : option.image;
+    const imageFlip =
+      typeof option.image === "object" ? isRTL && option.image.flip_rtl : false;
+
+    return html`
+      <label
+        class="option ${classMap({
+          horizontal: horizontal,
+          stacked: stacked,
+          selected: selected,
+        })}"
+        ?disabled=${disabled}
+      >
+        <div class="content">
+          <ha-radio-option
+            aria-describedby=${ifDefined(
+              option.description ? `desc-${option.value}` : undefined
+            )}
+            aria-labelledby=${`label-${option.value}`}
+            .value=${option.value}
+            .disabled=${option.disabled || false}
+          ></ha-radio-option>
+          <div class="text">
+            <span id=${`label-${option.value}`} class="label"
+              >${option.label}</span
+            >
+            ${
+              option.description
+                ? html`<span class="description" id="desc-${option.value}"
+                    >${option.description}</span
+                  >`
+                : nothing
+            }
+          </div>
+        </div>
+        ${
+          imageSrc
+            ? html`
+                <img
+                  class=${imageFlip ? "flipped" : ""}
+                  alt=""
+                  src=${imageSrc}
+                />
+              `
+            : nothing
+        }
+      </label>
+    `;
+  }
+
+  private _radioChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const radio = ev.currentTarget as HaRadioGroup;
+    const value = radio.value;
+    if (this.disabled || value === undefined || value === (this.value ?? "")) {
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: value,
+    });
+  }
+
+  static styles = css`
+    .list::part(form-control-input) {
+      display: grid;
+      grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
+      gap: var(--ha-space-3);
+    }
+    .option {
+      position: relative;
+      display: block;
+      border: 1px solid var(--divider-color);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      gap: var(--ha-space-2);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .option .content {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      gap: var(--ha-space-2);
+      min-width: 0;
+      width: 100%;
+    }
+    .option .content ha-radio-option {
+      --ha-radio-option-control-margin: 0;
+      margin: 0;
+      flex: none;
+    }
+    .option .content .text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-1);
+      min-width: 0;
+      flex: 1;
+      justify-content: center;
+    }
+    .option .content .text .label {
+      color: var(--primary-text-color);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .option .content .text .description {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
+    }
+    img {
+      position: relative;
+      max-width: var(--ha-select-box-image-size, 96px);
+      max-height: var(--ha-select-box-image-size, 96px);
+      margin: auto;
+    }
+
+    .flipped {
+      transform: scaleX(-1);
+    }
+
+    .option.horizontal {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .option.horizontal img {
+      margin: 0;
+    }
+
+    .option.stacked {
+      align-items: stretch;
+    }
+
+    .option.stacked img {
+      max-width: 100%;
+      max-height: var(--ha-select-box-image-size, 96px);
+      margin: 0;
+    }
+
+    .option:before {
+      content: "";
+      display: block;
+      inset: 0;
+      position: absolute;
+      background-color: transparent;
+      pointer-events: none;
+      opacity: 0.2;
+      transition:
+        background-color 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
+    .option:hover:before {
+      background-color: var(--divider-color);
+    }
+    .option.selected:before {
+      background-color: var(--primary-color);
+    }
+    .option[disabled] {
+      cursor: not-allowed;
+    }
+    .option[disabled] .content,
+    .option[disabled] img {
+      opacity: 0.5;
+    }
+    .option[disabled]:before {
+      background-color: var(--disabled-color);
+      opacity: 0.05;
+    }
+  `;
+}
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-select-box": HaSelectBox;
+  }
+}

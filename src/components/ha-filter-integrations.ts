@@ -1,0 +1,256 @@
+import type { SelectedDetail } from "@material/mwc-list";
+import { consume, type ContextType } from "@lit/context";
+import { mdiFilterVariantRemove } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { fireEvent } from "../common/dom/fire_event";
+import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { internationalizationContext, manifestsContext } from "../data/context";
+import type { IntegrationManifest } from "../data/integration";
+import { domainToName } from "../data/integration";
+import { haStyleScrollbar } from "../resources/styles";
+import "./ha-check-list-item";
+import "./ha-domain-icon";
+import "./ha-expansion-panel";
+import "./ha-list";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
+
+@customElement("ha-filter-integrations")
+export class HaFilterIntegrations extends LitElement {
+  @property({ attribute: false }) public value?: string[];
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, reflect: true }) public expanded = false;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: manifestsContext, subscribe: true })
+  @state()
+  private _manifests?: ContextType<typeof manifestsContext>;
+
+  private _manifestList = memoizeOne(
+    (manifests: ContextType<typeof manifestsContext>) =>
+      Object.values(manifests)
+  );
+
+  @state() private _filter?: string;
+
+  private _content = createRef<HTMLElement>();
+
+  private _panel = new FilterPanelController(this, this._content);
+
+  protected render() {
+    const manifests = this._manifests
+      ? this._manifestList(this._manifests)
+      : undefined;
+
+    return html`
+      <ha-expansion-panel
+        left-chevron
+        .expanded=${this.expanded}
+        @expanded-changed=${this._expandedChanged}
+      >
+        <div slot="header" class="header">
+          ${this._localize("ui.panel.config.integrations.caption")}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
+        </div>
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`<div class="content" ${ref(this._content)}>
+              ${
+                manifests
+                  ? html`<ha-input-search
+                        appearance="outlined"
+                        .value=${this._filter}
+                        @input=${this._handleSearchChange}
+                      >
+                      </ha-input-search>
+                      <ha-list
+                        class="ha-scrollbar"
+                        @selected=${this._itemSelected}
+                        multi
+                      >
+                        ${repeat(
+                          this._integrations(
+                            this._localize,
+                            manifests,
+                            this._filter,
+                            this.value,
+                            this._i18n.locale.language
+                          ),
+                          (i) => i.domain,
+                          (integration) =>
+                            html`<ha-check-list-item
+                              .value=${integration.domain}
+                              .selected=${(this.value || []).includes(
+                                integration.domain
+                              )}
+                              graphic="icon"
+                            >
+                              <ha-domain-icon
+                                slot="graphic"
+                                .domain=${integration.domain}
+                                brand-fallback
+                              ></ha-domain-icon>
+                              ${integration.name}
+                            </ha-check-list-item>`
+                        )}
+                      </ha-list>`
+                  : nothing
+              }
+            </div>`
+          : nothing
+      }
+    `;
+  }
+
+  private _expandedChanged(ev) {
+    this.expanded = ev.detail.expanded;
+  }
+
+  protected firstUpdated() {
+    this._i18n.loadBackendTranslation("title");
+  }
+
+  private _integrations = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      manifest: IntegrationManifest[],
+      filter: string | undefined,
+      _value: string[] | undefined,
+      language: string
+    ) =>
+      manifest
+        .map((mnfst) => ({
+          ...mnfst,
+          name: domainToName(localize, mnfst.domain, mnfst),
+        }))
+        .filter(
+          (mnfst) =>
+            (!mnfst.integration_type ||
+              !["entity", "system", "hardware"].includes(
+                mnfst.integration_type
+              )) &&
+            (!filter ||
+              mnfst.name.toLowerCase().includes(filter) ||
+              mnfst.domain.toLowerCase().includes(filter))
+        )
+        .sort((a, b) => stringCompare(a.name, b.name, language))
+  );
+
+  private _itemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
+    if (!this._manifests) {
+      return;
+    }
+
+    const integrations = this._integrations(
+      this._localize,
+      this._manifestList(this._manifests),
+      this._filter,
+      this.value,
+      this._i18n.locale.language
+    );
+
+    const visibleDomains = new Set(integrations.map((i) => i.domain));
+    const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));
+    const selected = [...ev.detail.index]
+      .map((i) => integrations[i]?.domain)
+      .filter((d): d is string => !!d);
+
+    this.value = [...preserved, ...selected];
+
+    fireEvent(this, "data-table-filter-changed", {
+      value: this.value.length ? this.value : undefined,
+      items: undefined,
+    });
+  }
+
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      filterPanelStyles,
+      css`
+        ha-list {
+          flex: 1;
+          min-height: 0;
+        }
+        .header {
+          display: flex;
+          align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
+        }
+        ha-check-list-item {
+          --mdc-list-item-graphic-margin: var(--ha-space-4);
+        }
+        .badge {
+          display: inline-block;
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: 0;
+          min-width: 16px;
+          box-sizing: border-box;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          background-color: var(--primary-color);
+          line-height: var(--ha-line-height-normal);
+          text-align: center;
+          padding: 0px 2px;
+          color: var(--text-primary-color);
+        }
+        ha-input-search {
+          display: block;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-filter-integrations": HaFilterIntegrations;
+  }
+}

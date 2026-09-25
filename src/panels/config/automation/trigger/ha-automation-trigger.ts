@@ -1,0 +1,313 @@
+import { consume } from "@lit/context";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/ha-button";
+import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type Trigger,
+  type TriggerList,
+} from "../../../../data/automation";
+import { triggerDescriptionsContext } from "../../../../data/context";
+import type { TriggerDescriptions } from "../../../../data/trigger";
+import { isTriggerList } from "../../../../data/trigger";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
+import {
+  getAddAutomationElementTargetFromQuery,
+  PASTE_VALUE,
+  showAddAutomationElementDialog,
+} from "../show-add-automation-element-dialog";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
+import { automationRowsStyles } from "../styles";
+import { stripGeneratedTriggerIds } from "./automation-trigger-id";
+import "./ha-automation-trigger-row";
+import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
+
+@customElement("ha-automation-trigger")
+export default class HaAutomationTrigger extends AutomationSortableListMixin<Trigger>(
+  LitElement
+) {
+  @property({ attribute: false }) public triggers!: Trigger[];
+
+  @property({ attribute: false }) public highlightedTriggers?: Trigger[];
+
+  @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
+
+  @state()
+  @consume({ context: triggerDescriptionsContext, subscribe: true })
+  private _triggerDescriptions: TriggerDescriptions = {};
+
+  private _openedAddDialogFromQuery = false;
+
+  protected get items(): Trigger[] {
+    return this.triggers;
+  }
+
+  protected set items(items: Trigger[]) {
+    this.triggers = items;
+  }
+
+  protected setHighlightedItems(items: Trigger[]) {
+    this.highlightedTriggers = items;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("triggers");
+  }
+
+  protected render() {
+    return html`
+      <ha-sortable
+        handle-selector=".handle"
+        draggable-selector="ha-automation-trigger-row"
+        .disabled=${this.disabled}
+        group="triggers"
+        invert-swap
+        @item-moved=${this.itemMoved}
+        @item-added=${this.itemAdded}
+        @item-removed=${this.itemRemoved}
+      >
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
+          ${repeat(
+            this.triggers,
+            (trigger) => this.getKey(trigger),
+            (trg, idx) => html`
+              <ha-automation-trigger-row
+                .sortableData=${trg}
+                .index=${idx}
+                .first=${idx === 0}
+                .last=${idx === this.triggers.length - 1}
+                .trigger=${trg}
+                .triggerDescriptions=${this._triggerDescriptions}
+                @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
+                @insert-after=${this.insertAfter}
+                @move-down=${this.moveDown}
+                @move-up=${this.moveUp}
+                @value-changed=${this.itemChanged}
+                .hass=${this.hass}
+                .disabled=${this.disabled}
+                .narrow=${this.narrow}
+                .highlight=${this.highlightedTriggers?.includes(trg)}
+                .optionsInSidebar=${this.optionsInSidebar}
+                .sortSelected=${this.rowSortSelected === idx}
+                @stop-sort-selection=${this.stopSortSelection}
+              >
+                ${
+                  !this.disabled
+                    ? html`
+                        <div
+                          tabindex="0"
+                          class="handle ${
+                            this.rowSortSelected === idx ? "active" : ""
+                          }"
+                          slot="icons"
+                          @keydown=${this.handleDragKeydown}
+                          @click=${stopPropagation}
+                          .index=${idx}
+                        >
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
+                        </div>
+                      `
+                    : nothing
+                }
+              </ha-automation-trigger-row>
+            `
+          )}
+          <div class="buttons">
+            <ha-button
+              .disabled=${this.disabled}
+              @click=${this._addTriggerDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "m" : "s"}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.add"
+              )}
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+            </ha-button>
+          </div>
+        </div>
+      </ha-sortable>
+    `;
+  }
+
+  private _addTriggerDialog() {
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
+    showAddAutomationElementDialog(this, {
+      type: "trigger",
+      add: this._addTrigger,
+      clipboardItem: !this._clipboard?.trigger
+        ? undefined
+        : isTriggerList(this._clipboard.trigger)
+          ? "list"
+          : this._clipboard?.trigger?.trigger,
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
+    });
+  }
+
+  private _addTrigger = (value: string, target?: HassServiceTarget) => {
+    let triggers: Trigger[];
+    if (value === PASTE_VALUE) {
+      triggers = this.triggers.concat(
+        stripGeneratedTriggerIds(deepClone(this._clipboard!.trigger!))
+      );
+    } else if (isDynamic(value)) {
+      triggers = this.triggers.concat({
+        trigger: getValueFromDynamic(value),
+        target,
+      });
+    } else {
+      const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
+      const elClass = customElements.get(
+        `ha-automation-trigger-${trigger}`
+      ) as CustomElementConstructor & {
+        defaultConfig: Trigger;
+      };
+      triggers = this.triggers.concat({
+        ...elClass.defaultConfig,
+        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
+      });
+    }
+    this.focusLastItemOnChange = true;
+    fireEvent(this, "value-changed", { value: triggers });
+  };
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    if (!this.hass) {
+      return;
+    }
+
+    const addTriggerTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      "trigger"
+    );
+
+    if (changedProps.has("triggers") && addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.triggers.length === 0 &&
+      addTriggerTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addTriggerDialog());
+    } else if (this._openedAddDialogFromQuery && !addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      changedProps.has("triggers") &&
+      (this.focusLastItemOnChange || this.focusItemIndexOnChange !== undefined)
+    ) {
+      const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
+        `ha-automation-trigger-row:${this.focusLastItemOnChange ? "last-of-type" : `nth-of-type(${this.focusItemIndexOnChange! + 1})`}`
+      )!;
+
+      this.focusLastItemOnChange = false;
+      this.focusItemIndexOnChange = undefined;
+
+      row.updateComplete.then(() => {
+        if (this.optionsInSidebar) {
+          row.openSidebar();
+          if (this.narrow) {
+            row.scrollIntoView({
+              block: "start",
+              behavior: "smooth",
+            });
+          }
+        } else {
+          row.expand();
+          row.focus();
+        }
+        row.markAsNew();
+      });
+    }
+  }
+
+  public expandAll() {
+    const triggerRows =
+      this.shadowRoot!.querySelectorAll<HaAutomationTriggerRow>(
+        "ha-automation-trigger-row"
+      )!;
+    triggerRows.forEach((row) => {
+      row.expand();
+    });
+  }
+
+  protected override duplicateItem(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(
+        index + 1,
+        0,
+        stripGeneratedTriggerIds(deepClone(this.items[index]))
+      ),
+    });
+  }
+
+  protected override pasteItem(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.item) return;
+
+    const index = (ev.target as any).index;
+    const clonedItem = stripGeneratedTriggerIds(deepClone(ev.detail.item));
+
+    this.setHighlightedItems(ensureArray(clonedItem));
+
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(index + 1, 0, clonedItem),
+    });
+  }
+
+  protected override insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value).map((item) =>
+      stripGeneratedTriggerIds(deepClone(item))
+    );
+    this.setHighlightedItems(inserted);
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(index + 1, 0, ...inserted),
+    });
+  }
+
+  static styles = automationRowsStyles;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger": HaAutomationTrigger;
+  }
+}

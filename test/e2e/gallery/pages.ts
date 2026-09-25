@@ -1,0 +1,117 @@
+import type { GalleryPageSmokeCase } from "./helpers";
+
+export const componentPages: GalleryPageSmokeCase[] = [
+  { name: "ha-alert", selector: "demo-components-ha-alert" },
+  { name: "ha-badge", selector: "demo-components-ha-badge" },
+  { name: "ha-bar", selector: "demo-components-ha-bar" },
+  { name: "ha-button", selector: "demo-components-ha-button" },
+  { name: "ha-chips", selector: "demo-components-ha-chips" },
+  { name: "ha-control-button", selector: "demo-components-ha-control-button" },
+  {
+    name: "ha-control-circular-slider",
+    selector: "demo-components-ha-control-circular-slider",
+  },
+  {
+    name: "ha-control-number-buttons",
+    selector: "demo-components-ha-control-number-buttons",
+  },
+  {
+    name: "ha-control-select-menu",
+    selector: "demo-components-ha-control-select-menu",
+  },
+  { name: "ha-control-select", selector: "demo-components-ha-control-select" },
+  { name: "ha-control-slider", selector: "demo-components-ha-control-slider" },
+  { name: "ha-control-switch", selector: "demo-components-ha-control-switch" },
+  { name: "ha-dialog", selector: "demo-components-ha-dialog" },
+  { name: "ha-dropdown", selector: "demo-components-ha-dropdown" },
+  {
+    name: "ha-expansion-panel",
+    selector: "demo-components-ha-expansion-panel",
+  },
+  { name: "ha-faded", selector: "demo-components-ha-faded" },
+  { name: "ha-form", selector: "demo-components-ha-form" },
+  { name: "ha-gauge", selector: "demo-components-ha-gauge" },
+  {
+    name: "ha-hs-color-picker",
+    selector: "demo-components-ha-hs-color-picker",
+  },
+  { name: "ha-input", selector: "demo-components-ha-input" },
+  { name: "ha-label-badge", selector: "demo-components-ha-label-badge" },
+  { name: "ha-list", selector: "demo-components-ha-list" },
+  { name: "ha-marquee-text", selector: "demo-components-ha-marquee-text" },
+  {
+    name: "ha-progress-button",
+    selector: "demo-components-ha-progress-button",
+  },
+  { name: "ha-select-box", selector: "demo-components-ha-select-box" },
+  { name: "ha-selector", selector: "demo-components-ha-selector" },
+  { name: "ha-slider", selector: "demo-components-ha-slider" },
+  { name: "ha-spinner", selector: "demo-components-ha-spinner" },
+  { name: "ha-switch", selector: "demo-components-ha-switch" },
+  { name: "ha-textarea", selector: "demo-components-ha-textarea" },
+  { name: "ha-tip", selector: "demo-components-ha-tip" },
+  { name: "ha-tooltip", selector: "demo-components-ha-tooltip" },
+  {
+    name: "ha-adaptive-dialog",
+    selector: "demo-components-ha-adaptive-dialog",
+  },
+  {
+    name: "ha-adaptive-popover",
+    selector: "demo-components-ha-adaptive-popover",
+  },
+];
+
+export const moreInfoPages: GalleryPageSmokeCase[] = [
+  { name: "light", selector: "demo-more-info-light" },
+  { name: "climate", selector: "demo-more-info-climate" },
+  { name: "cover", selector: "demo-more-info-cover" },
+  { name: "fan", selector: "demo-more-info-fan" },
+  { name: "humidifier", selector: "demo-more-info-humidifier" },
+  { name: "input-number", selector: "demo-more-info-input-number" },
+  { name: "input-text", selector: "demo-more-info-input-text" },
+  { name: "lawn-mower", selector: "demo-more-info-lawn-mower" },
+  { name: "lock", selector: "demo-more-info-lock" },
+  { name: "media-player", selector: "demo-more-info-media-player" },
+  { name: "number", selector: "demo-more-info-number" },
+  { name: "scene", selector: "demo-more-info-scene" },
+  { name: "timer", selector: "demo-more-info-timer" },
+  { name: "update", selector: "demo-more-info-update" },
+  { name: "vacuum", selector: "demo-more-info-vacuum" },
+  { name: "water-heater", selector: "demo-more-info-water-heater" },
+];
+
+export const lovelacePages: GalleryPageSmokeCase[] = [
+  { name: "area-card", selector: "demo-lovelace-area-card" },
+  { name: "conditional-card", selector: "demo-lovelace-conditional-card" },
+  { name: "entities-card", selector: "demo-lovelace-entities-card" },
+  { name: "entity-button-card", selector: "demo-lovelace-entity-button-card" },
+  { name: "entity-filter-card", selector: "demo-lovelace-entity-filter-card" },
+  { name: "gauge-card", selector: "demo-lovelace-gauge-card" },
+  { name: "glance-card", selector: "demo-lovelace-glance-card" },
+  {
+    name: "grid-and-stack-card",
+    selector: "demo-lovelace-grid-and-stack-card",
+  },
+  { name: "iframe-card", selector: "demo-lovelace-iframe-card" },
+  { name: "light-card", selector: "demo-lovelace-light-card" },
+  { name: "map-card", selector: "demo-lovelace-map-card" },
+  { name: "markdown-card", selector: "demo-lovelace-markdown-card" },
+  { name: "media-control-card", selector: "demo-lovelace-media-control-card" },
+  { name: "media-player-row", selector: "demo-lovelace-media-player-row" },
+  { name: "picture-card", selector: "demo-lovelace-picture-card" },
+  {
+    name: "picture-elements-card",
+    selector: "demo-lovelace-picture-elements-card",
+  },
+  {
+    name: "picture-entity-card",
+    selector: "demo-lovelace-picture-entity-card",
+  },
+  {
+    name: "picture-glance-card",
+    selector: "demo-lovelace-picture-glance-card",
+  },
+  { name: "thermostat-card", selector: "demo-lovelace-thermostat-card" },
+  { name: "tile-card", selector: "demo-lovelace-tile-card" },
+  { name: "todo-list-card", selector: "demo-lovelace-todo-list-card" },
+];

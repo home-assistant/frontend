@@ -1,0 +1,766 @@
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
+import "../../../../components/input/ha-input";
+import type {
+  GridSourceTypeEnergyPreference,
+  PowerConfig,
+} from "../../../../data/energy";
+import {
+  emptyGridSourceEnergyPreference,
+  energyStatisticHelpUrl,
+} from "../../../../data/energy";
+import {
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../../data/recorder";
+import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import "./ha-energy-power-config";
+import {
+  buildPowerExcludeList,
+  getInitialPowerConfig,
+  getPowerHelperEntityId,
+  getPowerTypeFromConfig,
+  isPowerConfigValid,
+  type PowerType,
+} from "./power-config";
+import type { EnergySettingsGridDialogParams } from "./show-dialogs-energy";
+import type { HaInput } from "../../../../components/input/ha-input";
+
+const energyUnitClasses = ["energy"];
+
+type CostType = "no_cost" | "stat" | "entity" | "number";
+
+interface GridFormState {
+  source: GridSourceTypeEnergyPreference;
+  powerType: PowerType;
+  powerConfig: PowerConfig;
+  importCostType: CostType;
+  exportCostType: CostType;
+}
+
+@customElement("dialog-energy-grid-settings")
+export class DialogEnergyGridSettings
+  extends DirtyStateProviderMixin<GridFormState>()(LitElement)
+  implements HassDialog<EnergySettingsGridDialogParams>
+{
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _params?: EnergySettingsGridDialogParams;
+
+  @state() private _open = false;
+
+  @state() private _source?: GridSourceTypeEnergyPreference;
+
+  @state() private _powerType: PowerType = "none";
+
+  @state() private _powerConfig: PowerConfig = {};
+
+  @state() private _importCostType: CostType = "no_cost";
+
+  @state() private _exportCostType: CostType = "no_cost";
+
+  @state() private _energy_units?: string[];
+
+  @state() private _error?: string;
+
+  private _excludeList?: string[];
+
+  private _excludeListPower?: string[];
+
+  public async showDialog(
+    params: EnergySettingsGridDialogParams
+  ): Promise<void> {
+    this._params = params;
+    this._source = params.source
+      ? { ...params.source }
+      : emptyGridSourceEnergyPreference();
+
+    // Initialize power type and config from existing source
+    this._powerType = getPowerTypeFromConfig(
+      params.source?.power_config,
+      params.source?.stat_rate
+    );
+    this._powerConfig = getInitialPowerConfig(
+      params.source?.power_config,
+      params.source?.stat_rate
+    );
+
+    // Initialize import cost type
+    if (params.source?.stat_cost) {
+      this._importCostType = "stat";
+    } else if (params.source?.entity_energy_price) {
+      this._importCostType = "entity";
+    } else if (
+      params.source?.number_energy_price !== null &&
+      params.source?.number_energy_price !== undefined
+    ) {
+      this._importCostType = "number";
+    } else {
+      this._importCostType = "no_cost";
+    }
+
+    // Initialize export cost type
+    if (params.source?.stat_compensation) {
+      this._exportCostType = "stat";
+    } else if (params.source?.entity_energy_price_export) {
+      this._exportCostType = "entity";
+    } else if (
+      params.source?.number_energy_price_export !== null &&
+      params.source?.number_energy_price_export !== undefined
+    ) {
+      this._exportCostType = "number";
+    } else {
+      this._exportCostType = "no_cost";
+    }
+
+    this._energy_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
+    ).units;
+
+    // Build energy exclude list
+    const allSources: string[] = [];
+    this._params.grid_sources.forEach((entry) => {
+      if (entry.stat_energy_from) allSources.push(entry.stat_energy_from);
+      if (entry.stat_energy_to) allSources.push(entry.stat_energy_to);
+    });
+    this._excludeList = allSources.filter(
+      (id) =>
+        id !== this._source?.stat_energy_from &&
+        id !== this._source?.stat_energy_to
+    );
+
+    // Build power exclude list using shared helper
+    this._excludeListPower = buildPowerExcludeList(
+      this._params.grid_sources,
+      this._powerConfig,
+      params.source?.stat_rate
+    );
+
+    this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        source: this._source!,
+        powerType: this._powerType,
+        powerConfig: this._powerConfig,
+        importCostType: this._importCostType,
+        exportCostType: this._exportCostType,
+      }
+    );
+  }
+
+  public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
+    this._params = undefined;
+    this._source = undefined;
+    this._powerType = "none";
+    this._powerConfig = {};
+    this._importCostType = "no_cost";
+    this._exportCostType = "no_cost";
+    this._error = undefined;
+    this._excludeList = undefined;
+    this._excludeListPower = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected render() {
+    if (!this._params || !this._source) {
+      return nothing;
+    }
+
+    const hasExport = !!this._source.stat_energy_to;
+
+    // External statistics (from integrations) cannot use entity/number cost tracking
+    const externalImportSource =
+      this._source.stat_energy_from &&
+      isExternalStatistic(this._source.stat_energy_from);
+    const externalExportSource =
+      this._source.stat_energy_to &&
+      isExternalStatistic(this._source.stat_energy_to);
+
+    return html`
+      <ha-dialog
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.grid.dialog.header"
+        )}
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
+      >
+        ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
+          .includeUnitClass=${energyUnitClasses}
+          .value=${this._source.stat_energy_from}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.energy_from_grid"
+          )}
+          .excludeStatistics=${[
+            ...(this._excludeList || []),
+            this._source.stat_energy_to,
+          ].filter((id): id is string => Boolean(id))}
+          @value-changed=${this._statisticFromChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.energy_from_helper",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
+          autofocus
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
+          .includeUnitClass=${energyUnitClasses}
+          .value=${this._source.stat_energy_to}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.energy_to_grid"
+          )}
+          .excludeStatistics=${[
+            ...(this._excludeList || []),
+            this._source.stat_energy_from,
+          ].filter((id): id is string => Boolean(id))}
+          @value-changed=${this._statisticToChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.energy_to_helper",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
+        ></ha-statistic-picker>
+
+        <ha-input
+          class="name"
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.display_name"
+          )}
+          type="text"
+          .disabled=${!(
+            this._source?.stat_energy_from || this._source?.stat_energy_to
+          )}
+          .value=${this._source?.name || ""}
+          .placeholder=${
+            this._source?.stat_energy_from
+              ? getStatisticLabel(
+                  this.hass,
+                  this._source.stat_energy_from,
+                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                )
+              : this._source?.stat_energy_to
+                ? getStatisticLabel(
+                    this.hass,
+                    this._source.stat_energy_to,
+                    this._params?.statsMetadata?.[this._source.stat_energy_to]
+                  )
+                : ""
+          }
+          @input=${this._nameChanged}
+        >
+        </ha-input>
+
+        <p class="section-label">
+          ${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.import_cost"
+          )}
+        </p>
+        <p class="section-description">
+          ${this.hass.localize(
+            "ui.panel.config.energy.grid.dialog.import_cost_para"
+          )}
+        </p>
+
+        <ha-radio-group
+          .value=${this._importCostType}
+          name="importCostType"
+          @change=${this._handleImportCostTypeChanged}
+        >
+          <ha-radio-option value="no_cost">
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.no_cost_tracking"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="stat">
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.cost_stat"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="entity" .disabled=${externalImportSource}>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.cost_entity"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="number" .disabled=${externalImportSource}>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.dialog.cost_number"
+            )}
+          </ha-radio-option>
+        </ha-radio-group>
+
+        ${
+          this._importCostType === "stat"
+            ? html`
+                <ha-statistic-picker
+                  .hass=${this.hass}
+                  .value=${this._source.stat_cost}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.cost_stat_label"
+                  )}
+                  @value-changed=${this._statCostChanged}
+                ></ha-statistic-picker>
+              `
+            : nothing
+        }
+        ${
+          this._importCostType === "entity"
+            ? html`
+                <ha-entity-picker
+                  .value=${this._source.entity_energy_price}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.cost_entity_label"
+                  )}
+                  include-domains='["sensor", "input_number"]'
+                  @value-changed=${this._entityCostChanged}
+                ></ha-entity-picker>
+              `
+            : nothing
+        }
+        ${
+          this._importCostType === "number"
+            ? html`
+                <ha-input
+                  .value=${
+                    this._source.number_energy_price !== null
+                      ? String(this._source.number_energy_price)
+                      : ""
+                  }
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.cost_number_label"
+                  )}
+                  type="number"
+                  step="any"
+                  @input=${this._numberCostChanged}
+                >
+                  <span slot="end">${this.hass.config.currency}/kWh</span>
+                </ha-input>
+              `
+            : nothing
+        }
+        ${
+          hasExport
+            ? html`
+                <p class="section-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.export_compensation"
+                  )}
+                </p>
+                <p class="section-description">
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.export_compensation_para"
+                  )}
+                </p>
+
+                <ha-radio-group
+                  .value=${this._exportCostType}
+                  name="exportCostType"
+                  @change=${this._handleExportCostTypeChanged}
+                >
+                  <ha-radio-option value="no_cost">
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.no_compensation_tracking"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option value="stat">
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.compensation_stat"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option
+                    value="entity"
+                    .disabled=${externalExportSource}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.compensation_entity"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option
+                    value="number"
+                    .disabled=${externalExportSource}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.compensation_number"
+                    )}
+                  </ha-radio-option>
+                </ha-radio-group>
+
+                ${
+                  this._exportCostType === "stat"
+                    ? html`
+                        <ha-statistic-picker
+                          .hass=${this.hass}
+                          .value=${this._source.stat_compensation}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.dialog.compensation_stat_label"
+                          )}
+                          @value-changed=${this._statCompensationChanged}
+                        ></ha-statistic-picker>
+                      `
+                    : nothing
+                }
+                ${
+                  this._exportCostType === "entity"
+                    ? html`
+                        <ha-entity-picker
+                          .value=${this._source.entity_energy_price_export}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.dialog.compensation_entity_label"
+                          )}
+                          include-domains='["sensor", "input_number"]'
+                          @value-changed=${this._entityCompensationChanged}
+                        ></ha-entity-picker>
+                      `
+                    : nothing
+                }
+                ${
+                  this._exportCostType === "number"
+                    ? html`
+                        <ha-input
+                          .value=${
+                            this._source.number_energy_price_export !== null
+                              ? String(this._source.number_energy_price_export)
+                              : ""
+                          }
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.dialog.compensation_number_label"
+                          )}
+                          type="number"
+                          step="any"
+                          @input=${this._numberCompensationChanged}
+                        >
+                          <span slot="end"
+                            >${this.hass.config.currency}/kWh</span
+                          >
+                        </ha-input>
+                      `
+                    : nothing
+                }
+              `
+            : nothing
+        }
+
+        <ha-energy-power-config
+          .hass=${this.hass}
+          .powerType=${this._powerType}
+          .powerConfig=${this._powerConfig}
+          .excludeList=${this._excludeListPower}
+          .helperEntityId=${getPowerHelperEntityId(
+            this._params.source,
+            this._powerConfig
+          )}
+          .localizeBaseKey=${"ui.panel.config.energy.grid.dialog"}
+          @power-config-changed=${this._handlePowerConfigChanged}
+        ></ha-energy-power-config>
+
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${
+              !this._isValid() || (!!this._params?.source && !this.isDirtyState)
+            }
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
+    `;
+  }
+
+  private _isValid(): boolean {
+    // Grid must have at least one of: import, export, or power
+    const hasImport = !!this._source?.stat_energy_from;
+    const hasExport = !!this._source?.stat_energy_to;
+    const hasPower = this._powerType !== "none";
+
+    if (!hasImport && !hasExport && !hasPower) {
+      return false;
+    }
+
+    // Check power config validity (if power is configured)
+    if (hasPower && !isPowerConfigValid(this._powerType, this._powerConfig)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private async _updateMetadata(statId: string) {
+    if (
+      statId &&
+      isExternalStatistic(statId) &&
+      this._params?.statsMetadata &&
+      !(statId in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [statId]);
+      if (metadata) {
+        this._params.statsMetadata[statId] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
+  }
+
+  private _statisticFromChanged(ev: ValueChangedEvent<string>) {
+    this._source = { ...this._source!, stat_energy_from: ev.detail.value };
+    // Reset cost type if switching to external statistic with incompatible cost type
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      (this._importCostType === "entity" || this._importCostType === "number")
+    ) {
+      this._importCostType = "no_cost";
+      this._source = {
+        ...this._source!,
+        entity_energy_price: null,
+        number_energy_price: null,
+      };
+    }
+    this._updateMetadata(ev.detail.value);
+    this._updateFormDirtyState();
+  }
+
+  private _statisticToChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      stat_energy_to: ev.detail.value || null,
+    };
+    // Clear export cost if export is removed
+    if (!ev.detail.value) {
+      this._exportCostType = "no_cost";
+      this._source = {
+        ...this._source!,
+        stat_compensation: null,
+        entity_energy_price_export: null,
+        number_energy_price_export: null,
+      };
+    } else if (
+      // Reset cost type if switching to external statistic with incompatible cost type
+      isExternalStatistic(ev.detail.value) &&
+      (this._exportCostType === "entity" || this._exportCostType === "number")
+    ) {
+      this._exportCostType = "no_cost";
+      this._source = {
+        ...this._source!,
+        entity_energy_price_export: null,
+        number_energy_price_export: null,
+      };
+    }
+    this._updateMetadata(ev.detail.value);
+    this._updateFormDirtyState();
+  }
+
+  private _nameChanged(ev: InputEvent) {
+    this._source = {
+      ...this._source!,
+      name: (ev.target as HaInput).value,
+    };
+    if (!this._source.name) {
+      delete this._source.name;
+    }
+    this._updateFormDirtyState();
+  }
+
+  private _handleImportCostTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ) {
+    this._importCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
+    // Clear other cost fields when switching types
+    this._source = {
+      ...this._source!,
+      stat_cost: null,
+      entity_energy_price: null,
+      number_energy_price: null,
+    };
+    this._updateFormDirtyState();
+  }
+
+  private _handleExportCostTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ) {
+    this._exportCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
+    // Clear other cost fields when switching types
+    this._source = {
+      ...this._source!,
+      stat_compensation: null,
+      entity_energy_price_export: null,
+      number_energy_price_export: null,
+    };
+    this._updateFormDirtyState();
+  }
+
+  private _statCostChanged(ev: ValueChangedEvent<string>) {
+    this._source = { ...this._source!, stat_cost: ev.detail.value || null };
+    this._updateFormDirtyState();
+  }
+
+  private _entityCostChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      entity_energy_price: ev.detail.value || null,
+    };
+    this._updateFormDirtyState();
+  }
+
+  private _numberCostChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
+    this._source = { ...this._source!, number_energy_price: value };
+    this._updateFormDirtyState();
+  }
+
+  private _statCompensationChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      stat_compensation: ev.detail.value || null,
+    };
+    this._updateFormDirtyState();
+  }
+
+  private _entityCompensationChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      entity_energy_price_export: ev.detail.value || null,
+    };
+    this._updateFormDirtyState();
+  }
+
+  private _numberCompensationChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
+    this._source = { ...this._source!, number_energy_price_export: value };
+    this._updateFormDirtyState();
+  }
+
+  private _handlePowerConfigChanged(
+    ev: HASSDomEvent<HASSDomEvents["power-config-changed"]>
+  ) {
+    this._powerType = ev.detail.powerType;
+    this._powerConfig = ev.detail.powerConfig;
+    this._updateFormDirtyState();
+  }
+
+  private _updateFormDirtyState(): void {
+    this._updateDirtyState({
+      source: this._source!,
+      powerType: this._powerType,
+      powerConfig: this._powerConfig,
+      importCostType: this._importCostType,
+      exportCostType: this._exportCostType,
+    });
+  }
+
+  private async _save() {
+    try {
+      const source: GridSourceTypeEnergyPreference = {
+        type: "grid",
+        stat_energy_from: this._source!.stat_energy_from,
+        stat_energy_to: this._source!.stat_energy_to,
+        stat_cost: this._source!.stat_cost,
+        stat_compensation: this._source!.stat_compensation,
+        entity_energy_price: this._source!.entity_energy_price,
+        number_energy_price: this._source!.number_energy_price,
+        entity_energy_price_export: this._source!.entity_energy_price_export,
+        number_energy_price_export: this._source!.number_energy_price_export,
+        cost_adjustment_day: this._source!.cost_adjustment_day,
+      };
+      if (this._source?.name) {
+        source.name = this._source.name;
+      }
+
+      // Only include power_config if a power type is selected
+      if (this._powerType !== "none") {
+        source.power_config = { ...this._powerConfig };
+      }
+
+      await this._params!.saveCallback(source);
+      this._markDirtyStateClean();
+      this.closeDialog();
+    } catch (err: any) {
+      this._error = err.message;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        ha-statistic-picker,
+        ha-entity-picker {
+          display: block;
+          margin-bottom: var(--ha-space-4);
+        }
+        ha-input {
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
+        }
+        ha-statistic-picker:last-of-type,
+        ha-entity-picker:last-of-type,
+        ha-input:last-of-type {
+          margin-bottom: 0;
+        }
+        ha-input.name {
+          margin-top: var(--ha-space-4);
+        }
+        ha-radio-group {
+          margin-bottom: var(--ha-space-4);
+        }
+        .section-label {
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-2);
+        }
+        .section-description {
+          margin-top: 0;
+          margin-bottom: var(--ha-space-2);
+          color: var(--secondary-text-color);
+          font-size: 0.875em;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-energy-grid-settings": DialogEnergyGridSettings;
+  }
+}

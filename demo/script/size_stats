@@ -1,0 +1,9 @@
+#!/bin/sh
+# Analyze stats
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/../.."
+
+./node_modules/.bin/gulp analyze-demo

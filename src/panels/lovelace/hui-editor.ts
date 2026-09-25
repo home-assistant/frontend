@@ -1,0 +1,314 @@
+import { mdiClose } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { array, assert, object, optional, string, type } from "superstruct";
+import { deepEqual } from "../../common/util/deep-equal";
+import "../../components/ha-button";
+import "../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../components/ha-yaml-editor";
+import "../../components/ha-icon-button";
+import "../../components/ha-top-app-bar-fixed";
+import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import { PreventUnsavedMixin } from "../../mixins/prevent-unsaved-mixin";
+import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import type { Lovelace } from "./types";
+
+const lovelaceStruct = type({
+  title: optional(string()),
+  views: array(object()),
+});
+
+const strategyStruct = type({
+  strategy: type({
+    type: string(),
+  }),
+});
+
+@customElement("hui-editor")
+class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
+  PreventUnsavedMixin(LitElement)
+) {
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public lovelace?: Lovelace;
+
+  @property({ attribute: false }) public closeEditor?: () => void;
+
+  @state() private _saving?: boolean;
+
+  private _config?: LovelaceRawConfig;
+
+  private _yamlError?: string;
+
+  protected render(): TemplateResult | undefined {
+    return html`
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
+        <ha-icon-button
+          slot="navigationIcon"
+          .path=${mdiClose}
+          @click=${this._closeEditor}
+          .label=${this.hass!.localize("ui.common.close")}
+        ></ha-icon-button>
+        <div slot="title">
+          ${this.hass!.localize("ui.panel.lovelace.editor.raw_editor.header")}
+        </div>
+        <div
+          slot="actionItems"
+          class="save-button
+              ${classMap({
+                saved: this._saving === false || this.isDirtyState,
+              })}"
+        >
+          ${
+            this.isDirtyState
+              ? this.hass!.localize(
+                  "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
+                )
+              : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")
+          }
+        </div>
+        <ha-button
+          slot="actionItems"
+          @click=${this._handleSave}
+          .disabled=${!this.isDirtyState}
+          >${this.hass!.localize(
+            "ui.panel.lovelace.editor.raw_editor.save"
+          )}</ha-button
+        >
+        <div class="content">
+          <ha-yaml-editor
+            autofocus
+            @value-changed=${this._yamlChanged}
+            @editor-save=${this._handleSave}
+            disable-fullscreen
+          >
+          </ha-yaml-editor>
+        </div>
+      </ha-top-app-bar-fixed>
+    `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
+    this._setValue();
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    const oldLovelace = changedProps.get("lovelace") as Lovelace | undefined;
+    if (
+      !this._saving &&
+      oldLovelace &&
+      this.lovelace &&
+      oldLovelace.rawConfig !== this.lovelace.rawConfig &&
+      !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
+    ) {
+      this._setValue();
+    }
+  }
+
+  private _setValue() {
+    this.yamlEditor.setValue(this.lovelace!.rawConfig);
+    // Baseline the dirty check against the loaded YAML so it resets on save.
+    this._initDirtyTracking(
+      { type: "custom", compare: (a, b) => a === b },
+      this.yamlEditor.yaml
+    );
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host {
+          --code-mirror-height: 100%;
+          --app-header-background-color: var(
+            --app-header-edit-background-color,
+            #455a64
+          );
+          --app-header-text-color: var(--app-header-edit-text-color, #fff);
+        }
+
+        .content {
+          height: calc(100vh - var(--header-height));
+        }
+
+        .comments {
+          font-size: var(--ha-font-size-l);
+        }
+
+        ha-yaml-editor {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          min-height: 0;
+        }
+
+        .save-button {
+          opacity: 0;
+          font-size: var(--ha-font-size-m);
+          padding: 0px 10px;
+        }
+
+        .saved {
+          opacity: 1;
+        }
+      `,
+    ];
+  }
+
+  private _yamlChanged(ev: CustomEvent) {
+    this._config = ev.detail.isValid ? ev.detail.value : undefined;
+    this._yamlError = ev.detail.errorMsg;
+    this._updateDirtyState(this.yamlEditor.yaml);
+  }
+
+  /**
+   * Also closes the editor: it is a panel state rather than a route, so leaving
+   * by a navigation never reaches `_closeEditor` and the panel can be cached.
+   */
+  private async _confirmDiscard(addHistory: boolean): Promise<boolean> {
+    if (
+      this.isDirtyState &&
+      !(await showConfirmationDialog(this, {
+        addHistory,
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
+        ),
+        dismissText: this.hass!.localize("ui.common.stay"),
+        confirmText: this.hass!.localize("ui.common.leave"),
+      }))
+    ) {
+      return false;
+    }
+
+    this._markDirtyStateClean();
+    this.closeEditor?.();
+    return true;
+  }
+
+  protected async promptDiscardChanges(): Promise<boolean> {
+    return this._confirmDiscard(false);
+  }
+
+  private async _closeEditor() {
+    await this._confirmDiscard(true);
+  }
+
+  private async _resetConfig() {
+    try {
+      await this.lovelace!.deleteConfig();
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
+          { error: err }
+        ),
+      });
+      return;
+    }
+    this._markDirtyStateClean();
+    if (this.closeEditor) {
+      this.closeEditor();
+    }
+  }
+
+  private async _handleSave() {
+    this._saving = true;
+
+    if (!this.yamlEditor.yaml) {
+      showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_reset_config_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_reset_config_text"
+        ),
+        confirmText: this.hass.localize("ui.common.reset"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        confirm: () => this._resetConfig(),
+        destructive: true,
+      });
+      return;
+    }
+
+    if (this._yamlError) {
+      showAlertDialog(this, {
+        text: this._yamlError,
+      });
+      this._saving = false;
+      return;
+    }
+
+    if (this.yamlEditor.hasComments) {
+      if (
+        !confirm(
+          this.hass.localize(
+            "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_comments"
+          )
+        )
+      ) {
+        return;
+      }
+    }
+
+    const config: LovelaceRawConfig = this._config!;
+
+    try {
+      if (isStrategyDashboard(config)) {
+        assert(config, strategyStruct);
+      } else {
+        assert(config, lovelaceStruct);
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
+          { error: err }
+        ),
+      });
+      return;
+    }
+    // @ts-ignore
+    if (config.resources) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.resources_moved"
+        ),
+      });
+    }
+    try {
+      await this.lovelace!.saveConfig(config);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
+          { error: err }
+        ),
+      });
+    }
+    this._markDirtyStateClean();
+    this._saving = false;
+  }
+
+  private get yamlEditor(): HaYamlEditor {
+    return this.shadowRoot!.querySelector("ha-yaml-editor")! as HaYamlEditor;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-editor": LovelaceFullConfigEditor;
+  }
+}

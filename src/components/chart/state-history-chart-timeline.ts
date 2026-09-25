@@ -1,0 +1,359 @@
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import type {
+  CustomSeriesOption,
+  CustomSeriesRenderItem,
+  TooltipPositionCallbackParams,
+} from "echarts/types/dist/shared";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
+import { computeRTL } from "../../common/util/compute_rtl";
+import type { TimelineEntity } from "../../data/history";
+import type { HomeAssistant } from "../../types";
+import { DEFAULT_CHART_WIDTH, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { itemTooltipPosition } from "./chart-tooltip-position";
+import "./ha-chart-tooltip-marker";
+import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
+import echarts from "../../resources/echarts/echarts";
+import { measureTextWidth } from "../../util/text";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import { generateStateHistoryChartTimelineData } from "./state-history-chart-timeline-data";
+
+const ROW_HEIGHT = 30;
+// Taller rows when the name is drawn under the bar instead of in a column.
+const ROW_HEIGHT_INSIDE_LABELS = 64;
+const GRID_BOTTOM = 30;
+
+@customElement("state-history-chart-timeline")
+export class StateHistoryChartTimeline extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public data: TimelineEntity[] = [];
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public names?: Record<string, string>;
+
+  @property() public unit?: string;
+
+  @property() public identifier?: string;
+
+  @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+
+  // Render each row's name inside the plot (under its bar) instead of in a
+  // left-hand category-label column. Opt-in; used by the history panel and
+  // history-graph card.
+  @property({ attribute: "inside-labels", type: Boolean })
+  public insideLabels = false;
+
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
+
+  @property({ type: Boolean }) public chunked = false;
+
+  @property({ attribute: false }) public startTime!: Date;
+
+  @property({ attribute: false }) public endTime!: Date;
+
+  @property({ attribute: false }) public paddingYAxis = 0;
+
+  @property({ attribute: false }) public chartIndex?;
+
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
+  @state() private _chartData: CustomSeriesOption[] = [];
+
+  @state() private _chartOptions?: HaECOption;
+
+  @state() private _yWidth = 0;
+
+  private _chartTime: Date = new Date();
+
+  protected render() {
+    return html`
+      <ha-chart-base
+        .hass=${this.hass}
+        .options=${this._chartOptions}
+        .height=${`${
+          this.data.length *
+            (this.insideLabels && (this.chunked || this.showNames)
+              ? ROW_HEIGHT_INSIDE_LABELS
+              : ROW_HEIGHT) +
+          GRID_BOTTOM
+        }px`}
+        .data=${this._chartData as HaECSeries}
+        small-controls
+        @chart-click=${this._handleChartClick}
+        @chart-zoom=${this._handleDataZoom}
+        .hideResetButton=${this.hideResetButton}
+      ></ha-chart-base>
+    `;
+  }
+
+  private _renderItem: CustomSeriesRenderItem = (params, api) => {
+    const categoryIndex = api.value(0);
+    const start = api.coord([api.value(1), categoryIndex]);
+    const end = api.coord([api.value(2), categoryIndex]);
+    const height = 20;
+    const coordSys = params.coordSys as any;
+    const rectShape = echarts.graphic.clipRectByRect(
+      {
+        x: start[0],
+        y: start[1] - height / 2,
+        width: end[0] - start[0],
+        height: height,
+      },
+      {
+        x: coordSys.x,
+        y: coordSys.y,
+        width: coordSys.width,
+        height: coordSys.height,
+      }
+    );
+    if (!rectShape) return null;
+    const rect = {
+      type: "rect" as const,
+      transition: "shape" as const,
+      shape: rectShape,
+      style: {
+        fill: api.value(4) as string,
+      },
+    };
+    const text = (api.value(3) as string).replaceAll("\n", " ");
+    const textWidth = measureTextWidth(text, 12);
+    const LABEL_PADDING = 4;
+    if (textWidth < rectShape.width - LABEL_PADDING * 2) {
+      return {
+        type: "group",
+        children: [
+          rect,
+          {
+            type: "text",
+            style: {
+              ...rectShape,
+              x: rectShape.x + LABEL_PADDING,
+              text,
+              fill: api.value(5) as string,
+              fontSize: 12,
+              lineHeight: rectShape.height,
+            },
+          },
+        ],
+      };
+    }
+    return rect;
+  };
+
+  private _renderTooltip = (params: TooltipPositionCallbackParams) => {
+    const { value, name, seriesName, color } = Array.isArray(params)
+      ? params[0]
+      : params;
+    const durationInMs = value![2] - value![1];
+    const formattedDuration = `${this.hass.localize(
+      "ui.components.history_charts.duration"
+    )}: ${millisecondsToDuration(durationInMs)}`;
+
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+    return html`${
+        seriesName
+          ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
+          : nothing
+      }<ha-chart-tooltip-marker
+        .color=${String(color ?? "")}
+        .rtl=${rtl}
+      ></ha-chart-tooltip-marker
+      >${name}<br />${formatDateTimeWithSeconds(
+        new Date(value![1]),
+        this.hass.locale,
+        this.hass.config
+      )}<br />${formatDateTimeWithSeconds(
+        new Date(value![2]),
+        this.hass.locale,
+        this.hass.config
+      )}<br />${formattedDuration}`;
+  };
+
+  public willUpdate(changedProps: PropertyValues) {
+    if (
+      this.isConnected &&
+      (changedProps.has("startTime") ||
+        changedProps.has("endTime") ||
+        changedProps.has("data") ||
+        this._chartTime <
+          new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES))
+    ) {
+      // If the line is more than 5 minutes old, re-gen it
+      // so the X axis grows even if there is no new data
+      this._generateData();
+    }
+
+    if (
+      !this.hasUpdated ||
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
+      changedProps.has("showNames") ||
+      changedProps.has("insideLabels") ||
+      changedProps.has("paddingYAxis") ||
+      changedProps.has("_yWidth")
+    ) {
+      this._createOptions();
+    }
+  }
+
+  private _createOptions() {
+    const narrow = this.narrow;
+    const showNames = this.chunked || this.showNames;
+    const maxInternalLabelWidth = narrow ? 105 : 185;
+    const insideLabels = this.insideLabels;
+    const labelWidth =
+      showNames && !insideLabels
+        ? Math.max(this.paddingYAxis, this._yWidth)
+        : 0;
+    const labelMargin = 5;
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+    this._chartOptions = {
+      xAxis: {
+        type: "time",
+        min: this.startTime,
+        max: this.endTime,
+        axisTick: {
+          show: true,
+        },
+        splitLine: {
+          show: false,
+        },
+      },
+      yAxis: {
+        type: "category",
+        inverse: true,
+        position: rtl ? "right" : "left",
+        triggerEvent: true,
+        axisTick: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisLabel: insideLabels
+          ? {
+              // Draw the name inside the plot, under each row's bar, matching
+              // the line charts whose legend sits under the plot. The taller
+              // rows keep a name clear of the next row's bar.
+              show: showNames,
+              inside: true,
+              margin: 0,
+              padding: [18, 0, 0, rtl ? 0 : 2],
+              align: rtl ? "right" : "left",
+              verticalAlign: "top",
+              formatter: (id: string) =>
+                (this._chartData.find((d) => d.id === id)?.name as string) ??
+                "",
+              hideOverlap: true,
+            }
+          : {
+              show: showNames,
+              width: labelWidth,
+              overflow: "truncate",
+              margin: labelMargin,
+              formatter: (id: string) => {
+                const label = this._chartData.find((d) => d.id === id)
+                  ?.name as string;
+                const width = label
+                  ? Math.min(
+                      measureTextWidth(label, 12) + labelMargin,
+                      maxInternalLabelWidth
+                    )
+                  : 0;
+                if (width > this._yWidth) {
+                  this._yWidth = width;
+                  fireEvent(this, "y-width-changed", {
+                    value: this._yWidth,
+                    chartIndex: this.chartIndex,
+                  });
+                }
+                return label;
+              },
+              hideOverlap: true,
+            },
+      },
+      grid: {
+        top: 10,
+        bottom: GRID_BOTTOM,
+        left: rtl ? 1 : labelWidth,
+        right: rtl ? labelWidth : 1,
+      },
+      tooltip: {
+        renderMode: "html",
+        position: itemTooltipPosition,
+        confine: true,
+        formatter: this._renderTooltip,
+      },
+    };
+  }
+
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
+    fireEvent(this, "chart-zoom-with-index", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
+  }
+
+  private _generateData() {
+    this._chartTime = new Date();
+    this._chartData = generateStateHistoryChartTimelineData({
+      states: this.hass.states,
+      data: this.data,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      names: this.names,
+      showNames: this.showNames,
+      computedStyles: getComputedStyle(this),
+      renderItem: this._renderItem,
+      // 0 while inside a hidden container, e.g. a section with a visibility condition
+      chartWidth:
+        (this.clientWidth || DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
+    });
+  }
+
+  private _handleChartClick(
+    e: HASSDomEvent<HASSDomEvents["chart-click"]>
+  ): void {
+    if (e.detail.targetType === "axisLabel") {
+      const dataset = this._chartData[e.detail.dataIndex];
+      if (dataset) {
+        fireEvent(this, "hass-more-info", {
+          entityId: dataset.id as string,
+        });
+      }
+    }
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+    ha-chart-base {
+      --chart-max-height: none;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-history-chart-timeline": StateHistoryChartTimeline;
+  }
+}

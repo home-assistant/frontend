@@ -1,0 +1,196 @@
+import { mdiPlus } from "@mdi/js";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type { HomeAssistant } from "../../types";
+import "../ha-button";
+import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
+import "../ha-dropdown-item";
+import "../ha-svg-icon";
+import "./ha-form";
+import "./ha-form-divider";
+import type { HaForm } from "./ha-form";
+import type {
+  HaFormDataContainer,
+  HaFormDividerSchema,
+  HaFormElement,
+  HaFormOptionalActionsSchema,
+  HaFormSchema,
+} from "./types";
+
+const NO_ACTIONS = [];
+
+const DIVIDER = {
+  name: "",
+  type: "divider",
+} as const satisfies HaFormDividerSchema;
+
+@customElement("ha-form-optional_actions")
+export class HaFormOptionalActions extends LitElement implements HaFormElement {
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public data!: HaFormDataContainer;
+
+  @property({ attribute: false }) public schema!: HaFormOptionalActionsSchema;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: false }) public computeLabel?: (
+    schema: HaFormSchema,
+    data?: HaFormDataContainer
+  ) => string;
+
+  @property({ attribute: false }) public computeHelper?: (
+    schema: HaFormSchema
+  ) => string;
+
+  @property({ attribute: false }) public localizeValue?: (
+    key: string
+  ) => string;
+
+  @state() private _displayActions?: string[];
+
+  @query("ha-form") private _form?: HaForm;
+
+  public async focus() {
+    await this.updateComplete;
+    this._form?.focus();
+  }
+
+  public reportValidity(): boolean {
+    return this._form ? this._form.reportValidity() : true;
+  }
+
+  protected updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    if (changedProps.has("data")) {
+      const displayActions = this._displayActions ?? NO_ACTIONS;
+      const hiddenActions = this._hiddenActions(
+        this.schema.schema,
+        displayActions
+      );
+      this._displayActions = [
+        ...displayActions,
+        ...hiddenActions.filter((name) => name in this.data),
+      ];
+    }
+  }
+
+  private _hiddenActions = memoizeOne(
+    (schema: readonly HaFormSchema[], displayActions: string[]): string[] =>
+      schema
+        .map((item) => item.name)
+        .filter((name) => !displayActions.includes(name))
+  );
+
+  private _displaySchema = memoizeOne(
+    (
+      schema: readonly HaFormSchema[],
+      displayActions: string[]
+    ): HaFormSchema[] =>
+      schema
+        .filter((item) => displayActions.includes(item.name))
+        .flatMap((item) => [DIVIDER, item])
+  );
+
+  public render(): TemplateResult {
+    const displayActions = this._displayActions ?? NO_ACTIONS;
+
+    const schema = this._displaySchema(
+      this.schema.schema,
+      this._displayActions ?? []
+    );
+
+    const hiddenActions = this._hiddenActions(
+      this.schema.schema,
+      displayActions
+    );
+
+    const schemaMap = new Map<string, HaFormSchema>(
+      this.computeLabel
+        ? this.schema.schema.map((item) => [item.name, item])
+        : []
+    );
+
+    return html`
+      ${
+        schema.length > 0
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this.data}
+                .schema=${schema}
+                .disabled=${this.disabled}
+                .computeLabel=${this.computeLabel}
+                .computeHelper=${this.computeHelper}
+                .localizeValue=${this.localizeValue}
+              ></ha-form>
+            `
+          : nothing
+      }
+      ${
+        hiddenActions.length > 0
+          ? html`
+              <ha-form-divider></ha-form-divider>
+              <ha-dropdown
+                @wa-select=${this._handleAddAction}
+                @closed=${stopPropagation}
+              >
+                <ha-button slot="trigger" appearance="filled" size="s">
+                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                  ${
+                    this.localize?.(
+                      "ui.components.form-optional-actions.add"
+                    ) || "Add interaction"
+                  }
+                </ha-button>
+                ${hiddenActions.map((action) => {
+                  const actionSchema = schemaMap.get(action);
+                  return html`
+                    <ha-dropdown-item .value=${action}>
+                      ${
+                        this.computeLabel && actionSchema
+                          ? this.computeLabel(actionSchema)
+                          : action
+                      }
+                    </ha-dropdown-item>
+                  `;
+                })}
+              </ha-dropdown>
+            `
+          : nothing
+      }
+    `;
+  }
+
+  private _handleAddAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    this._displayActions = [...(this._displayActions ?? []), action];
+  }
+
+  static styles = css`
+    :host {
+      display: flex !important;
+      flex-direction: column;
+      gap: var(--ha-space-6);
+    }
+    :host ha-form {
+      display: block;
+    }
+    ha-dropdown {
+      display: inline-block;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-form-optional_actions": HaFormOptionalActions;
+  }
+}

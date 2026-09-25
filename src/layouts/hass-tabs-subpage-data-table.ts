@@ -1,0 +1,1001 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiClose,
+  mdiFilterVariant,
+  mdiFilterVariantRemove,
+  mdiFormatListChecks,
+  mdiMenuDown,
+  mdiTableCog,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { canShowPage } from "../common/config/can_show_page";
+import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
+import "../components/chips/ha-assist-chip";
+import "../components/data-table/ha-data-table";
+import type {
+  DataTableColumnContainer,
+  DataTableRowData,
+  HaDataTable,
+  SortingDirection,
+} from "../components/data-table/ha-data-table";
+import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import "../components/ha-adaptive-dialog";
+import "../components/ha-button";
+import "../components/ha-dialog-footer";
+import "../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
+import "../components/ha-dropdown-item";
+import "../components/ha-filter-pane-chip";
+import "../components/ha-icon-button";
+import "../components/ha-svg-icon";
+import "../components/input/ha-input-search";
+import type { HaInputSearch } from "../components/input/ha-input-search";
+import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
+import type { HomeAssistant, Route } from "../types";
+import "./hass-tabs-subpage";
+import type { PageNavigation } from "./hass-tabs-subpage";
+
+@customElement("hass-tabs-subpage-data-table")
+export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
+
+  @property({ attribute: false }) public initialCollapsedGroups: string[] = [];
+
+  /**
+   * Object with the columns.
+   * @type {Object}
+   */
+  @property({ type: Object }) public columns: DataTableColumnContainer = {};
+
+  /**
+   * Data to show in the table.
+   * @type {Array}
+   */
+  @property({ type: Array }) public data: DataTableRowData[] = [];
+
+  /**
+   * Should rows be selectable.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public selectable = false;
+
+  /**
+   * Should rows be clickable.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public clickable = false;
+
+  /**
+   * Do we need to add padding for a fab.
+   * @type {Boolean}
+   */
+  @property({ attribute: "has-fab", type: Boolean, reflect: true })
+  public hasFab = false;
+
+  /**
+   * Show tabs on top or at bottom (narrow) of the page.
+   * @type {Boolean}
+   */
+  @property({ attribute: "show-tabs", type: Boolean, reflect: true })
+  public showTabs = false;
+
+  /**
+   * Add an extra row at the bottom of the data table
+   * @type {TemplateResult}
+   */
+  @property({ attribute: false }) public appendRow?: TemplateResult;
+
+  /**
+   * Field with a unique id per entry in data.
+   * @type {String}
+   */
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: String }) public id = "id";
+
+  /**
+   * String to filter the data in the data table on.
+   * @type {String}
+   */
+  @property({ type: String }) public filter = "";
+
+  @property({ attribute: false }) public searchLabel?: string;
+
+  /**
+   * Number of active filters.
+   * @type {Number}
+   */
+  @property({ type: Number }) public filters?;
+
+  /**
+   * Number of current selections.
+   * @type {Number}
+   */
+  @property({ type: Number }) public selected?;
+
+  /**
+   * What path to use when the back button is pressed.
+   * @type {String}
+   * @attr back-path
+   */
+  @property({ type: String, attribute: "back-path" }) public backPath?: string;
+
+  /**
+   * Function to call when the back button is pressed.
+   * @type {() => void}
+   */
+  @property({ attribute: false }) public backCallback?: () => void;
+
+  /**
+   * String to show when there are no records in the data table.
+   * @type {String}
+   */
+  @property({ attribute: false }) public noDataText?: string;
+
+  /**
+   * Hides the data table and show an empty message.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public empty = false;
+
+  /**
+   * Show a loading state instead of the empty message until data is ready.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public loading = false;
+
+  @property({ attribute: false }) public route!: Route;
+
+  /**
+   * Array of tabs to show on the page.
+   * @type {Array}
+   */
+  @property({ attribute: false }) public tabs: PageNavigation[] = [];
+
+  /**
+   * Show the filter menu.
+   * @type {Boolean}
+   */
+  @property({ attribute: "has-filters", type: Boolean })
+  public hasFilters = false;
+
+  @property({ attribute: "show-filters", type: Boolean })
+  public showFilters = false;
+
+  @property({ attribute: false }) public initialSorting?: {
+    column: string;
+    direction: SortingDirection;
+  };
+
+  @property({ attribute: false }) public initialGroupColumn?: string;
+
+  @property({ attribute: false }) public groupOrder?: string[];
+
+  @property({ attribute: false }) public columnOrder?: string[];
+
+  @property({ attribute: false }) public hiddenColumns?: string[];
+
+  @state() private _sortColumn?: string;
+
+  @state() private _sortDirection: SortingDirection = null;
+
+  @state() private _groupColumn?: string;
+
+  @state() private _selectMode = false;
+
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
+
+  @query("ha-input-search") private _searchInput!: HaInputSearch;
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      f: () => this._searchInput.focus(),
+    };
+  }
+
+  private _showPaneController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width > 750,
+  });
+
+  public clearSelection() {
+    this._dataTable.clearSelection();
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      changedProperties.has("tabs") ||
+      (changedProperties.has("hass") &&
+        this.hass?.config.components !==
+          changedProperties.get("hass")?.config.components)
+    ) {
+      this.showTabs =
+        this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;
+    }
+
+    if (this.hasUpdated) {
+      return;
+    }
+    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
+      this._setGroupColumn(this.initialGroupColumn);
+    }
+    if (this.initialSorting && this.columns[this.initialSorting.column]) {
+      this._sortColumn = this.initialSorting.column;
+      this._sortDirection = this.initialSorting.direction;
+    }
+  }
+
+  protected render(): TemplateResult {
+    const localize = this.localizeFunc || this.hass.localize;
+    const showPane = this._showPaneController.value ?? !this.narrow;
+    const filterButton = this.hasFilters
+      ? html`<ha-filter-pane-chip
+          .label=${localize("ui.components.subpage-data-table.filters")}
+          .path=${mdiFilterVariant}
+          .count=${this.filters}
+          .active=${!!this.filters}
+          @click=${this._toggleFilters}
+        ></ha-filter-pane-chip>`
+      : nothing;
+
+    const selectModeBtn =
+      this.selectable && !this._selectMode
+        ? html`<ha-assist-chip
+            class="has-dropdown select-mode-chip"
+            .active=${this._selectMode}
+            @click=${this._enableSelectMode}
+            .title=${localize(
+              "ui.components.subpage-data-table.enter_selection_mode"
+            )}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiFormatListChecks}></ha-svg-icon>
+          </ha-assist-chip>`
+        : nothing;
+
+    const searchBar = html`<ha-input-search
+      appearance="outlined"
+      .value=${this.filter}
+      @input=${this._handleSearchChange}
+      .placeholder=${this.searchLabel}
+    >
+    </ha-input-search>`;
+
+    const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
+      ? html`
+          <ha-dropdown @wa-select=${this._handleSortBy}>
+            <ha-assist-chip
+              slot="trigger"
+              .label=${localize("ui.components.subpage-data-table.sort_by", {
+                sortColumn:
+                  this._sortColumn && this.columns[this._sortColumn]
+                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
+                    : "",
+              })}
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon>
+            </ha-assist-chip>
+            ${Object.entries(this.columns).map(([id, column]) =>
+              column.sortable
+                ? html`
+                    <ha-dropdown-item
+                      .value=${id}
+                      class=${classMap({ selected: id === this._sortColumn })}
+                    >
+                      ${
+                        this._sortColumn === id
+                          ? html`
+                              <ha-svg-icon
+                                slot="end"
+                                .path=${
+                                  this._sortDirection === "desc"
+                                    ? mdiArrowDown
+                                    : mdiArrowUp
+                                }
+                              ></ha-svg-icon>
+                            `
+                          : nothing
+                      }
+                      ${column.title || column.label}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            )}
+          </ha-dropdown>
+        `
+      : nothing;
+
+    const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
+      ? html`
+          <ha-dropdown @wa-select=${this._handleGroupBy}>
+            <ha-assist-chip
+              .label=${localize("ui.components.subpage-data-table.group_by", {
+                groupColumn:
+                  this._groupColumn && this.columns[this._groupColumn]
+                    ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
+                    : "",
+              })}
+              slot="trigger"
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon
+            ></ha-assist-chip>
+            ${Object.entries(this.columns).map(([id, column]) =>
+              column.groupable
+                ? html`
+                    <ha-dropdown-item
+                      .value=${id}
+                      .selected=${id === this._groupColumn}
+                      class=${classMap({ selected: id === this._groupColumn })}
+                    >
+                      ${column.title || column.label}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            )}
+            <ha-dropdown-item
+              value="reset"
+              class=${classMap({ selected: !this._groupColumn })}
+            >
+              ${localize("ui.components.subpage-data-table.dont_group_by")}
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
+            <ha-dropdown-item
+              value="collapse_all"
+              .disabled=${!this._groupColumn}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiUnfoldLessHorizontal}
+              ></ha-svg-icon>
+              ${localize(
+                "ui.components.subpage-data-table.collapse_all_groups"
+              )}
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              value="expand_all"
+              .disabled=${!this._groupColumn}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiUnfoldMoreHorizontal}
+              ></ha-svg-icon>
+              ${localize("ui.components.subpage-data-table.expand_all_groups")}
+            </ha-dropdown-item>
+          </ha-dropdown>
+        `
+      : nothing;
+
+    const settingsButton = html`<ha-assist-chip
+      class="has-dropdown select-mode-chip"
+      @click=${this._openSettings}
+      .title=${localize("ui.components.subpage-data-table.settings")}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
+    </ha-assist-chip>`;
+
+    return html`
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .localizeFunc=${this.localizeFunc}
+        .isWide=${this.isWide}
+        .backPath=${this.backPath}
+        .backCallback=${this.backCallback}
+        .route=${this.route}
+        .tabs=${this.tabs}
+        .mainPage=${this.mainPage}
+        .pane=${showPane && this.showFilters}
+        @sorting-changed=${this._sortingChanged}
+      >
+        ${
+          this._selectMode
+            ? html`<div class="selection-bar" slot="toolbar">
+                <div class="selection-controls">
+                  <ha-icon-button
+                    .path=${mdiClose}
+                    @click=${this._disableSelectMode}
+                    .label=${localize(
+                      "ui.components.subpage-data-table.exit_selection_mode"
+                    )}
+                  ></ha-icon-button>
+                  <ha-dropdown @wa-select=${this._handleSelect}>
+                    <ha-assist-chip
+                      .label=${localize(
+                        "ui.components.subpage-data-table.select"
+                      )}
+                      slot="trigger"
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiFormatListChecks}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon
+                    ></ha-assist-chip>
+                    <ha-dropdown-item value="all">
+                      ${localize("ui.components.subpage-data-table.select_all")}
+                    </ha-dropdown-item>
+                    <ha-dropdown-item value="none">
+                      ${localize("ui.components.subpage-data-table.select_none")}
+                    </ha-dropdown-item>
+                    <wa-divider></wa-divider>
+                    <ha-dropdown-item value="disable_select_mode">
+                      ${localize(
+                        "ui.components.subpage-data-table.exit_selection_mode"
+                      )}
+                    </ha-dropdown-item>
+                  </ha-dropdown>
+                  ${
+                    this.selected !== undefined
+                      ? html`<p>
+                          ${localize(
+                            "ui.components.subpage-data-table.selected",
+                            {
+                              selected: this.selected || "0",
+                            }
+                          )}
+                        </p>`
+                      : nothing
+                  }
+                </div>
+                <div class="center-vertical">
+                  <slot name="selection-bar"></slot>
+                </div>
+              </div>`
+            : nothing
+        }
+        ${
+          this.showFilters
+            ? !showPane
+              ? nothing
+              : html`<div class="pane" slot="pane">
+                  <div class="table-header">
+                    <ha-filter-pane-chip
+                      .label=${localize(
+                        "ui.components.subpage-data-table.filters"
+                      )}
+                      .path=${mdiFilterVariant}
+                      active
+                      @click=${this._toggleFilters}
+                    ></ha-filter-pane-chip>
+                    ${
+                      this.filters
+                        ? html`<ha-icon-button
+                            .path=${mdiFilterVariantRemove}
+                            @click=${this._clearFilters}
+                            .label=${localize(
+                              "ui.components.subpage-data-table.clear_filter"
+                            )}
+                          ></ha-icon-button>`
+                        : nothing
+                    }
+                  </div>
+                  <div class="pane-content">
+                    <slot name="filter-pane"></slot>
+                  </div>
+                </div>`
+            : nothing
+        }
+        ${
+          this.empty && !this.loading
+            ? html`<div class="center">
+                <slot name="empty">${this.noDataText}</slot>
+              </div>`
+            : html`<div slot="toolbar-icon">
+                  <slot name="toolbar-icon"></slot>
+                </div>
+                ${
+                  this.narrow
+                    ? html`
+                        <div slot="header">
+                          <slot name="header">
+                            <div class="search-toolbar">${searchBar}</div>
+                          </slot>
+                        </div>
+                      `
+                    : ""
+                }
+                <ha-data-table
+                  .narrow=${this.narrow}
+                  .columns=${this.columns}
+                  .data=${this.data}
+                  .loading=${this.loading}
+                  .noDataText=${this.noDataText}
+                  .filter=${this.filter}
+                  .selectable=${this._selectMode}
+                  .id=${this.id}
+                  .clickable=${this.clickable}
+                  .appendRow=${this.appendRow}
+                  .sortColumn=${this._sortColumn}
+                  .sortDirection=${this._sortDirection}
+                  .groupColumn=${this._groupColumn}
+                  .groupOrder=${this.groupOrder}
+                  .initialCollapsedGroups=${this.initialCollapsedGroups}
+                  .columnOrder=${this.columnOrder}
+                  .hiddenColumns=${this.hiddenColumns}
+                >
+                  ${
+                    !this.narrow
+                      ? html`
+                          <div slot="header">
+                            <slot name="top-header"></slot>
+                            <slot name="header">
+                              <div class="table-header">
+                                ${
+                                  this.hasFilters && !this.showFilters
+                                    ? html`${filterButton}`
+                                    : nothing
+                                }${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
+                              </div>
+                            </slot>
+                          </div>
+                        `
+                      : html`
+                          <div slot="header">
+                            <slot name="top-header"></slot>
+                          </div>
+                          <div slot="header-row" class="narrow-header-row">
+                            ${
+                              this.hasFilters && !this.showFilters
+                                ? html`${filterButton}`
+                                : nothing
+                            }
+                            ${selectModeBtn}
+                            <div class="flex"></div>
+                            ${groupByMenu}${sortByMenu}${settingsButton}
+                          </div>
+                        `
+                  }
+                </ha-data-table>`
+        }
+        <div slot="fab"><slot name="fab"></slot></div>
+      </hass-tabs-subpage>
+      ${
+        this.showFilters && !showPane
+          ? html`<ha-adaptive-dialog
+              open
+              flexcontent
+              width="full"
+              header-title=${localize("ui.components.subpage-data-table.filters")}
+              @closed=${this._closeFilters}
+            >
+              <ha-icon-button
+                slot="headerNavigationIcon"
+                data-dialog="close"
+                .path=${mdiClose}
+                .label=${localize(
+                  "ui.components.subpage-data-table.close_filter"
+                )}
+              ></ha-icon-button>
+              ${
+                this.filters
+                  ? html`<ha-icon-button
+                      slot="headerActionItems"
+                      @click=${this._clearFilters}
+                      .path=${mdiFilterVariantRemove}
+                      .label=${localize(
+                        "ui.components.subpage-data-table.clear_filter"
+                      )}
+                    ></ha-icon-button>`
+                  : nothing
+              }
+              <div class="filter-dialog-content">
+                <slot name="filter-pane"></slot>
+              </div>
+              <ha-dialog-footer slot="footer">
+                <ha-button slot="primaryAction" data-dialog="close">
+                  ${localize("ui.components.subpage-data-table.show_results", {
+                    number: this.data.length,
+                  })}
+                </ha-button>
+              </ha-dialog-footer>
+            </ha-adaptive-dialog>`
+          : nothing
+      }
+    `;
+  }
+
+  private _clearFilters() {
+    fireEvent(this, "clear-filter");
+  }
+
+  private _toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+
+  private _closeFilters = () => {
+    this.showFilters = false;
+  };
+
+  private _sortingChanged(ev) {
+    this._sortDirection = ev.detail.direction;
+    this._sortColumn = this._sortDirection ? ev.detail.column : undefined;
+  }
+
+  private _handleSortBy(ev: HaDropdownSelectEvent) {
+    ev.preventDefault(); // keep the dropdown open
+
+    const columnId = ev.detail.item.value;
+    if (!this._sortDirection || this._sortColumn !== columnId) {
+      this._sortDirection = "asc";
+    } else if (this._sortDirection === "asc") {
+      this._sortDirection = "desc";
+    } else {
+      this._sortDirection = "asc";
+    }
+    this._sortColumn = columnId;
+
+    fireEvent(this, "sorting-changed", {
+      column: columnId,
+      direction: this._sortDirection,
+    });
+  }
+
+  private _handleGroupBy(ev: HaDropdownSelectEvent) {
+    const group = ev.detail.item.value;
+
+    if (group === "reset") {
+      this._setGroupColumn("");
+      return;
+    }
+    if (group === "collapse_all") {
+      this._collapseAllGroups();
+      return;
+    }
+    if (group === "expand_all") {
+      this._expandAllGroups();
+      return;
+    }
+
+    this._setGroupColumn(group);
+  }
+
+  private _setGroupColumn(columnId: string) {
+    this._groupColumn = columnId;
+    fireEvent(this, "grouping-changed", { value: columnId });
+  }
+
+  private _openSettings() {
+    showDataTableSettingsDialog(this, {
+      columns: this.columns,
+      hiddenColumns: this.hiddenColumns,
+      columnOrder: this.columnOrder,
+      onUpdate: (
+        columnOrder: string[] | undefined,
+        hiddenColumns: string[] | undefined
+      ) => {
+        this.columnOrder = columnOrder;
+        this.hiddenColumns = hiddenColumns;
+        fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
+      },
+      localizeFunc: this.localizeFunc,
+    });
+  }
+
+  private _collapseAllGroups = () => {
+    this._dataTable.collapseAllGroups();
+  };
+
+  private _expandAllGroups = () => {
+    this._dataTable.expandAllGroups();
+  };
+
+  private _enableSelectMode() {
+    this._selectMode = true;
+  }
+
+  private _handleSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "all":
+        this._selectAll();
+        break;
+      case "none":
+        this._selectNone();
+        break;
+      case "disable_select_mode":
+        this._disableSelectMode();
+        break;
+    }
+  }
+
+  private _disableSelectMode = () => {
+    this._selectMode = false;
+    this._dataTable.clearSelection();
+  };
+
+  private _selectAll = () => {
+    this._dataTable.selectAll();
+  };
+
+  private _selectNone = () => {
+    this._dataTable.clearSelection();
+  };
+
+  private _handleSearchChange(
+    ev: InputEvent & HASSDomTargetEvent<HaInputSearch>
+  ) {
+    const target = ev.target as HaInputSearch;
+    if (this.filter === target.value) {
+      return;
+    }
+    this.filter = target.value ?? "";
+    fireEvent(this, "search-changed", { value: this.filter });
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+    }
+
+    ha-data-table {
+      width: 100%;
+      height: 100%;
+      --data-table-border-width: 0;
+      --data-table-empty-row-height: var(--safe-area-inset-bottom, 0px);
+    }
+    :host(:not([narrow])) ha-data-table,
+    .pane {
+      height: calc(
+        100vh -
+          1px - var(--header-height, 0px) - var(
+            --safe-area-inset-top,
+            0px
+          ) - var(--safe-area-inset-bottom, 0px)
+      );
+      display: block;
+    }
+    /* Last content row should keep the same padding above the fab as the fab
+       has to the bottom (16px standard fab bottom padding) + the safe-area inset. */
+    :host([has-fab]) ha-data-table {
+      --data-table-empty-row-height: calc(
+        48px + 16px * 2 + var(--safe-area-inset-bottom, 0px)
+      );
+    }
+    /* In narrow view with tabs shown at the bottom, the tab bar already
+       accounts for safe-area-inset-bottom. No extra empty-row height is needed. */
+    :host([narrow][show-tabs]:not([has-fab])) ha-data-table {
+      --data-table-empty-row-height: 0px;
+    }
+    /* Reserve space for fab + doubled narrow-mode bottom padding (28px * 2)
+       when using narrow layout with bottom tabs. */
+    :host([narrow][show-tabs][has-fab]) ha-data-table {
+      --data-table-empty-row-height: calc(48px + 28px * 2);
+    }
+
+    .pane-content {
+      height: calc(
+        100vh -
+          1px - var(--header-height, 0px) - var(--header-height, 0px) - var(
+            --safe-area-inset-top,
+            0px
+          ) - var(--safe-area-inset-bottom, 0px)
+      );
+      display: flex;
+      flex-direction: column;
+    }
+
+    :host([narrow]) hass-tabs-subpage {
+      --main-title-margin: 0;
+    }
+    :host([narrow]) {
+      --expansion-panel-summary-padding: 0 16px;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      --mdc-shape-small: 0;
+      height: 56px;
+      width: 100%;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: var(--ha-space-4);
+      box-sizing: border-box;
+      background: var(--primary-background-color);
+      border-bottom: 1px solid var(--divider-color);
+    }
+    ha-input-search {
+      flex: 1;
+    }
+    @media (min-width: 871px) {
+      ha-input-search {
+        --ha-input-search-height: 32px;
+        --ha-input-search-border-radius: 10px;
+      }
+    }
+    .search-toolbar {
+      display: flex;
+      align-items: center;
+      color: var(--secondary-text-color);
+    }
+    .filters {
+      --mdc-text-field-fill-color: var(--input-fill-color);
+      --mdc-text-field-idle-line-color: var(--input-idle-line-color);
+      --mdc-shape-small: 4px;
+      --text-field-overflow: initial;
+      display: flex;
+      justify-content: flex-end;
+      color: var(--primary-text-color);
+    }
+    .active-filters {
+      color: var(--primary-text-color);
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 2px 2px 2px 8px;
+      margin-left: 4px;
+      margin-inline-start: 4px;
+      margin-inline-end: initial;
+      font-size: var(--ha-font-size-m);
+      width: max-content;
+      cursor: initial;
+      direction: var(--direction);
+    }
+    .active-filters ha-svg-icon {
+      color: var(--primary-color);
+    }
+    .active-filters::before {
+      background-color: var(--primary-color);
+      opacity: 0.12;
+      border-radius: var(--ha-border-radius-sm);
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      content: "";
+    }
+    .center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-sizing: border-box;
+      height: 100%;
+      width: 100%;
+      padding: 16px;
+    }
+
+    .narrow-header-row {
+      --header-row-inset-start: var(--safe-area-inset-left, 0px);
+      --header-row-inset-end: var(--safe-area-inset-right, 0px);
+      display: flex;
+      align-items: center;
+      min-width: 100%;
+      gap: var(--ha-space-4);
+      padding: 0;
+      padding-inline-start: calc(16px + var(--header-row-inset-start));
+      box-sizing: border-box;
+      overflow-x: scroll;
+      scrollbar-width: none;
+    }
+
+    .narrow-header-row:dir(rtl) {
+      --header-row-inset-start: var(--safe-area-inset-right, 0px);
+      --header-row-inset-end: var(--safe-area-inset-left, 0px);
+    }
+
+    .narrow-header-row::after {
+      content: "";
+      flex: 0 0 var(--header-row-inset-end);
+    }
+
+    .narrow-header-row .flex {
+      flex: 1;
+      margin-inline-start: -16px;
+    }
+
+    .selection-bar {
+      background: rgba(var(--rgb-primary-color), 0.1);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      font-size: var(--ha-font-size-m);
+      --ha-assist-chip-container-color: var(--card-background-color);
+    }
+
+    .selection-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+    }
+
+    .selection-controls p {
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+    }
+
+    .center-vertical {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+    }
+
+    ha-assist-chip,
+    ha-filter-pane-chip {
+      --ha-assist-chip-container-shape: 10px;
+      --ha-assist-chip-container-color: var(--card-background-color);
+    }
+
+    .select-mode-chip {
+      --md-assist-chip-icon-label-space: 0;
+      --md-assist-chip-trailing-space: 8px;
+    }
+
+    ha-adaptive-dialog {
+      --dialog-content-padding: 0;
+      /* Fixed height so the sheet does not resize while filtering. */
+      --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+      --ha-dialog-min-height: calc(var(--safe-height) - var(--ha-space-20));
+    }
+
+    .filter-dialog-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    ha-dropdown ha-assist-chip {
+      --md-assist-chip-trailing-space: 8px;
+    }
+
+    ha-dropdown-item.selected {
+      border: 1px solid var(--primary-color);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+      --icon-primary-color: var(--primary-color);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hass-tabs-subpage-data-table": HaTabsSubpageDataTable;
+  }
+
+  // for fire event
+  interface HASSDomEvents {
+    "search-changed": { value: string };
+    "grouping-changed": { value: string };
+    "columns-changed": {
+      columnOrder: string[] | undefined;
+      hiddenColumns: string[] | undefined;
+    };
+    "clear-filter": undefined;
+  }
+}

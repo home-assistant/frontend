@@ -1,0 +1,33 @@
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
+
+@customElement("ha-input-helper-text")
+class InputHelperText extends LitElement {
+  protected render(): TemplateResult {
+    return html`<slot></slot>`;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+      font-size: var(--ha-font-size-s);
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-inline-start: 16px;
+      padding-inline-end: 16px;
+      letter-spacing: var(
+        --mdc-typography-caption-letter-spacing,
+        0.0333333333em
+      );
+      line-height: normal;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-input-helper-text": InputHelperText;
+  }
+}

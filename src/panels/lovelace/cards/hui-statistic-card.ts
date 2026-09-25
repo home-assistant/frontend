@@ -1,0 +1,488 @@
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../../common/number/format_number";
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-state-icon";
+import {
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../data/energy";
+import type { StatisticsMetaData } from "../../../data/recorder";
+import {
+  fetchStatistic,
+  getDisplayUnit,
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../data/recorder";
+import type { HomeAssistant } from "../../../types";
+import { computeCardSize } from "../common/compute-card-size";
+import { findEntities } from "../common/find-entities";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+  LovelaceHeaderFooter,
+} from "../types";
+import type { HuiErrorCard } from "./hui-error-card";
+import type { EntityCardConfig, StatisticCardConfig } from "./types";
+
+/* @deprecated */
+export const PERIOD_ENERGY = "energy_date_selection";
+export const STATISTIC_CARD_DEFAULT_PERIOD = {
+  calendar: { period: "month" },
+};
+
+@customElement("hui-statistic-card")
+export class HuiStatisticCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-statistic-card-editor");
+    return document.createElement("hui-statistic-card-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFill: string[]
+  ) {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains,
+      (stateObj: HassEntity) => "state_class" in stateObj.attributes
+    );
+
+    return {
+      entity: foundEntities[0] || "",
+      period: STATISTIC_CARD_DEFAULT_PERIOD,
+    };
+  }
+
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: StatisticCardConfig;
+
+  @state() private _value?: number | null;
+
+  @state() private _metadata?: StatisticsMetaData;
+
+  @state() private _error?: string;
+
+  private _energySub?: UnsubscribeFunc;
+
+  @state() private _energyStart?: Date;
+
+  @state() private _energyEnd?: Date;
+
+  private _interval?: number;
+
+  private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeEnergy();
+    clearInterval(this._interval);
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._useEnergyDateSelect()) {
+      this._subscribeEnergy();
+    } else {
+      this._setFetchStatisticTimer();
+    }
+  }
+
+  private _subscribeEnergy() {
+    if (!this._energySub) {
+      this._energySub = getEnergyDataCollection(this.hass!, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
+        this._energyStart = data.start;
+        // Energy selection defines a "day" as:
+        //   start: 00:00:00.000
+        //   end:   23:59:59.999
+        // this is fine for recorder/statistics_during_period, which returns a
+        // full 24 hour dataset for this start/end pair.
+        // recorder/statistic_during_period however expects a full day to be
+        // 00:00:00 to 00:00:00 and in some cases will only use 23 hours worth
+        // of data if the end is before midnight.
+        let end = data.end;
+        if (end && end.getMilliseconds() === 999) {
+          end = new Date(end);
+          end.setMilliseconds(1000);
+        }
+        this._energyEnd = end;
+        this._fetchStatistic();
+      });
+    }
+  }
+
+  private _unsubscribeEnergy() {
+    if (this._energySub) {
+      this._energySub();
+      this._energySub = undefined;
+    }
+    this._energyStart = undefined;
+    this._energyEnd = undefined;
+  }
+
+  public setConfig(config: StatisticCardConfig): void {
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
+    }
+    if (!config.stat_type) {
+      throw new Error("Statistic type must be specified");
+    }
+    if (!config.period) {
+      throw new Error("Period must be specified");
+    }
+    if (
+      config.entity &&
+      !isExternalStatistic(config.entity) &&
+      !isValidEntityId(config.entity)
+    ) {
+      throw new Error("Invalid entity");
+    }
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
+    // Migrate legacy period option to new key
+    if (config.period === PERIOD_ENERGY) {
+      config = {
+        energy_date_selection: true,
+        ...config,
+        period: STATISTIC_CARD_DEFAULT_PERIOD,
+      };
+    }
+
+    this._config = config;
+    this._error = undefined;
+
+    if (this._config.footer) {
+      const footerElement = createHeaderFooterElement(this._config.footer);
+      // A lazy loaded footer has no `hass` accessor before it is upgraded,
+      // so the forwarding in `shouldUpdate` skips it until then
+      footerElement.addEventListener(
+        "ll-upgrade",
+        () => {
+          if ("hass" in footerElement) {
+            footerElement.hass = this.hass;
+          }
+        },
+        { once: true }
+      );
+      this._footerElement = footerElement;
+    } else if (this._footerElement) {
+      this._footerElement = undefined;
+    }
+  }
+
+  public async getCardSize(): Promise<number> {
+    let size = 2;
+    if (this._footerElement) {
+      const footerSize = computeCardSize(this._footerElement);
+      size += footerSize instanceof Promise ? await footerSize : footerSize;
+    }
+    return size;
+  }
+
+  protected render() {
+    if (!this._config || !this.hass) {
+      return nothing;
+    }
+
+    if (this._error) {
+      return html` <ha-alert alert-type="error">${this._error}</ha-alert> `;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+    const name =
+      (this._config.name
+        ? this.hass.formatEntityName(stateObj, this._config.name)
+        : "") ||
+      getStatisticLabel(this.hass, this._config.entity, this._metadata);
+
+    const interactive = !isExternalStatistic(this._config.entity);
+
+    return html`
+      <ha-card
+        @click=${interactive ? this._handleClick : nothing}
+        .tabIndex=${interactive ? 0 : -1}
+        ?interactive=${interactive}
+      >
+        <div class="header">
+          <div class="name" .title=${name}>${name}</div>
+          <div class="icon">
+            <ha-state-icon
+              .icon=${this._config.icon}
+              .stateObj=${stateObj}
+            ></ha-state-icon>
+          </div>
+        </div>
+        <div class="info">
+          <span class="value"
+            >${
+              this._value === undefined
+                ? ""
+                : this._value === null
+                  ? "?"
+                  : formatNumber(
+                      this._value,
+                      this.hass.locale,
+                      getNumberFormatOptions(
+                        undefined,
+                        this.hass.entities[this._config.entity]
+                      )
+                    )
+            }</span
+          >
+          <span class="measurement"
+            >${
+              this._config.unit ||
+              getDisplayUnit(this.hass, this._config.entity, this._metadata)
+            }</span
+          >
+        </div>
+        ${this._footerElement}
+      </ha-card>
+    `;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    // Side Effect used to update footer hass while keeping optimizations
+    if (this._footerElement && "hass" in this._footerElement) {
+      this._footerElement.hass = this.hass;
+    }
+    if (
+      changedProps.has("_value") ||
+      changedProps.has("_metadata") ||
+      changedProps.has("_error") ||
+      changedProps.has("_energyStart") ||
+      changedProps.has("_energyEnd")
+    ) {
+      return true;
+    }
+    if (this._config) {
+      return hasConfigOrEntityChanged(this, changedProps);
+    }
+    return true;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this._config || !changedProps.has("_config")) {
+      return;
+    }
+    const oldConfig = changedProps.get("_config") as
+      StatisticCardConfig | undefined;
+
+    if (this.hass) {
+      const useDateSelect = this._useEnergyDateSelect();
+      if (useDateSelect && !this._energySub) {
+        this._subscribeEnergy();
+        return;
+      }
+      if (!useDateSelect && this._energySub) {
+        this._unsubscribeEnergy();
+        this._setFetchStatisticTimer();
+        return;
+      }
+      if (
+        useDateSelect &&
+        this._energySub &&
+        changedProps.has("_config") &&
+        oldConfig?.collection_key !== this._config.collection_key
+      ) {
+        this._unsubscribeEnergy();
+        this._subscribeEnergy();
+      }
+    }
+
+    if (
+      changedProps.has("_config") &&
+      oldConfig?.entity !== this._config.entity
+    ) {
+      this._fetchMetadata().then(() => {
+        this._setFetchStatisticTimer();
+      });
+    }
+  }
+
+  protected firstUpdated() {
+    this._fetchStatistic();
+    this._fetchMetadata();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      EntityCardConfig | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config!.theme);
+    }
+  }
+
+  private _useEnergyDateSelect() {
+    if (!this._config) return false;
+    // Use date selection if enabled through config key
+    if (this._config.energy_date_selection) return true;
+    // Otherwise check if period key is set to the legacy energy mode value
+    return this._config.period === PERIOD_ENERGY;
+  }
+
+  private _setFetchStatisticTimer() {
+    this._fetchStatistic();
+    // statistics are created every hour
+    clearInterval(this._interval);
+    if (!this._useEnergyDateSelect()) {
+      this._interval = window.setInterval(
+        () => this._fetchStatistic(),
+        5 * 1000 * 60
+      );
+    }
+  }
+
+  private async _fetchStatistic() {
+    if (!this.hass || !this._config) {
+      return;
+    }
+    try {
+      const stats = await fetchStatistic(
+        this.hass,
+        this._config.entity,
+        this._energyStart && this._energyEnd
+          ? { fixed_period: { start: this._energyStart, end: this._energyEnd } }
+          : typeof this._config?.period === "object"
+            ? this._config?.period
+            : {}
+      );
+      this._value = stats[this._config!.stat_type];
+      this._error = undefined;
+    } catch (e: any) {
+      this._error = e.message;
+    }
+  }
+
+  private async _fetchMetadata() {
+    if (!this.hass || !this._config) {
+      return;
+    }
+    try {
+      this._metadata = (
+        await getStatisticMetadata(this.hass, [this._config.entity])
+      )?.[0];
+    } catch (e: any) {
+      this._error = e.message;
+    }
+  }
+
+  private _handleClick(): void {
+    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 6,
+      rows: 2,
+      min_columns: 6,
+      min_rows: 2,
+    };
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      css`
+        ha-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          outline: none;
+        }
+        ha-card[interactive] {
+          cursor: pointer;
+        }
+
+        .header {
+          display: flex;
+          padding: 8px 16px 0;
+          justify-content: space-between;
+        }
+
+        .name {
+          color: var(--secondary-text-color);
+          line-height: 40px;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .icon {
+          color: var(--state-icon-color, #44739e);
+          line-height: 40px;
+        }
+
+        .info {
+          display: flex;
+          align-items: baseline;
+          padding: 0px 16px 16px;
+          margin-top: -4px;
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .info > * {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .value {
+          font-size: var(--ha-font-size-3xl);
+          margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
+        }
+
+        .measurement {
+          font-size: var(--ha-font-size-l);
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-statistic-card": HuiStatisticCard;
+  }
+}

@@ -1,0 +1,79 @@
+name: Cast deployment
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+env:
+  NODE_OPTIONS: --max_old_space_size=6144
+
+jobs:
+  deploy_dev:
+    runs-on: ubuntu-latest
+    name: Deploy Development
+    if: github.event_name != 'push'
+    environment:
+      name: Cast Development
+      url: ${{ steps.deploy.outputs.netlify_url }}
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: dev
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
+      - name: Build Cast
+        uses: ./.github/actions/build
+        with:
+          target: build-cast
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Netlify
+        id: deploy
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: cast/dist
+          alias: dev
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_CAST_SITE_ID }}
+
+  deploy_master:
+    runs-on: ubuntu-latest
+    name: Deploy Production
+    if: github.event_name == 'push'
+    environment:
+      name: Cast Production
+      url: ${{ steps.deploy.outputs.netlify_url }}
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: master
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
+      - name: Build Cast
+        uses: ./.github/actions/build
+        with:
+          target: build-cast
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Netlify
+        id: deploy
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: cast/dist
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_CAST_SITE_ID }}

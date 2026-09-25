@@ -1,0 +1,86 @@
+diff --git a/dist/tinykeys.cjs b/dist/tinykeys.cjs
+index 08c98b6eff3b8fb4b727fe8e6b096951d6ef6347..9c44f14862f582766ea1733b6dc0e97f962800d8 100644
+--- a/dist/tinykeys.cjs
++++ b/dist/tinykeys.cjs
+@@ -61,6 +61,18 @@ function defaultKeybindingsHandlerIgnore(event) {
+ function getModifierState(event, mod) {
+ 	return typeof event.getModifierState === "function" ? event.getModifierState(mod) || ALT_GRAPH_ALIASES.includes(mod) && event.getModifierState("AltGraph") : false;
+ }
++function splitKeybindingPress(press) {
++	let parts = [];
++	let start = 0;
++	for (let index = 0; index < press.length; index++) {
++		if (press[index] === "+" && /[\w\]]/.test(press[index - 1] || "")) {
++			parts.push(press.slice(start, index));
++			start = index + 1;
++		}
++	}
++	parts.push(press.slice(start));
++	return parts;
++}
+ /**
+ * Parses a keybinding string into its parts.
+ *
+@@ -76,10 +88,10 @@ function getModifierState(event, mod) {
+ */
+ function parseKeybinding(str) {
+ 	return str.trim().split(" ").map((press) => {
+-		let parts = press.split(/(?<=\w|\])\+/);
++		let parts = splitKeybindingPress(press);
+ 		let last = parts.pop();
+ 		let regex = last.match(/^\((.+)\)$/);
+-		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "iv") : last;
++		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "i") : last;
+ 		let requiredModifiers = [];
+ 		let optionalModifiers = [];
+ 		for (const part of parts) {
+@@ -201,5 +213,3 @@ exports.defaultKeybindingsHandlerIgnore = defaultKeybindingsHandlerIgnore;
+ exports.matchKeybindingPress = matchKeybindingPress;
+ exports.parseKeybinding = parseKeybinding;
+ exports.tinykeys = tinykeys;
+-
+-//# sourceMappingURL=tinykeys.cjs.map
+\ No newline at end of file
+diff --git a/dist/tinykeys.mjs b/dist/tinykeys.mjs
+index c289972d2728e03d9b272268c38fd3392e8845bf..e22897b00aae6cdb0dbbb971445227c07be52918 100644
+--- a/dist/tinykeys.mjs
++++ b/dist/tinykeys.mjs
+@@ -60,6 +60,18 @@ function defaultKeybindingsHandlerIgnore(event) {
+ function getModifierState(event, mod) {
+ 	return typeof event.getModifierState === "function" ? event.getModifierState(mod) || ALT_GRAPH_ALIASES.includes(mod) && event.getModifierState("AltGraph") : false;
+ }
++function splitKeybindingPress(press) {
++	let parts = [];
++	let start = 0;
++	for (let index = 0; index < press.length; index++) {
++		if (press[index] === "+" && /[\w\]]/.test(press[index - 1] || "")) {
++			parts.push(press.slice(start, index));
++			start = index + 1;
++		}
++	}
++	parts.push(press.slice(start));
++	return parts;
++}
+ /**
+ * Parses a keybinding string into its parts.
+ *
+@@ -75,10 +87,10 @@ function getModifierState(event, mod) {
+ */
+ function parseKeybinding(str) {
+ 	return str.trim().split(" ").map((press) => {
+-		let parts = press.split(/(?<=\w|\])\+/);
++		let parts = splitKeybindingPress(press);
+ 		let last = parts.pop();
+ 		let regex = last.match(/^\((.+)\)$/);
+-		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "iv") : last;
++		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "i") : last;
+ 		let requiredModifiers = [];
+ 		let optionalModifiers = [];
+ 		for (const part of parts) {
+@@ -196,5 +208,3 @@ function tinykeys(target, keybindingMap, options = {}) {
+ }
+ //#endregion
+ export { createKeybindingsHandler, defaultKeybindingsHandlerIgnore, matchKeybindingPress, parseKeybinding, tinykeys };
+-
+-//# sourceMappingURL=tinykeys.mjs.map
+\ No newline at end of file
