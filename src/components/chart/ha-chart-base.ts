@@ -63,6 +63,19 @@ export const DEFAULT_CHART_WIDTH = 500;
 // is short enough for a whole screenful; on a desktop that would cover the page.
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
+// Keys that move through a chart. Unmodified, they scroll the page when the
+// focused chart does not handle them, as Space does.
+const NAVIGATION_KEYS = new Set([
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+]);
+const MODIFIER_KEYS = new Set(["Shift", "Control", "Alt", "Meta"]);
 const DEFERRED_PROPS = [
   "options",
   "data",
@@ -169,6 +182,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _sonificationOutput?: HTMLDivElement;
 
   private _sonification?: ChartSonification;
+
+  // The last key pressed while Chart2Music loads, replayed once it connects
+  private _pendingSonificationKey?: KeyboardEvent;
+
+  // Whether we prevented the pending key, rather than a page shortcut
+  private _pendingSonificationKeyHeld = false;
 
   @state() private _sonificationLoading = false;
 
@@ -722,11 +741,31 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   // A chart focused by pointer has not started Chart2Music, so start it once
-  // the keyboard is used there. Tab only leaves the chart.
+  // the keyboard is used there. Tab only leaves the chart, and a lone modifier,
+  // a Meta shortcut or Ctrl or Alt with anything but a navigation key belongs
+  // to the browser or the page.
   private _handleChartKeydown(ev: KeyboardEvent) {
-    if (ev.key !== "Tab") {
-      this._startSonification();
+    const modified = ev.ctrlKey || ev.altKey;
+    if (
+      this._sonification ||
+      this._sonificationUnavailable ||
+      ev.key === "Tab" ||
+      MODIFIER_KEYS.has(ev.key) ||
+      ev.metaKey ||
+      (modified && !NAVIGATION_KEYS.has(ev.key))
+    ) {
+      return;
     }
+    // Chart2Music is not listening yet, so keep the key from scrolling the page
+    // and replay it once connected. Modified keys keep their browser action,
+    // like Alt+Left going back.
+    const hold = !modified && (NAVIGATION_KEYS.has(ev.key) || ev.key === " ");
+    if (hold) {
+      ev.preventDefault();
+    }
+    this._pendingSonificationKey = ev;
+    this._pendingSonificationKeyHeld = hold;
+    this._startSonification();
   }
 
   private async _startSonification() {
@@ -735,6 +774,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     await this._applyDeferredWork();
     if (!this.chart) {
+      this._pendingSonificationKey = undefined;
       return;
     }
     this._sonificationLoading = true;
@@ -764,11 +804,33 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         // Chart2Music reads its summary and key hints on focus, which already
         // happened while it was still being fetched.
         this._chartContainer!.dispatchEvent(new FocusEvent("focus"));
+        const pending = this._pendingSonificationKey;
+        // A key a page shortcut already handled is not replayed, so it does not
+        // also trigger Chart2Music.
+        if (
+          pending &&
+          (!pending.defaultPrevented || this._pendingSonificationKeyHeld)
+        ) {
+          // Chart2Music listens on this element, so the replay does not bubble
+          // and listeners above the chart only see the key once.
+          const { key, code, altKey, ctrlKey, shiftKey } = pending;
+          this._chartContainer!.dispatchEvent(
+            new KeyboardEvent("keydown", {
+              key,
+              code,
+              altKey,
+              ctrlKey,
+              shiftKey,
+              cancelable: true,
+            })
+          );
+        }
       }
     } catch (_err) {
       // Never let a failure here escape a focus or key handler. The tab stop
       // stays, so focusing the chart again retries.
     } finally {
+      this._pendingSonificationKey = undefined;
       this._sonificationLoading = false;
     }
   }
