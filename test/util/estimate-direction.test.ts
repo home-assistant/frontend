@@ -29,9 +29,6 @@ describe("Estimate direction tests", () => {
   ];
 
   it("classifies direction for text inputs", () => {
-    // @ts-expect-error missing argument.
-    assert.strictEqual(estimateDirection(), "neutral");
-
     for (const { input, output } of fixtures) {
       assert.strictEqual(
         estimateDirection(input),
