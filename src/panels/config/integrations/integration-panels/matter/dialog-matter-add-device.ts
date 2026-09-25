@@ -194,17 +194,19 @@ class DialogMatterAddDevice extends LitElement {
       entityIds
     );
 
-    this._mainEntity = Object.values(entries).find((entry) => {
-      if (entry.entity_category) return false;
-      const domain = computeDomain(entry.entity_id);
-      const deviceClasses = OVERRIDE_DEVICE_CLASSES[domain];
-      if (!deviceClasses) return false;
-      const deviceClass = entry.device_class ?? entry.original_device_class;
-      if (!deviceClass) return false;
-      return deviceClasses.some(
-        (classes) => classes.length > 1 && classes.includes(deviceClass)
-      );
-    });
+    this._mainEntity = Object.values(entries)
+      .filter((entry): entry is ExtEntityRegistryEntry => entry !== null)
+      .find((entry) => {
+        if (entry.entity_category) return false;
+        const domain = computeDomain(entry.entity_id);
+        const deviceClasses = OVERRIDE_DEVICE_CLASSES[domain];
+        if (!deviceClasses) return false;
+        const deviceClass = entry.device_class ?? entry.original_device_class;
+        if (!deviceClass) return false;
+        return deviceClasses.some(
+          (classes) => classes.length > 1 && classes.includes(deviceClass)
+        );
+      });
   }
 
   private _dialogClosed(): void {

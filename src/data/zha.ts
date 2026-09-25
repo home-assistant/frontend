@@ -1,10 +1,10 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
 
-export interface ZHAEntityReference extends HassEntity {
-  name: string;
-  original_name?: string;
+export interface ZHAEntityReference {
+  entity_id?: string;
+  name: string | null;
+  original_name?: string | null;
 }
 
 export interface ZHADevice {
@@ -12,19 +12,19 @@ export interface ZHADevice {
   name: string;
   ieee: string;
   nwk: number;
-  lqi: number;
-  rssi: string;
+  lqi: number | null;
+  rssi: number | null;
   last_seen: string;
   manufacturer: string;
   model: string;
   quirk_applied: boolean;
   quirk_class: string;
   entities: ZHAEntityReference[];
-  manufacturer_code: number;
+  manufacturer_code: number | null;
   device_reg_id: string;
-  user_given_name?: string;
+  user_given_name?: string | null;
   power_source?: string;
-  area_id?: string;
+  area_id?: string | null;
   device_type: string;
   active_coordinator: boolean;
   signature: any;
@@ -176,9 +176,9 @@ export interface ZHANetworkBackupNetworkInfo {
   key_table: ZHANetworkBackupKey[];
   children: string[];
   nwk_addresses: Record<string, string>;
-  stack_specific?: Record<string, any>;
+  stack_specific: Record<string, any>;
   metadata: Record<string, any>;
-  source: string;
+  source: string | null;
 }
 
 export interface ZHANetworkBackup {
@@ -195,7 +195,7 @@ export interface ZHADeviceSettings {
 
 export interface ZHANetworkSettings {
   settings: ZHANetworkBackup;
-  radio_type: "ezsp" | "znp" | "deconz" | "zigate" | "xbee";
+  radio_type: string;
   device: ZHADeviceSettings;
 }
 

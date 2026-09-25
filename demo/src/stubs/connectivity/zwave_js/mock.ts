@@ -160,7 +160,6 @@ const buildNodeStatistics = (
   return {
     event: "statistics updated",
     source: "node",
-    nodeId,
     node_id: nodeId,
     commands_tx: 1200 + nodeId * 7,
     commands_rx: 980 + nodeId * 5,
