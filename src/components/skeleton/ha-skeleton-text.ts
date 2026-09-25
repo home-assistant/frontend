@@ -8,7 +8,7 @@ import { HaSkeleton } from "./ha-skeleton";
  * Its height follows the surrounding font size. Set `width` in CSS to fit the
  * expected text.
  *
- * @cssprop --ha-skeleton-text-width - The width of the placeholder. defaults to `140px`.
+ * @cssprop --ha-skeleton-text-width - The width of the placeholder. Defaults to `140px`.
  */
 @customElement("ha-skeleton-text")
 export class HaSkeletonText extends HaSkeleton {
