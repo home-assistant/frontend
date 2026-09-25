@@ -6215,6 +6215,20 @@
             "no_traces_found": "No traces found",
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
+            "graph": {
+              "node_label": "{description}, {state}",
+              "state": {
+                "executed": "executed",
+                "not_executed": "not executed",
+                "passed": "passed",
+                "failed": "failed",
+                "passed_and_failed": "passed and failed",
+                "not_triggered": "did not trigger",
+                "error": "error",
+                "disabled": "disabled",
+                "repeated": "repeated {count} times"
+              }
+            },
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",

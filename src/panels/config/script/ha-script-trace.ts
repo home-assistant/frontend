@@ -12,6 +12,7 @@ import {
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   fireEvent,
@@ -36,7 +37,13 @@ import type {
   HatScriptGraph,
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
-import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import {
+  fireRelatedContext,
+  fullEntitiesContext,
+  manifestsContext,
+} from "../../../data/context";
+import type { DomainManifestLookup } from "../../../data/integration";
+import { buildTraceLabels } from "../../../data/trace-labels";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -72,6 +79,9 @@ export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  _manifests?: DomainManifestLookup;
+
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry?: EntityRegistryEntry[];
 
@@ -92,6 +102,17 @@ export class HaScriptTrace extends LitElement {
   @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
+
+  /**
+   * `hass` is replaced on every state update, so comparing it would rebuild
+   * every label on every state event. The run already happened, so only the
+   * trace and the registries the descriptions read can change the result.
+   */
+  private _traceLabels = memoizeOne(
+    buildTraceLabels,
+    ([trace, , entities, manifests], [pTrace, , pEntities, pManifests]) =>
+      trace === pTrace && entities === pEntities && manifests === pManifests
+  );
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -257,6 +278,16 @@ export class HaScriptTrace extends LitElement {
         <hat-script-graph
           .trace=${this._trace}
           .selected=${this._selected?.path}
+          .labels=${
+            this._trace
+              ? this._traceLabels(
+                  this._trace,
+                  this.hass,
+                  this._entityRegistry,
+                  this._manifests
+                )
+              : undefined
+          }
           @graph-node-selected=${this._pickNode}
         ></hat-script-graph>
       </div>
