@@ -1,9 +1,7 @@
 import { consume } from "@lit/context";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext } from "../data/context";
@@ -11,89 +9,26 @@ import {
   SENSOR_DEVICE_CLASS_UNITS,
   SENSOR_STATE_CLASS_UNITS,
 } from "../data/sensor_entity_constants";
-import { computeStateClassName } from "../data/entity/state_class";
 import type {
   HomeAssistantInternationalization,
   ValueChangedEvent,
 } from "../types";
-import "./chips/ha-chip-set";
-import "./chips/ha-input-chip";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
-export const getUnitOptions = (
-  localize: LocalizeFunc,
-  deviceClasses?: string[],
-  stateClasses?: string[]
-): PickerComboBoxItem[] => {
-  const deviceUnits = deviceClasses?.length
-    ? [
-        ...new Set(
-          deviceClasses
-            .map((dc) => SENSOR_DEVICE_CLASS_UNITS[dc] ?? [])
-            .reduce(
-              (shared, units) =>
-                shared.length === 0
-                  ? units
-                  : shared.filter((unit) => units.includes(unit)),
-              [] as (string | null)[]
-            )
-        ),
-      ]
-    : undefined;
-
-  const stateUnits = stateClasses?.length
-    ? [
-        ...new Set(
-          stateClasses
-            .map((sc) => SENSOR_STATE_CLASS_UNITS[sc] ?? [])
-            .reduce(
-              (shared, units) =>
-                shared.length === 0
-                  ? units
-                  : shared.filter((unit) => units.includes(unit)),
-              [] as (string | null)[]
-            )
-        ),
-      ]
-    : [];
-
-  const units =
-    stateUnits.length > 0
-      ? deviceUnits
-        ? deviceUnits.filter((unit) => stateUnits.includes(unit))
-        : stateUnits
-      : (deviceUnits ?? [
-          ...new Set([
-            ...Object.values(SENSOR_DEVICE_CLASS_UNITS).flat(),
-            ...Object.values(SENSOR_STATE_CLASS_UNITS).flat(),
-          ]),
-        ]);
-
-  return units
-    .map((unit): PickerComboBoxItem => ({
-      id: unit ?? "",
-      primary:
-        unit ?? localize("ui.components.unit-of-measurement-picker.none"),
-      sorting_label: unit ?? "",
-    }))
-    .sort((a, b) => {
-      if (a.id === "") return -1; // null at the top
-      if (b.id === "") return 1;
-
-      return (a.sorting_label ?? "").localeCompare(
-        b.sorting_label ?? "",
-        undefined,
-        { sensitivity: "base" }
-      );
-    });
-};
+const ALL_UNITS: (string | null)[] = [
+  ...new Set([
+    ...Object.values(SENSOR_DEVICE_CLASS_UNITS).flat(),
+    ...Object.values(SENSOR_STATE_CLASS_UNITS).flat(),
+  ]),
+];
 
 @customElement("ha-unit-of-measurement-picker")
 export class HaUnitOfMeasurementPicker extends LitElement {
-  @property({ attribute: false }) public value?: string | string[];
+  @property() public value?: string;
 
-  @property({ type: Boolean }) public multiple = false;
+  /** Allowed units, `null` means "no unit". `undefined` allows any unit. */
+  @property({ attribute: false }) public units?: (string | null)[];
 
   @property() public label?: string;
 
@@ -103,132 +38,66 @@ export class HaUnitOfMeasurementPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ attribute: false }) public stateClasses?: string[];
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 
-  private _translationsLoaded = false;
-
-  protected willUpdate() {
-    if (this._translationsLoaded || !this._i18n) {
-      return;
-    }
-    this._translationsLoaded = true;
-    this._i18n.loadBackendTranslation("entity_component", "sensor");
-  }
-
-  private get _value(): string[] {
-    return this.value ? ensureArray(this.value) : [];
-  }
-
-  private _stateClassName(stateClass: string): string {
-    return this._i18n
-      ? computeStateClassName(this._i18n.localize, stateClass)
-      : stateClass;
-  }
-
-  private _options = memoizeOne(
+  private _items = memoizeOne(
     (
       localize: LocalizeFunc | undefined,
-      stateClasses: string[]
+      units: (string | null)[] | undefined
     ): PickerComboBoxItem[] =>
-      localize ? getStateClassOptions(localize, stateClasses) : []
-  );
-
-  private _availableOptions = memoizeOne(
-    (options: PickerComboBoxItem[], selected: string[]) =>
-      options.filter((option) => !selected.includes(option.id))
-  );
-
-  private _getItems = () => {
-    const options = this._options(
-      this._i18n?.localize,
-      this.stateClasses || SENSOR_STATE_CLASSES
-    );
-    return this.multiple
-      ? this._availableOptions(options, this._value)
-      : options;
-  };
-
-  private _valueRenderer = (value: string) =>
-    html`<span slot="headline">${this._stateClassName(value)}</span>`;
-
-  private _notFoundLabel = (search: string) => {
-    const term = html`<b>'${search}'</b>`;
-    return this._i18n
-      ? this._i18n.localize("ui.components.state-class-picker.no_match", {
-          term,
+      (units ?? ALL_UNITS)
+        .map((unit): PickerComboBoxItem => ({
+          id: unit ?? "",
+          primary:
+            unit ??
+            localize?.("ui.components.unit-of-measurement-picker.no_unit") ??
+            "No unit",
+          sorting_label: unit ?? "",
+        }))
+        .sort((a, b) => {
+          // "No unit" first
+          if (a.id === "") return -1;
+          if (b.id === "") return 1;
+          return a.id.localeCompare(b.id, undefined, { sensitivity: "base" });
         })
-      : html`No state classes found for ${term}`;
-  };
+  );
+
+  private _getItems = () => this._items(this._i18n?.localize, this.units);
+
+  private _notFoundLabel = (search: string) =>
+    this._i18n?.localize("ui.components.unit-of-measurement-picker.no_match", {
+      term: `'${search}'`,
+    }) ?? `No units found for '${search}'`;
 
   protected render() {
     const localize = this._i18n?.localize;
-    const emptyLabel = localize?.(
-      "ui.components.state-class-picker.no_state_classes"
+    const noUnits = this.units !== undefined && this.units.length === 0;
+    const noUnitsLabel = localize?.(
+      "ui.components.unit-of-measurement-picker.no_units"
     );
-
-    if (this.multiple) {
-      const value = this._value;
-      return html`
-        ${
-          value.length
-            ? html`
-                <ha-chip-set>
-                  ${repeat(
-                    value,
-                    (stateClass) => stateClass,
-                    (stateClass) => {
-                      const label = this._stateClassName(stateClass);
-                      return html`
-                        <ha-input-chip
-                          .item=${stateClass}
-                          .label=${label}
-                          .disabled=${this.disabled}
-                          @remove=${this._removeItem}
-                          selected
-                        >
-                          ${label}
-                        </ha-input-chip>
-                      `;
-                    }
-                  )}
-                </ha-chip-set>
-              `
-            : nothing
-        }
-        <ha-generic-picker
-          .helper=${this.helper}
-          .disabled=${this.disabled}
-          .required=${this.required && !value.length}
-          .value=${""}
-          .addButtonLabel=${
-            this.label ?? localize?.("ui.components.state-class-picker.add")
-          }
-          .getItems=${this._getItems}
-          .notFoundLabel=${this._notFoundLabel}
-          .emptyLabel=${emptyLabel}
-          @value-changed=${this._itemAdded}
-        ></ha-generic-picker>
-      `;
-    }
 
     return html`
       <ha-generic-picker
         .label=${
           this.label ??
-          localize?.("ui.components.state-class-picker.state_class")
+          localize?.(
+            "ui.components.unit-of-measurement-picker.unit_of_measurement"
+          )
         }
-        .value=${this.value as string | undefined}
-        .helper=${this.helper}
-        .disabled=${this.disabled}
+        .value=${this.value}
+        .helper=${noUnits ? noUnitsLabel : this.helper}
+        .disabled=${this.disabled || noUnits}
         .required=${this.required}
+        .allowCustomValue=${this.units === undefined}
+        .customValueLabel=${localize?.(
+          "ui.components.unit-of-measurement-picker.custom_unit"
+        )}
         .getItems=${this._getItems}
-        .valueRenderer=${this._valueRenderer}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${emptyLabel}
+        .emptyLabel=${noUnitsLabel}
+        no-sort
         @value-changed=${this._valueChanged}
       ></ha-generic-picker>
     `;
@@ -236,28 +105,8 @@ export class HaUnitOfMeasurementPicker extends LitElement {
 
   private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
+    // "No unit" is sent as undefined, so ha-form leaves the key out
     fireEvent(this, "value-changed", { value: ev.detail.value || undefined });
-  }
-
-  private _itemAdded(ev: ValueChangedEvent<string | undefined>) {
-    ev.stopPropagation();
-    const stateClass = ev.detail.value;
-    if (!stateClass || this._value.includes(stateClass)) {
-      return;
-    }
-    this._setValue([...this._value, stateClass]);
-  }
-
-  private _removeItem(ev: Event) {
-    ev.stopPropagation();
-    const stateClass = (ev.currentTarget as HTMLElement & { item: string })
-      .item;
-    this._setValue(this._value.filter((item) => item !== stateClass));
-  }
-
-  private _setValue(value: string[]) {
-    this.value = value;
-    fireEvent(this, "value-changed", { value });
   }
 
   static styles = css`
@@ -267,9 +116,6 @@ export class HaUnitOfMeasurementPicker extends LitElement {
     ha-generic-picker {
       display: block;
       width: 100%;
-    }
-    ha-chip-set {
-      padding: 8px 0;
     }
   `;
 }

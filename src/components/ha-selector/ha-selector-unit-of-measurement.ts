@@ -1,14 +1,17 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { StateClassSelector } from "../../data/selector";
-import "../ha-state-class-picker";
-import { SENSOR_STATE_CLASSES } from "../../data/sensor_entity_constants";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../common/dom/fire_event";
+import type { UnitOfMeasurementSelector } from "../../data/selector";
+import { computeSelectorUnits } from "../../data/sensor/unit_of_measurement";
+import "../ha-unit-of-measurement-picker";
 
 @customElement("ha-selector-unit_of_measurement")
 export class HaUnitOfMeasurementSelector extends LitElement {
-  @property({ attribute: false }) public selector!: StateClassSelector;
+  @property({ attribute: false }) public selector!: UnitOfMeasurementSelector;
 
-  @property() public value?: string | string[];
+  @property() public value?: string;
 
   @property() public label?: string;
 
@@ -23,22 +26,75 @@ export class HaUnitOfMeasurementSelector extends LitElement {
     filter_state_class?: string | string[];
   };
 
+  private _units = memoizeOne(
+    (
+      deviceClasses: string | string[] | undefined,
+      stateClasses: string | string[] | undefined,
+      filterDeviceClass: string | string[] | undefined,
+      filterStateClass: string | string[] | undefined
+    ) =>
+      computeSelectorUnits(
+        { device_classes: deviceClasses, state_classes: stateClasses },
+        {
+          filter_device_class: filterDeviceClass,
+          filter_state_class: filterStateClass,
+        }
+      )
+  );
+
+  private _getUnits() {
+    return this._units(
+      this.selector.unit_of_measurement?.device_classes,
+      this.selector.unit_of_measurement?.state_classes,
+      this.context?.filter_device_class,
+      this.context?.filter_state_class
+    );
+  }
+
   protected render() {
     return html`
-      <ha-state-class-picker
+      <ha-unit-of-measurement-picker
         .value=${this.value}
-        .multiple=${this.selector.state_class?.multiple ?? false}
-        .stateClasses=${this.selector.state_class?.state_classes ?? SENSOR_STATE_CLASSES}
+        .units=${this._getUnits()}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-      ></ha-state-class-picker>
+      ></ha-unit-of-measurement-picker>
     `;
   }
 
+  protected updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    if (!changedProps.has("context") && !changedProps.has("selector")) {
+      return;
+    }
+
+    const units = this._getUnits();
+    // Any unit is allowed
+    if (units === undefined) {
+      return;
+    }
+
+    if (this.value) {
+      // Unselect a unit that the changed context no longer allows
+      if (
+        changedProps.get("context") !== undefined &&
+        !units.includes(this.value)
+      ) {
+        fireEvent(this, "value-changed", { value: undefined });
+      }
+      return;
+    }
+
+    if (this.required && units.length === 1 && units[0] !== null) {
+      // Preselect the only allowed unit
+      fireEvent(this, "value-changed", { value: units[0] });
+    }
+  }
+
   static styles = css`
-    ha-state-class-picker {
+    ha-unit-of-measurement-picker {
       width: 100%;
     }
   `;

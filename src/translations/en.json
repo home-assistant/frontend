@@ -1490,10 +1490,10 @@
       },
       "unit-of-measurement-picker": {
         "unit_of_measurement": "Unit of measurement",
-        "add": "Add unit",
-        "no_units": "No units available",
+        "no_unit": "No unit",
+        "no_units": "No units available for this device class",
         "no_match": "No units found for {term}",
-        "null": "No unit"
+        "custom_unit": "Use custom unit"
       },
       "multi-textfield": {
         "add_item": "Add {item}"

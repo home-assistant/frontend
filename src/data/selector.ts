@@ -655,8 +655,8 @@ export interface UiTimeFormatSelector {
 
 export interface UnitOfMeasurementSelector {
   unit_of_measurement: {
-    device_class?: string | string[];
-    state_class?: string | string[];
+    device_classes?: string | string[];
+    state_classes?: string | string[];
   } | null;
 }
 

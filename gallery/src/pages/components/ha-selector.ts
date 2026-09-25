@@ -358,6 +358,9 @@ const SCHEMAS: {
     | (BlueprintInput & {
         required?: boolean;
         context?: Record<string, unknown>;
+        // Maps a context key to another input of the same sample, like the
+        // schema context of ha-form, so the context follows its value
+        context_fields?: Record<string, string>;
       })
     | null
   >;
@@ -668,6 +671,62 @@ const SCHEMAS: {
       ui_time_format: {
         name: "Time format",
         selector: { ui_time_format: {} },
+      },
+    },
+  },
+  {
+    name: "Unit of measurement",
+    input: {
+      sensor_device_class: {
+        name: "Device class",
+        selector: { device_class: { domain: "sensor" } },
+      },
+      sensor_state_class: {
+        name: "State class",
+        selector: { state_class: {} },
+      },
+      unit_linked: {
+        name: "Unit of the device class and state class above",
+        selector: { unit_of_measurement: {} },
+        context_fields: {
+          filter_device_class: "sensor_device_class",
+          filter_state_class: "sensor_state_class",
+        },
+      },
+      unit: {
+        name: "Any unit (custom allowed)",
+        selector: { unit_of_measurement: {} },
+      },
+      unit_temperature: {
+        name: "Temperature",
+        selector: { unit_of_measurement: { device_classes: ["temperature"] } },
+      },
+      unit_battery_humidity: {
+        name: "Battery or humidity",
+        selector: {
+          unit_of_measurement: { device_classes: ["battery", "humidity"] },
+        },
+      },
+      unit_aqi: {
+        name: "Air quality index (no unit only)",
+        selector: { unit_of_measurement: { device_classes: ["aqi"] } },
+      },
+      unit_enum: {
+        name: "Enum (no units)",
+        selector: { unit_of_measurement: { device_classes: ["enum"] } },
+      },
+      unit_angle: {
+        name: "Measurement angle",
+        selector: {
+          unit_of_measurement: { state_classes: ["measurement_angle"] },
+        },
+      },
+      unit_context: {
+        name: "Temperature or humidity, narrowed by context to humidity",
+        selector: {
+          unit_of_measurement: { device_classes: ["temperature", "humidity"] },
+        },
+        context: { filter_device_class: "humidity" },
       },
     },
   },
@@ -1031,7 +1090,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}
-                      .context=${value!.context}
+                      .context=${this._context(value!, data)}
                       .key=${key}
                       .label=${this._label ? value!.name : undefined}
                       .value=${data[key] ?? value!.default}
@@ -1049,6 +1108,20 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
         `;
       })}
     `;
+  }
+
+  private _context(
+    input: (typeof SCHEMAS)[number]["input"][string],
+    data: Record<string, unknown>
+  ): Record<string, unknown> | undefined {
+    if (!input?.context_fields) {
+      return input?.context;
+    }
+    const context = { ...input.context };
+    for (const [contextKey, dataKey] of Object.entries(input.context_fields)) {
+      context[contextKey] = data[dataKey];
+    }
+    return context;
   }
 
   private _handleValueChanged(ev) {
