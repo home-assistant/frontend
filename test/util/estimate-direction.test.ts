@@ -3,6 +3,7 @@ import { estimateDirection } from "../../src/common/util/estimate-direction";
 
 describe("Estimate direction tests", () => {
   const fixtures = [
+    { input: "[", output: "neutral" },
     { input: "0", output: "neutral" },
     { input: "123", output: "neutral" },
     { input: "a", output: "ltr" },
@@ -26,6 +27,8 @@ describe("Estimate direction tests", () => {
     { input: "الجملة", output: "rtl" },
     { input: "الانجليزية", output: "rtl" },
     { input: "بسيطة", output: "rtl" },
+    { input: ", שלום", output: "rtl" },
+    { input: ", hello", output: "ltr" },
   ];
 
   it("classifies direction for text inputs", () => {
