@@ -58,6 +58,8 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+// echarts' own default, restored when switching back from touch input
+const DEFAULT_TOOLTIP_TRIGGER_ON = "mousemove|click|mousewheel";
 export const DEFAULT_CHART_WIDTH = 500;
 // Slack so a chart is up to date before a scroll can reach it. A phone screen
 // is short enough for a whole screenful; on a desktop that would cover the page.
@@ -252,9 +254,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener("touchstart", this._handleOutsideTouch, {
-      capture: true,
-    });
+    this._removeOutsideTouchListener();
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -795,6 +795,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
+      // the new chart starts with its handle hidden, so nothing would remove it
+      this._removeOutsideTouchListener();
       if (this.chart) {
         this.chart.dispose();
         this.chart = undefined;
@@ -873,11 +875,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               passive: true,
             });
           } else {
-            document.removeEventListener(
-              "touchstart",
-              this._handleOutsideTouch,
-              { capture: true }
-            );
+            this._removeOutsideTouchListener();
           }
           this.chart?.setOption({
             xAxis: ensureArray(this.options?.xAxis ?? []).map(
@@ -1481,10 +1479,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return "move";
   }
 
-  // Pointer events arrive before the touch and mouse events echarts handles,
-  // so the tooltip trigger is switched before echarts sees the input.
+  // pointerdown arrives before the click that shows the tooltip, so the trigger
+  // is switched before echarts acts on a tap. Only on touch devices, which
+  // install the handle and outside tap handlers. A pen counts as touch, as it
+  // does for echarts.
   private _handleChartPointer(ev: PointerEvent) {
-    const touchInput = ev.pointerType === "touch";
+    const touchInput = this._isTouchDevice && ev.pointerType !== "mouse";
     if (touchInput === this._touchInput) {
       return;
     }
@@ -1495,8 +1495,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     const tooltip = this._createOptions().tooltip;
     this.chart.setOption({
       tooltip: ensureArray(tooltip ?? []).map((t) => ({
-        triggerOn: t.triggerOn ?? "mousemove|click",
+        triggerOn: t.triggerOn ?? DEFAULT_TOOLTIP_TRIGGER_ON,
       })),
+    });
+  }
+
+  private _removeOutsideTouchListener() {
+    document.removeEventListener("touchstart", this._handleOutsideTouch, {
+      capture: true,
     });
   }
 
