@@ -319,7 +319,7 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _devicesAndFilterDomains = memoizeOne(
     (
       devices: HomeAssistant["devices"],
-      entries: ConfigEntry[] = [],
+      entries: ConfigEntry[] | undefined,
       entities: EntityRegistryEntry[] = [],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
@@ -348,7 +348,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       const entryLookup: Record<string, ConfigEntry> = {};
-      for (const entry of entries) {
+
+      for (const entry of entries ?? []) {
         entryLookup[entry.entry_id] = entry;
       }
 
@@ -373,7 +374,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             )
           );
 
-          const configEntries = entries.filter(
+          const configEntries = (entries ?? []).filter(
             (entry) =>
               entry.entry_id &&
               (filter.value as string[]).includes(entry.entry_id)
@@ -414,7 +415,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           Array.isArray(filter.value) &&
           filter.value.length
         ) {
-          const entryIds = entries
+          const entryIds = (entries ?? [])
             .filter((entry) =>
               (filter.value as string[]).includes(entry.domain)
             )
@@ -533,16 +534,19 @@ export class HaConfigDeviceDashboard extends LitElement {
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           area: areaName,
           floor: floorName,
-          integration: deviceEntries.length
-            ? deviceEntries
-                .map(
-                  (entry) =>
-                    localize(`component.${entry.domain}.title`) || entry.domain
-                )
-                .join(", ")
-            : this.hass.localize(
-                "ui.panel.config.devices.data_table.no_integration"
-              ),
+          integration: !entries
+            ? localize("ui.common.loading")
+            : deviceEntries.length
+              ? deviceEntries
+                  .map(
+                    (entry) =>
+                      localize(`component.${entry.domain}.title`) ||
+                      entry.domain
+                  )
+                  .join(", ")
+              : this.hass.localize(
+                  "ui.panel.config.devices.data_table.no_integration"
+                ),
           domains: deviceEntries.map((entry) => entry.domain),
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(
