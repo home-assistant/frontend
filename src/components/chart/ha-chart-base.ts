@@ -12,6 +12,7 @@ import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
+  ElementEvent,
   LegendComponentOption,
   LineSeriesOption,
   TooltipOption,
@@ -816,8 +817,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
-      this.chart.getZr().on("mousedown", (e: ECElementEvent) => {
-        if (!e.zrByTouch) {
+      this.chart.getZr().on("mousedown", (e: ElementEvent) => {
+        // Only the primary button pans. zrender does not mark touch and pen as
+        // touch when it listens to pointer events, as on Edge, so check that too.
+        const ev = e.event;
+        const isMouse = !("pointerType" in ev) || ev.pointerType === "mouse";
+        if (!e.zrByTouch && isMouse && "button" in ev && ev.button === 0) {
           this._mouseDown = true;
           // on window, so releasing the button outside the chart also counts
           window.addEventListener("mouseup", this._handleWindowMouseUp, {
