@@ -253,6 +253,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("mouseup", this._handleWindowMouseUp);
+    this._mouseDown = false;
+    this._tooltipHiddenWhilePanning = false;
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -1480,9 +1482,22 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._mouseDown = false;
     if (this._tooltipHiddenWhilePanning) {
       this._tooltipHiddenWhilePanning = false;
-      this.chart?.setOption({ tooltip: { show: true } });
+      this._setPanTooltipsHidden(false);
     }
   };
+
+  // Restores the configured visibility of each tooltip rather than forcing it
+  // on, so a chart without a tooltip, or with a hidden one, stays that way.
+  private _setPanTooltipsHidden(hidden: boolean) {
+    if (!this.options?.tooltip) {
+      return;
+    }
+    this.chart?.setOption({
+      tooltip: ensureArray(this.options.tooltip).map((tooltip) => ({
+        show: hidden ? false : (tooltip.show ?? true),
+      })),
+    });
+  }
 
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
@@ -1524,7 +1539,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       !this._tooltipHiddenWhilePanning
     ) {
       this._tooltipHiddenWhilePanning = true;
-      this.chart?.setOption({ tooltip: { show: false } });
+      this._setPanTooltipsHidden(true);
     }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
