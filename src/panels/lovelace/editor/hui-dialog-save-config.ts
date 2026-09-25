@@ -6,7 +6,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
@@ -103,17 +102,15 @@ export class HuiSaveConfig
                       "ui.panel.lovelace.editor.save_config.para_sure"
                     )}
                   </p>
-                  <ha-formfield
-                    .label=${this.hass!.localize(
+                  <ha-switch
+                    .checked=${this._emptyConfig}
+                    @change=${this._emptyConfigChanged}
+                    autofocus
+                  >
+                    ${this.hass!.localize(
                       "ui.panel.lovelace.editor.save_config.empty_config"
                     )}
-                  >
-                    <ha-switch
-                      .checked=${this._emptyConfig}
-                      @change=${this._emptyConfigChanged}
-                      autofocus
-                    ></ha-switch
-                  ></ha-formfield>
+                  </ha-switch>
                 `
               : html`
                   <p>

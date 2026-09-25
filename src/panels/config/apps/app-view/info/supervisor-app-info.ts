@@ -51,7 +51,6 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-markdown";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
@@ -1485,19 +1484,16 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             }
           )}
         </p>
-        <ha-formfield
-          .label=${html`<p>
+        <ha-switch
+          @change=${_removeConfigToggled}
+          .checked=${removeConfig}
+          haptic
+          ><p>
             ${this.i18n.localize(
               "ui.panel.config.apps.dashboard.uninstall_dialog.remove_config"
             )}
-          </p>`}
+          </p></ha-switch
         >
-          <ha-switch
-            @change=${_removeConfigToggled}
-            .checked=${removeConfig}
-            haptic
-          ></ha-switch>
-        </ha-formfield>
       `,
       confirmText: this.i18n.localize(
         "ui.panel.config.apps.dashboard.uninstall_dialog.uninstall"

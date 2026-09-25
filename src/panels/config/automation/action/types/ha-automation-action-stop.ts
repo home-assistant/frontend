@@ -2,7 +2,6 @@ import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
@@ -44,18 +43,14 @@ export class HaStopAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @change=${this._responseChanged}
       ></ha-input>
-      <ha-formfield
+      <ha-switch
         .disabled=${this.disabled}
-        .label=${this._i18n.localize(
+        .checked=${error ?? false}
+        @change=${this._errorChanged}
+        >${this._i18n.localize(
           "ui.panel.config.automation.editor.actions.type.stop.error"
-        )}
+        )}</ha-switch
       >
-        <ha-switch
-          .disabled=${this.disabled}
-          .checked=${error ?? false}
-          @change=${this._errorChanged}
-        ></ha-switch>
-      </ha-formfield>
     `;
   }
 

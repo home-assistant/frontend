@@ -3728,21 +3728,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/form-field@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/form-field@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/c7634084c10621bcfe3b8f4b1da21bcf76ab0532863a9c9e55f9ac5fc97d6c0f0c0b25d4f4328fe9b90fd711a567fb2ed1adfeb248ded6a2f5ed24e19c4a73be
-  languageName: node
-  linkType: hard
-
 "@material/list@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/list@npm:14.0.0-canary.53b3cad2f.0"
@@ -3782,30 +3767,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 10/064a32f238e6582f1d83f545a7f953a14f4774b0f7205f440fd34531d3cc72c9bfdd3e87c9a309eec0c4f42b1de9fb29ac8b35ccf2bdb76fd3216dfed2f387ad
-  languageName: node
-  linkType: hard
-
-"@material/mwc-formfield@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-formfield@npm:0.27.0"
-  dependencies:
-    "@material/form-field": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/028ded7f43b104d4cef616522f17b26f8670bbeab9d9e6f8a39bb1f396a3a00d3f3b0d359c713f8a2aed513c5201f6e2e1e0eabec105a01dc3b8f01b12b3818f
-  languageName: node
-  linkType: hard
-
-"@material/mwc-formfield@patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch":
-  version: 0.27.0
-  resolution: "@material/mwc-formfield@patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch::version=0.27.0&hash=fbe3e7"
-  dependencies:
-    "@material/form-field": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/20827383c78c06f8e38eee6ec7cce84d2f79bd4ba74f83de0d97479865dee34d6c4c558063afd7ef2315db4697427b52dfa3d1fae6088187c389d50438de5a48
   languageName: node
   linkType: hard
 
@@ -10397,7 +10358,6 @@ __metadata:
     "@lokalise/node-api": "npm:16.4.1"
     "@mapbox/mapbox-gl-rtl-text": "npm:0.4.0"
     "@maplibre/maplibre-gl-leaflet": "npm:0.1.4"
-    "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/web": "npm:2.5.0"
     "@mdi/js": "npm:7.4.47"

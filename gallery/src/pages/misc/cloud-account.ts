@@ -1,7 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../src/components/ha-select";
 import "../../../../src/components/ha-switch";
@@ -384,13 +383,12 @@ export class DemoMiscCloudAccount
 
   private _toggle(label: string, field: keyof CloudDemoScenario) {
     return html`
-      <ha-formfield .label=${label}>
-        <ha-switch
-          .checked=${this._scenario[field] as boolean}
-          data-field=${field}
-          @change=${this._switchChanged}
-        ></ha-switch>
-      </ha-formfield>
+      <ha-switch
+        .checked=${this._scenario[field] as boolean}
+        data-field=${field}
+        @change=${this._switchChanged}
+        >${label}</ha-switch
+      >
     `;
   }
 
