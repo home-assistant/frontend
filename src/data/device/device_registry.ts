@@ -8,7 +8,7 @@ import type {
   EntityRegistryEntry,
 } from "../entity/entity_registry";
 import type { EntitySources } from "../entity/entity_sources";
-import type { RegistryEntry } from "../registry";
+import type { NextNamePart, RegistryEntry } from "../registry";
 
 export {
   fetchDeviceRegistry,
@@ -46,6 +46,7 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   // Set when this device is a child (logical part) of another device.
   // null for regular top-level devices.
   parent_device_id: string | null;
+  next_name_part?: NextNamePart | null;
 }
 
 /**
@@ -68,6 +69,7 @@ export interface ChildDeviceRegistryEntry extends RegistryEntry {
   area_id: string | null;
   disabled_by: DeviceDisabler | null;
   parent_device_id: string;
+  next_name_part?: NextNamePart | null;
 }
 
 /**
