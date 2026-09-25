@@ -110,7 +110,6 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${node.disabled}
         .error=${node.error}
-        role="button"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
         aria-disabled=${ifDefined(node.disabled || undefined)}
@@ -200,7 +199,6 @@ export class HatScriptGraph extends LitElement {
                 ?track=${branch.hasTrace}
                 ?active=${this.selected === branch.path}
                 .notEnabled=${branch.disabled}
-                role="button"
                 aria-label=${ifDefined(this.labels?.[branch.path])}
                 aria-current=${ifDefined(this.selected === branch.path || undefined)}
                 aria-disabled=${ifDefined(branch.disabled || undefined)}
@@ -411,7 +409,6 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
         .error=${model.error}
-        role="button"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
         aria-disabled=${ifDefined(model.disabled || undefined)}
@@ -448,7 +445,6 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
         .error=${model.error}
-        role="button"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
         aria-disabled=${ifDefined(model.disabled || undefined)}
@@ -553,7 +549,6 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .error=${model.error}
         .notEnabled=${model.disabled}
-        role="button"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
         aria-disabled=${ifDefined(model.disabled || undefined)}

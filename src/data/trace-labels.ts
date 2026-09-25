@@ -11,6 +11,9 @@ import type { TraceActionNode, TraceBranch, TraceNode } from "./trace-tree";
 
 const STATE_KEY = "ui.panel.config.automation.trace.graph.state";
 
+/** Shared so an absent registry does not break the callers' memoization. */
+const NO_ENTITY_REGISTRY: EntityRegistryEntry[] = [];
+
 interface LabelContext {
   hass: HomeAssistant;
   entityRegistry: EntityRegistryEntry[];
@@ -18,7 +21,27 @@ interface LabelContext {
 }
 
 type StatefulNode = Pick<TraceNode, "disabled" | "error" | "track"> &
-  Partial<Pick<TraceNode, "notTriggered">>;
+  Partial<Pick<TraceNode, "notTriggered" | "condition">>;
+
+/**
+ * Whether a condition passed is drawn as the tracked path, and failing as a
+ * cross on a node that is aria-hidden, so the outcome needs saying. A repeated
+ * condition can have done both across its evaluations.
+ */
+const conditionOutcome = (
+  condition: NonNullable<TraceNode["condition"]>
+): "passed" | "failed" | "passed_and_failed" | undefined => {
+  if (condition.passed && condition.failed) {
+    return "passed_and_failed";
+  }
+  if (condition.passed) {
+    return "passed";
+  }
+  if (condition.failed) {
+    return "failed";
+  }
+  return undefined;
+};
 
 /** The graph shows the run outcome only visually, so the label says it. */
 const withState = (
@@ -27,6 +50,7 @@ const withState = (
   node: StatefulNode,
   badge?: number
 ): string => {
+  const outcome = node.condition && conditionOutcome(node.condition);
   let state: string;
   if (node.disabled) {
     state = hass.localize(`${STATE_KEY}.disabled`);
@@ -34,6 +58,8 @@ const withState = (
     state = hass.localize(`${STATE_KEY}.error`);
   } else if (node.notTriggered) {
     state = hass.localize(`${STATE_KEY}.not_triggered`);
+  } else if (outcome) {
+    state = hass.localize(`${STATE_KEY}.${outcome}`);
   } else if (node.track && badge) {
     state = hass.localize(`${STATE_KEY}.repeated`, { count: badge });
   } else if (node.track) {
@@ -112,30 +138,31 @@ const addAction = (
 
 /**
  * Accessible names for every step of a trace, keyed by node path. Called from
- * the trace panels, which own `hass`; memoize on `trace` so entity state
- * changes neither rebuild the labels nor rerender the graph.
+ * the trace panels, which own `hass`; memoize on everything but `hass`, which
+ * is replaced on every state update.
  */
 export const buildTraceLabels = (
   trace: TraceExtended,
   hass: HomeAssistant,
-  entityRegistry: EntityRegistryEntry[],
+  entityRegistry: EntityRegistryEntry[] | undefined,
   manifests?: DomainManifestLookup
 ): Record<string, string> => {
-  const ctx: LabelContext = { hass, entityRegistry, manifests };
+  const entities = entityRegistry ?? NO_ENTITY_REGISTRY;
+  const ctx: LabelContext = { hass, entityRegistry: entities, manifests };
   const tree = new TraceTree(trace);
   const labels: Record<string, string> = {};
 
   tree.triggers?.forEach((node: TraceNode<Trigger>) => {
     labels[node.path] = withState(
       ctx,
-      describeTrigger(node.config, hass, entityRegistry),
+      describeTrigger(node.config, hass, entities),
       node
     );
   });
   tree.conditions.forEach((node: TraceNode<Condition>) => {
     labels[node.path] = withState(
       ctx,
-      describeCondition(node.config, hass, entityRegistry),
+      describeCondition(node.config, hass, entities),
       node
     );
   });

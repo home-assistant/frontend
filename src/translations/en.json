@@ -6195,6 +6195,9 @@
               "state": {
                 "executed": "executed",
                 "not_executed": "not executed",
+                "passed": "passed",
+                "failed": "failed",
+                "passed_and_failed": "passed and failed",
                 "not_triggered": "did not trigger",
                 "error": "error",
                 "disabled": "disabled",
