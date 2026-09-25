@@ -1127,7 +1127,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       line: {
         lineStyle: { width: 1.5 },
         // At this size the symbols are invisible, but drawing one per data point
-        // makes every tooltip move repaint hundreds of them. Echarts still draws
+        // makes every tooltip move repaint hundreds of them. ECharts still draws
         // the symbol of the hovered point.
         showSymbol: false,
         symbolSize: 1,
