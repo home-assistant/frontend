@@ -171,6 +171,9 @@ export class EntitySettingsHelperTab extends LitElement {
         );
       }
       const result = await this._registryEditor!.updateEntry();
+      if (!result) {
+        return;
+      }
       this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
