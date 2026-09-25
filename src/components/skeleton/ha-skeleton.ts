@@ -7,9 +7,9 @@ import { customElement } from "lit/decorators";
  * Placeholder shown while content loads. Sized by its container unless a
  * more specific variant such as `ha-skeleton-text` or `ha-skeleton-icon` is used.
  *
- * @cssprop --ha-skeleton-color - The fill color. defaults to `var(--ha-color-fill-neutral-normal-resting)`.
- * @cssprop --ha-skeleton-sheen-color - The sheen color when `effect="sheen"`. defaults to `var(--ha-color-fill-neutral-loud-resting)`.
- * @cssprop --ha-skeleton-border-radius - The corner radius. defaults to `var(--ha-border-radius-sm)`.
+ * @cssprop --ha-skeleton-color - The fill color. Defaults to `var(--ha-color-fill-neutral-normal-resting)`.
+ * @cssprop --ha-skeleton-sheen-color - The sheen color when `effect="sheen"`. Defaults to `var(--ha-color-fill-neutral-loud-resting)`.
+ * @cssprop --ha-skeleton-border-radius - The corner radius. Defaults to `var(--ha-border-radius-sm)`.
  */
 @customElement("ha-skeleton")
 export class HaSkeleton extends WaSkeleton {
