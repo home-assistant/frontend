@@ -715,6 +715,14 @@ const SCHEMAS: {
         name: "Enum (no units)",
         selector: { unit_of_measurement: { device_classes: ["enum"] } },
       },
+      unit_timestamp: {
+        name: "Timestamp (no units)",
+        selector: { unit_of_measurement: { device_classes: ["timestamp"] } },
+      },
+      unit_uptime: {
+        name: "Uptime (no units)",
+        selector: { unit_of_measurement: { device_classes: ["uptime"] } },
+      },
       unit_angle: {
         name: "Measurement angle",
         selector: {

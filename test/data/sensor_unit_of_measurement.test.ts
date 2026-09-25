@@ -38,6 +38,13 @@ describe("computeAllowedUnits", () => {
     expect(computeAllowedUnits(["enum"])).toEqual([]);
   });
 
+  it("allows nothing for date and time based device classes", () => {
+    expect(computeAllowedUnits(["date"])).toEqual([]);
+    expect(computeAllowedUnits(["timestamp"])).toEqual([]);
+    expect(computeAllowedUnits(["uptime"])).toEqual([]);
+    expect(computeAllowedUnits(["date", "timestamp", "uptime"])).toEqual([]);
+  });
+
   it("is unrestricted for state classes without units", () => {
     expect(computeAllowedUnits(undefined, ["measurement"])).toBeUndefined();
   });
@@ -100,6 +107,15 @@ describe("computeSelectorUnits", () => {
         { filter_device_class: "", filter_state_class: [] }
       )
     ).toEqual([null]);
+  });
+
+  it("allows nothing for a date or time based device class in the context", () => {
+    expect(
+      computeSelectorUnits(undefined, { filter_device_class: "timestamp" })
+    ).toEqual([]);
+    expect(
+      computeSelectorUnits(undefined, { filter_device_class: "uptime" })
+    ).toEqual([]);
   });
 
   it("narrows the config with an overlapping context", () => {
