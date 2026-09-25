@@ -33,6 +33,8 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _configEntries?: ConfigEntry[];
 
+  @state() private _configEntriesFailed = false;
+
   @state() private _manifests: IntegrationManifest[] = [];
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -51,6 +53,7 @@ class HaConfigDevices extends HassRouterPage {
       pageEl.entries = this._configEntries ?? [];
     } else {
       pageEl.entries = this._configEntries;
+      pageEl.entriesFailed = this._configEntriesFailed;
     }
 
     pageEl.manifests = this._manifests;
@@ -62,13 +65,21 @@ class HaConfigDevices extends HassRouterPage {
   private async _loadData() {
     await Promise.all([
       getConfigEntries(this.hass)
-        .catch(() => [])
+        .catch(() => {
+          this._configEntriesFailed = true;
+
+          return [];
+        })
         .then((configEntries) => {
           this._configEntries = configEntries;
         }),
-      fetchIntegrationManifests(this.hass).then((manifests) => {
-        this._manifests = manifests;
-      }),
+      fetchIntegrationManifests(this.hass)
+        .then((manifests) => {
+          this._manifests = manifests;
+        })
+        .catch(() => {
+          // The pages remain usable without integration manifests.
+        }),
     ]);
   }
 }
