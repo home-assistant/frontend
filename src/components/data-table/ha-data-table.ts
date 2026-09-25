@@ -547,59 +547,61 @@ export class HaDataTable extends LitElement {
                 (this.data.length && !this._filteredDataSourceLength)
                 ? html`
                     <div class="mdc-data-table__content" role="row">
-                      <ha-fade-in role="cell" .duration=${300} easing="ease-in">
-                        <div
-                          role="progressbar"
-                          aria-label=${
-                            this._i18n?.localize?.("ui.common.loading") ||
-                            "Loading"
-                          }
-                        >
-                          ${Array.from(
-                            {
-                              length: this.autoHeight
-                                ? 1
-                                : Math.ceil(window.innerHeight / ROW_HEIGHT),
-                            },
-                            () => html`
-                              <div class="mdc-data-table__row">
-                                ${
-                                  this.selectable
-                                    ? html`<div
-                                        class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-                                      ></div>`
-                                    : nothing
-                                }
-                                ${Object.entries(columns).map(
-                                  ([key, column]) =>
-                                    (this.narrow &&
-                                      !column.main &&
-                                      !column.showNarrow) ||
-                                    !this._isColumnVisible(key, column)
-                                      ? nothing
-                                      : html`
-                                          <div
-                                            class="mdc-data-table__cell ${classMap(
-                                              cellClasses(column)
-                                            )}"
-                                            style=${styleMap(cellStyles(column))}
-                                          >
-                                            ${
-                                              column.type === "icon"
-                                                ? html`<ha-skeleton-icon></ha-skeleton-icon>`
-                                                : column.type ===
-                                                      "icon-button" ||
-                                                    column.type ===
-                                                      "overflow-menu"
-                                                  ? nothing
-                                                  : html`<ha-skeleton-text></ha-skeleton-text>`
-                                            }
-                                          </div>
-                                        `
-                                )}
-                              </div>
-                            `
-                          )}
+                      <ha-fade-in .duration=${300} easing="ease-in">
+                        <div role="cell">
+                          <div
+                            role="progressbar"
+                            aria-label=${
+                              this._i18n?.localize?.("ui.common.loading") ||
+                              "Loading"
+                            }
+                          >
+                            ${Array.from(
+                              {
+                                length: this.autoHeight
+                                  ? 1
+                                  : Math.ceil(window.innerHeight / ROW_HEIGHT),
+                              },
+                              () => html`
+                                <div class="mdc-data-table__row">
+                                  ${
+                                    this.selectable
+                                      ? html`<div
+                                          class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                        ></div>`
+                                      : nothing
+                                  }
+                                  ${Object.entries(columns).map(
+                                    ([key, column]) =>
+                                      (this.narrow &&
+                                        !column.main &&
+                                        !column.showNarrow) ||
+                                      !this._isColumnVisible(key, column)
+                                        ? nothing
+                                        : html`
+                                            <div
+                                              class="mdc-data-table__cell ${classMap(
+                                                cellClasses(column)
+                                              )}"
+                                              style=${styleMap(cellStyles(column))}
+                                            >
+                                              ${
+                                                column.type === "icon"
+                                                  ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+                                                  : column.type ===
+                                                        "icon-button" ||
+                                                      column.type ===
+                                                        "overflow-menu"
+                                                    ? nothing
+                                                    : html`<ha-skeleton-text></ha-skeleton-text>`
+                                              }
+                                            </div>
+                                          `
+                                  )}
+                                </div>
+                              `
+                            )}
+                          </div>
                         </div>
                       </ha-fade-in>
                     </div>
