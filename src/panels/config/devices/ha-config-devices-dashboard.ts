@@ -15,6 +15,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -309,6 +310,10 @@ export class HaConfigDeviceDashboard extends LitElement {
         items: undefined,
       },
     };
+  }
+
+  private _reloadConfigEntries() {
+    fireEvent(this, "reload-config-entries");
   }
 
   private _clearFilter() {
@@ -919,6 +924,22 @@ export class HaConfigDeviceDashboard extends LitElement {
           ${this.hass.localize("ui.panel.config.devices.add_device")}
         </ha-button>
         ${
+          this.entriesFailed
+            ? html`<ha-alert slot="top-header" alert-type="error">
+                ${this.hass.localize(
+                  "ui.panel.config.devices.config_entries_load_failed"
+                )}
+                <ha-button
+                  slot="action"
+                  appearance="plain"
+                  @click=${this._reloadConfigEntries}
+                >
+                  ${this.hass.localize("ui.panel.config.devices.retry")}
+                </ha-button>
+              </ha-alert>`
+            : nothing
+        }
+        ${
           Array.isArray(this._filters.config_entry?.value) &&
           this._filters.config_entry?.value.length
             ? html`<ha-alert slot="filter-pane">
@@ -1383,6 +1404,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-alert[slot="top-header"] {
+          display: block;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
         ha-alert ha-skeleton-text {
           --ha-skeleton-text-width: 100px;
