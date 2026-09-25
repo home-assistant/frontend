@@ -67,7 +67,7 @@ class HaRefreshTokens extends LitElement {
     if (token.client_id === androidClientId) {
       return this.hass.localize("ui.panel.profile.refresh_tokens.android_app");
     }
-    return token.client_name || token.client_id;
+    return token.client_name || token.client_id || "";
   };
 
   protected render(): TemplateResult {

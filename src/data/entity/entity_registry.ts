@@ -37,7 +37,7 @@ export interface EntityRegistryDisplayEntryResponse {
     ec?: number;
     en?: string;
     ic?: string;
-    pl?: string;
+    pl: string;
     tk?: string;
     hb?: boolean;
     dp?: number;
@@ -58,7 +58,7 @@ export interface EntityRegistryEntry extends RegistryEntry {
   area_id: string | null;
   labels: string[];
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
-  hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
+  hidden_by: "integration" | "user" | null;
   entity_category: EntityCategory | null;
   has_entity_name: boolean;
   original_name?: string;
@@ -69,7 +69,7 @@ export interface EntityRegistryEntry extends RegistryEntry {
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
-  capabilities: Record<string, unknown>;
+  capabilities: Record<string, unknown> | null;
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
@@ -196,7 +196,7 @@ export interface EntityRegistryEntryUpdateParams {
   device_class?: string | null;
   area_id?: string | null;
   disabled_by?: string | null;
-  hidden_by: string | null;
+  hidden_by?: string | null;
   new_entity_id?: string;
   options_domain?: string;
   options?:
@@ -278,7 +278,7 @@ export const getExtendedEntityRegistryEntry = (
 export const getExtendedEntityRegistryEntries = (
   hass: HomeAssistant,
   entityIds: string[]
-): Promise<Record<string, ExtEntityRegistryEntry>> =>
+): Promise<Record<string, ExtEntityRegistryEntry | null>> =>
   hass.callWS({
     type: "config/entity_registry/get_entries",
     entity_ids: entityIds,
