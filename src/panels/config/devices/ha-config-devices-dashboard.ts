@@ -119,6 +119,8 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property({ attribute: false }) public entries?: ConfigEntry[];
 
+  @property({ attribute: false }) public entriesFailed = false;
+
   @state() private _subEntries?: SubEntry[];
 
   @state()
@@ -320,6 +322,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     (
       devices: HomeAssistant["devices"],
       entries: ConfigEntry[] | undefined,
+      entriesFailed: boolean,
       entities: EntityRegistryEntry[] = [],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
@@ -536,17 +539,19 @@ export class HaConfigDeviceDashboard extends LitElement {
           floor: floorName,
           integration: !entries
             ? localize("ui.common.loading")
-            : deviceEntries.length
-              ? deviceEntries
-                  .map(
-                    (entry) =>
-                      localize(`component.${entry.domain}.title`) ||
-                      entry.domain
-                  )
-                  .join(", ")
-              : this.hass.localize(
-                  "ui.panel.config.devices.data_table.no_integration"
-                ),
+            : entriesFailed
+              ? `<${localize("ui.panel.config.devices.data_table.unknown")}>`
+              : deviceEntries.length
+                ? deviceEntries
+                    .map(
+                      (entry) =>
+                        localize(`component.${entry.domain}.title`) ||
+                        entry.domain
+                    )
+                    .join(", ")
+                : this.hass.localize(
+                    "ui.panel.config.devices.data_table.no_integration"
+                  ),
           domains: deviceEntries.map((entry) => entry.domain),
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(
@@ -848,6 +853,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     const { devicesOutput } = this._devicesAndFilterDomains(
       this.hass.devices,
       this.entries,
+      this.entriesFailed,
       this.entities,
       this.hass.areas,
       this.manifests,
@@ -1138,6 +1144,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       this._devicesAndFilterDomains(
         this.hass.devices,
         this.entries,
+        this.entriesFailed,
         this.entities,
         this.hass.areas,
         this.manifests,
