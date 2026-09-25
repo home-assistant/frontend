@@ -39,7 +39,7 @@ export class CloudRemotePref extends LitElement {
       return nothing;
     }
 
-    const { remote_enabled, remote_allow_remote_enable, strict_connection } =
+    const { remote_enabled, remote_allow_remote_enable } =
       this.cloudStatus.prefs;
 
     const {
@@ -120,17 +120,7 @@ export class CloudRemotePref extends LitElement {
                                 )}
                               ></ha-alert>
                             `
-                          : strict_connection === "drop_connection"
-                            ? html`<ha-alert
-                                alert-type="warning"
-                                .title=${this.hass.localize(
-                                  `ui.panel.config.cloud.account.remote.drop_connection_warning_title`
-                                )}
-                                >${this.hass.localize(
-                                  `ui.panel.config.cloud.account.remote.drop_connection_warning`
-                                )}</ha-alert
-                              >`
-                            : nothing
+                          : nothing
                       }
                       <p>
                         ${this.hass.localize(

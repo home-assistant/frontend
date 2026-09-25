@@ -1,7 +1,7 @@
 import type { HomeAssistant } from "../types";
 
 export type BackupManagerState =
-  "idle" | "create_backup" | "receive_backup" | "restore_backup";
+  "idle" | "create_backup" | "receive_backup" | "restore_backup" | "blocked";
 
 export type CreateBackupStage =
   | "addon_repositories"
@@ -39,7 +39,8 @@ export type RestoreBackupStage =
   | "remove_delta_addons"
   | "remove_delta_apps";
 
-export type RestoreBackupState = "completed" | "failed" | "in_progress";
+export type RestoreBackupState =
+  "completed" | "core_restart" | "failed" | "in_progress";
 
 interface IdleEvent {
   manager_state: "idle";
@@ -47,20 +48,27 @@ interface IdleEvent {
 
 interface CreateBackupEvent {
   manager_state: "create_backup";
+  reason: string | null;
   stage: CreateBackupStage | null;
   state: CreateBackupState;
 }
 
 interface ReceiveBackupEvent {
   manager_state: "receive_backup";
+  reason: string | null;
   stage: ReceiveBackupStage | null;
   state: ReceiveBackupState;
 }
 
 interface RestoreBackupEvent {
   manager_state: "restore_backup";
+  reason: string | null;
   stage: RestoreBackupStage | null;
   state: RestoreBackupState;
+}
+
+interface BlockedEvent {
+  manager_state: "blocked";
 }
 
 export interface UploadBackupEvent {
@@ -71,10 +79,14 @@ export interface UploadBackupEvent {
 }
 
 export type ManagerState =
-  "idle" | "create_backup" | "receive_backup" | "restore_backup";
+  "idle" | "create_backup" | "receive_backup" | "restore_backup" | "blocked";
 
 export type ManagerStateEvent =
-  IdleEvent | CreateBackupEvent | ReceiveBackupEvent | RestoreBackupEvent;
+  | IdleEvent
+  | CreateBackupEvent
+  | ReceiveBackupEvent
+  | RestoreBackupEvent
+  | BlockedEvent;
 
 export type BackupSubscriptionEvent = ManagerStateEvent | UploadBackupEvent;
 
