@@ -254,7 +254,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._removeOutsideTouchListener();
+    this._removeOutsideTapListener();
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -796,7 +796,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
       // the new chart starts with its handle hidden, so nothing would remove it
-      this._removeOutsideTouchListener();
+      this._removeOutsideTapListener();
       if (this.chart) {
         this.chart.dispose();
         this.chart = undefined;
@@ -870,12 +870,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           handleShown = show;
           // the tooltip only opens on a tap, so a tap anywhere else closes it
           if (show) {
-            document.addEventListener("touchstart", this._handleOutsideTouch, {
+            document.addEventListener("pointerdown", this._handleOutsideTap, {
               capture: true,
               passive: true,
             });
           } else {
-            this._removeOutsideTouchListener();
+            this._removeOutsideTapListener();
           }
           this.chart?.setOption({
             xAxis: ensureArray(this.options?.xAxis ?? []).map(
@@ -1500,14 +1500,17 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     });
   }
 
-  private _removeOutsideTouchListener() {
-    document.removeEventListener("touchstart", this._handleOutsideTouch, {
+  private _removeOutsideTapListener() {
+    document.removeEventListener("pointerdown", this._handleOutsideTap, {
       capture: true,
     });
   }
 
-  private _handleOutsideTouch = (ev: TouchEvent) => {
-    if (!ev.composedPath().includes(this)) {
+  // A pen does not reliably fire touch events, so this listens to pointer
+  // events. The mouse is left out: echarts already hides the tooltip when it
+  // leaves the chart, even when the tooltip only opens on click.
+  private _handleOutsideTap = (ev: PointerEvent) => {
+    if (ev.pointerType !== "mouse" && !ev.composedPath().includes(this)) {
       this.chart?.dispatchAction({ type: "hideTip", from: "outside" });
     }
   };
