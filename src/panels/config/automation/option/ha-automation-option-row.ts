@@ -7,6 +7,7 @@ import {
   mdiCommentTextOutline,
   mdiDelete,
   mdiDotsVertical,
+  mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
@@ -29,6 +30,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-yaml-editor";
 import type {
   Condition,
   OptionSidebarConfig,
@@ -83,6 +85,8 @@ export default class HaAutomationOptionRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _collapsed = true;
+
+  @state() private _yamlMode = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -264,6 +268,18 @@ export default class HaAutomationOptionRow extends LitElement {
                   )}
                 </ha-dropdown-item>
 
+                <ha-dropdown-item value="toggle_yaml_mode">
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiPlaylistEdit}
+                  ></ha-svg-icon>
+                  ${this._renderOverflowLabel(
+                    this.hass.localize(
+                      `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+                    )
+                  )}
+                </ha-dropdown-item>
+
                 ${
                   !this.optionsInSidebar
                     ? html`
@@ -339,6 +355,29 @@ export default class HaAutomationOptionRow extends LitElement {
   }
 
   private _renderContent() {
+    if (this.optionsInSidebar && this._yamlMode) {
+      // YAML is edited in the sidebar
+      return nothing;
+    }
+    if (this._yamlMode && this.option) {
+      return html`<div
+        class=${classMap({
+          "card-content": true,
+          card: !this.optionsInSidebar,
+          indent: this.optionsInSidebar,
+          selected: this._selected,
+          hidden: this.optionsInSidebar && this._collapsed,
+        })}
+      >
+        <ha-yaml-editor
+          .hass=${this.hass}
+          .defaultValue=${this.option}
+          .readOnly=${this.disabled}
+          @value-changed=${this._onYamlChange}
+        ></ha-yaml-editor>
+      </div>`;
+    }
+
     return html`<div
       class=${classMap({
         "card-content": true,
@@ -428,6 +467,24 @@ export default class HaAutomationOptionRow extends LitElement {
     fireEvent(this, "duplicate");
   };
 
+  private _toggleYamlMode = () => {
+    this._yamlMode = !this._yamlMode;
+    this.expand();
+    if (this.optionsInSidebar && this._selected) {
+      this.openSidebar(); // refresh sidebar
+    }
+  };
+
+  private _onYamlChange(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: ev.detail.value,
+    });
+  }
+
   private _moveUp() {
     fireEvent(this, "move-up");
   }
@@ -456,6 +513,9 @@ export default class HaAutomationOptionRow extends LitElement {
         break;
       case "duplicate":
         this._duplicateOption();
+        break;
+      case "toggle_yaml_mode":
+        this._toggleYamlMode();
         break;
       case "move_up":
         this._moveUp();
@@ -581,6 +641,9 @@ export default class HaAutomationOptionRow extends LitElement {
   public openSidebar(option?: Option): void {
     const sidebarOption = option ?? this.option;
     fireEvent(this, "open-sidebar", {
+      save: (value) => {
+        fireEvent(this, "value-changed", { value });
+      },
       close: (focus?: boolean) => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
@@ -594,6 +657,13 @@ export default class HaAutomationOptionRow extends LitElement {
       editNote: this._editNoteOption,
       delete: this._removeOption,
       duplicate: this._duplicateOption,
+      toggleYamlMode: () => {
+        this._toggleYamlMode();
+      },
+      yamlMode: this._yamlMode,
+      config: {
+        option: sidebarOption,
+      },
       defaultOption: !!this.defaultActions,
       note: sidebarOption?.note,
     } satisfies OptionSidebarConfig);
