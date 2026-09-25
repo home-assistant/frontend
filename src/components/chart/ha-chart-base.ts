@@ -180,6 +180,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _isTouchDevice = "ontouchstart" in window;
 
+  // Whether the chart was last used with touch rather than a mouse. With touch
+  // the tooltip only opens on a tap, like on mobile, while a mouse on the same
+  // device still shows it on hover.
+  private _touchInput = this._isTouchDevice;
+
   private _lastTapTime?: number;
 
   private _longPressTimer?: ReturnType<typeof setTimeout>;
@@ -247,6 +252,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener("touchstart", this._handleOutsideTouch, {
+      capture: true,
+    });
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -534,6 +542,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
+            @pointerdown=${this._handleChartPointer}
+            @pointermove=${this._handleChartPointer}
           ></div>
         </div>
         <div class="sonification-output"></div>
@@ -856,6 +866,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         // built from this.options: getOption() would deep clone all series data.
         const setAxisPointerHandle = (show: boolean) => {
           handleShown = show;
+          // the tooltip only opens on a tap, so a tap anywhere else closes it
+          if (show) {
+            document.addEventListener("touchstart", this._handleOutsideTouch, {
+              capture: true,
+              passive: true,
+            });
+          } else {
+            document.removeEventListener(
+              "touchstart",
+              this._handleOutsideTouch,
+              { capture: true }
+            );
+          }
           this.chart?.setOption({
             xAxis: ensureArray(this.options?.xAxis ?? []).map(
               (axis: XAXisOption) =>
@@ -1085,6 +1108,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           // mobile charts are full width so we need to confine the tooltip to the chart
           next.confine = true;
           next.appendTo = undefined;
+        }
+        if (isMobile || this._touchInput) {
           next.triggerOn = "click";
         }
         return next;
@@ -1455,6 +1480,31 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     return "move";
   }
+
+  // Pointer events arrive before the touch and mouse events echarts handles,
+  // so the tooltip trigger is switched before echarts sees the input.
+  private _handleChartPointer(ev: PointerEvent) {
+    const touchInput = ev.pointerType === "touch";
+    if (touchInput === this._touchInput) {
+      return;
+    }
+    this._touchInput = touchInput;
+    if (!this.chart || !this.options?.tooltip) {
+      return;
+    }
+    const tooltip = this._createOptions().tooltip;
+    this.chart.setOption({
+      tooltip: ensureArray(tooltip ?? []).map((t) => ({
+        triggerOn: t.triggerOn ?? "mousemove|click",
+      })),
+    });
+  }
+
+  private _handleOutsideTouch = (ev: TouchEvent) => {
+    if (!ev.composedPath().includes(this)) {
+      this.chart?.dispatchAction({ type: "hideTip", from: "outside" });
+    }
+  };
 
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
