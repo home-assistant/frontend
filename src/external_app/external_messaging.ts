@@ -1,5 +1,9 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
+import type {
+  MatterShareDeviceParams,
+  MatterShareTarget,
+} from "../data/matter";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -41,6 +45,11 @@ interface EMOutgoingMessageEntityAddToGetActions extends EMMessage {
   payload: {
     entity_id: string;
   };
+}
+
+interface EMOutgoingMessageMatterShareDevice extends EMMessage {
+  type: "matter/share_device";
+  payload: MatterShareDeviceParams;
 }
 
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
@@ -85,6 +94,10 @@ interface EMOutgoingMessageWithAnswer {
   "entity/add_to/get_actions": {
     request: EMOutgoingMessageEntityAddToGetActions;
     response: ExternalEntityAddToActions;
+  };
+  "matter/share_device": {
+    request: EMOutgoingMessageMatterShareDevice;
+    response: unknown;
   };
 }
 
@@ -394,6 +407,7 @@ export interface ExternalConfig {
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
   hasMatterStatusReport?: boolean;
+  matterShareTarget?: MatterShareTarget;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;

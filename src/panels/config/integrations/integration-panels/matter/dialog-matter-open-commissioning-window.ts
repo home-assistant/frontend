@@ -3,15 +3,26 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
 import { domainToName } from "../../../../../data/integration";
-import type { MatterCommissioningParameters } from "../../../../../data/matter";
-import { openMatterCommissioningWindow } from "../../../../../data/matter";
+import type {
+  MatterCommissioningParameters,
+  MatterShareTarget,
+} from "../../../../../data/matter";
+import {
+  canShareMatterDevice,
+  matterShareRemainingSeconds,
+  matterShareTargetExternal,
+  openMatterCommissioningWindow,
+  shareMatterDeviceExternal,
+} from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
@@ -29,6 +40,12 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   @state() private _open = false;
 
+  @state() private _sharing = false;
+
+  @state() private _shareFailed = false;
+
+  private _windowOpenedAt?: number;
+
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
@@ -40,6 +57,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     if (!this.device_id) {
       return nothing;
     }
+    const target = matterShareTargetExternal(this.hass);
+    const shareTarget = canShareMatterDevice(target, this._commissionParams)
+      ? target
+      : undefined;
 
     return html`
       <ha-dialog
@@ -61,6 +82,15 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     "ui.panel.config.matter.open_commissioning_window.scan_code"
                   )}
                 </p>
+                ${
+                  this._shareFailed
+                    ? html`<ha-alert alert-type="error">
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.open_commissioning_window.share_failed"
+                        )}
+                      </ha-alert>`
+                    : nothing
+                }
                 <div class="sharing-code-container">
                   <div class="sharing-code">
                     <img
@@ -150,13 +180,32 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         <ha-dialog-footer slot="footer">
           ${
             this._commissionParams
-              ? html`
-                  <ha-button slot="primaryAction" @click=${this._copyCode}>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.copy_code"
-                    )}
-                  </ha-button>
-                `
+              ? shareTarget
+                ? html`
+                    <ha-button
+                      slot="secondaryAction"
+                      appearance="plain"
+                      @click=${this._copyCode}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.copy_code"
+                      )}
+                    </ha-button>
+                    <ha-button
+                      slot="primaryAction"
+                      .loading=${this._sharing}
+                      @click=${this._shareDevice}
+                    >
+                      ${this._shareLabel(shareTarget)}
+                    </ha-button>
+                  `
+                : html`
+                    <ha-button slot="primaryAction" @click=${this._copyCode}>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.copy_code"
+                      )}
+                    </ha-button>
+                  `
               : this._status === "started" || this._status === "failed"
                 ? html`
                     <ha-button slot="primaryAction" @click=${this.closeDialog}>
@@ -182,13 +231,74 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     }
     this._status = "started";
     this._commissionParams = undefined;
+    const deviceId = this.device_id!;
     try {
-      this._commissionParams = await openMatterCommissioningWindow(
-        this.hass,
-        this.device_id!
-      );
+      // Taken before the request so the remaining time is never overstated.
+      const requestedAt = Date.now();
+      const params = await openMatterCommissioningWindow(this.hass, deviceId);
+      // The dialog may have been closed, or reopened for another device, in the meantime.
+      if (this.device_id !== deviceId) {
+        return;
+      }
+      this._commissionParams = params;
+      this._windowOpenedAt = requestedAt;
     } catch (_e) {
-      this._status = "failed";
+      if (this.device_id === deviceId) {
+        this._status = "failed";
+      }
+    }
+  }
+
+  private _shareLabel(target: MatterShareTarget) {
+    return target === "apple_home"
+      ? this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.add_to_apple_home"
+        )
+      : this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.add_to_other_app"
+        );
+  }
+
+  private async _shareDevice() {
+    const params = this._commissionParams;
+    if (!params || this._sharing) {
+      return;
+    }
+    const remaining = matterShareRemainingSeconds(
+      params.commissioning_timeout,
+      this._windowOpenedAt,
+      Date.now()
+    );
+    if (remaining !== undefined && remaining < 1) {
+      this._shareFailed = true;
+      return;
+    }
+    this._sharing = true;
+    this._shareFailed = false;
+    const device = this.hass.devices[this.device_id!];
+    try {
+      await shareMatterDeviceExternal(this.hass, {
+        setup_qr_code: params.setup_qr_code,
+        setup_pin_code: params.setup_pin_code,
+        discriminator: params.discriminator ?? undefined,
+        vendor_id: params.vendor_id ?? undefined,
+        product_id: params.product_id ?? undefined,
+        device_name: device ? computeDeviceName(device) : undefined,
+        remaining_seconds: remaining,
+      });
+      // The dialog may have been closed, or reopened for another window, in the meantime.
+      if (this._commissionParams === params) {
+        this.closeDialog();
+      }
+    } catch (err: unknown) {
+      if (this._commissionParams === params) {
+        // Backing out of the platform sheet is not an error.
+        this._shareFailed = (err as { code?: string })?.code !== "cancelled";
+      }
+    } finally {
+      if (this._commissionParams === params) {
+        this._sharing = false;
+      }
     }
   }
 
@@ -208,6 +318,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     this.device_id = undefined;
     this._status = undefined;
     this._commissionParams = undefined;
+    this._sharing = false;
+    this._shareFailed = false;
+    this._windowOpenedAt = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

@@ -116,10 +116,69 @@ export interface MatterCommissioningParameters {
   setup_pin_code: number;
   setup_manual_code: string;
   setup_qr_code: string;
+  // Only sent by Matter servers that report the window's structured fields.
+  discriminator?: number | null;
+  vendor_id?: number | null;
+  product_id?: number | null;
+  commissioning_timeout?: number | null;
 }
 
 export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
+
+export type MatterShareTarget = "apple_home" | "app_chooser";
+
+export interface MatterShareDeviceParams {
+  // Apple Home reads the QR code; platforms that need the window's values get them in the fields below.
+  setup_qr_code: string;
+  setup_pin_code: number;
+  discriminator?: number;
+  vendor_id?: number;
+  product_id?: number;
+  device_name?: string;
+  remaining_seconds?: number;
+}
+
+/** Where the companion app can share a Matter device to, if anywhere. */
+export const matterShareTargetExternal = (
+  hass: HomeAssistant
+): MatterShareTarget | undefined =>
+  hass.auth.external?.config.matterShareTarget;
+
+/**
+ * Whether the app can share this window: Apple Home takes the QR code, the Android share sheet needs the
+ * structured fields, which only newer Matter servers report.
+ */
+export const canShareMatterDevice = (
+  target: MatterShareTarget | undefined,
+  params: MatterCommissioningParameters | undefined
+): boolean =>
+  params !== undefined &&
+  (target === "apple_home" ||
+    (target === "app_chooser" && typeof params.discriminator === "number"));
+
+/**
+ * Whole seconds left in a commissioning window of `timeout` seconds requested at `requestedAt`, never more
+ * than the window itself even if the clock went back. Undefined when the server does not report the timeout.
+ */
+export const matterShareRemainingSeconds = (
+  timeout: number | null | undefined,
+  requestedAt: number | undefined,
+  now: number
+): number | undefined =>
+  timeout && requestedAt !== undefined
+    ? Math.min(timeout, Math.floor(timeout - (now - requestedAt) / 1000))
+    : undefined;
+
+/** Rejects with `{code, message}`; `code` is `cancelled` when the user backed out. */
+export const shareMatterDeviceExternal = (
+  hass: HomeAssistant,
+  params: MatterShareDeviceParams
+) =>
+  hass.auth.external!.sendMessage<"matter/share_device">({
+    type: "matter/share_device",
+    payload: params,
+  });
 
 export const startExternalCommissioning = async (hass: HomeAssistant) => {
   if (isComponentLoaded(hass.config, "thread")) {
