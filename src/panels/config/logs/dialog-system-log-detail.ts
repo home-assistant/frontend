@@ -426,19 +426,21 @@ class DialogSystemLogDetail extends LitElement {
         ha-skeleton-text {
           --ha-skeleton-text-width: 320px;
         }
-        ha-alert[alert-type="info"] ha-skeleton-text {
-          --ha-skeleton-color: color-mix(
-            in srgb,
-            var(--info-color) 24%,
-            transparent
-          );
-        }
-        ha-alert[alert-type="warning"] ha-skeleton-text {
-          --ha-skeleton-color: color-mix(
-            in srgb,
-            var(--warning-color) 24%,
-            transparent
-          );
+        @supports (color: color-mix(in srgb, black, transparent)) {
+          ha-alert[alert-type="info"] ha-skeleton-text {
+            --ha-skeleton-color: color-mix(
+              in srgb,
+              var(--info-color) 24%,
+              transparent
+            );
+          }
+          ha-alert[alert-type="warning"] ha-skeleton-text {
+            --ha-skeleton-color: color-mix(
+              in srgb,
+              var(--warning-color) 24%,
+              transparent
+            );
+          }
         }
         .contents {
           outline: none;
