@@ -551,9 +551,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                 : undefined
             )}
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
+            @keydown=${this._handleChartKeydown}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
-            @keydown=${this._handleChartKeydown}
           ></div>
         </div>
         <div class="sonification-output"></div>
