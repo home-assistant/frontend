@@ -459,25 +459,13 @@ export class HaBaseTimeInput extends LitElement {
     label {
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);
-      font-family: var(
-        --mdc-typography-body2-font-family,
-        var(--mdc-typography-font-family, var(--ha-font-family-body))
-      );
-      font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
-      line-height: var(
-        --mdc-typography-body2-line-height,
-        var(--ha-line-height-condensed)
-      );
-      font-weight: var(
-        --mdc-typography-body2-font-weight,
-        var(--ha-font-weight-normal)
-      );
-      letter-spacing: var(
-        --mdc-typography-body2-letter-spacing,
-        0.0178571429em
-      );
-      text-decoration: var(--mdc-typography-body2-text-decoration, inherit);
-      text-transform: var(--mdc-typography-body2-text-transform, inherit);
+      font-family: var(--ha-font-family-body);
+      font-size: var(--ha-font-size-s);
+      line-height: var(--ha-line-height-condensed);
+      font-weight: var(--ha-font-weight-normal);
+      letter-spacing: 0.0178571429em;
+      text-decoration: inherit;
+      text-transform: inherit;
       color: var(--mdc-theme-text-primary-on-background, rgba(0, 0, 0, 0.87));
       padding-left: 4px;
       padding-inline-start: 4px;
