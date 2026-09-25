@@ -13,10 +13,7 @@ import { customElement } from "lit/decorators";
  */
 @customElement("ha-skeleton")
 export class HaSkeleton extends WaSkeleton {
-  constructor() {
-    super();
-    this.effect = "pulse";
-  }
+  override effect: WaSkeleton["effect"] = "pulse";
 
   static get styles(): CSSResultGroup {
     return [
