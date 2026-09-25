@@ -182,6 +182,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _lastTapTime?: number;
 
+  // A mouse button is held on the chart, so zooming now is a drag that pans it
+  private _mouseDown = false;
+
+  private _tooltipHiddenWhilePanning = false;
+
   private _longPressTimer?: ReturnType<typeof setTimeout>;
 
   private _longPressTriggered = false;
@@ -247,6 +252,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    window.removeEventListener("mouseup", this._handleWindowMouseUp);
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -807,6 +813,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
+      });
+      this.chart.getZr().on("mousedown", (e: ECElementEvent) => {
+        if (!e.zrByTouch) {
+          this._mouseDown = true;
+          // on window, so releasing the button outside the chart also counts
+          window.addEventListener("mouseup", this._handleWindowMouseUp, {
+            once: true,
+          });
+        }
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
@@ -1461,6 +1476,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return "move";
   }
 
+  private _handleWindowMouseUp = () => {
+    this._mouseDown = false;
+    if (this._tooltipHiddenWhilePanning) {
+      this._tooltipHiddenWhilePanning = false;
+      this.chart?.setOption({ tooltip: { show: true } });
+    }
+  };
+
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
     let start = typeof zoomData.start === "number" ? zoomData.start : 0;
@@ -1493,6 +1516,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
+    // the tooltip would follow the pointer across the moving data; a modifier
+    // drag only zooms once, on release
+    if (
+      this._mouseDown &&
+      !this._modifierPressed &&
+      !this._tooltipHiddenWhilePanning
+    ) {
+      this._tooltipHiddenWhilePanning = true;
+      this.chart?.setOption({ tooltip: { show: false } });
+    }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
