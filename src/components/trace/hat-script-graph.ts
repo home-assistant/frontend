@@ -110,9 +110,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${node.disabled}
         .error=${node.error}
+        role="img"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
-        aria-disabled=${ifDefined(node.disabled || undefined)}
         tabindex=${hasTrace ? "0" : "-1"}
       >
         <ha-trigger-icon
@@ -199,9 +199,9 @@ export class HatScriptGraph extends LitElement {
                 ?track=${branch.hasTrace}
                 ?active=${this.selected === branch.path}
                 .notEnabled=${branch.disabled}
+                role="img"
                 aria-label=${ifDefined(this.labels?.[branch.path])}
                 aria-current=${ifDefined(this.selected === branch.path || undefined)}
-                aria-disabled=${ifDefined(branch.disabled || undefined)}
               ></hat-graph-node>
               ${branch.children.map((action) => this._renderActionNode(action))}
             </div>
@@ -409,9 +409,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
         .error=${model.error}
+        role="img"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
-        aria-disabled=${ifDefined(model.disabled || undefined)}
         tabindex=${model.hasTrace ? "0" : "-1"}
       >
         ${
@@ -445,9 +445,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
         .error=${model.error}
+        role="img"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
-        aria-disabled=${ifDefined(model.disabled || undefined)}
         tabindex=${model.hasTrace ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -549,9 +549,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .error=${model.error}
         .notEnabled=${model.disabled}
+        role="img"
         aria-label=${ifDefined(this.labels?.[path])}
         aria-current=${ifDefined(this.selected === path || undefined)}
-        aria-disabled=${ifDefined(model.disabled || undefined)}
       ></hat-graph-node>
     `;
   }

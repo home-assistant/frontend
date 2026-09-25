@@ -153,7 +153,7 @@ describe("buildTraceLabels", () => {
     });
   });
 
-  it("names every node of a nested config, including choose options", () => {
+  it("names every node of a nested config, down to the nested steps", () => {
     const labels = build(
       createTrace({
         triggers: [{ trigger: "state", entity_id: "light.kitchen" }],
@@ -165,8 +165,9 @@ describe("buildTraceLabels", () => {
               { conditions: [], sequence: [{ delay: 2 }] },
             ],
           },
-          { if: [], then: [{ delay: 1 }] },
+          { if: [], then: [{ delay: 1 }], else: [{ delay: 2 }] },
           { parallel: [{ sequence: [{ delay: 1 }] }] },
+          { repeat: { count: 2, sequence: [{ delay: 1 }] } },
         ],
       })
     );
@@ -174,11 +175,21 @@ describe("buildTraceLabels", () => {
     for (const path of [
       "trigger/0",
       "condition/0",
+      // The building blocks themselves...
       "action/0",
       "action/0/choose/0",
       "action/0/choose/1",
       "action/1",
       "action/2",
+      "action/3",
+      // ...and the steps nested inside each branch, which only the recursion
+      // in `addAction` reaches.
+      "action/0/choose/0/sequence/0",
+      "action/0/choose/1/sequence/0",
+      "action/1/then/0",
+      "action/1/else/0",
+      "action/2/parallel/0/sequence/0",
+      "action/3/repeat/sequence/0",
     ]) {
       expect(labels[path], path).toBeTruthy();
     }
