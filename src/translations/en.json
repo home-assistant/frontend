@@ -8823,7 +8823,7 @@
             "copy_code": "Copy code",
             "add_to_apple_home": "Add to Apple Home",
             "add_to_other_app": "Add to Google Home or another app",
-            "share_failed": "Couldn't share the device. The sharing code is only valid for a few minutes. Close this dialog and share the device again to get a new code."
+            "share_failed": "Couldn't share the device. Try again, or close this dialog and share the device again to get a new code."
           },
           "lock": {
             "manage": "Manage access",
