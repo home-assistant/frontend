@@ -41,6 +41,9 @@ class HaConfigDevices extends HassRouterPage {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this.addEventListener("reload-config-entries", () =>
+        this._loadConfigEntries()
+      );
       this._loadData();
     }
   }
@@ -64,15 +67,7 @@ class HaConfigDevices extends HassRouterPage {
 
   private async _loadData() {
     await Promise.all([
-      getConfigEntries(this.hass)
-        .catch(() => {
-          this._configEntriesFailed = true;
-
-          return [];
-        })
-        .then((configEntries) => {
-          this._configEntries = configEntries;
-        }),
+      this._loadConfigEntries(),
       fetchIntegrationManifests(this.hass)
         .then((manifests) => {
           this._manifests = manifests;
@@ -82,9 +77,25 @@ class HaConfigDevices extends HassRouterPage {
         }),
     ]);
   }
+
+  private async _loadConfigEntries() {
+    this._configEntriesFailed = false;
+    this._configEntries = undefined;
+
+    try {
+      this._configEntries = await getConfigEntries(this.hass);
+    } catch {
+      this._configEntriesFailed = true;
+      this._configEntries = [];
+    }
+  }
 }
 
 declare global {
+  interface HASSDomEvents {
+    "reload-config-entries": undefined;
+  }
+
   interface HTMLElementTagNameMap {
     "ha-config-devices": HaConfigDevices;
   }
