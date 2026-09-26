@@ -151,6 +151,77 @@ describe("ha-selector-object form dialog flow", () => {
     });
   });
 
+  it("uses explicit object field defaults in Add dialog data", async () => {
+    const chooseDefault = {
+      active_choice: "Temperature",
+      Temperature: 4000,
+    };
+
+    const selector = await mountSelector([], {
+      object: {
+        multiple: true,
+        fields: {
+          name: {
+            required: true,
+            selector: { text: {} },
+          },
+          number: {
+            selector: { number: {} },
+            default: 0,
+          },
+          boolean: {
+            selector: { boolean: {} },
+            default: false,
+          },
+          text: {
+            selector: { text: {} },
+            default: "",
+          },
+          entities: {
+            selector: { entity: { multiple: true } },
+            default: [],
+          },
+          object: {
+            selector: { object: {} },
+            default: {},
+          },
+          choose: {
+            selector: {
+              choose: {
+                choices: {
+                  Disabled: { selector: { boolean: {} } },
+                  Temperature: { selector: { number: {} } },
+                },
+              },
+            },
+            default: chooseDefault,
+          },
+        },
+      },
+    });
+
+    const params = await resolveFormDialog(selector, "_addItem", {
+      name: "A",
+    });
+
+    expect(params.data).toEqual({
+      name: "",
+      number: 0,
+      boolean: false,
+      text: "",
+      entities: [],
+      object: {},
+      choose: chooseDefault,
+    });
+
+    (params.data!.choose as { Temperature: number }).Temperature = 3000;
+
+    expect(chooseDefault).toEqual({
+      active_choice: "Temperature",
+      Temperature: 4000,
+    });
+  });
+
   it("leaves unsupported required fields unset in Add dialog data", async () => {
     const selector = await mountSelector([], {
       object: {

@@ -217,6 +217,9 @@ export class HaObjectSelector extends LitElement {
       name: key,
       selector: field.selector,
       required: field.required ?? false,
+      ...("default" in field
+        ? { default: field.default as HaFormSchema["default"] }
+        : {}),
     }));
   });
 
@@ -237,13 +240,21 @@ export class HaObjectSelector extends LitElement {
     ev.stopPropagation();
 
     const schema = this._schema(this.selector);
+    const data = {
+      ...computeInitialHaFormData(schema, {
+        skipUnsupportedSelectors: true,
+      }),
+      ...Object.fromEntries(
+        schema
+          .filter((field) => "default" in field)
+          .map((field) => [field.name, structuredClone(field.default)])
+      ),
+    };
 
     const newItem = await showFormDialog(this, {
       title: this.hass.localize("ui.common.add"),
       schema,
-      data: computeInitialHaFormData(schema, {
-        skipUnsupportedSelectors: true,
-      }),
+      data,
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),
