@@ -39,13 +39,12 @@ export type HvacAction =
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
-    hvac_mode: HvacMode;
     hvac_modes: HvacMode[];
     hvac_action?: HvacAction;
-    current_temperature: number;
+    current_temperature?: number;
     min_temp: number;
     max_temp: number;
-    temperature: number;
+    temperature?: number;
     target_temp_step?: number;
     target_temp_high?: number;
     target_temp_low?: number;

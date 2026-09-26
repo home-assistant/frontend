@@ -33,6 +33,7 @@ import {
   mdiStarFourPoints,
   mdiTextBoxOutline,
   mdiTools,
+  mdiTransitConnectionVariant,
   mdiUpdate,
   mdiViewDashboard,
   mdiZigbee,
@@ -186,6 +187,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#607D8B",
       component: "usb",
       translationKey: "serial",
+      adminOnly: true,
+    },
+    {
+      path: "/config/modbus",
+      iconPath: mdiTransitConnectionVariant,
+      iconColor: "#00897B",
+      component: "modbus",
+      translationKey: "modbus",
       adminOnly: true,
     },
     {
@@ -540,8 +549,8 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
-      path: "/config/ai-tasks",
-      translationKey: "ai_tasks",
+      path: "/config/ai",
+      translationKey: "ai",
       iconPath: mdiStarFourPoints,
       iconColor: "#8B69E3",
       core: true,

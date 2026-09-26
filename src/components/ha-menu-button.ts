@@ -6,6 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import {
+  configContext,
   connectionContext,
   narrowViewportContext,
   uiContext,
@@ -31,6 +32,10 @@ class HaMenuButton extends LitElement {
   @state()
   @consume({ context: uiContext, subscribe: true })
   private _ui?: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
 
   @state() private _hasNotifications = false;
 
@@ -82,7 +87,8 @@ class HaMenuButton extends LitElement {
     if (
       !changedProps.has("_narrow") &&
       !changedProps.has("_ui") &&
-      !changedProps.has("_connection")
+      !changedProps.has("_connection") &&
+      !changedProps.has("_config")
     ) {
       return;
     }
@@ -94,6 +100,7 @@ class HaMenuButton extends LitElement {
 
     const showButton =
       this._ui?.kioskMode === false &&
+      this._config?.auth.external?.config.hasSidebar !== true &&
       (this._narrow || this._ui.dockedSidebar === "always_hidden");
 
     this._show = showButton || this._alwaysVisible;

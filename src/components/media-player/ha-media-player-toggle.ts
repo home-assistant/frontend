@@ -7,8 +7,7 @@ import memoizeOne from "memoize-one";
 
 import { consumeEntityState } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import {
   areasContext,
   devicesContext,
@@ -54,30 +53,24 @@ class HaMediaPlayerToggle extends LitElement {
 
   private _computeDisplayData = memoizeOne(
     (
-      entityId: string,
       entities: ContextType<typeof entitiesContext>,
       devices: ContextType<typeof devicesContext>,
       areas: ContextType<typeof areasContext>,
       floors: ContextType<typeof floorsContext>,
-      isRTL: boolean,
+      i18n: ContextType<typeof internationalizationContext>,
       stateObj: HassEntity
-    ) => {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        entities,
-        devices,
-        areas,
-        floors
-      );
-
-      const primary = entityName || deviceName || entityId;
-      const secondary = [areaName, entityName ? deviceName : undefined]
-        .filter(Boolean)
-        .join(isRTL ? " ◂ " : " ▸ ");
-
-      return { primary, secondary };
-    }
+    ) =>
+      computeEntityPickerDisplay(
+        {
+          entities,
+          devices,
+          areas,
+          floors,
+          language: i18n.language,
+          translationMetadata: i18n.translationMetadata,
+        },
+        stateObj
+      )
   );
 
   protected render() {
@@ -94,18 +87,12 @@ class HaMediaPlayerToggle extends LitElement {
       icon = mdiSpeakerPause;
     }
 
-    const isRTL = computeRTL(
-      this._i18n.language,
-      this._i18n.translationMetadata.translations
-    );
-
     const { primary, secondary } = this._computeDisplayData(
-      this.entityId,
       this._entities,
       this._devices,
       this._areas,
       this._floors,
-      isRTL,
+      this._i18n,
       stateObj
     );
 

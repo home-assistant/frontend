@@ -22,6 +22,7 @@ import {
   type ConversationChatLogToolResultDelta,
   type PipelineRunEvent,
 } from "../data/assist_pipeline";
+import type { ChatLogToolResult } from "../data/chat_log";
 import {
   configContext,
   connectionContext,
@@ -58,7 +59,7 @@ interface AssistMessage {
     {
       tool_name: string;
       tool_args: Record<string, unknown>;
-      result?: any;
+      result?: ChatLogToolResult;
     }
   >;
   error?: boolean;
@@ -834,7 +835,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           } else if (isToolResult(delta)) {
             if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
               progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.tool_result;
+                delta.result;
               this.requestUpdate("_conversation");
             }
           }
@@ -1061,31 +1062,18 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           position: absolute;
           top: 0;
           left: 0;
-          -webkit-animation: sk-bounce 2s infinite ease-in-out;
           animation: sk-bounce 2s infinite ease-in-out;
         }
         .double-bounce2 {
-          -webkit-animation-delay: -1s;
           animation-delay: -1s;
-        }
-        @-webkit-keyframes sk-bounce {
-          0%,
-          100% {
-            -webkit-transform: scale(0);
-          }
-          50% {
-            -webkit-transform: scale(1);
-          }
         }
         @keyframes sk-bounce {
           0%,
           100% {
             transform: scale(0);
-            -webkit-transform: scale(0);
           }
           50% {
             transform: scale(1);
-            -webkit-transform: scale(1);
           }
         }
 

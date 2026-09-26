@@ -114,7 +114,9 @@ export interface StateTrigger extends BaseTrigger {
   entity_id: string | string[];
   attribute?: string;
   from?: string | string[];
+  not_from?: string | string[];
   to?: string | string[];
+  not_to?: string | string[];
   for?: string | number | ForDict;
 }
 
@@ -153,7 +155,7 @@ export interface ConversationTrigger extends BaseTrigger {
 
 export interface SunTrigger extends BaseTrigger {
   trigger: "sun";
-  offset: number;
+  offset?: string | number | ForDict;
   event: "sunrise" | "sunset";
 }
 
@@ -190,9 +192,11 @@ export interface TagTrigger extends BaseTrigger {
   device_id?: string;
 }
 
+export type TimeTriggerAt = string | { entity_id: string; offset?: string };
+
 export interface TimeTrigger extends BaseTrigger {
   trigger: "time";
-  at: string | { entity_id: string; offset?: string };
+  at: TimeTriggerAt | TimeTriggerAt[];
   weekday?: string | string[];
 }
 
@@ -211,9 +215,9 @@ export interface EventTrigger extends BaseTrigger {
 
 export interface CalendarTrigger extends BaseTrigger {
   trigger: "calendar";
-  event: "start" | "end";
+  event?: "start" | "end";
   entity_id: string;
-  offset: string;
+  offset?: string | number | ForDict;
 }
 
 export type LegacyTrigger =
@@ -301,7 +305,7 @@ export interface TemplateCondition extends BaseCondition {
 
 export interface TriggerCondition extends BaseCondition {
   condition: "trigger";
-  id: string;
+  id: string | string[];
 }
 
 type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
@@ -652,7 +656,7 @@ export const testCondition = (
   condition: Condition | Condition[],
   variables?: Record<string, unknown>
 ) =>
-  hass.callWS<{ result: boolean }>({
+  hass.callWS<{ result: boolean; template_errors?: string[] }>({
     type: "test_condition",
     condition,
     variables,
@@ -663,6 +667,8 @@ export const subscribeCondition = (
   onChange: (result: {
     result?: boolean;
     error?: string | { code: string; message: string };
+    /** Template errors while still producing a result. */
+    template_errors?: string[];
   }) => void,
   condition: Condition
 ) =>

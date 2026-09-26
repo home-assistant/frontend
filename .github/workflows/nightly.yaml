@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   nightly:
+    if: github.repository == 'home-assistant/frontend'
     name: Nightly
     runs-on: ubuntu-latest
     permissions:
@@ -113,6 +114,7 @@ jobs:
   # needed for the uploaded artifact, not the wheel, so they are downloaded in
   # parallel here instead of blocking the build above.
   translations:
+    if: github.repository == 'home-assistant/frontend'
     name: Translations
     runs-on: ubuntu-latest
     steps:

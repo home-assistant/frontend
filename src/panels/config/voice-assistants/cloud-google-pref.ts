@@ -5,13 +5,14 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
-import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-md-list-item";
+import "../../../components/ha-card";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/item/ha-row-item";
+import "../../../components/voice-assistant-brand-icon";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
 import { updateCloudPref } from "../../../data/cloud";
 import type { ExposeEntitySettings } from "../../../data/expose";
@@ -21,7 +22,6 @@ import {
 } from "../../../data/expose";
 import type { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
-import "../../../components/voice-assistant-brand-icon";
 
 @customElement("cloud-google-pref")
 export class CloudGooglePref extends LitElement {
@@ -138,7 +138,7 @@ export class CloudGooglePref extends LitElement {
                         `
                       : nothing
                   }
-                  <ha-md-list-item>
+                  <ha-row-item>
                     <span slot="headline"
                       >${this.hass!.localize(
                         "ui.panel.config.cloud.account.google.expose_new_entities"
@@ -155,7 +155,7 @@ export class CloudGooglePref extends LitElement {
                       .disabled=${this._exposeNew === undefined}
                       @change=${this._exposeNewToggleChanged}
                     ></ha-switch>
-                  </ha-md-list-item>
+                  </ha-row-item>
                   ${
                     google_registered
                       ? html`
@@ -183,7 +183,7 @@ export class CloudGooglePref extends LitElement {
                                 `
                               : nothing
                           }
-                          <ha-md-list-item>
+                          <ha-row-item>
                             <span slot="headline"
                               >${this.hass!.localize(
                                 "ui.panel.config.cloud.account.google.enable_state_reporting"
@@ -199,9 +199,9 @@ export class CloudGooglePref extends LitElement {
                               .checked=${google_report_state}
                               @change=${this._reportToggleChanged}
                             ></ha-switch>
-                          </ha-md-list-item>
+                          </ha-row-item>
 
-                          <ha-md-list-item>
+                          <ha-row-item>
                             <span slot="headline"
                               >${this.hass.localize(
                                 "ui.panel.config.cloud.account.google.security_devices"
@@ -213,7 +213,7 @@ export class CloudGooglePref extends LitElement {
                               )}</span
                             >
                             <ha-switch slot="end"></ha-switch>
-                          </ha-md-list-item>
+                          </ha-row-item>
 
                           <ha-input
                             id="google_secure_devices_pin"
@@ -344,10 +344,8 @@ export class CloudGooglePref extends LitElement {
       direction: var(--direction);
       color: var(--secondary-text-color);
     }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-item-overflow: visible;
+    ha-row-item {
+      --ha-row-item-padding-inline: 0;
     }
     ha-input {
       width: 250px;

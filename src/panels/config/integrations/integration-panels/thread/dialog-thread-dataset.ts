@@ -48,7 +48,11 @@ class DialogThreadDataset extends LitElement {
       @closed=${this._dialogClosed}
     >
       <div>
-        Network name: ${dataset.network_name}<br />
+        ${
+          dataset.network_name
+            ? html`Network name: ${dataset.network_name}<br />`
+            : nothing
+        }
         Channel: ${dataset.channel}<br />
         Dataset ID: ${dataset.dataset_id}<br />
         PAN ID: ${dataset.pan_id}<br />

@@ -49,6 +49,10 @@ import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 
+type DashboardSummary<Key extends string, Item> = Record<Key, Item[]> & {
+  total: number;
+};
+
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
   let tips = [
@@ -153,7 +157,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _tip?: string;
 
-  @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
+  @state() private _repairsIssues: DashboardSummary<"issues", RepairsIssue> = {
     issues: [],
     total: 0,
   };
@@ -383,7 +387,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     (
       entities: HomeAssistant["states"],
       entityRegistry: HomeAssistant["entities"]
-    ): { updates: UpdateEntity[]; total: number } => {
+    ): DashboardSummary<"updates", UpdateEntity> => {
       const updates = filterUpdateEntitiesParameterized(
         entities,
         false,
@@ -460,6 +464,15 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             border-width: 1px 0;
             border-radius: var(--ha-border-radius-square);
             box-shadow: unset;
+            box-sizing: border-box;
+            width: calc(
+              100% + var(--safe-area-inset-left, 0px) +
+                var(--safe-area-inset-right, 0px)
+            );
+            margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
+            margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+            padding-left: var(--safe-area-inset-left, 0px);
+            padding-right: var(--safe-area-inset-right, 0px);
           }
           ha-config-section {
             margin-top: -42px;

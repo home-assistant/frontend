@@ -70,7 +70,6 @@ export class HaBadge extends LitElement {
         --ha-card-background,
         var(--card-background-color, white)
       );
-      -webkit-backdrop-filter: var(--ha-card-backdrop-filter, none);
       backdrop-filter: var(--ha-card-backdrop-filter, none);
       border-width: var(--ha-card-border-width, 1px);
       box-shadow: var(--ha-card-box-shadow, none);

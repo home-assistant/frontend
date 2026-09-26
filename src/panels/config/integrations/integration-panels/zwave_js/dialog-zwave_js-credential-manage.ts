@@ -2,32 +2,35 @@ import { mdiAccountKey, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import {
+  stopKeydownEnterSpacePropagation,
+  stopPropagation,
+} from "../../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-dialog";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import type {
   ZwaveCredentialCapabilities,
   ZwaveUser,
 } from "../../../../../data/zwave_js-credentials";
 import {
   canAddZwaveUser,
+  compatibleUserTypes,
   deleteZwaveAllUsers,
   deleteZwaveUser,
   getZwaveCredentialCapabilities,
   getZwaveUsers,
-  compatibleUserTypes,
 } from "../../../../../data/zwave_js-credentials";
 import {
   showAlertDialog,
@@ -220,11 +223,10 @@ class DialogZwaveCredentialManage extends LitElement {
                 )}
               </p>`
             : html`
-                <ha-md-list>
+                <ha-list-base>
                   ${activeUsers.map(
                     (user) => html`
-                      <ha-md-list-item
-                        type="button"
+                      <ha-list-item-button
                         data-user-id=${user.user_id}
                         @click=${this._handleUserClick}
                       >
@@ -264,11 +266,12 @@ class DialogZwaveCredentialManage extends LitElement {
                           data-user-id=${user.user_id}
                           ?disabled=${this._busy}
                           @click=${this._handleDeleteUserClick}
+                          @keydown=${stopKeydownEnterSpacePropagation}
                         ></ha-icon-button>
-                      </ha-md-list-item>
+                      </ha-list-item-button>
                     `
                   )}
-                </ha-md-list>
+                </ha-list-base>
               `
         }
       </div>

@@ -2,6 +2,8 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { estimateDirection } from "../../common/util/estimate-direction";
 import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -20,6 +22,10 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 @customElement("notification-drawer")
 export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // Reflected so the styles can apply the right safe-area inset whenever the
+  // drawer spans the full viewport width, not only below a fixed breakpoint.
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _notifications: PersistentNotification[] = [];
 
@@ -48,6 +54,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   }
 
   showDialog({ narrow }) {
+    this.narrow = narrow;
     this._unsubNotifications = subscribeNotifications(
       this.hass.connection,
       (notifications) => {
@@ -175,6 +182,11 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       <notification-item
         .hass=${this.hass}
         .notification=${notification}
+        class=${classMap({
+          ltr:
+            !("entity_id" in notification) &&
+            estimateDirection(notification.title) !== "rtl",
+        })}
       ></notification-item>
     </div>
   `;
@@ -218,11 +230,9 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       display: block;
     }
 
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      ha-header-bar {
-        --header-bar-padding: var(--safe-area-inset-top, 0px)
-          var(--safe-area-inset-right, 0px) 0 var(--safe-area-inset-left, 0px);
-      }
+    :host([narrow]) ha-header-bar {
+      --header-bar-padding: var(--safe-area-inset-top, 0px)
+        var(--safe-area-inset-right, 0px) 0 var(--safe-area-inset-left, 0px);
     }
 
     .list-container {
@@ -246,11 +256,9 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
       color: var(--primary-text-color);
     }
 
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      .notifications {
-        padding-right: var(--safe-area-inset-right, 0px);
-        padding-inline-end: var(--safe-area-inset-right, 0px);
-      }
+    :host([narrow]) .notifications {
+      padding-right: var(--safe-area-inset-right, 0px);
+      padding-inline-end: var(--safe-area-inset-right, 0px);
     }
 
     .notification {
@@ -268,6 +276,10 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
     .empty {
       padding: var(--ha-space-4);
       text-align: center;
+    }
+
+    .ltr {
+      direction: ltr;
     }
   `;
 }

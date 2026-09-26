@@ -29,7 +29,7 @@ export interface DataEntryFlowProgress {
   handler: string;
   step_id: string;
   context: {
-    title_placeholders: Record<string, string>;
+    title_placeholders?: Record<string, string>;
     [key: string]: any;
   };
 }
@@ -40,7 +40,7 @@ export interface DataEntryFlowStepForm {
   handler: string;
   step_id: string;
   data_schema: HaFormSchema[];
-  errors: Record<string, string>;
+  errors: Record<string, string> | null;
   description_placeholders?: Record<string, string>;
   last_step: boolean | null;
   preview?: string;
@@ -61,13 +61,13 @@ export interface DataEntryFlowStepCreateEntry<
   TResult extends ConfigEntry | RepairsIssue = ConfigEntry,
 > {
   type: "create_entry";
-  version: number;
+  version?: number;
   flow_id: string;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
-  title: string;
-  result?: TResult;
-  description: string;
+  title?: string;
+  result?: TResult | null;
+  description: string | null;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }
@@ -81,7 +81,7 @@ export interface DataEntryFlowStepAbort<
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
-  result?: TResult;
+  result?: TResult | null;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
 }
 

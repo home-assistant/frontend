@@ -4,13 +4,13 @@ import { customElement, property, state } from "lit/decorators";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
-import "../../../../../components/input/ha-input";
-import type { HaInput } from "../../../../../components/input/ha-input";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { ZHAConfiguration } from "../../../../../data/zha";
 import {
   fetchZHAConfiguration,
@@ -115,8 +115,8 @@ class ZHAOptionsPage extends LitElement {
             ${
               this._configuration
                 ? html`
-                    <ha-md-list>
-                      <ha-md-list-item>
+                    <ha-list-base>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enable_identify_on_join_label"
@@ -135,8 +135,8 @@ class ZHAOptionsPage extends LitElement {
                           }
                           @change=${this._enableIdentifyOnJoinChanged}
                         ></ha-switch>
-                      </ha-md-list-item>
-                      <ha-md-list-item>
+                      </ha-list-item-base>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.default_light_transition_label"
@@ -160,8 +160,8 @@ class ZHAOptionsPage extends LitElement {
                         >
                           <span slot="end">s</span>
                         </ha-input>
-                      </ha-md-list-item>
-                      <ha-md-list-item>
+                      </ha-list-item-base>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enhanced_light_transition_label"
@@ -180,8 +180,8 @@ class ZHAOptionsPage extends LitElement {
                           }
                           @change=${this._enhancedLightTransitionChanged}
                         ></ha-switch>
-                      </ha-md-list-item>
-                      <ha-md-list-item>
+                      </ha-list-item-base>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.light_transitioning_flag_label"
@@ -200,8 +200,8 @@ class ZHAOptionsPage extends LitElement {
                           }
                           @change=${this._lightTransitioningFlagChanged}
                         ></ha-switch>
-                      </ha-md-list-item>
-                      <ha-md-list-item>
+                      </ha-list-item-base>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.group_members_assume_state_label"
@@ -220,8 +220,8 @@ class ZHAOptionsPage extends LitElement {
                           }
                           @change=${this._groupMembersAssumeStateChanged}
                         ></ha-switch>
-                      </ha-md-list-item>
-                      <ha-md-list-item>
+                      </ha-list-item-base>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.consider_unavailable_mains_label"
@@ -242,11 +242,11 @@ class ZHAOptionsPage extends LitElement {
                           .options=${this._getUnavailableTimeoutOptions(7200)}
                           @selected=${this._mainsUnavailableChanged}
                         ></ha-select>
-                      </ha-md-list-item>
+                      </ha-list-item-base>
                       ${
                         this._customMains
                           ? html`
-                              <ha-md-list-item>
+                              <ha-list-item-base>
                                 <ha-input
                                   slot="end"
                                   type="number"
@@ -261,11 +261,11 @@ class ZHAOptionsPage extends LitElement {
                                 >
                                   <span slot="end">s</span>
                                 </ha-input>
-                              </ha-md-list-item>
+                              </ha-list-item-base>
                             `
                           : nothing
                       }
-                      <ha-md-list-item>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.consider_unavailable_battery_label"
@@ -286,11 +286,11 @@ class ZHAOptionsPage extends LitElement {
                           .options=${this._getUnavailableTimeoutOptions(21600)}
                           @selected=${this._batteryUnavailableChanged}
                         ></ha-select>
-                      </ha-md-list-item>
+                      </ha-list-item-base>
                       ${
                         this._customBattery
                           ? html`
-                              <ha-md-list-item>
+                              <ha-list-item-base>
                                 <ha-input
                                   slot="end"
                                   type="number"
@@ -305,11 +305,11 @@ class ZHAOptionsPage extends LitElement {
                                 >
                                   <span slot="end">s</span>
                                 </ha-input>
-                              </ha-md-list-item>
+                              </ha-list-item-base>
                             `
                           : nothing
                       }
-                      <ha-md-list-item>
+                      <ha-list-item-base>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enable_mains_startup_polling_label"
@@ -328,8 +328,8 @@ class ZHAOptionsPage extends LitElement {
                           }
                           @change=${this._enableMainsStartupPollingChanged}
                         ></ha-switch>
-                      </ha-md-list-item>
-                    </ha-md-list>
+                      </ha-list-item-base>
+                    </ha-list-base>
                     <div class="card-actions">
                       <ha-progress-button
                         appearance="filled"
@@ -461,15 +461,6 @@ class ZHAOptionsPage extends LitElement {
         ha-card {
           max-width: 600px;
           margin: auto;
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
 
         ha-select,

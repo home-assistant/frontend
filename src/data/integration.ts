@@ -1,6 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { GITHUB_CORE_ISSUES_URL } from "../common/url/github";
+import {
+  createQueryString,
+  type QueryParamConfig,
+} from "../common/url/query-params";
 import { sanitizeHttpUrl } from "../common/url/sanitize-http-url";
 import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
@@ -18,8 +23,28 @@ export const integrationsWithPanel = {
   zwave_js: "config/zwave_js/dashboard",
 };
 
+/**
+ * The panel an integration is configured in, if it has one of its own.
+ *
+ * An integration can register a panel at runtime; the built-in ones above are
+ * the fallback for those that do not.
+ */
+export const getConfigPanelPath = (
+  domain: string,
+  panels: HomeAssistant["panels"]
+): string | undefined =>
+  Object.values(panels).find((panel) => panel.config_panel_domain === domain)
+    ?.url_path || integrationsWithPanel[domain];
+
 export type IntegrationType =
-  "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
+  | "device"
+  | "helper"
+  | "hub"
+  | "service"
+  | "hardware"
+  | "entity"
+  | "system"
+  | "virtual";
 
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
@@ -28,7 +53,7 @@ export interface IntegrationManifest {
   overwrites_built_in?: boolean;
   domain: string;
   name: string;
-  config_flow: boolean;
+  config_flow?: boolean;
   documentation?: string;
   issue_tracker?: string;
   dependencies?: string[];
@@ -36,8 +61,18 @@ export interface IntegrationManifest {
   codeowners?: string[];
   requirements?: string[];
   ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
-  zeroconf?: string[];
-  homekit?: { models: string[] };
+  zeroconf?: (
+    | string
+    | {
+        type: string;
+        macaddress?: string;
+        manufacturer?: string;
+        model?: string;
+        name?: string;
+        properties?: Record<string, string>;
+      }
+  )[];
+  homekit?: { models?: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
   quality_scale?:
@@ -49,8 +84,9 @@ export interface IntegrationManifest {
     | "internal"
     | "legacy"
     | "custom";
-  iot_class:
+  iot_class?:
     | "assumed_state"
+    | "calculated"
     | "cloud_polling"
     | "cloud_push"
     | "local_polling"
@@ -95,12 +131,19 @@ const sanitizeManifest = <T extends IntegrationManifest | undefined>(
       } as T)
     : manifest;
 
+const integrationIssuesQueryParams = {
+  string: ["q"],
+} as const satisfies QueryParamConfig;
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
 ) =>
   sanitizeHttpUrl(manifest.issue_tracker) ||
-  `https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
+  `${GITHUB_CORE_ISSUES_URL}?${createQueryString(
+    { q: `is:issue is:open label:"integration: ${domain}"` },
+    integrationIssuesQueryParams
+  )}`;
 
 export const domainToName = (
   localize: LocalizeFunc,
@@ -142,7 +185,7 @@ export const fetchIntegrationManifestsCollection = async (
 };
 
 export const fetchIntegrationManifest = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   integration: string
 ) =>
   hass

@@ -27,7 +27,6 @@ import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
 import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
-import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";

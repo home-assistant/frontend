@@ -6,9 +6,11 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import {
+  computeEntityPickerDisplay,
+  computeEntitySearchLabels,
+} from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -30,9 +32,10 @@ interface EntityPickerTableRowData extends DataTableRowData {
   entity_id: string;
   stateObj: any;
   name: string;
-  entity_name?: string;
-  device_name?: string;
-  area_name?: string;
+  entity_name: string | null;
+  device_name: string | null;
+  parent_device_name: string | null;
+  area_name: string | null;
   domain_name: string;
   last_changed: string;
 }
@@ -53,21 +56,25 @@ export class HuiEntityPickerTable extends LitElement {
   private _data = memoizeOne(
     (
       states: HomeAssistant["states"],
+      entityRegistry: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"],
       localize: LocalizeFunc,
       entities?: string[]
     ): EntityPickerTableRowData[] =>
       (entities || Object.keys(states)).map<EntityPickerTableRowData>(
         (entity) => {
-          const stateObj = this.hass.states[entity];
+          const stateObj = states[entity];
 
-          const [entityName, deviceName, areaName] = computeEntityNameList(
-            stateObj,
-            [{ type: "entity" }, { type: "device" }, { type: "area" }],
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          );
+          const { entityName, deviceName, parentDeviceName, areaName } =
+            computeEntitySearchLabels(
+              stateObj,
+              entityRegistry,
+              devices,
+              areas,
+              floors
+            );
           const name = [deviceName, entityName].filter(Boolean).join(" ");
           const domain = computeDomain(entity);
 
@@ -78,6 +85,7 @@ export class HuiEntityPickerTable extends LitElement {
             name: name,
             entity_name: entityName,
             device_name: deviceName,
+            parent_device_name: parentDeviceName,
             area_name: areaName,
             domain_name: domainToName(localize, domain),
             last_changed: stateObj!.last_changed,
@@ -89,20 +97,17 @@ export class HuiEntityPickerTable extends LitElement {
   protected render(): TemplateResult {
     const data = this._data(
       this.hass.states,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors,
       this.hass.localize,
       this.entities
     );
 
     const showEntityId = Boolean(this.hass.userData?.showEntityIdPicker);
 
-    const columns = this._columns(
-      this.narrow,
-      computeRTL(
-        this.hass.language,
-        this.hass.translationMetadata.translations
-      ),
-      showEntityId
-    );
+    const columns = this._columns(this.narrow, showEntityId);
 
     return html`
       <ha-data-table
@@ -122,115 +127,111 @@ export class HuiEntityPickerTable extends LitElement {
     `;
   }
 
-  private _columns = memoizeOne(
-    (narrow: boolean, isRTL: boolean, showEntityId: boolean) => {
-      const columns: DataTableColumnContainer = {
-        icon: {
-          title: "",
-          label: this.hass!.localize(
-            "ui.panel.lovelace.unused_entities.state_icon"
-          ),
-          type: "icon",
-          template: (entity) => html`
-            <state-badge
-              @click=${this._handleEntityClicked}
-              .stateObj=${entity.stateObj}
-            ></state-badge>
-          `,
-        },
-        name: {
-          title: this.hass!.localize(
-            "ui.panel.lovelace.unused_entities.entity"
-          ),
-          sortable: true,
-          filterable: true,
-          flex: 2,
-          main: true,
-          direction: "asc",
-          template: (entity: any) => {
-            const primary =
-              entity.entity_name || entity.device_name || entity.entity_id;
-            const secondary = [
-              entity.area_name,
-              entity.entity_name ? entity.device_name : undefined,
-            ]
-              .filter(Boolean)
-              .join(isRTL ? " ◂ " : " ▸ ");
-            return html`
-              <div @click=${this._handleEntityClicked} style="cursor: pointer;">
-                ${primary}
-                ${
-                  secondary
-                    ? html`<div class="secondary">${secondary}</div>`
-                    : nothing
-                }
-                ${
-                  narrow && showEntityId
-                    ? html`
-                        <div class="secondary" style=${ENTITY_ID_STYLE}>
-                          ${entity.entity_id}
-                        </div>
-                      `
-                    : nothing
-                }
-              </div>
-            `;
-          },
-        },
-      };
-
-      columns.entity_name = {
-        title: "entity_name",
-        filterable: true,
-        hidden: true,
-      };
-
-      columns.device_name = {
-        title: "device_name",
-        filterable: true,
-        hidden: true,
-      };
-
-      columns.area_name = {
-        title: "area_name",
-        filterable: true,
-        hidden: true,
-      };
-
-      columns.entity_id = {
-        title: this.hass!.localize(
-          "ui.panel.lovelace.unused_entities.entity_id"
+  private _columns = memoizeOne((narrow: boolean, showEntityId: boolean) => {
+    const columns: DataTableColumnContainer = {
+      icon: {
+        title: "",
+        label: this.hass!.localize(
+          "ui.panel.lovelace.unused_entities.state_icon"
         ),
-        sortable: true,
-        filterable: true,
-        hidden: narrow || !showEntityId,
-      };
-
-      columns.domain_name = {
-        title: this.hass!.localize("ui.panel.lovelace.unused_entities.domain"),
-        sortable: true,
-        filterable: true,
-        hidden: narrow || showEntityId,
-      };
-
-      columns.last_changed = {
-        title: this.hass!.localize(
-          "ui.panel.lovelace.unused_entities.last_changed"
-        ),
-        type: "numeric",
-        sortable: true,
-        hidden: narrow,
+        type: "icon",
         template: (entity) => html`
-          <ha-relative-time
-            .datetime=${entity.last_changed}
-            capitalize
-          ></ha-relative-time>
+          <state-badge
+            @click=${this._handleEntityClicked}
+            .stateObj=${entity.stateObj}
+          ></state-badge>
         `,
-      };
+      },
+      name: {
+        title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity"),
+        sortable: true,
+        filterable: true,
+        flex: 2,
+        main: true,
+        direction: "asc",
+        template: (entity: any) => {
+          const { primary, secondary } = computeEntityPickerDisplay(
+            this.hass!,
+            entity.stateObj
+          );
+          return html`
+            <div @click=${this._handleEntityClicked} style="cursor: pointer;">
+              ${primary}
+              ${
+                secondary
+                  ? html`<div class="secondary">${secondary}</div>`
+                  : nothing
+              }
+              ${
+                narrow && showEntityId
+                  ? html`
+                      <div class="secondary" style=${ENTITY_ID_STYLE}>
+                        ${entity.entity_id}
+                      </div>
+                    `
+                  : nothing
+              }
+            </div>
+          `;
+        },
+      },
+    };
 
-      return columns;
-    }
-  );
+    columns.entity_name = {
+      title: "entity_name",
+      filterable: true,
+      hidden: true,
+    };
+
+    columns.device_name = {
+      title: "device_name",
+      filterable: true,
+      hidden: true,
+    };
+
+    columns.parent_device_name = {
+      title: "parent_device_name",
+      filterable: true,
+      hidden: true,
+    };
+
+    columns.area_name = {
+      title: "area_name",
+      filterable: true,
+      hidden: true,
+    };
+
+    columns.entity_id = {
+      title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity_id"),
+      sortable: true,
+      filterable: true,
+      hidden: narrow || !showEntityId,
+    };
+
+    columns.domain_name = {
+      title: this.hass!.localize("ui.panel.lovelace.unused_entities.domain"),
+      sortable: true,
+      filterable: true,
+      hidden: narrow || showEntityId,
+    };
+
+    columns.last_changed = {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.unused_entities.last_changed"
+      ),
+      type: "numeric",
+      sortable: true,
+      hidden: narrow,
+      template: (entity) => html`
+        <ha-relative-time
+          .datetime=${entity.last_changed}
+          capitalize
+        ></ha-relative-time>
+      `,
+    };
+
+    return columns;
+  });
 
   private _handleSelectionChanged(
     ev: HASSDomEvent<SelectionChangedEvent>

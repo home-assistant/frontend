@@ -94,11 +94,14 @@ declare global {
     __mockHass: MockHomeAssistant;
     rejectMediaBrowse?: () => void;
     resolveCalendarRegistry?: () => void;
+    resolveConnectivityConfigEntries?: () => void;
     resolveConfigEntries?: () => void;
     resolveConfigEntriesInProgress?: () => void;
     resolveGeneratedDashboard?: () => void;
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;
+    resolveSerialPorts?: () => void;
+    resolveStorageHostInfo?: () => void;
   }
 }
 
@@ -180,10 +183,9 @@ export class HaTest extends HomeAssistantAppEl {
       const protocolEntries = demoConfigEntries
         .map(({ entry }) => entry)
         .concat(
-          [
-            { entry_id: "mock-bluetooth", domain: "bluetooth" },
-            { entry_id: "mock-lovelace", domain: "lovelace" },
-          ].map((entry) => ({
+          // Bluetooth entries come from the connectivity fixtures in
+          // demoConfigEntries.
+          [{ entry_id: "mock-lovelace", domain: "lovelace" }].map((entry) => ({
             disabled_by: null,
             domain: entry.domain,
             entry_id: entry.entry_id,

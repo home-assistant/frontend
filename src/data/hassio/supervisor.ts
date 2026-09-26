@@ -1,37 +1,59 @@
 import type { HomeAssistant, PanelInfo } from "../../types";
 import type { SupervisorArch } from "../supervisor/supervisor";
-import type { HassioResponse } from "./common";
+import type { AddonState } from "./addon";
+import { supervisorUrl, type HassioResponse } from "./common";
 
 export interface HassioHomeAssistantInfo {
-  arch: SupervisorArch;
+  arch: SupervisorArch | null;
   audio_input: string | null;
   audio_output: string | null;
+  backups_exclude_database: boolean;
   boot: boolean;
+  duplicate_log_file: boolean;
   image: string;
   ip_address: string;
-  machine: string;
+  machine: string | null;
   port: number;
   ssl: boolean;
   update_available: boolean;
-  version_latest: string;
-  version: string;
-  wait_boot: number;
+  version_latest: string | null;
+  version: string | null;
   watchdog: boolean;
 }
 
+export interface HassioSupervisorInfoAddon {
+  icon: boolean;
+  name: string;
+  repository: string;
+  slug: string;
+  state: AddonState;
+  update_available: boolean;
+  version: string;
+  version_latest: string;
+}
+
+export interface HassioSupervisorInfoRepository {
+  name: string;
+  slug: string;
+}
+
 export interface HassioSupervisorInfo {
-  addons: string[];
-  addons_repositories: string[];
+  addons: HassioSupervisorInfoAddon[];
+  addons_repositories: HassioSupervisorInfoRepository[];
   arch: SupervisorArch;
+  auto_update: boolean;
   channel: string;
+  country: string | null;
   debug: boolean;
   debug_block: boolean;
+  detect_blocking_io: boolean;
   diagnostics: boolean | null;
+  feature_flags: Record<string, boolean>;
   healthy: boolean;
   ip_address: string;
   logging: string;
   supported: boolean;
-  timezone: string;
+  timezone: string | null;
   update_available: boolean;
   version: string;
   version_latest: string;
@@ -43,11 +65,12 @@ export interface HassioInfo {
   channel: string;
   docker: string;
   features: string[];
-  hassos: null;
-  homeassistant: string;
-  hostname: string;
+  hassos: string | null;
+  homeassistant: string | null;
+  hostname: string | null;
   logging: string;
-  machine: string;
+  machine: string | null;
+  machine_id: string | null;
   state:
     | "initialize"
     | "setup"
@@ -57,7 +80,7 @@ export interface HassioInfo {
     | "shutdown"
     | "stopping"
     | "close";
-  operating_system: string;
+  operating_system: string | null;
   supervisor: string;
   supported: boolean;
   supported_arch: SupervisorArch[];
@@ -198,18 +221,20 @@ export const fetchHassioLogsFollowSkip = async (
   );
 
 export const getHassioLogDownloadUrl = (provider: string) =>
-  `/api/hassio/${
-    provider.includes("_") ? `addons/${provider}` : provider
-  }/logs`;
+  supervisorUrl(
+    `${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+  );
 
 export const getHassioLogDownloadLinesUrl = (
   provider: string,
   lines: number,
   boot = 0
 ) =>
-  `/api/hassio/${
-    provider.includes("_") ? `addons/${provider}` : provider
-  }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`;
+  supervisorUrl(
+    `${
+      provider.includes("_") ? `addons/${provider}` : provider
+    }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`
+  );
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,
@@ -223,4 +248,4 @@ export const setSupervisorOption = async (
   });
 };
 
-export const coreLatestLogsUrl = "/api/hassio/core/logs/latest";
+export const coreLatestLogsUrl = supervisorUrl("core/logs/latest");

@@ -3,11 +3,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
-import {
-  computeCssColor,
-  isValidColorString,
-} from "../../../common/color/compute-color";
-import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
@@ -20,6 +15,7 @@ import type {
   CalendarEventApiData,
 } from "../../../data/calendar";
 import {
+  getCalendarColors,
   normalizeSubscriptionEventData,
   subscribeCalendarEvents,
 } from "../../../data/calendar";
@@ -142,21 +138,14 @@ export class HuiCalendarCard
         ]) ?? []
       );
       if (this._config?.entities) {
-        this._calendars = this._config.entities.map((entity, idx) => {
-          const entityColor = entityOptionsMap.get(entity)?.calendar?.color;
-          let backgroundColor: string;
-          // Validate and use the color from entity registry if valid
-          if (entityColor && isValidColorString(entityColor)) {
-            backgroundColor = computeCssColor(entityColor);
-          } else {
-            // Fall back to default color by index
-            backgroundColor = getColorByIndex(idx, computedStyles);
-          }
-          return {
-            entity_id: entity,
-            backgroundColor,
-          };
-        });
+        this._calendars = this._config.entities.map((entity, idx) => ({
+          entity_id: entity,
+          ...getCalendarColors(
+            entityOptionsMap.get(entity)?.calendar?.color,
+            idx,
+            computedStyles
+          ),
+        }));
       }
     }
   }
@@ -201,6 +190,10 @@ export class HuiCalendarCard
     }
 
     const loading = !this._entityRegistry || !this._eventsLoaded;
+    const rows = this._config.grid_options
+      ? this._config.grid_options.rows
+      : this._config.layout_options?.grid_rows;
+    const autoHeight = this.layout === "grid" && rows === "auto";
 
     const views: FullCalendarView[] = [
       "dayGridMonth",
@@ -217,11 +210,12 @@ export class HuiCalendarCard
         }
         <ha-full-calendar
           class=${classMap({
-            "is-grid": this.layout === "grid",
+            "is-grid": this.layout === "grid" && !autoHeight,
             "is-panel": this.layout === "panel",
             "has-title": !!this._config.title,
             loading: loading,
           })}
+          ?auto-height=${autoHeight}
           ?add-fab=${this._config.show_add_event}
           add-fab-style=${this._config.show_add_event ? (this._config.add_event_style ?? "below") : nothing}
           add-fab-size=${this._config.show_add_event && this._config.add_event_style !== "header" ? (this._config.add_event_size ?? "small") : nothing}
@@ -412,6 +406,11 @@ export class HuiCalendarCard
       width: 100%;
       height: 100%;
       min-height: var(--calendar-height);
+    }
+
+    ha-full-calendar[auto-height] {
+      --calendar-height: auto;
+      height: auto;
     }
 
     ha-full-calendar.loading {

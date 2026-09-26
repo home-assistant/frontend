@@ -1,11 +1,12 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { fetchHassioAddonsInfo } from "../data/hassio/addon";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-alert";
+import "./ha-app-icon";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
@@ -18,13 +19,22 @@ const SEARCH_KEYS = [
   { name: "search_labels.repository", weight: 5 },
 ];
 
-const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
+interface AddonPickerItem extends PickerComboBoxItem {
+  slug: string;
+  hasIcon: boolean;
+}
+
+const rowRenderer: RenderItemFunction<AddonPickerItem> = (item) => html`
   <ha-combo-box-item type="button">
     <span slot="headline">${item.primary}</span>
     <span slot="supporting-text">${item.secondary}</span>
     ${
-      item.icon
-        ? html` <img alt="" slot="start" .src=${item.icon} /> `
+      item.hasIcon
+        ? html`<ha-app-icon
+            slot="start"
+            .slug=${item.slug}
+            .hasIcon=${item.hasIcon}
+          ></ha-app-icon>`
         : nothing
     }
   </ha-combo-box-item>
@@ -40,7 +50,7 @@ class HaAddonPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @state() private _addons?: PickerComboBoxItem[];
+  @state() private _addons?: AddonPickerItem[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -102,11 +112,10 @@ class HaAddonPicker extends LitElement {
           .filter((addon) => addon.version)
           .map((addon) => ({
             id: addon.slug,
+            slug: addon.slug,
+            hasIcon: addon.icon,
             primary: addon.name,
             secondary: addon.slug,
-            icon: addon.icon
-              ? `/api/hassio/addons/${addon.slug}/icon`
-              : undefined,
             search_labels: {
               description: addon.description || null,
               repository: addon.repository || null,
@@ -151,15 +160,22 @@ class HaAddonPicker extends LitElement {
   private _valueRenderer = (itemId: string) => {
     const item = this._addons!.find((addon) => addon.id === itemId);
     return html`${
-        item?.icon
-          ? html`<img
+        item?.hasIcon
+          ? html`<ha-app-icon
               slot="start"
-              alt=${item.primary ?? "Unknown"}
-              .src=${item.icon}
-            />`
+              .slug=${item.slug}
+              .hasIcon=${item.hasIcon}
+              .alt=${item.primary ?? "Unknown"}
+            ></ha-app-icon>`
           : nothing
       }<span slot="headline">${item?.primary || "Unknown"}</span>`;
   };
+
+  static styles = css`
+    ha-app-icon {
+      --ha-app-icon-size: var(--ha-space-8);
+    }
+  `;
 }
 
 declare global {

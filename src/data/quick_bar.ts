@@ -28,6 +28,7 @@ export interface NavigationComboBoxItem extends PickerComboBoxItem {
   path: string;
   image?: string;
   iconColor?: string;
+  app?: Pick<HassioAddonInfo, "slug" | "icon">;
 }
 
 export interface BaseNavigationCommand {
@@ -38,6 +39,7 @@ export interface BaseNavigationCommand {
   iconPath?: string;
   iconColor?: string;
   image?: string;
+  app?: Pick<HassioAddonInfo, "slug" | "icon">;
 }
 
 export interface ActionCommandComboBoxItem extends PickerComboBoxItem {
@@ -62,19 +64,14 @@ const generateNavigationPanelCommands = (
 
       const primary = localize(translationKey) || panel.title || panel.url_path;
 
-      let image: string | undefined;
-
-      if (apps) {
-        const app = apps.find(({ slug }) => slug === panel.url_path);
-        if (app) {
-          image = app.icon ? `/api/hassio/addons/${app.slug}/icon` : undefined;
-        }
-      }
+      const panelApp = apps?.find(({ slug }) => slug === panel.url_path);
 
       return {
         primary,
         icon,
-        image,
+        app: panelApp
+          ? { slug: panelApp.slug, icon: panelApp.icon }
+          : undefined,
         path: `/${panel.url_path}`,
       };
     });
@@ -171,7 +168,7 @@ export const generateNavigationCommands = (
       for (const app of apps.filter((a) => a.version)) {
         appItems.push({
           path: `/config/app/${app.slug}`,
-          image: app.icon ? `/api/hassio/addons/${app.slug}/icon` : undefined,
+          app: { slug: app.slug, icon: app.icon },
           primary: hass.localize(
             "ui.dialogs.quick-bar.commands.navigation.app_info",
             { app: app.name }

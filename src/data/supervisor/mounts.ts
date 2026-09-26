@@ -15,9 +15,12 @@ export enum SupervisorMountUsage {
 
 export enum SupervisorMountState {
   ACTIVE = "active",
+  ACTIVATING = "activating",
+  DEACTIVATING = "deactivating",
   FAILED = "failed",
   INACTIVE = "inactive",
-  UNKNOWN = "unknown",
+  MAINTENANCE = "maintenance",
+  RELOADING = "reloading",
 }
 
 interface MountOptions {
@@ -28,13 +31,14 @@ export type CIFSVersion = "auto" | "1.0" | "2.0";
 
 interface SupervisorMountBase {
   name: string;
-  usage: SupervisorMountUsage;
+  usage: SupervisorMountUsage | null;
   type: SupervisorMountType;
-  read_only?: boolean;
+  read_only: boolean;
 }
 
 export interface SupervisorMountResponse extends SupervisorMountBase {
   state: SupervisorMountState | null;
+  user_path: string | null;
 }
 
 // Supervisor omits port when the mount uses the protocol default.
@@ -51,7 +55,7 @@ export interface SupervisorNFSMount extends SupervisorNetworkMount {
 export interface SupervisorCIFSMount extends SupervisorNetworkMount {
   type: SupervisorMountType.CIFS;
   share: string;
-  version?: CIFSVersion;
+  version?: CIFSVersion | null;
 }
 
 // Supervisor resolves device to uuid; responses report uuid and filesystem.
@@ -69,7 +73,7 @@ export type SupervisorNFSMountRequestParams = SupervisorNFSMount;
 export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
   username?: string;
   password?: string;
-  version?: CIFSVersion;
+  version?: CIFSVersion | null;
 }
 
 interface SupervisorDiskMountRequestParamsBase {

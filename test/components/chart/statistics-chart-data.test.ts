@@ -175,6 +175,117 @@ describe("generateStatisticsChartData", () => {
     expect(result?.unit).toBe("°C");
   });
 
+  // The charger misses the middle period; the pv statistic is continuous.
+  const gapIds = ["sensor.charger", "sensor.pv"];
+  const gapStart = FIXED_EPOCH_MS;
+  const gapPeriod = 5 * 60 * 1000;
+  const gapStatistics = {
+    [gapIds[0]]: [
+      { start: gapStart, end: gapStart + gapPeriod, mean: 10 },
+      {
+        start: gapStart + 2 * gapPeriod,
+        end: gapStart + 3 * gapPeriod,
+        mean: 20,
+      },
+    ],
+    [gapIds[1]]: [
+      { start: gapStart, end: gapStart + gapPeriod, mean: 100 },
+      { start: gapStart + gapPeriod, end: gapStart + 2 * gapPeriod, mean: 110 },
+      {
+        start: gapStart + 2 * gapPeriod,
+        end: gapStart + 3 * gapPeriod,
+        mean: 120,
+      },
+    ],
+  };
+
+  it("aligns stacked lines by index when one statistic has a gap", () => {
+    const stacked = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: gapStatistics,
+      statisticsMetaData: buildMetadata(gapIds),
+      statTypes: ["mean"],
+      chartType: "line-stack",
+      period: "5minute",
+    })!.datasets.filter((dataset) => dataset.data?.length);
+    expect(stacked.map((dataset) => dataset.sampling)).toEqual([
+      "lttb",
+      "lttb",
+    ]);
+    expect(stacked.map((dataset) => dataset.data)).toEqual([
+      [
+        [gapStart, 10],
+        [gapStart + gapPeriod, 10],
+        [gapStart + gapPeriod, null],
+        [gapStart + 2 * gapPeriod, 20],
+        [gapStart + 2 * gapPeriod, 20],
+      ],
+      [
+        [gapStart, 100],
+        [gapStart + gapPeriod, 110],
+        [gapStart + gapPeriod, 110],
+        [gapStart + 2 * gapPeriod, 120],
+        [gapStart + 2 * gapPeriod, 120],
+      ],
+    ]);
+  });
+
+  it("pads a stacked statistic that starts late with nulls", () => {
+    const lateIds = ["sensor.late", "sensor.pv"];
+    const stacked = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: {
+        [lateIds[0]]: [
+          {
+            start: gapStart + gapPeriod,
+            end: gapStart + 2 * gapPeriod,
+            mean: 10,
+          },
+          {
+            start: gapStart + 2 * gapPeriod,
+            end: gapStart + 3 * gapPeriod,
+            mean: 20,
+          },
+        ],
+        [lateIds[1]]: gapStatistics[gapIds[1]],
+      },
+      statisticsMetaData: buildMetadata(lateIds),
+      statTypes: ["mean"],
+      chartType: "line-stack",
+      period: "5minute",
+    })!.datasets.filter((dataset) => dataset.data?.length);
+    expect(stacked.map((dataset) => dataset.data)).toEqual([
+      [
+        [gapStart, null],
+        [gapStart + gapPeriod, 10],
+        [gapStart + 2 * gapPeriod, 20],
+        [gapStart + 2 * gapPeriod, 20],
+      ],
+      [
+        [gapStart, 100],
+        [gapStart + gapPeriod, 110],
+        [gapStart + 2 * gapPeriod, 120],
+        [gapStart + 2 * gapPeriod, 120],
+      ],
+    ]);
+  });
+
+  it("leaves plain lines unaligned with minmax sampling", () => {
+    const plain = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: gapStatistics,
+      statisticsMetaData: buildMetadata(gapIds),
+      statTypes: ["mean"],
+      chartType: "line",
+      period: "5minute",
+    })!.datasets.filter((dataset) => dataset.data?.length);
+    expect(plain.map((dataset) => dataset.sampling)).toEqual([
+      "minmax",
+      "minmax",
+    ]);
+    expect(plain.map((dataset) => dataset.data!.length)).toEqual([5, 4]);
+  });
+
   it("large dataset digest is stable", () => {
     expect(
       digestResult(

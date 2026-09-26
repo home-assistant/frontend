@@ -178,6 +178,17 @@ export class HaStateContentPicker extends LitElement {
                   ),
                 });
               }
+              if (context.parentDevice) {
+                contextItems.push({
+                  id: "parent_device_name",
+                  primary: this.hass.localize(
+                    "ui.components.state-content-picker.parent_device_name"
+                  ),
+                  sorting_label: this.hass.localize(
+                    "ui.components.state-content-picker.parent_device_name"
+                  ),
+                });
+              }
               if (context.area) {
                 contextItems.push({
                   id: "area_name",
@@ -318,11 +329,7 @@ export class HaStateContentPicker extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`
-          <ha-input-helper-text .disabled=${this.disabled}>
-            ${this.helper}
-          </ha-input-helper-text>
-        `
+      ? html` <ha-input-helper-text> ${this.helper} </ha-input-helper-text> `
       : nothing;
   }
 

@@ -261,15 +261,16 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     };
 
     protected async promptDiscardChanges() {
-      return this.confirmUnsavedChanged();
+      return this.confirmUnsavedChanged(false);
     }
 
     /**
      * Asks whether unsaved changes should be discarded.
      * Subclasses must override this to show a confirmation dialog.
+     * @param addHistory false while a navigation is already in flight.
      * @returns true to proceed (discard/save changes), false to cancel.
      */
-    protected confirmUnsavedChanged(): Promise<boolean> {
+    protected confirmUnsavedChanged(_addHistory = true): Promise<boolean> {
       return Promise.resolve(true);
     }
 

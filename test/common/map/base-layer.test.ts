@@ -167,6 +167,15 @@ describe("createBaseLayer", () => {
     expect(leaflet.tileLayer).not.toHaveBeenCalled();
   });
 
+  it("renders raster tiles when asked to, even with WebGL2", async () => {
+    const createBaseLayer = await setWebGL2(true);
+
+    await createBaseLayer(leaflet, map, false, TOKEN, true);
+
+    expect(isRaster()).toBe(true);
+    expect(maplibreGL).not.toHaveBeenCalled();
+  });
+
   it("falls back to raster tiles when the style cannot be fetched", async () => {
     const createBaseLayer = await setWebGL2(true);
     vi.stubGlobal(

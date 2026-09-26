@@ -1,4 +1,8 @@
+import { resolveHassUrl } from "../../common/url/hass-url";
 import type { CallWS } from "../../types";
+
+export const supervisorUrl = (path: string): string =>
+  resolveHassUrl(`/api/hassio/${path}`);
 
 export interface HassioResponse<T> {
   data: T;
@@ -9,12 +13,15 @@ export interface HassioResponse<T> {
 export interface HassioStats {
   blk_read: number;
   blk_write: number;
-  cpu_percent: number;
+  cpu_percent: number | null;
+  cpu_system_usage: number;
+  cpu_usage: number;
   memory_limit: number;
   memory_percent: number;
   memory_usage: number;
   network_rx: number;
   network_tx: number;
+  online_cpus: number;
 }
 
 export const extractApiErrorMessage = (error: any): string =>

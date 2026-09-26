@@ -95,7 +95,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       -webkit-touch-callout: none !important;
     }
     hui-image {
-      -webkit-user-select: none !important;
+      user-select: none !important;
       pointer-events: none;
     }
     div:focus {

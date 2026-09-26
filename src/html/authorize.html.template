@@ -26,7 +26,10 @@
         width: 100%;
         max-width: 400px;
         margin: 0 auto;
-        padding: 0 16px;
+        padding: var(--safe-area-inset-top, 0px)
+          calc(16px + var(--safe-area-inset-right, 0px))
+          var(--safe-area-inset-bottom, 0px)
+          calc(16px + var(--safe-area-inset-left, 0px));
         box-sizing: content-box;
       }
 
@@ -35,7 +38,6 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 32px;
-        padding-top: var(--safe-area-inset-top);
       }
 
       .header img {

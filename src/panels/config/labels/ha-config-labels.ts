@@ -108,6 +108,8 @@ export class HaConfigLabels extends LitElement {
 
   @state() private _labels: LabelRegistryEntry[] = [];
 
+  @state() private _loading = true;
+
   @state()
   @storage({
     storage: "sessionStorage",
@@ -258,6 +260,7 @@ export class HaConfigLabels extends LitElement {
         .tabs=${configSections.areas}
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._data(this._labels)}
+        .loading=${this._loading}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         has-fab
         .initialSorting=${this._activeSorting}
@@ -321,7 +324,11 @@ export class HaConfigLabels extends LitElement {
   }
 
   private async _fetchLabels() {
-    this._labels = await fetchLabelRegistry(this.hass.connection);
+    try {
+      this._labels = await fetchLabelRegistry(this.hass.connection);
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _addLabel() {

@@ -164,12 +164,18 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth/visualization",
   },
+  config_ai: {
+    redirect: "/config/ai",
+  },
   config_ai_task: {
-    redirect: "/config/ai-tasks",
+    redirect: "/config/ai",
   },
   config_bluetooth: {
     component: "bluetooth",
     redirect: "/config/bluetooth",
+  },
+  config_connectivity: {
+    redirect: "/config/connectivity",
   },
   config_dhcp: {
     component: "dhcp",
@@ -182,9 +188,17 @@ export const getMyRedirects = (): Redirects => ({
   config_infrared: {
     redirect: "/config/infrared",
   },
+  config_modbus: {
+    component: "modbus",
+    redirect: "/config/modbus",
+  },
   config_radiofrequency: {
     component: "radio_frequency",
     redirect: "/config/radio-frequency",
+  },
+  config_serial: {
+    component: "usb",
+    redirect: "/config/serial",
   },
   config_ssdp: {
     component: "ssdp",
@@ -348,6 +362,15 @@ export const getMyRedirects = (): Redirects => ({
   overview: {
     redirect: "/home/overview",
   },
+  climate: {
+    redirect: "/climate",
+  },
+  lights: {
+    redirect: "/light",
+  },
+  security: {
+    redirect: "/security",
+  },
   media_browser: {
     component: "media_source",
     redirect: "/media-browser",
@@ -388,7 +411,16 @@ export const getMyRedirects = (): Redirects => ({
     component: "hassio",
     redirect: "/config/apps/available",
   },
+  supervisor_apps: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
   supervisor_addons: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
+  supervisor: {
+    // Supervisor panel was removed in 2026.2, fallback to apps
     component: "hassio",
     redirect: "/config/apps",
   },
@@ -427,9 +459,6 @@ export const getMyRedirects = (): Redirects => ({
       repository: "string",
       category: "string?",
     },
-  },
-  lights: {
-    redirect: "/lights",
   },
 });
 

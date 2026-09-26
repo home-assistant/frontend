@@ -30,6 +30,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
+      <slot name="alerts"></slot>
       ${
         this.config.description
           ? html`<ha-markdown

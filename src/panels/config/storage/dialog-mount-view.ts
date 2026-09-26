@@ -15,6 +15,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
+  CIFSVersion,
   SupervisorMountCandidate,
   SupervisorMountRequestParams,
 } from "../../../data/supervisor/mounts";
@@ -32,6 +33,22 @@ import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { MountViewDialogParams } from "./show-dialog-view-mount";
+
+type MountFormData = {
+  name: string;
+  type: SupervisorMountType;
+  usage?: SupervisorMountUsage | null;
+  read_only?: boolean;
+  server?: string;
+  port?: number;
+  path?: string;
+  share?: string;
+  version?: CIFSVersion | null;
+  device?: string;
+  uuid?: string;
+  username?: string;
+  password?: string;
+};
 
 // Drive vendor/model, then label or device path, then size.
 const mountCandidateLabel = (candidate: SupervisorMountCandidate): string => {
@@ -232,7 +249,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 >()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _data?: SupervisorMountRequestParams;
+  @state() private _data?: MountFormData;
 
   @state() private _waiting?: boolean;
 
@@ -283,7 +300,10 @@ class ViewMountDialog extends DirtyStateProviderMixin<
         .filter(Boolean)
         .join(" • ");
     }
-    this._initDirtyTracking({ type: "deep" }, this._data ?? {});
+    this._initDirtyTracking(
+      { type: "deep" },
+      (this._data ?? {}) as Partial<SupervisorMountRequestParams>
+    );
     // Candidates only matter when picking a disk for a new mount.
     if (!this._existing) {
       this._loadCandidates();
@@ -541,7 +561,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     if (!this._allowBackupUsage && this._data?.usage === "backup") {
       delete (this._data as Partial<SupervisorMountRequestParams>).usage;
     }
-    this._updateDirtyState(this._data ?? {});
+    this._updateDirtyState(
+      (this._data ?? {}) as Partial<SupervisorMountRequestParams>
+    );
   }
 
   private async _connectMount(ev) {
@@ -564,9 +586,15 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     }
     try {
       if (this._existing) {
-        await updateSupervisorMount(this.hass, mountData);
+        await updateSupervisorMount(
+          this.hass,
+          mountData as Partial<SupervisorMountRequestParams>
+        );
       } else {
-        await createSupervisorMount(this.hass, mountData);
+        await createSupervisorMount(
+          this.hass,
+          mountData as SupervisorMountRequestParams
+        );
       }
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);

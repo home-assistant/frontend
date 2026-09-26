@@ -257,6 +257,13 @@ class PartialPanelResolver extends HassRouterPage {
       )
     ) {
       await this.rebuild();
+      // hass.panels can change again while rebuild() is in flight (e.g.
+      // multiple integrations/resources updating panels around startup), so
+      // the panel we were about to show may no longer exist. willUpdate will
+      // re-run _updateRoutes for the newer panels, so just bail out here.
+      if (!this.hass.panels[this._currentPage]) {
+        return;
+      }
       const component =
         COMPONENTS[this.hass.panels[this._currentPage].component_name];
       await promiseTimeout(
@@ -267,9 +274,9 @@ class PartialPanelResolver extends HassRouterPage {
       // screen, so later panel updates do not fire it again. Native apps remove
       // it instantly because their own splash screen is still visible.
       if (
-        removeLaunchScreen(!!this.hass.auth.external?.config.hasSplashscreen)
+        removeLaunchScreen(!!this.hass.auth?.external?.config.hasSplashscreen)
       ) {
-        this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+        this.hass.auth?.external?.fireMessage({ type: "frontend/loaded" });
       }
     }
   }

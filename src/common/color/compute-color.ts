@@ -62,12 +62,16 @@ export function computeCssColor(color: string): string {
 /**
  * Get a color from document's styles
  * @param color - Named theme color (examples: `red`, `primary-text`)
- * @returns Resolved color; initial color if not found in document's styles
+ * @param style - Styles to resolve against, defaults to the document body
+ * @returns Resolved color; initial color if not found in the styles
  */
-export function resolveThemeColor(color: string): string {
+export function resolveThemeColor(
+  color: string,
+  style?: CSSStyleDeclaration
+): string {
   const cssColor = computeCssVariableName(color);
   if (cssColor.startsWith("--")) {
-    const resolved = getComputedStyle(document.body)
+    const resolved = (style ?? getComputedStyle(document.body))
       .getPropertyValue(cssColor)
       .trim();
     return resolved || color;

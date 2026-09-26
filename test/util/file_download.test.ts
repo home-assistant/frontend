@@ -36,6 +36,7 @@ describe("fileDownload", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     delete (window as any).externalApp;
     delete (window as any).externalAppV2;
   });
@@ -56,6 +57,16 @@ describe("fileDownload", () => {
     fileDownload("https://example.com/file.json", "file.json");
     vi.runAllTimers();
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+  });
+
+  it("resolves relative URLs against the configured Home Assistant URL", async () => {
+    vi.stubGlobal("__HASS_URL__", "http://homeassistant.local:8123");
+    await loadFileDownload();
+    fileDownload("/api/hassio/core/logs/follow");
+
+    expect(createdElement.href).toBe(
+      "http://homeassistant.local:8123/api/hassio/core/logs/follow"
+    );
   });
 
   it("revokes blob URLs immediately outside Android", async () => {

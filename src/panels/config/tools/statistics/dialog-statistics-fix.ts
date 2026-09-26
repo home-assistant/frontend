@@ -10,7 +10,7 @@ import { clearStatistics, getStatisticLabel } from "../../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
-import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 
 @customElement("dialog-statistics-fix")

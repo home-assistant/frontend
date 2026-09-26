@@ -82,7 +82,7 @@ class HaMoreInfoRelated extends LitElement {
       ? (domain as ItemType)
       : "entity";
 
-    const { floor, area, device } = getEntityContext(
+    const { floor, area, device, parentDevice } = getEntityContext(
       this._stateObj,
       this.hass.entities,
       this.hass.devices,
@@ -91,6 +91,13 @@ class HaMoreInfoRelated extends LitElement {
     );
     const floorName = floor ? computeFloorName(floor) : undefined;
     const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
+    const parentDeviceName = parentDevice
+      ? computeDeviceNameDisplay(
+          parentDevice,
+          this.hass.localize,
+          this.hass.states
+        )
+      : undefined;
     const deviceName = device
       ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : undefined;
@@ -124,6 +131,14 @@ class HaMoreInfoRelated extends LitElement {
           : html`<ha-svg-icon slot="end" .path=${mdiTextureBox}></ha-svg-icon>`,
       });
     }
+    if (parentDevice && parentDeviceName) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.parent_device",
+        value: parentDeviceName,
+        href: `/config/devices/device/${parentDevice.id}`,
+        icon: html`<ha-svg-icon slot="end" .path=${mdiDevices}></ha-svg-icon>`,
+      });
+    }
     if (device && deviceName) {
       contextEntries.push({
         translationKey: "ui.components.related-items.device",
@@ -155,43 +170,46 @@ class HaMoreInfoRelated extends LitElement {
         />`,
       });
     }
-    contextEntries.push({
-      translationKey: "ui.dialogs.more_info_control.labels",
-      value:
-        labels.map(({ id, entry }) => entry?.name ?? id).join(", ") ||
-        this.hass.localize("ui.dialogs.more_info_control.no_labels"),
-      displayValue: labels.length
-        ? html`<div class="labels">
-            ${labels.map(
-              ({ id, entry }) => html`
-                <ha-label
-                  class="text-ellipsis"
-                  .color=${entry?.color ?? undefined}
-                  .description=${entry?.description ?? undefined}
-                >
-                  ${
-                    entry?.icon
-                      ? html`<ha-icon
-                          slot="icon"
-                          .icon=${entry.icon}
-                        ></ha-icon>`
-                      : nothing
-                  }
-                  ${entry?.name ?? id}
-                </ha-label>
-              `
-            )}
-          </div>`
-        : undefined,
-    });
+    if (labels.length) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.labels",
+        value: labels.map(({ id, entry }) => entry?.name ?? id).join(", "),
+        displayValue: html`<div class="labels">
+          ${labels.map(
+            ({ id, entry }) => html`
+              <ha-label
+                class="text-ellipsis"
+                .color=${entry?.color ?? undefined}
+                .description=${entry?.description ?? undefined}
+              >
+                ${
+                  entry?.icon
+                    ? html`<ha-icon slot="icon" .icon=${entry.icon}></ha-icon>`
+                    : nothing
+                }
+                ${entry?.name ?? id}
+              </ha-label>
+            `
+          )}
+        </div>`,
+      });
+    }
 
     return html`
       <div class="content">
-        <ha-grouped-list
-          .header=${this.hass.localize("ui.dialogs.more_info_control.context")}
-        >
-          ${this._renderEntries(contextEntries)}
-        </ha-grouped-list>
+        ${
+          contextEntries.length
+            ? html`
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.dialogs.more_info_control.context"
+                  )}
+                >
+                  ${this._renderEntries(contextEntries)}
+                </ha-grouped-list>
+              `
+            : nothing
+        }
         <ha-related-items
           .hass=${this.hass}
           .itemId=${this.params.entityId}
@@ -239,7 +257,7 @@ class HaMoreInfoRelated extends LitElement {
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
-    ha-related-items {
+    ha-grouped-list + ha-related-items {
       margin-top: var(--ha-space-6);
     }
 

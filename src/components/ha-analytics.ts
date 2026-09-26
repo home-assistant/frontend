@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
@@ -20,12 +21,14 @@ declare global {
 
 @customElement("ha-analytics")
 export class HaAnalytics extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ attribute: false }) public analytics?: Analytics;
 
   @property({ attribute: "translation_key_panel" }) public translationKeyPanel:
     "page-onboarding" | "config" = "config";
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected render(): TemplateResult {
     const loading = this.analytics === undefined;
@@ -34,12 +37,12 @@ export class HaAnalytics extends LitElement {
     return html`
       <ha-row-item>
         <span slot="headline"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
           )}</span
         >
         <span slot="supporting-text"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
           )}</span
         >
@@ -50,18 +53,22 @@ export class HaAnalytics extends LitElement {
           .preference=${"base"}
           .disabled=${loading}
           name="base"
-        ></ha-switch>
+        >
+          ${this._localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
+          )}
+        </ha-switch>
       </ha-row-item>
       ${ADDITIONAL_PREFERENCES.map(
         (preference) => html`
           <ha-row-item>
             <span slot="headline"
-              >${this.localize(
+              >${this._localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
               )}</span
             >
             <span slot="supporting-text"
-              >${this.localize(
+              >${this._localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
               )}</span
             >
@@ -72,7 +79,11 @@ export class HaAnalytics extends LitElement {
               .checked=${!!this.analytics?.preferences[preference]}
               .preference=${preference}
               name=${preference}
-            ></ha-switch>
+            >
+              ${this._localize(
+                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
+              )}
+            </ha-switch>
             ${
               baseEnabled
                 ? nothing
@@ -80,7 +91,7 @@ export class HaAnalytics extends LitElement {
                     .for="switch-${preference}"
                     placement="right"
                   >
-                    ${this.localize(
+                    ${this._localize(
                       `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
                     )}
                   </ha-tooltip>`
@@ -90,12 +101,12 @@ export class HaAnalytics extends LitElement {
       )}
       <ha-row-item>
         <span slot="headline"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
           )}</span
         >
         <span slot="supporting-text"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
           )}</span
         >
@@ -106,7 +117,11 @@ export class HaAnalytics extends LitElement {
           .preference=${"diagnostics"}
           .disabled=${loading}
           name="diagnostics"
-        ></ha-switch>
+        >
+          ${this._localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
+          )}
+        </ha-switch>
       </ha-row-item>
     `;
   }
@@ -141,6 +156,19 @@ export class HaAnalytics extends LitElement {
       css`
         .error {
           color: var(--error-color);
+        }
+
+        /* The visible headline already names the row. Keep the switch's
+           slotted label available to assistive technology without repeating it. */
+        ha-switch::part(label) {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
         }
 
         ha-row-item {

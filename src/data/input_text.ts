@@ -9,6 +9,7 @@ export interface InputText {
   max?: number;
   pattern?: string;
   mode?: "text" | "password";
+  unit_of_measurement?: string;
 }
 
 export interface InputTextMutableParams {

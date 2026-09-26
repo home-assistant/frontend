@@ -202,7 +202,7 @@ export class HassRouterPage extends ReactiveElement {
       // the app stayed open) is recoverable: reload onto the current build
       // (or prompt when there are unsaved edits) instead of dead-ending.
       const message = err instanceof Error ? err.message : String(err ?? "");
-      const stale = recoverFromStaleBuild(message, this);
+      const recovery = recoverFromStaleBuild(message, this);
 
       // Show error screen, offering a reload action for a stale build. Set
       // `showReload` on the returned element rather than through
@@ -211,8 +211,12 @@ export class HassRouterPage extends ReactiveElement {
       const errorScreen = this.createErrorScreen(
         `Error while loading page ${newPage}.`
       );
-      errorScreen.showReload = stale;
       this.appendChild(errorScreen);
+      // That action drops the caches, so only offer it once the probe has
+      // confirmed the chunk is really gone.
+      void Promise.resolve(recovery).then((stale) => {
+        errorScreen.showReload = stale;
+      });
     });
 
     // If we don't show loading screen, just show the panel.

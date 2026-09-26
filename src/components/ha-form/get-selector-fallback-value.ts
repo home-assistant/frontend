@@ -48,6 +48,7 @@ const SELECTOR_FALLBACK_VALUES = {
   selector: undefined,
   serial_port: undefined,
   state: undefined,
+  state_class: undefined,
   backup_location: undefined,
   stt: undefined,
   target: undefined,

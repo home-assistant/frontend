@@ -11,18 +11,18 @@ import millisecondsToDuration from "../../common/datetime/milliseconds_to_durati
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { DEFAULT_CHART_WIDTH, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
-import { computeTimelineColor } from "./timeline-color";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
 import echarts from "../../resources/echarts/echarts";
-import { luminosity } from "../../common/color/rgb";
-import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import { generateStateHistoryChartTimelineData } from "./state-history-chart-timeline-data";
 
 const ROW_HEIGHT = 30;
+// Taller rows when the name is drawn under the bar instead of in a column.
+const ROW_HEIGHT_INSIDE_LABELS = 64;
 const GRID_BOTTOM = 30;
 
 @customElement("state-history-chart-timeline")
@@ -40,6 +40,12 @@ export class StateHistoryChartTimeline extends LitElement {
   @property() public identifier?: string;
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+
+  // Render each row's name inside the plot (under its bar) instead of in a
+  // left-hand category-label column. Opt-in; used by the history panel and
+  // history-graph card.
+  @property({ attribute: "inside-labels", type: Boolean })
+  public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
@@ -70,7 +76,13 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .hass=${this.hass}
         .options=${this._chartOptions}
-        .height=${`${this.data.length * ROW_HEIGHT + GRID_BOTTOM}px`}
+        .height=${`${
+          this.data.length *
+            (this.insideLabels && (this.chunked || this.showNames)
+              ? ROW_HEIGHT_INSIDE_LABELS
+              : ROW_HEIGHT) +
+          GRID_BOTTOM
+        }px`}
         .data=${this._chartData as HaECSeries}
         small-controls
         @chart-click=${this._handleChartClick}
@@ -185,6 +197,7 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("showNames") ||
+      changedProps.has("insideLabels") ||
       changedProps.has("paddingYAxis") ||
       changedProps.has("_yWidth")
     ) {
@@ -196,9 +209,11 @@ export class StateHistoryChartTimeline extends LitElement {
     const narrow = this.narrow;
     const showNames = this.chunked || this.showNames;
     const maxInternalLabelWidth = narrow ? 105 : 185;
-    const labelWidth = showNames
-      ? Math.max(this.paddingYAxis, this._yWidth)
-      : 0;
+    const insideLabels = this.insideLabels;
+    const labelWidth =
+      showNames && !insideLabels
+        ? Math.max(this.paddingYAxis, this._yWidth)
+        : 0;
     const labelMargin = 5;
     const rtl = computeRTL(
       this.hass.language,
@@ -227,31 +242,47 @@ export class StateHistoryChartTimeline extends LitElement {
         axisLine: {
           show: false,
         },
-        axisLabel: {
-          show: showNames,
-          width: labelWidth,
-          overflow: "truncate",
-          margin: labelMargin,
-          formatter: (id: string) => {
-            const label = this._chartData.find((d) => d.id === id)
-              ?.name as string;
-            const width = label
-              ? Math.min(
-                  measureTextWidth(label, 12) + labelMargin,
-                  maxInternalLabelWidth
-                )
-              : 0;
-            if (width > this._yWidth) {
-              this._yWidth = width;
-              fireEvent(this, "y-width-changed", {
-                value: this._yWidth,
-                chartIndex: this.chartIndex,
-              });
+        axisLabel: insideLabels
+          ? {
+              // Draw the name inside the plot, under each row's bar, matching
+              // the line charts whose legend sits under the plot. The taller
+              // rows keep a name clear of the next row's bar.
+              show: showNames,
+              inside: true,
+              margin: 0,
+              padding: [18, 0, 0, rtl ? 0 : 2],
+              align: rtl ? "right" : "left",
+              verticalAlign: "top",
+              formatter: (id: string) =>
+                (this._chartData.find((d) => d.id === id)?.name as string) ??
+                "",
+              hideOverlap: true,
             }
-            return label;
-          },
-          hideOverlap: true,
-        },
+          : {
+              show: showNames,
+              width: labelWidth,
+              overflow: "truncate",
+              margin: labelMargin,
+              formatter: (id: string) => {
+                const label = this._chartData.find((d) => d.id === id)
+                  ?.name as string;
+                const width = label
+                  ? Math.min(
+                      measureTextWidth(label, 12) + labelMargin,
+                      maxInternalLabelWidth
+                    )
+                  : 0;
+                if (width > this._yWidth) {
+                  this._yWidth = width;
+                  fireEvent(this, "y-width-changed", {
+                    value: this._yWidth,
+                    chartIndex: this.chartIndex,
+                  });
+                }
+                return label;
+              },
+              hideOverlap: true,
+            },
       },
       grid: {
         top: 10,
@@ -282,109 +313,20 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   private _generateData() {
-    const computedStyles = getComputedStyle(this);
-    let stateHistory = this.data;
-
-    if (!stateHistory) {
-      stateHistory = [];
-    }
-
     this._chartTime = new Date();
-    const startTime = this.startTime;
-    const endTime = this.endTime;
-    const datasets: CustomSeriesOption[] = [];
-    const names = this.names || {};
-    // stateHistory is a list of lists of sorted state objects
-    stateHistory.forEach((stateInfo) => {
-      let newLastChanged: Date;
-      let prevState: string | null = null;
-      let locState: string | null = null;
-      let prevLastChanged = startTime;
-      const entityDisplay: string = this.showNames
-        ? names[stateInfo.entity_id] || stateInfo.name || stateInfo.entity_id
-        : "";
-
-      const dataRow: unknown[] = [];
-      stateInfo.data.forEach((entityState) => {
-        let newState: string | null = entityState.state;
-        const timeStamp = new Date(entityState.last_changed);
-        if (!newState) {
-          newState = null;
-        }
-        if (timeStamp > endTime) {
-          // Drop datapoints that are after the requested endTime. This could happen if
-          // endTime is 'now' and client time is not in sync with server time.
-          return;
-        }
-        if (prevState === null) {
-          prevState = newState;
-          locState = entityState.state_localize;
-          prevLastChanged = new Date(entityState.last_changed);
-        } else if (newState !== prevState) {
-          newLastChanged = new Date(entityState.last_changed);
-
-          const color = computeTimelineColor(
-            prevState,
-            computedStyles,
-            this.hass.states[stateInfo.entity_id]
-          );
-          dataRow.push({
-            value: [
-              stateInfo.entity_id,
-              prevLastChanged,
-              newLastChanged,
-              locState,
-              color,
-              luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
-            ],
-            itemStyle: {
-              color,
-            },
-          });
-
-          prevState = newState;
-          locState = entityState.state_localize;
-          prevLastChanged = newLastChanged;
-        }
-      });
-
-      if (prevState !== null) {
-        const color = computeTimelineColor(
-          prevState,
-          computedStyles,
-          this.hass.states[stateInfo.entity_id]
-        );
-        dataRow.push({
-          value: [
-            stateInfo.entity_id,
-            prevLastChanged,
-            endTime,
-            locState,
-            color,
-            luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
-          ],
-          itemStyle: {
-            color,
-          },
-        });
-      }
-      datasets.push({
-        id: stateInfo.entity_id,
-        data: dataRow,
-        name: entityDisplay,
-        dimensions: ["id", "start", "end", "name", "color", "textColor"],
-        type: "custom",
-        encode: {
-          x: [1, 2],
-          y: 0,
-          itemName: 3,
-        },
-        renderItem: this._renderItem,
-        progressive: 0,
-      });
+    this._chartData = generateStateHistoryChartTimelineData({
+      states: this.hass.states,
+      data: this.data,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      names: this.names,
+      showNames: this.showNames,
+      computedStyles: getComputedStyle(this),
+      renderItem: this._renderItem,
+      // 0 while inside a hidden container, e.g. a section with a visibility condition
+      chartWidth:
+        (this.clientWidth || DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
     });
-
-    this._chartData = datasets;
   }
 
   private _handleChartClick(
@@ -401,6 +343,9 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
     ha-chart-base {
       --chart-max-height: none;
     }

@@ -20,7 +20,6 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
-import { shallowEqual } from "../../common/util/shallow-equal";
 import {
   createHistoryLogbookUrl,
   decodeHistoryLogbookQueryParams,
@@ -31,6 +30,7 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import { shallowEqual } from "../../common/util/shallow-equal";
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
@@ -40,20 +40,21 @@ import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
-import "../../components/ha-filter-pane-chip";
 import "../../components/ha-filter-pane";
+import type { HaFilterPane } from "../../components/ha-filter-pane";
+import "../../components/ha-filter-pane-chip";
 import "../../components/ha-icon-button";
+import type { SourceFilters } from "../../components/ha-sources-picker";
 import {
   applySourceFilters,
   countSourceFilters,
   countTargets,
 } from "../../components/ha-sources-picker";
-import type { SourceFilters } from "../../components/ha-sources-picker";
-import { entityTypesNeedStates } from "../../data/entity/entity_type";
 import "../../components/ha-spinner";
 import "../../components/ha-top-app-bar-fixed";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
+import { entityTypesNeedStates } from "../../data/entity/entity_type";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
@@ -66,8 +67,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { csvDownload, csvSafeString } from "../../util/csv";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
-import { csvSafeString, csvDownload } from "../../util/csv";
 
 const EMPTY_STATES: HomeAssistant["states"] = {};
 
@@ -107,6 +108,8 @@ class HaPanelHistory extends LitElement {
   private _storedFilters?: SourceFilters;
 
   @state() private _showSources?: boolean;
+
+  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
 
   @state() private _entitySources?: EntitySources;
 
@@ -267,6 +270,7 @@ class HaPanelHistory extends LitElement {
                             .endTime=${this._endDate}
                             .narrow=${this.narrow}
                             sync-charts
+                            inside-labels
                           >
                           </state-history-charts>
                         `
@@ -295,11 +299,7 @@ class HaPanelHistory extends LitElement {
         )}
       >
         <ha-button appearance="plain" @click=${this._openSources}>
-          ${this.hass.localize(
-            hasTargets
-              ? "ui.panel.history.change_sources"
-              : "ui.panel.history.add_targets"
-          )}
+          ${this.hass.localize("ui.panel.history.change_sources")}
         </ha-button>
       </ha-empty-state>
     `;
@@ -391,6 +391,10 @@ class HaPanelHistory extends LitElement {
   }
 
   private _openSources() {
+    if (this._sourcesShown()) {
+      this._filterPane?.highlight();
+      return;
+    }
     this._showSources = true;
   }
 
@@ -809,7 +813,13 @@ class HaPanelHistory extends LitElement {
           flex: 1;
           min-width: 0;
           overflow: hidden auto;
-          padding: 16px;
+          padding: var(--ha-space-4);
+        }
+
+        /* Narrow screens: keep the vertical rhythm but give the charts the
+           horizontal space back. */
+        :host([narrow]) .results {
+          padding-inline: var(--ha-space-2);
         }
 
         .progress-wrapper {

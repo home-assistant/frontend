@@ -115,7 +115,7 @@ describe("image_upload", () => {
       await updateImage(hass, "12345", updates);
       expect(hass.callWS).toHaveBeenCalledWith({
         type: "image/update",
-        media_id: "12345",
+        image_id: "12345",
         ...updates,
       });
     });

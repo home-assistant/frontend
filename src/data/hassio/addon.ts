@@ -17,11 +17,12 @@ export type AddonCapability = Exclude<
 >;
 export type AddonStage = "stable" | "experimental" | "deprecated";
 export type AddonAppArmour = "disable" | "default" | "profile";
-export type AddonRole = "default" | "homeassistant" | "manager" | "admin";
+export type AddonRole =
+  "default" | "homeassistant" | "backup" | "manager" | "admin";
 export type AddonStartup =
   "initialize" | "system" | "services" | "application" | "once";
 export type AddonState =
-  "startup" | "started" | "stopped" | "unknown" | "error" | null;
+  "startup" | "started" | "stopped" | "unknown" | "error";
 export type AddonRepository = "core" | "local" | string;
 
 interface AddonFieldTranslation {
@@ -41,15 +42,15 @@ export interface HassioAddonInfo {
   build: boolean;
   description: string;
   detached: boolean;
-  homeassistant: string;
+  homeassistant: string | null;
   icon: boolean;
-  installed: boolean;
   logo: boolean;
   name: string;
   repository: AddonRepository;
   slug: string;
   stage: AddonStage;
   state: AddonState;
+  system_managed: boolean;
   update_available: boolean;
   url: string | null;
   version_latest: string;
@@ -63,13 +64,14 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   audio_output: null | string;
   audio: boolean;
   auth_api: boolean;
-  auto_uart: boolean;
   auto_update: boolean;
   boot: "auto" | "manual";
+  boot_config: "auto" | "manual" | "manual_only";
   changelog: boolean;
   devices: string[];
   devicetree: boolean;
   discovery: string[];
+  dns: string[];
   docker_api: boolean;
   documentation: boolean;
   full_access: boolean;
@@ -82,8 +84,10 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   host_ipc: boolean;
   host_network: boolean;
   host_pid: boolean;
+  host_uts: boolean;
   ingress_entry: null | string;
-  ingress_panel: boolean;
+  ingress_panel: boolean | null;
+  ingress_port: number | null;
   ingress_url: null | string;
   ingress: boolean;
   ip_address: string;
@@ -91,27 +95,29 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   long_description: null | string;
   machine: any;
   network_description: null | Record<string, string>;
-  network: null | Record<string, number>;
+  network: null | Record<string, number | null>;
   options: Record<string, unknown>;
   privileged: any;
   protected: boolean;
   rating: number;
   schema: HaFormSchema[] | null;
-  services_role: string[];
+  services: string[];
   signed: boolean;
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
-  system_managed: boolean;
   system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
-  watchdog: null | boolean;
+  uart: boolean;
+  udev: boolean;
+  usb: boolean;
+  video: boolean;
+  watchdog: boolean;
   webui: null | string;
 }
 
 export interface HassioAddonsInfo {
   addons: HassioAddonInfo[];
-  repositories: HassioAddonRepository[];
 }
 
 export interface HassioAddonSetSecurityParams {
@@ -201,7 +207,7 @@ export const validateHassioAddonOption = async (
   callWS: CallWS,
   slug: string,
   data?: any
-): Promise<{ message: string; valid: boolean }> => {
+): Promise<{ message: string; valid: boolean; pwned: boolean | null }> => {
   return callWS({
     type: "supervisor/api",
     endpoint: `/addons/${slug}/options/validate`,
@@ -280,14 +286,14 @@ export const restartHassioAddon = async (
 export const uninstallHassioAddon = async (
   callWS: CallWS,
   slug: string,
-  removeData: boolean
+  removeConfig: boolean
 ): Promise<void> => {
   await callWS({
     type: "supervisor/api",
     endpoint: `/addons/${slug}/uninstall`,
     method: "post",
     timeout: null,
-    data: { remove_config: removeData },
+    data: { remove_config: removeConfig },
   });
 };
 

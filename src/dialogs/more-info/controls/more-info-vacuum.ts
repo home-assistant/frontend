@@ -1,6 +1,5 @@
 import { consume } from "@lit/context";
 import {
-  mdiChevronRight,
   mdiFan,
   mdiHomeImportOutline,
   mdiMapMarker,
@@ -25,6 +24,7 @@ import "../../../components/ha-control-select-menu";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
 import {
   apiContext,
   entitiesContext,
@@ -489,7 +489,7 @@ class MoreInfoVacuum extends LitElement {
                             </p>
                           </div>
                           <div class="icon">
-                            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+                            <ha-icon-next></ha-icon-next>
                           </div>
                         </button>
                       `

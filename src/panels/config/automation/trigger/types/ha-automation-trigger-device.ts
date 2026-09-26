@@ -66,9 +66,9 @@ export class HaDeviceTrigger extends LitElement {
   private _extraFieldsData = memoizeOne(
     (trigger: DeviceTrigger, capabilities: DeviceCapabilities) => {
       const extraFieldsData = computeInitialHaFormData(
-        capabilities.extra_fields
+        capabilities.extra_fields ?? []
       );
-      capabilities.extra_fields.forEach((item) => {
+      capabilities.extra_fields?.forEach((item) => {
         if (trigger[item.name] !== undefined) {
           extraFieldsData![item.name] = trigger[item.name];
         }

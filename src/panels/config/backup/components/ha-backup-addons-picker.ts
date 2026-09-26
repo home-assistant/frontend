@@ -4,8 +4,10 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/ha-app-icon";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
@@ -50,13 +52,17 @@ export class HaBackupAddonsPicker extends LitElement {
               <ha-backup-formfield-label
                 .label=${item.name}
                 .version=${this.hideVersion ? undefined : item.version}
-                .iconPath=${item.iconPath || mdiPuzzle}
-                .imageUrl=${
-                  this.addons?.find((a) => a.slug === item.slug)?.icon
-                    ? `/api/hassio/addons/${item.slug}/icon`
-                    : undefined
-                }
               >
+                <ha-app-icon
+                  slot="icon"
+                  .slug=${item.slug}
+                  .hasIcon=${item.icon}
+                  loading="lazy"
+                >
+                  <ha-svg-icon
+                    .path=${item.iconPath || mdiPuzzle}
+                  ></ha-svg-icon>
+                </ha-app-icon>
               </ha-backup-formfield-label>
             </ha-checkbox>
           `
@@ -85,6 +91,10 @@ export class HaBackupAddonsPicker extends LitElement {
       gap: var(--ha-space-2);
       padding-inline-start: var(--ha-space-2);
       padding-bottom: var(--ha-space-3);
+    }
+
+    ha-app-icon {
+      --ha-app-icon-size: var(--ha-space-6);
     }
   `;
 }
