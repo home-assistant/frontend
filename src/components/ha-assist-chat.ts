@@ -139,6 +139,10 @@ export const createAssistMessageProcessor = ({
   requestUpdate: () => void;
 }): AssistMessageProcessor => {
   let currentDeltaRole = "";
+  // Set when an assistant role delta starts a new chat log message and
+  // cleared once that message's first content chunk has been joined. The
+  // role and the content can arrive in separate deltas.
+  let pendingMessageBoundary = false;
   let continueConversation = false;
   let hassMessage: AssistMessage = newAssistantMessage();
 
@@ -203,14 +207,18 @@ export const createAssistMessageProcessor = ({
       // new message
       if (delta.role) {
         currentDeltaRole = delta.role;
+        if (delta.role === "assistant") {
+          pendingMessageBoundary = true;
+        }
       }
 
       if (isAssistantDelta(delta)) {
         if (delta.content && typeof hassMessage.text === "string") {
           let text = stripStreamingEllipsis(hassMessage.text);
-          if (delta.role) {
-            // A role marks the start of a new chat log message.
+          if (pendingMessageBoundary) {
+            // First content of a new chat log message.
             text = joinWithBreak(text, delta.content);
+            pendingMessageBoundary = false;
           } else {
             text += delta.content;
           }
@@ -242,13 +250,15 @@ export const createAssistMessageProcessor = ({
         return;
       }
       if (response) {
+        // applyFinalResponse already removes the streaming marker; stripping
+        // again would remove a legitimate trailing ellipsis from the reply.
         applyFinalResponse(hassMessage, response);
-      }
-      // Finalize the streaming marker so a reply without a spoken response
-      // does not stay stuck with a trailing ellipsis.
-      if (typeof hassMessage.text === "string") {
+      } else if (typeof hassMessage.text === "string") {
+        // Finalize the streaming marker so a reply without a spoken response
+        // does not stay stuck with a trailing ellipsis.
         hassMessage.text = stripStreamingEllipsis(hassMessage.text);
       }
+      pendingMessageBoundary = false;
       requestUpdate();
     }
   };

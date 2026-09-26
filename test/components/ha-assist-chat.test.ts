@@ -233,6 +233,67 @@ describe("createAssistMessageProcessor", () => {
     expect(processor.hassMessage.text).toBe("Done.");
   });
 
+  it("keeps a message boundary when role and content arrive separately", () => {
+    const processor = createProcessor();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Let me check." })
+    );
+    processor.processEvent(assistantDelta({ role: "assistant" }));
+    processor.processEvent(assistantDelta({ content: "Done." }));
+    processor.processEvent(assistantDelta({ content: " All set." }));
+    processor.processEvent(intentEnd("Done. All set."));
+
+    expect(processor.hassMessage.text).toBe("Let me check.\n\nDone. All set.");
+  });
+
+  it("keeps a message boundary when the role arrives with tool calls only", () => {
+    const processor = createProcessor();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Let me check." })
+    );
+    processor.processEvent(
+      assistantDelta({
+        role: "assistant",
+        tool_calls: [{ id: "call-1", tool_name: "get_state", tool_args: {} }],
+      })
+    );
+    processor.processEvent(
+      toolResultDelta("call-1", { data: {}, error: false })
+    );
+    processor.processEvent(assistantDelta({ role: "assistant" }));
+    processor.processEvent(assistantDelta({ content: "It is on." }));
+    processor.processEvent(intentEnd("It is on."));
+
+    expect(processor.hassMessage.text).toBe("Let me check.\n\nIt is on.");
+  });
+
+  it("keeps a legitimate trailing ellipsis in a streamed reply", () => {
+    const processor = createProcessor();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Wait…" })
+    );
+    processor.processEvent(intentEnd("Wait…"));
+
+    expect(processor.hassMessage.text).toBe("Wait…");
+  });
+
+  it("keeps a legitimate trailing ellipsis when nothing was streamed", () => {
+    const processor = createProcessor();
+    processor.processEvent(intentEnd("Wait…"));
+
+    expect(processor.hassMessage.text).toBe("Wait…");
+  });
+
+  it("keeps a legitimate trailing ellipsis without a spoken response", () => {
+    const processor = createProcessor();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Wait…" })
+    );
+    processor.processEvent(intentEnd());
+
+    expect(processor.hassMessage.text).toBe("Wait…");
+  });
+
   it("tracks the continue conversation flag from the intent output", () => {
     const processor = createProcessor();
     expect(processor.continueConversation).toBe(false);
