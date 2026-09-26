@@ -11,6 +11,7 @@ import {
   hasGasRateSource,
   hasNowViewContent,
   hasPowerSources,
+  hasSolarRateSource,
   hasWaterRateSource,
   isEnergyCardVisible,
 } from "./energy-cards";
@@ -53,6 +54,7 @@ export class PowerViewStrategy extends ReactiveElement {
     };
 
     const hasPowerSrc = !!prefs && hasPowerSources(prefs);
+    const hasSolarSrc = !!prefs && hasSolarRateSource(prefs);
     const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
     const hasGasSrc = !!prefs && hasGasRateSource(prefs);
 
@@ -64,6 +66,13 @@ export class PowerViewStrategy extends ReactiveElement {
     if (hasPowerSrc) {
       badges.push({
         type: "power-total",
+        collection_key: collectionKey,
+      });
+    }
+
+    if (hasSolarSrc) {
+      badges.push({
+        type: "solar-production",
         collection_key: collectionKey,
       });
     }
@@ -98,26 +107,6 @@ export class PowerViewStrategy extends ReactiveElement {
         badges.push({
           type: "entity",
           entity: source.stat_soc,
-        });
-      }
-    });
-
-    prefs.energy_sources.forEach((source) => {
-      if (source.type === "solar" && source.stat_rate) {
-        badges.push({
-          type: "entity",
-          entity: source.stat_rate,
-          name: hass.localize(
-            "ui.panel.lovelace.cards.energy.solar_production_title"
-          ),
-          show_name: true,
-          visibility: [
-            {
-              condition: "numeric_state",
-              entity: source.stat_rate,
-              above: 0,
-            },
-          ],
         });
       }
     });
