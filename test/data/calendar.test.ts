@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getCalendarColors } from "../../src/data/calendar";
+import {
+  getCalendarColors,
+  normalizeSubscriptionEventData,
+} from "../../src/data/calendar";
+import type { Calendar, CalendarEventApiData } from "../../src/data/calendar";
 
 const style = {
   getPropertyValue: (prop: string) => (prop === "--color-1" ? "#4269d0" : ""),
@@ -54,5 +58,75 @@ describe("getCalendarColors", () => {
     expect(
       getCalendarColors("rgba(255, 255, 255, 0.1)", 0, style).textColor
     ).toBeUndefined();
+  });
+});
+
+const calendar: Calendar = {
+  entity_id: "calendar.test",
+  backgroundColor: "#4269d0",
+  textColor: "#ffffff",
+};
+
+const event: CalendarEventApiData = {
+  summary: "Event",
+  start: { dateTime: "2026-01-05T10:00:00+01:00" },
+  end: { dateTime: "2026-01-05T11:00:00+01:00" },
+};
+
+describe("normalizeSubscriptionEventData", () => {
+  it("keeps the calendar's colors for an event that has none", () => {
+    expect(normalizeSubscriptionEventData(event, calendar)).toMatchObject({
+      backgroundColor: "#4269d0",
+      borderColor: "#4269d0",
+      textColor: "#ffffff",
+    });
+  });
+
+  it("lets a color on the event override the calendar's", () => {
+    expect(
+      normalizeSubscriptionEventData({ ...event, color: "#ffe066" }, calendar)
+    ).toMatchObject({
+      backgroundColor: "#ffe066",
+      borderColor: "#ffe066",
+      textColor: "#000000",
+    });
+  });
+
+  it("accepts the CSS3 color name that rfc7986 defines", () => {
+    expect(
+      normalizeSubscriptionEventData({ ...event, color: "turquoise" }, calendar)
+    ).toMatchObject({ backgroundColor: "turquoise", textColor: "#000000" });
+  });
+
+  it("reads a name a theme also defines as the CSS color it is", () => {
+    // Resolving it as a theme color instead would paint the event in the
+    // theme's blue rather than the blue the calendar declared
+    expect(
+      normalizeSubscriptionEventData({ ...event, color: "blue" }, calendar)
+    ).toMatchObject({ backgroundColor: "blue", textColor: "#ffffff" });
+  });
+
+  it.each([
+    ["an unusable value", "not a color"],
+    ["a malformed hex color", "#zzzzzz"],
+    ["a hex color of the wrong length", "#12345"],
+    ["a theme color name that CSS does not know", "primary"],
+    ["no color at all", null],
+  ])("keeps the calendar's colors for %s", (_name, color) => {
+    expect(
+      normalizeSubscriptionEventData({ ...event, color }, calendar)
+    ).toMatchObject({ backgroundColor: "#4269d0", textColor: "#ffffff" });
+  });
+
+  it("leaves the text color unset for an event color it cannot measure", () => {
+    expect(
+      normalizeSubscriptionEventData(
+        { ...event, color: "rgba(255, 255, 255, 0.1)" },
+        calendar
+      )
+    ).toMatchObject({
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      textColor: undefined,
+    });
   });
 });

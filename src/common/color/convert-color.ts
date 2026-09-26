@@ -132,12 +132,13 @@ export const hs2rgb = (hs: [number, number]): [number, number, number] =>
   hsv2rgb([hs[0], hs[1], 255]);
 
 /**
- * Attempt to get a HEX color from a color defined in different formats:
- * HEX, rgb/rgba, named color
- * @param color - Color (HEX, rgb/rgba, named color) to be converted to HEX
- * @returns HEX color
+ * Attempt to get a HEX color from a literal CSS color, without the Home
+ * Assistant theme colors that `theme2hex` looks up first. A CSS color name a
+ * theme also defines, such as `blue`, keeps the color CSS gives it.
+ * @param color - CSS color (HEX, rgb/rgba, named CSS color) to be converted
+ * @returns HEX color, or undefined when the value is none of those
  */
-export function theme2hex(color: string): string {
+export function css2hex(color: string): string | undefined {
   // Attempting to find a HEX pattern in the input string
   if (color.startsWith("#")) {
     if (color.length === 4 || color.length === 5) {
@@ -152,13 +153,6 @@ export function theme2hex(color: string): string {
     return color;
   }
 
-  // Attempting to find a match in a HA Frontend theme colors
-  const themeColor = resolveThemeColor(color.toLowerCase());
-  if (themeColor !== color.toLowerCase()) {
-    // theme color is recognized, now re-attempt
-    return theme2hex(themeColor);
-  }
-
   // Attempting to find a match in a web colors array
   const rgbFromWebColor = colors[color.toLowerCase()];
   if (rgbFromWebColor) {
@@ -171,6 +165,33 @@ export function theme2hex(color: string): string {
   if (rgbMatch) {
     const [, r, g, b] = rgbMatch.map(Number);
     return rgb2hex([r, g, b]);
+  }
+
+  return undefined;
+}
+
+/**
+ * Attempt to get a HEX color from a color defined in different formats:
+ * HEX, rgb/rgba, named color
+ * @param color - Color (HEX, rgb/rgba, named color) to be converted to HEX
+ * @returns HEX color
+ */
+export function theme2hex(color: string): string {
+  // Attempting to find a HEX pattern in the input string
+  if (color.startsWith("#")) {
+    return css2hex(color) ?? color;
+  }
+
+  // Attempting to find a match in a HA Frontend theme colors
+  const themeColor = resolveThemeColor(color.toLowerCase());
+  if (themeColor !== color.toLowerCase()) {
+    // theme color is recognized, now re-attempt
+    return theme2hex(themeColor);
+  }
+
+  const cssHex = css2hex(color);
+  if (cssHex) {
+    return cssHex;
   }
 
   // We have a named color, and there's nothing in the table,

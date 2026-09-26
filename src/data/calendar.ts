@@ -1,9 +1,11 @@
 import {
   computeCssColor,
+  isCssColorString,
   isValidColorString,
   resolveThemeColor,
 } from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
+import { css2hex } from "../common/color/convert-color";
 import { getContrastedColorHex, isOpaqueColor } from "../common/color/rgb";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -133,6 +135,25 @@ export const getCalendarColors = (
   };
 };
 
+export const getCalendarEventColors = (
+  color: string | null | undefined
+): { backgroundColor: string; textColor?: string } | undefined => {
+  // The value comes from a calendar backend, so anything CSS does not accept
+  // leaves the event with its calendar's colors instead of an unusable one
+  if (!color || !isCssColorString(color)) {
+    return undefined;
+  }
+  // An rfc7986 color is a literal CSS color, so a name a Home Assistant theme
+  // also defines, such as "blue", must not become that theme's color here
+  const hex = css2hex(color);
+  return {
+    backgroundColor: color,
+    // A background we cannot measure keeps the color fullcalendar picks itself
+    textColor:
+      hex && isOpaqueColor(color) ? getContrastedColorHex(hex) : undefined,
+  };
+};
+
 export const getCalendars = (
   hass: HomeAssistant,
   element: Element,
@@ -217,6 +238,12 @@ export interface CalendarEventApiData {
   uid?: string | null;
   recurrence_id?: string | null;
   rrule?: string | null;
+  /**
+   * A color for this event that overrides its calendar's own color. An
+   * rfc7986 COLOR value, so either a CSS3 color name or a hex color. Omitted
+   * by the subscription and null in the REST API when the event has none.
+   */
+  color?: string | null;
 }
 
 export interface CalendarEventSubscription {
@@ -269,6 +296,8 @@ export const normalizeSubscriptionEventData = (
     return null;
   }
 
+  const eventColors = getCalendarEventColors(eventData.color);
+
   const normalizedEventData: CalendarEventData = {
     summary: eventData.summary,
     dtstart: eventStart,
@@ -284,9 +313,11 @@ export const normalizeSubscriptionEventData = (
     start: eventStart,
     end: eventEnd,
     title: eventData.summary,
-    backgroundColor: calendar.backgroundColor,
-    borderColor: calendar.backgroundColor,
-    textColor: calendar.textColor,
+    backgroundColor: eventColors?.backgroundColor ?? calendar.backgroundColor,
+    borderColor: eventColors?.backgroundColor ?? calendar.backgroundColor,
+    // An event color that fullcalendar has to contrast itself leaves the text
+    // color unset rather than falling back to the calendar's
+    textColor: eventColors ? eventColors.textColor : calendar.textColor,
     calendar: calendar.entity_id,
     eventData: normalizedEventData,
   };

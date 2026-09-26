@@ -80,17 +80,13 @@ export function resolveThemeColor(
 }
 
 /**
- * Validates if a string is a valid color.
- * Accepts: hex colors (#xxx, #xxxxxx), theme colors, and valid CSS color names.
+ * Validates if a string is a valid CSS color, which unlike
+ * `isValidColorString` does not accept a Home Assistant theme color name.
+ * Accepts: hex colors (#xxx, #xxxxxx) and valid CSS color values.
  */
-export function isValidColorString(color: string | undefined): boolean {
+export function isCssColorString(color: string | undefined): boolean {
   if (!color || typeof color !== "string") {
     return false;
-  }
-
-  // Check if it's a theme color
-  if (THEME_COLORS.has(color)) {
-    return true;
   }
 
   // Check if it's a hex color
@@ -108,4 +104,17 @@ export function isValidColorString(color: string | undefined): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * Validates if a string is a valid color.
+ * Accepts: hex colors (#xxx, #xxxxxx), theme colors, and valid CSS color names.
+ */
+export function isValidColorString(color: string | undefined): boolean {
+  // Check if it's a theme color
+  if (color && THEME_COLORS.has(color)) {
+    return true;
+  }
+
+  return isCssColorString(color);
 }
