@@ -23,6 +23,7 @@ import type { TileCardConfig } from "../../../cards/types";
 export const AREA_STRATEGY_GROUPS = [
   "lights",
   "climate",
+  "sensors",
   "covers",
   "media_players",
   "security",
@@ -33,6 +34,7 @@ export const AREA_STRATEGY_GROUPS = [
 export const AREA_STRATEGY_GROUP_ICONS = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
+  sensors: "mdi:eye",
   covers: "mdi:blinds-horizontal",
   media_players: "mdi:multimedia",
   security: "mdi:security",
@@ -59,6 +61,14 @@ export const getAreaGroupedEntities = (
   displayOptions?: AreaGroupsDisplayOptions
 ): AreaEntitiesByGroup => {
   const allEntities = Object.keys(hass.states);
+  const areaObj = hass.areas[area];
+  // Already rendered as badges above the groups, so exclude them here to
+  // avoid showing the same reading twice.
+  const badgeEntities = new Set(
+    [areaObj?.temperature_entity_id, areaObj?.humidity_entity_id].filter(
+      (entityId): entityId is string => !!entityId
+    )
+  );
 
   const groupedFilters: AreaFilteredByGroup = {
     lights: [
@@ -99,6 +109,13 @@ export const getAreaGroupedEntities = (
       }),
       generateEntityFilter(hass, {
         domain: "fan",
+        area: area,
+        entity_category: "none",
+      }),
+    ],
+    sensors: [
+      generateEntityFilter(hass, {
+        domain: "sensor",
         area: area,
         entity_category: "none",
       }),
@@ -177,13 +194,17 @@ export const getAreaGroupedEntities = (
 
   return Object.fromEntries(
     Object.entries(groupedFilters).map(([group, filters]) => {
-      const entities = filters.reduce<string[]>(
+      let entities = filters.reduce<string[]>(
         (acc, filter) => [
           ...acc,
           ...allEntities.filter((entity) => filter(entity)),
         ],
         []
       );
+
+      if (group === "sensors") {
+        entities = entities.filter((entity) => !badgeEntities.has(entity));
+      }
 
       const hidden = displayOptions?.[group]?.hidden
         ? new Set(displayOptions[group].hidden)
