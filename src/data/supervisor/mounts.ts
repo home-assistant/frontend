@@ -3,6 +3,7 @@ import type { HomeAssistant } from "../../types";
 export enum SupervisorMountType {
   BIND = "bind",
   CIFS = "cifs",
+  DISK = "disk",
   NFS = "nfs",
 }
 
@@ -33,8 +34,6 @@ interface SupervisorMountBase {
   usage: SupervisorMountUsage | null;
   type: SupervisorMountType;
   read_only: boolean;
-  server: string;
-  port?: number;
 }
 
 export interface SupervisorMountResponse extends SupervisorMountBase {
@@ -42,18 +41,32 @@ export interface SupervisorMountResponse extends SupervisorMountBase {
   user_path: string | null;
 }
 
-export interface SupervisorNFSMount extends SupervisorMountResponse {
+// Supervisor omits port when the mount uses the protocol default.
+interface SupervisorNetworkMount extends SupervisorMountResponse {
+  server: string;
+  port?: number;
+}
+
+export interface SupervisorNFSMount extends SupervisorNetworkMount {
   type: SupervisorMountType.NFS;
   path: string;
 }
 
-export interface SupervisorCIFSMount extends SupervisorMountResponse {
+export interface SupervisorCIFSMount extends SupervisorNetworkMount {
   type: SupervisorMountType.CIFS;
   share: string;
   version?: CIFSVersion | null;
 }
 
-export type SupervisorMount = SupervisorNFSMount | SupervisorCIFSMount;
+// Supervisor resolves device to uuid; responses report uuid and filesystem.
+export interface SupervisorDiskMount extends SupervisorMountResponse {
+  type: SupervisorMountType.DISK;
+  uuid: string;
+  filesystem?: string;
+}
+
+export type SupervisorMount =
+  SupervisorNFSMount | SupervisorCIFSMount | SupervisorDiskMount;
 
 export type SupervisorNFSMountRequestParams = SupervisorNFSMount;
 
@@ -63,13 +76,66 @@ export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
   version?: CIFSVersion | null;
 }
 
+interface SupervisorDiskMountRequestParamsBase {
+  name: string;
+  usage: SupervisorMountUsage;
+  type: SupervisorMountType.DISK;
+  read_only?: boolean;
+}
+
+// At least one identifier is required. Both may be sent together, as a
+// candidate carries both; Supervisor then resolves by uuid and checks the
+// device agrees with it.
+export type SupervisorDiskMountRequestParams =
+  | (SupervisorDiskMountRequestParamsBase & { device: string; uuid?: string })
+  | (SupervisorDiskMountRequestParamsBase & { uuid: string; device?: string });
+
 export type SupervisorMountRequestParams =
-  SupervisorNFSMountRequestParams | SupervisorCIFSMountRequestParams;
+  | SupervisorNFSMountRequestParams
+  | SupervisorCIFSMountRequestParams
+  | SupervisorDiskMountRequestParams;
 
 export interface SupervisorMounts {
   default_backup_mount: string | null;
   mounts: SupervisorMount[];
 }
+
+// Null when UDisks2 cannot attribute the device to a drive.
+export interface SupervisorMountCandidateDrive {
+  vendor: string;
+  model: string;
+  serial: string;
+  id: string;
+  size: number;
+  connection_bus: string;
+  removable: boolean;
+  ejectable: boolean;
+}
+
+export interface SupervisorMountCandidate {
+  type: SupervisorMountType.DISK;
+  device: string;
+  uuid: string;
+  label: string;
+  filesystem: string;
+  size: number;
+  read_only: boolean;
+  drive: SupervisorMountCandidateDrive | null;
+}
+
+export interface SupervisorMountCandidates {
+  candidates: SupervisorMountCandidate[];
+}
+
+// Disk mounts have no server/share/path, so describe them by filesystem and uuid.
+export const supervisorMountDescription = (mount: SupervisorMount): string => {
+  if (mount.type === SupervisorMountType.DISK) {
+    return [mount.filesystem, mount.uuid].filter(Boolean).join(" • ");
+  }
+  return `${mount.server}${mount.port ? `:${mount.port}` : ""}${
+    mount.type === SupervisorMountType.NFS ? mount.path : `:${mount.share}`
+  }`;
+};
 
 export const fetchSupervisorMounts = async (
   hass: HomeAssistant
@@ -77,6 +143,17 @@ export const fetchSupervisorMounts = async (
   hass.callWS({
     type: "supervisor/api",
     endpoint: `/mounts`,
+    method: "get",
+    timeout: null,
+  });
+
+// Empty list without UDisks2. Older Supervisors return 404; hide the feature.
+export const fetchSupervisorMountCandidates = async (
+  hass: HomeAssistant
+): Promise<SupervisorMountCandidates> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/mounts/candidates`,
     method: "get",
     timeout: null,
   });
