@@ -109,7 +109,7 @@ export class PowerViewStrategy extends ReactiveElement {
         const device = entityEntry?.device_id
           ? hass.devices[entityEntry.device_id]
           : undefined;
-        const badgeName = device?.name_by_user || device?.name || source.name;
+        const badgeName = device?.name_by_user || device?.name;
 
         badges.push({
           type: "entity",
