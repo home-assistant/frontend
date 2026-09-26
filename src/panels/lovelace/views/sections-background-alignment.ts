@@ -1,4 +1,5 @@
 import type { HuiSection } from "../sections/hui-section";
+import { sectionColumnSpan, sectionsRowEnd } from "./sections-row-layout";
 
 /**
  * Determines which sections without a background need vertical margin
@@ -18,41 +19,33 @@ export function computeSectionsBackgroundAlignment(
   // Single column layout never has side-by-side sections
   if (columnCount <= 1) return sectionsNeedingMargin;
 
-  // Group visible sections into rows by accumulating column spans
-  const rows: { indices: number[]; hasBackground: boolean }[] = [];
-  let currentRow = { indices: [] as number[], hasBackground: false };
-  let columnsUsed = 0;
-
-  for (let idx = 0; idx < sections.length; idx++) {
-    const section = sections[idx];
-    if (section.hidden) continue;
-
-    const span = Math.min(section.config.column_span || 1, columnCount);
-
-    // Start a new row if this section doesn't fit
-    if (columnsUsed + span > columnCount) {
-      rows.push(currentRow);
-      currentRow = { indices: [], hasBackground: false };
-      columnsUsed = 0;
-    }
-
-    columnsUsed += span;
-    currentRow.indices.push(idx);
-
-    if (section.config.background !== undefined) {
-      currentRow.hasBackground = true;
-    }
-  }
-  rows.push(currentRow);
-
-  // Mark sections without background in rows that contain a background section
-  for (const row of rows) {
-    if (!row.hasBackground) continue;
-    for (const idx of row.indices) {
-      if (sections[idx].config.background === undefined) {
-        sectionsNeedingMargin.add(idx);
+  const visible = sections.flatMap((section, index) =>
+    section.hidden
+      ? []
+      : [
+          {
+            index,
+            columnSpan: sectionColumnSpan(
+              section.config.column_span,
+              columnCount
+            ),
+          },
+        ]
+  );
+  let start = 0;
+  while (start < visible.length) {
+    const end = sectionsRowEnd(visible, start, columnCount);
+    const row = visible.slice(start, end);
+    if (
+      row.some(({ index }) => sections[index].config.background !== undefined)
+    ) {
+      for (const { index } of row) {
+        if (sections[index].config.background === undefined) {
+          sectionsNeedingMargin.add(index);
+        }
       }
     }
+    start = end;
   }
 
   return sectionsNeedingMargin;
