@@ -102,6 +102,26 @@ export class PowerViewStrategy extends ReactiveElement {
       }
     });
 
+    prefs.energy_sources.forEach((source) => {
+      if (source.type === "solar" && source.stat_rate) {
+        badges.push({
+          type: "entity",
+          entity: source.stat_rate,
+          name: hass.localize(
+            "ui.panel.lovelace.cards.energy.solar_production_title"
+          ),
+          show_name: true,
+          visibility: [
+            {
+              condition: "numeric_state",
+              entity: source.stat_rate,
+              above: 0,
+            },
+          ],
+        });
+      }
+    });
+
     if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption,

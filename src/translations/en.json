@@ -9565,6 +9565,7 @@
               "compare_preview": "Card preview"
             },
             "power_total_title": "Power usage",
+            "solar_production_title": "Solar production",
             "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",
             "gas_total_title": "[%key:ui::panel::config::energy::gas::dialog::gas_flow_rate%]"
           },
