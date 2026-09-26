@@ -4,6 +4,7 @@ import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   getEnergyDataCollection,
 } from "../../../data/energy";
+import type { BatterySourceTypeEnergyPreference } from "../../../data/energy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
@@ -13,6 +14,7 @@ import {
   hasPowerSources,
   hasWaterRateSource,
   isEnergyCardVisible,
+  hasBattery,
 } from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -55,6 +57,7 @@ export class PowerViewStrategy extends ReactiveElement {
     const hasPowerSrc = !!prefs && hasPowerSources(prefs);
     const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
     const hasGasSrc = !!prefs && hasGasRateSource(prefs);
+    const hasBatterySrc = !!prefs && hasBattery(prefs);
 
     // No live power or flow-rate sources configured
     if (!prefs || !hasNowViewContent(prefs)) {
@@ -93,14 +96,28 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    prefs.energy_sources.forEach((source) => {
-      if (source.type === "battery" && source.stat_soc) {
+    if (hasBatterySrc) {
+      const batterySources = prefs.energy_sources.filter(
+        (s): s is BatterySourceTypeEnergyPreference =>
+          s.type === "battery" && !!s.stat_soc
+      );
+      batterySources.forEach((source) => {
+        const entityEntry = hass.entities[source.stat_soc!];
+        const device = entityEntry?.device_id
+          ? hass.devices[entityEntry.device_id]
+          : undefined;
+        const badgeName = device?.name_by_user || device?.name || source.name;
+
         badges.push({
           type: "entity",
-          entity: source.stat_soc,
+          entity: source.stat_soc!,
+          ...(batterySources.length > 1 && {
+            name: badgeName,
+            show_name: true,
+          }),
         });
-      }
-    });
+      });
+    }
 
     if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
