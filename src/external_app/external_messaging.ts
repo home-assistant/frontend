@@ -207,6 +207,98 @@ interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
   };
 }
 
+/** How much of the screen the modal asks for; the app maps it to its own presentation. */
+export type NativeModalSize = "compact" | "full";
+
+/**
+ * Asks the app to show a frontend route in a modal of its own, instead of the
+ * frontend showing it in a dialog. Sent when the app reports `hasNativeModal`.
+ * The app loads `path` in a webview inside whatever a modal is on its platform,
+ * for example a sheet on iOS.
+ */
+interface EMOutgoingMessageModalOpen extends EMMessage {
+  type: "modal/open";
+  payload: {
+    /** Frontend route the modal's webview loads. */
+    path: string;
+    /** What the page's own header would show, for the app's header. */
+    title: string;
+    /** The breadcrumb above the title, when there is one. */
+    subtitle?: string;
+    size: NativeModalSize;
+  };
+}
+
+/**
+ * Sent from inside a native modal when the user asks to close it. The page has
+ * no dialog to hide, so the app dismisses the modal around it.
+ */
+interface EMOutgoingMessageModalClose extends EMMessage {
+  type: "modal/close";
+}
+
+/**
+ * Sent from inside a native modal instead of navigating. A modal shows one
+ * thing, so the app dismisses it and sends its main frontend to the
+ * destination.
+ */
+interface EMOutgoingMessageModalNavigate extends EMMessage {
+  type: "modal/navigate";
+  payload: {
+    path: string;
+  };
+}
+
+/** An icon button in a native modal's header, or an item of its overflow menu. */
+export interface NativeModalHeaderAction {
+  /** Sent back in `modal/action` when the user picks it. */
+  id: string;
+  /** Translated, for the button's accessibility label or the menu item. */
+  label: string;
+  /** MDI icon name, like `mdi:chart-box-outline`. */
+  icon: string;
+}
+
+export interface NativeModalHeaderMenuItem extends NativeModalHeaderAction {
+  disabled?: boolean;
+  /** A separator follows this item. */
+  divider_after?: boolean;
+}
+
+export interface NativeModalHeader {
+  title: string;
+  /** The breadcrumb above the title, when there is one. */
+  subtitle?: string;
+  /** What the leading button does: dismiss the modal, or return to the previous view. */
+  navigation: "close" | "back";
+  /** Translated accessibility label of the leading button. */
+  navigation_label: string;
+  /** Translated accessibility label of the overflow menu button. */
+  menu_label: string;
+  /** Icon buttons, in order, before the overflow menu. */
+  actions: NativeModalHeaderAction[];
+  /** Items of the overflow menu; empty means no menu button. */
+  menu: NativeModalHeaderMenuItem[];
+}
+
+/**
+ * Tells the app what changed about a modal that is already up: the header it
+ * should draw, and how much room the page needs. Both are optional, and at
+ * least one is always present.
+ *
+ * The header arrives whenever the page's own header would change, and the app
+ * answers a tap with the `modal/action` command, so what it offers is decided by
+ * the frontend alone. The size arrives when a dialog opens over the page, which
+ * a half-height modal would clip.
+ */
+interface EMOutgoingMessageModalUpdate extends EMMessage {
+  type: "modal/update";
+  payload: {
+    size?: NativeModalSize;
+    header?: NativeModalHeader;
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -239,6 +331,10 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageModalOpen
+  | EMOutgoingMessageModalUpdate
+  | EMOutgoingMessageModalClose
+  | EMOutgoingMessageModalNavigate
   | EMOutgoingMessageMoreInfoOpened
   | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageSidebarShow
@@ -356,6 +452,16 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
+/** The user picked an item of a native modal's header; `id` is from `modal/update`. */
+export interface EMIncomingMessageModalAction {
+  id: number;
+  type: "command";
+  command: "modal/action";
+  payload: {
+    id: string;
+  };
+}
+
 export interface MatterCommissionFinish {
   name: string | null;
   success: boolean;
@@ -380,7 +486,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
   | EMIncomingMessageMatterCommissionFinish
-  | EMIncomingMessageKioskModeSet;
+  | EMIncomingMessageKioskModeSet
+  | EMIncomingMessageModalAction;
 
 type EMIncomingMessage =
   EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
@@ -401,6 +508,7 @@ export interface ExternalConfig {
   canSetupImprov?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+  hasNativeModal?: boolean; // Shows a frontend route in a native modal and draws its header: the frontend sends modal/open instead of opening its own dialog, describes the header in modal/update, and the page inside leaves its own out
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }

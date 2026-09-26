@@ -25,6 +25,8 @@ export const ADAPTIVE_DIALOG_MEDIA_QUERY =
  * A responsive dialog component that automatically switches between a full dialog (ha-dialog)
  * and a bottom sheet (ha-bottom-sheet) based on screen size. Uses dialog mode on larger screens
  * (>870px width and >500px height) and bottom sheet mode on smaller screens or mobile devices.
+ * With `standalone` set, it instead renders the content as a frameless page filling the
+ * viewport, for an external app that embeds a single dialog in a native screen.
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
@@ -56,6 +58,7 @@ export const ADAPTIVE_DIALOG_MEDIA_QUERY =
  * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the content body a flex container.
+ * @attr {boolean} standalone - Renders the content as a frameless page filling the viewport instead of a dialog or sheet. There is no scrim and `open` is ignored; only a slotted headerNavigationIcon can close it.
  * @attr {boolean} without-header - Hides the default header.
  * @attr {boolean} hide-close-button - Hides the default close button.
  * @attr {boolean} allow-mode-change - When set, the component can switch between dialog and bottom-sheet modes as the viewport changes.
@@ -120,6 +123,9 @@ export class HaAdaptiveDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
+  @property({ type: Boolean, reflect: true })
+  public standalone = false;
+
   @state() public mode: DialogSheetMode = "dialog";
 
   @state()
@@ -155,6 +161,11 @@ export class HaAdaptiveDialog extends LitElement {
   ) {
     if (this.hideCloseButton) {
       return html`<span slot=${slotName}></span>`;
+    }
+
+    if (this.standalone) {
+      // A page cannot dismiss itself, so there is no default close button.
+      return html`<slot name="headerNavigationIcon" slot=${slotName}></slot>`;
     }
 
     return html`
@@ -197,6 +208,24 @@ export class HaAdaptiveDialog extends LitElement {
   }
 
   render() {
+    if (this.standalone) {
+      return html`
+        <div class="standalone">
+          ${
+            !this.withoutHeader
+              ? html`
+                  <slot name="header">${this._renderHeaderContent()}</slot>
+                `
+              : nothing
+          }
+          <div class="standalone-content">
+            <slot></slot>
+          </div>
+          <slot name="footer"></slot>
+        </div>
+      `;
+    }
+
     if (this.mode === "bottom-sheet") {
       return html`
         <ha-bottom-sheet
@@ -248,6 +277,41 @@ export class HaAdaptiveDialog extends LitElement {
   static get styles() {
     return [
       css`
+        .standalone {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          padding: var(--safe-area-inset-top, 0px)
+            var(--safe-area-inset-right, 0px) var(--safe-area-inset-bottom, 0px)
+            var(--safe-area-inset-left, 0px);
+          background: var(
+            --ha-dialog-surface-background,
+            var(--card-background-color, var(--ha-color-surface-default))
+          );
+          color: var(--primary-text-color);
+        }
+
+        .standalone ha-dialog-header {
+          flex: none;
+        }
+
+        .standalone-content {
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow: auto;
+          padding: var(
+            --dialog-content-padding,
+            0 var(--ha-space-6) var(--ha-space-6) var(--ha-space-6)
+          );
+        }
+
+        :host([flexcontent]) .standalone-content {
+          display: flex;
+          flex-direction: column;
+        }
+
         ha-bottom-sheet {
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
           --ha-bottom-sheet-surface-background: var(

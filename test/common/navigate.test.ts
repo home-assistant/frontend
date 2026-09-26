@@ -9,7 +9,9 @@ import {
   goBack,
   handleHistoryPop,
   navigate,
+  registerNavigationInterceptor,
   registerUnsavedChangesGuard,
+  unregisterNavigationInterceptor,
   unregisterUnsavedChangesGuard,
 } from "../../src/common/navigate";
 
@@ -96,6 +98,52 @@ describe("navigate", () => {
   it("does not stamp an entry the app did not push", () => {
     expect(window.history.state).toBeNull();
     expect(canGoBack()).toBe(false);
+  });
+});
+
+describe("navigation interceptor", () => {
+  beforeEach(() => {
+    setEntry("/more-info?more-info-entity-id=light.kitchen");
+  });
+
+  it("hands a claimed navigation to the interceptor and leaves the page", async () => {
+    const interceptor = vi.fn(() => true);
+    registerNavigationInterceptor(interceptor);
+    try {
+      const result = await navigate("/config/devices/device/abc");
+
+      expect(result).toBe(false);
+      expect(interceptor).toHaveBeenCalledWith("/config/devices/device/abc");
+      expect(window.location.pathname).toEqual("/more-info");
+    } finally {
+      unregisterNavigationInterceptor(interceptor);
+    }
+  });
+
+  it("navigates as usual when no interceptor claims the path", async () => {
+    const interceptor = vi.fn(() => false);
+    registerNavigationInterceptor(interceptor);
+    try {
+      await navigate("/config/devices/device/abc");
+
+      expect(window.location.pathname).toEqual("/config/devices/device/abc");
+    } finally {
+      unregisterNavigationInterceptor(interceptor);
+    }
+  });
+
+  it("asks about unsaved changes before offering the navigation", async () => {
+    const interceptor = vi.fn(() => true);
+    registerNavigationInterceptor(interceptor);
+    const guard = registerGuard(true, false);
+    try {
+      await navigate("/config/devices/device/abc");
+
+      expect(guard.prompt).toHaveBeenCalled();
+      expect(interceptor).not.toHaveBeenCalled();
+    } finally {
+      unregisterNavigationInterceptor(interceptor);
+    }
   });
 });
 

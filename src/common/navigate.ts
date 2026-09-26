@@ -104,6 +104,28 @@ export const unregisterUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
 const dirtyGuards = (): UnsavedChangesGuard[] =>
   [...unsavedChangesGuards].filter((guard) => guard.isDirty());
 
+/**
+ * Lets a host that shows a single page take over navigation to other pages.
+ * The native modal page runs inside a screen of a companion app, and a link
+ * out of it belongs in the app's main frontend, not in that screen. Return
+ * true to claim the navigation; nothing is then navigated here.
+ */
+export type NavigationInterceptor = (path: string) => boolean;
+
+const navigationInterceptors = new Set<NavigationInterceptor>();
+
+export const registerNavigationInterceptor = (
+  interceptor: NavigationInterceptor
+) => {
+  navigationInterceptors.add(interceptor);
+};
+
+export const unregisterNavigationInterceptor = (
+  interceptor: NavigationInterceptor
+) => {
+  navigationInterceptors.delete(interceptor);
+};
+
 let pendingUnsavedPrompt: Promise<boolean> | undefined;
 
 /**
@@ -245,6 +267,13 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
       // so this destination is stale. Dropping it keeps a late answer from
       // pulling the user back off the page they are on now.
       return false;
+    }
+    // After the unsaved-changes prompt, so leaving is confirmed before a host
+    // is asked to show the destination somewhere else.
+    for (const interceptor of navigationInterceptors) {
+      if (interceptor(path)) {
+        return false;
+      }
     }
   }
   return performNavigation(path, options);

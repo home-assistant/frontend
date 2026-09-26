@@ -40,6 +40,13 @@ class DialogLogbookDetail
 
   @state() private _params?: LogbookDetailDialogParams;
 
+  /** Rendered frameless, as the whole of a companion app's modal; see `ha-native-modal-page`. */
+  @property({ type: Boolean }) public standalone = false;
+
+  /** The app draws the header itself, so the dialog leaves its own out. */
+  @property({ type: Boolean, attribute: "without-header" })
+  public withoutHeader = false;
+
   @state() private _open = false;
 
   @state() private _chain?: LogbookChain;
@@ -141,6 +148,8 @@ class DialogLogbookDetail
 
     return html`
       <ha-adaptive-dialog
+        ?standalone=${this.standalone}
+        ?without-header=${this.withoutHeader}
         .open=${this._open}
         header-title=${this.hass.localize("ui.dialogs.logbook_detail.title")}
         @closed=${this._dialogClosed}
