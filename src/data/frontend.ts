@@ -54,6 +54,12 @@ export interface EnergyFrontendSystemData {
   hidden_cards?: string[];
 }
 
+export interface MaintenanceFrontendSystemData {
+  battery_threshold?: number;
+  // device_id (or entity_id when the battery has no device) -> threshold (%)
+  battery_thresholds?: Record<string, number>;
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -64,6 +70,7 @@ declare global {
     home: HomeFrontendSystemData;
     energy: EnergyFrontendSystemData;
     security: SecurityFrontendSystemData;
+    maintenance: MaintenanceFrontendSystemData;
   }
 }
 

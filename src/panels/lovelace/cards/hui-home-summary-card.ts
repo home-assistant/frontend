@@ -30,6 +30,10 @@ import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
+  subscribeFrontendSystemData,
+  type MaintenanceFrontendSystemData,
+} from "../../../data/frontend";
+import {
   getSummaryLabel,
   HOME_SUMMARIES_COLORS,
   HOME_SUMMARIES_FILTERS,
@@ -59,9 +63,26 @@ export class HuiHomeSummaryCard
 
   @state() private _energyData?: EnergyData;
 
+  @state() private _maintenanceData?: MaintenanceFrontendSystemData;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
-  public hassSubscribe(): UnsubscribeFunc[] {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    if (this._config?.summary === "maintenance") {
+      return [
+        subscribeFrontendSystemData(
+          this.hass!.connection,
+          "maintenance",
+          ({ value }) => {
+            this._maintenanceData = value ?? {};
+          }
+        ).catch(() => {
+          // Fall back to the default threshold instead of loading forever
+          this._maintenanceData = {};
+          return () => undefined;
+        }),
+      ];
+    }
     if (this._config?.summary !== "energy") {
       return [];
     }
@@ -118,8 +139,13 @@ export class HuiHomeSummaryCard
   }
 
   private _computeSecondaryLoading = memoizeOne(
-    (summary: HomeSummary, energyData: EnergyData | undefined): boolean =>
-      summary === "energy" && !energyData
+    (
+      summary: HomeSummary,
+      energyData: EnergyData | undefined,
+      maintenanceData: MaintenanceFrontendSystemData | undefined
+    ): boolean =>
+      (summary === "energy" && !energyData) ||
+      (summary === "maintenance" && !maintenanceData)
   );
 
   private _computeSummaryState(): string {
@@ -276,6 +302,9 @@ export class HuiHomeSummaryCard
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
       case "maintenance": {
+        if (!this._maintenanceData) {
+          return "";
+        }
         const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
           (filter) => generateEntityFilter(this.hass!, filter)
         );
@@ -287,7 +316,8 @@ export class HuiHomeSummaryCard
 
         const lowBatteryEntities = filterLowBatteryEntities(
           this.hass!,
-          maintenanceEntities
+          maintenanceEntities,
+          this._maintenanceData
         );
 
         const unavailableBatteryEntities = filterUnavailableBatteryEntities(
@@ -374,7 +404,8 @@ export class HuiHomeSummaryCard
     const secondary = this._computeSummaryState();
     const secondaryLoading = this._computeSecondaryLoading(
       summary,
-      this._energyData
+      this._energyData,
+      this._maintenanceData
     );
 
     const label = getSummaryLabel(this.hass.localize, summary);

@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { filterLowBatteryEntities } from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
+import {
+  filterLowBatteryEntities,
+  batteryThresholdKey,
+} from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
 import { mockEntity } from "../../../common/entity/context/context-mock";
 import { createMockEntityState, createMockHass } from "../../../fixtures/hass";
+import type { HomeAssistant } from "../../../../src/types";
 
 describe("filterLowBatteryEntities", () => {
   it("filters numeric battery entities by the low battery threshold", () => {
@@ -141,5 +145,57 @@ describe("filterLowBatteryEntities", () => {
     expect(filterLowBatteryEntities(secondHass, ["sensor.battery"])).toEqual([
       "sensor.battery",
     ]);
+  });
+});
+
+const hass = {
+  states: {
+    "sensor.a": { state: "15" },
+    "sensor.b": { state: "30" },
+    "sensor.c": { state: "unknown" },
+    "binary_sensor.d": { state: "on" },
+  },
+  entities: {},
+} as unknown as HomeAssistant;
+
+const ids = Object.keys(hass.states);
+
+describe("batteryThresholdKey", () => {
+  it("keys by device, falling back to the entity", () => {
+    const h = {
+      entities: { "sensor.a": { device_id: "dev1" } },
+    } as unknown as HomeAssistant;
+    expect(batteryThresholdKey(h.entities, "sensor.a")).toBe("dev1");
+    expect(batteryThresholdKey(h.entities, "sensor.b")).toBe("sensor.b");
+  });
+});
+
+describe("filterLowBatteryEntities", () => {
+  it("uses 20% by default", () => {
+    expect(filterLowBatteryEntities(hass, ids)).toEqual([
+      "sensor.a",
+      "binary_sensor.d",
+    ]);
+  });
+
+  it("applies the global threshold", () => {
+    expect(
+      filterLowBatteryEntities(hass, ids, { battery_threshold: 40 })
+    ).toEqual(["sensor.a", "sensor.b", "binary_sensor.d"]);
+  });
+
+  it("lets a per-entity threshold override the global one", () => {
+    expect(
+      filterLowBatteryEntities(hass, ids, {
+        battery_threshold: 40,
+        battery_thresholds: { "sensor.b": 10 },
+      })
+    ).toEqual(["sensor.a", "binary_sensor.d"]);
+    expect(
+      filterLowBatteryEntities(hass, ids, {
+        battery_threshold: 10,
+        battery_thresholds: { "sensor.b": 50 },
+      })
+    ).toEqual(["sensor.b", "binary_sensor.d"]);
   });
 });
