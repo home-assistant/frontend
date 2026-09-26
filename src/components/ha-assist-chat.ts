@@ -146,8 +146,8 @@ export const createAssistMessageProcessor = ({
   // Whether the current message text still ends with the streaming marker.
   // Once finalized, a trailing ellipsis is part of the reply and is kept.
   let streamingMarker = true;
-  // Content of the latest assistant chat log message with content, used to
-  // detect whether the final response was already streamed.
+  // Content of the latest assistant chat log message, used to detect whether
+  // the final response was already streamed.
   let latestSegment = "";
   let continueConversation = false;
   let hassMessage: AssistMessage = newAssistantMessage();
@@ -220,6 +220,7 @@ export const createAssistMessageProcessor = ({
         currentDeltaRole = delta.role;
         if (delta.role === "assistant") {
           pendingMessageBoundary = true;
+          latestSegment = "";
         }
       }
 
@@ -229,12 +230,11 @@ export const createAssistMessageProcessor = ({
           if (pendingMessageBoundary) {
             // First content of a new chat log message.
             text = joinWithBreak(text, delta.content);
-            latestSegment = delta.content;
             pendingMessageBoundary = false;
           } else {
             text += delta.content;
-            latestSegment += delta.content;
           }
+          latestSegment += delta.content;
           hassMessage.text = text + STREAMING_ELLIPSIS;
           streamingMarker = true;
         }

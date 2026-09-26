@@ -345,6 +345,32 @@ describe("createAssistMessageProcessor", () => {
     expect(processor.hassMessage.text).toBe("Turning it on. Done.\n\nDone.");
   });
 
+  it("adds a final response that repeats an earlier message after tool calls", () => {
+    const processor = createProcessor();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Done." })
+    );
+    processor.processEvent(
+      assistantDelta({
+        role: "assistant",
+        tool_calls: [
+          {
+            id: "call-1",
+            tool_name: "turn_on",
+            tool_args: {},
+            external: false,
+          },
+        ],
+      })
+    );
+    processor.processEvent(
+      toolResultDelta("call-1", { data: {}, error: false })
+    );
+    processor.processEvent(intentEnd("Done."));
+
+    expect(processor.hassMessage.text).toBe("Done.\n\nDone.");
+  });
+
   it("tracks the continue conversation flag from the intent output", () => {
     const processor = createProcessor();
     expect(processor.continueConversation).toBe(false);
