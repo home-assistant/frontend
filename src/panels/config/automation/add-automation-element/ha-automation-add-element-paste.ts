@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume, type ContextType } from "@lit/context";
-import { mdiAppleKeyboardCommand, mdiContentPaste, mdiPlus } from "@mdi/js";
+import { mdiContentPaste, mdiPlus } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -10,9 +10,9 @@ import {
   internationalizationContext,
   narrowViewportContext,
 } from "../../../../data/context";
-import { isMac } from "../../../../util/is_mac";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 import { shortcutStyles } from "../styles";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-add-element-paste")
 export class HaAutomationAddElementPaste extends LitElement {
@@ -51,18 +51,7 @@ export class HaAutomationAddElementPaste extends LitElement {
         ${
           !this._narrow
             ? html`<span slot="end" class="shortcut">
-                <span
-                  >${
-                    isMac
-                      ? html`<ha-svg-icon
-                          slot="start"
-                          .path=${mdiAppleKeyboardCommand}
-                        ></ha-svg-icon>`
-                      : this._i18n.localize(
-                          "ui.panel.config.automation.editor.ctrl"
-                        )
-                  }</span
-                >
+                <span>${renderCtrlOrCmd(this._i18n.localize)}</span>
                 <span>+</span>
                 <span>V</span>
               </span>`

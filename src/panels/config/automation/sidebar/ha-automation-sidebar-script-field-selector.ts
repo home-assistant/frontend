@@ -1,4 +1,4 @@
-import { mdiAppleKeyboardCommand, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,6 +14,7 @@ import type HaAutomationConditionEditor from "../action/ha-automation-action-edi
 import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-sidebar-script-field-selector")
 export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
@@ -96,17 +97,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span
                     >${this.hass.localize(

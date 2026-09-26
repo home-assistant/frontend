@@ -1,12 +1,12 @@
 import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import { internationalizationContext } from "../../data/context";
-import { isMac } from "../../util/is_mac";
 import { DialogMixin } from "../dialog-mixin";
 
 interface Text {
@@ -192,9 +192,7 @@ class DialogShortcuts extends DialogMixin(LitElement) {
             html`<span
               >${
                 shortcutKey === CTRL_CMD
-                  ? isMac
-                    ? "⌘"
-                    : this._i18n.localize("ui.dialogs.shortcuts.keys.ctrl")
+                  ? ctrlOrCmdLabel(this._i18n.localize)
                   : typeof shortcutKey === "string"
                     ? shortcutKey
                     : this._i18n.localize(shortcutKey.shortcutTranslationKey)
