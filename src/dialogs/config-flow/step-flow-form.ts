@@ -154,7 +154,7 @@ class StepFlowForm extends LitElement {
   }
 
   private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
-    this._previewErrors = ev.detail;
+    this._previewErrors = ev.detail ?? undefined;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
