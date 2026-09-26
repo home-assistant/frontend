@@ -63,7 +63,11 @@ export class HuiSolarProductionBadge
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config") || changedProps.has("_data")) {
+    if (
+      changedProps.has("_config") ||
+      changedProps.has("_data") ||
+      changedProps.has("_i18n")
+    ) {
       return true;
     }
 
@@ -98,17 +102,18 @@ export class HuiSolarProductionBadge
 
     return solar;
   }
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (this._data) {
+      this.hidden = this._computeSolarPower() <= 0;
+    }
+  }
 
   protected render() {
-    if (!this._config || !this._data || !this._i18n) {
+    if (!this._config || !this._data || !this._i18n || this.hidden) {
       return nothing;
     }
-
     const power = this._computeSolarPower();
-
-    if (power <= 0) {
-      return nothing;
-    }
 
     let displayValue: string;
     if (power >= 1000) {
