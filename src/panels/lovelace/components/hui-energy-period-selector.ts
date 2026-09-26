@@ -841,7 +841,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     ha-ripple {
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
-    :host([narrow]) ha-date-range-picker {
+    :host([narrow]) ha-date-range-picker::part(range-input) {
       --ha-icon-button-size: 24px;
       --mdc-icon-size: 16px;
     }
