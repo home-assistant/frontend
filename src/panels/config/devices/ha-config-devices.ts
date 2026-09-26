@@ -31,7 +31,9 @@ class HaConfigDevices extends HassRouterPage {
     },
   };
 
-  @state() private _configEntries: ConfigEntry[] = [];
+  @state() private _configEntries?: ConfigEntry[];
+
+  @state() private _configEntriesFailed = false;
 
   @state() private _manifests: IntegrationManifest[] = [];
 
@@ -39,6 +41,9 @@ class HaConfigDevices extends HassRouterPage {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this.addEventListener("reload-config-entries", () =>
+        this._loadConfigEntries()
+      );
       this._loadData();
     }
   }
@@ -48,9 +53,12 @@ class HaConfigDevices extends HassRouterPage {
 
     if (this._currentPage === "device") {
       pageEl.deviceId = this.routeTail.path.substr(1);
+      pageEl.entries = this._configEntries ?? [];
+    } else {
+      pageEl.entries = this._configEntries;
+      pageEl.entriesFailed = this._configEntriesFailed;
     }
 
-    pageEl.entries = this._configEntries;
     pageEl.manifests = this._manifests;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
@@ -59,17 +67,35 @@ class HaConfigDevices extends HassRouterPage {
 
   private async _loadData() {
     await Promise.all([
-      getConfigEntries(this.hass).then((configEntries) => {
-        this._configEntries = configEntries;
-      }),
-      fetchIntegrationManifests(this.hass).then((manifests) => {
-        this._manifests = manifests;
-      }),
+      this._loadConfigEntries(),
+      fetchIntegrationManifests(this.hass)
+        .then((manifests) => {
+          this._manifests = manifests;
+        })
+        .catch(() => {
+          // The pages remain usable without integration manifests.
+        }),
     ]);
+  }
+
+  private async _loadConfigEntries() {
+    this._configEntriesFailed = false;
+    this._configEntries = undefined;
+
+    try {
+      this._configEntries = await getConfigEntries(this.hass);
+    } catch {
+      this._configEntriesFailed = true;
+      this._configEntries = [];
+    }
   }
 }
 
 declare global {
+  interface HASSDomEvents {
+    "reload-config-entries": undefined;
+  }
+
   interface HTMLElementTagNameMap {
     "ha-config-devices": HaConfigDevices;
   }

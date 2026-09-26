@@ -58,6 +58,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
 
   @state() private _tags: Tag[] = [];
 
+  @state() private _loading = true;
+
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
   }
@@ -195,6 +197,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.tags}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         .filter=${this._filter}
@@ -266,7 +269,11 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchTags() {
-    this._tags = await fetchTags(this.hass);
+    try {
+      this._tags = await fetchTags(this.hass);
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _openWrite(tag: Tag) {
