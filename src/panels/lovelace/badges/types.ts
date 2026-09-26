@@ -70,6 +70,10 @@ export interface PowerTotalBadgeConfig extends EnergyTotalBadgeConfig {
   type: "power-total";
 }
 
+export interface SolarProductionBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "solar-production";
+}
+
 export interface WaterTotalBadgeConfig extends EnergyTotalBadgeConfig {
   type: "water-total";
 }

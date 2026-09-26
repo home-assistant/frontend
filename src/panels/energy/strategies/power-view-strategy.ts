@@ -11,6 +11,7 @@ import {
   hasGasRateSource,
   hasNowViewContent,
   hasPowerSources,
+  hasSolarRateSource,
   hasWaterRateSource,
   isEnergyCardVisible,
 } from "./energy-cards";
@@ -53,6 +54,7 @@ export class PowerViewStrategy extends ReactiveElement {
     };
 
     const hasPowerSrc = !!prefs && hasPowerSources(prefs);
+    const hasSolarSrc = !!prefs && hasSolarRateSource(prefs);
     const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
     const hasGasSrc = !!prefs && hasGasRateSource(prefs);
 
@@ -64,6 +66,13 @@ export class PowerViewStrategy extends ReactiveElement {
     if (hasPowerSrc) {
       badges.push({
         type: "power-total",
+        collection_key: collectionKey,
+      });
+    }
+
+    if (hasSolarSrc) {
+      badges.push({
+        type: "solar-production",
         collection_key: collectionKey,
       });
     }

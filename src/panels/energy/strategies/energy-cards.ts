@@ -85,6 +85,12 @@ export const hasGasRateSource = (prefs: EnergyPreferences): boolean =>
     (source) => source.type === "gas" && !!source.stat_rate
   );
 
+/** A solar source exposing a live power-rate statistic. */
+export const hasSolarRateSource = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some(
+    (source) => source.type === "solar" && !!source.stat_rate
+  );
+
 /** Whether the Now view has any live power or flow-rate content to show. */
 export const hasNowViewContent = (prefs: EnergyPreferences): boolean =>
   hasPowerSources(prefs) ||
