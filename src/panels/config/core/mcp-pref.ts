@@ -14,6 +14,7 @@ import "../../../components/ha-spinner";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
+  enableConfigEntry,
   getConfigEntries,
 } from "../../../data/config_entries";
 import type { LLMApi } from "../../../data/llm";
@@ -52,6 +53,7 @@ export class MCPPref extends LitElement {
   }
 
   protected render() {
+    const enabled = this._entry && !this._entry.disabled_by;
     return html`
       <ha-card outlined>
         <h1 class="card-header">
@@ -69,7 +71,7 @@ export class MCPPref extends LitElement {
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.mcp.header")}
           ${
-            this._entry
+            enabled
               ? html`
                   <div class="header-actions">
                     <ha-dropdown>
@@ -122,10 +124,10 @@ export class MCPPref extends LitElement {
                 `
               : nothing
           }
-          ${this._entry ? this._renderEnabled() : nothing}
+          ${enabled ? this._renderEnabled() : nothing}
         </div>
         ${
-          this._entry === null
+          this._entry === null || this._entry?.disabled_by
             ? html`
                 <div class="card-actions centered">
                   <ha-button appearance="filled" @click=${this._enable}>
@@ -194,7 +196,7 @@ export class MCPPref extends LitElement {
         domain: MCP_SERVER_DOMAIN,
       });
       this._entry = entries.length ? entries[0] : null;
-      if (this._entry) {
+      if (this._entry && !this._entry.disabled_by) {
         this._apis = await fetchLLMApis(this.hass);
       }
     } catch (err: any) {
@@ -202,13 +204,40 @@ export class MCPPref extends LitElement {
     }
   }
 
-  private _enable() {
+  private async _enable() {
+    if (this._entry?.disabled_by) {
+      await this._enableEntry(this._entry.entry_id);
+      return;
+    }
     showConfigFlowDialog(this, {
       startFlowHandler: MCP_SERVER_DOMAIN,
       dialogClosedCallback: () => {
         this._load();
       },
     });
+  }
+
+  private async _enableEntry(entryId: string) {
+    let result: { require_restart: boolean };
+    try {
+      result = await enableConfigEntry(this.hass, entryId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_error"
+        ),
+        text: err?.message,
+      });
+      return;
+    }
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.enable_restart_confirm"
+        ),
+      });
+    }
+    await this._load();
   }
 
   private _configure() {
