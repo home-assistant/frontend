@@ -183,7 +183,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
             .hass=${this.hass}
             .data=${this._data}
             .supportedLanguages=${this._supportedLanguages}
-            keys="name,language"
+            keys="name,language,user_id"
             @value-changed=${this._valueChanged}
             ?autofocus=${!isExistingPipeline}
           ></assist-pipeline-detail-config>
@@ -301,6 +301,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
         tts_voice: data.tts_voice ?? null,
         wake_word_entity: data.wake_word_entity ?? null,
         wake_word_id: data.wake_word_id ?? null,
+        user_id: data.user_id ?? null,
       };
       if (
         this._params!.pipeline &&

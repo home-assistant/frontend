@@ -4954,7 +4954,9 @@
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice",
                   "wake_word_entity": "Wake word engine",
-                  "wake_word_id": "Wake word"
+                  "wake_word_id": "Wake word",
+                  "user_id": "Acts as user",
+                  "user_id_description": "Voice requests have no user of their own. Pick one and this assistant speaks for them, so integrations that link a Home Assistant user to an account of their own use the right account."
                 },
                 "steps": {
                   "config": {

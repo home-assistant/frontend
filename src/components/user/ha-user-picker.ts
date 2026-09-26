@@ -119,7 +119,11 @@ class HaUserPicker extends LitElement {
 
   private _getItems = () => this._getUsers(this.users);
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (!this.users) {
+      return nothing;
+    }
+
     const placeholder =
       this.placeholder ?? this.hass.localize("ui.components.user-picker.user");
 
