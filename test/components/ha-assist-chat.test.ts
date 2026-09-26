@@ -303,6 +303,48 @@ describe("createAssistMessageProcessor", () => {
     expect(processor.hassMessage.text).toBe("Wait…");
   });
 
+  it("keeps a trailing ellipsis when an error follows the finalized reply", () => {
+    const added: AssistMessage[] = [];
+    const processor = createProcessor(added);
+    processor.addMessage();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Wait…" })
+    );
+    processor.processEvent(intentEnd("Wait…"));
+
+    processor.setError("Text-to-speech failed");
+
+    expect(added).toHaveLength(2);
+    expect(added[0].text).toBe("Wait…");
+    expect(added[1].text).toBe("Text-to-speech failed");
+  });
+
+  it("adds a final response that matches the end of an earlier message", () => {
+    const processor = createProcessor();
+    processor.processEvent(
+      assistantDelta({ role: "assistant", content: "Turning it on. Done." })
+    );
+    processor.processEvent(
+      assistantDelta({
+        role: "assistant",
+        tool_calls: [
+          {
+            id: "call-1",
+            tool_name: "turn_on",
+            tool_args: {},
+            external: false,
+          },
+        ],
+      })
+    );
+    processor.processEvent(
+      toolResultDelta("call-1", { data: {}, error: false })
+    );
+    processor.processEvent(intentEnd("Done."));
+
+    expect(processor.hassMessage.text).toBe("Turning it on. Done.\n\nDone.");
+  });
+
   it("tracks the continue conversation flag from the intent output", () => {
     const processor = createProcessor();
     expect(processor.continueConversation).toBe(false);

@@ -143,22 +143,36 @@ export const createAssistMessageProcessor = ({
   // cleared once that message's first content chunk has been joined. The
   // role and the content can arrive in separate deltas.
   let pendingMessageBoundary = false;
+  // Whether the current message text still ends with the streaming marker.
+  // Once finalized, a trailing ellipsis is part of the reply and is kept.
+  let streamingMarker = true;
+  // Content of the latest assistant chat log message with content, used to
+  // detect whether the final response was already streamed.
+  let latestSegment = "";
   let continueConversation = false;
   let hassMessage: AssistMessage = newAssistantMessage();
 
   const isMessageEmpty = (message: AssistMessage) =>
+    streamingMarker &&
     message.text === STREAMING_ELLIPSIS &&
     !message.thinking &&
     Object.keys(message.tool_calls).length === 0;
+
+  const finalizeStreamingText = () => {
+    if (streamingMarker && typeof hassMessage.text === "string") {
+      hassMessage.text = stripStreamingEllipsis(hassMessage.text);
+    }
+    streamingMarker = false;
+  };
 
   const progressToNextMessage = () => {
     if (isMessageEmpty(hassMessage)) {
       return;
     }
-    if (typeof hassMessage.text === "string") {
-      hassMessage.text = stripStreamingEllipsis(hassMessage.text);
-    }
+    finalizeStreamingText();
     hassMessage = newAssistantMessage();
+    streamingMarker = true;
+    latestSegment = "";
     addMessage(hassMessage);
   };
 
@@ -176,27 +190,24 @@ export const createAssistMessageProcessor = ({
   // every assistant message of a turn, while the response speech only
   // contains the final one, so replacing the streamed text with the response
   // would drop the beginning of the reply (see #54310).
-  const applyFinalResponse = (message: AssistMessage, response: string) => {
+  const applyFinalResponse = (response: string) => {
+    finalizeStreamingText();
     const streamed =
-      typeof message.text === "string"
-        ? stripStreamingEllipsis(message.text)
-        : "";
+      typeof hassMessage.text === "string" ? hassMessage.text : "";
     if (streamed === "") {
-      message.text = response;
-      return;
+      hassMessage.text = response;
+    } else if (latestSegment.trim() !== response.trim()) {
+      // Only compare with the latest message: an earlier message may end
+      // with the same words as a final response that was not streamed.
+      hassMessage.text = joinWithBreak(streamed, response);
     }
-    if (streamed.endsWith(response)) {
-      // The final response was already streamed, keep it as is.
-      message.text = streamed;
-      return;
-    }
-    message.text = joinWithBreak(streamed, response);
   };
 
   const setError = (error: string) => {
     progressToNextMessage();
     hassMessage.text = error;
     hassMessage.error = true;
+    streamingMarker = false;
     requestUpdate();
   };
 
@@ -218,11 +229,14 @@ export const createAssistMessageProcessor = ({
           if (pendingMessageBoundary) {
             // First content of a new chat log message.
             text = joinWithBreak(text, delta.content);
+            latestSegment = delta.content;
             pendingMessageBoundary = false;
           } else {
             text += delta.content;
+            latestSegment += delta.content;
           }
           hassMessage.text = text + STREAMING_ELLIPSIS;
+          streamingMarker = true;
         }
         if (delta.thinking_content) {
           hassMessage.thinking += delta.thinking_content;
@@ -250,13 +264,11 @@ export const createAssistMessageProcessor = ({
         return;
       }
       if (response) {
-        // applyFinalResponse already removes the streaming marker; stripping
-        // again would remove a legitimate trailing ellipsis from the reply.
-        applyFinalResponse(hassMessage, response);
-      } else if (typeof hassMessage.text === "string") {
+        applyFinalResponse(response);
+      } else {
         // Finalize the streaming marker so a reply without a spoken response
         // does not stay stuck with a trailing ellipsis.
-        hassMessage.text = stripStreamingEllipsis(hassMessage.text);
+        finalizeStreamingText();
       }
       pendingMessageBoundary = false;
       requestUpdate();
