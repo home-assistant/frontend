@@ -102,10 +102,22 @@ export class HuiSolarProductionBadge
 
     return solar;
   }
+  public connectedWhileHidden = true;
+
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+    const wasHidden = this.hidden;
     if (this._data) {
       this.hidden = this._computeSolarPower() <= 0;
+    }
+    if (wasHidden !== this.hidden) {
+      this.dispatchEvent(
+        new CustomEvent("badge-visibility-changed", {
+          detail: { value: !this.hidden },
+          bubbles: true,
+          composed: true,
+        })
+      );
     }
   }
 
@@ -142,7 +154,7 @@ export class HuiSolarProductionBadge
 
   static styles = css`
     ha-badge {
-      --badge-color: var(--primary-color);
+      --badge-color: var(--energy-solar-color);
     }
   `;
 }
