@@ -844,7 +844,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           progress.continueConversation =
             event.data.intent_output.continue_conversation;
           const response =
-            event.data.intent_output.response.speech?.plain.speech;
+            event.data.intent_output.response.speech.plain?.speech;
           if (!response) {
             return;
           }
