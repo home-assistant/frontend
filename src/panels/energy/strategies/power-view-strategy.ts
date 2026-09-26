@@ -23,7 +23,10 @@ import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+  ];
 
   static async generate(
     _config: EnergyViewStrategyConfig,
