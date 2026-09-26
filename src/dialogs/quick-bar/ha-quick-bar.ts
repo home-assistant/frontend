@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import "../../components/entity/state-badge";
@@ -59,7 +60,6 @@ import {
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
-import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "../restart/automation-restart-status";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
@@ -296,7 +296,7 @@ export class QuickBar extends LitElement {
                   >
                     ${this.hass.localize("ui.tips.keyboard_shortcut")}
                   </button>`,
-                  modifier: isMac ? "⌘" : "Ctrl",
+                  modifier: ctrlOrCmdLabel(this.hass.localize),
                 })}</ha-tip
               >`
             : nothing

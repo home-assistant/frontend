@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
   mdiDelete,
   mdiPlusCircleMultipleOutline,
@@ -19,6 +18,7 @@ import type HaAutomationConditionEditor from "../action/ha-automation-action-edi
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-sidebar-option")
 export default class HaAutomationSidebarOption extends LitElement {
@@ -129,18 +129,7 @@ export default class HaAutomationSidebarOption extends LitElement {
                   ${
                     !this.narrow
                       ? html`<span class="shortcut">
-                          <span
-                            >${
-                              isMac
-                                ? html`<ha-svg-icon
-                                    slot="start"
-                                    .path=${mdiAppleKeyboardCommand}
-                                  ></ha-svg-icon>`
-                                : this.hass.localize(
-                                    "ui.panel.config.automation.editor.ctrl"
-                                  )
-                            }</span
-                          >
+                          <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                           <span>+</span>
                           <span
                             >${this.hass.localize(
