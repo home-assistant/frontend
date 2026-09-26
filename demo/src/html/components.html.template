@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant card components</title>
+    <%= renderTemplate("../../../src/html/_header.html.template") %>
+    <meta name="referrer" content="same-origin" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#03a9f4" />
+    <style>
+      :root {
+        color-scheme: light;
+        --page-background: #fafafa;
+        --page-text: #212121;
+        --page-code-background: #e5e5e5;
+        --page-divider: #dddddd;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-scheme="light"]) {
+          color-scheme: dark;
+          --page-background: #111111;
+          --page-text: #e1e1e1;
+          --page-code-background: #1c1c1c;
+          --page-divider: #333333;
+        }
+      }
+      :root[data-scheme="dark"] {
+        color-scheme: dark;
+        --page-background: #111111;
+        --page-text: #e1e1e1;
+        --page-code-background: #1c1c1c;
+        --page-divider: #333333;
+      }
+      html {
+        background-color: var(--page-background);
+        color: var(--page-text);
+      }
+      body {
+        font-family: Roboto, Noto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0 16px 64px;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 32px 0 8px;
+      }
+      h2 {
+        margin: 48px 0 8px;
+      }
+      pre {
+        background: var(--page-code-background);
+        border-radius: 8px;
+        padding: 12px 16px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        text-align: start;
+        vertical-align: top;
+        padding: 8px;
+        border-bottom: 1px solid var(--page-divider);
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        align-items: start;
+        margin: 16px 0;
+      }
+      .single {
+        max-width: 400px;
+        margin: 16px 0;
+      }
+      .log {
+        height: 160px;
+        overflow-y: auto;
+        margin: 0;
+      }
+      button {
+        font: inherit;
+        padding: 6px 12px;
+        margin-inline-end: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Home Assistant card components</h1>
+      <p>
+        Embed working Home Assistant dashboard cards in any page. The cards run
+        against a mocked backend in the browser. No Home Assistant server is
+        necessary.
+      </p>
+      <p>There are two components:</p>
+      <ul>
+        <li>
+          <code>&lt;ha-embed-provider&gt;</code> holds the mocked backend and
+          its entities.
+        </li>
+        <li>
+          <code>&lt;ha-embed-card&gt;</code> renders one card. It uses the
+          backend of a provider.
+        </li>
+      </ul>
+      <p>
+        All cards in the same provider share their entities. When you change
+        an entity in one card, the other cards show the change.
+      </p>
+
+      <p>
+        Color scheme of this page and its cards:
+        <button data-scheme="">Auto</button>
+        <button data-scheme="light">Light</button>
+        <button data-scheme="dark">Dark</button>
+      </p>
+
+      <h2>Use on your site</h2>
+      <p>
+        Load the script from the demo site. The script loads all other files
+        from the demo site too.
+      </p>
+      <pre><code>&lt;script type="module" src="https://demo.home-assistant.io/embed.js"&gt;&lt;/script&gt;</code></pre>
+
+      <h2>One card</h2>
+      <p>
+        Put the entities in a script tag inside the provider. Put the card
+        configuration in a script tag inside the card. Both take JSON with
+        <code>type="application/json"</code> or YAML with
+        <code>type="text/yaml"</code>. The card configuration is the same as in
+        a dashboard. YAML needs its indentation. If your site minifies HTML,
+        make sure the minifier keeps the whitespace in script tags, or use
+        JSON.
+      </p>
+      <pre><code>&lt;ha-embed-provider&gt;
+  &lt;script type="text/yaml"&gt;
+    - entity_id: light.kitchen
+      state: "on"
+      attributes:
+        friendly_name: Kitchen
+        supported_color_modes: [brightness]
+        color_mode: brightness
+        brightness: 180
+  &lt;/script&gt;
+  &lt;ha-embed-card&gt;
+    &lt;script type="text/yaml"&gt;
+      type: tile
+      entity: light.kitchen
+      tap_action:
+        action: toggle
+      features:
+        - type: light-brightness
+    &lt;/script&gt;
+  &lt;/ha-embed-card&gt;
+&lt;/ha-embed-provider&gt;</code></pre>
+      <ha-embed-provider>
+        <!-- htmlmin:ignore --><script type="text/yaml">
+          - entity_id: light.kitchen
+            state: "on"
+            attributes:
+              friendly_name: Kitchen
+              supported_color_modes: [brightness]
+              color_mode: brightness
+              brightness: 180
+        </script><!-- htmlmin:ignore -->
+        <div class="single">
+          <ha-embed-card>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              type: tile
+              entity: light.kitchen
+              tap_action:
+                action: toggle
+              features:
+                - type: light-brightness
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-card>
+        </div>
+      </ha-embed-provider>
+      <p>
+        The <code>entities</code> attribute of the provider and the
+        <code>config</code> attribute of the card also take JSON.
+      </p>
+
+      <h2>Cards with shared state</h2>
+      <p>
+        These three cards are in one provider. Turn on a light in one card. The
+        other cards update. The log below shows the events of the provider.
+      </p>
+      <ha-embed-provider id="shared">
+        <script type="application/json">
+          [
+            {
+              "entity_id": "light.living_room",
+              "state": "off",
+              "attributes": {
+                "friendly_name": "Living room",
+                "supported_color_modes": ["brightness"],
+                "color_mode": "brightness",
+                "brightness": 255
+              }
+            },
+            {
+              "entity_id": "switch.coffee_maker",
+              "state": "on",
+              "attributes": {
+                "friendly_name": "Coffee maker",
+                "device_class": "outlet"
+              }
+            },
+            {
+              "entity_id": "climate.hallway",
+              "state": "heat",
+              "attributes": {
+                "friendly_name": "Hallway",
+                "current_temperature": 19.5,
+                "temperature": 21,
+                "min_temp": 7,
+                "max_temp": 30,
+                "target_temp_step": 0.5,
+                "hvac_modes": ["heat", "off"],
+                "hvac_action": "heating",
+                "supported_features": 1
+              }
+            },
+            {
+              "entity_id": "sensor.outside_temperature",
+              "state": "12.3",
+              "attributes": {
+                "friendly_name": "Outside temperature",
+                "device_class": "temperature",
+                "state_class": "measurement",
+                "unit_of_measurement": "°C"
+              }
+            }
+          ]
+        </script>
+        <div class="cards">
+          <ha-embed-card>
+            <script type="application/json">
+              {
+                "type": "tile",
+                "entity": "light.living_room",
+                "tap_action": { "action": "toggle" }
+              }
+            </script>
+          </ha-embed-card>
+          <ha-embed-card>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              type: entities
+              title: Living room
+              entities:
+                - light.living_room
+                - switch.coffee_maker
+                - sensor.outside_temperature
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-card>
+          <ha-embed-card>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              type: thermostat
+              entity: climate.hallway
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-card>
+        </div>
+      </ha-embed-provider>
+      <pre class="log" id="log"><code>Use the cards to see events here.</code></pre>
+
+      <h2>Cards outside a provider</h2>
+      <p>
+        A card does not have to be inside a provider. A card outside a provider
+        uses the first provider on the page. Put one provider with all entities
+        at the top of the page, and put the cards anywhere below it. If the
+        page has no provider, the card adds an empty provider to the page.
+      </p>
+      <p>
+        To use a different provider, set the <code>provider</code> attribute of
+        the card to the ID of the provider.
+      </p>
+      <pre><code>&lt;ha-embed-provider id="living-room"&gt;…&lt;/ha-embed-provider&gt;
+
+&lt;p&gt;Some text about the coffee maker.&lt;/p&gt;
+
+&lt;ha-embed-card provider="living-room"&gt;
+  &lt;script type="text/yaml"&gt;
+    type: tile
+    entity: switch.coffee_maker
+  &lt;/script&gt;
+&lt;/ha-embed-card&gt;</code></pre>
+      <p>
+        These two cards are not inside a provider. The first card uses the
+        first provider on this page, the kitchen light at the top. The second
+        card uses the provider with the ID <code>shared</code> above.
+      </p>
+      <div class="cards">
+        <ha-embed-card>
+          <!-- htmlmin:ignore --><script type="text/yaml">
+            type: tile
+            entity: light.kitchen
+            tap_action:
+              action: toggle
+          </script><!-- htmlmin:ignore -->
+        </ha-embed-card>
+        <ha-embed-card provider="shared">
+          <!-- htmlmin:ignore --><script type="text/yaml">
+            type: tile
+            entity: switch.coffee_maker
+            tap_action:
+              action: toggle
+          </script><!-- htmlmin:ignore -->
+        </ha-embed-card>
+      </div>
+
+      <h2>Light and dark mode</h2>
+      <p>
+        The cards follow the light or dark mode of the browser. To choose the
+        mode, set the <code>color-scheme</code> attribute of the provider to
+        <code>light</code> or <code>dark</code>. Use this when your site has its
+        own switch for dark mode. The buttons at the top of this page do this.
+        The cards keep their styles inside. They do not change the styles of
+        your page.
+      </p>
+      <pre><code>&lt;ha-embed-provider color-scheme="dark"&gt;…&lt;/ha-embed-provider&gt;</code></pre>
+
+      <h2>Change entities from the page</h2>
+      <p>
+        Set the <code>entities</code> property to change entities from
+        JavaScript. The new list replaces all entities. To change one entity,
+        start from the current states.
+      </p>
+      <p>
+        <button id="set-temperature">Set a random outside temperature</button>
+        <button id="toggle-coffee">Toggle the coffee maker</button>
+      </p>
+      <pre><code>const provider = document.querySelector("ha-embed-provider");
+provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
+  entity.entity_id === "sensor.outside_temperature"
+    ? { ...entity, state: "18.1" }
+    : entity
+);</code></pre>
+      <p>
+        To use the actions of an entity, call a service. The provider updates
+        the state and the cards.
+      </p>
+      <pre><code>provider.hass.callService("switch", "toggle", {
+  entity_id: "switch.coffee_maker",
+});</code></pre>
+
+      <h2>Listen to changes</h2>
+      <p>
+        The provider fires a <code>states-changed</code> event when the state
+        of one or more entities changes. The event has the states of all
+        entities. The event bubbles.
+      </p>
+      <pre><code>provider.addEventListener("states-changed", (ev) =&gt; {
+  const { states } = ev.detail;
+  console.log(states["light.living_room"].state);
+});</code></pre>
+      <p>
+        Read the current state of all entities with
+        <code>provider.hass.states</code>.
+      </p>
+
+      <h2>Custom cards</h2>
+      <p>
+        Custom cards work too. Load the script of the custom card on the page,
+        and use <code>custom:</code> and the element name as the card type.
+        The custom card gets the same mocked backend as the other cards.
+        <code>window.loadCardHelpers()</code> is available to create built-in
+        cards.
+      </p>
+      <p>
+        The mocked backend only knows a part of the Home Assistant API. A
+        custom card that asks for history, statistics, or templates gets an
+        error. From another site, the script of the custom card needs CORS
+        headers, like the embed script.
+      </p>
+      <pre><code>&lt;script type="module" src="https://example.com/embed-demo-custom-card.js"&gt;&lt;/script&gt;
+&lt;ha-embed-card&gt;
+  &lt;script type="text/yaml"&gt;
+    type: custom:embed-demo-custom-card
+    entity: light.office
+  &lt;/script&gt;
+&lt;/ha-embed-card&gt;</code></pre>
+      <ha-embed-provider>
+        <script type="application/json">
+          [
+            {
+              "entity_id": "light.office",
+              "state": "on",
+              "attributes": {
+                "friendly_name": "Office",
+                "supported_color_modes": ["brightness"],
+                "color_mode": "brightness",
+                "brightness": 120
+              }
+            }
+          ]
+        </script>
+        <div class="single">
+          <ha-embed-card
+            config='{ "type": "custom:embed-demo-custom-card", "entity": "light.office" }'
+          ></ha-embed-card>
+        </div>
+      </ha-embed-provider>
+      <p>This is the code of the custom card:</p>
+      <pre><code>class EmbedDemoCustomCard extends HTMLElement {
+  setConfig(config) {
+    if (!config.entity) {
+      throw new Error("Set an entity");
+    }
+    this._config = config;
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  getCardSize() {
+    return 3;
+  }
+
+  async _render() {
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: "open" }).innerHTML = `
+        &lt;style&gt;
+          ha-card { padding: 16px; }
+          .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: var(--accent-color);
+            color: var(--text-accent-color, #fff);
+            font-size: 12px;
+          }
+          .tile { margin: 12px 0; }
+        &lt;/style&gt;
+        &lt;ha-card&gt;
+          &lt;span class="badge"&gt;Custom card&lt;/span&gt;
+          &lt;p&gt;
+            This is a custom card. It is not part of Home Assistant. The page
+            defines it, and it creates the tile card below with the card
+            helpers.
+          &lt;/p&gt;
+          &lt;div class="tile"&gt;&lt;/div&gt;
+          &lt;button&gt;Toggle from the custom card&lt;/button&gt;
+        &lt;/ha-card&gt;`;
+      this.shadowRoot.querySelector("button").addEventListener("click", () =&gt;
+        this._hass.callService("homeassistant", "toggle", {
+          entity_id: this._config.entity,
+        })
+      );
+    }
+    // Keep the promise, so that a second update does not create a second tile.
+    if (!this._tile) {
+      this._tile = window.loadCardHelpers().then((helpers) => {
+        const tile = helpers.createCardElement({
+          type: "tile",
+          entity: this._config.entity,
+        });
+        this.shadowRoot.querySelector(".tile").append(tile);
+        return tile;
+      });
+    }
+    (await this._tile).hass = this._hass;
+  }
+}
+
+customElements.define("embed-demo-custom-card", EmbedDemoCustomCard);</code></pre>
+      <script type="module">
+        class EmbedDemoCustomCard extends HTMLElement {
+          setConfig(config) {
+            if (!config.entity) {
+              throw new Error("Set an entity");
+            }
+            this._config = config;
+          }
+
+          set hass(hass) {
+            this._hass = hass;
+            this._render();
+          }
+
+          getCardSize() {
+            return 3;
+          }
+
+          async _render() {
+            if (!this.shadowRoot) {
+              this.attachShadow({ mode: "open" }).innerHTML = `
+                <style>
+                  ha-card { padding: 16px; }
+                  .badge {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 8px;
+                    background: var(--accent-color);
+                    color: var(--text-accent-color, #fff);
+                    font-size: 12px;
+                  }
+                  .tile { margin: 12px 0; }
+                </style>
+                <ha-card>
+                  <span class="badge">Custom card</span>
+                  <p>
+                    This is a custom card. It is not part of Home Assistant. The page
+                    defines it, and it creates the tile card below with the card
+                    helpers.
+                  </p>
+                  <div class="tile"></div>
+                  <button>Toggle from the custom card</button>
+                </ha-card>`;
+              this.shadowRoot.querySelector("button").addEventListener("click", () =>
+                this._hass.callService("homeassistant", "toggle", {
+                  entity_id: this._config.entity,
+                })
+              );
+            }
+            // Keep the promise, so that a second update does not create a second tile.
+            if (!this._tile) {
+              this._tile = window.loadCardHelpers().then((helpers) => {
+                const tile = helpers.createCardElement({
+                  type: "tile",
+                  entity: this._config.entity,
+                });
+                this.shadowRoot.querySelector(".tile").append(tile);
+                return tile;
+              });
+            }
+            (await this._tile).hass = this._hass;
+          }
+        }
+
+        customElements.define("embed-demo-custom-card", EmbedDemoCustomCard);
+      </script>
+
+      <h2>Reference</h2>
+      <h3><code>&lt;ha-embed-provider&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>entities</code></td>
+          <td>Attribute and property</td>
+          <td>
+            A list of entities. Each entity has an <code>entity_id</code>, a
+            <code>state</code>, and <code>attributes</code>. The optional keys
+            <code>area_id</code>, <code>device_id</code>, and
+            <code>platform</code> set the entity registry entry. A new list
+            replaces all entities. A JSON or YAML script child sets the first
+            list.
+          </td>
+        </tr>
+        <tr>
+          <td><code>color-scheme</code></td>
+          <td>Attribute and property (<code>colorScheme</code>)</td>
+          <td>
+            <code>light</code> or <code>dark</code>. Without it, the cards
+            follow the browser setting.
+          </td>
+        </tr>
+        <tr>
+          <td><code>hass</code></td>
+          <td>Property, read-only</td>
+          <td>The mocked Home Assistant object that the cards use.</td>
+        </tr>
+        <tr>
+          <td><code>states-changed</code></td>
+          <td>Event</td>
+          <td>
+            Fires when the state of one or more entities changes. The detail
+            has <code>states</code>, the states of all entities by entity ID.
+          </td>
+        </tr>
+      </table>
+      <h3><code>&lt;ha-embed-card&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The card configuration, the same as in a dashboard. A JSON or YAML
+            script child sets the first configuration.
+          </td>
+        </tr>
+        <tr>
+          <td><code>provider</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The ID of the provider to use. Without it, the card uses the
+            provider around it, else the first provider on the page.
+          </td>
+        </tr>
+      </table>
+      <p>
+        The mocked backend knows the actions of lights, switches, climate,
+        covers, fans, locks, media players, and more. Actions that open dialogs,
+        such as <code>more-info</code>, do nothing.
+      </p>
+    </main>
+    <script>
+      (function () {
+        var shared = document.getElementById("shared");
+        var log = document.getElementById("log");
+        var first = true;
+        shared.addEventListener("states-changed", function (ev) {
+          var states = ev.detail.states;
+          var line =
+            new Date().toLocaleTimeString() +
+            "  " +
+            Object.keys(states)
+              .map(function (entityId) {
+                return entityId + "=" + states[entityId].state;
+              })
+              .join(", ");
+          if (first) {
+            log.textContent = "";
+            first = false;
+          }
+          log.textContent = line + "\n" + log.textContent;
+        });
+        document
+          .getElementById("set-temperature")
+          .addEventListener("click", function () {
+            var states = shared.hass.states;
+            shared.entities = Object.keys(states).map(function (entityId) {
+              var entity = states[entityId];
+              return {
+                entity_id: entityId,
+                state:
+                  entityId === "sensor.outside_temperature"
+                    ? (Math.random() * 30 - 5).toFixed(1)
+                    : entity.state,
+                attributes: entity.attributes,
+              };
+            });
+          });
+        document
+          .querySelectorAll("button[data-scheme]")
+          .forEach(function (button) {
+            button.addEventListener("click", function () {
+              var scheme = button.getAttribute("data-scheme");
+              if (scheme) {
+                document.documentElement.setAttribute("data-scheme", scheme);
+              } else {
+                document.documentElement.removeAttribute("data-scheme");
+              }
+              document
+                .querySelectorAll("ha-embed-provider")
+                .forEach(function (provider) {
+                  if (scheme) {
+                    provider.setAttribute("color-scheme", scheme);
+                  } else {
+                    provider.removeAttribute("color-scheme");
+                  }
+                });
+            });
+          });
+        document
+          .getElementById("toggle-coffee")
+          .addEventListener("click", function () {
+            shared.hass.callService("switch", "toggle", {
+              entity_id: "switch.coffee_maker",
+            });
+          });
+      })();
+    </script>
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../src/html/_script_loader.html.template") %>
+  </body>
+</html>
