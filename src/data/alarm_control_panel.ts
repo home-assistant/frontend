@@ -31,6 +31,7 @@ interface AlarmControlPanelEntityAttributes extends HassEntityAttributeBase {
   code_format?: "text" | "number";
   changed_by?: string | null;
   code_arm_required?: boolean;
+  state_names?: Partial<Record<AlarmMode, string>>;
 }
 
 export interface AlarmControlPanelEntity extends HassEntityBase {

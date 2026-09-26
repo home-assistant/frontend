@@ -94,7 +94,9 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
 
     const options = modes.map<ControlSelectOption>((mode) => ({
       value: mode,
-      label: this._localize(`ui.card.alarm_control_panel.modes.${mode}`),
+      label:
+        this.stateObj.attributes.state_names?.[mode] ||
+        this._localize(`ui.card.alarm_control_panel.modes.${mode}`),
       path: ALARM_MODES[mode].path,
     }));
 

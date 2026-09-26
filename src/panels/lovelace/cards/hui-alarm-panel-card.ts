@@ -15,7 +15,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
-import type { AlarmMode } from "../../../data/alarm_control_panel";
+import type {
+  AlarmMode,
+  AlarmControlPanelEntity,
+} from "../../../data/alarm_control_panel";
 import {
   ALARM_MODES,
   FORMAT_NUMBER,
@@ -63,6 +66,14 @@ export const filterSupportedAlarmStates = (
         ALARM_MODES[ALARM_MODE_STATE_MAP[s]].feature || 0
       )
   );
+
+const ACTION_TO_ARMED_STATE: Partial<Record<string, AlarmMode>> = {
+  arm_home: "armed_home",
+  arm_away: "armed_away",
+  arm_night: "armed_night",
+  arm_vacation: "armed_vacation",
+  arm_custom_bypass: "armed_custom_bypass",
+};
 
 @customElement("hui-alarm-panel-card")
 class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
@@ -321,18 +332,47 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private get _stateObj(): AlarmControlPanelEntity | undefined {
+    if (!this._config || !this.hass) {
+      return undefined;
+    }
+    return this.hass.states[this._config.entity] as
+      AlarmControlPanelEntity | undefined;
+  }
+
   private _actionDisplay(
     entityState: NonNullable<AlarmPanelCardConfig["states"]>[number]
   ): string {
-    return this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`);
+    const armedState = ACTION_TO_ARMED_STATE[entityState];
+    const customStateName = armedState
+      ? this._stateObj?.attributes.state_names?.[armedState]
+      : undefined;
+
+    return (
+      customStateName ||
+      this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`)
+    );
   }
 
   private _stateDisplay(entityState: string): string {
-    return entityState === UNAVAILABLE
-      ? this.hass!.localize("state.default.unavailable")
-      : this.hass!.localize(
-          `component.alarm_control_panel.entity_component._.state.${entityState}`
-        ) || entityState;
+    if (entityState === UNAVAILABLE) {
+      return this.hass!.localize("state.default.unavailable");
+    }
+
+    const customStateName =
+      this._stateObj?.attributes.state_names?.[entityState as AlarmMode];
+    if (customStateName) {
+      return this.hass!.localize(
+        "ui.card.alarm_control_panel.armed_state_with_name",
+        { name: customStateName }
+      );
+    }
+
+    return (
+      this.hass!.localize(
+        `component.alarm_control_panel.entity_component._.state.${entityState}`
+      ) || entityState
+    );
   }
 
   private _handleInput(e: Event): void {

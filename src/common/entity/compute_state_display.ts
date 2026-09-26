@@ -271,6 +271,20 @@ const computeStateToPartsFromEntityAttributes = (
     }
   }
 
+  if (domain === "alarm_control_panel") {
+    const customStateName = attributes.state_names?.[state];
+    if (customStateName) {
+      return [
+        {
+          type: "value",
+          value: localize("ui.card.alarm_control_panel.armed_state_with_name", {
+            name: customStateName,
+          }),
+        },
+      ];
+    }
+  }
+
   return [
     {
       type: "value",

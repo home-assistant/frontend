@@ -106,6 +106,7 @@
         "clear_code": "Clear",
         "disarm": "Disarm",
         "arm": "Arm",
+        "armed_state_with_name": "Armed {name}",
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
