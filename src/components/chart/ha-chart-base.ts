@@ -12,6 +12,7 @@ import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
+  ElementEvent,
   LegendComponentOption,
   LineSeriesOption,
   TooltipOption,
@@ -182,6 +183,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _lastTapTime?: number;
 
+  // A mouse button is held on the chart, so zooming now is a drag that pans it
+  private _mouseDown = false;
+
+  private _tooltipHiddenWhilePanning = false;
+
   private _longPressTimer?: ReturnType<typeof setTimeout>;
 
   private _longPressTriggered = false;
@@ -248,6 +254,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._legendPointerCancel();
+    window.removeEventListener("mouseup", this._handleWindowMouseUp);
+    this._mouseDown = false;
+    this._tooltipHiddenWhilePanning = false;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
     this._pendingOptions = undefined;
@@ -807,6 +816,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
+      });
+      this.chart.getZr().on("mousedown", (e: ElementEvent) => {
+        // Only the primary button pans. zrender does not mark touch and pen as
+        // touch when it listens to pointer events, as on Edge, so check that too.
+        const ev = e.event;
+        const isMouse = !("pointerType" in ev) || ev.pointerType === "mouse";
+        if (!e.zrByTouch && isMouse && "button" in ev && ev.button === 0) {
+          this._mouseDown = true;
+          // on window, so releasing the button outside the chart also counts
+          window.addEventListener("mouseup", this._handleWindowMouseUp, {
+            once: true,
+          });
+        }
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
@@ -1493,6 +1515,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
+    // the tooltip would follow the pointer across the moving data; a modifier
+    // drag only zooms once, on release
+    if (
+      this._mouseDown &&
+      !this._modifierPressed &&
+      !this._tooltipHiddenWhilePanning
+    ) {
+      this._tooltipHiddenWhilePanning = true;
+      this._setPanTooltipsHidden(true);
+    }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
@@ -1500,6 +1532,27 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       });
     }
     fireEvent(this, "chart-zoom", { start, end });
+  }
+
+  private _handleWindowMouseUp = () => {
+    this._mouseDown = false;
+    if (this._tooltipHiddenWhilePanning) {
+      this._tooltipHiddenWhilePanning = false;
+      this._setPanTooltipsHidden(false);
+    }
+  };
+
+  // Restores the configured visibility of each tooltip rather than forcing it
+  // on, so a chart without a tooltip, or with a hidden one, stays that way.
+  private _setPanTooltipsHidden(hidden: boolean) {
+    if (!this.options?.tooltip) {
+      return;
+    }
+    this.chart?.setOption({
+      tooltip: ensureArray(this.options.tooltip).map((tooltip) => ({
+        show: hidden ? false : (tooltip.show ?? true),
+      })),
+    });
   }
 
   // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
