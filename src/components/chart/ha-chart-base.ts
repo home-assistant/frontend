@@ -58,6 +58,8 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+// echarts' own default, restored when switching back from touch input
+const DEFAULT_TOOLTIP_TRIGGER_ON = "mousemove|click|mousewheel";
 export const DEFAULT_CHART_WIDTH = 500;
 // Slack so a chart is up to date before a scroll can reach it. A phone screen
 // is short enough for a whole screenful; on a desktop that would cover the page.
@@ -180,6 +182,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _isTouchDevice = "ontouchstart" in window;
 
+  // Whether the chart was last used with touch rather than a mouse. With touch
+  // the tooltip only opens on a tap, like on mobile, while a mouse on the same
+  // device still shows it on hover.
+  private _touchInput = this._isTouchDevice;
+
   private _lastTapTime?: number;
 
   private _longPressTimer?: ReturnType<typeof setTimeout>;
@@ -247,6 +254,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._removeOutsideTapListener();
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -534,6 +542,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
+            @pointerdown=${this._handleChartPointer}
+            @pointermove=${this._handleChartPointer}
           ></div>
         </div>
         <div class="sonification-output"></div>
@@ -785,6 +795,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
+      // the new chart starts with its handle hidden, so nothing would remove it
+      this._removeOutsideTapListener();
       if (this.chart) {
         this.chart.dispose();
         this.chart = undefined;
@@ -848,34 +860,52 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         });
         // show axis pointer handle on touch devices
         let dragJustEnded = false;
+        let handleShown = false;
         let lastTipX: number | undefined;
         let lastTipY: number | undefined;
+        // showTip fires on every pointer move, so only touch the chart options
+        // when the handle state changes. The update is a partial xAxis merge
+        // built from this.options: getOption() would deep clone all series data.
+        const setAxisPointerHandle = (show: boolean) => {
+          handleShown = show;
+          // the tooltip only opens on a tap, so a tap anywhere else closes it
+          if (show) {
+            document.addEventListener("pointerdown", this._handleOutsideTap, {
+              capture: true,
+              passive: true,
+            });
+          } else {
+            this._removeOutsideTapListener();
+          }
+          this.chart?.setOption({
+            xAxis: ensureArray(this.options?.xAxis ?? []).map(
+              (axis: XAXisOption) =>
+                axis.show === false
+                  ? {}
+                  : {
+                      axisPointer: show
+                        ? {
+                            status: "show",
+                            handle: {
+                              color: style.getPropertyValue("--primary-color"),
+                              margin: 0,
+                              size: 20,
+                              ...axis.axisPointer?.handle,
+                              show: true,
+                            },
+                            label: { show: false },
+                          }
+                        : { status: "hide", handle: { show: false } },
+                    }
+            ),
+          });
+        };
         this.chart.on("showTip", (e: any) => {
           lastTipX = e.x;
           lastTipY = e.y;
-          this.chart?.setOption({
-            xAxis: ensureArray(
-              (this.chart?.getOption().xAxis as any) ?? []
-            ).map((axis: XAXisOption) =>
-              axis.show
-                ? {
-                    ...axis,
-                    axisPointer: {
-                      ...axis.axisPointer,
-                      status: "show",
-                      handle: {
-                        color: style.getPropertyValue("--primary-color"),
-                        margin: 0,
-                        size: 20,
-                        ...axis.axisPointer?.handle,
-                        show: true,
-                      },
-                      label: { show: false },
-                    },
-                  }
-                : axis
-            ),
-          });
+          if (!handleShown) {
+            setAxisPointerHandle(true);
+          }
         });
         this.chart.on("hideTip", (e: any) => {
           // the drag end event doesn't have a `from` property
@@ -885,25 +915,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               dragJustEnded = false;
               return;
             }
-            this.chart?.setOption({
-              xAxis: ensureArray(
-                (this.chart?.getOption().xAxis as any) ?? []
-              ).map((axis: XAXisOption) =>
-                axis.show
-                  ? {
-                      ...axis,
-                      axisPointer: {
-                        ...axis.axisPointer,
-                        handle: {
-                          ...axis.axisPointer?.handle,
-                          show: false,
-                        },
-                        status: "hide",
-                      },
-                    }
-                  : axis
-              ),
-            });
+            // hiding the handle makes echarts fire hideTip again from inside
+            // setOption; the flag is already cleared, so that one is skipped
+            if (handleShown) {
+              setAxisPointerHandle(false);
+            }
             this.chart?.dispatchAction({
               type: "downplay",
             });
@@ -1090,6 +1106,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           // mobile charts are full width so we need to confine the tooltip to the chart
           next.confine = true;
           next.appendTo = undefined;
+        }
+        if (isMobile || this._touchInput) {
           next.triggerOn = "click";
         }
         return next;
@@ -1460,6 +1478,42 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     return "move";
   }
+
+  // pointerdown arrives before the click that shows the tooltip, so the trigger
+  // is switched before echarts acts on a tap. Only on touch devices, which
+  // install the handle and outside tap handlers. A pen counts as touch, as it
+  // does for echarts.
+  private _handleChartPointer(ev: PointerEvent) {
+    const touchInput = this._isTouchDevice && ev.pointerType !== "mouse";
+    if (touchInput === this._touchInput) {
+      return;
+    }
+    this._touchInput = touchInput;
+    if (!this.chart || !this.options?.tooltip) {
+      return;
+    }
+    const tooltip = this._createOptions().tooltip;
+    this.chart.setOption({
+      tooltip: ensureArray(tooltip ?? []).map((t) => ({
+        triggerOn: t.triggerOn ?? DEFAULT_TOOLTIP_TRIGGER_ON,
+      })),
+    });
+  }
+
+  private _removeOutsideTapListener() {
+    document.removeEventListener("pointerdown", this._handleOutsideTap, {
+      capture: true,
+    });
+  }
+
+  // A pen does not reliably fire touch events, so this listens to pointer
+  // events. The mouse is left out: echarts already hides the tooltip when it
+  // leaves the chart, even when the tooltip only opens on click.
+  private _handleOutsideTap = (ev: PointerEvent) => {
+    if (ev.pointerType !== "mouse" && !ev.composedPath().includes(this)) {
+      this.chart?.dispatchAction({ type: "hideTip", from: "outside" });
+    }
+  };
 
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
