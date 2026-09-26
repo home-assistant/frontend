@@ -9157,7 +9157,7 @@
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
               "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
-              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins.",
+              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. To remove a ban, delete the IP address from ip_bans.yaml in your configuration directory, then restart Home Assistant.",
               "login_attempts_threshold": "Failed login attempts before an IP is banned. Set to -1 to disable automatic bans."
             }
           },
