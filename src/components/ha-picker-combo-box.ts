@@ -3,7 +3,7 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume, type ContextType } from "@lit/context";
 import { mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
   customElement,
   eventOptions,
@@ -80,7 +80,56 @@ type PickerComboBoxRowElement = HTMLDivElement & {
 const MAX_PLAIN_LIST_ITEMS = 12;
 
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
-const PADDING_ID = "___padding___";
+export const PADDING_ID = "___padding___";
+
+/**
+ * Whether Enter on this row would pick something. Section titles are plain
+ * strings, and the padding and empty-list rows are placeholders, so the
+ * keyboard cursor skips all of them.
+ */
+export const isPickableItem = (
+  item?: PickerComboBoxItem | string
+): item is PickerComboBoxItem =>
+  !!item &&
+  typeof item !== "string" &&
+  !item.disabled &&
+  item.id !== NO_ITEMS_AVAILABLE_ID &&
+  item.id !== PADDING_ID;
+
+/** Nearest pickable row from `from`, moving by `step`. -1 when there is none. */
+export const findPickableIndex = (
+  items: (PickerComboBoxItem | string)[],
+  from: number,
+  step: 1 | -1
+): number => {
+  for (let i = from; i >= 0 && i < items.length; i += step) {
+    if (isPickableItem(items[i])) {
+      return i;
+    }
+  }
+  return -1;
+};
+
+/**
+ * Where the cursor sits before the user moves it, or -1 when Enter should do
+ * nothing. An untouched list without a value has no cursor: Enter is only ever
+ * a shortcut for a row the user has already narrowed to or picked.
+ */
+export const defaultSelectedIndex = (
+  items: (PickerComboBoxItem | string)[],
+  search: string,
+  value?: string
+): number => {
+  // A search narrows the list to what was asked for, so Enter takes the top
+  // match.
+  if (search) {
+    return findPickableIndex(items, 0, 1);
+  }
+  if (value) {
+    return items.findIndex((item) => isPickableItem(item) && item.id === value);
+  }
+  return -1;
+};
 
 export const DEFAULT_ROW_RENDERER_CONTENT = (item: PickerComboBoxItem) =>
   html` ${
@@ -225,7 +274,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _allItems: PickerComboBoxItem[] = [];
 
-  private _selectedItemIndex = -1;
+  /**
+   * The row Enter picks, or -1 when Enter does nothing. The highlight renders
+   * from this, so the cursor and Enter cannot disagree.
+   */
+  @state() private _selectedItemIndex = -1;
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -236,17 +289,53 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _search = "";
 
-  protected firstUpdated() {
+  private _cursorScrollPending = false;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
     this._registerKeyboardShortcuts();
   }
 
-  public willUpdate() {
+  public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._selectedSection = this.selectedSection;
       this._allItems = this._getItems();
       this._items = this._allItems;
       this._updateListMode();
     }
+    if (changedProps.has("_items") || changedProps.has("value")) {
+      this._selectedItemIndex = this._focusOwnsCursor
+        ? this._defaultSelectedIndex()
+        : -1;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    // ScrollableFadeMixin attaches its scroll observer here, so the fades stop
+    // updating if this returns without calling it.
+    super.updated(changedProps);
+    if (!this._cursorScrollPending) {
+      return;
+    }
+    this._cursorScrollPending = false;
+    if (this._selectedItemIndex === -1) {
+      this._resetListScroll();
+      return;
+    }
+    this._scrollCursorIntoView(this._selectedItemIndex);
+  }
+
+  private async _scrollCursorIntoView(index: number) {
+    if (!this._plainList) {
+      // The virtualizer takes its new items in its own update, which runs
+      // after this one, so scrolling now would address the old list.
+      await this.virtualizerElement?.updateComplete;
+      if (index !== this._selectedItemIndex) {
+        // The cursor moved on while we waited; that move scrolls itself.
+        return;
+      }
+    }
+    this._scrollRowIntoView(index);
   }
 
   disconnectedCallback() {
@@ -282,6 +371,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     return html`<ha-input-search
         appearance="outlined"
         .placeholder=${searchLabel}
+        @focus=${this._restoreCursor}
         @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
       >
@@ -314,10 +404,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         class="plain-list ${this._listScrolled ? "scrolled" : ""}"
         tabindex="0"
         @scroll=${this._onScrollList}
-        @focus=${this._focusList}
+        @focus=${this._restoreCursor}
         @blur=${this._resetSelectedItem}
       >
-        ${repeat(this._items, this._keyFunction, this._renderItem)}
+        ${repeat(
+          this._items,
+          this._keyFunction,
+          this._rowRenderer(this._selectedItemIndex, this.value)
+        )}
       </div>
     `;
   }
@@ -334,7 +428,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         tabindex="0"
         scroller
         .items=${this._items}
-        .renderItem=${this._renderItem}
+        .renderItem=${this._rowRenderer(this._selectedItemIndex, this.value)}
         style="min-height: 36px;"
         class=${this._listScrolled ? "scrolled" : ""}
         .layout=${
@@ -349,7 +443,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         }
         @unpinned=${this._handleUnpinned}
         @scroll=${this._onScrollList}
-        @focus=${this._focusList}
+        @focus=${this._restoreCursor}
         @blur=${this._resetSelectedItem}
         @visibilityChanged=${this._visibilityChanged}
       >
@@ -463,7 +557,22 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     return items;
   };
 
-  private _renderItem = (item: PickerComboBoxItem, index: number) => {
+  /**
+   * lit-virtualizer only re-renders its rows when one of its own properties
+   * changes, so anything the rows read off the host has to travel with the
+   * renderer's identity.
+   */
+  private _rowRenderer = memoizeOne(
+    (selectedIndex: number, _value?: string) =>
+      (item: PickerComboBoxItem, index: number) =>
+        this._renderItem(item, index, index === selectedIndex)
+  );
+
+  private _renderItem = (
+    item: PickerComboBoxItem,
+    index: number,
+    selected: boolean
+  ) => {
     if (!item) {
       return nothing;
     }
@@ -504,7 +613,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const renderer = this.rowRenderer || DEFAULT_ROW_RENDERER;
     return html`<div
       id=${`list-item-${index}`}
-      class="combo-box-row ${this.value === item.id ? "current-value" : ""}"
+      class="combo-box-row ${this.value === item.id ? "current-value" : ""} ${
+        selected ? "selected" : ""
+      }"
       .value=${item.id}
       .index=${index}
       .disabled=${item.disabled}
@@ -547,6 +658,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const textfield = ev.target as HaInputSearch;
     const searchString = (textfield.value ?? "").trim();
     this._search = searchString;
+    this._valuePinned = true;
+    // Filtering reseeds the cursor onto the first match, but an already
+    // scrolled list stays where it is, so that row can be off screen. Put it
+    // back in view once the filtered items have rendered.
+    this._cursorScrollPending = true;
 
     if (this.sections?.length) {
       this._items = this._getItems();
@@ -594,9 +710,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
       this._items = filteredItems;
     }
-
-    this._selectedItemIndex = -1;
-    this._valuePinned = true;
   };
 
   private _preventBlur(ev: Event) {
@@ -605,7 +718,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _toggleSection(ev: Event) {
     ev.stopPropagation();
-    this._resetSelectedItem();
     this._sectionTitle = undefined;
     const section = (ev.target as HTMLElement)["section-id"] as string;
     if (!section) {
@@ -623,12 +735,29 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._resetListScroll();
   }
 
+  /**
+   * The shortcuts are bound to the host, so they arrive wherever focus sits
+   * inside the picker. The navigation keys move the cursor without moving
+   * focus, so off the search field and the list they would highlight a row
+   * that Enter refuses to pick. A section chip keeps its own keys.
+   *
+   * Enter guards inside `_pickItem` instead, which stops propagation before it
+   * bails.
+   */
+  private _cursorKey =
+    (handler: (ev: KeyboardEvent) => void) => (ev: KeyboardEvent) => {
+      if (!this._focusOwnsCursor) {
+        return;
+      }
+      handler(ev);
+    };
+
   private _registerKeyboardShortcuts() {
     this._removeKeyboardShortcuts = tinykeys(this, {
-      ArrowUp: this._selectPreviousItem,
-      ArrowDown: this._selectNextItem,
-      Home: this._selectFirstItem,
-      End: this._selectLastItem,
+      ArrowUp: this._cursorKey(this._selectPreviousItem),
+      ArrowDown: this._cursorKey(this._selectNextItem),
+      Home: this._cursorKey(this._selectFirstItem),
+      End: this._cursorKey(this._selectLastItem),
       Enter: this._pickSelectedItem,
       "$mod+Enter": this._pickSelectedItemNewTab,
     });
@@ -654,36 +783,43 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     });
   }
 
-  private _focusList() {
-    if (this._selectedItemIndex === -1) {
-      this._initializeSelectedIndex();
-    }
+  /**
+   * The search field and the list are the only places Enter reaches the cursor
+   * from, so the cursor exists only while one of them has focus. Anywhere else
+   * inside the picker — a section chip — the highlight would promise a pick
+   * that Enter will not make.
+   */
+  private get _focusOwnsCursor(): boolean {
+    const focused = this.shadowRoot?.activeElement;
+    return (
+      !!focused &&
+      (focused === this._searchFieldElement || focused === this._listElement)
+    );
   }
 
   /**
-   * Initialize keyboard selection to the currently selected value,
-   * or fall back to the first item when searching (skipping section titles).
+   * The blur handlers drop the cursor, so whichever of the search field and the
+   * list takes focus next puts it back. Enter acts on the cursor, and the row
+   * it points at is highlighted, so both have to survive focus moving between
+   * the two.
    */
-  private _initializeSelectedIndex(): void {
-    if (!this._items.length) {
-      return;
+  private _restoreCursor() {
+    if (this._selectedItemIndex === -1) {
+      this._selectedItemIndex = this._defaultSelectedIndex();
     }
-    const initialIndex = this._getInitialSelectedIndex();
-    // Only initialize to first item if searching, otherwise require a selected value
-    if (initialIndex === 0 && !this._search) {
-      return;
-    }
-    let index = initialIndex;
-    // Skip section titles (strings)
-    if (typeof this._items[index] === "string") {
-      index += 1;
-    }
-    // Bounds check: ensure index is valid after skipping section title
-    if (index >= this._items.length) {
+  }
+
+  private _defaultSelectedIndex(): number {
+    return defaultSelectedIndex(this._items, this._search, this.value);
+  }
+
+  private _moveCursor(from: number, step: 1 | -1) {
+    const index = findPickableIndex(this._items, from, step);
+    if (index === -1) {
       return;
     }
     this._selectedItemIndex = index;
-    this._scrollToSelectedItem();
+    this._scrollRowIntoView(index);
   }
 
   private _selectNextItem = (ev?: KeyboardEvent) => {
@@ -693,121 +829,41 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
+    // Focusing the search field blurs the list, which resets the cursor, so
+    // read the starting index first.
+    const from = this._selectedItemIndex + 1;
+
     this._searchFieldElement?.focus();
 
-    const items = this._items;
-
-    const maxItems = items.length - 1;
-
-    if (maxItems === -1) {
-      this._resetSelectedItem();
-      return;
-    }
-
-    // If no item is selected yet, start from the currently selected value
-    if (this._selectedItemIndex === -1) {
-      this._initializeSelectedIndex();
-      if (this._selectedItemIndex !== -1) {
-        return;
-      }
-    }
-
-    const nextIndex =
-      maxItems === this._selectedItemIndex
-        ? this._selectedItemIndex
-        : this._selectedItemIndex + 1;
-
-    if (!items[nextIndex]) {
-      return;
-    }
-
-    if (typeof items[nextIndex] === "string") {
-      // Skip titles, padding and empty search
-      if (nextIndex === maxItems) {
-        return;
-      }
-      this._selectedItemIndex = nextIndex + 1;
-    } else {
-      this._selectedItemIndex = nextIndex;
-    }
-
-    this._scrollToSelectedItem();
+    this._moveCursor(from, 1);
   };
 
   private _selectPreviousItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
     ev.preventDefault();
-    if (!this._listElement) {
+    if (!this._listElement || this._selectedItemIndex <= 0) {
       return;
     }
 
-    if (this._selectedItemIndex > 0) {
-      const nextIndex = this._selectedItemIndex - 1;
-
-      const items = this._items;
-
-      if (!items[nextIndex]) {
-        return;
-      }
-
-      if (typeof items[nextIndex] === "string") {
-        // Skip titles, padding and empty search
-        if (nextIndex === 0) {
-          return;
-        }
-        this._selectedItemIndex = nextIndex - 1;
-      } else {
-        this._selectedItemIndex = nextIndex;
-      }
-
-      this._scrollToSelectedItem();
-    }
+    this._moveCursor(this._selectedItemIndex - 1, -1);
   };
 
   private _selectFirstItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
-    if (!this._listElement || !this._items.length) {
+    if (!this._listElement) {
       return;
     }
 
-    const nextIndex = 0;
-
-    if (typeof this._items[nextIndex] === "string") {
-      this._selectedItemIndex = nextIndex + 1;
-    } else {
-      this._selectedItemIndex = nextIndex;
-    }
-
-    this._scrollToSelectedItem();
+    this._moveCursor(0, 1);
   };
 
   private _selectLastItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
-    if (!this._listElement || !this._items.length) {
+    if (!this._listElement) {
       return;
     }
 
-    const nextIndex = this._items.length - 1;
-
-    if (typeof this._items[nextIndex] === "string") {
-      this._selectedItemIndex = nextIndex - 1;
-    } else {
-      this._selectedItemIndex = nextIndex;
-    }
-
-    this._scrollToSelectedItem();
-  };
-
-  private _scrollToSelectedItem = () => {
-    this._listElement?.querySelector(".selected")?.classList.remove("selected");
-
-    this._scrollRowIntoView(this._selectedItemIndex);
-
-    requestAnimationFrame(() => {
-      this._listElement
-        ?.querySelector(`#list-item-${this._selectedItemIndex}`)
-        ?.classList.add("selected");
-    });
+    this._moveCursor(this._items.length - 1, -1);
   };
 
   private _pickSelectedItem = (ev: KeyboardEvent) => {
@@ -820,36 +876,24 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _pickItem = (ev: KeyboardEvent, newTab: boolean) => {
     ev.stopPropagation();
-    if (
-      this._items.length < 4 && // it still can have a section title and a padding item
-      this._items.filter((item) => typeof item !== "string").length === 1
-    ) {
-      this._items.forEach((item, index) => {
-        if (typeof item !== "string" && !item.disabled) {
-          this._fireSelectedEvents(item.id, index, newTab);
-        }
-      });
+
+    // Enter is bound to the host, so it arrives wherever focus sits inside the
+    // picker. A focused section chip needs its own Enter to toggle its section.
+    if (!this._focusOwnsCursor) {
       return;
     }
 
-    if (this._selectedItemIndex === -1) {
-      this._initializeSelectedIndex();
-      if (this._selectedItemIndex === -1) {
-        return;
-      }
+    const item = this._items[this._selectedItemIndex];
+    if (this._selectedItemIndex === -1 || !isPickableItem(item)) {
+      return;
     }
 
-    // if filter button is focused
     ev.preventDefault();
 
-    const item = this._items[this._selectedItemIndex];
-    if (item && !item.disabled) {
-      this._fireSelectedEvents(item.id, this._selectedItemIndex, newTab);
-    }
+    this._fireSelectedEvents(item.id, this._selectedItemIndex, newTab);
   };
 
   private _resetSelectedItem() {
-    this._listElement?.querySelector(".selected")?.classList.remove("selected");
     this._selectedItemIndex = -1;
   }
 
@@ -904,16 +948,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         ha-combo-box-item {
           width: 100%;
-        }
-
-        ha-combo-box-item.selected {
-          background-color: var(--ha-color-fill-neutral-quiet-hover);
-        }
-
-        @media (prefers-color-scheme: dark) {
-          ha-combo-box-item.selected {
-            background-color: var(--ha-color-fill-neutral-normal-hover);
-          }
         }
 
         .list-wrapper {
@@ -976,6 +1010,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         .combo-box-row.selected {
           background-color: var(--ha-color-fill-neutral-quiet-hover);
+        }
+
+        .combo-box-row.current-value.selected {
+          background-color: var(--ha-color-fill-primary-quiet-hover);
         }
 
         @media (prefers-color-scheme: dark) {
