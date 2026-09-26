@@ -12,10 +12,13 @@ import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import type { MatterCommissionFinish } from "../../../../../external_app/external_messaging";
+import { handleConfigFlowStep } from "../../../../../data/config_flow";
 import {
+  canCommissionMatterExternal,
   commissionMatterDevice,
   watchForNewMatterDevice,
 } from "../../../../../data/matter";
+import type { MatterAddDeviceDialogParams } from "./show-dialog-add-matter-device";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
@@ -37,6 +40,7 @@ import "./matter-add-device/matter-add-device-main";
 import "./matter-add-device/matter-add-device-new";
 import "./matter-add-device/matter-add-device-commissioning";
 import "./matter-add-device/matter-add-device-device-added";
+import "./matter-add-device/matter-add-device-discovered";
 import { showToast } from "../../../../../util/toast";
 
 export type MatterAddDeviceStep =
@@ -48,7 +52,8 @@ export type MatterAddDeviceStep =
   | "apple_home"
   | "generic"
   | "commissioning"
-  | "device_added";
+  | "device_added"
+  | "discovered";
 
 declare global {
   interface HASSDomEvents {
@@ -68,6 +73,7 @@ const BACK_STEP: Record<MatterAddDeviceStep, MatterAddDeviceStep | undefined> =
     generic: "existing",
     commissioning: undefined,
     device_added: undefined,
+    discovered: undefined,
   };
 
 @customElement("dialog-matter-add-device")
@@ -104,8 +110,15 @@ class DialogMatterAddDevice extends LitElement {
 
   private _unsub?: UnsubscribeFunc;
 
-  public showDialog(): void {
+  private _discoveryFlowId?: string;
+
+  public showDialog(params: MatterAddDeviceDialogParams): void {
+    this._discoveryFlowId = params.discoveryFlowId;
     this._open = true;
+    // A discovered device only needs its code, unless the app can scan it.
+    if (this._discoveryFlowId && !canCommissionMatterExternal(this.hass)) {
+      this._step = "discovered";
+    }
     this._unsub = watchForNewMatterDevice(this.hass, (device) => {
       // make sure a refresh of the page will navigate to the device page, old iOS apps will refresh the webview when commissioning is done
       setRefreshUrl(`/config/devices/device/${device.id}`);
@@ -211,6 +224,7 @@ class DialogMatterAddDevice extends LitElement {
     this._open = false;
     this._step = "main";
     this._pairingCode = "";
+    this._discoveryFlowId = undefined;
     this._newDevice = undefined;
     this._mainEntity = undefined;
     this._mainEntityFetched = false;
@@ -283,7 +297,7 @@ class DialogMatterAddDevice extends LitElement {
     const savedStep = this._step;
     try {
       this._step = "commissioning";
-      await commissionMatterDevice(this.hass, code, true);
+      await this._commission(code);
     } catch (_err) {
       showToast(this, {
         message: this.hass.localize(
@@ -294,6 +308,20 @@ class DialogMatterAddDevice extends LitElement {
       this._step = savedStep;
     }
     // On success, keep showing commissioning spinner until watchForNewMatterDevice fires
+  }
+
+  private async _commission(code: string): Promise<void> {
+    if (!this._discoveryFlowId) {
+      await commissionMatterDevice(this.hass, code, true);
+      return;
+    }
+    // The discovery flow commissions over Bluetooth and ends itself on success.
+    const step = await handleConfigFlowStep(this.hass, this._discoveryFlowId, {
+      code,
+    });
+    if (step.type !== "abort" || step.reason !== "commission_successful") {
+      throw new Error("Commissioning failed");
+    }
   }
 
   private async _finishDeviceAdded(): Promise<void> {
@@ -377,7 +405,8 @@ class DialogMatterAddDevice extends LitElement {
     if (
       this._step === "apple_home" ||
       this._step === "google_home_fallback" ||
-      this._step === "generic"
+      this._step === "generic" ||
+      this._step === "discovered"
     ) {
       return html`
         <ha-button
