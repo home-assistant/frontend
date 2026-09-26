@@ -13,6 +13,7 @@ env:
 
 jobs:
   deploy:
+    if: github.repository == 'home-assistant/frontend'
     runs-on: ubuntu-latest
     environment:
       name: Design

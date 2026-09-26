@@ -3143,7 +3143,7 @@
               },
               "rating": {
                 "title": "Security rating",
-                "description": "This shows the security rating of the app. Higher is better."
+                "description": "This shows the security rating of the app on a scale from 1 to {max}. Higher is better."
               },
               "host_network": {
                 "title": "Host network",
@@ -4719,7 +4719,7 @@
             "debug": "DEBUG"
           },
           "custom_integration": "custom integration",
-          "error_from_custom_integration": "This error originated from a custom integration.",
+          "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
@@ -4745,6 +4745,31 @@
           "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
+            "report_issue": {
+              "frontend": {
+                "introduction": "This log entry was reported by a browser (or the Home Assistant app).",
+                "report": "If you think it relates to Home Assistant’s user interface, {report_link}.",
+                "guidance": "Core, custom integrations, or custom Frontend modules may also be involved. See the {guide_link} for further guidance.",
+                "link_text": "report it on the Frontend repository"
+              },
+              "core": {
+                "introduction": "This log entry was reported by Home Assistant Core.",
+                "report": "If you think it indicates a bug, {report_link}.",
+                "guidance": "See the {guide_link} for further guidance.",
+                "link_text": "report it on the Core repository"
+              },
+              "custom": {
+                "introduction": "This log entry is from {integration}, a custom integration.",
+                "report": "If you think it indicates a bug, you can {report_link}.",
+                "link_text": "report it on its issue tracker"
+              },
+              "custom_fallback": {
+                "introduction": "This log entry is from {integration}, a custom integration. Its issue tracker is unavailable.",
+                "report": "If you think it indicates a Home Assistant Core bug, {report_link}.",
+                "guidance": "See the {guide_link} for further guidance."
+              },
+              "guide_link_text": "reporting guide"
+            },
             "source": "Source",
             "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
@@ -6190,6 +6215,20 @@
             "no_traces_found": "No traces found",
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
+            "graph": {
+              "node_label": "{description}, {state}",
+              "state": {
+                "executed": "executed",
+                "not_executed": "not executed",
+                "passed": "passed",
+                "failed": "failed",
+                "passed_and_failed": "passed and failed",
+                "not_triggered": "did not trigger",
+                "error": "error",
+                "disabled": "disabled",
+                "repeated": "repeated {count} times"
+              }
+            },
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",
@@ -7277,6 +7316,7 @@
             "entries_helper": "Helpers",
             "entries_hardware": "Hardware",
             "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
+            "entries_virtual": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
             "yaml_entry": "This integration was not set up via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
@@ -7288,7 +7328,8 @@
             "add_helper": "Add helper",
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
           },
           "config_entry": {
             "application_credentials": {
@@ -7375,7 +7416,8 @@
               "setup_retry": "Failed setup, will retry",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload",
-              "setup_in_progress": "Initializing"
+              "setup_in_progress": "Initializing",
+              "unload_in_progress": "Unloading"
             },
             "open_configuration_url": "Visit device",
             "bronze_quality": "Bronze quality",
@@ -9115,7 +9157,7 @@
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
               "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
-              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins.",
+              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. To remove a ban, delete the IP address from ip_bans.yaml in your configuration directory, then restart Home Assistant.",
               "login_attempts_threshold": "Failed login attempts before an IP is banned. Set to -1 to disable automatic bans."
             }
           },

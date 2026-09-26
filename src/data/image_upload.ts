@@ -75,7 +75,7 @@ export const updateImage = (
 ) =>
   hass.callWS<Image>({
     type: "image/update",
-    media_id: id,
+    image_id: id,
     ...updates,
   });
 

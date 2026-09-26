@@ -241,7 +241,7 @@ export const createAssistMessageProcessor = ({
       }
     } else if (event.type === "intent-end") {
       continueConversation = event.data.intent_output.continue_conversation;
-      const response = event.data.intent_output.response.speech?.plain.speech;
+      const response = event.data.intent_output.response.speech.plain?.speech;
       if (
         event.data.intent_output.response.response_type === "error" &&
         response

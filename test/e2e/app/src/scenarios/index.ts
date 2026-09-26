@@ -17,6 +17,15 @@ import {
   type ForecastEvent,
 } from "../../../../../src/data/weather";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+import type { LoggedError } from "../../../../../src/data/system_log";
+import type { IntegrationManifest } from "../../../../../src/data/integration";
+import { manifest } from "../../../../../demo/src/stubs/manifest";
+
+declare global {
+  interface Window {
+    resolveReportManifest?: () => void;
+  }
+}
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
 
@@ -165,6 +174,7 @@ const quickSearchAssistScenario: Scenario = async (hass) => {
     tts_voice: null,
     wake_word_entity: null,
     wake_word_id: null,
+    prefer_local_intents: false,
   };
 
   hass.updateHass({
@@ -362,6 +372,127 @@ const delayedMediaBrowseErrorScenario: Scenario = (hass) => {
   hass.mockWS("media_source/browse_media", () => browsePromise);
 };
 
+const systemLogReportingScenario: Scenario = async (hass) => {
+  await hass.loadFragmentTranslation("config");
+  hass.updateHass({
+    config: {
+      ...hass.config,
+      components: [...hass.config.components, "system_health"],
+    },
+  });
+
+  const entries: Pick<
+    LoggedError,
+    "name" | "message" | "source" | "exception"
+  >[] = [
+    {
+      name: "frontend.js.modern.202609180",
+      message: [
+        "Uncaught error from Firefox 140.0 on Linux\nTypeError: Report fixture failed\nrender@src/example.ts:10:2",
+        "Another occurrence: café & ? # %\n```",
+      ],
+      source: ["components/system_log/__init__.py", 350],
+      exception: "",
+    },
+    {
+      name: "homeassistant.components.hue",
+      message: ["Built-in integration error"],
+      source: ["components/hue/light.py", 20],
+      exception:
+        "Traceback (most recent call last):\nValueError: Invalid light",
+    },
+    {
+      name: "homeassistant.core",
+      message: ["General Core error"],
+      source: ["core.py", 50],
+      exception: "RuntimeError: Test error",
+    },
+    {
+      name: "third_party_library",
+      message: ["Error with relative integration source"],
+      source: ["components/hue/light.py", 21],
+      exception: "ValueError: Invalid response",
+    },
+    {
+      name: "custom_components.example",
+      message: ["Custom integration error"],
+      source: ["custom_components/example/sensor.py", 30],
+      exception: "ValueError: Custom fixture",
+    },
+    ...[
+      { domain: "no_tracker", message: "Missing tracker error" },
+      { domain: "unsafe_tracker", message: "Unsafe tracker error" },
+      { domain: "delayed_manifest", message: "Delayed manifest error" },
+    ].map(
+      ({
+        domain,
+        message,
+      }): Pick<LoggedError, "name" | "message" | "source" | "exception"> => ({
+        name: `custom_components.${domain}`,
+        message: [message],
+        source: [`custom_components/${domain}/sensor.py`, 30],
+        exception: "",
+      })
+    ),
+    {
+      name: "homeassistant.components.overridden",
+      message: ["Custom override error"],
+      source: ["components/overridden/sensor.py", 30],
+      exception: "",
+    },
+    {
+      name: "homeassistant.components.failed_manifest",
+      message: ["Failed manifest error"],
+      source: ["components/failed_manifest/sensor.py", 30],
+      exception: "",
+    },
+  ];
+
+  hass.mockWS("system_log/list", () =>
+    entries.map((entry): LoggedError => ({
+      ...entry,
+      level: "error",
+      count: 1,
+      timestamp: 1789760000,
+      first_occurred: 1789760000,
+    }))
+  );
+  hass.mockWS("manifest/get", ({ integration }: { integration: string }) => {
+    switch (integration) {
+      case "failed_manifest":
+        return Promise.reject(new Error("Manifest unavailable"));
+      case "delayed_manifest":
+        return new Promise<IntegrationManifest>((resolve) => {
+          window.resolveReportManifest = () =>
+            resolve(
+              manifest(integration, "Delayed integration", {
+                is_built_in: false,
+                issue_tracker: "https://example.com/delayed/issues",
+              })
+            );
+        });
+      case "example":
+      case "overridden":
+        return manifest(integration, "Custom example", {
+          is_built_in: false,
+          issue_tracker: "https://example.com/issues?project=example",
+        });
+      case "no_tracker":
+        return manifest(integration, "Missing tracker", { is_built_in: false });
+      case "unsafe_tracker":
+        return manifest(integration, "Unsafe tracker", {
+          is_built_in: false,
+          issue_tracker: "data:text/html,unsafe",
+        });
+      default:
+        return manifest(
+          integration,
+          integration === "hue" ? "Philips Hue" : integration
+        );
+    }
+  });
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
@@ -381,4 +512,5 @@ export const scenarios: Record<string, Scenario> = {
   "weather-more-info": weatherMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,
   "delayed-lovelace": delayedLovelaceScenario,
+  "system-log-reporting": systemLogReportingScenario,
 };

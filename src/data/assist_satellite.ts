@@ -8,7 +8,7 @@ export enum AssistSatelliteEntityFeature {
 }
 
 export interface WakeWordInterceptMessage {
-  wake_word_phrase: string;
+  wake_word_phrase: string | null;
 }
 
 export interface WakeWordOption {
@@ -21,8 +21,8 @@ export interface AssistSatelliteConfiguration {
   active_wake_words: string[];
   available_wake_words: WakeWordOption[];
   max_active_wake_words: number;
-  pipeline_entity_id: string;
-  vad_entity_id: string;
+  pipeline_entity_id: string | null;
+  vad_entity_id: string | null;
 }
 
 export const interceptWakeWord = (

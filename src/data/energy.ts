@@ -242,8 +242,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  affected_entities: [string, unknown][];
-  translation_placeholders: Record<string, string>;
+  affected_entities: [string, string | number | null][];
+  translation_placeholders: Record<string, string> | null;
 }
 
 export interface EnergyPreferencesValidation {

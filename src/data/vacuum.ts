@@ -67,7 +67,7 @@ export function canReturnHome(stateObj: VacuumEntity): boolean {
 export interface Segment {
   id: string;
   name: string;
-  group?: string;
+  group: string | null;
 }
 
 export const getVacuumSegments = (

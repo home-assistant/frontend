@@ -56,13 +56,19 @@ export interface ForecastAttribute {
   temperature: number;
   datetime: string;
   templow?: number;
+  apparent_temperature?: number;
+  dew_point?: number;
   precipitation?: number;
   precipitation_probability?: number;
   humidity?: number;
+  cloud_coverage?: number;
+  uv_index?: number;
   condition?: string;
   is_daytime?: boolean;
   pressure?: number;
-  wind_speed?: string;
+  wind_bearing?: number | string;
+  wind_gust_speed?: number;
+  wind_speed?: number;
 }
 
 export type ForecastPrecipitationType = "amount" | "probability";
@@ -77,13 +83,18 @@ export const getForecastPrecipitation = (
 
 interface WeatherEntityAttributes extends HassEntityAttributeBase {
   attribution?: string;
+  apparent_temperature?: number;
+  cloud_coverage?: number;
+  dew_point?: number;
   humidity?: number;
   forecast?: ForecastAttribute[];
-  is_daytime?: boolean;
+  ozone?: number;
   pressure?: number;
   temperature?: number;
+  uv_index?: number;
   visibility?: number;
   wind_bearing?: number | string;
+  wind_gust_speed?: number;
   wind_speed?: number;
   precipitation_unit: string;
   pressure_unit: string;
@@ -94,7 +105,7 @@ interface WeatherEntityAttributes extends HassEntityAttributeBase {
 
 export interface ForecastEvent {
   type: "hourly" | "daily" | "twice_daily";
-  forecast: [ForecastAttribute] | null;
+  forecast: ForecastAttribute[] | null;
 }
 
 export interface WeatherEntity extends HassEntityBase {

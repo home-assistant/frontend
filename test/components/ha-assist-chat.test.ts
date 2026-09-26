@@ -116,12 +116,12 @@ const intentEnd = (
         response_type: "query_answer",
         speech:
           speech === undefined
-            ? null
+            ? {}
             : {
                 plain: { extra_data: {}, speech },
                 ssml: { extra_data: {}, speech },
               },
-        data: { targets: [], success: [], failed: [] },
+        data: { success: [], failed: [] },
       },
       continue_conversation: continueConversation,
     },
@@ -151,6 +151,7 @@ describe("createAssistMessageProcessor", () => {
             id: "call-1",
             tool_name: "get_weather",
             tool_args: { city: "Utrecht" },
+            external: false,
           },
         ],
       })
@@ -207,6 +208,7 @@ describe("createAssistMessageProcessor", () => {
             id: "call-1",
             tool_name: "get_weather",
             tool_args: { city: "Utrecht" },
+            external: false,
           },
         ],
       })
@@ -254,7 +256,14 @@ describe("createAssistMessageProcessor", () => {
     processor.processEvent(
       assistantDelta({
         role: "assistant",
-        tool_calls: [{ id: "call-1", tool_name: "get_state", tool_args: {} }],
+        tool_calls: [
+          {
+            id: "call-1",
+            tool_name: "get_state",
+            tool_args: {},
+            external: false,
+          },
+        ],
       })
     );
     processor.processEvent(
@@ -312,7 +321,12 @@ describe("createAssistMessageProcessor", () => {
     processor.processEvent(
       assistantDelta({
         tool_calls: [
-          { id: "call-1", tool_name: "get_sensor_state", tool_args: {} },
+          {
+            id: "call-1",
+            tool_name: "get_sensor_state",
+            tool_args: {},
+            external: false,
+          },
         ],
       })
     );
