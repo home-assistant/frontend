@@ -16,6 +16,10 @@ import {
   deleteConfigEntry,
   getConfigEntries,
 } from "../../../data/config_entries";
+import {
+  createConfigFlow,
+  handleConfigFlowStep,
+} from "../../../data/config_flow";
 import type { LLMApi } from "../../../data/llm";
 import { fetchLLMApis } from "../../../data/llm";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -42,6 +46,8 @@ export class MCPPref extends LitElement {
   @state() private _apis?: LLMApi[];
 
   @state() private _error?: string;
+
+  @state() private _enabling = false;
 
   private _sortedApis = memoizeOne((apis: LLMApi[], language: string) =>
     [...apis].sort((a, b) => a.name.localeCompare(b.name, language))
@@ -128,7 +134,12 @@ export class MCPPref extends LitElement {
           this._entry === null
             ? html`
                 <div class="card-actions centered">
-                  <ha-button appearance="filled" @click=${this._enable}>
+                  <ha-button
+                    appearance="filled"
+                    .loading=${this._enabling}
+                    .disabled=${this._enabling}
+                    @click=${this._enable}
+                  >
                     ${this.hass.localize("ui.panel.config.mcp.enable")}
                   </ha-button>
                 </div>
@@ -202,13 +213,33 @@ export class MCPPref extends LitElement {
     }
   }
 
-  private _enable() {
-    showConfigFlowDialog(this, {
-      startFlowHandler: MCP_SERVER_DOMAIN,
-      dialogClosedCallback: () => {
-        this._load();
-      },
-    });
+  private async _enable() {
+    this._enabling = true;
+    try {
+      // The config flow only asks for confirmation, so submit it directly
+      let step = await createConfigFlow(this.hass, MCP_SERVER_DOMAIN);
+      if (step.type === "form") {
+        step = await handleConfigFlowStep(this.hass, step.flow_id, {});
+      }
+      if (step.type === "form") {
+        showConfigFlowDialog(this, {
+          continueFlowId: step.flow_id,
+          dialogClosedCallback: () => {
+            this._load();
+          },
+        });
+        return;
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.mcp.error_enable"),
+        text: err?.message,
+      });
+      return;
+    } finally {
+      this._enabling = false;
+    }
+    await this._load();
   }
 
   private _configure() {
