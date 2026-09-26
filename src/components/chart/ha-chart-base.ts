@@ -848,34 +848,43 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         });
         // show axis pointer handle on touch devices
         let dragJustEnded = false;
+        let handleShown = false;
         let lastTipX: number | undefined;
         let lastTipY: number | undefined;
+        // showTip fires on every pointer move, so only touch the chart options
+        // when the handle state changes. The update is a partial xAxis merge
+        // built from this.options: getOption() would deep clone all series data.
+        const setAxisPointerHandle = (show: boolean) => {
+          handleShown = show;
+          this.chart?.setOption({
+            xAxis: ensureArray(this.options?.xAxis ?? []).map(
+              (axis: XAXisOption) =>
+                axis.show === false
+                  ? {}
+                  : {
+                      axisPointer: show
+                        ? {
+                            status: "show",
+                            handle: {
+                              color: style.getPropertyValue("--primary-color"),
+                              margin: 0,
+                              size: 20,
+                              ...axis.axisPointer?.handle,
+                              show: true,
+                            },
+                            label: { show: false },
+                          }
+                        : { status: "hide", handle: { show: false } },
+                    }
+            ),
+          });
+        };
         this.chart.on("showTip", (e: any) => {
           lastTipX = e.x;
           lastTipY = e.y;
-          this.chart?.setOption({
-            xAxis: ensureArray(
-              (this.chart?.getOption().xAxis as any) ?? []
-            ).map((axis: XAXisOption) =>
-              axis.show
-                ? {
-                    ...axis,
-                    axisPointer: {
-                      ...axis.axisPointer,
-                      status: "show",
-                      handle: {
-                        color: style.getPropertyValue("--primary-color"),
-                        margin: 0,
-                        size: 20,
-                        ...axis.axisPointer?.handle,
-                        show: true,
-                      },
-                      label: { show: false },
-                    },
-                  }
-                : axis
-            ),
-          });
+          if (!handleShown) {
+            setAxisPointerHandle(true);
+          }
         });
         this.chart.on("hideTip", (e: any) => {
           // the drag end event doesn't have a `from` property
@@ -885,25 +894,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               dragJustEnded = false;
               return;
             }
-            this.chart?.setOption({
-              xAxis: ensureArray(
-                (this.chart?.getOption().xAxis as any) ?? []
-              ).map((axis: XAXisOption) =>
-                axis.show
-                  ? {
-                      ...axis,
-                      axisPointer: {
-                        ...axis.axisPointer,
-                        handle: {
-                          ...axis.axisPointer?.handle,
-                          show: false,
-                        },
-                        status: "hide",
-                      },
-                    }
-                  : axis
-              ),
-            });
+            // hiding the handle makes echarts fire hideTip again from inside
+            // setOption; the flag is already cleared, so that one is skipped
+            if (handleShown) {
+              setAxisPointerHandle(false);
+            }
             this.chart?.dispatchAction({
               type: "downplay",
             });
