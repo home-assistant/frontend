@@ -988,7 +988,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   // visible x-axis to zoom; a chart can switch type (e.g. pie and bar) without
   // being rebuilt, so this is re-evaluated when the options change.
   private _updateDragToZoom() {
-    const xAxis = ensureArray(this.options?.xAxis)[0] as
+    const xAxis = ensureArray(this.options?.xAxis)?.[0] as
       XAXisOption | undefined;
     this.chart?.dispatchAction({
       type: "takeGlobalCursor",
@@ -1488,7 +1488,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return;
     }
     const [start, end] = this._zoomRange;
-    const xAxis = ensureArray(this.options?.xAxis)[0] as
+    const xAxis = ensureArray(this.options?.xAxis)?.[0] as
       XAXisOption | undefined;
     const direction = xAxis?.inverse ? -1 : 1;
     const shift = Math.max(
