@@ -2,7 +2,7 @@
  * E2E tests for the HA test app (port 8095).
  *
  * Run with:
- *   yarn test:e2e:app
+ *   pnpm test:e2e:app
  */
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";

@@ -11,16 +11,8 @@ dist/
 # Composite action source, not build output
 !/.github/actions/build/
 
-# yarn
-.yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
+# Node
 node_modules/
-yarn-error.log
 npm-debug.log
 
 # Python stuff

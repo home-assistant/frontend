@@ -88,7 +88,7 @@ const checkSprites = (name, style, sheet) => {
   if (missing.length) {
     throw new Error(
       `Style "${name}" references icons missing from the bundled ${SPRITE_SHEET} ` +
-        `sprite sheet: ${missing.join(", ")}. Run \`yarn gulp update-map-sprites\` ` +
+        `sprite sheet: ${missing.join(", ")}. Run \`pnpm exec gulp update-map-sprites\` ` +
         `and commit the result.`
     );
   }
