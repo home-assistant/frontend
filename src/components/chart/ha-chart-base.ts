@@ -245,6 +245,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _pendingZoom?: [number, number, boolean];
 
+  // Last zoom window in percent, kept so wheel panning need not read it back
+  // from the chart options.
+  private _zoomRange: [number, number] = [0, 100];
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._legendPointerCancel();
@@ -316,12 +320,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
           this._updateSankeyRoam();
-          // drag to zoom
-          this.chart?.dispatchAction({
-            type: "takeGlobalCursor",
-            key: "dataZoomSelect",
-            dataZoomSelectActive: true,
-          });
         }
       };
 
@@ -335,11 +333,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
           this._updateSankeyRoam();
-          this.chart?.dispatchAction({
-            type: "takeGlobalCursor",
-            key: "dataZoomSelect",
-            dataZoomSelectActive: false,
-          });
         }
       };
       window.addEventListener("keydown", handleKeyDown);
@@ -534,6 +527,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
+            @wheel=${this._handleWheel}
           ></div>
         </div>
         <div class="sonification-output"></div>
@@ -800,6 +794,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(this._chartContainer!, "custom");
+      this._zoomRange = [0, 100];
       if (this._isZoomed) {
         this._isZoomed = false;
         this._zoomRatio = 1;
@@ -926,6 +921,18 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         series: this._getSeries(),
       });
       this._updateSankeyRoam();
+      if (
+        !this._isTouchDevice &&
+        !this.options?.dataZoom &&
+        this._getDataZoomConfig()
+      ) {
+        // drag to zoom
+        this.chart.dispatchAction({
+          type: "takeGlobalCursor",
+          key: "dataZoomSelect",
+          dataZoomSelectActive: true,
+        });
+      }
       if (this._pendingZoom) {
         const [start, end, silent] = this._pendingZoom;
         this._pendingZoom = undefined;
@@ -987,8 +994,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       orient: "horizontal",
       filterMode: this._getDataZoomFilterMode() as any,
       xAxisIndex: 0,
-      moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
-      preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
+      // A mouse drag selects a range to zoom into, so only touch pans by
+      // dragging. Mouse users pan with horizontal scrolling instead.
+      moveOnMouseMove: this._isTouchDevice && this._isZoomed,
+      preventDefaultMouseMove: this._isTouchDevice && this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
   }
@@ -1418,6 +1427,39 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     });
   }
 
+  // Horizontal scrolling (trackpad swipe, or Shift + wheel) pans a zoomed
+  // chart, since a mouse drag is taken by the zoom selection.
+  private _handleWheel(ev: WheelEvent) {
+    if (!this.chart || !this._isZoomed || this.options?.dataZoom) {
+      return;
+    }
+    const delta = ev.shiftKey ? ev.deltaX || ev.deltaY : ev.deltaX;
+    if (!delta || (!ev.shiftKey && Math.abs(ev.deltaX) < Math.abs(ev.deltaY))) {
+      return;
+    }
+    ev.preventDefault();
+    const pixels =
+      ev.deltaMode === WheelEvent.DOM_DELTA_LINE ? delta * 16 : delta;
+    const [start, end] = this._zoomRange;
+    const xAxis = ensureArray(this.options?.xAxis)[0] as
+      XAXisOption | undefined;
+    const direction = xAxis?.inverse ? -1 : 1;
+    const shift = Math.max(
+      -start,
+      Math.min(
+        100 - end,
+        (direction * pixels * (end - start)) / this.chart.getWidth()
+      )
+    );
+    if (shift) {
+      this.chart.dispatchAction({
+        type: "dataZoom",
+        start: start + shift,
+        end: end + shift,
+      });
+    }
+  }
+
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
     // Reset sankey roam zoom
@@ -1495,6 +1537,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
     }
 
+    this._zoomRange = [start, end];
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
     if (this._isTouchDevice) {
