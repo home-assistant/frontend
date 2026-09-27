@@ -845,8 +845,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         // filter location data from states and remove all invalid locations
         const points: HaMapPathPoint[] = [];
         for (const entityState of entityStates) {
-          const latitude = entityState.a.latitude;
-          const longitude = entityState.a.longitude;
+          const latitude = entityState.a?.latitude;
+          const longitude = entityState.a?.longitude;
           if (!latitude || !longitude) {
             continue;
           }

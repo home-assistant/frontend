@@ -217,6 +217,8 @@ export interface CalendarEventApiData {
   uid?: string | null;
   recurrence_id?: string | null;
   rrule?: string | null;
+  status?: "confirmed" | "tentative" | null;
+  all_day?: boolean;
 }
 
 export interface CalendarEventSubscription {

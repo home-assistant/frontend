@@ -1,4 +1,4 @@
-import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
+import "../../../components/skeleton/ha-skeleton-text";
 import { consume, type ContextType } from "@lit/context";
 import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -188,8 +188,10 @@ class DialogSystemLogDetail extends LitElement {
           integration &&
           this._manifest === undefined &&
           reportTarget !== "frontend"
-            ? html`<ha-alert alert-type="info">
-                <wa-skeleton effect="sheen"></wa-skeleton>
+            ? html`<ha-alert
+                alert-type=${this.isCustomIntegration ? "warning" : "info"}
+              >
+                <ha-skeleton-text></ha-skeleton-text>
               </ha-alert>`
             : html`<ha-alert
                 alert-type=${this.isCustomIntegration ? "warning" : "info"}
@@ -421,10 +423,24 @@ class DialogSystemLogDetail extends LitElement {
         ha-alert p + p {
           margin-block-start: var(--ha-space-2);
         }
-        wa-skeleton {
-          height: 1em;
-          --color: var(--ha-color-fill-neutral-normal-resting);
-          --sheen-color: var(--ha-color-fill-neutral-loud-resting);
+        ha-skeleton-text {
+          --ha-skeleton-text-width: 320px;
+        }
+        @supports (color: color-mix(in srgb, black, transparent)) {
+          ha-alert[alert-type="info"] ha-skeleton-text {
+            --ha-skeleton-color: color-mix(
+              in srgb,
+              var(--info-color) 24%,
+              transparent
+            );
+          }
+          ha-alert[alert-type="warning"] ha-skeleton-text {
+            --ha-skeleton-color: color-mix(
+              in srgb,
+              var(--warning-color) 24%,
+              transparent
+            );
+          }
         }
         .contents {
           outline: none;

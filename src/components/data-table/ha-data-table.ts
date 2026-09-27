@@ -123,6 +123,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
 
+  @property({ type: Boolean }) public loading = false;
+
   @property({ type: Boolean }) public selectable = false;
 
   @property({ type: Boolean }) public clickable = false;
@@ -164,6 +166,9 @@ export class HaDataTable extends LitElement {
   @state() private _filter = "";
 
   @state() private _filteredData?: DataTableRowData[];
+
+  // Row count of the data that _filteredData was computed from
+  @state() private _filteredDataSourceLength = 0;
 
   @state() private _headerHeight = 0;
 
@@ -523,7 +528,9 @@ export class HaDataTable extends LitElement {
                         role="cell"
                       >
                         ${
-                          !this._filteredData
+                          this.loading ||
+                          !this._filteredData ||
+                          (this.data.length && !this._filteredDataSourceLength)
                             ? this._i18n?.localize?.("ui.common.loading") ||
                               "Loading"
                             : this.data.length
@@ -721,10 +728,11 @@ export class HaDataTable extends LitElement {
       !this._lastUpdate ||
       (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
-    let filteredData = this.data;
+    const sourceData = this.data;
+    let filteredData = sourceData;
     if (this._filter) {
       filteredData = await this._memFilterData(
-        this.data,
+        sourceData,
         this._sortColumns,
         this._filter.trim()
       );
@@ -760,8 +768,13 @@ export class HaDataTable extends LitElement {
       return;
     }
 
+    if (startTime < this._lastUpdate) {
+      return;
+    }
+
     this._lastUpdate = startTime;
     this._filteredData = data;
+    this._filteredDataSourceLength = sourceData.length;
   }
 
   private _groupData = memoizeOne(

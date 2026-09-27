@@ -154,6 +154,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Boolean }) public empty = false;
 
+  /**
+   * Show a loading state instead of the empty message until data is ready.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public loading = false;
+
   @property({ attribute: false }) public route!: Route;
 
   /**
@@ -492,7 +498,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this.empty
+          this.empty && !this.loading
             ? html`<div class="center">
                 <slot name="empty">${this.noDataText}</slot>
               </div>`
@@ -514,6 +520,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .narrow=${this.narrow}
                   .columns=${this.columns}
                   .data=${this.data}
+                  .loading=${this.loading}
                   .noDataText=${this.noDataText}
                   .filter=${this.filter}
                   .selectable=${this._selectMode}

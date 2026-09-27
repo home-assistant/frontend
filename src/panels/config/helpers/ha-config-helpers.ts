@@ -1207,14 +1207,13 @@ ${rejected
       });
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass, ["helper"]);
+    const handlers = await getConfigFlowHandlers(this.hass, "helper");
 
     if (!handlers.includes(domain)) {
-      const integrations = await getConfigFlowHandlers(this.hass, [
-        "device",
-        "hub",
-        "service",
-      ]);
+      const integrations = await getConfigFlowHandlers(
+        this.hass,
+        "integration"
+      );
       if (integrations.includes(domain)) {
         navigate(`/config/integrations/add?domain=${domain}`, {
           replace: true,

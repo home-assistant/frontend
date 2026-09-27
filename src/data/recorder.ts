@@ -5,7 +5,7 @@ import type { HomeAssistant } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
-  backlog: number | null;
+  backlog: number;
   db_in_default_location: boolean;
   max_backlog: number;
   migration_in_progress: boolean;
@@ -33,10 +33,10 @@ export interface StatisticValue {
 }
 
 export interface Statistic {
-  max: number | null;
-  mean: number | null;
-  min: number | null;
-  change: number | null;
+  max?: number | null;
+  mean?: number | null;
+  min?: number | null;
+  change?: number | null;
 }
 
 export enum StatisticMeanType {
@@ -96,11 +96,11 @@ export interface StatisticsValidationResultUnitsChanged {
   type: "units_changed";
   data: {
     statistic_id: string;
-    state_unit: string;
+    state_unit: string | null;
     state_unit_class: string | null;
-    metadata_unit: string;
+    metadata_unit: string | null;
     metadata_unit_class: string | null;
-    supported_unit: string;
+    supported_unit: string | null;
   };
 }
 
@@ -194,7 +194,7 @@ export const fetchStatistic = (
   period: {
     fixed_period?: { start: string | Date; end: string | Date };
     calendar?: { period: string; offset?: number };
-    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+    rolling_window?: { duration: HaDurationData; offset?: HaDurationData };
   },
   units?: StatisticsUnitConfiguration
 ) =>
