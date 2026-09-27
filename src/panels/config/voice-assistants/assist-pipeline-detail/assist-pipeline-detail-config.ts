@@ -1,8 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
+import "../../../../components/user/ha-user-picker";
 import type { AssistPipeline } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 
@@ -80,8 +82,32 @@ export class AssistPipelineDetailConfig extends LitElement {
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
         ></ha-form>
+        <ha-user-picker
+          .hass=${this.hass}
+          .label=${this.hass.localize(
+            "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.user_id"
+          )}
+          .value=${this.data?.user_id ?? ""}
+          @value-changed=${this._userChanged}
+        ></ha-user-picker>
+        <p class="user-description">
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.user_id_description"
+          )}
+        </p>
       </div>
     `;
+  }
+
+  private _userChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const userId = ev.detail.value || null;
+    if (userId === (this.data?.user_id ?? null)) {
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: { ...this.data, user_id: userId },
+    });
   }
 
   static styles = css`
@@ -106,6 +132,13 @@ export class AssistPipelineDetailConfig extends LitElement {
       font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
       margin-top: 0;
       margin-bottom: 0;
+    }
+    ha-user-picker {
+      display: block;
+      margin-top: 16px;
+    }
+    p.user-description {
+      margin-top: 8px;
     }
   `;
 }
