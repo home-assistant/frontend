@@ -464,7 +464,11 @@ class HaPanelApp extends LitElement {
       {
         type: "home-assistant/properties",
         narrow: this.narrow,
-        route: this._computeRouteTail(this.route),
+        // A dedicated app panel already gets the route within the app; only
+        // the shared /app panel still carries the slug as its first segment.
+        route: this.panel.config?.addon
+          ? this.route
+          : this._computeRouteTail(this.route),
         // Resolved insets so an addon that handles the safe area itself can
         // apply them. Vertical uses the raw insets, horizontal the content
         // variables (the docked sidebar already absorbs its side).
