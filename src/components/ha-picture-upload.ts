@@ -176,6 +176,7 @@ export class HaPictureUpload extends LitElement {
       return;
     }
     this._uploading = true;
+    fireEvent(this, "uploading-changed", { uploading: true });
     try {
       const media = await createImage(this.hass, file);
       if (this.fullMedia) {
@@ -211,6 +212,7 @@ export class HaPictureUpload extends LitElement {
       });
     } finally {
       this._uploading = false;
+      fireEvent(this, "uploading-changed", { uploading: false });
     }
   }
 
@@ -308,5 +310,8 @@ export class HaPictureUpload extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-picture-upload": HaPictureUpload;
+  }
+  interface HASSDomEvents {
+    "uploading-changed": { uploading: boolean };
   }
 }

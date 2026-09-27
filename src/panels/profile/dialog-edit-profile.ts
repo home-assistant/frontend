@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -57,7 +58,14 @@ class DialogEditProfile
 
   @state() private _submitting = false;
 
+  @state() private _uploading = false;
+
+  // Identifies the current opening, so a save that finishes after the
+  // dialog was closed and opened again leaves the new session alone.
+  private _session = 0;
+
   public async showDialog(): Promise<void> {
+    this._session++;
     const person = getUserPerson(this.hass);
     this._name = this.hass.user?.name ?? "";
     this._picture = (person?.attributes.entity_picture as string) || null;
@@ -65,6 +73,8 @@ class DialogEditProfile
     this._hasPerson = !!person;
     this._pictureEditable = !!person?.attributes.editable;
     this._error = undefined;
+    this._submitting = false;
+    this._uploading = false;
     this._rendered = true;
     this._open = true;
     this._initDirtyTracking({ type: "shallow" }, this._currentState());
@@ -79,6 +89,9 @@ class DialogEditProfile
   private _dialogClosed(): void {
     this._error = undefined;
     this._rendered = false;
+    // The dialog stays connected when closed, so discarded changes
+    // would otherwise keep the global dirty state set.
+    this._markDirtyStateClean();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -116,6 +129,7 @@ class DialogEditProfile
                     crop
                     .cropOptions=${cropOptions}
                     @change=${this._pictureChanged}
+                    @uploading-changed=${this._uploadingChanged}
                   ></ha-picture-upload>
                 `
               : html`
@@ -132,9 +146,17 @@ class DialogEditProfile
             .value=${this._name}
             @input=${this._nameChanged}
             .label=${this.hass.localize("ui.panel.profile.edit_profile.name")}
-            .hint=${this.hass.localize(
-              "ui.panel.profile.edit_profile.name_helper"
-            )}
+            .hint=${
+              this._pictureEditable
+                ? this.hass.localize(
+                    "ui.panel.profile.edit_profile.name_helper"
+                  )
+                : this._hasPerson
+                  ? this.hass.localize(
+                      "ui.panel.profile.edit_profile.name_helper_yaml"
+                    )
+                  : undefined
+            }
             .validationMessage=${this.hass.localize(
               "ui.panel.profile.edit_profile.name_error_msg"
             )}
@@ -153,7 +175,12 @@ class DialogEditProfile
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${nameInvalid || this._submitting || !this.isDirtyState}
+            .disabled=${
+              nameInvalid ||
+              this._submitting ||
+              this._uploading ||
+              !this.isDirtyState
+            }
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
@@ -174,6 +201,10 @@ class DialogEditProfile
     this._updateDirtyState(this._currentState());
   }
 
+  private _uploadingChanged(ev: HASSDomEvent<{ uploading: boolean }>) {
+    this._uploading = ev.detail.uploading;
+  }
+
   private async _save() {
     const updates: Partial<OwnProfileMutableParams> = {};
     const name = this._name.trim();
@@ -186,20 +217,26 @@ class DialogEditProfile
       updates.picture = this._picture;
     }
 
+    const session = this._session;
     this._submitting = true;
     try {
       await updateOwnProfile(this.hass, updates);
     } catch (err: any) {
-      this._error =
-        err.message || this.hass.localize("ui.common.unknown_error");
+      if (session === this._session) {
+        this._error =
+          err.message || this.hass.localize("ui.common.unknown_error");
+        this._submitting = false;
+      }
       return;
-    } finally {
-      this._submitting = false;
     }
 
     if (updates.name) {
       fireEvent(this, "hass-refresh-current-user");
     }
+    if (session !== this._session) {
+      return;
+    }
+    this._submitting = false;
     this._markDirtyStateClean();
     this.closeDialog();
   }

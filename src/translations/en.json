@@ -11446,6 +11446,7 @@
           "title": "Edit profile",
           "name": "Name",
           "name_helper": "This name is also used for the person linked to your user.",
+          "name_helper_yaml": "Your person is configured in YAML, so only your user name is changed.",
           "name_error_msg": "Name is required",
           "no_person": "Your user is not linked to a person, so you cannot add a picture. Ask an administrator to link your user to a person.",
           "picture_not_editable": "Your person is configured in YAML, so its picture cannot be changed here."
