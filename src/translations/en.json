@@ -9110,7 +9110,7 @@
             "invalid_host": "Enter a valid IP address or hostname.",
             "invalid_network": "Enter a valid IP address or network.",
             "invalid_port": "Enter a port number between 1 and 65535.",
-            "invalid_login_attempts_threshold": "Enter a number between -1 and 1000.",
+            "invalid_login_attempts_threshold": "Enter a number between 1 and 1000.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
             "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
             "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
@@ -9145,6 +9145,7 @@
               "trusted_proxies": "Trusted proxies",
               "use_x_frame_options": "Send X-Frame-Options",
               "ip_ban_enabled": "Enable IP banning",
+              "login_attempts_unlimited": "Unlimited login attempts",
               "login_attempts_threshold": "Login attempts before ban"
             },
             "helpers": {
@@ -9159,7 +9160,8 @@
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
               "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
               "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. To remove a ban, delete the IP address from ip_bans.yaml in your configuration directory, then restart Home Assistant.",
-              "login_attempts_threshold": "Failed login attempts before an IP is banned. Set to -1 to disable automatic bans."
+              "login_attempts_unlimited": "Never ban an IP address, no matter how many login attempts fail.",
+              "login_attempts_threshold": "Failed login attempts before an IP address is banned."
             }
           },
           "network_adapter": "Network adapter",
