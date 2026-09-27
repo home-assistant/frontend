@@ -24,6 +24,11 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import {
+  dashboardActions,
+  type DashboardActionContext,
+  type ResolvedDashboardAction,
+} from "../../data/dashboard_actions";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -366,9 +371,15 @@ class HUIRoot extends LitElement {
       });
     }
 
+    const contributedActions =
+      this._editMode || this.hass.kioskMode
+        ? []
+        : dashboardActions.resolve(this._dashboardActionContext());
     const overflowItems = items.filter((i) => i.visible && i.overflow);
     const overflowCanPromote =
-      overflowItems.length === 1 && overflowItems[0].overflow_can_promote;
+      contributedActions.length === 0 &&
+      overflowItems.length === 1 &&
+      overflowItems[0].overflow_can_promote;
     const buttonItems = items.filter(
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
@@ -421,7 +432,10 @@ class HUIRoot extends LitElement {
       result.push(button);
     });
 
-    if (overflowItems.length && !overflowCanPromote) {
+    if (
+      (overflowItems.length || contributedActions.length) &&
+      !overflowCanPromote
+    ) {
       result.push(html`
         <ha-dropdown
           slot="actionItems"
@@ -441,6 +455,14 @@ class HUIRoot extends LitElement {
               ${title}
             </ha-dropdown-item>`;
           })}
+          ${contributedActions.map(
+            (item) => html`
+              <ha-dropdown-item .value=${item.action.id} .data=${item}>
+                <ha-icon slot="icon" .icon=${item.action.icon}></ha-icon>
+                ${item.label}
+              </ha-dropdown-item>
+            `
+          )}
         </ha-dropdown>
       `);
     }
@@ -687,8 +709,25 @@ class HUIRoot extends LitElement {
     });
   }
 
+  private _dashboardActionsUnsubscribe?: () => void;
+
+  private _dashboardActionContext(): DashboardActionContext {
+    return {
+      hass: this.hass,
+      host: this,
+      path: this.route?.path ?? "",
+      showDialog: async (options) => {
+        await import("../../components/ha-dialog");
+        fireEvent(this, "show-dialog", options);
+      },
+    };
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
+    this._dashboardActionsUnsubscribe = dashboardActions.subscribe(() =>
+      this.requestUpdate()
+    );
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
@@ -700,6 +739,8 @@ class HUIRoot extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._dashboardActionsUnsubscribe?.();
+    this._dashboardActionsUnsubscribe = undefined;
     window.removeEventListener("scroll", this._handleWindowScroll);
     window.removeEventListener("popstate", this._handlePopState);
     window.removeEventListener("location-changed", this._locationChanged);
@@ -1310,9 +1351,17 @@ class HUIRoot extends LitElement {
   }
 
   private _handleOverflowItemSelect(
-    ev: HaDropdownSelectEvent<ActionItem["key"], ActionItem>
+    ev: HaDropdownSelectEvent<string, ActionItem | ResolvedDashboardAction>
   ) {
     const item = ev.detail.item.data;
+    if (item && "action" in item) {
+      void Promise.resolve()
+        .then(() => item.action.execute(this._dashboardActionContext()))
+        .catch((error) => {
+          showAlertDialog(this, { text: String(error) });
+        });
+      return;
+    }
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");
       showListItemsDialog(this, {
