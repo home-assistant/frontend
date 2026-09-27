@@ -19,7 +19,6 @@ import {
 } from "../../../data/config_entries";
 import type { ConfigFlowInProgressMessage } from "../../../data/config_flow";
 import {
-  ignoreConfigFlow,
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
@@ -221,13 +220,6 @@ export class MCPPref extends SubscribeMixin(LitElement) {
               >
             </div>
             <ha-button
-              appearance="plain"
-              data-flow-id=${flow.flow_id}
-              @click=${this._ignoreFlow}
-            >
-              ${this.hass.localize("ui.panel.config.integrations.ignore.ignore")}
-            </ha-button>
-            <ha-button
               appearance="filled"
               data-flow-id=${flow.flow_id}
               @click=${this._continueFlow}
@@ -320,31 +312,6 @@ export class MCPPref extends SubscribeMixin(LitElement) {
   private _continueFlow(ev: Event) {
     const flowId = (ev.currentTarget as HTMLElement).dataset.flowId!;
     showConfigFlowDialog(this, { continueFlowId: flowId });
-  }
-
-  private async _ignoreFlow(ev: Event) {
-    const flowId = (ev.currentTarget as HTMLElement).dataset.flowId!;
-    const flow = this._discoveredFlows.find((f) => f.flow_id === flowId);
-    if (!flow) {
-      return;
-    }
-    const name = localizeConfigFlowTitle(this.hass.localize, flow);
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.ignore.confirm_ignore_title",
-        { name }
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.ignore.confirm_ignore"
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.config.integrations.ignore.ignore"
-      ),
-    });
-    if (!confirmed) {
-      return;
-    }
-    await ignoreConfigFlow(this.hass, flowId, name);
   }
 
   private async _copyUrl(ev: Event) {
