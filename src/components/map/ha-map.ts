@@ -31,7 +31,10 @@ import type {
   MapEditableMarkerHandle,
   MapEditingSupport,
 } from "../../common/map/map-engine";
-import { circleBoundsPoints } from "../../common/map/map-engine";
+import {
+  circleBoundsPoints,
+  distanceMeters,
+} from "../../common/map/map-engine";
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
 import {
@@ -310,6 +313,8 @@ export class HaMap extends ReactiveElement {
   public zoomPosition: MapControlPosition = "topleft";
 
   private _zonePositions: Record<string, MapLatLng> = {};
+
+  private _zoneRadii: Record<string, number> = {};
 
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
@@ -1133,6 +1138,7 @@ export class HaMap extends ReactiveElement {
     // A person's state is "home" for the home zone, the zone name otherwise
     const zoneByState: Record<string, string> = {};
     this._zonePositions = {};
+    this._zoneRadii = {};
     for (const entity of this.entities) {
       const stateObj = states[getEntityId(entity)];
       // A zone that is not drawn cannot anchor a bubble either
@@ -1154,6 +1160,9 @@ export class HaMap extends ReactiveElement {
             stateObj.attributes.latitude,
             stateObj.attributes.longitude,
           ];
+          if (typeof stateObj.attributes.radius === "number") {
+            this._zoneRadii[stateObj.entity_id] = stateObj.attributes.radius;
+          }
         }
       }
     }
@@ -1301,7 +1310,7 @@ export class HaMap extends ReactiveElement {
         zoneId: ["person", "device_tracker"].includes(
           computeStateDomain(stateObj)
         )
-          ? zoneByState[stateObj.state]
+          ? (zoneByState[stateObj.state] ?? this._zoneContaining(position))
           : undefined,
       };
 
@@ -1339,9 +1348,26 @@ export class HaMap extends ReactiveElement {
     );
   }
 
+  private _zoneContaining(position: MapLatLng): string | undefined {
+    let found: string | undefined;
+    let foundRadius = Infinity;
+    for (const [zoneId, radius] of Object.entries(this._zoneRadii)) {
+      if (
+        radius < foundRadius &&
+        distanceMeters(position, this._zonePositions[zoneId]) <= radius
+      ) {
+        found = zoneId;
+        foundRadius = radius;
+      }
+    }
+    return found;
+  }
+
   // Renders a marker cluster as a bubble of its members' avatars
   private _createClusterBubble = (
-    members: MapMarkerHandle[]
+    members: MapMarkerHandle[],
+    _location: MapLatLng,
+    zoneId?: string
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
     const shown = data.slice(0, CLUSTER_MAX_AVATARS);
@@ -1387,12 +1413,8 @@ export class HaMap extends ReactiveElement {
     }
 
     // A cluster of one zone's occupants attaches to that zone's marker
-    const zoneId = data[0]?.zoneId;
     const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
-    const atZone =
-      !!zoneId &&
-      !!zonePosition &&
-      data.every((member) => member?.zoneId === zoneId);
+    const atZone = !!zonePosition;
 
     let height = CLUSTER_AVATAR_SIZE + 2 * CLUSTER_BUBBLE_PADDING;
     let root: HTMLElement = bubble;

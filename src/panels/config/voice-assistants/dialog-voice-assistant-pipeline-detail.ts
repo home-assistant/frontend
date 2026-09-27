@@ -60,7 +60,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
       "id" in this._params.pipeline &&
       this._params.pipeline.id
     ) {
-      this._data = { prefer_local_intents: false, ...this._params.pipeline };
+      this._data = { ...this._params.pipeline };
 
       this._hideWakeWord =
         this._params.hideWakeWord || !this._data.wake_word_entity;
@@ -121,7 +121,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
 
   private async _getSupportedLanguages() {
     const { languages } = await fetchAssistPipelineLanguages(this.hass);
-    this._supportedLanguages = languages;
+    this._supportedLanguages = languages ?? undefined;
   }
 
   private _hasWakeWorkEntities = memoizeOne((states: HomeAssistant["states"]) =>
