@@ -1448,7 +1448,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   // Horizontal scrolling (trackpad swipe, or Shift + wheel) pans a zoomed
   // chart, since a mouse drag is taken by the zoom selection.
   private _handleWheel(ev: WheelEvent) {
-    if (!this.chart || !this._isZoomed || this.options?.dataZoom) {
+    // Check the axis range rather than _isZoomed, which a Sankey roam also
+    // sets without giving an axis to pan.
+    const [start, end] = this._zoomRange;
+    if (!this.chart || (start === 0 && end === 100) || this.options?.dataZoom) {
       return;
     }
     const delta = ev.shiftKey ? ev.deltaX || ev.deltaY : ev.deltaX;
