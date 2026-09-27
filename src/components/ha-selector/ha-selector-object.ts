@@ -4,6 +4,7 @@ import {
   mdiDragHorizontalVariant,
   mdiPencil,
 } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -247,7 +248,7 @@ export class HaObjectSelector extends LitElement {
       ...Object.fromEntries(
         schema
           .filter((field) => "default" in field)
-          .map((field) => [field.name, structuredClone(field.default)])
+          .map((field) => [field.name, deepClone(field.default)])
       ),
     };
 
