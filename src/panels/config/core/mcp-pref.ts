@@ -230,16 +230,15 @@ export class MCPPref extends LitElement {
         });
         return;
       }
+      await this._load();
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.mcp.error_enable"),
         text: err?.message,
       });
-      return;
     } finally {
       this._enabling = false;
     }
-    await this._load();
   }
 
   private _configure() {
