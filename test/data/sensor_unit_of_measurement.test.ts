@@ -34,15 +34,28 @@ describe("computeAllowedUnits", () => {
     expect(computeAllowedUnits(["aqi"])).toEqual([null]);
   });
 
-  it("allows nothing for device classes without units", () => {
-    expect(computeAllowedUnits(["enum"])).toEqual([]);
+  it("only allows no unit for non-numeric device classes", () => {
+    expect(computeAllowedUnits(["enum"])).toEqual([null]);
+    expect(computeAllowedUnits(["date"])).toEqual([null]);
+    expect(computeAllowedUnits(["timestamp"])).toEqual([null]);
+    expect(computeAllowedUnits(["uptime"])).toEqual([null]);
+    expect(computeAllowedUnits(["date", "timestamp", "uptime"])).toEqual([
+      null,
+    ]);
   });
 
-  it("allows nothing for date and time based device classes", () => {
-    expect(computeAllowedUnits(["date"])).toEqual([]);
-    expect(computeAllowedUnits(["timestamp"])).toEqual([]);
-    expect(computeAllowedUnits(["uptime"])).toEqual([]);
-    expect(computeAllowedUnits(["date", "timestamp", "uptime"])).toEqual([]);
+  it("is unrestricted for numeric device classes without a unit table", () => {
+    expect(computeAllowedUnits(["monetary"])).toBeUndefined();
+  });
+
+  it("is unrestricted when one of the device classes does not restrict", () => {
+    expect(computeAllowedUnits(["temperature", "monetary"])).toBeUndefined();
+  });
+
+  it("adds no unit for a non-numeric device class in a list", () => {
+    const units = computeAllowedUnits(["temperature", "enum"]);
+    expect(units).toHaveLength(4);
+    expect(units).toEqual(expect.arrayContaining(["K", "°C", "°F", null]));
   });
 
   it("is unrestricted for state classes without units", () => {
@@ -55,10 +68,19 @@ describe("computeAllowedUnits", () => {
     ]);
   });
 
-  it("ignores state classes without units when combined with others", () => {
+  it("is unrestricted when one of the state classes does not restrict", () => {
     expect(
       computeAllowedUnits(undefined, ["measurement_angle", "measurement"])
-    ).toEqual(["°"]);
+    ).toBeUndefined();
+  });
+
+  it("keeps device class units for mixed state classes", () => {
+    expect(
+      computeAllowedUnits(
+        ["battery", "humidity"],
+        ["measurement_angle", "measurement"]
+      )
+    ).toEqual(["%"]);
   });
 
   it("intersects device class and state class units", () => {
@@ -109,13 +131,19 @@ describe("computeSelectorUnits", () => {
     ).toEqual([null]);
   });
 
-  it("allows nothing for a date or time based device class in the context", () => {
+  it("only allows no unit for a non-numeric device class in the context", () => {
     expect(
       computeSelectorUnits(undefined, { filter_device_class: "timestamp" })
-    ).toEqual([]);
+    ).toEqual([null]);
     expect(
       computeSelectorUnits(undefined, { filter_device_class: "uptime" })
-    ).toEqual([]);
+    ).toEqual([null]);
+  });
+
+  it("is unrestricted for a monetary device class in the context", () => {
+    expect(
+      computeSelectorUnits(undefined, { filter_device_class: "monetary" })
+    ).toBeUndefined();
   });
 
   it("narrows the config with an overlapping context", () => {

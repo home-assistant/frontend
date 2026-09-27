@@ -1,16 +1,41 @@
 import { ensureArray } from "../../common/array/ensure-array";
 import {
   SENSOR_DEVICE_CLASS_UNITS,
+  SENSOR_NUMERIC_DEVICE_CLASSES,
   SENSOR_STATE_CLASS_UNITS,
 } from "../sensor_entity_constants";
 
 /**
+ * Collect the units of the given classes.
+ *
+ * @returns `undefined` when one of the classes does not restrict the units
+ */
+const unitsForClasses = (
+  classes: string[],
+  table: Record<string, (string | null)[]>,
+  isNonNumeric: (key: string) => boolean
+): Set<string | null> | undefined => {
+  const units = new Set<string | null>();
+  for (const key of classes) {
+    if (key in table) {
+      table[key].forEach((unit) => units.add(unit));
+    } else if (isNonNumeric(key)) {
+      units.add(null);
+    } else {
+      return undefined;
+    }
+  }
+  return units;
+};
+
+/**
  * Compute the units allowed for a set of sensor device classes and state classes.
  *
- * - Device classes: the union of their units. A device class without units
- *   (e.g. `enum`) allows nothing, `null` means "no unit".
+ * - Device classes: the union of their units. A non-numeric device class
+ *   (e.g. `enum`) only allows "no unit" (`null`); a numeric device class
+ *   without a unit table (e.g. `monetary`) does not restrict.
  * - State classes: the union of their units, intersected with the device class
- *   units. State classes without units (e.g. `measurement`) don't restrict.
+ *   units. A state class without units (e.g. `measurement`) does not restrict.
  *
  * @returns `undefined` when unrestricted (custom unit allowed), `[]` when nothing is allowed
  */
@@ -18,21 +43,20 @@ export const computeAllowedUnits = (
   deviceClasses?: string[],
   stateClasses?: string[]
 ): (string | null)[] | undefined => {
-  let allowed: Set<string | null> | undefined;
-  if (deviceClasses?.length) {
-    allowed = new Set(
-      deviceClasses.flatMap((dc) => SENSOR_DEVICE_CLASS_UNITS[dc] ?? [])
-    );
-  }
-  if (stateClasses?.length) {
-    const stateUnits = new Set(
-      stateClasses.flatMap((sc) => SENSOR_STATE_CLASS_UNITS[sc] ?? [])
-    );
-    if (stateUnits.size) {
-      allowed = allowed
-        ? new Set([...allowed].filter((unit) => stateUnits.has(unit)))
-        : stateUnits;
-    }
+  let allowed = deviceClasses?.length
+    ? unitsForClasses(
+        deviceClasses,
+        SENSOR_DEVICE_CLASS_UNITS,
+        (deviceClass) => !SENSOR_NUMERIC_DEVICE_CLASSES.includes(deviceClass)
+      )
+    : undefined;
+  const stateUnits = stateClasses?.length
+    ? unitsForClasses(stateClasses, SENSOR_STATE_CLASS_UNITS, () => false)
+    : undefined;
+  if (stateUnits) {
+    allowed = allowed
+      ? new Set([...allowed].filter((unit) => stateUnits.has(unit)))
+      : stateUnits;
   }
   return allowed ? [...allowed] : undefined;
 };

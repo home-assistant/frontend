@@ -712,16 +712,20 @@ const SCHEMAS: {
         selector: { unit_of_measurement: { device_classes: ["aqi"] } },
       },
       unit_enum: {
-        name: "Enum (no units)",
+        name: "Enum (no unit)",
         selector: { unit_of_measurement: { device_classes: ["enum"] } },
       },
       unit_timestamp: {
-        name: "Timestamp (no units)",
+        name: "Timestamp (no unit)",
         selector: { unit_of_measurement: { device_classes: ["timestamp"] } },
       },
       unit_uptime: {
-        name: "Uptime (no units)",
+        name: "Uptime (no unit)",
         selector: { unit_of_measurement: { device_classes: ["uptime"] } },
+      },
+      unit_monetary: {
+        name: "Monetary (custom unit)",
+        selector: { unit_of_measurement: { device_classes: ["monetary"] } },
       },
       unit_angle: {
         name: "Measurement angle",
