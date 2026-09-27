@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { createLoginFlow } from "../../../src/data/auth";
+import { createLoginFlow } from "../../src/data/auth";
 
 describe("createLoginFlow", () => {
   beforeEach(() => {
