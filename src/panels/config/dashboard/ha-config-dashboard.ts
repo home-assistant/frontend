@@ -11,6 +11,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { ctrlOrCmdLabel } from "../../../common/keyboard/ctrl-or-cmd";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -41,7 +42,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { isMac } from "../../../util/is_mac";
 import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../config-sections";
@@ -124,7 +124,7 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       {
         content: hass.localize("ui.tips.key_shortcut_quick_search", {
           ...localizeParam,
-          modifier: isMac ? "⌘" : "Ctrl",
+          modifier: ctrlOrCmdLabel(hass.localize),
         }),
         weight: 1,
         narrow: false,
@@ -226,9 +226,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     const quickBarLabel = [
       this.hass.localize("ui.dialogs.quick-bar.title"),
       this.hass.enableShortcuts && !isMobileClient
-        ? isMac
-          ? "(⌘ + K)"
-          : "(Ctrl + K)"
+        ? `(${ctrlOrCmdLabel(this.hass.localize)} + K)`
         : undefined,
     ]
       .filter(Boolean)
