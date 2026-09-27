@@ -143,7 +143,7 @@ export class MCPPref extends LitElement {
     return html`
       ${this._renderUrlRow(
         this.hass.localize("ui.panel.config.mcp.your_api_header"),
-        this._mcpUrl(),
+        this._mcpPath(),
         html`<ha-icon-button
           .label=${this.hass.localize("ui.panel.config.mcp.configure")}
           .path=${mdiCog}
@@ -157,7 +157,7 @@ export class MCPPref extends LitElement {
                 ${this.hass.localize("ui.panel.config.mcp.apis_header")}
               </p>
               ${this._sortedApis(this._apis, this.hass.locale.language).map(
-                (api) => this._renderUrlRow(api.name, this._mcpUrl(api.id))
+                (api) => this._renderUrlRow(api.name, this._mcpPath(api.id))
               )}
             `
           : nothing
@@ -165,26 +165,27 @@ export class MCPPref extends LitElement {
     `;
   }
 
-  private _renderUrlRow(name: string, url: string, action?: TemplateResult) {
+  private _renderUrlRow(name: string, path: string, action?: TemplateResult) {
+    // Only the path is shown, so screenshots do not reveal the host
     return html`
       <div class="url-row">
         <div class="url-info">
           <span class="name">${name}</span>
-          <span class="url">${url}</span>
+          <span class="url">…${path}</span>
         </div>
         ${action}
         <ha-icon-button
           .label=${this.hass.localize("ui.panel.config.mcp.copy_url")}
           .path=${mdiContentCopy}
-          data-url=${url}
+          data-url=${this.hass.hassUrl(path)}
           @click=${this._copyUrl}
         ></ha-icon-button>
       </div>
     `;
   }
 
-  private _mcpUrl(apiId?: string) {
-    return this.hass.hassUrl(`/api/mcp${apiId ? `/${apiId}` : ""}`);
+  private _mcpPath(apiId?: string) {
+    return `/api/mcp${apiId ? `/${apiId}` : ""}`;
   }
 
   private async _load() {
