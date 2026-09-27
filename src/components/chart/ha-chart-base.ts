@@ -1465,6 +1465,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!this.chart || (start === 0 && end === 100) || this.options?.dataZoom) {
       return;
     }
+    // ECharts zooms on the wheel with Ctrl/Cmd held (also how browsers report
+    // a trackpad pinch) and always on touch devices, so leave those to it.
+    if (ev.ctrlKey || ev.metaKey || this._isTouchDevice) {
+      return;
+    }
     const delta = ev.shiftKey ? ev.deltaX || ev.deltaY : ev.deltaX;
     if (!delta || (!ev.shiftKey && Math.abs(ev.deltaX) < Math.abs(ev.deltaY))) {
       return;
