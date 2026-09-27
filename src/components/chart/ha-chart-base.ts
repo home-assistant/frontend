@@ -249,6 +249,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   // from the chart options.
   private _zoomRange: [number, number] = [0, 100];
 
+  // Wheel pan distance not yet applied, flushed once per animation frame.
+  private _wheelPanPixels = 0;
+
+  private _wheelPanFrame?: number;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._legendPointerCancel();
@@ -256,6 +261,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._pendingUpdate = undefined;
     this._pendingOptions = undefined;
     this._pendingZoom = undefined;
+    if (this._wheelPanFrame !== undefined) {
+      cancelAnimationFrame(this._wheelPanFrame);
+      this._wheelPanFrame = undefined;
+    }
+    this._wheelPanPixels = 0;
     // The observers are about to be torn down, so nothing would correct a stale
     // value if this element is reattached inside a hidden container.
     this._intersecting = false;
@@ -937,6 +947,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         const [start, end, silent] = this._pendingZoom;
         this._pendingZoom = undefined;
         this.chart.dispatchAction({ type: "dataZoom", start, end, silent });
+        if (silent) {
+          this._setZoomRange(start, end);
+        }
       }
     } finally {
       this._loading = false;
@@ -1425,6 +1438,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       end,
       silent,
     });
+    if (silent) {
+      // A silent zoom skips the datazoom handler, so record the range here
+      // for wheel panning to start from.
+      this._setZoomRange(start, end);
+    }
   }
 
   // Horizontal scrolling (trackpad swipe, or Shift + wheel) pans a zoomed
@@ -1438,8 +1456,23 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return;
     }
     ev.preventDefault();
-    const pixels =
-      ev.deltaMode === WheelEvent.DOM_DELTA_LINE ? delta * 16 : delta;
+    this._wheelPanPixels +=
+      ev.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? delta * this.chart.getWidth()
+        : ev.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? delta * 16
+          : delta;
+    // Trackpads fire many wheel events per frame, so apply them together.
+    this._wheelPanFrame ??= requestAnimationFrame(this._flushWheelPan);
+  }
+
+  private _flushWheelPan = () => {
+    this._wheelPanFrame = undefined;
+    const pixels = this._wheelPanPixels;
+    this._wheelPanPixels = 0;
+    if (!this.chart || !pixels) {
+      return;
+    }
     const [start, end] = this._zoomRange;
     const xAxis = ensureArray(this.options?.xAxis)[0] as
       XAXisOption | undefined;
@@ -1452,13 +1485,17 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       )
     );
     if (shift) {
+      // Follow the gesture directly; an update animation per frame would keep
+      // restarting and make the axis lag behind.
       this.chart.dispatchAction({
         type: "dataZoom",
         start: start + shift,
         end: end + shift,
+        animation: { duration: 0 },
       });
+      this._setZoomRange(start + shift, end + shift);
     }
-  }
+  };
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
@@ -1507,6 +1544,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return "move";
   }
 
+  private _setZoomRange(start: number, end: number) {
+    this._zoomRange = [start, end];
+    this._isZoomed = start !== 0 || end !== 100;
+    this._zoomRatio = (end - start) / 100;
+  }
+
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
     let start = typeof zoomData.start === "number" ? zoomData.start : 0;
@@ -1537,9 +1580,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
     }
 
-    this._zoomRange = [start, end];
-    this._isZoomed = start !== 0 || end !== 100;
-    this._zoomRatio = (end - start) / 100;
+    this._setZoomRange(start, end);
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
