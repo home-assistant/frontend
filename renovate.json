@@ -110,6 +110,11 @@
       "minimumGroupSize": 5
     },
     {
+      "description": "MCR returns no release timestamps, so the minimum release age would keep the Playwright container pending forever. The npm package still gates the group.",
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "minimumReleaseAge": null
+    },
+    {
       "description": "GitHub Actions: weekly, with a 7 day cooldown, like Dependabot did",
       "matchManagers": ["github-actions"],
       "addLabels": ["GitHub Actions"],
