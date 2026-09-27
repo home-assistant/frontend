@@ -108,6 +108,11 @@
       "groupName": "Playwright",
       "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"],
       "minimumGroupSize": 5
+    },
+    {
+      "description": "MCR returns no release timestamps, so the minimum release age would keep the Playwright container pending forever. The npm package still gates the group.",
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "minimumReleaseAge": null
     }
   ]
 }
