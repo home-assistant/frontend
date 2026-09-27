@@ -505,6 +505,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (chartOptions.series || changedProps.has("_isZoomed")) {
         this._updateSankeyRoam();
       }
+      if (changedProps.has("options")) {
+        this._updateDragToZoom();
+      }
     }
   }
 
@@ -931,19 +934,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         series: this._getSeries(),
       });
       this._updateSankeyRoam();
-      if (
-        !this._isTouchDevice &&
-        this.options?.xAxis &&
-        !this.options.dataZoom &&
-        this._getDataZoomConfig()
-      ) {
-        // drag to zoom
-        this.chart.dispatchAction({
-          type: "takeGlobalCursor",
-          key: "dataZoomSelect",
-          dataZoomSelectActive: true,
-        });
-      }
+      this._updateDragToZoom();
       if (this._pendingZoom) {
         const [start, end, silent] = this._pendingZoom;
         this._pendingZoom = undefined;
@@ -991,6 +982,25 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
     });
     this.requestUpdate("_hiddenDatasets");
+  }
+
+  // A mouse drag selects a range to zoom into, but only on charts with a
+  // visible x-axis to zoom; a chart can switch type (e.g. pie and bar) without
+  // being rebuilt, so this is re-evaluated when the options change.
+  private _updateDragToZoom() {
+    const xAxis = ensureArray(this.options?.xAxis)[0] as
+      XAXisOption | undefined;
+    this.chart?.dispatchAction({
+      type: "takeGlobalCursor",
+      key: "dataZoomSelect",
+      dataZoomSelectActive: Boolean(
+        !this._isTouchDevice &&
+        xAxis &&
+        xAxis.show !== false &&
+        !this.options?.dataZoom &&
+        this._getDataZoomConfig()
+      ),
+    });
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
