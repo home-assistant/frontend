@@ -2982,7 +2982,8 @@
           "copy_url": "Copy URL",
           "configure": "Configure",
           "error_load": "Failed to load the Model Context Protocol configuration",
-          "error_delete_entry": "Failed to disable the Model Context Protocol server"
+          "error_delete_entry": "Failed to disable the Model Context Protocol server",
+          "error_enable": "Failed to enable the Model Context Protocol server"
         },
         "apps": {
           "caption": "Apps",
@@ -6837,8 +6838,6 @@
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
-              "drop_connection_warning_title": "Remote login has been deactivated",
-              "drop_connection_warning": "The below security options may make it appear the system is not running.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details",
