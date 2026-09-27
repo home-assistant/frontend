@@ -19,6 +19,7 @@ const makeConfig = (overrides: Partial<BackupConfig> = {}): BackupConfig =>
     last_attempted_automatic_backup: null,
     last_completed_automatic_backup: null,
     next_automatic_backup: null,
+    next_automatic_backup_additional: false,
     create_backup: {
       agent_ids: [CLOUD_AGENT],
       include_addons: null,
@@ -29,7 +30,11 @@ const makeConfig = (overrides: Partial<BackupConfig> = {}): BackupConfig =>
       password: null,
     },
     retention: {},
-    schedule: { recurrence: BackupScheduleRecurrence.DAILY, days: [] },
+    schedule: {
+      recurrence: BackupScheduleRecurrence.DAILY,
+      time: null,
+      days: [],
+    },
     agents: {},
     ...overrides,
   }) satisfies BackupConfig;
