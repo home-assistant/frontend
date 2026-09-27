@@ -18,6 +18,8 @@ inputs:
 runs:
   using: composite
   steps:
+    # The pnpm store is cached with node_modules because `pnpm licenses`
+    # (used by the license file generation) reads package metadata from it.
     - name: Restore complete dependency tree
       id: dependency-cache
       if: inputs.node-modules-cache == 'true'
@@ -26,6 +28,7 @@ runs:
       with:
         path: |
           node_modules
+          ~/.local/share/pnpm/store
         key: >-
           ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}

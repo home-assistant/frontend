@@ -16,6 +16,7 @@ runs:
       with:
         path: |
           node_modules
+          ~/.local/share/pnpm/store
         key: >-
           ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
@@ -34,6 +35,7 @@ runs:
       with:
         path: |
           node_modules
+          ~/.local/share/pnpm/store
         key: >-
           ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
