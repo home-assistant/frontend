@@ -1490,7 +1490,6 @@
       },
       "unit-of-measurement-picker": {
         "unit_of_measurement": "Unit of measurement",
-        "no_unit": "No unit",
         "no_units": "No units available for this device class",
         "no_match": "No units found for {term}",
         "custom_unit": "Use custom unit"

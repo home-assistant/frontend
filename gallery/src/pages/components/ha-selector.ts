@@ -708,7 +708,7 @@ const SCHEMAS: {
         },
       },
       unit_aqi: {
-        name: "Air quality index (no unit only)",
+        name: "Air quality index (no unit)",
         selector: { unit_of_measurement: { device_classes: ["aqi"] } },
       },
       unit_enum: {

@@ -3,7 +3,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext } from "../data/context";
 import {
   SENSOR_DEVICE_CLASS_UNITS,
@@ -27,7 +26,7 @@ const ALL_UNITS: (string | null)[] = [
 export class HaUnitOfMeasurementPicker extends LitElement {
   @property() public value?: string;
 
-  /** Allowed units, `null` means "no unit". `undefined` allows any unit. */
+  /** Allowed units, `null` means "no unit" is allowed. `undefined` allows any unit. */
   @property({ attribute: false }) public units?: (string | null)[];
 
   @property() public label?: string;
@@ -42,29 +41,23 @@ export class HaUnitOfMeasurementPicker extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 
+  // "No unit" is not an item: it is an empty field, which the picker's clear
+  // button already provides and which ha-form leaves out
   private _items = memoizeOne(
-    (
-      localize: LocalizeFunc | undefined,
-      units: (string | null)[] | undefined
-    ): PickerComboBoxItem[] =>
+    (units: (string | null)[] | undefined): PickerComboBoxItem[] =>
       (units ?? ALL_UNITS)
+        .filter((unit): unit is string => unit !== null)
         .map((unit): PickerComboBoxItem => ({
-          id: unit ?? "",
-          primary:
-            unit ??
-            localize?.("ui.components.unit-of-measurement-picker.no_unit") ??
-            "No unit",
-          sorting_label: unit ?? "",
+          id: unit,
+          primary: unit,
+          sorting_label: unit,
         }))
-        .sort((a, b) => {
-          // "No unit" first
-          if (a.id === "") return -1;
-          if (b.id === "") return 1;
-          return a.id.localeCompare(b.id, undefined, { sensitivity: "base" });
-        })
+        .sort((a, b) =>
+          a.id.localeCompare(b.id, undefined, { sensitivity: "base" })
+        )
   );
 
-  private _getItems = () => this._items(this._i18n?.localize, this.units);
+  private _getItems = () => this._items(this.units);
 
   private _notFoundLabel = (search: string) =>
     this._i18n?.localize("ui.components.unit-of-measurement-picker.no_match", {
@@ -73,7 +66,9 @@ export class HaUnitOfMeasurementPicker extends LitElement {
 
   protected render() {
     const localize = this._i18n?.localize;
-    const noUnits = this.units !== undefined && this.units.length === 0;
+    // Also true when "no unit" is the only allowed value
+    const noUnits =
+      this.units !== undefined && !this.units.some((unit) => unit !== null);
     const noUnitsLabel = localize?.(
       "ui.components.unit-of-measurement-picker.no_units"
     );
@@ -105,7 +100,6 @@ export class HaUnitOfMeasurementPicker extends LitElement {
 
   private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
-    // "No unit" is sent as undefined, so ha-form leaves the key out
     fireEvent(this, "value-changed", { value: ev.detail.value || undefined });
   }
 
