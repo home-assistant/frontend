@@ -464,7 +464,7 @@ class HaPanelApp extends LitElement {
       {
         type: "home-assistant/properties",
         narrow: this.narrow,
-        route: this._computeRouteTail(this.route),
+        route: this._computeAppRoute(this.route, this.panel?.config?.addon),
         // Resolved insets so an addon that handles the safe area itself can
         // apply them. Vertical uses the raw insets, horizontal the content
         // variables (the docked sidebar already absorbs its side).
@@ -483,7 +483,12 @@ class HaPanelApp extends LitElement {
     );
   }
 
-  private _computeRouteTail = memoizeOne(computeRouteTail);
+  // A dedicated app panel already receives the app's route tail, only the
+  // generic /app/<slug> panel still has the slug in its path.
+  private _computeAppRoute = memoizeOne(
+    (route: Route, addon?: string): Route =>
+      addon ? route : computeRouteTail(route)
+  );
 
   static styles = css`
     :host {
