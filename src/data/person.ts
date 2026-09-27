@@ -71,6 +71,20 @@ export const deletePerson = (hass: HomeAssistant, personId: string) =>
     person_id: personId,
   });
 
+export interface OwnProfileMutableParams {
+  name: string;
+  picture: string | null;
+}
+
+export const updateOwnProfile = (
+  hass: HomeAssistant,
+  updates: Partial<OwnProfileMutableParams>
+) =>
+  hass.callWS<{ user_name: string; person: Person | null }>({
+    type: "person/update_own_profile",
+    ...updates,
+  });
+
 const cachedUserPerson: Record<string, string> = {};
 
 export const getUserPerson = (hass: HomeAssistant): undefined | HassEntity => {

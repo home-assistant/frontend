@@ -11441,6 +11441,15 @@
         "logout": "Log out",
         "logout_title": "Log out?",
         "logout_text": "Are you sure you want to log out?",
+        "edit_profile": {
+          "button": "Edit profile",
+          "title": "Edit profile",
+          "name": "Name",
+          "name_helper": "This name is also used for the person linked to your user.",
+          "name_error_msg": "Name is required",
+          "no_person": "Your user is not linked to a person, so you cannot add a picture. Ask an administrator to link your user to a person.",
+          "picture_not_editable": "Your person is configured in YAML, so its picture cannot be changed here."
+        },
         "force_narrow": {
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
