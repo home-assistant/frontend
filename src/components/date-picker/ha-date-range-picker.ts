@@ -188,7 +188,9 @@ export class HaDateRangePicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="container">
-        <div class="date-range-inputs">${this._renderField()}</div>
+        <div class="date-range-inputs" part="range-input">
+          ${this._renderField()}
+        </div>
         ${
           this._pickerWrapperOpen || this._opened
             ? this._openedNarrow
