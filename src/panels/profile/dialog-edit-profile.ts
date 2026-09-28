@@ -3,7 +3,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
-import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
@@ -15,11 +14,13 @@ import type { HaInput } from "../../components/input/ha-input";
 import {
   apiContext,
   configContext,
+  connectionContext,
   internationalizationContext,
   statesContext,
 } from "../../data/context";
 import type { OwnProfileMutableParams } from "../../data/person";
 import { getUserPerson, updateOwnProfile } from "../../data/person";
+import { userCollection } from "../../data/ws-user";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { CropOptions } from "../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
@@ -47,6 +48,10 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -103,7 +108,7 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing
         }
-        <div class="form">
+        <div class="form" ?inert=${this._submitting}>
           ${
             this._pictureEditable
               ? html`
@@ -211,7 +216,8 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
     }
 
     if (updates.name) {
-      fireEvent(this, "hass-refresh-current-user");
+      // Refresh directly, as the dialog may already be closed and detached.
+      userCollection(this._connection.connection).refresh();
     }
     this._markDirtyStateClean();
     this.closeDialog();
