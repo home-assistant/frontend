@@ -21,6 +21,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
 import type { TagTrigger } from "../../../data/automation";
 import { showAutomationEditor } from "../../../data/automation";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { Tag, TagScannedEvent, UpdateTagParams } from "../../../data/tag";
 import {
   createTag,
@@ -59,6 +60,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   @state() private _tags: Tag[] = [];
 
   @state() private _loading = true;
+
+  @state() private _error?: string;
 
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
@@ -199,7 +202,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .columns=${this._columns(this.hass.localize)}
         .loading=${this._loading}
         .data=${this._data(this._tags)}
-        .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
+        .noDataText=${
+          this._error || this.hass.localize("ui.panel.config.tag.no_tags")
+        }
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
@@ -271,6 +276,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private async _fetchTags() {
     try {
       this._tags = await fetchTags(this.hass);
+      this._error = undefined;
+    } catch (err) {
+      this._error = extractApiErrorMessage(err);
     } finally {
       this._loading = false;
     }

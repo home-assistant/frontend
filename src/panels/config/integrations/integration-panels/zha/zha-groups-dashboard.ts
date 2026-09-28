@@ -12,6 +12,7 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
+import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import type { ZHAGroup } from "../../../../../data/zha";
 import { fetchGroups } from "../../../../../data/zha";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
@@ -46,6 +47,8 @@ export class ZHAGroupsDashboard extends LitElement {
   @state() private _groups: ZHAGroup[] = [];
 
   @state() private _loading = true;
+
+  @state() private _error?: string;
 
   private _firstUpdatedCalled = false;
 
@@ -118,6 +121,7 @@ export class ZHAGroupsDashboard extends LitElement {
         .columns=${this._columns(this.hass.localize)}
         .loading=${this._loading}
         .data=${this._formattedGroups(this._groups)}
+        .noDataText=${this._error}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
@@ -133,6 +137,9 @@ export class ZHAGroupsDashboard extends LitElement {
   private async _fetchGroups() {
     try {
       this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+      this._error = undefined;
+    } catch (err) {
+      this._error = extractApiErrorMessage(err);
     } finally {
       this._loading = false;
     }

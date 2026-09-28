@@ -13,6 +13,7 @@ import type {
 import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { User } from "../../../data/user";
 import {
   computeUserBadges,
@@ -41,6 +42,8 @@ export class HaConfigUsers extends LitElement {
   @state() private _users: User[] = [];
 
   @state() private _loading = true;
+
+  @state() private _error?: string;
 
   @storage({ key: "users-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -183,6 +186,7 @@ export class HaConfigUsers extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .loading=${this._loading}
         .data=${this._userData(this._users, this.hass.localize)}
+        .noDataText=${this._error}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
@@ -217,6 +221,11 @@ export class HaConfigUsers extends LitElement {
   private async _fetchUsers() {
     try {
       this._users = await fetchUsers(this.hass);
+      this._error = undefined;
+    } catch (err) {
+      this._error = extractApiErrorMessage(err);
+
+      return;
     } finally {
       this._loading = false;
     }
