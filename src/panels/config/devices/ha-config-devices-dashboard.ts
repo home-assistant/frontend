@@ -15,6 +15,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -118,6 +119,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public entries?: ConfigEntry[];
+
+  @property({ attribute: false }) public entriesFailed = false;
 
   @state() private _subEntries?: SubEntry[];
 
@@ -309,6 +312,10 @@ export class HaConfigDeviceDashboard extends LitElement {
     };
   }
 
+  private _reloadConfigEntries() {
+    fireEvent(this, "reload-config-entries");
+  }
+
   private _clearFilter() {
     this._filters = {};
     if (!this._fromUrl) {
@@ -320,6 +327,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     (
       devices: HomeAssistant["devices"],
       entries: ConfigEntry[] | undefined,
+      entriesFailed: boolean,
       entities: EntityRegistryEntry[] = [],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
@@ -536,17 +544,19 @@ export class HaConfigDeviceDashboard extends LitElement {
           floor: floorName,
           integration: !entries
             ? localize("ui.common.loading")
-            : deviceEntries.length
-              ? deviceEntries
-                  .map(
-                    (entry) =>
-                      localize(`component.${entry.domain}.title`) ||
-                      entry.domain
-                  )
-                  .join(", ")
-              : this.hass.localize(
-                  "ui.panel.config.devices.data_table.no_integration"
-                ),
+            : entriesFailed
+              ? `<${localize("ui.panel.config.devices.data_table.unknown")}>`
+              : deviceEntries.length
+                ? deviceEntries
+                    .map(
+                      (entry) =>
+                        localize(`component.${entry.domain}.title`) ||
+                        entry.domain
+                    )
+                    .join(", ")
+                : this.hass.localize(
+                    "ui.panel.config.devices.data_table.no_integration"
+                  ),
           domains: deviceEntries.map((entry) => entry.domain),
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(
@@ -848,6 +858,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     const { devicesOutput } = this._devicesAndFilterDomains(
       this.hass.devices,
       this.entries,
+      this.entriesFailed,
       this.entities,
       this.hass.areas,
       this.manifests,
@@ -912,6 +923,22 @@ export class HaConfigDeviceDashboard extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.devices.add_device")}
         </ha-button>
+        ${
+          this.entriesFailed
+            ? html`<ha-alert slot="top-header" alert-type="error">
+                ${this.hass.localize(
+                  "ui.panel.config.devices.config_entries_load_failed"
+                )}
+                <ha-button
+                  slot="action"
+                  appearance="plain"
+                  @click=${this._reloadConfigEntries}
+                >
+                  ${this.hass.localize("ui.panel.config.devices.retry")}
+                </ha-button>
+              </ha-alert>`
+            : nothing
+        }
         ${
           Array.isArray(this._filters.config_entry?.value) &&
           this._filters.config_entry?.value.length
@@ -1138,6 +1165,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       this._devicesAndFilterDomains(
         this.hass.devices,
         this.entries,
+        this.entriesFailed,
         this.entities,
         this.hass.areas,
         this.manifests,
@@ -1376,6 +1404,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-alert[slot="top-header"] {
+          display: block;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
         ha-alert ha-skeleton-text {
           --ha-skeleton-text-width: 100px;
