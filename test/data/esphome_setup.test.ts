@@ -10,6 +10,7 @@ import {
   deriveESPHomeSetupStatus,
   deviceHasMediaPlayerEntity,
   getESPHomeAudioControls,
+  getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
@@ -85,27 +86,27 @@ describe("hasESPHomeSetupCapabilities", () => {
     expect(hasESPHomeSetupCapabilities(undefined)).toBe(false);
   });
 
-  it("is true when bluetooth is supported", () => {
+  it("is false for Bluetooth alone", () => {
     expect(
       hasESPHomeSetupCapabilities(
         capabilities({
           bluetooth_proxy: { supported: true },
-        }),
-        { mediaPlayerSupported: true }
+        })
       )
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("is false for a device with no advertised capabilities", () => {
     expect(hasESPHomeSetupCapabilities(capabilities())).toBe(false);
   });
 
-  it("is true when any capability is supported", () => {
+  it("is true when music, Z-Wave, or serial is supported", () => {
     expect(
       hasESPHomeSetupCapabilities(
         capabilities({
           bluetooth_proxy: { supported: true },
-        })
+        }),
+        { mediaPlayerSupported: true }
       )
     ).toBe(true);
     expect(
@@ -326,6 +327,7 @@ describe("remaining capabilities and continue-setup", () => {
     expect(getESPHomeSetupCapabilityIds(status).length).toBe(4);
     expect(countRemainingESPHomeCapabilities(status)).toBe(3);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(false);
+    expect(getESPHomeSetupBannerState(status)).toBe("setup");
   });
 
   it("does not count Bluetooth when the proxy is unsupported", () => {
@@ -371,6 +373,7 @@ describe("remaining capabilities and continue-setup", () => {
     );
     expect(countRemainingESPHomeCapabilities(incomplete)).toBe(1);
     expect(hasStartedNonBluetoothESPHomeSetup(incomplete)).toBe(false);
+    expect(getESPHomeSetupBannerState(incomplete)).toBe("setup");
 
     const status = deriveESPHomeSetupStatus(
       capabilities({
@@ -386,6 +389,7 @@ describe("remaining capabilities and continue-setup", () => {
 
     expect(countRemainingESPHomeCapabilities(status)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
+    expect(getESPHomeSetupBannerState(status)).toBe("complete");
   });
 
   it("treats a configured serial port as remaining-zero and started", () => {
@@ -400,6 +404,24 @@ describe("remaining capabilities and continue-setup", () => {
     expect(status.serial).toBe("completed");
     expect(countRemainingESPHomeCapabilities(status)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
+    expect(getESPHomeSetupBannerState(status)).toBe("complete");
+  });
+
+  it("keeps the continue headline while other non-Bluetooth work remains", () => {
+    const status = deriveESPHomeSetupStatus(
+      capabilities({
+        zwave_proxy: {
+          supported: true,
+          home_id: 123456,
+          config_entry_id: "zwave-entry",
+        },
+        serial_proxies: [serialProxy()],
+      }),
+      deriveOptions()
+    );
+
+    expect(countRemainingESPHomeCapabilities(status)).toBe(1);
+    expect(getESPHomeSetupBannerState(status)).toBe("continue");
   });
 });
 

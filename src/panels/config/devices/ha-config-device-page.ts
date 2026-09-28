@@ -93,7 +93,6 @@ import {
   getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
-  hasStartedNonBluetoothESPHomeSetup,
   isESPHomeSerialConfigured,
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
@@ -528,9 +527,6 @@ export class HaConfigDevicePage extends LitElement {
     const esphomeCapabilityCount = esphomeStatus
       ? getESPHomeSetupCapabilityIds(esphomeStatus).length
       : 0;
-    const esphomeStarted = esphomeStatus
-      ? hasStartedNonBluetoothESPHomeSetup(esphomeStatus)
-      : false;
 
     const deviceInfo: TemplateResult[] = integrations.length
       ? [
@@ -1216,7 +1212,6 @@ export class HaConfigDevicePage extends LitElement {
                   class="fullwidth"
                   .deviceName=${deviceName}
                   .status=${esphomeStatus}
-                  .started=${esphomeStarted}
                   @esphome-setup=${this._showESPHomeSetup}
                   @esphome-setup-later=${this._deferESPHomeSetup}
                 ></ha-esphome-setup-banner>

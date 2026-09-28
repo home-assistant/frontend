@@ -19,6 +19,7 @@ import "../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../data/context";
 import {
   ESPHOME_CAPABILITY_ACCENTS,
+  getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
   type ESPHomeCapabilityId,
   type ESPHomeSetupStatus,
@@ -49,33 +50,33 @@ export class HaESPHomeSetupBanner extends LitElement {
 
   @property({ attribute: false }) public status: ESPHomeSetupStatus = {};
 
-  @property({ type: Boolean }) public started = false;
-
   protected render() {
     if (!this._i18n) {
       return nothing;
     }
     const localize = this._i18n.localize;
     const ids = getESPHomeSetupCapabilityIds(this.status);
+    const bannerState = getESPHomeSetupBannerState(this.status);
+    const complete = bannerState === "complete";
+    const title = complete
+      ? localize("ui.panel.config.devices.esphome.setup_reminder_done")
+      : bannerState === "continue"
+        ? localize("ui.panel.config.devices.esphome.setup_continue_title", {
+            name: this.deviceName,
+          })
+        : localize("ui.panel.config.devices.esphome.setup_title");
+    const intro = localize(
+      complete
+        ? "ui.panel.config.devices.esphome.setup_reminder_done_intro"
+        : "ui.panel.config.devices.esphome.setup_intro",
+      { count: ids.length }
+    );
     return html`
       <ha-card outlined>
         <div class="content">
           <div class="text">
-            <h2>
-              ${
-                this.started
-                  ? localize(
-                      "ui.panel.config.devices.esphome.setup_continue_title",
-                      { name: this.deviceName }
-                    )
-                  : localize("ui.panel.config.devices.esphome.setup_title")
-              }
-            </h2>
-            <p>
-              ${localize("ui.panel.config.devices.esphome.setup_intro", {
-                count: ids.length,
-              })}
-            </p>
+            <h2>${title}</h2>
+            <p>${intro}</p>
             <div class="actions">
               <ha-button @click=${this._setup}>
                 ${localize("ui.panel.config.devices.esphome.setup_action")}

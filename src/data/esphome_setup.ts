@@ -188,14 +188,18 @@ export const getESPHomeAudioControls = (
   };
 };
 
+/**
+ * Whether the device page should show the setup banner.
+ * Bluetooth is status inside the wizard and is not enough on its own.
+ * Zigbee has no separate capability bit; the Z-Wave proxy row covers it.
+ */
 export const hasESPHomeSetupCapabilities = (
   capabilities: ESPHomeDeviceCapabilities | undefined | null,
   options: { mediaPlayerSupported?: boolean } = {}
 ): boolean =>
   Boolean(
     capabilities &&
-    (capabilities.bluetooth_proxy.supported ||
-      options.mediaPlayerSupported ||
+    (options.mediaPlayerSupported ||
       capabilities.zwave_proxy.supported ||
       capabilities.serial_proxies.length > 0)
   );
@@ -268,6 +272,18 @@ export const hasStartedNonBluetoothESPHomeSetup = (
   status.audio === "completed" ||
   status.connectivity === "completed" ||
   status.serial === "completed";
+
+export type ESPHomeSetupBannerState = "setup" | "continue" | "complete";
+
+/** Headline state for the device-page setup banner. */
+export const getESPHomeSetupBannerState = (
+  status: ESPHomeSetupStatus
+): ESPHomeSetupBannerState => {
+  if (countRemainingESPHomeCapabilities(status) === 0) {
+    return "complete";
+  }
+  return hasStartedNonBluetoothESPHomeSetup(status) ? "continue" : "setup";
+};
 
 export const isESPHomeSetupDeferred = (
   data: ESPHomeFrontendUserData | null | undefined,
