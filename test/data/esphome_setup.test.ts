@@ -9,6 +9,7 @@ import {
   countRemainingESPHomeCapabilities,
   deriveESPHomeSetupStatus,
   deviceHasMediaPlayerEntity,
+  getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
@@ -26,7 +27,6 @@ const capabilities = (
     zwave_proxy?: Partial<ESPHomeZWaveProxyCapabilities>;
   } = {}
 ): ESPHomeDeviceCapabilities => ({
-  available: true,
   serial_proxies: [],
   ...overrides,
   bluetooth_proxy: {
@@ -45,6 +45,8 @@ const deriveOptions = (
   overrides: Partial<{
     mediaPlayerSupported: boolean;
     musicAssistantLoaded: boolean;
+    sendspinSupported: boolean;
+    sendspinEnabled: boolean;
     serialConfigured: boolean;
   }> = {}
 ) => ({
@@ -83,11 +85,10 @@ describe("hasESPHomeSetupCapabilities", () => {
     expect(hasESPHomeSetupCapabilities(undefined)).toBe(false);
   });
 
-  it("is true when advertised even if the device is unavailable", () => {
+  it("is true when bluetooth is supported", () => {
     expect(
       hasESPHomeSetupCapabilities(
         capabilities({
-          available: false,
           bluetooth_proxy: { supported: true },
         }),
         { mediaPlayerSupported: true }
@@ -182,7 +183,7 @@ describe("deriveESPHomeSetupStatus", () => {
         caps,
         deriveOptions({ mediaPlayerSupported: true })
       ).audio
-    ).toBe("active");
+    ).toBe("not-started");
     expect(
       deriveESPHomeSetupStatus(
         caps,
@@ -191,10 +192,37 @@ describe("deriveESPHomeSetupStatus", () => {
           musicAssistantLoaded: true,
         })
       ).audio
-    ).toBe("completed");
+    ).toBe("not-started");
     expect(
       deriveESPHomeSetupStatus(caps, deriveOptions()).audio
     ).toBeUndefined();
+  });
+
+  it("keeps audio incomplete until Sendspin is on", () => {
+    const caps = capabilities();
+
+    expect(
+      deriveESPHomeSetupStatus(
+        caps,
+        deriveOptions({
+          mediaPlayerSupported: true,
+          musicAssistantLoaded: true,
+          sendspinSupported: true,
+          sendspinEnabled: false,
+        })
+      ).audio
+    ).toBe("not-started");
+    expect(
+      deriveESPHomeSetupStatus(
+        caps,
+        deriveOptions({
+          mediaPlayerSupported: true,
+          musicAssistantLoaded: true,
+          sendspinSupported: true,
+          sendspinEnabled: true,
+        })
+      ).audio
+    ).toBe("completed");
   });
 
   it("derives connectivity from home_id and a matching zwave_js entry", () => {
@@ -331,7 +359,19 @@ describe("remaining capabilities and continue-setup", () => {
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(false);
   });
 
-  it("reports everything set up when remaining is zero", () => {
+  it("reports everything set up only when Sendspin is on", () => {
+    const incomplete = deriveESPHomeSetupStatus(
+      capabilities({
+        bluetooth_proxy: { supported: true },
+      }),
+      deriveOptions({
+        mediaPlayerSupported: true,
+        musicAssistantLoaded: true,
+      })
+    );
+    expect(countRemainingESPHomeCapabilities(incomplete)).toBe(1);
+    expect(hasStartedNonBluetoothESPHomeSetup(incomplete)).toBe(false);
+
     const status = deriveESPHomeSetupStatus(
       capabilities({
         bluetooth_proxy: { supported: true },
@@ -339,6 +379,8 @@ describe("remaining capabilities and continue-setup", () => {
       deriveOptions({
         mediaPlayerSupported: true,
         musicAssistantLoaded: true,
+        sendspinSupported: true,
+        sendspinEnabled: true,
       })
     );
 
@@ -358,6 +400,122 @@ describe("remaining capabilities and continue-setup", () => {
     expect(status.serial).toBe("completed");
     expect(countRemainingESPHomeCapabilities(status)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
+  });
+});
+
+describe("getESPHomeAudioControls", () => {
+  const entities = [
+    {
+      entity_id: "media_player.proxy",
+      device_id: "dev-1",
+      platform: "esphome",
+    },
+    {
+      entity_id: "switch.proxy_sendspin",
+      device_id: "dev-1",
+      platform: "esphome",
+      name: "Sendspin",
+    },
+    {
+      entity_id: "switch.proxy_require_pin_to_play_audio",
+      device_id: "dev-1",
+      platform: "esphome",
+      name: "Require PIN to play audio",
+    },
+    {
+      entity_id: "switch.other_sendspin",
+      device_id: "dev-2",
+      platform: "esphome",
+      name: "Sendspin",
+    },
+  ];
+
+  it("maps Sendspin and an inverted require-PIN switch", () => {
+    expect(
+      getESPHomeAudioControls("dev-1", entities, {
+        "switch.proxy_sendspin": { state: "on" },
+        "switch.proxy_require_pin_to_play_audio": { state: "off" },
+      })
+    ).toMatchObject({
+      supported: true,
+      sendspinEntityId: "switch.proxy_sendspin",
+      sendspinOn: true,
+      guestEntityId: "switch.proxy_require_pin_to_play_audio",
+      guestOn: true,
+      guestRequiresPin: true,
+    });
+  });
+
+  it("ignores unrelated switches on a device whose name contains guest", () => {
+    expect(
+      getESPHomeAudioControls(
+        "dev-1",
+        [
+          {
+            entity_id: "switch.guest_room_night_light",
+            device_id: "dev-1",
+            platform: "esphome",
+            name: "Night light",
+          },
+          {
+            entity_id: "switch.guest_room_sendspin",
+            device_id: "dev-1",
+            platform: "esphome",
+            translation_key: "sendspin",
+          },
+          {
+            entity_id: "switch.guest_room_require_pin_to_stream",
+            device_id: "dev-1",
+            platform: "esphome",
+            name: "Require PIN to stream",
+          },
+        ],
+        {
+          "switch.guest_room_night_light": {
+            state: "on",
+            attributes: { friendly_name: "Guest room Night light" },
+          },
+          "switch.guest_room_sendspin": {
+            state: "off",
+            attributes: { friendly_name: "Guest room Sendspin" },
+          },
+          "switch.guest_room_require_pin_to_stream": {
+            state: "on",
+            attributes: { friendly_name: "Guest room Require PIN to stream" },
+          },
+        }
+      )
+    ).toMatchObject({
+      sendspinEntityId: "switch.guest_room_sendspin",
+      sendspinOn: false,
+      guestEntityId: "switch.guest_room_require_pin_to_stream",
+      guestOn: false,
+      guestRequiresPin: true,
+    });
+  });
+
+  it("treats a guest-mode switch as open access when it is on", () => {
+    expect(
+      getESPHomeAudioControls(
+        "dev-1",
+        [
+          {
+            entity_id: "switch.proxy_sendspin_guest_mode",
+            device_id: "dev-1",
+            platform: "esphome",
+            name: "Sendspin Guest mode",
+          },
+        ],
+        {
+          "switch.proxy_sendspin_guest_mode": { state: "on" },
+        }
+      )
+    ).toMatchObject({
+      sendspinEntityId: undefined,
+      guestEntityId: "switch.proxy_sendspin_guest_mode",
+      guestOn: true,
+      guestRequiresPin: false,
+    });
   });
 });
 

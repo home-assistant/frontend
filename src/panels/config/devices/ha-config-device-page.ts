@@ -90,7 +90,7 @@ import {
 import {
   countRemainingESPHomeCapabilities,
   deriveESPHomeSetupStatus,
-  deviceHasMediaPlayerEntity,
+  getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
@@ -495,10 +495,12 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
 
-    const mediaPlayerSupported = deviceHasMediaPlayerEntity(
+    const audio = getESPHomeAudioControls(
       this.deviceId,
-      entities
+      entities,
+      this.hass.states
     );
+    const mediaPlayerSupported = audio.supported;
     const showESPHomeSetup =
       this._esphomeUserDataReady &&
       hasESPHomeSetupCapabilities(this._esphomeCapabilities, {
@@ -511,6 +513,8 @@ export class HaConfigDevicePage extends LitElement {
     const esphomeStatus = this._esphomeCapabilities
       ? deriveESPHomeSetupStatus(this._esphomeCapabilities, {
           mediaPlayerSupported,
+          sendspinSupported: Boolean(audio.sendspinEntityId),
+          sendspinEnabled: audio.sendspinOn,
           musicAssistantLoaded: isComponentLoaded(
             this.hass.config,
             "music_assistant"
@@ -1326,10 +1330,11 @@ export class HaConfigDevicePage extends LitElement {
         ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
         : undefined,
       capabilities: this._esphomeCapabilities,
-      mediaPlayerSupported: deviceHasMediaPlayerEntity(
+      mediaPlayerSupported: getESPHomeAudioControls(
         this.deviceId,
-        this._entities(this.deviceId, this._entityReg, this.hass.devices)
-      ),
+        this._entities(this.deviceId, this._entityReg, this.hass.devices),
+        this.hass.states
+      ).supported,
       dialogClosedCallback: () => {
         this._fetchESPHomeCapabilities();
       },

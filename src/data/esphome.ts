@@ -23,7 +23,6 @@ export interface ESPHomeSerialProxy {
 }
 
 export interface ESPHomeDeviceCapabilities {
-  available: boolean;
   bluetooth_proxy: ESPHomeBluetoothProxyCapabilities;
   zwave_proxy: ESPHomeZWaveProxyCapabilities;
   serial_proxies: ESPHomeSerialProxy[];

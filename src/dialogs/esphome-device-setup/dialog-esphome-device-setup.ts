@@ -14,7 +14,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { waitForMs } from "../../common/util/wait";
@@ -23,9 +22,10 @@ import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
+import type { HaSwitch } from "../../components/ha-switch";
+import "../../components/ha-switch";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-nav";
 import { fetchConfigFlowInProgress } from "../../data/config_flow";
@@ -36,6 +36,8 @@ import {
   connectionContext,
   entitiesContext,
   internationalizationContext,
+  statesContext,
+  uiContext,
 } from "../../data/context";
 import type { DataEntryFlowProgress } from "../../data/data_entry_flow";
 import {
@@ -44,13 +46,13 @@ import {
 } from "../../data/esphome";
 import {
   deriveESPHomeSetupStatus,
-  deviceHasMediaPlayerEntity,
   ESPHOME_CAPABILITY_ACCENTS,
-  ESPHOME_SERIAL_INTEGRATIONS,
+  getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
   MUSIC_ASSISTANT_ADDON_SLUG,
   MUSIC_ASSISTANT_DOCS_URL,
+  type ESPHomeAudioControls,
   type ESPHomeCapabilityId,
   type ESPHomeCapabilityStatus,
   type ESPHomeSetupStatus,
@@ -62,9 +64,8 @@ import {
   startHassioAddon,
 } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
-import { domainToName, fetchIntegrationManifest } from "../../data/integration";
 import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
-import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
+import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -73,7 +74,7 @@ import { DialogMixin } from "../dialog-mixin";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-device-setup";
 
-type SetupView = "checklist" | "zwave-adapters" | "serial";
+type SetupView = "checklist" | "zwave-adapters";
 
 const CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: mdiBluetooth,
@@ -116,6 +117,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   private _i18n?: ContextType<typeof internationalizationContext>;
 
   @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui?: ContextType<typeof uiContext>;
+
+  @state()
   @consume({ context: apiContext, subscribe: true })
   private _api?: ContextType<typeof apiContext>;
 
@@ -130,6 +135,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   @state()
   @consume({ context: entitiesContext, subscribe: true })
   private _entities?: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: ContextType<typeof statesContext>;
 
   @state()
   @consume({ context: configEntriesContext, subscribe: true })
@@ -170,6 +179,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       this._loaded = true;
       this._capabilities = this.params.capabilities;
       this._load();
+    } else if (
+      this._loaded &&
+      changedProps.has("_configEntries") &&
+      this._capabilities?.serial_proxies.length
+    ) {
+      this._refreshSerialPorts();
     }
   }
 
@@ -216,9 +231,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
     if (this._view === "zwave-adapters") {
       return this._renderZWaveAdapters();
-    }
-    if (this._view === "serial") {
-      return this._renderSerial();
     }
     return this._renderChecklist();
   }
@@ -288,14 +300,29 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           expanded
             ? html`
                 <div class="check-body">
+                  ${
+                    id === "audio"
+                      ? html`
+                          <img
+                            class="sendspin-lockup ${classMap({
+                              dark: Boolean(this._ui?.themes.darkMode),
+                            })}"
+                            alt=${localize(
+                              "ui.panel.config.devices.esphome.setup_audio_sendspin"
+                            )}
+                            src="/static/images/sendspin-lockup.svg"
+                          />
+                        `
+                      : nothing
+                  }
                   <p>${localize(CAPABILITY_DESCRIPTION_KEYS[id])}</p>
-                  ${id === "audio" ? this._renderAudioActions(status) : nothing}
+                  ${id === "audio" ? this._renderAudioActions() : nothing}
                   ${
                     id === "connectivity"
                       ? this._renderConnectivityActions(status)
                       : nothing
                   }
-                  ${id === "serial" ? this._renderSerialActions(status) : nothing}
+                  ${id === "serial" ? this._renderSerialPortList() : nothing}
                 </div>
               `
             : nothing
@@ -305,17 +332,15 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   }
 
   private _statusBadge(status: ESPHomeCapabilityStatus) {
-    if (status !== "completed" && status !== "active") {
+    if (status !== "completed") {
       return nothing;
     }
     return html`
       <span
-        class="status-badge ${status}"
+        class="status-badge completed"
         role="img"
         aria-label=${this._i18n!.localize(
-          status === "completed"
-            ? "ui.panel.config.devices.esphome.setup_status_completed"
-            : "ui.panel.config.devices.esphome.setup_status_active"
+          "ui.panel.config.devices.esphome.setup_status_completed"
         )}
       >
         <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
@@ -323,32 +348,16 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _renderAudioActions(status: ESPHomeCapabilityStatus) {
+  private _renderAudioActions() {
     const localize = this._i18n!.localize;
     const hassio = isComponentLoaded(this._hassConfig!.config, "hassio");
-    const musicAssistantReady = status === "completed";
+    const musicAssistantReady = isComponentLoaded(
+      this._hassConfig!.config,
+      "music_assistant"
+    );
+    const audio = this._audioControls();
     return html`
       <div class="audio-players">
-        <div class="audio-player">
-          <span class="audio-icon">
-            <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-          </span>
-          <span class="audio-text">
-            <span class="audio-name">
-              ${localize(
-                "ui.panel.config.devices.esphome.setup_audio_home_assistant"
-              )}
-            </span>
-            <span class="audio-meta">
-              ${localize(
-                "ui.panel.config.devices.esphome.setup_audio_builtin_playback"
-              )}
-            </span>
-          </span>
-          <span class="chip active">
-            ${localize("ui.panel.config.devices.esphome.setup_audio_active")}
-          </span>
-        </div>
         ${
           musicAssistantReady
             ? html`
@@ -368,15 +377,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       </span>
                       <span class="audio-meta">
                         ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_music_assistant_meta"
+                          "ui.panel.config.devices.esphome.setup_audio_installed"
                         )}
                       </span>
                     </span>
-                    <span class="chip active">
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_audio_active"
-                      )}
-                    </span>
+                    ${this._statusBadge("completed")}
                   </div>
                   <div class="actions">
                     <ha-button
@@ -389,31 +394,20 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                     </ha-button>
                   </div>
                 </div>
+                ${this._renderSendspinRows(audio)}
               `
             : html`
-                <div class="ma-upsell">
-                  <div class="ma-upsell-head">
+                <div class="ma-flat">
+                  <div class="ma-flat-head">
                     <span class="audio-icon">
                       <ha-domain-icon
                         domain="music_assistant"
                         brand-fallback
                       ></ha-domain-icon>
                     </span>
-                    <span class="ma-upsell-title">
-                      <span class="audio-name">
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_music_assistant"
-                        )}
-                      </span>
-                      <span class="audio-meta">
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_music_assistant_upsell"
-                        )}
-                      </span>
-                    </span>
-                    <span class="chip recommended">
+                    <span class="audio-name">
                       ${localize(
-                        "ui.panel.config.devices.esphome.setup_audio_recommended"
+                        "ui.panel.config.devices.esphome.setup_audio_music_assistant"
                       )}
                     </span>
                   </div>
@@ -443,6 +437,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       </span>
                     </div>
                   </div>
+                  <p class="sendspin-hint">
+                    ${localize(
+                      "ui.panel.config.devices.esphome.setup_audio_install_first"
+                    )}
+                  </p>
                   ${
                     this._installingAudio
                       ? html`<p class="install-status">
@@ -482,6 +481,71 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                   </div>
                 </div>
               `
+        }
+      </div>
+    `;
+  }
+
+  private _renderSendspinRows(audio: ESPHomeAudioControls) {
+    if (!audio.sendspinEntityId && !audio.guestEntityId) {
+      return nothing;
+    }
+    const localize = this._i18n!.localize;
+    const sendspinBlocked = !audio.sendspinOn;
+    const guestDisabled = sendspinBlocked || !audio.guestAvailable;
+    return html`
+      <div class="sendspin-list">
+        ${
+          audio.sendspinEntityId
+            ? html`
+                <div class="sendspin-row">
+                  <span class="sendspin-text">
+                    <span class="audio-name">
+                      ${localize(
+                        "ui.panel.config.devices.esphome.setup_audio_sendspin"
+                      )}
+                    </span>
+                    <span class="audio-meta">
+                      ${localize(
+                        "ui.panel.config.devices.esphome.setup_audio_sendspin_meta"
+                      )}
+                    </span>
+                  </span>
+                  <ha-switch
+                    .checked=${audio.sendspinOn}
+                    .disabled=${!audio.sendspinAvailable}
+                    @change=${this._sendspinToggled}
+                  ></ha-switch>
+                </div>
+              `
+            : nothing
+        }
+        ${
+          audio.guestEntityId
+            ? html`
+                <div class="sendspin-row ${guestDisabled ? "is-disabled" : ""}">
+                  <span class="sendspin-text">
+                    <span class="audio-name">
+                      ${localize(
+                        "ui.panel.config.devices.esphome.setup_audio_guest"
+                      )}
+                    </span>
+                    <span class="audio-meta">
+                      ${localize(
+                        sendspinBlocked
+                          ? "ui.panel.config.devices.esphome.setup_audio_guest_needs_sendspin"
+                          : "ui.panel.config.devices.esphome.setup_audio_guest_meta"
+                      )}
+                    </span>
+                  </span>
+                  <ha-switch
+                    .checked=${sendspinBlocked ? false : audio.guestOn}
+                    .disabled=${guestDisabled}
+                    @change=${this._guestToggled}
+                  ></ha-switch>
+                </div>
+              `
+            : nothing
         }
       </div>
     `;
@@ -579,25 +643,18 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                         )}
                       </span>
                     `
-                  : nothing
+                  : html`
+                      <ha-button size="s" @click=${this._setupSerialPort}>
+                        ${localize(
+                          "ui.panel.config.devices.esphome.setup_action"
+                        )}
+                      </ha-button>
+                    `
               }
             </li>
           `;
         })}
       </ul>
-    `;
-  }
-
-  private _renderSerialActions(status: ESPHomeCapabilityStatus) {
-    return html`
-      ${status === "completed" ? this._renderSerialPortList() : nothing}
-      <div class="actions">
-        <ha-button @click=${this._showSerial}>
-          ${this._i18n!.localize(
-            "ui.panel.config.devices.esphome.setup_action"
-          )}
-        </ha-button>
-      </div>
     `;
   }
 
@@ -640,54 +697,15 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _renderSerial() {
-    const localize = this._i18n!.localize;
-    const ports = this._capabilities?.serial_proxies ?? [];
-    return html`
-      <p>${localize("ui.panel.config.devices.esphome.setup_serial_intro")}</p>
-      ${
-        ports.length
-          ? html`
-              <h3>
-                ${localize(
-                  "ui.panel.config.devices.esphome.setup_serial_ports"
-                )}
-              </h3>
-              ${this._renderSerialPortList()}
-            `
-          : nothing
-      }
-      <h3>
-        ${localize("ui.panel.config.devices.esphome.setup_serial_integrations")}
-      </h3>
-      <ha-list-nav>
-        ${ESPHOME_SERIAL_INTEGRATIONS.map(
-          (domain) => html`
-            <ha-list-item-button
-              data-domain=${domain}
-              @click=${this._setupSerialIntegration}
-            >
-              <ha-domain-icon
-                slot="start"
-                .domain=${domain}
-                brand-fallback
-              ></ha-domain-icon>
-              <span slot="headline">${domainToName(localize, domain)}</span>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-list-item-button>
-          `
-        )}
-      </ha-list-nav>
-    `;
-  }
+  private _setupSerialPort = (ev: Event) => {
+    ev.stopPropagation();
+    showAddIntegrationDialog(this);
+  };
 
   private _dialogTitle(): string {
     const localize = this._i18n!.localize;
     if (this._view === "zwave-adapters") {
       return localize("ui.panel.config.devices.esphome.setup_adapters_title");
-    }
-    if (this._view === "serial") {
-      return localize("ui.panel.config.devices.esphome.setup_serial_choose");
     }
     return localize("ui.panel.config.devices.esphome.setup_title");
   }
@@ -696,15 +714,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (!this.params || !this._capabilities || !this._hassConfig) {
       return undefined;
     }
+    const audio = this._audioControls();
     return deriveESPHomeSetupStatus(this._capabilities, {
       mediaPlayerSupported:
-        Boolean(this.params.mediaPlayerSupported) ||
-        (this._entities
-          ? deviceHasMediaPlayerEntity(
-              this.params.deviceId,
-              Object.values(this._entities)
-            )
-          : false),
+        Boolean(this.params.mediaPlayerSupported) || audio.supported,
+      sendspinSupported: Boolean(audio.sendspinEntityId),
+      sendspinEnabled: audio.sendspinOn,
       musicAssistantLoaded: isComponentLoaded(
         this._hassConfig.config,
         "music_assistant"
@@ -767,6 +782,16 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
   }
 
+  private async _refreshSerialPorts() {
+    if (!this._capabilities) {
+      return;
+    }
+    const ports = await this._fetchSerialUsage(this._capabilities);
+    if (this.isConnected) {
+      this._serialPorts = ports;
+    }
+  }
+
   private _toggleCapability(ev: Event) {
     const capability = (ev.currentTarget as HTMLElement).dataset
       .capability as ESPHomeCapabilityId;
@@ -782,16 +807,50 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     this._view = "zwave-adapters";
   };
 
-  private async _showSerial(ev: Event) {
-    ev.stopPropagation();
-    if (this._i18n) {
-      await Promise.all(
-        ESPHOME_SERIAL_INTEGRATIONS.map((domain) =>
-          this._i18n!.loadBackendTranslation("title", domain)
-        )
-      );
+  private _audioControls(): ESPHomeAudioControls {
+    if (!this.params) {
+      return {
+        supported: false,
+        sendspinOn: false,
+        sendspinAvailable: false,
+        guestOn: false,
+        guestAvailable: false,
+        guestRequiresPin: false,
+      };
     }
-    this._view = "serial";
+    return getESPHomeAudioControls(
+      this.params.deviceId,
+      this._entities ? Object.values(this._entities) : [],
+      this._states ?? {}
+    );
+  }
+
+  private _sendspinToggled = (ev: Event) => {
+    ev.stopPropagation();
+    const entityId = this._audioControls().sendspinEntityId;
+    if (!entityId) {
+      return;
+    }
+    this._toggleSwitch(entityId, (ev.target as HaSwitch).checked);
+  };
+
+  private _guestToggled = (ev: Event) => {
+    ev.stopPropagation();
+    const audio = this._audioControls();
+    if (!audio.guestEntityId || !audio.sendspinOn) {
+      return;
+    }
+    const guestOn = (ev.target as HaSwitch).checked;
+    this._toggleSwitch(
+      audio.guestEntityId,
+      audio.guestRequiresPin ? !guestOn : guestOn
+    );
+  };
+
+  private _toggleSwitch(entityId: string, turnOn: boolean) {
+    this._api?.callService("switch", turnOn ? "turn_on" : "turn_off", {
+      entity_id: entityId,
+    });
   }
 
   private async _installMusicAssistant(ev: Event) {
@@ -913,42 +972,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
     showConfigFlowDialog(this, {
       startFlowHandler: "zwave_js",
-      dialogClosedCallback: () => {
-        this._load();
-      },
-    });
-  }
-
-  private async _setupSerialIntegration(
-    ev: HASSDomCurrentTargetEvent<HTMLElement>
-  ) {
-    ev.stopPropagation();
-    const domain = ev.currentTarget.dataset.domain;
-    if (!domain) {
-      return;
-    }
-    let manifest;
-    try {
-      manifest = this._api
-        ? await fetchIntegrationManifest(
-            { callWS: this._api.callWS } as HomeAssistant,
-            domain
-          )
-        : undefined;
-    } catch (_err) {
-      manifest = undefined;
-    }
-    if (!manifest?.config_flow) {
-      await showAlertDialog(this, {
-        text: this._i18n!.localize(
-          "ui.panel.config.devices.esphome.setup_error_serial_integration"
-        ),
-      });
-      return;
-    }
-    showConfigFlowDialog(this, {
-      startFlowHandler: domain,
-      manifest,
       dialogClosedCallback: () => {
         this._load();
       },
@@ -1082,6 +1105,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         }
         .status-badge {
           display: flex;
+          flex-shrink: 0;
           align-items: center;
           justify-content: center;
           width: 24px;
@@ -1089,13 +1113,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           border-radius: var(--ha-border-radius-circle);
           background: var(--success-color);
           color: var(--ha-color-on-success-loud);
-        }
-        .status-badge.active {
-          background: var(--warning-color);
-          color: var(
-            --ha-color-on-warning-loud,
-            var(--ha-color-on-success-loud)
-          );
         }
         .status-badge ha-svg-icon,
         .chevron {
@@ -1194,15 +1211,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           background: var(--success-color);
           color: var(--ha-color-on-success-loud);
         }
-        .chip.recommended {
-          background: color-mix(
-            in srgb,
-            var(--capability-accent, var(--success-color)) 16%,
-            transparent
-          );
-          color: var(--capability-accent, var(--success-color));
-        }
-        .ma-upsell {
+        .ma-flat {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
@@ -1211,17 +1220,52 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           border-radius: var(--ha-border-radius-lg);
           background: var(--card-background-color);
         }
-        .ma-upsell-head {
+        .ma-flat-head {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: var(--ha-space-3);
         }
-        .ma-upsell-title {
+        .sendspin-hint {
+          margin: 0;
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
+        }
+        .sendspin-list {
           display: flex;
           flex-direction: column;
-          gap: 3px;
-          min-width: 0;
+        }
+        .sendspin-row {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+          min-height: 52px;
+          padding: var(--ha-space-2) var(--ha-space-1);
+        }
+        .sendspin-row + .sendspin-row {
+          border-top: 1px solid var(--divider-color);
+        }
+        .sendspin-text {
+          display: flex;
           flex: 1;
+          flex-direction: column;
+          gap: 2px;
+          min-width: 0;
+        }
+        .sendspin-row.is-disabled .audio-name,
+        .sendspin-row.is-disabled .audio-meta {
+          opacity: 0.55;
+        }
+        .sendspin-lockup {
+          display: block;
+          height: 26px;
+          width: auto;
+          max-width: 100%;
+          align-self: start;
+          object-fit: contain;
+          object-position: left center;
+        }
+        .sendspin-lockup.dark {
+          filter: invert(1) hue-rotate(180deg);
         }
         .ma-upsell-benefits {
           display: flex;
@@ -1239,11 +1283,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           flex-shrink: 0;
           color: var(--capability-accent, var(--success-color));
           --mdc-icon-size: 16px;
-        }
-        h3 {
-          margin: var(--ha-space-4) 0 var(--ha-space-2);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
         }
         .ports {
           display: flex;
@@ -1277,9 +1316,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-s);
         }
-        ha-list-item-button ha-domain-icon {
-          width: 24px;
-          height: 24px;
+        .ports ha-button {
+          flex-shrink: 0;
         }
       `,
     ];
