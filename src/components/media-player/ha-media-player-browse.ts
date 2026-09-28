@@ -20,6 +20,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { getShadowRootHost } from "../../common/dom/get-shadow-root-host";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
@@ -1161,14 +1162,9 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
     this._initialReady = true;
-    const root = this.getRootNode();
-    panelIsReady(
-      root instanceof ShadowRoot &&
-        root.host instanceof HTMLElement &&
-        root.host.tagName.startsWith("HA-PANEL-")
-        ? root.host
-        : this
-    );
+
+    const host = getShadowRootHost(this);
+    panelIsReady(host?.tagName.startsWith("HA-PANEL-") ? host : this);
   }
 
   private _setError(error: any) {
