@@ -1,9 +1,10 @@
 // Generates the MapLibre styles for the vector base map.
 //
-// Only the styles. Glyphs, sprites and tiles are served by core's proxy, which
-// is what lets them be requested with an application User-Agent and without a
-// referrer. The styles stay here because they come from @versatiles/style and
-// core has no node toolchain to regenerate them with.
+// Only the styles. Glyphs and tiles are served by core's proxy, which is what
+// lets them be requested with an application User-Agent and without a referrer.
+// The sprite sheet ships with the frontend (see map-sprites.js). The styles
+// stay here because they come from @versatiles/style and core has no node
+// toolchain to regenerate them with.
 
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
