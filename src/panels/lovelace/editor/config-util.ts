@@ -33,11 +33,12 @@ export const addCards = (
   config: LovelaceConfig,
   containerPath: LovelacePath,
   cardConfigs: LovelaceCardConfig[]
-): LovelaceConfig =>
-  cardConfigs.reduce(
-    (newConfig, cardConfig) => addCard(newConfig, containerPath, cardConfig),
-    config
-  );
+): LovelaceConfig => {
+  const cardsPath = [...containerPath, "cards"];
+  const cards = getAtPath<LovelaceCardConfig[]>(config, cardsPath);
+  const existingCards = Array.isArray(cards) ? cards : [];
+  return setAtPath(config, cardsPath, [...existingCards, ...cardConfigs]);
+};
 
 export const addCardAtPath = (
   config: LovelaceConfig,
