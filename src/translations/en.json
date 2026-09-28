@@ -6966,7 +6966,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
-          "config_entries_load_failed": "Error loading integrations for your devices.",
+          "config_entries_load_failed": "An unknown error occurred while loading integrations for your devices.",
           "retry": "[%key:ui::panel::app::retry%]",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
