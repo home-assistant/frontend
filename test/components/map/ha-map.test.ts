@@ -53,14 +53,16 @@ const STATES = {
 // Leaflet map underneath is what the fit assertions read.
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
 
-const createMap = async (): Promise<HaMap> => {
+const createMap = async (
+  options: { clusterMarkers?: boolean; states?: HassEntities } = {}
+): Promise<HaMap> => {
   const el = document.createElement("ha-map");
   el.entities = [
     "device_tracker.paulus",
     "device_tracker.anne_therese",
   ] as string[];
-  el.clusterMarkers = false;
-  (el as any)._states = STATES;
+  el.clusterMarkers = options.clusterMarkers ?? false;
+  (el as any)._states = options.states ?? STATES;
   (el as any)._config = {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
   };
@@ -143,5 +145,84 @@ describe("ha-map", () => {
       Object.defineProperty(Element.prototype, "clientWidth", originalWidth!);
       Object.defineProperty(Element.prototype, "clientHeight", originalHeight!);
     }
+  });
+
+  describe("marker reuse", () => {
+    // Two trackers close enough to share one cluster bubble
+    const NEARBY = {
+      ...STATES,
+      "device_tracker.anne_therese": {
+        ...STATES["device_tracker.anne_therese"],
+        attributes: {
+          friendly_name: "Anne Therese",
+          latitude: 52.3722,
+          longitude: 4.8902,
+        },
+      },
+    } as unknown as HassEntities;
+
+    const withSize = async (create: () => Promise<HaMap>) => {
+      const originalWidth = Object.getOwnPropertyDescriptor(
+        Element.prototype,
+        "clientWidth"
+      );
+      const originalHeight = Object.getOwnPropertyDescriptor(
+        Element.prototype,
+        "clientHeight"
+      );
+      Object.defineProperty(Element.prototype, "clientWidth", {
+        get: () => 800,
+        configurable: true,
+      });
+      Object.defineProperty(Element.prototype, "clientHeight", {
+        get: () => 500,
+        configurable: true,
+      });
+      try {
+        return await create();
+      } finally {
+        Object.defineProperty(Element.prototype, "clientWidth", originalWidth!);
+        Object.defineProperty(
+          Element.prototype,
+          "clientHeight",
+          originalHeight!
+        );
+      }
+    };
+
+    const shownBubbles = (el: HaMap) =>
+      [...el.shadowRoot!.querySelectorAll(".cluster-bubble")].filter(
+        (bubble) => bubble.isConnected
+      );
+
+    // markercluster keeps the outgoing bubble until its animation ends
+    const settledBubble = async (el: HaMap, previous?: Element) => {
+      let bubble: Element | undefined;
+      await vi.waitFor(() => {
+        const bubbles = shownBubbles(el);
+        expect(bubbles).toHaveLength(1);
+        expect(bubbles[0]).not.toBe(previous);
+        bubble = bubbles[0];
+      });
+      return bubble!;
+    };
+
+    it("keeps avatars in a bubble Leaflet shows again after zooming out", async () => {
+      const el = await withSize(() =>
+        createMap({ clusterMarkers: true, states: NEARBY })
+      );
+      const map = leafletMap(el)!;
+      map.setView([52.3721, 4.8901], 12, { animate: false });
+      const zoomedOut = await settledBubble(el);
+      expect(zoomedOut.querySelectorAll("ha-entity-marker")).toHaveLength(2);
+
+      map.setZoom(13, { animate: false });
+      const zoomedIn = await settledBubble(el, zoomedOut);
+      expect(zoomedIn.querySelectorAll("ha-entity-marker")).toHaveLength(2);
+
+      map.setZoom(12, { animate: false });
+      const shownAgain = await settledBubble(el, zoomedIn);
+      expect(shownAgain.querySelectorAll("ha-entity-marker")).toHaveLength(2);
+    });
   });
 });
