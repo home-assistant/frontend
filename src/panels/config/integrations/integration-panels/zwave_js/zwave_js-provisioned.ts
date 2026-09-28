@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
-import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import type { ZwaveJSProvisioningEntry } from "../../../../../data/zwave_js";
 import {
   fetchZwaveProvisioningEntries,
@@ -33,7 +32,7 @@ class ZWaveJSProvisioned extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _error?: string;
+  @state() private _loadFailed = false;
 
   @state() private _nodeIdToDevice: Record<number, DeviceRegistryEntry> = {};
 
@@ -57,7 +56,14 @@ class ZWaveJSProvisioned extends LitElement {
         .columns=${this._columns(this.hass.localize)}
         .loading=${this._loading}
         .data=${this._getData(this._provisioningEntries, this._nodeIdToDevice)}
-        .noDataText=${this._error}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.zwave_js.provisioned.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryFetchProvisioningEntries}
       >
       </hass-tabs-subpage-data-table>
     `;
@@ -188,12 +194,17 @@ class ZWaveJSProvisioned extends LitElement {
         this.hass!,
         this.configEntryId
       );
-      this._error = undefined;
-    } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryFetchProvisioningEntries() {
+    this._loading = true;
+    this._fetchProvisioningEntries();
   }
 
   private _unprovision = async (ev) => {

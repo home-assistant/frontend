@@ -20,7 +20,6 @@ import {
   deleteApplicationCredential,
   fetchApplicationCredentials,
 } from "../../../data/application_credential";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { domainToName } from "../../../data/integration";
 import {
   showAlertDialog,
@@ -40,7 +39,7 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _error?: string;
+  @state() private _loadFailed = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
@@ -164,7 +163,14 @@ export class HaConfigApplicationCredentials extends LitElement {
           this._applicationCredentials,
           this.hass.localize
         )}
-        .noDataText=${this._error}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.application_credentials.picker.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryFetchApplicationCredentials}
         has-fab
         selectable
         .selected=${this._selected.length}
@@ -289,12 +295,17 @@ export class HaConfigApplicationCredentials extends LitElement {
       this._applicationCredentials = await fetchApplicationCredentials(
         this.hass
       );
-      this._error = undefined;
-    } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryFetchApplicationCredentials() {
+    this._loading = true;
+    this._fetchApplicationCredentials();
   }
 
   private _addApplicationCredential() {

@@ -12,7 +12,6 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
-import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import type { ZHAGroup } from "../../../../../data/zha";
 import { fetchGroups } from "../../../../../data/zha";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
@@ -48,7 +47,7 @@ export class ZHAGroupsDashboard extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _error?: string;
+  @state() private _loadFailed = false;
 
   private _firstUpdatedCalled = false;
 
@@ -121,7 +120,12 @@ export class ZHAGroupsDashboard extends LitElement {
         .columns=${this._columns(this.hass.localize)}
         .loading=${this._loading}
         .data=${this._formattedGroups(this._groups)}
-        .noDataText=${this._error}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.zha.groups.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchGroups}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
@@ -137,12 +141,17 @@ export class ZHAGroupsDashboard extends LitElement {
   private async _fetchGroups() {
     try {
       this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
-      this._error = undefined;
-    } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryFetchGroups() {
+    this._loading = true;
+    this._fetchGroups();
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

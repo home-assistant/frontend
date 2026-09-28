@@ -884,6 +884,14 @@ export class HaConfigDeviceDashboard extends LitElement {
         )}
         .columns=${this._columns(this.hass.localize)}
         .data=${devicesOutput}
+        .loadError=${
+          this.entriesFailed
+            ? this.hass.localize(
+                "ui.panel.config.devices.config_entries_load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._reloadConfigEntries}
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
@@ -923,22 +931,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.devices.add_device")}
         </ha-button>
-        ${
-          this.entriesFailed
-            ? html`<ha-alert slot="top-header" alert-type="error">
-                ${this.hass.localize(
-                  "ui.panel.config.devices.config_entries_load_failed"
-                )}
-                <ha-button
-                  slot="action"
-                  appearance="plain"
-                  @click=${this._reloadConfigEntries}
-                >
-                  ${this.hass.localize("ui.panel.config.devices.retry")}
-                </ha-button>
-              </ha-alert>`
-            : nothing
-        }
         ${
           Array.isArray(this._filters.config_entry?.value) &&
           this._filters.config_entry?.value.length
@@ -1404,10 +1396,6 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
-        }
-        ha-alert[slot="top-header"] {
-          display: block;
-          margin: var(--ha-space-2) var(--ha-space-4);
         }
         ha-alert ha-skeleton-text {
           --ha-skeleton-text-width: 100px;

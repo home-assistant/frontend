@@ -30,7 +30,6 @@ import "../../../../components/ha-icon-overflow-menu";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import { saveFrontendSystemData } from "../../../../data/frontend";
-import { extractApiErrorMessage } from "../../../../data/hassio/common";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
@@ -104,7 +103,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _error?: string;
+  @state() private _loadFailed = false;
 
   @state()
   @storage({
@@ -432,6 +431,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.picker.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryGetDashboards}
         id="url_path"
         has-fab
         clickable
@@ -450,13 +457,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
             </ha-dropdown-item>
           </a>
         </ha-dropdown>
-        ${
-          this._error
-            ? html`<ha-alert slot="top-header" alert-type="error">
-                ${this._error}
-              </ha-alert>`
-            : nothing
-        }
         <ha-button slot="fab" size="l" @click=${this._addDashboard}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
@@ -491,12 +491,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _getDashboards() {
     try {
       this._dashboards = await fetchDashboards(this.hass);
-      this._error = undefined;
-    } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryGetDashboards() {
+    this._loading = true;
+    this._getDashboards();
   }
 
   private _handleRowClicked(ev: CustomEvent) {
@@ -737,10 +742,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
   static styles = css`
     ha-dropdown a {
       text-decoration: none;
-    }
-    ha-alert[slot="top-header"] {
-      display: block;
-      margin: var(--ha-space-2) var(--ha-space-4);
     }
   `;
 }
