@@ -176,19 +176,24 @@ export class StateHistoryCharts extends LitElement {
               this._renderHistoryItem(item, index)
             )}`
       }
-      ${
-        this.syncCharts && this._hasZoomedCharts
-          ? html`<ha-button
-              size="l"
-              class="reset-button"
-              @click=${this._handleGlobalZoomReset}
-            >
-              <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
-              ${this.hass.localize("ui.components.history_charts.zoom_reset")}
-            </ha-button>`
-          : nothing
-      }
     `;
+  }
+
+  // Shown once, in the first chart, since resetting it resets the synced
+  // charts too.
+  private _renderResetButton(index: number) {
+    if (index !== 0 || !this.syncCharts || !this._hasZoomedCharts) {
+      return nothing;
+    }
+    return html`<ha-button
+      size="xs"
+      appearance="filled"
+      class="reset-button"
+      @click=${this._handleGlobalZoomReset}
+    >
+      <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
+      ${this.hass.localize("ui.components.history_charts.zoom_reset")}
+    </ha-button>`;
   }
 
   private _renderHistoryItem: RenderItemFunction<
@@ -223,6 +228,7 @@ export class StateHistoryCharts extends LitElement {
           .expandLegend=${this.expandLegend}
           ?hide-reset-button=${this.syncCharts}
         ></state-history-chart-line>
+        ${this._renderResetButton(index)}
       </div> `;
     }
     return html`<div class="entry-container timeline">
@@ -243,6 +249,7 @@ export class StateHistoryCharts extends LitElement {
         @chart-zoom-with-index=${this._handleTimelineSync}
         ?hide-reset-button=${this.syncCharts}
       ></state-history-chart-timeline>
+      ${this._renderResetButton(index)}
     </div> `;
   };
 
@@ -421,6 +428,7 @@ export class StateHistoryCharts extends LitElement {
     }
 
     .entry-container {
+      position: relative;
       width: 100%;
       overflow: visible;
     }
@@ -468,12 +476,15 @@ export class StateHistoryCharts extends LitElement {
     state-history-chart-line {
       width: 100%;
     }
+    /* Same spot as the chart's own controls in ha-chart-base. */
     .reset-button {
-      position: fixed;
-      bottom: calc(24px + var(--safe-area-inset-bottom));
-      right: calc(24px + var(--safe-area-inset-bottom));
-      z-index: 1;
-      --ha-button-box-shadow: var(--ha-box-shadow-l);
+      position: absolute;
+      top: var(--ha-space-4);
+      inset-inline-end: var(--ha-space-2);
+      z-index: 2;
+    }
+    .entry-container.line .reset-button {
+      top: calc(var(--ha-space-6) + 8px);
     }
   `;
 }

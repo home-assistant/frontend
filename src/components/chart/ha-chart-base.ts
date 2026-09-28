@@ -245,6 +245,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _pendingZoom?: [number, number, boolean];
 
+  // Last zoom window in percent, kept so wheel panning need not read it back
+  // from the chart options.
+  private _zoomRange: [number, number] = [0, 100];
+
+  // Wheel pan distance not yet applied, flushed once per animation frame.
+  private _wheelPanPixels = 0;
+
+  private _wheelPanFrame?: number;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._legendPointerCancel();
@@ -252,6 +261,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._pendingUpdate = undefined;
     this._pendingOptions = undefined;
     this._pendingZoom = undefined;
+    if (this._wheelPanFrame !== undefined) {
+      cancelAnimationFrame(this._wheelPanFrame);
+      this._wheelPanFrame = undefined;
+    }
+    this._wheelPanPixels = 0;
     // The observers are about to be torn down, so nothing would correct a stale
     // value if this element is reattached inside a hidden container.
     this._intersecting = false;
@@ -316,12 +330,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
           this._updateSankeyRoam();
-          // drag to zoom
-          this.chart?.dispatchAction({
-            type: "takeGlobalCursor",
-            key: "dataZoomSelect",
-            dataZoomSelectActive: true,
-          });
         }
       };
 
@@ -335,11 +343,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
           }
           this._updateSankeyRoam();
-          this.chart?.dispatchAction({
-            type: "takeGlobalCursor",
-            key: "dataZoomSelect",
-            dataZoomSelectActive: false,
-          });
         }
       };
       window.addEventListener("keydown", handleKeyDown);
@@ -502,6 +505,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (chartOptions.series || changedProps.has("_isZoomed")) {
         this._updateSankeyRoam();
       }
+      if (changedProps.has("options")) {
+        this._updateDragToZoom();
+      }
     }
   }
 
@@ -534,6 +540,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
+            @wheel=${this._handleWheel}
           ></div>
         </div>
         <div class="sonification-output"></div>
@@ -800,6 +807,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(this._chartContainer!, "custom");
+      this._zoomRange = [0, 100];
       if (this._isZoomed) {
         this._isZoomed = false;
         this._zoomRatio = 1;
@@ -921,10 +929,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         series: this._getSeries(),
       });
       this._updateSankeyRoam();
+      this._updateDragToZoom();
       if (this._pendingZoom) {
         const [start, end, silent] = this._pendingZoom;
         this._pendingZoom = undefined;
         this.chart.dispatchAction({ type: "dataZoom", start, end, silent });
+        if (silent) {
+          this._setZoomRange(start, end);
+        }
       }
     } finally {
       this._loading = false;
@@ -967,6 +979,25 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this.requestUpdate("_hiddenDatasets");
   }
 
+  // A mouse drag selects a range to zoom into, but only on charts with a
+  // visible x-axis to zoom; a chart can switch type (e.g. pie and bar) without
+  // being rebuilt, so this is re-evaluated when the options change.
+  private _updateDragToZoom() {
+    const xAxis = ensureArray(this.options?.xAxis)?.[0] as
+      XAXisOption | undefined;
+    this.chart?.dispatchAction({
+      type: "takeGlobalCursor",
+      key: "dataZoomSelect",
+      dataZoomSelectActive: Boolean(
+        !this._isTouchDevice &&
+        xAxis &&
+        xAxis.show !== false &&
+        !this.options?.dataZoom &&
+        this._getDataZoomConfig()
+      ),
+    });
+  }
+
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
       XAXisOption | undefined;
@@ -982,8 +1013,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       orient: "horizontal",
       filterMode: this._getDataZoomFilterMode() as any,
       xAxisIndex: 0,
-      moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
-      preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
+      // A mouse drag selects a range to zoom into, so only touch pans by
+      // dragging. Mouse users pan with horizontal scrolling instead.
+      moveOnMouseMove: this._isTouchDevice && this._isZoomed,
+      preventDefaultMouseMove: this._isTouchDevice && this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
   }
@@ -1411,7 +1444,72 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       end,
       silent,
     });
+    if (silent) {
+      // A silent zoom skips the datazoom handler, so record the range here
+      // for wheel panning to start from.
+      this._setZoomRange(start, end);
+    }
   }
+
+  // Horizontal scrolling (trackpad swipe, or Shift + wheel) pans a zoomed
+  // chart, since a mouse drag is taken by the zoom selection.
+  private _handleWheel(ev: WheelEvent) {
+    // Check the axis range rather than _isZoomed, which a Sankey roam also
+    // sets without giving an axis to pan.
+    const [start, end] = this._zoomRange;
+    if (!this.chart || (start === 0 && end === 100) || this.options?.dataZoom) {
+      return;
+    }
+    // ECharts zooms on the wheel with Ctrl/Cmd held (also how browsers report
+    // a trackpad pinch) and always on touch devices, so leave those to it.
+    if (ev.ctrlKey || ev.metaKey || this._isTouchDevice) {
+      return;
+    }
+    const delta = ev.shiftKey ? ev.deltaX || ev.deltaY : ev.deltaX;
+    if (!delta || (!ev.shiftKey && Math.abs(ev.deltaX) < Math.abs(ev.deltaY))) {
+      return;
+    }
+    ev.preventDefault();
+    this._wheelPanPixels +=
+      ev.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? delta * this.chart.getWidth()
+        : ev.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? delta * 16
+          : delta;
+    // Trackpads fire many wheel events per frame, so apply them together.
+    this._wheelPanFrame ??= requestAnimationFrame(this._flushWheelPan);
+  }
+
+  private _flushWheelPan = () => {
+    this._wheelPanFrame = undefined;
+    const pixels = this._wheelPanPixels;
+    this._wheelPanPixels = 0;
+    if (!this.chart || !pixels) {
+      return;
+    }
+    const [start, end] = this._zoomRange;
+    const xAxis = ensureArray(this.options?.xAxis)?.[0] as
+      XAXisOption | undefined;
+    const direction = xAxis?.inverse ? -1 : 1;
+    const shift = Math.max(
+      -start,
+      Math.min(
+        100 - end,
+        (direction * pixels * (end - start)) / this._getXAxisPixelWidth()
+      )
+    );
+    if (shift) {
+      // Follow the gesture directly; an update animation per frame would keep
+      // restarting and make the axis lag behind.
+      this.chart.dispatchAction({
+        type: "dataZoom",
+        start: start + shift,
+        end: end + shift,
+        animation: { duration: 0 },
+      });
+      this._setZoomRange(start + shift, end + shift);
+    }
+  };
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
@@ -1460,6 +1558,25 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return "move";
   }
 
+  // The zoom window spans the plot area, not the canvas, which also holds the
+  // axis labels.
+  private _getXAxisPixelWidth(): number {
+    const axisModel = this.chart
+      // @ts-ignore private method but no public way to get the axis extent
+      ?.getModel()
+      .getComponent("xAxis", 0) as
+      { axis?: { getExtent(): [number, number] } } | undefined;
+    const extent = axisModel?.axis?.getExtent();
+    const width = extent ? Math.abs(extent[1] - extent[0]) : 0;
+    return width || this.chart!.getWidth();
+  }
+
+  private _setZoomRange(start: number, end: number) {
+    this._zoomRange = [start, end];
+    this._isZoomed = start !== 0 || end !== 100;
+    this._zoomRatio = (end - start) / 100;
+  }
+
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
     let start = typeof zoomData.start === "number" ? zoomData.start : 0;
@@ -1490,8 +1607,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
     }
 
-    this._isZoomed = start !== 0 || end !== 100;
-    this._zoomRatio = (end - start) / 100;
+    this._setZoomRange(start, end);
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
