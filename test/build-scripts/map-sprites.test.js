@@ -28,6 +28,18 @@ const STYLE = {
       paint: { "fill-pattern": "base:pattern-wave" },
     },
     {
+      id: "rail",
+      type: "line",
+      paint: {
+        "line-pattern": [
+          "case",
+          ["get", "tunnel"],
+          "base:pattern-rail",
+          "base:icon-shop",
+        ],
+      },
+    },
+    {
       id: "extras",
       type: "symbol",
       layout: { "icon-image": "extras:shape-star" },
@@ -36,19 +48,19 @@ const STYLE = {
 };
 
 describe("missingSprites", () => {
-  it("reports every base icon the sheet lacks, from literals and expressions", () => {
+  it("reports every base image the sheet lacks, from literals and expressions", () => {
     expect(
       missingSprites(STYLE, { "icon-cafe": {}, "icon-shop": {} }).sort()
-    ).toEqual(["icon-hospital", "not-an-icon-but-a-label", "pattern-wave"]);
+    ).toEqual(["icon-hospital", "pattern-rail", "pattern-wave"]);
   });
 
-  it("is satisfied by a complete sheet and ignores other sheets", () => {
+  it("ignores base-prefixed text and other sprite sheets", () => {
     expect(
       missingSprites(STYLE, {
         "icon-cafe": {},
         "icon-hospital": {},
         "icon-shop": {},
-        "not-an-icon-but-a-label": {},
+        "pattern-rail": {},
         "pattern-wave": {},
       })
     ).toEqual([]);

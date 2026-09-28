@@ -17,9 +17,18 @@ export const spritesDir = path.resolve(
   "sprites"
 );
 
-const SHEET_FILES = [".json", ".png", "@2x.json", "@2x.png"].map(
+export const SHEET_FILES = [".json", ".png", "@2x.json", "@2x.png"].map(
   (suffix) => `${SPRITE_SHEET}${suffix}`
 );
+
+// The only style properties that resolve to a sprite image.
+const IMAGE_PROPERTIES = [
+  "icon-image",
+  "fill-pattern",
+  "line-pattern",
+  "fill-extrusion-pattern",
+  "background-pattern",
+];
 
 const collectStrings = (value, into) => {
   if (typeof value === "string") {
@@ -35,7 +44,9 @@ const collectStrings = (value, into) => {
 export const spriteIds = (style) => {
   const prefix = `${SPRITE_SHEET}:`;
   const strings = style.layers.flatMap((layer) =>
-    collectStrings([layer.layout, layer.paint], [])
+    IMAGE_PROPERTIES.flatMap((property) =>
+      collectStrings([layer.layout?.[property], layer.paint?.[property]], [])
+    )
   );
   return new Set(
     strings
