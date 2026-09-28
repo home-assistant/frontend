@@ -254,7 +254,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._legendPointerCancel();
-    window.removeEventListener("mouseup", this._handleWindowMouseUp);
     this._mouseDown = false;
     this._tooltipHiddenWhilePanning = false;
     this._pendingSetup = false;
@@ -824,12 +823,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         const isMouse = !("pointerType" in ev) || ev.pointerType === "mouse";
         if (!e.zrByTouch && isMouse && "button" in ev && ev.button === 0) {
           this._mouseDown = true;
-          // on window, so releasing the button outside the chart also counts
-          window.addEventListener("mouseup", this._handleWindowMouseUp, {
-            once: true,
-          });
         }
       });
+      // zrender also fires this when a drag is released outside the chart
+      this.chart.getZr().on("mouseup", this._handleMouseUp);
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
@@ -1534,7 +1531,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     fireEvent(this, "chart-zoom", { start, end });
   }
 
-  private _handleWindowMouseUp = () => {
+  private _handleMouseUp = () => {
     this._mouseDown = false;
     if (this._tooltipHiddenWhilePanning) {
       this._tooltipHiddenWhilePanning = false;
