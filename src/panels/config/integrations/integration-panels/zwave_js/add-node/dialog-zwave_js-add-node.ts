@@ -961,7 +961,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 }
 
                 return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                  name: newName || name,
+                  name: newName ?? name,
                   new_entity_id: newEntityId || undefined,
                 });
               })
