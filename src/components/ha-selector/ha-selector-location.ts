@@ -124,7 +124,7 @@ export class HaLocationSelector extends LitElement {
         </ha-input>
 
         ${
-          this._places !== undefined
+          this._places !== undefined && this._places !== null
             ? html`
                 <ha-list activatable>
                   ${
@@ -132,7 +132,9 @@ export class HaLocationSelector extends LitElement {
                       ? this._places.map(this._renderPlace)
                       : html`
                           <ha-list-item noninteractive>
-                            No results
+                            ${this.hass.localize(
+                               "ui.components.media-browser.search.no_results"
+                            )}
                           </ha-list-item>
                         `
                   }
@@ -266,7 +268,12 @@ export class HaLocationSelector extends LitElement {
     this._places = null;
 
     try {
-      this._places = await searchPlaces(address, this.hass, true, 3);
+      this._places = await searchPlaces(
+         encodeURIComponent(address.trim()),
+         this.hass,
+         true,
+         3
+       );
     } catch (_err) {
       this._places = undefined;
     } finally {
