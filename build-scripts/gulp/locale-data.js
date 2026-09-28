@@ -48,7 +48,7 @@ const convertToJSON = async (
     "s"
   );
   const encodedData = localeData.match(
-    /\(JSON\.parse\((?<data>"(?:[^"\\]|\\.)*")\)\);?\s*$/s
+    /JSON\.parse\((?<data>"(?:[^"\\]|\\.)*")\)/
   )?.groups?.data;
   localeData = firstBlock.match(dataRegex)?.groups?.data;
   if (!localeData && !encodedData) {
@@ -57,7 +57,7 @@ const convertToJSON = async (
   // Parse to validate JSON, then stringify to minify
   try {
     localeData = JSON.stringify(
-      JSON.parse(localeData || JSON.parse(encodedData))
+      JSON.parse(encodedData ? JSON.parse(encodedData) : localeData)
     );
     await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
   } catch (e) {
