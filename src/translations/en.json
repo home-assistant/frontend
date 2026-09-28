@@ -2982,7 +2982,8 @@
           "copy_url": "Copy URL",
           "configure": "Configure",
           "error_load": "Failed to load the Model Context Protocol configuration",
-          "error_delete_entry": "Failed to disable the Model Context Protocol server"
+          "error_delete_entry": "Failed to disable the Model Context Protocol server",
+          "error_enable": "Failed to enable the Model Context Protocol server"
         },
         "apps": {
           "caption": "Apps",
@@ -4954,7 +4955,9 @@
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice",
                   "wake_word_entity": "Wake word engine",
-                  "wake_word_id": "Wake word"
+                  "wake_word_id": "Wake word",
+                  "user_id": "Acts as user",
+                  "user_id_description": "Voice requests have no user of their own. Pick one and this assistant speaks for them, so integrations that link a Home Assistant user to an account of their own use the right account."
                 },
                 "steps": {
                   "config": {
@@ -6837,8 +6840,6 @@
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
-              "drop_connection_warning_title": "Remote login has been deactivated",
-              "drop_connection_warning": "The below security options may make it appear the system is not running.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details",
@@ -9109,7 +9110,7 @@
             "invalid_host": "Enter a valid IP address or hostname.",
             "invalid_network": "Enter a valid IP address or network.",
             "invalid_port": "Enter a port number between 1 and 65535.",
-            "invalid_login_attempts_threshold": "Enter a number between -1 and 1000.",
+            "invalid_login_attempts_threshold": "Enter a number between 1 and 1000.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
             "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
             "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
@@ -9144,6 +9145,7 @@
               "trusted_proxies": "Trusted proxies",
               "use_x_frame_options": "Send X-Frame-Options",
               "ip_ban_enabled": "Enable IP banning",
+              "login_attempts_unlimited": "Unlimited login attempts",
               "login_attempts_threshold": "Login attempts before ban"
             },
             "helpers": {
@@ -9158,7 +9160,8 @@
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
               "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
               "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. To remove a ban, delete the IP address from ip_bans.yaml in your configuration directory, then restart Home Assistant.",
-              "login_attempts_threshold": "Failed login attempts before an IP is banned. Set to -1 to disable automatic bans."
+              "login_attempts_unlimited": "Never ban an IP address, no matter how many login attempts fail.",
+              "login_attempts_threshold": "Failed login attempts before an IP address is banned."
             }
           },
           "network_adapter": "Network adapter",

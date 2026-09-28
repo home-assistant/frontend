@@ -1,6 +1,5 @@
 import { consume } from "@lit/context";
 import {
-  mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
   mdiCommentEditOutline,
@@ -53,6 +52,7 @@ import {
   overflowStyles,
   rowStyles,
 } from "../styles";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -310,17 +310,7 @@ export default class HaAutomationOptionRow extends LitElement {
                       "ui.panel.config.automation.editor.actions.type.choose.remove_option"
                     ),
                     html`<span class="shortcut">
-                      <span
-                        >${
-                          isMac
-                            ? html`<ha-svg-icon
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )
-                        }</span
-                      >
+                      <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                       <span>+</span>
                       <span
                         >${this.hass.localize(
