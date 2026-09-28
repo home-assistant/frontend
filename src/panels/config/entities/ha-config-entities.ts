@@ -1294,8 +1294,8 @@ export class HaConfigEntities extends LitElement {
             ),
             text: html`<pre>
     ${rejected
-      .map((r) => r.reason.message || r.reason.code || r.reason)
-      .join("\r\n")}</pre>`,
+                .map((r) => r.reason.message || r.reason.code || r.reason)
+                .join("\r\n")}</pre>`,
           });
         }
 
@@ -1420,8 +1420,8 @@ export class HaConfigEntities extends LitElement {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
