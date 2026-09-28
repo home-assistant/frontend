@@ -1,22 +1,20 @@
 import { consume, type ContextType } from "@lit/context";
 import {
-  mdiAccessPoint,
-  mdiBluetooth,
   mdiCheck,
   mdiChevronDown,
   mdiChevronLeft,
-  mdiMusic,
   mdiOpenInNew,
-  mdiSwapHorizontal,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
-import { waitForMs } from "../../common/util/wait";
+import "../../components/entity/ha-entity-toggle";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
@@ -28,7 +26,11 @@ import type { HaSwitch } from "../../components/ha-switch";
 import "../../components/ha-switch";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-nav";
-import { fetchConfigFlowInProgress } from "../../data/config_flow";
+import {
+  fetchConfigFlowInProgress,
+  subscribeConfigFlowInProgress,
+  type ConfigFlowInProgressMessage,
+} from "../../data/config_flow";
 import {
   apiContext,
   configContext,
@@ -43,10 +45,13 @@ import type { DataEntryFlowProgress } from "../../data/data_entry_flow";
 import {
   fetchESPHomeDeviceCapabilities,
   type ESPHomeDeviceCapabilities,
+  type ESPHomeSerialPortType,
 } from "../../data/esphome";
 import {
   deriveESPHomeSetupStatus,
   ESPHOME_CAPABILITY_ACCENTS,
+  ESPHOME_CAPABILITY_ICONS,
+  ESPHOME_CAPABILITY_TITLE_KEYS,
   getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
@@ -67,7 +72,6 @@ import { extractApiErrorMessage } from "../../data/hassio/common";
 import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
 import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showConfigFlowDialog } from "../config-flow/show-dialog-config-flow";
 import { DialogMixin } from "../dialog-mixin";
@@ -76,20 +80,18 @@ import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-devic
 
 type SetupView = "checklist" | "zwave-adapters";
 
-const CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
-  bluetooth: mdiBluetooth,
-  audio: mdiMusic,
-  connectivity: mdiAccessPoint,
-  serial: mdiSwapHorizontal,
+const SERIAL_PORT_TYPE_LABELS: Record<ESPHomeSerialPortType, LocalizeKeys> = {
+  TTL: "ui.panel.config.devices.esphome.setup_serial_port_ttl",
+  RS232: "ui.panel.config.devices.esphome.setup_serial_port_rs232",
+  RS485: "ui.panel.config.devices.esphome.setup_serial_port_rs485",
+  USB_SERIAL: "ui.panel.config.devices.esphome.setup_serial_port_usb_serial",
 };
 
-const CAPABILITY_TITLE_KEYS: Record<ESPHomeCapabilityId, LocalizeKeys> = {
-  bluetooth: "ui.panel.config.devices.esphome.setup_capability_bluetooth_title",
-  audio: "ui.panel.config.devices.esphome.setup_capability_audio_title",
-  connectivity:
-    "ui.panel.config.devices.esphome.setup_capability_connectivity_title",
-  serial: "ui.panel.config.devices.esphome.setup_capability_serial_title",
-};
+/** Add-on discovery on slow hardware can take longer than a few seconds. */
+const MUSIC_ASSISTANT_DISCOVERY_TIMEOUT_MS = 60_000;
+
+/** Same delay ha-entity-toggle uses to resync a switch the state did not follow. */
+const SWITCH_RESYNC_MS = 2000;
 
 const CAPABILITY_SHORT_KEYS: Record<ESPHomeCapabilityId, LocalizeKeys> = {
   bluetooth: "ui.panel.config.devices.esphome.setup_capability_bluetooth_short",
@@ -106,6 +108,21 @@ const CAPABILITY_DESCRIPTION_KEYS: Record<ESPHomeCapabilityId, LocalizeKeys> = {
   connectivity:
     "ui.panel.config.devices.esphome.setup_capability_connectivity_description",
   serial: "ui.panel.config.devices.esphome.setup_capability_serial_description",
+};
+
+const hassioMusicAssistantFlow = (
+  messages: ConfigFlowInProgressMessage[]
+): DataEntryFlowProgress | undefined => {
+  for (const message of messages) {
+    if (
+      message.type !== "removed" &&
+      message.flow.handler === "music_assistant" &&
+      message.flow.context.source === "hassio"
+    ) {
+      return message.flow;
+    }
+  }
+  return undefined;
 };
 
 @customElement("dialog-esphome-device-setup")
@@ -160,15 +177,33 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   @state() private _installStatus?: string;
 
+  /** Optimistic guest-access value until the entity state catches up. */
+  @state() private _guestToggleOn?: boolean;
+
   private _loaded = false;
 
+  private _musicAssistantDiscovery?: {
+    unsub?: UnsubscribeFunc;
+    timer?: number;
+    resolve?: (flow: DataEntryFlowProgress | undefined) => void;
+  };
+
   public disconnectedCallback() {
+    this._finishMusicAssistantDiscovery(undefined);
     this.params?.dialogClosedCallback?.();
     super.disconnectedCallback();
   }
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (this._guestToggleOn !== undefined && changedProps.has("_states")) {
+      const entityId = this._audioControls().guestEntityId;
+      const previous = changedProps.get("_states") as
+        ContextType<typeof statesContext> | undefined;
+      if (entityId && previous?.[entityId] !== this._states?.[entityId]) {
+        this._guestToggleOn = undefined;
+      }
+    }
     if (
       !this._loaded &&
       this.params &&
@@ -278,11 +313,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           @click=${this._toggleCapability}
         >
           <span class="icon-chip">
-            <ha-svg-icon .path=${CAPABILITY_ICONS[id]}></ha-svg-icon>
+            <ha-svg-icon .path=${ESPHOME_CAPABILITY_ICONS[id]}></ha-svg-icon>
           </span>
           <span class="check-text">
             <span class="check-title">
-              ${localize(CAPABILITY_TITLE_KEYS[id])}
+              ${localize(ESPHOME_CAPABILITY_TITLE_KEYS[id])}
             </span>
             <span class="check-short">
               ${localize(CAPABILITY_SHORT_KEYS[id])}
@@ -511,11 +546,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       )}
                     </span>
                   </span>
-                  <ha-switch
-                    .checked=${audio.sendspinOn}
-                    .disabled=${!audio.sendspinAvailable}
-                    @change=${this._sendspinToggled}
-                  ></ha-switch>
+                  <ha-entity-toggle
+                    .stateObj=${this._states?.[audio.sendspinEntityId]}
+                  ></ha-entity-toggle>
                 </div>
               `
             : nothing
@@ -539,7 +572,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                     </span>
                   </span>
                   <ha-switch
-                    .checked=${sendspinBlocked ? false : audio.guestOn}
+                    .checked=${
+                      sendspinBlocked
+                        ? false
+                        : (this._guestToggleOn ?? audio.guestOn)
+                    }
                     .disabled=${guestDisabled}
                     @change=${this._guestToggled}
                   ></ha-switch>
@@ -584,6 +621,24 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         </div>
       `;
     }
+    if (!isComponentLoaded(this._hassConfig!.config, "hassio")) {
+      return html`
+        <div class="actions">
+          <ha-button
+            appearance="plain"
+            href=${documentationUrl(
+              this._hassConfig!,
+              "/integrations/zwave_js/"
+            )}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            ${localize("ui.panel.config.devices.esphome.setup_learn_more")}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+          </ha-button>
+        </div>
+      `;
+    }
     return html`
       <div class="actions">
         <ha-button @click=${this._setupZWave}>
@@ -623,7 +678,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                 <span class="port-name">${port.name}</span>
                 ${
                   port.port_type
-                    ? html`<span class="port-type">${port.port_type}</span>`
+                    ? html`<span class="port-type"
+                        >${this._serialPortTypeLabel(port.port_type)}</span
+                      >`
                     : nothing
                 }
                 ${
@@ -825,33 +882,43 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     );
   }
 
-  private _sendspinToggled = (ev: Event) => {
-    ev.stopPropagation();
-    const entityId = this._audioControls().sendspinEntityId;
-    if (!entityId) {
-      return;
-    }
-    this._toggleSwitch(entityId, (ev.target as HaSwitch).checked);
-  };
+  private _serialPortTypeLabel(portType: string): string {
+    const key = SERIAL_PORT_TYPE_LABELS[portType as ESPHomeSerialPortType];
+    return key ? this._i18n!.localize(key) : portType;
+  }
 
-  private _guestToggled = (ev: Event) => {
+  private _guestToggled = async (
+    ev: Event & HASSDomTargetEvent<HaSwitch>
+  ): Promise<void> => {
     ev.stopPropagation();
     const audio = this._audioControls();
-    if (!audio.guestEntityId || !audio.sendspinOn) {
+    const entityId = audio.guestEntityId;
+    if (!entityId || !audio.sendspinOn || !this._api) {
       return;
     }
-    const guestOn = (ev.target as HaSwitch).checked;
-    this._toggleSwitch(
-      audio.guestEntityId,
-      audio.guestRequiresPin ? !guestOn : guestOn
-    );
+    const guestOn = ev.target.checked;
+    const turnOn = audio.guestRequiresPin ? !guestOn : guestOn;
+    const stateBefore = this._states?.[entityId];
+    this._guestToggleOn = guestOn;
+    try {
+      await this._api.callService("switch", turnOn ? "turn_on" : "turn_off", {
+        entity_id: entityId,
+      });
+    } catch {
+      // callService already shows the failure toast.
+      this._guestToggleOn = undefined;
+    } finally {
+      // Same two-second resync as ha-entity-toggle when the state does not follow.
+      window.setTimeout(() => {
+        if (
+          this._states?.[entityId] === stateBefore &&
+          this._guestToggleOn !== undefined
+        ) {
+          this._guestToggleOn = undefined;
+        }
+      }, SWITCH_RESYNC_MS);
+    }
   };
-
-  private _toggleSwitch(entityId: string, turnOn: boolean) {
-    this._api?.callService("switch", turnOn ? "turn_on" : "turn_off", {
-      entity_id: entityId,
-    });
-  }
 
   private async _installMusicAssistant(ev: Event) {
     ev.stopPropagation();
@@ -861,9 +928,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     this._installingAudio = true;
     this._error = undefined;
     try {
-      const { addons } = await fetchHassioAddonsInfo({
-        callWS: this._api.callWS,
-      } as HomeAssistant);
+      const { addons } = await fetchHassioAddonsInfo(this._api);
       const addon = addons.find(
         (item) => item.slug === MUSIC_ASSISTANT_ADDON_SLUG
       );
@@ -882,7 +947,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       this._installStatus = this._i18n.localize(
         "ui.panel.config.devices.esphome.setup_discovering_music_assistant"
       );
-      await this._openMusicAssistantFlow(true);
+      await this._openMusicAssistantFlow();
     } catch (err: unknown) {
       this._error = extractApiErrorMessage(err);
       await showAlertDialog(this, {
@@ -897,15 +962,14 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
   }
 
-  private async _openMusicAssistantFlow(waitForDiscovery = false) {
+  private async _openMusicAssistantFlow() {
     if (!this._connection) {
       return;
     }
-    const flow = waitForDiscovery
-      ? await this._findFlow("music_assistant")
-      : (await fetchConfigFlowInProgress(this._connection.connection)).find(
-          (item) => item.handler === "music_assistant"
-        );
+    const flow = await this._waitForHassioMusicAssistantFlow();
+    if (!this.isConnected) {
+      return;
+    }
     if (flow) {
       showConfigFlowDialog(this, {
         continueFlowId: flow.flow_id,
@@ -920,6 +984,54 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       dialogClosedCallback: () => {
         this._load();
       },
+    });
+  }
+
+  private _finishMusicAssistantDiscovery(
+    flow: DataEntryFlowProgress | undefined
+  ) {
+    const pending = this._musicAssistantDiscovery;
+    if (!pending) {
+      return;
+    }
+    this._musicAssistantDiscovery = undefined;
+    if (pending.timer !== undefined) {
+      window.clearTimeout(pending.timer);
+    }
+    pending.unsub?.();
+    pending.resolve?.(flow);
+  }
+
+  private _waitForHassioMusicAssistantFlow(): Promise<
+    DataEntryFlowProgress | undefined
+  > {
+    const connection = this._connection;
+    if (!connection) {
+      return Promise.resolve(undefined);
+    }
+    return new Promise((resolve) => {
+      const pending: NonNullable<typeof this._musicAssistantDiscovery> = {
+        resolve,
+      };
+      this._musicAssistantDiscovery = pending;
+      pending.timer = window.setTimeout(
+        () => this._finishMusicAssistantDiscovery(undefined),
+        MUSIC_ASSISTANT_DISCOVERY_TIMEOUT_MS
+      );
+      void subscribeConfigFlowInProgress(connection, (messages) => {
+        const flow = hassioMusicAssistantFlow(messages);
+        if (flow) {
+          this._finishMusicAssistantDiscovery(flow);
+        }
+      })
+        .then((unsub) => {
+          if (this._musicAssistantDiscovery !== pending) {
+            unsub();
+            return;
+          }
+          pending.unsub = unsub;
+        })
+        .catch(() => this._finishMusicAssistantDiscovery(undefined));
     });
   }
 
@@ -976,30 +1088,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         this._load();
       },
     });
-  }
-
-  private async _findFlow(
-    handler: string
-  ): Promise<DataEntryFlowProgress | undefined> {
-    if (!this._connection) {
-      return undefined;
-    }
-    for (let attempt = 0; attempt < 8; attempt++) {
-      // Sequential polls: discovery is not available until the add-on starts.
-      // eslint-disable-next-line no-await-in-loop
-      const flows = await fetchConfigFlowInProgress(
-        this._connection.connection
-      );
-      const flow = flows.find((item) => item.handler === handler);
-      if (flow) {
-        return flow;
-      }
-      if (attempt < 7) {
-        // eslint-disable-next-line no-await-in-loop
-        await waitForMs(1000);
-      }
-    }
-    return undefined;
   }
 
   static get styles(): CSSResultGroup {

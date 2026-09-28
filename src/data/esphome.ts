@@ -4,7 +4,7 @@ export interface ESPHomeEncryptionKey {
   encryption_key: string | null;
 }
 
-export type ESPHomeSerialPortType = "TTL" | "RS232" | "RS485";
+export type ESPHomeSerialPortType = "TTL" | "RS232" | "RS485" | "USB_SERIAL";
 
 export interface ESPHomeBluetoothProxyCapabilities {
   supported: boolean;

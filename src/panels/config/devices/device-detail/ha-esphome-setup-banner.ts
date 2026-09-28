@@ -1,44 +1,24 @@
 import { consume, type ContextType } from "@lit/context";
-import {
-  mdiAccessPoint,
-  mdiBluetooth,
-  mdiCheck,
-  mdiMusic,
-  mdiSwapHorizontal,
-} from "@mdi/js";
+import { mdiCheck } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   fireEvent,
   type HASSDomEvent,
 } from "../../../../common/dom/fire_event";
-import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../data/context";
 import {
   ESPHOME_CAPABILITY_ACCENTS,
+  ESPHOME_CAPABILITY_ICONS,
+  ESPHOME_CAPABILITY_TITLE_KEYS,
   getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
   type ESPHomeCapabilityId,
   type ESPHomeSetupStatus,
 } from "../../../../data/esphome_setup";
-
-const CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
-  bluetooth: mdiBluetooth,
-  audio: mdiMusic,
-  connectivity: mdiAccessPoint,
-  serial: mdiSwapHorizontal,
-};
-
-const CAPABILITY_TITLE_KEYS: Record<ESPHomeCapabilityId, LocalizeKeys> = {
-  bluetooth: "ui.panel.config.devices.esphome.setup_capability_bluetooth_title",
-  audio: "ui.panel.config.devices.esphome.setup_capability_audio_title",
-  connectivity:
-    "ui.panel.config.devices.esphome.setup_capability_connectivity_title",
-  serial: "ui.panel.config.devices.esphome.setup_capability_serial_title",
-};
 
 @customElement("ha-esphome-setup-banner")
 export class HaESPHomeSetupBanner extends LitElement {
@@ -57,20 +37,15 @@ export class HaESPHomeSetupBanner extends LitElement {
     const localize = this._i18n.localize;
     const ids = getESPHomeSetupCapabilityIds(this.status);
     const bannerState = getESPHomeSetupBannerState(this.status);
-    const complete = bannerState === "complete";
-    const title = complete
-      ? localize("ui.panel.config.devices.esphome.setup_reminder_done")
-      : bannerState === "continue"
+    const title =
+      bannerState === "continue"
         ? localize("ui.panel.config.devices.esphome.setup_continue_title", {
             name: this.deviceName,
           })
         : localize("ui.panel.config.devices.esphome.setup_title");
-    const intro = localize(
-      complete
-        ? "ui.panel.config.devices.esphome.setup_reminder_done_intro"
-        : "ui.panel.config.devices.esphome.setup_intro",
-      { count: ids.length }
-    );
+    const intro = localize("ui.panel.config.devices.esphome.setup_intro", {
+      count: ids.length,
+    });
     return html`
       <ha-card outlined>
         <div class="content">
@@ -109,7 +84,7 @@ export class HaESPHomeSetupBanner extends LitElement {
           class="pip-chip"
           style="--capability-accent: ${ESPHOME_CAPABILITY_ACCENTS[id]}"
         >
-          <ha-svg-icon .path=${CAPABILITY_ICONS[id]}></ha-svg-icon>
+          <ha-svg-icon .path=${ESPHOME_CAPABILITY_ICONS[id]}></ha-svg-icon>
           ${
             completed
               ? html`
@@ -126,7 +101,9 @@ export class HaESPHomeSetupBanner extends LitElement {
               : ""
           }
         </span>
-        <span class="pip-label"> ${localize(CAPABILITY_TITLE_KEYS[id])} </span>
+        <span class="pip-label">
+          ${localize(ESPHOME_CAPABILITY_TITLE_KEYS[id])}
+        </span>
       </div>
     `;
   }

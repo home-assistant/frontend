@@ -206,8 +206,9 @@ export class StorageBreakdownChart extends LitElement {
     return this._formatGB(gb);
   };
 
-  private _formatGB = (GB: number): string =>
-    bidiIsolate(`${roundWithOneDecimal(GB)} GB`) ?? "";
+  private _formatGB = (GB: number): string => {
+    return bidiIsolate(`${roundWithOneDecimal(GB)} GB`);
+  };
 
   private _formatLabel = (id: string): string =>
     this.hass.localize(`ui.panel.config.storage.segments.${id}`) || id;

@@ -984,7 +984,7 @@ export class HaConfigDevicePage extends LitElement {
         }
       </ha-device-info-card>
       ${
-        showESPHomeSetup && esphomeDeferred
+        showESPHomeSetup && (esphomeDeferred || esphomeRemaining === 0)
           ? html`<ha-esphome-setup-reminder
               .remaining=${esphomeRemaining}
               .count=${esphomeCapabilityCount}
@@ -1206,7 +1206,7 @@ export class HaConfigDevicePage extends LitElement {
           </div>
         </div>
         ${
-          showESPHomeSetup && !esphomeDeferred
+          showESPHomeSetup && !esphomeDeferred && esphomeRemaining > 0
             ? html`
                 <ha-esphome-setup-banner
                   class="fullwidth"
