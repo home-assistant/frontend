@@ -306,6 +306,7 @@ export class HaLocationSelector extends LitElement {
     return html`
       <ha-list-item
         @click=${this._placeSelected}
+        .disabled=${this.disabled}
         .placeId=${place.place_id}
         .twoline=${Boolean(primary && secondary)}
       >
