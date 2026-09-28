@@ -293,6 +293,7 @@ export class HaStateLabelBadge extends LitElement {
     }
     ha-label-badge.has-unit_of_measurement {
       --ha-label-badge-label-text-transform: none;
+      direction: ltr;
     }
 
     ha-label-badge.binary_sensor {
