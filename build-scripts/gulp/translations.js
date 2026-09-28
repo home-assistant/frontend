@@ -137,6 +137,9 @@ const lokaliseTransform = (data, path, original = data) => {
 
 gulp.task("clean-translations", () => deleteAsync([workDir]));
 
+// Keep translationMetadata.json, the dev server's rspack watcher imports it.
+const cleanTranslationOutput = () => deleteAsync([outDir]);
+
 const makeWorkDir = () => mkdir(workDir, { recursive: true });
 
 const createTestTranslation = () =>
@@ -307,7 +310,7 @@ gulp.task(
   gulp.series(
     gulp.parallel(
       "fetch-nightly-translations",
-      gulp.series("clean-translations", makeWorkDir)
+      gulp.series(cleanTranslationOutput, makeWorkDir)
     ),
     createTestTranslation,
     createMasterTranslation,
