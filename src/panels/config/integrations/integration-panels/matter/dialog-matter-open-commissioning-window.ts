@@ -1,4 +1,4 @@
-import { mdiCloseCircle } from "@mdi/js";
+import { mdiCloseCircle, mdiShareVariant } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -196,6 +196,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       .loading=${this._sharing}
                       @click=${this._shareDevice}
                     >
+                      ${
+                        shareTarget === "apple_home"
+                          ? nothing
+                          : html`<ha-svg-icon
+                              slot="start"
+                              .path=${mdiShareVariant}
+                            ></ha-svg-icon>`
+                      }
                       ${this._shareLabel(shareTarget)}
                     </ha-button>
                   `
@@ -255,7 +263,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           "ui.panel.config.matter.open_commissioning_window.add_to_apple_home"
         )
       : this.hass.localize(
-          "ui.panel.config.matter.open_commissioning_window.add_to_other_app"
+          "ui.panel.config.matter.open_commissioning_window.share_with_app"
         );
   }
 
