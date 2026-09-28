@@ -10,45 +10,20 @@ export interface WebSocketError {
   message: string;
 }
 
-/**
- * What a rejected command carries: an error from Core, or one of the client's
- * own numeric codes (`ERR_CONNECTION_LOST`) when the connection fails before
- * Core answers.
- */
-type Rejection = WebSocketError | { code: number; message: string };
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
-const isRejection = (value: unknown): value is Rejection =>
+const isWebSocketError = (value: unknown): value is WebSocketError =>
   isRecord(value) &&
-  (typeof value.code === "string" || typeof value.code === "number") &&
+  typeof value.code === "string" &&
   typeof value.message === "string";
-
-/**
- * Normalize a rejected websocket command.
- *
- * Rejections are plain values, never `Error` instances, and the client uses two
- * object shapes: the `error` field of the result frame, or — when the socket
- * closes with a command in flight — the whole result frame, which nests the
- * error one level deeper.
- */
-const asRejection = (err: unknown): Rejection | undefined => {
-  if (isRejection(err)) {
-    return err;
-  }
-  if (isRecord(err) && isRejection(err.error)) {
-    return err.error;
-  }
-  return undefined;
-};
 
 /**
  * True when a failed `callWS` or `subscribeMessage` was rejected with this Core
  * error code, such as `not_found`.
  */
 export const isWsErrorCode = (err: unknown, code: string): boolean =>
-  asRejection(err)?.code === code;
+  isWebSocketError(err) && err.code === code;
 
 /**
  * Best-effort message for a failed `callWS` or `subscribeMessage`, falling back
@@ -57,9 +32,8 @@ export const isWsErrorCode = (err: unknown, code: string): boolean =>
  * Returns `undefined` when no message is available.
  */
 export const getWsErrorMessage = (err: unknown): string | undefined => {
-  const rejection = asRejection(err);
-  if (rejection) {
-    return rejection.message;
+  if (isWebSocketError(err)) {
+    return err.message;
   }
   if (err instanceof Error) {
     return err.message;

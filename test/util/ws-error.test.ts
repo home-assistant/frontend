@@ -13,14 +13,14 @@ describe("getWsErrorMessage", () => {
     ).toBe("Failed to remove device entry, rejected by integration");
   });
 
-  it("unwraps the result frame used when the socket closes mid-command", () => {
+  it("ignores connection-level failures in both their shapes", () => {
+    // A dropped socket is not a message to render: the global disconnect toast
+    // already covers it, so callers suppress it rather than showing an alert.
+    // The client rejects with a bare code, or the whole result frame.
+    expect(getWsErrorMessage(ERR_CONNECTION_LOST)).toBeUndefined();
     expect(
       getWsErrorMessage(errorMessage(ERR_CONNECTION_LOST, "Connection lost"))
-    ).toBe("Connection lost");
-  });
-
-  it("returns undefined for a bare connection code so callers can localize", () => {
-    expect(getWsErrorMessage(ERR_CONNECTION_LOST)).toBeUndefined();
+    ).toBeUndefined();
   });
 
   it("falls back to Error and string rejections", () => {
