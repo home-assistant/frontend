@@ -29,6 +29,17 @@ describe("dashboard action registrations", () => {
     second();
     expect(registry.resolve(context)).toHaveLength(0);
   });
+  it("disposes the registered ID after the caller mutates its action", () => {
+    const registry = new DashboardActions();
+    const definition = action("example:original");
+    const dispose = registry.register(definition);
+    definition.id = "example:changed";
+    registry.register(action("example:changed"));
+    dispose();
+    expect(registry.resolve(context).map((item) => item.action.id)).toEqual([
+      "example:changed",
+    ]);
+  });
   it("resolves labels and visibility from the current context", () => {
     const registry = new DashboardActions();
     registry.register({
@@ -53,6 +64,38 @@ describe("dashboard action registrations", () => {
     registry.register(action("another:call"));
     expect(listener).toHaveBeenCalledTimes(1);
     expect(registry.resolve(context)).toHaveLength(2);
+  });
+  it("reports a failing action once until resolution recovers", () => {
+    const report = vi.fn();
+    vi.stubGlobal("reportError", report);
+    try {
+      const registry = new DashboardActions();
+      let broken = true;
+      let visible = true;
+      registry.register({
+        ...action("example:tools"),
+        visible: () => visible,
+        label: () => {
+          if (broken) throw new Error("invalid label");
+          return "Tools";
+        },
+      });
+      registry.resolve(context);
+      registry.resolve(context);
+      expect(report).toHaveBeenCalledTimes(1);
+      broken = false;
+      expect(registry.resolve(context)[0].label).toBe("Tools");
+      broken = true;
+      registry.resolve(context);
+      expect(report).toHaveBeenCalledTimes(2);
+      visible = false;
+      expect(registry.resolve(context)).toEqual([]);
+      visible = true;
+      registry.resolve(context);
+      expect(report).toHaveBeenCalledTimes(3);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
   it("isolates a broken resource and reports its exception", () => {
     const report = vi.fn();

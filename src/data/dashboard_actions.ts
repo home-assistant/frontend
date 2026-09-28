@@ -27,6 +27,8 @@ export class DashboardActions {
 
   private _listeners = new Set<() => void>();
 
+  private _failedActions = new WeakSet<DashboardAction>();
+
   /** Replaces the same namespaced ID. Disposing an old registration is harmless. */
   public register(action: DashboardAction): () => void {
     if (!/^[a-z][a-z0-9_]*:[a-z][a-z0-9_-]*$/.test(action.id)) {
@@ -39,11 +41,11 @@ export class DashboardActions {
       throw new Error("Dashboard actions require an MDI icon and an action");
     }
     const registered = Object.freeze({ ...action });
-    this._actions.set(action.id, registered);
+    this._actions.set(registered.id, registered);
     this._notify();
     return () => {
-      if (this._actions.get(action.id) !== registered) return;
-      this._actions.delete(action.id);
+      if (this._actions.get(registered.id) !== registered) return;
+      this._actions.delete(registered.id);
       this._notify();
     };
   }
@@ -57,12 +59,19 @@ export class DashboardActions {
     const result: ResolvedDashboardAction[] = [];
     for (const action of this._actions.values()) {
       try {
-        if (action.visible && !action.visible(context)) continue;
+        if (action.visible && !action.visible(context)) {
+          this._failedActions.delete(action);
+          continue;
+        }
         const label = action.label(context);
         if (label) result.push({ action, label });
+        this._failedActions.delete(action);
       } catch (error) {
         // A broken resource must not prevent built-in dashboard actions rendering.
-        reportError(error);
+        if (!this._failedActions.has(action)) {
+          this._failedActions.add(action);
+          reportError(error);
+        }
       }
     }
     return result;
