@@ -12,6 +12,7 @@ import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
 import { addLatinLabels } from "./map-labels.js";
+import { missingSprites, SPRITE_SHEET, spritesDir } from "./map-sprites.js";
 
 const PROXY_PATH = "/api/map_tiles";
 const TILEJSON_URL = `${PROXY_PATH}/tilejson.json`;
@@ -55,12 +56,25 @@ const styleOptions = {
     // Keeps the generated URLs origin relative.
     base: "",
     glyphsPattern: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
-    sprite: [{ id: "base", url: `${PROXY_PATH}/sprites/base/sprites` }],
+    sprite: [{ id: SPRITE_SHEET, url: `/static/map/sprites/${SPRITE_SHEET}` }],
   },
+};
+
+const checkSprites = (name, style, sheet) => {
+  const missing = missingSprites(style, sheet);
+  if (missing.length) {
+    throw new Error(
+      `Style "${name}" references icons missing from the bundled ${SPRITE_SHEET} ` +
+        `sprite sheet: ${missing.join(", ")}. Run \`yarn gulp update-map-sprites\` ` +
+        `and commit the result.`
+    );
+  }
+  return style;
 };
 
 const buildMapAssets = async () => {
   await fs.emptyDir(outputDir);
+  const sheet = await fs.readJson(path.join(spritesDir, `${SPRITE_SHEET}.json`));
 
   await Promise.all(
     // Both themes up front: dark is a real cartography, not an inverted raster.
@@ -71,7 +85,13 @@ const buildMapAssets = async () => {
       writeFile(
         path.join(outputDir, `${name}.json`),
         JSON.stringify(
-          addLatinLabels(useTileJson(name, osm({ theme, ...styleOptions })))
+          addLatinLabels(
+            checkSprites(
+              name,
+              useTileJson(name, osm({ theme, ...styleOptions })),
+              sheet
+            )
+          )
         )
       )
     )
