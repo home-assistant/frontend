@@ -21,7 +21,13 @@ import type {
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -1509,10 +1515,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return "move";
   }
 
-  // pointerdown arrives before the click that shows the tooltip, so the trigger
-  // is switched before echarts acts on a tap. Only on touch devices, which
-  // install the handle and outside tap handlers. A pen counts as touch, as it
-  // does for echarts.
+  // Captured, so the trigger is switched before echarts handles the same event:
+  // before it acts on a tap, and before the first mouse move after touch input.
+  // Only on touch devices, which install the handle and outside tap handlers. A
+  // pen counts as touch, as it does for echarts.
+  @eventOptions({ capture: true })
   private _handleChartPointer(ev: PointerEvent) {
     const touchInput = this._isTouchDevice && ev.pointerType !== "mouse";
     if (touchInput === this._touchInput) {
