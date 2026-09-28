@@ -1251,7 +1251,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 <ha-switch
                   slot="end"
                   .checked=${live(
-                    this._useDeviceArea || !this._areaId || !!this._noDeviceArea
+                    this._useDeviceArea ||
+                      (!this._areaId && !this._noDeviceArea)
                   )}
                   .disabled=${this.disabled || this._useDeviceArea}
                   @change=${this._useDeviceAreaChanged}
