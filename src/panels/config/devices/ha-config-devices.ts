@@ -37,13 +37,23 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _manifests: IntegrationManifest[] = [];
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("reload-config-entries", this._reloadConfigEntries);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "reload-config-entries",
+      this._reloadConfigEntries
+    );
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
-      this.addEventListener("reload-config-entries", () =>
-        this._loadConfigEntries()
-      );
       this._loadData();
     }
   }
@@ -77,6 +87,10 @@ class HaConfigDevices extends HassRouterPage {
         }),
     ]);
   }
+
+  private _reloadConfigEntries = () => {
+    this._loadConfigEntries();
+  };
 
   private async _loadConfigEntries() {
     this._configEntriesFailed = false;
