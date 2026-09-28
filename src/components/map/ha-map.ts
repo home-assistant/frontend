@@ -254,10 +254,31 @@ const CLUSTER_RADIUS = 40;
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
 
+type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
+
 // Exposes each marker's parts on ha-map, generically and per entity
 const exportedMarkerParts = (entityId: string): string => {
   const suffix = entityId.replace(".", "-");
   return `marker, picture, marker: marker-${suffix}, picture: picture-${suffix}`;
+};
+
+// The cached element serves again once it left the screen; Leaflet keeps an
+// outgoing bubble on screen during its zoom animation
+const takeEntityMarker = (
+  cache: Map<string, EntityMarkerElement>,
+  entityId: string | undefined,
+  reusable = true
+): EntityMarkerElement => {
+  const cached = entityId && reusable ? cache.get(entityId) : undefined;
+  if (cached && !cached.isConnected) {
+    return cached;
+  }
+  const marker = document.createElement("ha-entity-marker");
+  if (entityId) {
+    marker.setAttribute("exportparts", exportedMarkerParts(entityId));
+    cache.set(entityId, marker);
+  }
+  return marker;
 };
 
 /**
@@ -362,10 +383,10 @@ export class HaMap extends ReactiveElement {
 
   private _entityHandles: MapMarkerHandle[] = [];
 
-  private _clusterAvatars = new Map<
-    string,
-    HTMLElementTagNameMap["ha-entity-marker"]
-  >();
+  // Marker elements survive redraws so unchanged entities keep their DOM
+  private _entityMarkers = new Map<string, EntityMarkerElement>();
+
+  private _clusterAvatars = new Map<string, EntityMarkerElement>();
 
   private _zoneHandles: MapItemHandle[] = [];
 
@@ -429,6 +450,7 @@ export class HaMap extends ReactiveElement {
     this._startingEngine = undefined;
     this._loading = false;
     this._entityHandles = [];
+    this._entityMarkers.clear();
     this._clusterAvatars.clear();
     this._zoneHandles = [];
     this._pathHandles = [];
@@ -1142,6 +1164,7 @@ export class HaMap extends ReactiveElement {
     this._focusZonePoints = [];
 
     if (!this.entities) {
+      this._entityMarkers.clear();
       this._clusterAvatars.clear();
       engine.setClustering(null);
       return;
@@ -1177,6 +1200,7 @@ export class HaMap extends ReactiveElement {
       }
     }
 
+    const drawn = new Set<string>();
     for (const entity of this.entities) {
       const stateObj = states[getEntityId(entity)];
       if (!stateObj) {
@@ -1285,14 +1309,16 @@ export class HaMap extends ReactiveElement {
                 .join("")
                 .substr(0, 3));
 
-      const entityMarker = document.createElement("ha-entity-marker");
-      entityMarker.setAttribute(
-        "exportparts",
-        exportedMarkerParts(getEntityId(entity))
+      const entityId = getEntityId(entity);
+      const entityMarker = takeEntityMarker(
+        this._entityMarkers,
+        entityId,
+        !drawn.has(entityId)
       );
+      drawn.add(entityId);
       entityMarker.showIcon =
         typeof entity !== "string" && entity.label_mode === "icon";
-      entityMarker.entityId = getEntityId(entity);
+      entityMarker.entityId = entityId;
       entityMarker.entityName = entityName;
       entityMarker.entityUnit =
         typeof entity !== "string" &&
@@ -1307,20 +1333,19 @@ export class HaMap extends ReactiveElement {
       // A host may leave the color to the map
       const entityColor =
         (typeof entity !== "string" ? entity.color : undefined) ||
-        entityMapColor(getEntityId(entity), this._entityReg, computedStyles);
+        entityMapColor(entityId, this._entityReg, computedStyles);
       entityMarker.entityColor = entityColor;
-      if (typeof entity !== "string") {
-        entityMarker.selected = entity.selected ?? false;
-      }
+      entityMarker.selected =
+        typeof entity !== "string" && (entity.selected ?? false);
 
       const clusterData: ClusterData = {
-        entityId: getEntityId(entity),
+        entityId,
         picture: entityMarker.entityPicture || undefined,
         label: entityName,
         showIcon: entityMarker.showIcon,
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
-        selected: typeof entity !== "string" && (entity.selected ?? false),
+        selected: entityMarker.selected,
         zoneId: ["person", "device_tracker"].includes(
           computeStateDomain(stateObj)
         )
@@ -1350,9 +1375,11 @@ export class HaMap extends ReactiveElement {
     }
 
     const shownIds = new Set(this.entities.map(getEntityId));
-    for (const entityId of this._clusterAvatars.keys()) {
-      if (!shownIds.has(entityId)) {
-        this._clusterAvatars.delete(entityId);
+    for (const cache of [this._entityMarkers, this._clusterAvatars]) {
+      for (const entityId of cache.keys()) {
+        if (!shownIds.has(entityId)) {
+          cache.delete(entityId);
+        }
       }
     }
 
@@ -1382,23 +1409,15 @@ export class HaMap extends ReactiveElement {
 
     const bubble = document.createElement("div");
     bubble.className = "cluster-bubble";
+    const seen = new Set<string>();
     for (const member of shown) {
-      let avatar = member?.entityId
-        ? this._clusterAvatars.get(member.entityId)
-        : undefined;
-      // Leaflet keeps the outgoing bubble on screen during its zoom animation
-      if (avatar && (avatar.isConnected || avatar.parentElement === bubble)) {
-        avatar = undefined;
-      }
-      if (!avatar) {
-        avatar = document.createElement("ha-entity-marker");
-        if (member?.entityId) {
-          avatar.setAttribute(
-            "exportparts",
-            exportedMarkerParts(member.entityId)
-          );
-          this._clusterAvatars.set(member.entityId, avatar);
-        }
+      const avatar = takeEntityMarker(
+        this._clusterAvatars,
+        member?.entityId,
+        !seen.has(member?.entityId ?? "")
+      );
+      if (member?.entityId) {
+        seen.add(member.entityId);
       }
       avatar.entityId = member?.entityId;
       avatar.entityName = member?.label ?? "";
