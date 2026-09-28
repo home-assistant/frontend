@@ -73,30 +73,34 @@ const checkSprites = (name, style, sheet) => {
   return style;
 };
 
-const buildMapAssets = async () => {
-  await fs.emptyDir(outputDir);
+// Both themes up front: dark is a real cartography, not an inverted raster.
+const THEMES = [
+  ["light", "colorful"],
+  ["dark", "colorful-dark"],
+];
+
+const generateStyles = async () => {
   const sheet = await fs.readJson(
     path.join(spritesDir, `${SPRITE_SHEET}.json`)
   );
-
-  await Promise.all(
-    // Both themes up front: dark is a real cartography, not an inverted raster.
-    [
-      ["light", "colorful"],
-      ["dark", "colorful-dark"],
-    ].map(([name, theme]) =>
-      writeFile(
-        path.join(outputDir, `${name}.json`),
-        JSON.stringify(
-          addLatinLabels(
-            checkSprites(
-              name,
-              useTileJson(name, osm({ theme, ...styleOptions })),
-              sheet
-            )
-          )
-        )
+  return THEMES.map(([name, theme]) => [
+    name,
+    addLatinLabels(
+      checkSprites(
+        name,
+        useTileJson(name, osm({ theme, ...styleOptions })),
+        sheet
       )
+    ),
+  ]);
+};
+
+const buildMapAssets = async () => {
+  await fs.emptyDir(outputDir);
+  const styles = await generateStyles();
+  await Promise.all(
+    styles.map(([name, style]) =>
+      writeFile(path.join(outputDir, `${name}.json`), JSON.stringify(style))
     )
   );
 };
@@ -109,5 +113,9 @@ export const ensureMapAssets = () => {
 };
 
 gulp.task("build-map-assets", ensureMapAssets);
+
+// Runs in the required lint job so a @versatiles/style bump that needs new
+// icons cannot merge before the sheet is re-vendored on that branch.
+gulp.task("check-map-sprites", generateStyles);
 
 export const mapAssetsDir = outputDir;
