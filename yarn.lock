@@ -3546,7 +3546,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/jsonlint-lines-primitives@npm:^2.0.2, @mapbox/jsonlint-lines-primitives@npm:~2.0.2":
+"@mapbox/jsonlint-lines-primitives@npm:^2.0.2, @mapbox/jsonlint-lines-primitives@npm:^2.0.3, @mapbox/jsonlint-lines-primitives@npm:~2.0.2":
   version: 2.0.3
   resolution: "@mapbox/jsonlint-lines-primitives@npm:2.0.3"
   checksum: 10/99404df11b1840153c910154c238f62ba0ea7cfab6aa7ed3bad1e522d31b746bfad78b23e6ee4887196acec76759f1863b5cb4f5e2d95d0dc2a8ea73091c78f6
@@ -3641,6 +3641,24 @@ __metadata:
     gl-style-migrate: dist/gl-style-migrate.mjs
     gl-style-validate: dist/gl-style-validate.mjs
   checksum: 10/7d580c71a7978ffd6c93a95a9178eb55fa0777eb63f1954afec58934e940a7d1432ecd51e98b725e01ae97298b7a60d6a2a19a863952fad45f97ae609ad0d886
+  languageName: node
+  linkType: hard
+
+"@maplibre/maplibre-gl-style-spec@npm:^26.4.4":
+  version: 26.4.4
+  resolution: "@maplibre/maplibre-gl-style-spec@npm:26.4.4"
+  dependencies:
+    "@mapbox/jsonlint-lines-primitives": "npm:^2.0.3"
+    "@mapbox/unitbezier": "npm:^1.0.0"
+    json-stringify-pretty-compact: "npm:^4.0.0"
+    minimist: "npm:^1.2.8"
+    quickselect: "npm:^3.0.0"
+    tinyqueue: "npm:^3.0.0"
+  bin:
+    gl-style-format: dist/gl-style-format.mjs
+    gl-style-migrate: dist/gl-style-migrate.mjs
+    gl-style-validate: dist/gl-style-validate.mjs
+  checksum: 10/c049485af7654f7ffef63cb0ba7afbae231225151fcf0de173f03815e5b3edac5182c94287b0871a77afef0c95537b8d06da6142aa04eecb541430016e368972
   languageName: node
   linkType: hard
 
@@ -6706,12 +6724,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@versatiles/style@npm:5.13.1":
-  version: 5.13.1
-  resolution: "@versatiles/style@npm:5.13.1"
+"@versatiles/style@npm:6.0.1":
+  version: 6.0.1
+  resolution: "@versatiles/style@npm:6.0.1"
   dependencies:
-    brace-expansion: "npm:^5.0.9"
-  checksum: 10/046be455df89f55bc6a8b1b63a01169f68e701799249761c49523c6098b871d9cdb5b0c8a6a1a15503eee17d89f6fb9f0421eb48cf71d70dfa2cee2900a5b25a
+    "@maplibre/maplibre-gl-style-spec": "npm:^26.4.4"
+  peerDependencies:
+    maplibre-gl: ">=5.0.0"
+  peerDependenciesMeta:
+    maplibre-gl:
+      optional: true
+  checksum: 10/6a4c2c0496c7ab7034eedb91946d60df54a2dbb0b739c86fbb92fa91ac47825434c38892450c0b82282019728ff6f8840b19f3c20d55a67bf70357766040efe2
   languageName: node
   linkType: hard
 
@@ -7655,7 +7678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brace-expansion@npm:^5.0.8, brace-expansion@npm:^5.0.9":
+"brace-expansion@npm:^5.0.8":
   version: 5.0.9
   resolution: "brace-expansion@npm:5.0.9"
   dependencies:
@@ -10415,7 +10438,7 @@ __metadata:
     "@types/sortablejs": "npm:1.15.9"
     "@types/tar": "npm:7.0.87"
     "@typescript/native": "npm:typescript@7.0.2"
-    "@versatiles/style": "npm:5.13.1"
+    "@versatiles/style": "npm:6.0.1"
     "@vibrant/color": "npm:4.0.4"
     "@vitest/coverage-v8": "npm:5.0.1"
     "@vvo/tzdb": "npm:6.198.0"
