@@ -133,7 +133,7 @@ describe("computeEntityEntryName", () => {
     expect(computeEntityEntryName(entry, hass.devices)).toBe("Old Name");
   });
 
-  it("preserves an explicitly empty name instead of the integration name", () => {
+  it("uses the device name for an explicitly empty name instead of the integration name", () => {
     const entry = mockEntityEntry({
       device_id: "dev1",
       name: "",
@@ -141,7 +141,7 @@ describe("computeEntityEntryName", () => {
     });
     const devices = { dev1: mockDevice({ id: "dev1", name: "Living room" }) };
 
-    expect(computeEntityEntryName(entry, devices)).toBe("");
+    expect(computeEntityEntryName(entry, devices)).toBeUndefined();
     expect(computeEntityEntryName({ ...entry, name: null }, devices)).toBe(
       "Temperature"
     );
