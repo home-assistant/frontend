@@ -4,6 +4,7 @@ import {
   mdiClockPlusOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -53,11 +54,22 @@ export class HaTimeDuration extends LitElement {
 
   @state() private _offsetType?: OffsetType;
 
+  private _valueChangedFromChild = false;
+
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
   }
 
   private _data = memoizeOne(durationValueToData);
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("value")) {
+      if (!this._valueChangedFromChild) {
+        this._offsetType = undefined;
+      }
+      this._valueChangedFromChild = false;
+    }
+  }
 
   private _offsetTypeOptions = memoizeOne((localize: LocalizeFunc) =>
     OFFSET_TYPES.map(({ value, iconPath }) => ({
@@ -195,10 +207,7 @@ export class HaTimeDuration extends LitElement {
     }
     ev.stopPropagation();
     const type = this._getOffsetType(this._data(this.value));
-    this._offsetType = type;
-    fireEvent(this, "value-changed", {
-      value: this._withOffsetType(type, ev.detail.value),
-    });
+    this._fireValue(type, ev.detail.value);
   }
 
   private _offsetTypeChanged(ev: HaSelectSelectEvent<OffsetType>) {
@@ -208,10 +217,14 @@ export class HaTimeDuration extends LitElement {
     if (!type || type === this._getOffsetType(data)) {
       return;
     }
+    this._fireValue(type, data);
+  }
+
+  private _fireValue(type: OffsetType, data?: HaDurationData) {
+    const value = this._withOffsetType(type, data);
     this._offsetType = type;
-    fireEvent(this, "value-changed", {
-      value: this._withOffsetType(type, data),
-    });
+    this._valueChangedFromChild = true;
+    fireEvent(this, "value-changed", { value });
   }
 
   static styles = css`
