@@ -9803,14 +9803,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.4.0, fs-extra@npm:^11.1.1":
-  version: 11.4.0
-  resolution: "fs-extra@npm:11.4.0"
+"fs-extra@npm:11.4.1, fs-extra@npm:^11.1.1":
+  version: 11.4.1
+  resolution: "fs-extra@npm:11.4.1"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10/a1bd91076fe9de9114bd037a433f1f498857eb3f0cf778e647fd00dc5984374dee5e088854de3d6ca77cd9f11554a85f6f016a6004d0838bbc7cd722e33601ce
+  checksum: 10/8805c7413442ed9e94fb25eeafd28d705e2a732deba3eeb7b43cf687ce60c94e8a298b882de38249034ca84db7d21a0e4a237a041e8141f8f24f0d5ac2c6056a
   languageName: node
   linkType: hard
 
@@ -10466,7 +10466,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:4.4.1"
     eslint-plugin-wc: "npm:3.1.0"
     fancy-log: "npm:2.0.0"
-    fs-extra: "npm:11.4.0"
+    fs-extra: "npm:11.4.1"
     fuse.js: "npm:7.5.0"
     generate-license-file: "npm:4.2.5"
     glob: "npm:13.0.6"
