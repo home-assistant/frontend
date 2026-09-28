@@ -613,6 +613,12 @@
           "options": "Selector options",
           "type": "Type",
           "multiple": "Multiple",
+          "mode": "Mode",
+          "mode_options": {
+            "positive": "Positive only",
+            "signed": "Positive or negative",
+            "offset": "Before or after"
+          },
           "types": {
             "action": "Action",
             "area": "Area",

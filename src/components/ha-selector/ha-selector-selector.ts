@@ -10,6 +10,7 @@ import type {
 } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-form/ha-form";
+import type { HaFormSchema } from "../ha-form/types";
 import { unitOfMeasurementOptions } from "../../data/number";
 
 const SELECTOR_DEFAULTS = {
@@ -173,6 +174,36 @@ const SELECTOR_SCHEMAS = {
   time: [] as const,
 };
 
+const localizeSelectOptions = (
+  schemas: readonly HaFormSchema[],
+  localize: LocalizeFunc
+): HaFormSchema[] =>
+  schemas.map((field) => {
+    if (!("selector" in field) || !("select" in field.selector)) {
+      return field;
+    }
+    const select = field.selector.select;
+    const options = select?.options;
+    if (!options?.every((option) => typeof option === "string")) {
+      return field;
+    }
+    return {
+      ...field,
+      selector: {
+        select: {
+          ...select,
+          options: options.map((value) => ({
+            value,
+            label:
+              localize(
+                `ui.components.selectors.selector.${field.name}_options.${value}` as LocalizeKeys
+              ) || value,
+          })),
+        },
+      },
+    };
+  });
+
 @customElement("ha-selector-selector")
 export class HaSelectorSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -202,7 +233,9 @@ export class HaSelectorSelector extends LitElement {
   }
 
   private _schema = memoizeOne((choice: string, localize: LocalizeFunc) => {
-    const schemas = SELECTOR_SCHEMAS[choice];
+    const schemas = SELECTOR_SCHEMAS[choice]
+      ? localizeSelectOptions(SELECTOR_SCHEMAS[choice], localize)
+      : undefined;
     return [
       {
         name: "type",
