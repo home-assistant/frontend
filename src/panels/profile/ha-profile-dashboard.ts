@@ -170,8 +170,9 @@ class HaProfileDashboard extends LitElement {
 
         .heading {
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
-          column-gap: var(--ha-space-4);
+          gap: var(--ha-space-2) var(--ha-space-4);
         }
 
         ha-user-badge {
@@ -181,6 +182,9 @@ class HaProfileDashboard extends LitElement {
         }
 
         .details {
+          flex: 1 1 auto;
+          min-width: 0;
+          overflow-wrap: anywhere;
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
@@ -197,7 +201,6 @@ class HaProfileDashboard extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           margin-inline-start: auto;
-          flex-shrink: 0;
         }
       `,
     ];

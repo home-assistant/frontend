@@ -47,7 +47,7 @@ export const fetchImages = (hass: HomeAssistant) =>
   hass.callWS<Image[]>({ type: "image/list" });
 
 export const createImage = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "fetchWithAuth" | "localize">,
   file: File
 ): Promise<Image> => {
   const fd = new FormData();
@@ -85,7 +85,10 @@ export const deleteImage = (hass: HomeAssistant, id: string) =>
     image_id: id,
   });
 
-export const getImageData = async (hass: HomeAssistant, url: string) => {
+export const getImageData = async (
+  hass: Pick<HomeAssistant, "hassUrl">,
+  url: string
+) => {
   const response = await fetch(hass.hassUrl(url));
 
   if (!response.ok) {

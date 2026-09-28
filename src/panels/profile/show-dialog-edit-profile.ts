@@ -6,6 +6,5 @@ export const showEditProfileDialog = (element: HTMLElement): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-edit-profile",
     dialogImport: loadEditProfileDialog,
-    dialogParams: {},
   });
 };

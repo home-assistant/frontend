@@ -77,7 +77,7 @@ export interface OwnProfileMutableParams {
 }
 
 export const updateOwnProfile = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   updates: Partial<OwnProfileMutableParams>
 ) =>
   hass.callWS<{ user_name: string; person: Person | null }>({
@@ -87,7 +87,9 @@ export const updateOwnProfile = (
 
 const cachedUserPerson: Record<string, string> = {};
 
-export const getUserPerson = (hass: HomeAssistant): undefined | HassEntity => {
+export const getUserPerson = (
+  hass: Pick<HomeAssistant, "user" | "states">
+): undefined | HassEntity => {
   if (!hass.user?.id) {
     return undefined;
   }

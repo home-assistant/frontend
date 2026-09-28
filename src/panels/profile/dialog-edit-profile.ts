@@ -1,6 +1,7 @@
+import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
@@ -11,13 +12,18 @@ import "../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../components/ha-picture-upload";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+  statesContext,
+} from "../../data/context";
 import type { OwnProfileMutableParams } from "../../data/person";
 import { getUserPerson, updateOwnProfile } from "../../data/person";
-import type { HassDialog } from "../../dialogs/make-dialog-manager";
+import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { CropOptions } from "../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 
 const cropOptions: CropOptions = {
   round: true,
@@ -30,19 +36,25 @@ interface ProfileFormState {
   picture: string | null;
 }
 
-// Uses the legacy dialog lifecycle, as ha-picture-upload needs `hass`,
-// which the dialog manager only provides to legacy dialogs.
 @customElement("dialog-edit-profile")
-class DialogEditProfile
-  extends DirtyStateProviderMixin<ProfileFormState>()(LitElement)
-  implements HassDialog
-{
-  @property({ attribute: false }) public hass!: HomeAssistant;
+class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
+  DialogMixin(LitElement)
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _open = false;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
-  // Kept until the close animation finishes, so ha-dialog can fire `closed`
-  @state() private _rendered = false;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @state() private _name = "";
 
@@ -60,59 +72,31 @@ class DialogEditProfile
 
   @state() private _uploading = false;
 
-  // Identifies the current opening, so a save that finishes after the
-  // dialog was closed and opened again leaves the new session alone.
-  private _session = 0;
-
-  public async showDialog(): Promise<void> {
-    this._session++;
-    const person = getUserPerson(this.hass);
-    this._name = this.hass.user?.name ?? "";
+  public connectedCallback(): void {
+    super.connectedCallback();
+    const user = this._hassConfig.user;
+    const person = getUserPerson({ user, states: this._states });
+    this._name = user?.name ?? "";
     this._picture = (person?.attributes.entity_picture as string) || null;
     this._initialPicture = this._picture;
     this._hasPerson = !!person;
     this._pictureEditable = !!person?.attributes.editable;
-    this._error = undefined;
-    this._submitting = false;
-    this._uploading = false;
-    this._rendered = true;
-    this._open = true;
-    this._initDirtyTracking({ type: "shallow" }, this._currentState());
-    await this.updateComplete;
-  }
-
-  public closeDialog(): boolean {
-    this._open = false;
-    return true;
-  }
-
-  private _dialogClosed(): void {
-    this._error = undefined;
-    this._rendered = false;
-    // The dialog stays connected when closed, so discarded changes
-    // would otherwise keep the global dirty state set.
-    this._markDirtyStateClean();
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  private _currentState(): ProfileFormState {
-    return { name: this._name, picture: this._picture };
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { name: this._name, picture: this._picture }
+    );
   }
 
   protected render() {
-    if (!this._rendered) {
-      return nothing;
-    }
     const nameInvalid = this._name.trim() === "";
 
     return html`
       <ha-dialog
-        .open=${this._open}
-        header-title=${this.hass.localize(
+        open
+        header-title=${this._i18n.localize(
           "ui.panel.profile.edit_profile.title"
         )}
         .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
       >
         ${
           this._error
@@ -124,7 +108,6 @@ class DialogEditProfile
             this._pictureEditable
               ? html`
                   <ha-picture-upload
-                    .hass=${this.hass}
                     .value=${this._picture}
                     crop
                     .cropOptions=${cropOptions}
@@ -134,7 +117,7 @@ class DialogEditProfile
                 `
               : html`
                   <ha-alert alert-type="info">
-                    ${this.hass.localize(
+                    ${this._i18n.localize(
                       this._hasPerson
                         ? "ui.panel.profile.edit_profile.picture_not_editable"
                         : "ui.panel.profile.edit_profile.no_person"
@@ -145,19 +128,19 @@ class DialogEditProfile
           <ha-input
             .value=${this._name}
             @input=${this._nameChanged}
-            .label=${this.hass.localize("ui.panel.profile.edit_profile.name")}
+            .label=${this._i18n.localize("ui.panel.profile.edit_profile.name")}
             .hint=${
               this._pictureEditable
-                ? this.hass.localize(
+                ? this._i18n.localize(
                     "ui.panel.profile.edit_profile.name_helper"
                   )
                 : this._hasPerson
-                  ? this.hass.localize(
+                  ? this._i18n.localize(
                       "ui.panel.profile.edit_profile.name_helper_yaml"
                     )
                   : undefined
             }
-            .validationMessage=${this.hass.localize(
+            .validationMessage=${this._i18n.localize(
               "ui.panel.profile.edit_profile.name_error_msg"
             )}
             required
@@ -170,7 +153,7 @@ class DialogEditProfile
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -182,7 +165,7 @@ class DialogEditProfile
               !this.isDirtyState
             }
           >
-            ${this.hass.localize("ui.common.save")}
+            ${this._i18n.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -192,13 +175,13 @@ class DialogEditProfile
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
-    this._updateDirtyState(this._currentState());
+    this._updateDirtyState({ name: this._name, picture: this._picture });
   }
 
   private _pictureChanged(ev: Event) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
-    this._updateDirtyState(this._currentState());
+    this._updateDirtyState({ name: this._name, picture: this._picture });
   }
 
   private _uploadingChanged(ev: HASSDomEvent<{ uploading: boolean }>) {
@@ -208,7 +191,7 @@ class DialogEditProfile
   private async _save() {
     const updates: Partial<OwnProfileMutableParams> = {};
     const name = this._name.trim();
-    if (name !== this.hass.user?.name) {
+    if (name !== this._hassConfig.user?.name) {
       updates.name = name;
     }
     // Only send the picture when it changed, as a picture set by an
@@ -217,26 +200,19 @@ class DialogEditProfile
       updates.picture = this._picture;
     }
 
-    const session = this._session;
     this._submitting = true;
     try {
-      await updateOwnProfile(this.hass, updates);
+      await updateOwnProfile(this._api, updates);
     } catch (err: any) {
-      if (session === this._session) {
-        this._error =
-          err.message || this.hass.localize("ui.common.unknown_error");
-        this._submitting = false;
-      }
+      this._error =
+        err.message || this._i18n.localize("ui.common.unknown_error");
+      this._submitting = false;
       return;
     }
 
     if (updates.name) {
       fireEvent(this, "hass-refresh-current-user");
     }
-    if (session !== this._session) {
-      return;
-    }
-    this._submitting = false;
     this._markDirtyStateClean();
     this.closeDialog();
   }
