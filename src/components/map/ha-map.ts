@@ -254,6 +254,18 @@ const CLUSTER_RADIUS = 40;
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
 
+// Exposes each marker's parts on ha-map, generically and per entity
+const exportedMarkerParts = (entityId: string): string => {
+  const suffix = entityId.replace(".", "-");
+  return `marker, picture, marker: marker-${suffix}, picture: picture-${suffix}`;
+};
+
+/**
+ * @csspart marker - The frame of an entity marker or cluster avatar.
+ * @csspart picture - The entity picture inside the frame.
+ * @csspart marker-<entity-id> - The frame for one entity, e.g. `marker-person-anne`.
+ * @csspart picture-<entity-id> - The picture for one entity.
+ */
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
   @state()
@@ -1274,6 +1286,10 @@ export class HaMap extends ReactiveElement {
                 .substr(0, 3));
 
       const entityMarker = document.createElement("ha-entity-marker");
+      entityMarker.setAttribute(
+        "exportparts",
+        exportedMarkerParts(getEntityId(entity))
+      );
       entityMarker.showIcon =
         typeof entity !== "string" && entity.label_mode === "icon";
       entityMarker.entityId = getEntityId(entity);
@@ -1377,6 +1393,10 @@ export class HaMap extends ReactiveElement {
       if (!avatar) {
         avatar = document.createElement("ha-entity-marker");
         if (member?.entityId) {
+          avatar.setAttribute(
+            "exportparts",
+            exportedMarkerParts(member.entityId)
+          );
           this._clusterAvatars.set(member.entityId, avatar);
         }
       }
