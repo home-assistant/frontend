@@ -46,7 +46,7 @@ const STYLE = {
   version: 8,
   sources: {},
   layers: [],
-  sprite: [{ id: "base", url: "/static/map/sprites/base" }],
+  sprite: [{ id: "base", url: "/static/map/sprites/base?v=abc12345" }],
 };
 
 const rasterLayer = {
@@ -114,7 +114,10 @@ describe("loadStyle", () => {
     const style = await load();
 
     expect(style.sprite).toEqual([
-      { id: "base", url: `${location.origin}/static/map/sprites/base` },
+      {
+        id: "base",
+        url: `${location.origin}/static/map/sprites/base?v=abc12345`,
+      },
     ]);
   });
 
@@ -136,7 +139,10 @@ describe("loadStyle", () => {
     const style = await load();
 
     expect(style.sprite).toEqual([
-      { id: "base", url: `${location.origin}/static/map/sprites/base` },
+      {
+        id: "base",
+        url: `${location.origin}/static/map/sprites/base?v=abc12345`,
+      },
     ]);
     expect(style.glyphs).toMatch(/^https:\/\/tiles\.versatiles\.org\//);
     expect((style.sources.osm as { url: string }).url).toMatch(

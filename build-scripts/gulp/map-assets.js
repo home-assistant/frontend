@@ -6,14 +6,20 @@
 // stay here because they come from @versatiles/style and core has no node
 // toolchain to regenerate them with.
 
-import { writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { osm } from "@versatiles/style";
 import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
 import { addLatinLabels } from "./map-labels.js";
-import { missingSprites, SPRITE_SHEET, spritesDir } from "./map-sprites.js";
+import {
+  missingSprites,
+  SHEET_FILES,
+  SPRITE_SHEET,
+  spritesDir,
+} from "./map-sprites.js";
 
 const PROXY_PATH = "/api/map_tiles";
 const TILEJSON_URL = `${PROXY_PATH}/tilejson.json`;
@@ -52,14 +58,30 @@ const useTileJson = (name, style) => {
   return style;
 };
 
-const styleOptions = {
+// Core serves /static with a month of max-age, so a re-vendored sheet would
+// otherwise keep being read from cache next to a style that expects the new one.
+const sheetHash = async () => {
+  const contents = await Promise.all(
+    SHEET_FILES.map((file) => readFile(path.join(spritesDir, file)))
+  );
+  const hash = createHash("sha256");
+  contents.forEach((content) => hash.update(content));
+  return hash.digest("hex").slice(0, 8);
+};
+
+const styleOptions = (spriteVersion) => ({
   urls: {
     // Keeps the generated URLs origin relative.
     base: "",
     glyphsPattern: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
-    sprite: [{ id: SPRITE_SHEET, url: `/static/map/sprites/${SPRITE_SHEET}` }],
+    sprite: [
+      {
+        id: SPRITE_SHEET,
+        url: `/static/map/sprites/${SPRITE_SHEET}?v=${spriteVersion}`,
+      },
+    ],
   },
-};
+});
 
 const checkSprites = (name, style, sheet) => {
   const missing = missingSprites(style, sheet);
@@ -83,14 +105,11 @@ const generateStyles = async () => {
   const sheet = await fs.readJson(
     path.join(spritesDir, `${SPRITE_SHEET}.json`)
   );
+  const options = styleOptions(await sheetHash());
   return THEMES.map(([name, theme]) => [
     name,
     addLatinLabels(
-      checkSprites(
-        name,
-        useTileJson(name, osm({ theme, ...styleOptions })),
-        sheet
-      )
+      checkSprites(name, useTileJson(name, osm({ theme, ...options })), sheet)
     ),
   ]);
 };
