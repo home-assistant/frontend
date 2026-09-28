@@ -3005,7 +3005,7 @@
             "not_available": "Not available"
           },
           "installed": {
-            "search": "Search apps",
+            "search": "Search {number} {number, plural,\n  one {app}\n  other {apps}\n}",
             "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
             "add_app": "Install app",
             "app_stopped": "App is stopped",
