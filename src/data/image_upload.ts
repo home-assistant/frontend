@@ -1,3 +1,4 @@
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 
 interface Image {
@@ -47,23 +48,24 @@ export const fetchImages = (hass: HomeAssistant) =>
   hass.callWS<Image[]>({ type: "image/list" });
 
 export const createImage = async (
-  hass: Pick<HomeAssistant, "fetchWithAuth" | "localize">,
+  fetchWithAuth: HomeAssistant["fetchWithAuth"],
+  localize: LocalizeFunc,
   file: File
 ): Promise<Image> => {
   const fd = new FormData();
   fd.append("file", file);
-  const resp = await hass.fetchWithAuth("/api/image/upload", {
+  const resp = await fetchWithAuth("/api/image/upload", {
     method: "POST",
     body: fd,
   });
   if (resp.status === 413) {
     throw new Error(
-      hass.localize("ui.common.upload_image_too_large", {
+      localize("ui.common.upload_image_too_large", {
         name: file.name,
       })
     );
   } else if (resp.status !== 200) {
-    throw new Error(hass.localize("ui.common.unknown_error"));
+    throw new Error(localize("ui.common.unknown_error"));
   }
   return resp.json();
 };
@@ -86,10 +88,10 @@ export const deleteImage = (hass: HomeAssistant, id: string) =>
   });
 
 export const getImageData = async (
-  hass: Pick<HomeAssistant, "hassUrl">,
+  hassUrl: HomeAssistant["hassUrl"],
   url: string
 ) => {
-  const response = await fetch(hass.hassUrl(url));
+  const response = await fetch(hassUrl(url));
 
   if (!response.ok) {
     throw new Error(

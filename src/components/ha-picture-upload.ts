@@ -198,10 +198,8 @@ export class HaPictureUpload extends LitElement {
     fireEvent(this, "uploading-changed", { uploading: true });
     try {
       const media = await createImage(
-        {
-          fetchWithAuth: this._api.fetchWithAuth,
-          localize: this._i18n.localize,
-        },
+        this._api.fetchWithAuth,
+        this._i18n.localize,
         file
       );
       if (this.fullMedia) {
@@ -269,7 +267,7 @@ export class HaPictureUpload extends LitElement {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             let data;
             try {
-              data = await getImageData(this._connection, url);
+              data = await getImageData(this._connection.hassUrl, url);
             } catch (err: any) {
               showAlertDialog(this, {
                 text: err.toString(),

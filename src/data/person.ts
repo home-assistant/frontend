@@ -1,4 +1,5 @@
 import type {
+  HassEntities,
   HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
@@ -77,10 +78,10 @@ export interface OwnProfileMutableParams {
 }
 
 export const updateOwnProfile = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: HomeAssistant["callWS"],
   updates: Partial<OwnProfileMutableParams>
 ) =>
-  hass.callWS<{ user_name: string; person: Person | null }>({
+  callWS<{ user_name: string; person: Person | null }>({
     type: "person/update_own_profile",
     ...updates,
   });
@@ -88,26 +89,27 @@ export const updateOwnProfile = (
 const cachedUserPerson: Record<string, string> = {};
 
 export const getUserPerson = (
-  hass: Pick<HomeAssistant, "user" | "states">
+  userId: string | undefined,
+  states: HassEntities
 ): undefined | HassEntity => {
-  if (!hass.user?.id) {
+  if (!userId) {
     return undefined;
   }
-  const cachedPersonEntityId = cachedUserPerson[hass.user.id];
+  const cachedPersonEntityId = cachedUserPerson[userId];
   if (cachedPersonEntityId) {
-    const stateObj = hass.states[cachedPersonEntityId];
-    if (stateObj && stateObj.attributes.user_id === hass.user.id) {
+    const stateObj = states[cachedPersonEntityId];
+    if (stateObj && stateObj.attributes.user_id === userId) {
       return stateObj;
     }
   }
 
-  const result = Object.values(hass.states).find(
+  const result = Object.values(states).find(
     (state) =>
-      state.attributes.user_id === hass.user!.id &&
+      state.attributes.user_id === userId &&
       computeStateDomain(state) === "person"
   );
   if (result) {
-    cachedUserPerson[hass.user.id] = result.entity_id;
+    cachedUserPerson[userId] = result.entity_id;
   }
   return result;
 };

@@ -80,7 +80,7 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
   public connectedCallback(): void {
     super.connectedCallback();
     const user = this._hassConfig.user;
-    const person = getUserPerson({ user, states: this._states });
+    const person = getUserPerson(user?.id, this._states);
     this._name = user?.name ?? "";
     this._picture = (person?.attributes.entity_picture as string) || null;
     this._initialPicture = this._picture;
@@ -149,6 +149,7 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
               "ui.panel.profile.edit_profile.name_error_msg"
             )}
             required
+            auto-validate
             autofocus
           ></ha-input>
         </div>
@@ -163,12 +164,8 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${
-              nameInvalid ||
-              this._submitting ||
-              this._uploading ||
-              !this.isDirtyState
-            }
+            .disabled=${nameInvalid || !this.isDirtyState}
+            .loading=${this._submitting || this._uploading}
           >
             ${this._i18n.localize("ui.common.save")}
           </ha-button>
@@ -199,15 +196,15 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
     if (name !== this._hassConfig.user?.name) {
       updates.name = name;
     }
-    // Only send the picture when it changed, as a picture set by an
-    // administrator may not be one users are allowed to set themselves.
+    // Only send the picture when it has changed. An administrator may have set
+    // the existing picture to a value that users are not allowed to set themselves.
     if (this._picture !== this._initialPicture) {
       updates.picture = this._picture;
     }
 
     this._submitting = true;
     try {
-      await updateOwnProfile(this._api, updates);
+      await updateOwnProfile(this._api.callWS, updates);
     } catch (err: any) {
       this._error =
         err.message || this._i18n.localize("ui.common.unknown_error");
