@@ -137,9 +137,7 @@ const lokaliseTransform = (data, path, original = data) => {
 
 gulp.task("clean-translations", () => deleteAsync([workDir]));
 
-// Only remove the generated fragments when rebuilding. The files at the top of
-// workDir are overwritten in place, because rspack imports
-// translationMetadata.json and a watch rebuild must never see it missing.
+// Keep translationMetadata.json, the dev server's rspack watcher imports it.
 const cleanTranslationOutput = () => deleteAsync([outDir]);
 
 const makeWorkDir = () => mkdir(workDir, { recursive: true });
