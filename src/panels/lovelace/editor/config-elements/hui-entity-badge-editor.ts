@@ -34,7 +34,6 @@ import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
-import "./hui-card-features-editor";
 import { timeFormatConfigStruct } from "../../components/types";
 
 const badgeConfigStruct = assign(

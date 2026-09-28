@@ -42,6 +42,15 @@ export interface MapFitOptions {
   pad?: number;
   /** Ease the camera to the bounds instead of jumping; defaults to true */
   animate?: boolean;
+  /** Viewport pixels covered by overlays; the bounds fit inside the rest */
+  padding?: MapFitPadding;
+}
+
+export interface MapFitPadding {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
 }
 
 export interface MapMarkerOptions {
@@ -170,7 +179,11 @@ export interface MapClusterOptions {
   groupKey?(marker: MapMarkerHandle): string | undefined;
   groupRadius?: number;
   /** Builds a cluster's element; called when its members change and on refreshClusters() */
-  iconBuilder(members: MapMarkerHandle[], location: MapLatLng): MapClusterIcon;
+  iconBuilder(
+    members: MapMarkerHandle[],
+    location: MapLatLng,
+    key?: string
+  ): MapClusterIcon;
 }
 
 export interface MapEngine {

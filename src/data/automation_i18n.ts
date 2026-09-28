@@ -150,6 +150,8 @@ const formatNumericLimitValue = (
 export interface DescribeOptions {
   // Skip the user defined alias and describe the underlying config.
   ignoreAlias?: boolean;
+  // Rows with trigger-reference chips render the IDs separately.
+  hideTriggerIds?: boolean;
 }
 
 export const describeTrigger = (
@@ -828,7 +830,7 @@ const describeLegacyTrigger = (
 
     let offsetChoice = "other";
     let offset = "";
-    if (trigger.offset) {
+    if (typeof trigger.offset === "string" && trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
       const parts = trigger.offset.startsWith("-")
         ? trigger.offset.substring(1).split(":")
@@ -923,6 +925,12 @@ const tryDescribeCondition = (
 
   if (condition.alias && !options?.ignoreAlias) {
     return condition.alias;
+  }
+
+  if (condition.condition === "trigger" && options?.hideTriggerIds) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.trigger.description.summary`
+    );
   }
 
   if (!condition.condition) {

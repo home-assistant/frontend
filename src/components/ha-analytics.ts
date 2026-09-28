@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
@@ -20,12 +21,14 @@ declare global {
 
 @customElement("ha-analytics")
 export class HaAnalytics extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ attribute: false }) public analytics?: Analytics;
 
   @property({ attribute: "translation_key_panel" }) public translationKeyPanel:
     "page-onboarding" | "config" = "config";
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected render(): TemplateResult {
     const loading = this.analytics === undefined;
@@ -34,12 +37,12 @@ export class HaAnalytics extends LitElement {
     return html`
       <ha-row-item>
         <span slot="headline"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
           )}</span
         >
         <span slot="supporting-text"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
           )}</span
         >
@@ -51,7 +54,7 @@ export class HaAnalytics extends LitElement {
           .disabled=${loading}
           name="base"
         >
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
           )}
         </ha-switch>
@@ -60,12 +63,12 @@ export class HaAnalytics extends LitElement {
         (preference) => html`
           <ha-row-item>
             <span slot="headline"
-              >${this.localize(
+              >${this._localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
               )}</span
             >
             <span slot="supporting-text"
-              >${this.localize(
+              >${this._localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
               )}</span
             >
@@ -77,7 +80,7 @@ export class HaAnalytics extends LitElement {
               .preference=${preference}
               name=${preference}
             >
-              ${this.localize(
+              ${this._localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
               )}
             </ha-switch>
@@ -88,7 +91,7 @@ export class HaAnalytics extends LitElement {
                     .for="switch-${preference}"
                     placement="right"
                   >
-                    ${this.localize(
+                    ${this._localize(
                       `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
                     )}
                   </ha-tooltip>`
@@ -98,12 +101,12 @@ export class HaAnalytics extends LitElement {
       )}
       <ha-row-item>
         <span slot="headline"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
           )}</span
         >
         <span slot="supporting-text"
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
           )}</span
         >
@@ -115,7 +118,7 @@ export class HaAnalytics extends LitElement {
           .disabled=${loading}
           name="diagnostics"
         >
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
           )}
         </ha-switch>

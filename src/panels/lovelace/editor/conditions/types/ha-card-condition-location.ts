@@ -2,7 +2,6 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { array, assert, literal, object, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-list";
 import type { HomeAssistant } from "../../../../../types";

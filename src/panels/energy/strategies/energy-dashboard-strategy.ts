@@ -18,7 +18,7 @@ import {
   hasDeviceConsumption,
   hasEnergySource,
   hasGasSource,
-  hasPowerDevices,
+  hasNowViewContent,
   hasPowerSources,
   hasWaterDevices,
   hasWaterSource,
@@ -90,7 +90,8 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     if (
       !prefs ||
       (prefs.device_consumption.length === 0 &&
-        prefs.energy_sources.length === 0)
+        prefs.energy_sources.length === 0 &&
+        !hasWaterDevices(prefs))
     ) {
       await import("../cards/energy-setup-wizard-card");
       return {
@@ -100,8 +101,6 @@ export class EnergyDashboardStrategy extends ReactiveElement {
 
     const hasEnergy = hasEnergySource(prefs);
     const hasPowerSource = hasPowerSources(prefs);
-    const hasDevicePower = hasPowerDevices(prefs);
-    const hasPower = hasPowerSource || hasDevicePower;
     const hasWater = hasWaterSource(prefs) || hasWaterDevices(prefs);
     const hasGas = hasGasSource(prefs);
     const hasDevices = hasDeviceConsumption(prefs);
@@ -118,7 +117,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     if (hasWater) {
       candidateViews.push(WATER_VIEW);
     }
-    if (hasPower) {
+    if (hasNowViewContent(prefs)) {
       candidateViews.push(POWER_VIEW);
     }
     if (

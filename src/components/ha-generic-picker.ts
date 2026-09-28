@@ -329,7 +329,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
       return nothing;
     }
 
-    return html`<ha-input-helper-text .disabled=${this.disabled}>
+    return html`<ha-input-helper-text>
       ${
         showError
           ? html`<span class="error">${this.errorMessage}</span> ${
@@ -360,7 +360,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         this._initialFieldValue = undefined;
       }
       if (
-        this._hassConfig?.auth.external &&
+        this._hassConfig?.auth?.external &&
         isIosApp(this._hassConfig.auth.external)
       ) {
         this._hassConfig.auth.external.fireMessage({

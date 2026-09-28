@@ -78,6 +78,7 @@ class DialogVoiceSettings extends LitElement {
 
   private _entityEntryUpdated(ev: CustomEvent) {
     this._params!.extEntityReg = ev.detail;
+    this._params!.entityEntryUpdated?.(ev.detail);
   }
 
   private _exposedEntitiesChanged() {

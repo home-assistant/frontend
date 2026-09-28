@@ -142,7 +142,7 @@ export interface DeviceAction extends BaseAction {
   type: string;
   device_id: string;
   domain: string;
-  entity_id: string;
+  entity_id?: string;
 }
 
 export interface DelayActionParts extends BaseAction {

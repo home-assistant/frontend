@@ -63,7 +63,6 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -1279,8 +1278,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1323,8 +1322,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1363,8 +1362,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1393,8 +1392,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   };
@@ -1413,8 +1412,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   };

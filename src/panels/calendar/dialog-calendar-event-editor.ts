@@ -42,7 +42,6 @@ import {
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";

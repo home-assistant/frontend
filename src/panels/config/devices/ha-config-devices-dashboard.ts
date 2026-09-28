@@ -43,17 +43,14 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
@@ -1185,8 +1182,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1240,8 +1237,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }

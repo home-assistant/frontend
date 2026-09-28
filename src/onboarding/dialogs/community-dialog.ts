@@ -1,22 +1,24 @@
 import { mdiAccountGroup, mdiOpenInNew } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement } from "lit/decorators";
+import { LitElement, css, html } from "lit";
+import { customElement, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-nav";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
-import type { CommunityDialogParams } from "./show-community-dialog";
 
 @customElement("community-dialog")
-class DialogCommunity extends DialogMixin<CommunityDialogParams>(LitElement) {
+class DialogCommunity extends DialogMixin(LitElement) {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   protected render() {
-    if (!this.params?.localize) {
-      return nothing;
-    }
     return html`<ha-dialog
       open
-      header-title=${this.params.localize(
+      header-title=${this._localize(
         "ui.panel.page-onboarding.welcome.community"
       )}
     >
@@ -32,7 +34,7 @@ class DialogCommunity extends DialogMixin<CommunityDialogParams>(LitElement) {
             alt="Home Assistant Logo"
           />
           <span slot="headline">
-            ${this.params.localize("ui.panel.page-onboarding.welcome.forums")}
+            ${this._localize("ui.panel.page-onboarding.welcome.forums")}
           </span>
           <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
         </ha-list-item-button>
@@ -47,7 +49,7 @@ class DialogCommunity extends DialogMixin<CommunityDialogParams>(LitElement) {
             alt="Open Home Foundation Logo"
           />
           <span slot="headline">
-            ${this.params.localize(
+            ${this._localize(
               "ui.panel.page-onboarding.welcome.open_home_newsletter"
             )}
           </span>
@@ -64,7 +66,7 @@ class DialogCommunity extends DialogMixin<CommunityDialogParams>(LitElement) {
             alt="Discord Logo"
           />
           <span slot="headline">
-            ${this.params.localize("ui.panel.page-onboarding.welcome.discord")}
+            ${this._localize("ui.panel.page-onboarding.welcome.discord")}
           </span>
           <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
         </ha-list-item-button>
@@ -75,9 +77,7 @@ class DialogCommunity extends DialogMixin<CommunityDialogParams>(LitElement) {
         >
           <ha-svg-icon .path=${mdiAccountGroup} slot="start"></ha-svg-icon>
           <span slot="headline">
-            ${this.params.localize(
-              "ui.panel.page-onboarding.welcome.social_media"
-            )}
+            ${this._localize("ui.panel.page-onboarding.welcome.social_media")}
           </span>
           <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
         </ha-list-item-button>

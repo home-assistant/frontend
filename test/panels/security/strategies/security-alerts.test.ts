@@ -48,15 +48,22 @@ describe("computeSecurityAlertCardConfig", () => {
     });
   });
 
-  it("uses the entity device class for the default severity", () => {
-    const stateObj = createMockEntityState("binary_sensor.smoke", "off", {
-      device_class: "smoke",
-    });
+  it.each(["glass_break", "smoke"])(
+    "uses the %s device class for the default severity",
+    (deviceClass) => {
+      const stateObj = createMockEntityState(
+        `binary_sensor.${deviceClass}`,
+        "off",
+        {
+          device_class: deviceClass,
+        }
+      );
 
-    expect(
-      computeSecurityAlertCardConfig(stateObj, {
-        entity: "binary_sensor.smoke",
-      }).color
-    ).toBe("red");
-  });
+      expect(
+        computeSecurityAlertCardConfig(stateObj, {
+          entity: stateObj.entity_id,
+        }).color
+      ).toBe("red");
+    }
+  );
 });

@@ -1,7 +1,3 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   mdiAlertCircleOutline,
   mdiCheck,
@@ -9,32 +5,37 @@ import {
   mdiShape,
   mdiTune,
 } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-svg-icon";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
+import "../../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
+import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { Action } from "../../../../../data/script";
 import { callExecuteScript } from "../../../../../data/service";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
+import { mdiMqttLogo } from "../../../../../resources/mqtt-logo-svg";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 import { showToast } from "../../../../../util/toast";
 import "./mqtt-subscribe-card";
-import { brandsUrl } from "../../../../../util/brands-url";
-import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
-import { fetchIntegrationManifest } from "../../../../../data/integration";
-import { mdiMqttLogo } from "../../../../../resources/mqtt-logo-svg";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -186,9 +187,12 @@ export class MQTTConfigPanel extends LitElement {
           ${this.hass.localize("ui.panel.config.mqtt.my_network_title")}
         </div>
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.mqtt.my_network_title"
+            )}
+          >
+            <ha-list-item-button
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -198,9 +202,8 @@ export class MQTTConfigPanel extends LitElement {
                 })}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
+            </ha-list-item-button>
+            <ha-list-item-button
               href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
@@ -210,8 +213,8 @@ export class MQTTConfigPanel extends LitElement {
                 })}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -221,8 +224,8 @@ export class MQTTConfigPanel extends LitElement {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item type="link" @click=${this._openOptionFlow}>
+          <ha-list-base>
+            <ha-list-item-button @click=${this._openOptionFlow}>
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize("ui.panel.config.mqtt.option_flow")}
@@ -233,8 +236,8 @@ export class MQTTConfigPanel extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item type="link" @click=${this._openConfigFlow}>
+            </ha-list-item-button>
+            <ha-list-item-button @click=${this._openConfigFlow}>
               <ha-svg-icon slot="start" .path=${mdiMqttLogo}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize("ui.panel.config.mqtt.config_flow")}
@@ -245,8 +248,8 @@ export class MQTTConfigPanel extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-base>
         </div>
       </ha-card>
     `;
@@ -403,13 +406,6 @@ export class MQTTConfigPanel extends LitElement {
         ha-card {
           margin: 0 auto var(--ha-space-4);
           max-width: 600px;
-        }
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
         ha-select {
           width: 96px;

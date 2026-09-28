@@ -20,7 +20,6 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
-import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";

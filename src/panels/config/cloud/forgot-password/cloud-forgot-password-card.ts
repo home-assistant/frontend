@@ -12,12 +12,11 @@ import { cloudForgotPassword } from "../../../../data/cloud";
 import { forgotPasswordHaCloud } from "../../../../data/onboarding";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 
 @customElement("cloud-forgot-password-card")
 export class CloudForgotPasswordCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     | "page-onboarding.restore.ha-cloud.forgot_password"
@@ -26,6 +25,10 @@ export class CloudForgotPasswordCard extends LitElement {
   @property() public email?: string;
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _inProgress = false;
 
@@ -41,7 +44,7 @@ export class CloudForgotPasswordCard extends LitElement {
     return html`
       <ha-card
         outlined
-        .header=${this.localize(
+        .header=${this._localize(
           `ui.panel.${this.translationKeyPanel}.subtitle`
         )}
       >
@@ -54,7 +57,7 @@ export class CloudForgotPasswordCard extends LitElement {
     return html`
       <div class="card-content">
         <p>
-          ${this.localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
+          ${this._localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
         </p>
         ${
           this._error
@@ -64,13 +67,13 @@ export class CloudForgotPasswordCard extends LitElement {
         <ha-input
           autofocus
           id="email"
-          label=${this.localize(`ui.panel.${this.translationKeyPanel}.email`)}
+          label=${this._localize(`ui.panel.${this.translationKeyPanel}.email`)}
           .value=${this.email ?? ""}
           type="email"
           required
           .disabled=${this._inProgress}
           @keydown=${this._keyDown}
-          .validationMessage=${this.localize(
+          .validationMessage=${this._localize(
             `ui.panel.${this.translationKeyPanel}.email_error_msg`
           )}
         ></ha-input>
@@ -80,7 +83,7 @@ export class CloudForgotPasswordCard extends LitElement {
           @click=${this._handleEmailPasswordReset}
           .progress=${this._inProgress}
         >
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.send_reset_email`
           )}
         </ha-progress-button>
@@ -107,7 +110,7 @@ export class CloudForgotPasswordCard extends LitElement {
       fireEvent(this, "cloud-email-changed", { value: email });
       this._inProgress = false;
       fireEvent(this, "cloud-done", {
-        flashMessage: this.localize(
+        flashMessage: this._localize(
           `ui.panel.${this.translationKeyPanel}.check_your_email`
         ),
       });

@@ -28,7 +28,6 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";

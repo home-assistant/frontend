@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-humidifier-state";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";

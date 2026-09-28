@@ -15,7 +15,7 @@ import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
+import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { isNumericState } from "../../../common/number/format_number";
@@ -950,29 +950,10 @@ class DialogAddAutomationElement
               this._manifests?.[domain]
             );
           } else {
-            const stateObj = this.hass.states[targetId];
-            const [entityName, deviceName, parentDeviceName, areaName] =
-              computeEntityNameList(
-                stateObj,
-                [
-                  { type: "entity" },
-                  { type: "device" },
-                  { type: "parent_device" },
-                  { type: "area" },
-                ],
-                this.hass.entities,
-                this.hass.devices,
-                this.hass.areas,
-                this.hass.floors
-              );
-
-            subtitle = [
-              areaName,
-              parentDeviceName,
-              entityName ? deviceName : undefined,
-            ]
-              .filter(Boolean)
-              .join(separator);
+            subtitle = computeEntityPickerDisplay(
+              this.hass,
+              this.hass.states[targetId]
+            ).secondary;
           }
         }
 

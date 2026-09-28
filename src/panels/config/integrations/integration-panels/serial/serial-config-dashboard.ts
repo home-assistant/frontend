@@ -22,10 +22,11 @@ import "../../../../../components/ha-app-icon";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import {
   domainToName,
   getConfigPanelPath,
@@ -42,13 +43,13 @@ import type {
 } from "../../../../../data/usb";
 import { listSerialPortsWithUsage } from "../../../../../data/usb";
 import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
-import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
-import { showSerialPortInfoDialog } from "./show-dialog-serial-port-info";
 import "../../../../../layouts/hass-subpage";
 import { panelIsReady } from "../../../../../layouts/panel-ready";
+import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { showSerialPortInfoDialog } from "./show-dialog-serial-port-info";
 
 const ESPHOME_HASS_SCHEME = "esphome-hass://";
 
@@ -270,7 +271,7 @@ export class SerialConfigDashboard extends LitElement {
     const href = this._consumerHref(consumer);
 
     return html`
-      <ha-md-list-item type="link" href=${href} class="consumer">
+      <ha-list-item-button href=${href} class="consumer">
         ${
           consumer.kind === "config_entry"
             ? html`<img
@@ -302,14 +303,13 @@ export class SerialConfigDashboard extends LitElement {
         }
         <div slot="headline">${this._consumerName(consumer)}</div>
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
   private _renderDiscoveryFlow(flow: SerialPortDiscoveryFlow): TemplateResult {
     return html`
-      <ha-md-list-item
-        type="button"
+      <ha-list-item-button
         class="consumer"
         .flowId=${flow.flow_id}
         @click=${this._continueFlow}
@@ -334,13 +334,13 @@ export class SerialConfigDashboard extends LitElement {
           })}
         </div>
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
   private _renderModbusLink(): TemplateResult {
     return html`
-      <ha-md-list-item type="link" class="consumer" href="/config/modbus">
+      <ha-list-item-button class="consumer" href="/config/modbus">
         <ha-svg-icon
           slot="start"
           .path=${mdiTransitConnectionVariant}
@@ -349,7 +349,7 @@ export class SerialConfigDashboard extends LitElement {
           ${this.hass.localize("ui.panel.config.serial.used_by_modbus")}
         </div>
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -378,7 +378,7 @@ export class SerialConfigDashboard extends LitElement {
         : undefined;
 
     return html`
-      <ha-md-list-item class="port">
+      <ha-list-item-base class="port">
         <ha-svg-icon
           slot="start"
           class=${item.port.present ? "" : "disconnected"}
@@ -415,7 +415,7 @@ export class SerialConfigDashboard extends LitElement {
               ></ha-icon-button>`
             : nothing
         }
-      </ha-md-list-item>
+      </ha-list-item-base>
       ${item.consumers.map((consumer) => this._renderConsumer(consumer))}
       ${this._usedByModbus(item.port) ? this._renderModbusLink() : nothing}
       ${item.discoveryFlows.map((flow) => this._renderDiscoveryFlow(flow))}
@@ -438,9 +438,9 @@ export class SerialConfigDashboard extends LitElement {
         <div class="card-header">${header}</div>
         <div class="card-content">
           <div class="description">${description}</div>
-          <ha-md-list>
+          <ha-list-base>
             ${items.map((item) => this._renderPortItem(item))}
-          </ha-md-list>
+          </ha-list-base>
         </div>
       </ha-card>
     `;
@@ -688,35 +688,28 @@ export class SerialConfigDashboard extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-md-list {
-          background: none;
-          padding: 0;
+        ha-list-item-base,
+        ha-list-item-button {
+          --ha-row-item-padding-block: var(--ha-space-2);
+          --ha-row-item-min-height: 0;
         }
 
-        ha-md-list-item {
-          --md-list-item-top-space: var(--ha-space-2);
-          --md-list-item-bottom-space: var(--ha-space-2);
-          --md-list-item-one-line-container-height: 0;
-          --md-list-item-two-line-container-height: 0;
-          --md-list-item-three-line-container-height: 0;
-        }
-
-        ha-md-list-item.port:not(:first-child) {
+        ha-list-item-base.port:not(:first-child) {
           border-top: 1px solid var(--divider-color);
           margin-top: var(--ha-space-2);
-          --md-list-item-top-space: var(--ha-space-4);
+          --ha-row-item-padding-block: var(--ha-space-4) var(--ha-space-2);
         }
 
-        ha-md-list-item .disconnected {
+        ha-list-item-base .disconnected {
           color: var(--disabled-text-color);
         }
 
-        ha-md-list-item.consumer {
-          --md-list-item-leading-space: var(--ha-space-14);
+        .consumer {
+          --ha-row-item-padding-inline: var(--ha-space-14) var(--ha-space-4);
         }
 
-        ha-md-list-item.consumer img[slot="start"],
-        ha-md-list-item.consumer ha-app-icon[slot="start"] {
+        .consumer img[slot="start"],
+        .consumer ha-app-icon[slot="start"] {
           width: 24px;
           height: 24px;
         }

@@ -10,7 +10,10 @@ import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hie
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeEntityName } from "../../../../common/entity/compute_entity_name";
+import {
+  computeEntityNameList,
+  computeEntitySearchLabels,
+} from "../../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
@@ -166,7 +169,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     const entry = entityReg[entityId];
     if (entry?.hidden) continue;
 
-    const { device, parentDevice, area } = getEntityContext(
+    const { device, area } = getEntityContext(
       stateObj,
       entityReg,
       deviceReg,
@@ -175,29 +178,33 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     );
     const areaId = area?.area_id;
     const domain = computeDomain(entityId);
-
-    const entityName = computeEntityName(stateObj, entityReg, deviceReg);
-    const friendlyName = computeStateName(stateObj);
-    const deviceName = device ? computeDeviceName(device) : undefined;
-    const parentDeviceName = parentDevice
-      ? computeDeviceName(parentDevice)
-      : undefined;
-    const areaName = area ? computeAreaName(area) : undefined;
     const domainName = domainToName(localize, domain);
+
+    const searchLabels = computeEntitySearchLabels(
+      stateObj,
+      entityReg,
+      deviceReg,
+      areaReg,
+      floorReg
+    );
+    const [deviceName, parentDeviceName, areaName] = computeEntityNameList(
+      stateObj,
+      [{ type: "device" }, { type: "parent_device" }, { type: "area" }],
+      entityReg,
+      deviceReg,
+      areaReg,
+      floorReg
+    );
 
     searchableEntities.push({
       id: entityId,
-      name: entityName || friendlyName || entityId,
+      name: searchLabels.entityName || searchLabels.friendlyName || entityId,
       area: areaName ?? "",
       parentDevice: parentDeviceName ?? "",
       device: deviceName ?? "",
       domain: domainName,
       search_labels: {
-        entityName: entityName || null,
-        friendlyName: friendlyName || null,
-        deviceName: deviceName || null,
-        parentDeviceName: parentDeviceName || null,
-        areaName: areaName || null,
+        ...searchLabels,
         domainName: domainName || null,
         entityId,
       },

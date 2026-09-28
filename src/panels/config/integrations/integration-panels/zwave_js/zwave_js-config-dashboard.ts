@@ -23,10 +23,12 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
+import "../../../../../components/list/ha-list-nav";
 import "../../../../../components/progress/ha-progress-ring";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
@@ -305,9 +307,12 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           </ha-button>
         </div>
         <div class="card-content network-card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zwave_js.dashboard.network_card_title"
+            )}
+          >
+            <ha-list-item-button
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -318,9 +323,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
+            </ha-list-item-button>
+            <ha-list-item-button
               href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
@@ -331,11 +335,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
+            </ha-list-item-button>
             ${
               this._provisioningEntries?.length
-                ? html`<ha-md-list-item
-                    type="link"
+                ? html`<ha-list-item-button
                     href=${`provisioned?config_entry=${this.configEntryId}`}
                   >
                     <ha-svg-icon slot="start" .path=${mdiQrcode}></ha-svg-icon>
@@ -346,10 +349,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       )}
                     </div>
                     <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>`
+                  </ha-list-item-button>`
                 : nothing
             }
-          </ha-md-list>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -359,9 +362,12 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zwave_js.navigation.general"
+            )}
+          >
+            <ha-list-item-button
               href=${`options?config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
@@ -376,9 +382,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
+            </ha-list-item-button>
+            <ha-list-item-button
               href=${`statistics?config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon slot="start" .path=${mdiPoll}></ha-svg-icon>
@@ -393,9 +398,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
+            </ha-list-item-button>
+            <ha-list-item-button
               href=${`logs?config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon
@@ -413,8 +417,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item type="link" href="/config/analytics?section=zwave">
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/analytics?section=zwave">
               <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
@@ -436,9 +440,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 }
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
+            </ha-list-item-button>
+            <ha-list-item-button
               href=${`network-info?config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon
@@ -456,8 +459,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -490,8 +493,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     )}
                     ${this._restoreProgress}%
                   </div>`
-                : html`<ha-md-list>
-                    <ha-md-list-item>
+                : html`<ha-list-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
@@ -516,8 +519,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           "ui.panel.config.zwave_js.dashboard.nvm_backup.download_action"
                         )}
                       </ha-button>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
@@ -545,8 +548,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         @change=${this._handleRestoreFileSelected}
                         style="display: none"
                       />
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
@@ -567,8 +570,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate_action"
                         )}
                       </ha-button>
-                    </ha-md-list-item>
-                  </ha-md-list>`
+                    </ha-list-item-base>
+                  </ha-list-base>`
           }
         </div>
       </ha-card>
@@ -903,15 +906,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         ha-card {
           margin: 0px auto var(--ha-space-4);
           max-width: 600px;
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
 
         .network-card .card-header {

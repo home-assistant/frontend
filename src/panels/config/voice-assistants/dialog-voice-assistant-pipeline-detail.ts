@@ -24,7 +24,6 @@ import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
 import "./assist-pipeline-detail/assist-pipeline-detail-stt";
 import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
-import "./debug/assist-render-pipeline-events";
 import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
@@ -61,7 +60,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
       "id" in this._params.pipeline &&
       this._params.pipeline.id
     ) {
-      this._data = { prefer_local_intents: false, ...this._params.pipeline };
+      this._data = { ...this._params.pipeline };
 
       this._hideWakeWord =
         this._params.hideWakeWord || !this._data.wake_word_entity;
@@ -122,7 +121,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
 
   private async _getSupportedLanguages() {
     const { languages } = await fetchAssistPipelineLanguages(this.hass);
-    this._supportedLanguages = languages;
+    this._supportedLanguages = languages ?? undefined;
   }
 
   private _hasWakeWorkEntities = memoizeOne((states: HomeAssistant["states"]) =>
@@ -184,7 +183,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
             .hass=${this.hass}
             .data=${this._data}
             .supportedLanguages=${this._supportedLanguages}
-            keys="name,language"
+            keys="name,language,user_id"
             @value-changed=${this._valueChanged}
             ?autofocus=${!isExistingPipeline}
           ></assist-pipeline-detail-config>
@@ -302,6 +301,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
         tts_voice: data.tts_voice ?? null,
         wake_word_entity: data.wake_word_entity ?? null,
         wake_word_id: data.wake_word_id ?? null,
+        user_id: data.user_id ?? null,
       };
       if (
         this._params!.pipeline &&

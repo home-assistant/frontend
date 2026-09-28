@@ -27,7 +27,6 @@ import {
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/chips/ha-filter-chip";
 import "../../../../components/entity/state-badge";
-import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-floor-icon";

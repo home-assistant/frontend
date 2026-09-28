@@ -90,6 +90,7 @@ export class HaAutomationConditionSummary extends LitElement {
               ></ha-automation-row-options>`
             : nothing
         }
+        <slot name="references"></slot>
         ${
           note
             ? html`

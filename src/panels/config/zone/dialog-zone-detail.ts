@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,18 +10,29 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import type { ZoneMutableParams } from "../../../data/zone";
+import type { Zone, ZoneMutableParams } from "../../../data/zone";
 import { getZoneEditorInitData } from "../../../data/zone";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
+import {
+  nextZoneColor,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
+import { fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 
 @customElement("dialog-zone-detail")
 class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
   LitElement
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // Registry creation order decides the zone color
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _error?: Record<string, string>;
 
@@ -89,6 +101,22 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
       !lngInvalid &&
       !radiusInvalid;
 
+    // From the registry context, so a deep link opening before the registry
+    // loads still resolves the color
+    const entityId = this._zoneEntityId(this._params.entry, this._entityReg);
+    const color = entityId
+      ? zoneColor(
+          entityId,
+          !!this._data.passive,
+          this._entityReg,
+          getComputedStyle(this)
+        )
+      : nextZoneColor(
+          !!this._data.passive,
+          this._entityReg,
+          getComputedStyle(this)
+        );
+
     return html`
       <ha-dialog
         .open=${this._open}
@@ -105,7 +133,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
         <ha-form
           autofocus
           .hass=${this.hass}
-          .schema=${this._schema(this._data.icon)}
+          .schema=${this._schema(this._data.icon, color, this._data.name)}
           .data=${this._formData(this._data)}
           .error=${this._error}
           .computeLabel=${this._computeLabel}
@@ -152,8 +180,18 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
     `;
   }
 
+  // Storage zones register their entity with the zone id as unique id
+  private _zoneEntityId = memoizeOne(
+    (entry: Zone | undefined, entityReg: EntityRegistryEntry[]) =>
+      entry
+        ? entityReg.find(
+            (ent) => ent.platform === "zone" && ent.unique_id === entry.id
+          )?.entity_id
+        : undefined
+  );
+
   private _schema = memoizeOne(
-    (icon?: string) =>
+    (icon?: string, color?: string, name?: string) =>
       [
         {
           name: "name",
@@ -172,7 +210,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
         {
           name: "location",
           required: true,
-          selector: { location: { radius: true, icon } },
+          selector: { location: { radius: true, icon, color, name } },
         },
         { name: "passive_note", type: "constant" },
         { name: "passive", selector: { boolean: {} } },

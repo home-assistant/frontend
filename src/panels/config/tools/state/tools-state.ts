@@ -25,7 +25,6 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-input-helper-text";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";

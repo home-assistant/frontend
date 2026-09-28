@@ -3,7 +3,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
-import "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-dropdown";

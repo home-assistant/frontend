@@ -31,7 +31,6 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-marquee-text";
-import "../../../components/ha-select";
 import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";

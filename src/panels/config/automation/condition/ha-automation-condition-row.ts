@@ -1,7 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
   mdiCommentEditOutline,
@@ -24,6 +23,7 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import "../trigger/ha-automation-trigger-references";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -50,6 +50,7 @@ import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
+  TriggerCondition,
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
@@ -84,6 +85,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -152,6 +154,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _testingTimeout?: number;
 
+  private _sidebarCondition?: Condition;
+
   get selected() {
     return this._selected;
   }
@@ -201,12 +205,34 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-automation-condition-summary
         slot="header"
         .label=${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg)
+          describeCondition(this.condition, this.hass, this._entityReg, {
+            hideTriggerIds: true,
+          })
         )}
         .condition=${this.condition}
         .description=${this.conditionDescriptions[this.condition.condition]}
         .isNew=${this._isNew}
-      ></ha-automation-condition-summary>
+      >
+        ${
+          this.condition.condition === "trigger"
+            ? html`<ha-automation-trigger-references
+                slot="references"
+                .condition=${this.condition as TriggerCondition}
+                .hass=${this.hass}
+              ></ha-automation-trigger-references>`
+            : nothing
+        }
+      </ha-automation-condition-summary>
+      <ha-automation-row-event-chip
+        .show=${this.condition.enabled === false && !this._testing}
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
       <ha-automation-row-event-chip
         .show=${this._testing}
         .variant=${this._testingResult ? "success" : "warning"}
@@ -283,17 +309,7 @@ export default class HaAutomationConditionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.copy"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>C</span>
             </span>`
@@ -307,17 +323,7 @@ export default class HaAutomationConditionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.cut"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>X</span>
             </span>`
@@ -337,17 +343,7 @@ export default class HaAutomationConditionRow extends LitElement {
                       "ui.panel.config.automation.editor.actions.paste"
                     ),
                     html`<span class="shortcut">
-                      <span
-                        >${
-                          isMac
-                            ? html`<ha-svg-icon
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )
-                        }</span
-                      >
+                      <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                       <span>+</span>
                       <span>V</span>
                     </span>`
@@ -423,17 +419,7 @@ export default class HaAutomationConditionRow extends LitElement {
               "ui.panel.config.automation.editor.actions.delete"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span
                 >${this.hass.localize(
@@ -490,17 +476,6 @@ export default class HaAutomationConditionRow extends LitElement {
             !this._collapsed,
         })}
       >
-        ${
-          this.condition.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row
@@ -564,6 +539,21 @@ export default class HaAutomationConditionRow extends LitElement {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Controller updates (trigger selection, ID migration, or cleanup) bypass the
+    // sidebar's save callback. Refresh its snapshot unless it already has this
+    // condition, so ordinary sidebar edits do not reopen it and disrupt focus.
+    if (
+      changedProperties.has("condition") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.condition !== this._sidebarCondition
+    ) {
+      this.openSidebar();
     }
   }
 
@@ -898,8 +888,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   public openSidebar(condition?: Condition): void {
     const sidebarCondition = condition || this.condition;
+    this._sidebarCondition = sidebarCondition;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
+        this._sidebarCondition = value;
         fireEvent(this, "value-changed", { value });
       },
       close: (focus?: boolean) => {

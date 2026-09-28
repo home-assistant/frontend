@@ -37,8 +37,10 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
-
-const CIRCLE_CIRCUMFERENCE = 238.76104;
+import {
+  ENERGY_DISTRIBUTION_HOME_CIRCLE_CIRCUMFERENCE as CIRCLE_CIRCUMFERENCE,
+  computeEnergyDistributionHomeCircleArcs,
+} from "./energy-distribution-home-circle";
 
 // Flows are differences of sums; anything that rounds to 0 Wh is noise
 const hasFlow = (value: number | null): value is number =>
@@ -321,22 +323,8 @@ class HuiEnergyDistrubutionCard
 
     const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
-    let homeSolarCircumference: number | undefined;
-    if (hasSolarProduction) {
-      homeSolarCircumference =
-        CIRCLE_CIRCUMFERENCE * (solarConsumption! / totalHomeConsumption);
-    }
-
-    let homeBatteryCircumference: number | undefined;
-    if (batteryConsumption) {
-      homeBatteryCircumference =
-        CIRCLE_CIRCUMFERENCE * (batteryConsumption / totalHomeConsumption);
-    }
-
     let lowCarbonEnergy: number | undefined;
-
-    let homeLowCarbonCircumference: number | undefined;
-    let homeHighCarbonCircumference: number | undefined;
+    let highCarbonConsumption: number | undefined;
 
     // This fallback is used in the demo
     let electricityMapUrl = "https://app.electricitymaps.com";
@@ -360,7 +348,6 @@ class HuiEnergyDistrubutionCard
       if (highCarbonEnergy !== null) {
         lowCarbonEnergy = totalFromGrid - highCarbonEnergy;
 
-        let highCarbonConsumption: number;
         if (gridConsumption !== totalFromGrid) {
           // Only get the part that was used for consumption and not the battery
           highCarbonConsumption =
@@ -368,17 +355,22 @@ class HuiEnergyDistrubutionCard
         } else {
           highCarbonConsumption = highCarbonEnergy;
         }
-
-        homeHighCarbonCircumference =
-          CIRCLE_CIRCUMFERENCE * (highCarbonConsumption / totalHomeConsumption);
-
-        homeLowCarbonCircumference =
-          CIRCLE_CIRCUMFERENCE -
-          (homeSolarCircumference || 0) -
-          (homeBatteryCircumference || 0) -
-          homeHighCarbonCircumference;
       }
     }
+
+    const {
+      solar: homeSolarCircumference,
+      battery: homeBatteryCircumference,
+      lowCarbon: homeLowCarbonCircumference,
+      grid: homeGridCircumference,
+    } = computeEnergyDistributionHomeCircleArcs({
+      usedSolar: solarConsumption ?? 0,
+      usedBattery: batteryConsumption ?? 0,
+      usedGrid: gridConsumption,
+      hasSolar: hasSolarProduction,
+      hasGrid: Boolean(hasGrid),
+      highCarbonConsumption,
+    });
 
     const totalLines =
       gridConsumption +
@@ -670,16 +662,8 @@ class HuiEnergyDistrubutionCard
                         cx="40"
                         cy="40"
                         r="38"
-                        stroke-dasharray="${
-                          homeHighCarbonCircumference ??
-                          CIRCLE_CIRCUMFERENCE -
-                            homeSolarCircumference! -
-                            (homeBatteryCircumference || 0)
-                        } ${
-                          homeHighCarbonCircumference !== undefined
-                            ? CIRCLE_CIRCUMFERENCE - homeHighCarbonCircumference
-                            : homeSolarCircumference! +
-                              (homeBatteryCircumference || 0)
+                        stroke-dasharray="${homeGridCircumference} ${
+                          CIRCLE_CIRCUMFERENCE - (homeGridCircumference ?? 0)
                         }"
                         stroke-dashoffset="0"
                         shape-rendering="geometricPrecision"
