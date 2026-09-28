@@ -117,22 +117,6 @@ const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 // Default row height, used to fill the viewport with skeleton rows.
 const ROW_HEIGHT = 52;
 
-const cellClasses = (column: DataTableColumnData) => ({
-  "mdc-data-table__cell--flex": column.type === "flex",
-  "mdc-data-table__cell--numeric": column.type === "numeric",
-  "mdc-data-table__cell--icon": column.type === "icon",
-  "mdc-data-table__cell--icon-button": column.type === "icon-button",
-  "mdc-data-table__cell--overflow-menu": column.type === "overflow-menu",
-  "mdc-data-table__cell--overflow": column.type === "overflow",
-  forceLTR: Boolean(column.forceLTR),
-});
-
-const cellStyles = (column: DataTableColumnData) => ({
-  minWidth: column.minWidth,
-  maxWidth: column.maxWidth,
-  flex: column.flex || 1,
-});
-
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @state()
@@ -581,9 +565,9 @@ export class HaDataTable extends LitElement {
                                         : html`
                                             <div
                                               class="mdc-data-table__cell ${classMap(
-                                                cellClasses(column)
+                                                this._cellClasses(column)
                                               )}"
-                                              style=${styleMap(cellStyles(column))}
+                                              style=${styleMap(this._cellStyles(column))}
                                             >
                                               ${
                                                 column.type === "icon"
@@ -721,8 +705,8 @@ export class HaDataTable extends LitElement {
               @mouseover=${this._setTitle}
               @focus=${this._setTitle}
               role=${column.main ? "rowheader" : "cell"}
-              class="mdc-data-table__cell ${classMap(cellClasses(column))}"
-              style=${styleMap(cellStyles(column))}
+              class="mdc-data-table__cell ${classMap(this._cellClasses(column))}"
+              style=${styleMap(this._cellStyles(column))}
             >
               ${
                 column.template
@@ -784,6 +768,22 @@ export class HaDataTable extends LitElement {
 
   private _hasCellValue = (value: unknown): boolean =>
     value !== undefined && value !== null && value !== "" && value !== nothing;
+
+  private _cellClasses = (column: DataTableColumnData) => ({
+    "mdc-data-table__cell--flex": column.type === "flex",
+    "mdc-data-table__cell--numeric": column.type === "numeric",
+    "mdc-data-table__cell--icon": column.type === "icon",
+    "mdc-data-table__cell--icon-button": column.type === "icon-button",
+    "mdc-data-table__cell--overflow-menu": column.type === "overflow-menu",
+    "mdc-data-table__cell--overflow": column.type === "overflow",
+    forceLTR: Boolean(column.forceLTR),
+  });
+
+  private _cellStyles = (column: DataTableColumnData) => ({
+    minWidth: column.minWidth,
+    maxWidth: column.maxWidth,
+    flex: column.flex || 1,
+  });
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();
