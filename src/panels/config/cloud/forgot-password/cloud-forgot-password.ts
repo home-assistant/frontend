@@ -1,10 +1,10 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "./cloud-forgot-password-card";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "./cloud-forgot-password-card";
 
 @customElement("cloud-forgot-password")
 export class CloudForgotPassword extends LitElement {
@@ -21,7 +21,7 @@ export class CloudForgotPassword extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/cloud/login"
         .header=${this.hass.localize(
           "ui.panel.config.cloud.forgot_password.title"
         )}
@@ -29,7 +29,6 @@ export class CloudForgotPassword extends LitElement {
         <div class="content">
           <cloud-forgot-password-card
             .hass=${this.hass}
-            .localize=${this.hass.localize}
             .email=${this.email}
           ></cloud-forgot-password-card>
         </div>

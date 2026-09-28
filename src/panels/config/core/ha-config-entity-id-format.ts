@@ -5,10 +5,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { ENTITY_NAME_TYPES } from "../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/buttons/ha-progress-button";
+import "../../../components/chips/ha-chip-set";
+import "../../../components/chips/ha-filter-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -32,6 +35,11 @@ import "./ha-entity-id-format-editor";
 const EXAMPLE_DOMAIN = "sensor";
 const PREVIEW_DEBOUNCE_MS = 200;
 
+interface EntityIdExample {
+  name: string;
+  parts: Partial<Record<EntityIdPart, string>>;
+}
+
 @customElement("ha-config-entity-id-format")
 export class HaConfigEntityIdFormat extends LitElement {
   @state()
@@ -50,9 +58,11 @@ export class HaConfigEntityIdFormat extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _preview?: string;
+  @state() private _previews?: string[];
 
   @state() private _previewError = false;
+
+  @state() private _selectedExample = 0;
 
   protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
@@ -79,12 +89,49 @@ export class HaConfigEntityIdFormat extends LitElement {
   }
 
   private _examples = memoizeOne(
-    (localize: LocalizeFunc): Record<EntityIdPart, string> => ({
-      area: localize("ui.panel.config.entity_id_format.card.examples.area"),
-      device: localize("ui.panel.config.entity_id_format.card.examples.device"),
-      entity: localize("ui.panel.config.entity_id_format.card.examples.entity"),
-      floor: localize("ui.panel.config.entity_id_format.card.examples.floor"),
-    })
+    (localize: LocalizeFunc): EntityIdExample[] => [
+      {
+        name: localize(
+          "ui.panel.config.entity_id_format.card.examples.thermostat.name"
+        ),
+        parts: {
+          floor: localize(
+            "ui.panel.config.entity_id_format.card.examples.thermostat.floor"
+          ),
+          area: localize(
+            "ui.panel.config.entity_id_format.card.examples.thermostat.area"
+          ),
+          device: localize(
+            "ui.panel.config.entity_id_format.card.examples.thermostat.device"
+          ),
+          entity: localize(
+            "ui.panel.config.entity_id_format.card.examples.thermostat.entity"
+          ),
+        },
+      },
+      {
+        name: localize(
+          "ui.panel.config.entity_id_format.card.examples.power_strip.name"
+        ),
+        parts: {
+          floor: localize(
+            "ui.panel.config.entity_id_format.card.examples.power_strip.floor"
+          ),
+          area: localize(
+            "ui.panel.config.entity_id_format.card.examples.power_strip.area"
+          ),
+          parent_device: localize(
+            "ui.panel.config.entity_id_format.card.examples.power_strip.parent_device"
+          ),
+          device: localize(
+            "ui.panel.config.entity_id_format.card.examples.power_strip.device"
+          ),
+          entity: localize(
+            "ui.panel.config.entity_id_format.card.examples.power_strip.entity"
+          ),
+        },
+      },
+    ]
   );
 
   private _debouncedUpdatePreview = debounce(
@@ -94,12 +141,16 @@ export class HaConfigEntityIdFormat extends LitElement {
 
   private async _updatePreview() {
     const examples = this._examples(this._localize);
-    const fullName = this._format!.map((part) => examples[part])
-      .filter(Boolean)
-      .join(" ");
     try {
-      const { slug } = await fetchSlug(this._api, fullName);
-      this._preview = slug;
+      this._previews = await Promise.all(
+        examples.map(async (example) => {
+          const fullName = this._format!.map((part) => example.parts[part])
+            .filter(Boolean)
+            .join(" ");
+          const { slug } = await fetchSlug(this._api, fullName);
+          return slug;
+        })
+      );
       this._previewError = false;
     } catch (_err: any) {
       this._previewError = true;
@@ -146,7 +197,6 @@ export class HaConfigEntityIdFormat extends LitElement {
                     )}
                     @value-changed=${this._formatChanged}
                   ></ha-entity-id-format-editor>
-                  ${this._renderPreview()}
                 `
               : nothing
           }
@@ -169,26 +219,80 @@ export class HaConfigEntityIdFormat extends LitElement {
           </ha-progress-button>
         </div>
       </ha-card>
+      ${this._format ? this._renderExamples() : nothing}
     `;
   }
 
-  private _renderPreview() {
+  private _renderExamples() {
+    const examples = this._examples(this._localize);
+    const example = examples[this._selectedExample];
+    const parts = ENTITY_NAME_TYPES.filter((part) => example.parts[part]);
     return html`
-      <div class="preview">
-        <span class="preview-label">
-          ${this._localize("ui.panel.config.entity_id_format.card.preview")}
-        </span>
-        ${
-          this._previewError
-            ? html`<ha-alert alert-type="error">
-                ${this._localize(
-                  "ui.panel.config.entity_id_format.card.preview_error"
-                )}
-              </ha-alert>`
-            : html`<code>${EXAMPLE_DOMAIN}.${this._preview ?? "…"}</code>`
-        }
-      </div>
+      <ha-card
+        outlined
+        .header=${this._localize(
+          "ui.panel.config.entity_id_format.card.preview"
+        )}
+      >
+        <div class="card-content examples">
+          <ha-chip-set>
+            ${examples.map(
+              (item, index) => html`
+                <ha-filter-chip
+                  no-leading-icon
+                  data-index=${index}
+                  .selected=${index === this._selectedExample}
+                  .label=${item.name}
+                  @click=${this._selectExample}
+                ></ha-filter-chip>
+              `
+            )}
+          </ha-chip-set>
+          ${
+            this._previewError
+              ? html`<ha-alert alert-type="error">
+                  ${this._localize(
+                    "ui.panel.config.entity_id_format.card.preview_error"
+                  )}
+                </ha-alert>`
+              : html`<code
+                  >${EXAMPLE_DOMAIN}.${
+                    this._previews?.[this._selectedExample] ?? "…"
+                  }</code
+                >`
+          }
+          <dl>
+            ${parts.map((part) => {
+              const used = this._format!.includes(part);
+              return html`
+                <dt>
+                  ${this._localize(
+                    `ui.components.entity.entity-name-picker.types.${part}`
+                  )}
+                </dt>
+                <dd class=${used ? "" : "unused"}>
+                  ${
+                    used
+                      ? example.parts[part]
+                      : this._localize(
+                          "ui.panel.config.entity_id_format.card.unused_part",
+                          { name: example.parts[part] }
+                        )
+                  }
+                </dd>
+              `;
+            })}
+          </dl>
+        </div>
+      </ha-card>
     `;
+  }
+
+  private _selectExample(ev: Event) {
+    ev.preventDefault();
+    this._selectedExample = Number(
+      (ev.currentTarget as HTMLElement).dataset.index
+    );
   }
 
   private _formatChanged(ev: CustomEvent) {
@@ -225,24 +329,36 @@ export class HaConfigEntityIdFormat extends LitElement {
     haStyle,
     css`
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ha-space-5);
       }
       .description {
         margin-top: 0;
         color: var(--secondary-text-color);
       }
-      .preview {
+      .examples {
         display: flex;
         flex-direction: column;
-        gap: var(--ha-space-1);
-        margin-top: var(--ha-space-5);
+        gap: var(--ha-space-3);
       }
-      .preview-label {
-        font-weight: 500;
+      .examples dl {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        column-gap: var(--ha-space-3);
+        margin: 0;
+        overflow-wrap: anywhere;
       }
-      .preview code {
+      .examples dt,
+      .examples .unused {
+        color: var(--secondary-text-color);
+      }
+      .examples dd {
+        margin: 0;
+      }
+      .examples code {
         display: block;
-        padding: var(--ha-space-3);
+        padding: var(--ha-space-2);
         border-radius: var(--ha-border-radius-md);
         background-color: var(--secondary-background-color);
         font-family: var(--ha-font-family-code);
@@ -252,6 +368,7 @@ export class HaConfigEntityIdFormat extends LitElement {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-block-end: var(--ha-space-4);
       }
     `,
   ];

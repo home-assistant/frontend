@@ -1,7 +1,7 @@
 import type { CallWS, HomeAssistant } from "../types";
 
 export interface ESPHomeEncryptionKey {
-  encryption_key: string;
+  encryption_key: string | null;
 }
 
 export type ESPHomeSerialPortType = "TTL" | "RS232" | "RS485";

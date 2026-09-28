@@ -55,7 +55,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
                 )
               : false),
           data: ev.detail.data,
-          hash: ev.detail.hash,
           returnUrl,
         },
         () => import("../dialogs/more-info/ha-more-info-dialog"),
@@ -66,7 +65,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           createMoreInfoUrl(returnUrl, {
             entityId: ev.detail.entityId,
             view,
-            hash: ev.detail.hash,
           })
         );
       }

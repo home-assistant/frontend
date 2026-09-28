@@ -222,7 +222,7 @@ export class DialogDeviceAddTo extends LitElement {
       haStyleDialog,
       css`
         ha-adaptive-dialog {
-          --dialog-content-padding: 0;
+          --dialog-content-padding: 0 0 var(--ha-space-6);
         }
       `,
     ];

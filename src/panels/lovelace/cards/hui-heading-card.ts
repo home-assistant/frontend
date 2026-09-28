@@ -172,9 +172,11 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                 : nothing
             }
             ${
-              this._config.heading
-                ? html`<p>${this._config.heading}</p>`
-                : nothing
+              this._config.heading && style === "subtitle"
+                ? html`<h3 class="heading">${this._config.heading}</h3>`
+                : this._config.heading
+                  ? html`<h2 class="heading">${this._config.heading}</h2>`
+                  : nothing
             }
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
@@ -214,7 +216,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     ha-card {
       background: none;
       backdrop-filter: none;
-      -webkit-backdrop-filter: none;
       border: none;
       box-shadow: none;
       padding: 0;
@@ -276,9 +277,12 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       display: flex;
       flex: none;
     }
-    .content p {
+    .content .heading {
       margin: 0;
       font-style: normal;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

@@ -39,6 +39,18 @@ export interface HomeFrontendSystemData {
   shortcuts?: ShortcutItem[];
 }
 
+export type SecurityAlertSeverity = "alert" | "warning";
+
+export interface SecurityAlertEntityConfig {
+  entity: string;
+  severity?: SecurityAlertSeverity;
+}
+
+export interface SecurityFrontendSystemData {
+  alert_entities?: SecurityAlertEntityConfig[];
+  favorite_entities?: string[];
+}
+
 export interface EnergyFrontendSystemData {
   // Stable "<view>.<card-type>" keys of energy dashboard cards the user has
   // hidden. An absent key or array means nothing is hidden (all cards visible),
@@ -56,6 +68,7 @@ declare global {
     core: CoreFrontendSystemData;
     home: HomeFrontendSystemData;
     energy: EnergyFrontendSystemData;
+    security: SecurityFrontendSystemData;
   }
 }
 

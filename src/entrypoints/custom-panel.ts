@@ -2,8 +2,6 @@ import type { Connection } from "home-assistant-js-websocket";
 import type { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { loadJS } from "../common/dom/load_resource";
-import { webComponentsSupported } from "../common/feature-detect/support-web-components";
 import { navigate } from "../common/navigate";
 import type { CustomPanelInfo } from "../data/panel_custom";
 import { baseEntrypointStyles } from "../resources/styles";
@@ -11,23 +9,6 @@ import { createCustomPanelElement } from "../util/custom-panel/create-custom-pan
 import { dropRealmCollections } from "../util/custom-panel/drop-realm-collections";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
-
-declare global {
-  interface Window {
-    loadES5Adapter: () => Promise<unknown>;
-  }
-}
-
-let es5Loaded: Promise<unknown> | undefined;
-
-window.loadES5Adapter = () => {
-  if (!es5Loaded) {
-    es5Loaded = loadJS(
-      `${__STATIC_PATH__}polyfills/custom-elements-es5-adapter.js`
-    ).catch(); // Swallow errors as it raises errors on old browsers.
-  }
-  return es5Loaded;
-};
 
 let panelEl: HTMLElement | undefined;
 let initialized = false;
@@ -66,68 +47,49 @@ function initialize(
   document.head.appendChild(style);
 
   const config = panel.config._panel_custom;
-  let start: Promise<unknown> = Promise.resolve();
 
-  if (!webComponentsSupported) {
-    start = start.then(() => {
-      loadJS(`${__STATIC_PATH__}polyfills/webcomponents-bundle.js`);
-      loadJS(`${__STATIC_PATH__}polyfills/lit-polyfill-support.js`);
-    });
-  }
+  loadCustomPanel(config).then(
+    () => {
+      panelEl = createCustomPanelElement(config);
 
-  if (__BUILD__ === "legacy") {
-    start = start.then(() => window.loadES5Adapter());
-  }
-
-  start
-    .then(() => loadCustomPanel(config))
-    // If our element is using es5, let it finish loading that and define element
-    // This avoids elements getting upgraded after being added to the DOM
-    .then(() => es5Loaded || Promise.resolve())
-    .then(
-      () => {
-        panelEl = createCustomPanelElement(config);
-
-        const forwardEvent = (ev) => {
-          if (window.parent.customPanel) {
-            fireEvent(window.parent.customPanel, ev.type, ev.detail);
-          }
-        };
-        panelEl!.addEventListener("hass-toggle-menu", forwardEvent);
-        window.addEventListener("location-changed", (ev: any) => {
-          if (window.parent.customPanel) {
-            window.parent.customPanel.navigate(
-              window.location.pathname,
-              ev.detail
-            );
-          }
-        });
-        setProperties({ panel, ...properties });
-        document.body.appendChild(panelEl!);
-      },
-      (err) => {
-        // eslint-disable-next-line
-        console.error(err, panel);
-        let errorScreen;
-        if (panel.url_path === "hassio") {
-          import("../layouts/supervisor-error-screen");
-          errorScreen = document.createElement(
-            "supervisor-error-screen"
-          ) as any;
-        } else {
-          import("../layouts/hass-error-screen");
-          errorScreen = document.createElement("hass-error-screen") as any;
-          errorScreen.error = `Unable to load the panel source: ${err}.`;
+      const forwardEvent = (ev) => {
+        if (window.parent.customPanel) {
+          fireEvent(window.parent.customPanel, ev.type, ev.detail);
         }
-
-        const errorStyle = document.createElement("style");
-        errorStyle.innerHTML = (baseEntrypointStyles as CSSResult).cssText;
-        document.body.appendChild(errorStyle);
-
-        errorScreen.hass = properties.hass;
-        document.body.appendChild(errorScreen);
+      };
+      panelEl!.addEventListener("hass-toggle-menu", forwardEvent);
+      window.addEventListener("location-changed", (ev: any) => {
+        if (window.parent.customPanel) {
+          window.parent.customPanel.navigate(
+            window.location.pathname,
+            ev.detail
+          );
+        }
+      });
+      setProperties({ panel, ...properties });
+      document.body.appendChild(panelEl!);
+    },
+    (err) => {
+      // eslint-disable-next-line
+      console.error(err, panel);
+      let errorScreen;
+      if (panel.url_path === "hassio") {
+        import("../layouts/supervisor-error-screen");
+        errorScreen = document.createElement("supervisor-error-screen") as any;
+      } else {
+        import("../layouts/hass-error-screen");
+        errorScreen = document.createElement("hass-error-screen") as any;
+        errorScreen.error = `Unable to load the panel source: ${err}.`;
       }
-    );
+
+      const errorStyle = document.createElement("style");
+      errorStyle.innerHTML = (baseEntrypointStyles as CSSResult).cssText;
+      document.body.appendChild(errorStyle);
+
+      errorScreen.hass = properties.hass;
+      document.body.appendChild(errorScreen);
+    }
+  );
 
   document.body.addEventListener("click", (ev) => {
     const href = isNavigationClick(ev);

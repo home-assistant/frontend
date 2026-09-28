@@ -17,7 +17,6 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
 import { apiContext } from "../../../../data/context";
 import type { LightColor, LightEntity } from "../../../../data/light";
@@ -483,8 +482,6 @@ class LightRgbColorPicker extends LitElement {
 
         input[type="color"] {
           appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
           border: none;
           outline: none;
           display: block;

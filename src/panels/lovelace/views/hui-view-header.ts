@@ -16,7 +16,6 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
-import "../components/hui-badge-edit-mode";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
@@ -346,11 +345,18 @@ export class HuiViewHeader extends LitElement {
       width: 100%;
       max-width: 700px;
       display: flex;
+      min-height: calc(
+        var(--ha-font-size-xl) * var(--ha-line-height-condensed) + 4px
+      );
     }
 
     .heading > * {
       width: 100%;
       height: 100%;
+    }
+
+    .container:not(.edit-mode) .heading:has(> *[hidden]) {
+      display: none;
     }
 
     .badges {

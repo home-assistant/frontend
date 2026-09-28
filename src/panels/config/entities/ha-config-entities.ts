@@ -3,7 +3,6 @@ import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
-  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiEye,
@@ -55,7 +54,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -69,7 +67,7 @@ import "../../../components/ha-filter-states";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-sub-menu";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
@@ -906,10 +904,7 @@ export class HaConfigEntities extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.automation.picker.bulk_actions.add_label"
                     )}
-                    <ha-svg-icon
-                      slot="end"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
+                    <ha-icon-next slot="end"></ha-icon-next>
                     ${this._renderLabelItems("submenu")}
                   </ha-dropdown-item>
                   <wa-divider></wa-divider>`
@@ -992,6 +987,7 @@ export class HaConfigEntities extends LitElement {
         }
         <ha-filter-floor-areas
           type="entity"
+          include-disabled-entities
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1001,6 +997,7 @@ export class HaConfigEntities extends LitElement {
         ></ha-filter-floor-areas>
         <ha-filter-devices
           .type=${"entity"}
+          include-disabled-entities
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"

@@ -184,6 +184,29 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageEntityControlled extends EMMessage {
+  type: "entity/controlled";
+  payload: {
+    entity_ids: string[];
+    domain: string;
+    service: string;
+  };
+}
+
+interface EMOutgoingMessageMoreInfoOpened extends EMMessage {
+  type: "more_info/opened";
+  payload: {
+    entity_id: string;
+  };
+}
+
+interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
+  type: "more_info/closed";
+  payload: {
+    entity_id: string;
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -216,6 +239,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageMoreInfoOpened
+  | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
@@ -223,6 +248,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
   | EMOutgoingMessageAddEntityTo
+  | EMOutgoingMessageEntityControlled
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageReloadAndClearCache
   | EMOutgoingMessageAssistSettings;

@@ -3,17 +3,21 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  ACTION_ROW_CONFIG_KEYS,
+  pickRowConfig,
+} from "../../../../data/automation";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
+import {
+  COLLAPSIBLE_ACTION_ELEMENTS,
+  getAutomationActionType,
+} from "../../../../data/action";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
-import {
-  getAutomationActionType,
-  type ActionElement,
-} from "./ha-automation-action-row";
+import type { ActionElement } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action-editor")
 export default class HaAutomationActionEditor extends LitElement {
@@ -107,9 +111,8 @@ export default class HaAutomationActionEditor extends LitElement {
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...(this.action.alias ? { alias: this.action.alias } : {}),
-      ...(this.action.note ? { note: this.action.note } : {}),
       ...ev.detail.value,
+      ...pickRowConfig(this.action, ACTION_ROW_CONFIG_KEYS),
     };
     fireEvent(this, "value-changed", { value });
   }

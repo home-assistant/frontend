@@ -43,6 +43,7 @@ export interface Lovelace {
 
 export interface LovelaceBadge extends HTMLElement {
   hass?: HomeAssistant;
+  preview?: boolean;
   connectedWhileHidden?: boolean;
   setConfig(config: LovelaceBadgeConfig): void;
 }

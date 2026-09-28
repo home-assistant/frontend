@@ -11,8 +11,8 @@ export enum RemoteEntityFeature {
 
 export type RemoteEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
-    current_activity: string | null;
-    activity_list: string[] | null;
+    current_activity?: string | null;
+    activity_list?: string[] | null;
     [key: string]: any;
   };
 };

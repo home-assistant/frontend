@@ -35,6 +35,14 @@ export class HaFilterChip extends FilterChip {
     `,
   ];
 
+  protected getContainerClasses() {
+    const classes = super.getContainerClasses();
+    if (this.noLeadingIcon) {
+      classes["has-icon"] = false;
+    }
+    return classes;
+  }
+
   protected renderLeadingIcon() {
     if (this.noLeadingIcon) {
       // eslint-disable-next-line lit/prefer-nothing

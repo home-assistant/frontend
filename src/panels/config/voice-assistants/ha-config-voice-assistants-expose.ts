@@ -58,7 +58,6 @@ import {
   getAssistantsTableColumn,
 } from "./expose/assistants-table-column";
 import { getAvailableAssistants } from "./expose/available-assistants";
-import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
@@ -395,9 +394,11 @@ export class VoiceAssistantsExpose extends LitElement {
               aliases: entry?.aliases || [],
             };
           }
-          result[entityId].assistants_sortable_key = getAssistantsSortableKey(
-            result[entityId].assistants
-          );
+          if (result[entityId]) {
+            result[entityId].assistants_sortable_key = getAssistantsSortableKey(
+              result[entityId].assistants
+            );
+          }
         });
       }
       return Object.values(result);
@@ -429,9 +430,14 @@ export class VoiceAssistantsExpose extends LitElement {
   };
 
   private async _fetchEntities() {
-    this._extEntities = await getExtendedEntityRegistryEntries(
+    const entries = await getExtendedEntityRegistryEntries(
       this.hass,
       Object.keys(this._entities)
+    );
+    this._extEntities = Object.fromEntries(
+      Object.entries(entries).filter(
+        (entry): entry is [string, ExtEntityRegistryEntry] => entry[1] !== null
+      )
     );
     this._fetchSupportedEntities();
   }
@@ -709,6 +715,9 @@ export class VoiceAssistantsExpose extends LitElement {
       extEntityReg: this._extEntities?.[entityId],
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");
+      },
+      entityEntryUpdated: (entry) => {
+        this._extEntities = { ...this._extEntities, [entityId]: entry };
       },
     });
   }

@@ -3,6 +3,7 @@ import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -22,7 +23,16 @@ import type {
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
+import {
+  contrastingZoneContent,
+  zoneInitials,
+} from "../../../common/map/zone-marker";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -47,6 +57,19 @@ import { configSections } from "../config-sections";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
+interface PendingEdit {
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
+}
+
+// How close the saved value must come to a pending one to count as saved
+const PENDING_TOLERANCE: Record<keyof PendingEdit, number> = {
+  latitude: 1e-7,
+  longitude: 1e-7,
+  radius: 0.5,
+};
+
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,7 +84,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @state() private _stateItems?: HassEntity[];
 
-  @state() private _activeEntry = "";
+  // Values dragged on the map, shown until the saved data reflects them, so
+  // a re-render while the save is in flight does not move the marker back.
+  // A failed save drops them and the marker returns to the saved values.
+  @state() private _pendingEdits: Record<string, PendingEdit> = {};
 
   @state() private _canEditCore = false;
 
@@ -69,15 +95,173 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _regEntities: string[] = [];
 
-  private _getZones = memoizeOne(
-    (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
-      const computedStyles = getComputedStyle(this);
-      const zoneRadiusColor = computedStyles.getPropertyValue("--accent-color");
-      const passiveRadiusColor = computedStyles.getPropertyValue(
-        "--secondary-text-color"
+  // Registry creation order decides the zone colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  // Storage zone id (its unique id) to entity id
+  @state() private _zoneEntityIds: Record<string, string> = {};
+
+  // Bumped on a theme change to recompute the memoized locations
+  @state() private _colorVersion = 0;
+
+  // Home first, then alphabetical, for UI and YAML zones alike
+  private _sortedItems = memoizeOne(
+    (
+      storageItems: Zone[],
+      stateItems: HassEntity[],
+      language: string
+    ): ({ entry: Zone } | { stateObject: HassEntity })[] => {
+      const items = [
+        ...storageItems.map((entry) => ({
+          entry,
+          name: entry.name,
+          home: false,
+        })),
+        ...stateItems.map((stateObject) => ({
+          stateObject,
+          name: stateObject.attributes.friendly_name || stateObject.entity_id,
+          home: stateObject.entity_id === HOME_ZONE_ENTITY_ID,
+        })),
+      ];
+      return items.sort((a, b) =>
+        a.home !== b.home
+          ? a.home
+            ? -1
+            : 1
+          : stringCompare(a.name, b.name, language)
       );
-      const homeRadiusColor =
-        computedStyles.getPropertyValue("--primary-color");
+    }
+  );
+
+  private _renderStorageItem(entry: Zone) {
+    const hass = this.hass;
+    return html`
+      <ha-list-item
+        .entry=${entry}
+        .id=${this.narrow ? entry.id : ""}
+        graphic="avatar"
+        .hasMeta=${!this.narrow}
+        @request-selected=${this._itemClicked}
+        .value=${entry.id}
+      >
+        ${this._renderZoneGraphic(
+          this._zoneEntityIds[entry.id] ?? `zone.${entry.id}`,
+          !!entry.passive,
+          entry.icon,
+          entry.name
+        )}
+        ${entry.name}
+        ${
+          !this.narrow
+            ? html`
+                <div slot="meta">
+                  <ha-icon-button
+                    .id=${entry.id}
+                    .entry=${entry}
+                    @click=${this._openEditEntry}
+                    .path=${mdiPencil}
+                    .label=${hass.localize("ui.common.edit_item", {
+                      name: entry.name,
+                    })}
+                  ></ha-icon-button>
+                </div>
+              `
+            : ""
+        }
+      </ha-list-item>
+    `;
+  }
+
+  private _renderStateItem(stateObject: HassEntity) {
+    const hass = this.hass;
+    return html`
+      <ha-list-item
+        graphic="avatar"
+        .id=${this.narrow ? stateObject.entity_id : ""}
+        .hasMeta=${!this.narrow || stateObject.entity_id !== "zone.home"}
+        .value=${stateObject.entity_id}
+        @request-selected=${this._stateItemClicked}
+        .noEdit=${stateObject.entity_id !== "zone.home" || !this._canEditCore}
+      >
+        ${this._renderZoneGraphic(
+          stateObject.entity_id,
+          !!stateObject.attributes.passive,
+          stateObject.attributes.icon,
+          stateObject.attributes.friendly_name || stateObject.entity_id
+        )}
+        ${stateObject.attributes.friendly_name || stateObject.entity_id}
+        ${
+          this.narrow &&
+          stateObject.entity_id === "zone.home" &&
+          !this._canEditCore
+            ? nothing
+            : html`<ha-icon-button
+                  .id="zone-${slugify(stateObject.entity_id)}"
+                  .entityId=${stateObject.entity_id}
+                  .noEdit=${
+                    stateObject.entity_id !== "zone.home" || !this._canEditCore
+                  }
+                  .path=${
+                    stateObject.entity_id === "zone.home" && this._canEditCore
+                      ? mdiPencil
+                      : mdiPencilOff
+                  }
+                  .label=${hass.localize("ui.common.edit_item", {
+                    name: hass.config.location_name,
+                  })}
+                  @click=${this._editHomeZone}
+                  slot="meta"
+                ></ha-icon-button>
+                <ha-tooltip
+                  .for="zone-${slugify(stateObject.entity_id)}"
+                  placement="left"
+                  .disabled=${stateObject.entity_id === "zone.home"}
+                  hoist
+                >
+                  ${hass.localize("ui.panel.config.zone.configured_in_yaml")}
+                </ha-tooltip>`
+        }
+      </ha-list-item>
+    `;
+  }
+
+  // The zone as it looks on the map: its color, with its icon or initials
+  private _renderZoneGraphic(
+    entityId: string,
+    passive: boolean,
+    icon: string | undefined,
+    name: string
+  ) {
+    const color = zoneColor(
+      entityId,
+      passive,
+      this._entityReg,
+      getComputedStyle(this)
+    );
+    return html`
+      <div
+        slot="graphic"
+        class="zone-avatar"
+        style=${styleMap({
+          background: color,
+          color: contrastingZoneContent(color),
+        })}
+      >
+        ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : zoneInitials(name)}
+      </div>
+    `;
+  }
+
+  private _getZones = memoizeOne(
+    (
+      storageItems: Zone[],
+      stateItems: HassEntity[],
+      zoneEntityIds: Record<string, string>,
+      pendingEdits: Record<string, PendingEdit>,
+      entityReg: EntityRegistryEntry[],
+      _colorVersion: number
+    ): MarkerLocation[] => {
+      const computedStyles = getComputedStyle(this);
 
       const stateLocations: MarkerLocation[] = stateItems.map(
         (entityState) => ({
@@ -87,21 +271,28 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           latitude: entityState.attributes.latitude,
           longitude: entityState.attributes.longitude,
           radius: entityState.attributes.radius,
-          radius_color:
-            entityState.entity_id === "zone.home"
-              ? homeRadiusColor
-              : entityState.attributes.passive
-                ? passiveRadiusColor
-                : zoneRadiusColor,
+          ...pendingEdits[entityState.entity_id],
+          radius_color: zoneColor(
+            entityState.entity_id,
+            !!entityState.attributes.passive,
+            entityReg,
+            computedStyles
+          ),
           location_editable:
-            entityState.entity_id === "zone.home" && this._canEditCore,
+            entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
           radius_editable:
-            entityState.entity_id === "zone.home" && this._canEditCore,
+            entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
         })
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
-        radius_color: zone.passive ? passiveRadiusColor : zoneRadiusColor,
+        ...pendingEdits[zone.id],
+        radius_color: zoneColor(
+          zoneEntityIds[zone.id] ?? `zone.${zone.id}`,
+          !!zone.passive,
+          entityReg,
+          computedStyles
+        ),
         location_editable: true,
         radius_editable: true,
       }));
@@ -112,8 +303,17 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
         this._regEntities = entities.map(
           (registryEntry) => registryEntry.entity_id
+        );
+        this._zoneEntityIds = Object.fromEntries(
+          entities
+            .filter((registryEntry) => registryEntry.platform === "zone")
+            .map((registryEntry) => [
+              registryEntry.unique_id,
+              registryEntry.entity_id,
+            ])
         );
         this._filterStates();
       }),
@@ -142,102 +342,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           `
         : html`
             <ha-list>
-              ${this._storageItems.map(
-                (entry) => html`
-                  <ha-list-item
-                    .entry=${entry}
-                    .id=${this.narrow ? entry.id : ""}
-                    graphic="icon"
-                    .hasMeta=${!this.narrow}
-                    @request-selected=${this._itemClicked}
-                    .value=${entry.id}
-                    ?selected=${this._activeEntry === entry.id}
-                  >
-                    <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
-                    ${entry.name}
-                    ${
-                      !this.narrow
-                        ? html`
-                            <div slot="meta">
-                              <ha-icon-button
-                                .id=${entry.id}
-                                .entry=${entry}
-                                @click=${this._openEditEntry}
-                                .path=${mdiPencil}
-                                .label=${hass.localize("ui.common.edit_item", {
-                                  name: entry.name,
-                                })}
-                              ></ha-icon-button>
-                            </div>
-                          `
-                        : ""
-                    }
-                  </ha-list-item>
-                `
-              )}
-              ${this._stateItems.map(
-                (stateObject) => html`
-                  <ha-list-item
-                    graphic="icon"
-                    .id=${this.narrow ? stateObject.entity_id : ""}
-                    .hasMeta=${
-                      !this.narrow || stateObject.entity_id !== "zone.home"
-                    }
-                    .value=${stateObject.entity_id}
-                    @request-selected=${this._stateItemClicked}
-                    ?selected=${this._activeEntry === stateObject.entity_id}
-                    .noEdit=${
-                      stateObject.entity_id !== "zone.home" ||
-                      !this._canEditCore
-                    }
-                  >
-                    <ha-icon
-                      .icon=${stateObject.attributes.icon}
-                      slot="graphic"
-                    >
-                    </ha-icon>
-
-                    ${
-                      stateObject.attributes.friendly_name ||
-                      stateObject.entity_id
-                    }
-                    ${
-                      this.narrow &&
-                      stateObject.entity_id === "zone.home" &&
-                      !this._canEditCore
-                        ? nothing
-                        : html`<ha-icon-button
-                              .id="zone-${slugify(stateObject.entity_id)}"
-                              .entityId=${stateObject.entity_id}
-                              .noEdit=${
-                                stateObject.entity_id !== "zone.home" ||
-                                !this._canEditCore
-                              }
-                              .path=${
-                                stateObject.entity_id === "zone.home" &&
-                                this._canEditCore
-                                  ? mdiPencil
-                                  : mdiPencilOff
-                              }
-                              .label=${hass.localize("ui.common.edit_item", {
-                                name: hass.config.location_name,
-                              })}
-                              @click=${this._editHomeZone}
-                              slot="meta"
-                            ></ha-icon-button>
-                            <ha-tooltip
-                              .for="zone-${slugify(stateObject.entity_id)}"
-                              placement="left"
-                              .disabled=${stateObject.entity_id === "zone.home"}
-                              hoist
-                            >
-                              ${hass.localize(
-                                "ui.panel.config.zone.configured_in_yaml"
-                              )}
-                            </ha-tooltip>`
-                    }
-                  </ha-list-item>
-                `
+              ${this._sortedItems(
+                this._storageItems,
+                this._stateItems,
+                hass.locale.language
+              ).map((item) =>
+                "entry" in item
+                  ? this._renderStorageItem(item.entry)
+                  : this._renderStateItem(item.stateObject)
               )}
             </ha-list>
           `;
@@ -269,11 +381,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   <ha-locations-editor
                     .locations=${this._getZones(
                       this._storageItems,
-                      this._stateItems
+                      this._stateItems,
+                      this._zoneEntityIds,
+                      this._pendingEdits,
+                      this._entityReg,
+                      this._colorVersion
                     )}
                     @location-updated=${this._locationUpdated}
                     @radius-updated=${this._radiusUpdated}
-                    @marker-clicked=${this._markerClicked}
                   ></ha-locations-editor>
                   <div class="overflow">${listBox}</div>
                 </div>
@@ -300,7 +415,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
     if (
       !this.route.path.startsWith("/edit/") ||
       !this._stateItems ||
@@ -318,10 +434,98 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   public willUpdate(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
+    super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
       this._getStates(oldHass);
+    }
+    // Zone colors come from theme variables
+    if (oldHass && oldHass.themes !== this.hass.themes) {
+      this._colorVersion++;
+    }
+    this._settlePendingEdits();
+  }
+
+  // A pending edit is done once the saved data carries its values
+  private _settlePendingEdits() {
+    for (const [id, pending] of Object.entries(this._pendingEdits)) {
+      const saved =
+        this._storageItems?.find((zone) => zone.id === id) ??
+        this.hass.states[id]?.attributes;
+      if (
+        saved &&
+        (Object.keys(pending) as (keyof PendingEdit)[]).every(
+          (key) =>
+            Math.abs((saved[key] as number) - pending[key]!) <
+            PENDING_TOLERANCE[key]
+        )
+      ) {
+        this._dropPendingEdit(id);
+      }
+    }
+  }
+
+  private _dropPendingEdit(id: string) {
+    const { [id]: _done, ...rest } = this._pendingEdits;
+    this._pendingEdits = rest;
+  }
+
+  // Saves for one zone run in order, so each sees the entry the previous one
+  // produced and a failure only drops the values its own request carried
+  private _saveQueue: Record<string, Promise<void>> = {};
+
+  private _saveEdit(id: string, pending: PendingEdit): Promise<void> {
+    this._pendingEdits = {
+      ...this._pendingEdits,
+      [id]: { ...this._pendingEdits[id], ...pending },
+    };
+    const save = (this._saveQueue[id] ?? Promise.resolve())
+      .then(() => this._performSave(id, pending))
+      .finally(() => {
+        // Only the last save in the chain removes the queue entry
+        if (this._saveQueue[id] === save) {
+          delete this._saveQueue[id];
+        }
+      });
+    this._saveQueue[id] = save;
+    return save;
+  }
+
+  private async _performSave(id: string, pending: PendingEdit) {
+    try {
+      if (id === HOME_ZONE_ENTITY_ID) {
+        await saveCoreConfig(this.hass, pending);
+        return;
+      }
+      const entry = this._storageItems!.find((item) => item.id === id);
+      if (entry) {
+        await this._updateEntry(entry, pending);
+      }
+    } catch (err: any) {
+      // The saved values are the truth again for what this request changed;
+      // a later edit of other values stays pending for its own save
+      this._dropPendingValues(id, pending);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
+        text: err.message,
+      });
+    }
+  }
+
+  private _dropPendingValues(id: string, failed: PendingEdit) {
+    const current = this._pendingEdits[id];
+    if (!current) {
+      return;
+    }
+    const rest = Object.fromEntries(
+      Object.entries(current).filter(
+        ([key, value]) => failed[key as keyof PendingEdit] !== value
+      )
+    ) as PendingEdit;
+    if (Object.keys(rest).length) {
+      this._pendingEdits = { ...this._pendingEdits, [id]: rest };
+    } else {
+      this._dropPendingEdit(id);
     }
   }
 
@@ -364,44 +568,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _locationUpdated(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
-    if (ev.detail.id === "zone.home" && this._canEditCore) {
-      await saveCoreConfig(this.hass, {
-        latitude: ev.detail.location[0],
-        longitude: ev.detail.location[1],
-      });
-      return;
-    }
-    const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
-    if (!entry) {
-      return;
-    }
-    this._updateEntry(entry, {
+  private _locationUpdated(ev: CustomEvent) {
+    this._saveEdit(ev.detail.id, {
       latitude: ev.detail.location[0],
       longitude: ev.detail.location[1],
     });
   }
 
-  private async _radiusUpdated(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
-    if (ev.detail.id === "zone.home" && this._canEditCore) {
-      await saveCoreConfig(this.hass, {
-        radius: Math.round(ev.detail.radius),
-      });
-      return;
-    }
-    const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
-    if (!entry) {
-      return;
-    }
-    this._updateEntry(entry, {
-      radius: ev.detail.radius,
+  private _radiusUpdated(ev: CustomEvent) {
+    this._saveEdit(ev.detail.id, {
+      radius:
+        ev.detail.id === HOME_ZONE_ENTITY_ID
+          ? Math.round(ev.detail.radius)
+          : ev.detail.radius,
     });
-  }
-
-  private _markerClicked(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
   }
 
   private _createZone() {
@@ -417,9 +597,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       this._openEditEntry(ev);
       return;
     }
-    const entryId: string = (ev.currentTarget! as any).value;
-    this._zoomZone(entryId);
-    this._activeEntry = entryId;
+    this._zoomZone((ev.currentTarget! as any).value);
   }
 
   private _stateItemClicked(ev: CustomEvent) {
@@ -429,13 +607,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
     const entryId: string = (ev.currentTarget! as any).value;
 
-    if (this.narrow && entryId === "zone.home") {
+    if (this.narrow && entryId === HOME_ZONE_ENTITY_ID) {
       this._editHomeZone(ev);
       return;
     }
 
     this._zoomZone(entryId);
-    this._activeEntry = entryId;
   }
 
   private async _zoomZone(id: string) {
@@ -455,6 +632,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _editHomeZone(ev) {
+    // Keep the click from selecting the list item, which zooms the map
+    ev.stopPropagation();
     if (ev.currentTarget.noEdit) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
@@ -476,7 +655,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow) {
       return;
     }
-    this._activeEntry = created.id;
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
@@ -488,7 +666,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       longitude: values.longitude,
       radius: values.radius,
     });
-    this._zoomZone("zone.home");
+    this._zoomZone(HOME_ZONE_ENTITY_ID);
   }
 
   private async _updateEntry(
@@ -503,7 +681,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow || !fitMap) {
       return;
     }
-    this._activeEntry = entry.id;
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(entry.id);
@@ -562,6 +739,19 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ha-icon,
     ha-icon-button:not([disabled]) {
       color: var(--secondary-text-color);
+    }
+    .zone-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--ha-font-weight-medium);
+    }
+    .zone-avatar ha-icon {
+      color: inherit;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
     ha-icon-button {
       --mdc-theme-text-disabled-on-light: var(--disabled-text-color);

@@ -1,9 +1,9 @@
+import { consume, type ContextType } from "@lit/context";
 import { genClientId } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
 import "../components/ha-button";
 import "../components/ha-form/ha-form";
@@ -12,6 +12,7 @@ import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../components/ha-form/types";
+import { internationalizationContext } from "../data/context";
 import { onboardUserStep } from "../data/onboarding";
 import type { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
@@ -43,9 +44,9 @@ const CREATE_USER_SCHEMA: HaFormSchema[] = [
 
 @customElement("onboarding-create-user")
 class OnboardingCreateUser extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
-  @property() public language!: string;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _loading = false;
 
@@ -59,8 +60,8 @@ class OnboardingCreateUser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h1>${this.localize("ui.panel.page-onboarding.user.header")}</h1>
-      <p>${this.localize("ui.panel.page-onboarding.user.intro")}</p>
+      <h1>${this._i18n.localize("ui.panel.page-onboarding.user.header")}</h1>
+      <p>${this._i18n.localize("ui.panel.page-onboarding.user.intro")}</p>
 
       ${
         this._errorMsg
@@ -69,8 +70,8 @@ class OnboardingCreateUser extends LitElement {
       }
 
       <ha-form
-        .computeLabel=${this._computeLabel(this.localize)}
-        .computeHelper=${this._computeHelper(this.localize)}
+        .computeLabel=${this._computeLabel(this._i18n.localize)}
+        .computeHelper=${this._computeHelper(this._i18n.localize)}
         .data=${this._newUser}
         .disabled=${this._loading}
         .error=${this._formError}
@@ -89,7 +90,7 @@ class OnboardingCreateUser extends LitElement {
             this._newUser.password !== this._newUser.password_confirm
           }
         >
-          ${this.localize("ui.panel.page-onboarding.user.create_account")}
+          ${this._i18n.localize("ui.panel.page-onboarding.user.create_account")}
         </ha-button>
       </div>
     `;
@@ -156,7 +157,7 @@ class OnboardingCreateUser extends LitElement {
     this._formError.password_confirm =
       this._newUser.password_confirm &&
       this._newUser.password !== this._newUser.password_confirm
-        ? this.localize(
+        ? this._i18n.localize(
             "ui.panel.page-onboarding.user.error.password_not_match"
           )
         : "";
@@ -180,7 +181,7 @@ class OnboardingCreateUser extends LitElement {
   private _checkUsername(): void {
     const old = this._formError.username;
     if (CHECK_USERNAME_REGEX.test(this._newUser.username as string)) {
-      this._formError.username = this.localize(
+      this._formError.username = this._i18n.localize(
         "ui.panel.page-onboarding.user.error.username_not_normalized"
       );
     } else {
@@ -204,7 +205,7 @@ class OnboardingCreateUser extends LitElement {
         name: String(this._newUser.name),
         username: String(this._newUser.username),
         password: String(this._newUser.password),
-        language: this.language,
+        language: this._i18n.language,
       });
 
       fireEvent(this, "onboarding-step", {

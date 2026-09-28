@@ -4,9 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 import {
+  getImageEntityIdFromMediaSourceContentId,
   isMediaSourceContentId,
-  resolveMediaSource,
+  resolveMediaSourceWithCache,
 } from "../../../data/media_source";
+import { computeImageUrl } from "../../../data/image";
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {
@@ -17,24 +19,67 @@ export class HUIViewBackground extends LitElement {
 
   @state({ attribute: false }) resolvedImage?: string;
 
+  private _entityId: string | undefined = undefined;
+
   protected render() {
     return nothing;
   }
 
-  private _fetchMedia() {
-    const backgroundImage =
-      typeof this.background === "string"
-        ? this.background
-        : typeof this.background?.image === "object"
-          ? this.background.image.media_content_id
-          : this.background?.image;
+  private _getBackgroundImage(
+    background?: string | LovelaceViewBackgroundConfig
+  ): string | undefined {
+    if (typeof background === "string") {
+      return background;
+    }
+    if (typeof background?.image === "object") {
+      return background.image.media_content_id;
+    }
+    return background?.image;
+  }
 
-    if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
-      resolveMediaSource(this.hass, backgroundImage).then((result) => {
-        this.resolvedImage = result.url;
-      });
-    } else {
+  private async _fetchMedia() {
+    const backgroundImage = this._getBackgroundImage(this.background);
+
+    if (!backgroundImage || !isMediaSourceContentId(backgroundImage)) {
+      this._entityId = undefined;
       this.resolvedImage = undefined;
+      return;
+    }
+
+    let resolvedUrl: string | undefined;
+    this._entityId = getImageEntityIdFromMediaSourceContentId(backgroundImage);
+    if (this._entityId) {
+      const stateObj = this.hass.states[this._entityId];
+      if (stateObj) {
+        const url = computeImageUrl(stateObj);
+        if (url) {
+          const image = new Image();
+          image.src = this.hass.hassUrl(url);
+          try {
+            await image.decode();
+            const newStateObj = this.hass.states[this._entityId];
+            // Discard if stale
+            if (url !== computeImageUrl(newStateObj)) {
+              return;
+            }
+            resolvedUrl = url;
+          } catch {
+            resolvedUrl = undefined;
+          }
+        }
+      }
+    } else {
+      try {
+        resolvedUrl = (
+          await resolveMediaSourceWithCache(this.hass, backgroundImage)
+        ).url;
+      } catch {
+        resolvedUrl = undefined;
+      }
+    }
+    // Discard if the background changed while resolving
+    if (this._getBackgroundImage(this.background) === backgroundImage) {
+      this.resolvedImage = resolvedUrl;
     }
   }
 
@@ -73,10 +118,7 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      const image =
-        typeof background.image === "object"
-          ? background.image.media_content_id || ""
-          : background.image;
+      const image = this._getBackgroundImage(background) || "";
       if (isMediaSourceContentId(image) && !this.resolvedImage) {
         return null;
       }
@@ -115,6 +157,13 @@ export class HUIViewBackground extends LitElement {
         this.hass.themes !== oldHass.themes ||
         this.hass.selectedTheme !== oldHass.selectedTheme
       ) {
+        applyTheme = true;
+      }
+      if (
+        this._entityId &&
+        this.hass.states[this._entityId] !== oldHass?.states[this._entityId]
+      ) {
+        this._fetchMedia();
         applyTheme = true;
       }
     }

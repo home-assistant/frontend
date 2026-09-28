@@ -6,7 +6,6 @@ export interface CustomPanelConfig {
   trust_external: boolean;
   js_url?: string;
   module_url?: string;
-  html_url?: string;
   // When true, the panel takes care of the safe-area insets itself (e.g. it
   // consumes the `--safe-area-inset-*` variables or draws into the safe area on
   // purpose). Home Assistant then skips adding its own safe-area padding around

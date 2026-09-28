@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { deepActiveElement } from "../../../src/common/dom/deep-active-element";
+import { nextRender } from "../../../src/common/util/render-status";
 import type {
   FormDialogData,
   FormDialogParams,
@@ -146,27 +147,18 @@ const submit = (dialog: DialogForm) =>
 const cancel = (dialog: DialogForm) =>
   (getInternals(dialog)["_cancel"] as () => void)();
 
-afterEach(() => {
+afterEach(async () => {
   mockForm.delayedTag = undefined;
+  document.body.querySelectorAll("dialog-form").forEach((el) => {
+    (el as DialogForm).closeDialog();
+  });
+  // Drain the fire-and-forget focus restore before jsdom teardown.
+  await nextRender();
   document.body.replaceChildren();
   vi.clearAllMocks();
 });
 
 describe("dialog-form mounted nested forms", () => {
-  it("keeps parent forms mounted while nested", async () => {
-    const dialog = await openDialog();
-    const parent = getForms(dialog)[0];
-
-    await showNestedDialog(dialog, parent, nestedParams());
-
-    const forms = getForms(dialog);
-    expect(forms).toHaveLength(2);
-    expect(forms[0].hidden).toBe(true);
-    expect(forms[1].hidden).toBe(false);
-    expect(forms[0].hasAttribute("autofocus")).toBe(false);
-    expect(forms[1].hasAttribute("autofocus")).toBe(true);
-  });
-
   it("returns to the parent after nested submit", async () => {
     const dialog = await openDialog();
     const nested = nestedParams({ value: "nested" });

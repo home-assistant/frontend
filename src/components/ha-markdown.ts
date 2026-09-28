@@ -53,9 +53,7 @@ export class HaMarkdown extends LitElement {
       display: block;
     }
     ha-markdown-element {
-      -ms-user-select: text;
-      -webkit-user-select: text;
-      -moz-user-select: text;
+      user-select: text;
     }
     ha-markdown-element > *:first-child {
       margin-top: 0;

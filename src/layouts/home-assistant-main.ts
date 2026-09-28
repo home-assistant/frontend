@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
-import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
 import { narrowViewportContext } from "../data/context";
@@ -141,10 +140,9 @@ export class HomeAssistantMain extends LitElement {
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
-    toggleAttribute(this, "expanded", this.hass.dockedSidebar === "docked");
+    this.toggleAttribute("expanded", this.hass.dockedSidebar === "docked");
 
-    toggleAttribute(
-      this,
+    this.toggleAttribute(
       "modal",
       this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode
     );

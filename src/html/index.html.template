@@ -155,7 +155,10 @@
     <% if (obj.hassUrl === "") { %>
       <script>
         {%- for extra_module in extra_modules -%}
-        import("{{ extra_module }}");
+        // Caught, or the boot recovery guard reads it as a stale build.
+        import("{{ extra_module }}").catch(function (err) {
+          console.error("Failed to load extra module {{ extra_module }}", err);
+        });
         {%- endfor -%}
       </script>
     <% } %>

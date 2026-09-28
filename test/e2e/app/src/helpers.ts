@@ -27,6 +27,51 @@ export async function goToPanel(page: Page, path: string) {
   ]);
 }
 
+export async function openSystemLogDetail(page: Page, message: string) {
+  await goToPanel(page, "/?scenario=system-log-reporting#/config/logs");
+  await page
+    .locator("system-log-card ha-list-item")
+    .filter({ hasText: message })
+    .click();
+  const dialog = page.locator("dialog-system-log-detail");
+
+  await expect(dialog.locator(".contents")).toContainText(message);
+
+  return dialog;
+}
+
+// The hass-more-info event is one-shot: if it lands before the shell's
+// listener is attached it is silently dropped. Re-dispatching is idempotent
+// (showDialog just resets the dialog to the requested view), so poll the
+// dispatch until the requested view actually renders.
+export async function openMoreInfoDialog(
+  page: Page,
+  entityId: string,
+  view?: string,
+  readyElement = "ha-more-info-info"
+) {
+  const dialog = page.locator("ha-more-info-dialog");
+  await expect(async () => {
+    await page.evaluate(
+      (detail) => {
+        document.querySelector("ha-test")?.dispatchEvent(
+          new CustomEvent("hass-more-info", {
+            detail,
+            bubbles: true,
+            composed: true,
+          })
+        );
+      },
+      view ? { entityId, view } : { entityId }
+    );
+    await expect(dialog).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(dialog.locator(readyElement)).toBeAttached({
+      timeout: QUICK_TIMEOUT,
+    });
+  }).toPass({ timeout: SHELL_TIMEOUT });
+  return dialog;
+}
+
 export const appMain = (page: Page) => page.locator(APP_MAIN_SELECTOR);
 
 export const appSidebar = (page: Page) => page.locator(APP_SIDEBAR_SELECTOR);

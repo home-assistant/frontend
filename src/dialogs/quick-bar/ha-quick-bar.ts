@@ -8,10 +8,12 @@ import memoizeOne from "memoize-one";
 import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import "../../components/entity/state-badge";
 import "../../components/ha-adaptive-dialog";
+import "../../components/ha-app-icon";
 import "../../components/ha-combo-box-item";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon";
@@ -58,7 +60,6 @@ import {
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
-import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "../restart/automation-restart-status";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
@@ -295,7 +296,7 @@ export class QuickBar extends LitElement {
                   >
                     ${this.hass.localize("ui.tips.keyboard_shortcut")}
                   </button>`,
-                  modifier: isMac ? "⌘" : "Ctrl",
+                  modifier: ctrlOrCmdLabel(this.hass.localize),
                 })}</ha-tip
               >`
             : nothing
@@ -310,6 +311,7 @@ export class QuickBar extends LitElement {
     }
 
     const iconPath = item.icon_path || mdiDevices;
+    const iconColor = "iconColor" in item ? item.iconColor : undefined;
 
     return html`
       <ha-combo-box-item
@@ -334,44 +336,65 @@ export class QuickBar extends LitElement {
                     brand-fallback
                   ></ha-domain-icon>
                 `
-              : "image" in item && item.image
+              : "app" in item && item.app
                 ? html`
-                    <img
+                    <ha-app-icon
                       slot="start"
-                      alt=${item.primary ?? "Unknown"}
-                      .src=${item.image}
+                      .slug=${item.app.slug}
+                      .hasIcon=${item.app.icon}
+                      .alt=${item.primary ?? "Unknown"}
+                      class=${iconColor ? "colored" : nothing}
                       style=${
-                        "iconColor" in item && item.iconColor
-                          ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
-                          : ""
+                        iconColor
+                          ? `--app-icon-background-color: ${iconColor}`
+                          : nothing
                       }
-                    />
+                    >
+                      ${
+                        item.icon
+                          ? html`<ha-icon .icon=${item.icon}></ha-icon>`
+                          : html`<ha-svg-icon .path=${iconPath}></ha-svg-icon>`
+                      }
+                    </ha-app-icon>
                   `
-                : item.icon
-                  ? html`<ha-icon
-                      style="margin: var(--ha-space-1);"
-                      slot="start"
-                      .icon=${item.icon}
-                    ></ha-icon>`
-                  : "iconColor" in item && item.iconColor
-                    ? html`
-                        <div
-                          slot="start"
-                          style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
-                        >
+                : "image" in item && item.image
+                  ? html`
+                      <img
+                        slot="start"
+                        alt=${item.primary ?? "Unknown"}
+                        .src=${item.image}
+                        style=${
+                          "iconColor" in item && item.iconColor
+                            ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                            : ""
+                        }
+                      />
+                    `
+                  : item.icon
+                    ? html`<ha-icon
+                        style="margin: var(--ha-space-1);"
+                        slot="start"
+                        .icon=${item.icon}
+                      ></ha-icon>`
+                    : "iconColor" in item && item.iconColor
+                      ? html`
+                          <div
+                            slot="start"
+                            style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
+                          >
+                            <ha-svg-icon
+                              style="color: var(--white-color); --mdc-icon-size: 24px;"
+                              .path=${iconPath}
+                            ></ha-svg-icon>
+                          </div>
+                        `
+                      : html`
                           <ha-svg-icon
-                            style="color: var(--white-color); --mdc-icon-size: 24px;"
+                            style="margin: var(--ha-space-1);"
+                            slot="start"
                             .path=${iconPath}
                           ></ha-svg-icon>
-                        </div>
-                      `
-                    : html`
-                        <ha-svg-icon
-                          style="margin: var(--ha-space-1);"
-                          slot="start"
-                          .path=${iconPath}
-                        ></ha-svg-icon>
-                      `
+                        `
         }
         <span slot="headline">${item.primary}</span>
         ${

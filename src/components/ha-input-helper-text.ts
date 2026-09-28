@@ -1,11 +1,9 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-input-helper-text")
 class InputHelperText extends LitElement {
-  @property({ type: Boolean, reflect: true }) disabled = false;
-
   protected render(): TemplateResult {
     return html`<slot></slot>`;
   }
@@ -24,9 +22,6 @@ class InputHelperText extends LitElement {
         0.0333333333em
       );
       line-height: normal;
-    }
-    :host([disabled]) {
-      color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
     }
   `;
 }

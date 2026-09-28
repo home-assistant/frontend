@@ -154,6 +154,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Boolean }) public empty = false;
 
+  /**
+   * Show a loading state instead of the empty message until data is ready.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public loading = false;
+
   @property({ attribute: false }) public route!: Route;
 
   /**
@@ -492,7 +498,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this.empty
+          this.empty && !this.loading
             ? html`<div class="center">
                 <slot name="empty">${this.noDataText}</slot>
               </div>`
@@ -514,6 +520,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .narrow=${this.narrow}
                   .columns=${this.columns}
                   .data=${this.data}
+                  .loading=${this.loading}
                   .noDataText=${this.noDataText}
                   .filter=${this.filter}
                   .selectable=${this._selectMode}
@@ -877,20 +884,32 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .narrow-header-row {
+      --header-row-inset-start: var(--safe-area-inset-left, 0px);
+      --header-row-inset-end: var(--safe-area-inset-right, 0px);
       display: flex;
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0 16px;
+      padding: 0;
+      padding-inline-start: calc(16px + var(--header-row-inset-start));
       box-sizing: border-box;
       overflow-x: scroll;
-      -ms-overflow-style: none;
       scrollbar-width: none;
+    }
+
+    .narrow-header-row:dir(rtl) {
+      --header-row-inset-start: var(--safe-area-inset-right, 0px);
+      --header-row-inset-end: var(--safe-area-inset-left, 0px);
+    }
+
+    .narrow-header-row::after {
+      content: "";
+      flex: 0 0 var(--header-row-inset-end);
     }
 
     .narrow-header-row .flex {
       flex: 1;
-      margin-left: -16px;
+      margin-inline-start: -16px;
     }
 
     .selection-bar {

@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
@@ -11,6 +12,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-spinner";
+import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import "../../../components/progress/ha-progress-ring";
@@ -152,9 +154,13 @@ class HaConfigUpdates extends LitElement {
     `;
   }
 
-  private _openMoreInfo(ev: MouseEvent): void {
+  private _openMoreInfo(
+    ev: HASSDomCurrentTargetEvent<
+      HaListItemButton & { entity_id: UpdateEntity["entity_id"] }
+    >
+  ): void {
     fireEvent(this, "hass-more-info", {
-      entityId: (ev.currentTarget as any).entity_id,
+      entityId: ev.currentTarget.entity_id,
     });
   }
 

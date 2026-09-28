@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { generateStateHistoryChartLineData } from "../../src/components/chart/state-history-chart-line-data";
 import { computeHistory } from "../../src/data/history";
 import { createMockComputedStyle } from "../fixtures/computed-style";
@@ -33,23 +33,21 @@ const base = {
 } as const;
 
 describe("generateStateHistoryChartLineData", () => {
-  bench("mixed medium (10k states)", () => {
-    generateStateHistoryChartLineData({ ...base, data: medium });
+  test("mixed medium (10k states)", async ({ bench }) => {
+    await bench("mixed medium (10k states)", () => {
+      generateStateHistoryChartLineData({ ...base, data: medium });
+    }).run();
   });
 
-  bench(
-    "mixed large (100k states)",
-    () => {
+  test("mixed large (100k states)", async ({ bench }) => {
+    await bench("mixed large (100k states)", () => {
       generateStateHistoryChartLineData({ ...base, data: large });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "climate entity (20k states)",
-    () => {
+  test("climate entity (20k states)", async ({ bench }) => {
+    await bench("climate entity (20k states)", () => {
       generateStateHistoryChartLineData({ ...base, data: climate });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

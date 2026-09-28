@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,7 +7,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
-import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -19,23 +19,23 @@ import type {
   LocalizeKeys,
 } from "../../../common/translations/localize";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
-import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
-import "../../../components/ha-list-item";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/item/ha-row-item";
+import "../../../components/list/ha-list-base";
 import {
   CAMERA_ORIENTATIONS,
   CameraEntityFeature,
@@ -45,16 +45,16 @@ import {
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
-import {
-  dirtyStateContext,
-  type DirtyStateContext,
-} from "../../../data/context/dirty-state";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteConfigEntry } from "../../../data/config_entries";
 import {
   createConfigFlow,
   handleConfigFlowStep,
 } from "../../../data/config_flow";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
@@ -128,6 +128,7 @@ export const OVERRIDE_DEVICE_CLASSES = {
     [
       "smoke",
       "safety",
+      "glass_break",
       "sound",
       "problem",
       "tamper",
@@ -626,7 +627,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 ${
                   SWITCH_AS_DOMAINS_INVERT.includes(this._switchAsDomain)
                     ? html`
-                        <ha-md-list-item>
+                        <ha-row-item>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.dialogs.entity_registry.editor.invert.label"
@@ -642,7 +643,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                             .checked=${!!this.entry.options?.switch_as_x?.invert}
                             @change=${this._switchAsInvertChanged}
                           ></ha-switch>
-                        </ha-md-list-item>
+                        </ha-row-item>
                       `
                     : nothing
                 } `
@@ -959,7 +960,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${
         this._cameraPrefs
           ? html`
-              <ha-md-list-item>
+              <ha-row-item>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.stream.preload_stream"
@@ -976,8 +977,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   .disabled=${this.disabled}
                   @change=${this._handleCameraPrefsChanged}
                 ></ha-switch>
-              </ha-md-list-item>
-              <ha-md-list-item>
+              </ha-row-item>
+              <ha-row-item>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.stream.stream_orientation"
@@ -1005,103 +1006,97 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   .value=${this._cameraPrefs.orientation.toString()}
                 >
                 </ha-select>
-              </ha-md-list-item>
+              </ha-row-item>
             `
           : nothing
       }
-      ${
-        this.helperConfigEntry &&
-        this.helperConfigEntry.supports_options &&
-        this.helperConfigEntry.domain !== "switch_as_x"
-          ? html`
-              <ha-list-item
-                class="menu-item"
-                twoline
-                hasMeta
-                .disabled=${this.disabled}
-                @click=${this._showOptionsFlow}
-              >
-                <span
-                  >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.configure_state",
-                    {
-                      integration: domainToName(
-                        this.hass.localize,
-                        this.helperConfigEntry.domain
-                      ),
-                    }
-                  )}</span
+      <ha-list-base>
+        ${
+          this.helperConfigEntry &&
+          this.helperConfigEntry.supports_options &&
+          this.helperConfigEntry.domain !== "switch_as_x"
+            ? html`
+                <ha-list-item-button
+                  class="menu-item"
+                  .disabled=${this.disabled}
+                  @click=${this._showOptionsFlow}
                 >
-                <span slot="secondary"
-                  >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.configure_state_secondary",
-                    {
-                      integration: domainToName(
-                        this.hass.localize,
-                        this.helperConfigEntry.domain
-                      ),
-                    }
-                  )}</span
-                >
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-            `
-          : nothing
-      }
-
-      <ha-list-item
-        class="menu-item"
-        twoline
-        hasMeta
-        .disabled=${this.disabled}
-        @click=${this._handleVoiceAssistantsClicked}
-      >
-        <span
-          >${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.voice_assistants"
-          )}</span
+                  <span slot="headline"
+                    >${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.configure_state",
+                      {
+                        integration: domainToName(
+                          this.hass.localize,
+                          this.helperConfigEntry.domain
+                        ),
+                      }
+                    )}</span
+                  >
+                  <span slot="supporting-text"
+                    >${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.configure_state_secondary",
+                      {
+                        integration: domainToName(
+                          this.hass.localize,
+                          this.helperConfigEntry.domain
+                        ),
+                      }
+                    )}</span
+                  >
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>
+              `
+            : nothing
+        }
+        <ha-list-item-button
+          class="menu-item"
+          .disabled=${this.disabled}
+          @click=${this._handleVoiceAssistantsClicked}
         >
-        <span slot="secondary">
-          ${
-            this.entry.aliases.filter((a) => a !== null).length
-              ? this.entry.aliases
-                  .filter((a): a is string => a !== null)
-                  .join(", ")
-              : this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.no_aliases"
-                )
-          }
-        </span>
-        <ha-icon-next slot="meta"></ha-icon-next>
-      </ha-list-item>
-
-      ${
-        domain === "vacuum" &&
-        stateObj &&
-        supportsFeature(stateObj, VacuumEntityFeature.CLEAN_AREA)
-          ? html`
-              <ha-list-item
-                class="menu-item"
-                twoline
-                hasMeta
-                .disabled=${this.disabled}
-                @click=${this._handleVacuumSegmentMappingClicked}
-              >
-                <span
-                  >${this.hass.localize(
-                    "ui.dialogs.vacuum_segment_mapping.title"
-                  )}</span
+          <span slot="headline"
+            >${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.voice_assistants"
+            )}</span
+          >
+          <span slot="supporting-text">
+            ${
+              this.entry.aliases.filter((a) => a !== null).length
+                ? this.entry.aliases
+                    .filter((a): a is string => a !== null)
+                    .join(", ")
+                : this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.no_aliases"
+                  )
+            }
+          </span>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+        ${
+          domain === "vacuum" &&
+          stateObj &&
+          supportsFeature(stateObj, VacuumEntityFeature.CLEAN_AREA)
+            ? html`
+                <ha-list-item-button
+                  class="menu-item"
+                  .disabled=${this.disabled}
+                  @click=${this._handleVacuumSegmentMappingClicked}
                 >
-                <span slot="secondary">
-                  ${this.hass.localize(
-                    "ui.dialogs.vacuum_segment_mapping.description"
-                  )}
-                </span>
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-            `
-          : nothing
-      }
+                  <span slot="headline"
+                    >${this.hass.localize(
+                      "ui.dialogs.vacuum_segment_mapping.title"
+                    )}</span
+                  >
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.dialogs.vacuum_segment_mapping.description"
+                    )}
+                  </span>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>
+              `
+            : nothing
+        }
+      </ha-list-base>
       ${
         this._disabledBy &&
         this._disabledBy !== "user" &&
@@ -1119,7 +1114,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           : nothing
       }
 
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(
             "ui.dialogs.entity_registry.editor.enabled_label"
@@ -1142,7 +1137,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           }
           @change=${this._enabledChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
 
       ${
         this._hiddenBy && this._hiddenBy !== "user"
@@ -1159,7 +1154,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           : nothing
       }
 
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(
             "ui.dialogs.entity_registry.editor.visible_label"
@@ -1176,12 +1171,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
           .disabled=${this.disabled || this._disabledBy}
           @change=${this._hiddenChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
 
       ${
         this.entry.device_id
           ? html`
-              <ha-md-list-item>
+              <ha-row-item>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.use_device_area"
@@ -1217,7 +1212,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   .disabled=${this.disabled}
                   @change=${this._useDeviceAreaChanged}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-row-item>
               ${
                 this._areaId || this._noDeviceArea
                   ? html`<ha-area-picker
@@ -1810,7 +1805,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-start: 0;
         }
 
-        ha-md-list-item ha-select {
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
+        }
+        ha-row-item ha-select {
           width: auto;
         }
         ha-input,
@@ -1822,11 +1820,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
           width: 100%;
         }
         .menu-item {
+          --ha-row-item-padding-inline: 0;
           border-radius: var(--ha-border-radius-sm);
           margin-top: 3px;
           margin-bottom: 3px;
           overflow: hidden;
-          --mdc-list-side-padding: 13px;
         }
         .entityId {
           direction: ltr;

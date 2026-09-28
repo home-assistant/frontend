@@ -18,16 +18,17 @@ import {
   calcDate,
   calcDateDifferenceProperty,
   calcDateProperty,
+  shiftToServerTimeZone,
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
-import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
+  StatisticPeriod,
   Statistics,
   StatisticsMetaData,
   StatisticsUnitConfiguration,
@@ -243,8 +244,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  affected_entities: [string, unknown][];
-  translation_placeholders: Record<string, string>;
+  affected_entities: [string, string | number | null][];
+  translation_placeholders: Record<string, string> | null;
 }
 
 export interface EnergyPreferencesValidation {
@@ -326,12 +327,6 @@ export const computeEnergyLabel = (
 ): string => {
   if (customName) {
     return customName;
-  }
-
-  const stateObj = hass.states[statisticId];
-
-  if (stateObj) {
-    return hass.formatEntityName(stateObj, DEFAULT_ENTITY_NAME);
   }
 
   return getStatisticLabel(hass, statisticId, statisticsMetaData);
@@ -496,6 +491,21 @@ export const enum CompareMode {
   YOY = "yoy",
 }
 
+// Core groups days and months by the server's calendar. Ask for the picked
+// dates there, or a browser time zone ahead or behind adds a day at one end.
+const getStatisticsRange = (
+  hass: HomeAssistant,
+  period: StatisticPeriod,
+  start: Date,
+  end?: Date
+): [Date, Date | undefined] =>
+  period === "5minute" || period === "hour"
+    ? [start, end]
+    : [
+        shiftToServerTimeZone(start, hass.locale, hass.config),
+        end && shiftToServerTimeZone(end, hass.locale, hass.config),
+      ];
+
 const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
@@ -543,6 +553,13 @@ const getEnergyData = async (
 
   const period = getSuggestedPeriod(start, end);
   const finePeriod = getSuggestedPeriod(start, end, true);
+  const [periodStart, periodEnd] = getStatisticsRange(hass, period, start, end);
+  const [finePeriodStart, finePeriodEnd] = getStatisticsRange(
+    hass,
+    finePeriod,
+    start,
+    end
+  );
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -573,14 +590,26 @@ const getEnergyData = async (
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
-    ? fetchStatistics(hass!, start, end, energyStatIds, period, energyUnits, [
-        "change",
-      ])
+    ? fetchStatistics(
+        hass!,
+        periodStart,
+        periodEnd,
+        energyStatIds,
+        period,
+        energyUnits,
+        ["change"]
+      )
     : {};
   const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
-    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
-        "mean",
-      ])
+    ? fetchStatistics(
+        hass!,
+        finePeriodStart,
+        finePeriodEnd,
+        powerStatIds,
+        finePeriod,
+        powerUnits,
+        ["mean"]
+      )
     : {};
   // If power stats 5 minute data is selected, then also fetch hourly data which
   // will be used to back-fill any missing data points in the 5 minute data when
@@ -593,14 +622,22 @@ const getEnergyData = async (
       : {};
 
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
-    ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
-        "change",
-      ])
+    ? fetchStatistics(
+        hass!,
+        periodStart,
+        periodEnd,
+        waterStatIds,
+        period,
+        waterUnits,
+        ["change"]
+      )
     : {};
 
   let statsCompare;
   let startCompare;
   let endCompare;
+  let periodStartCompare;
+  let periodEndCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
@@ -647,11 +684,17 @@ const getEnergyData = async (
       startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
       endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
+    [periodStartCompare, periodEndCompare] = getStatisticsRange(
+      hass,
+      period,
+      startCompare,
+      endCompare
+    );
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
-        startCompare,
-        endCompare,
+        periodStartCompare,
+        periodEndCompare,
         energyStatIds,
         period,
         energyUnits,
@@ -661,8 +704,8 @@ const getEnergyData = async (
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         hass!,
-        startCompare,
-        endCompare,
+        periodStartCompare,
+        periodEndCompare,
         waterStatIds,
         period,
         waterUnits,
@@ -677,19 +720,19 @@ const getEnergyData = async (
   if (co2SignalEntity !== undefined) {
     _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,
-      start,
+      periodStart,
       consumptionStatIDs,
       co2SignalEntity,
-      end,
+      periodEnd,
       period
     );
     if (compare) {
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
         hass!,
-        startCompare,
+        periodStartCompare,
         consumptionStatIDs,
         co2SignalEntity,
-        endCompare,
+        periodEndCompare,
         period
       );
     }
@@ -1553,7 +1596,8 @@ export const formatConsumptionShort = (
   hass: HomeAssistant,
   consumption: number | null,
   unit: string,
-  targetUnit?: string
+  targetUnit?: string,
+  displayPrecision?: number
 ): string => {
   const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
   let pickedUnit = unit;
@@ -1583,10 +1627,19 @@ export const formatConsumptionShort = (
     pickedUnit = units[unitIndex];
   }
   return (
-    formatNumber(val, hass.locale, {
-      maximumFractionDigits:
-        Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
-    }) +
+    formatNumber(
+      val,
+      hass.locale,
+      displayPrecision !== undefined && pickedUnit === unit
+        ? {
+            minimumFractionDigits: displayPrecision,
+            maximumFractionDigits: displayPrecision,
+          }
+        : {
+            maximumFractionDigits:
+              Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
+          }
+    ) +
     " " +
     pickedUnit
   );
@@ -1909,20 +1962,13 @@ export const downloadEnergyData = (
   const device_consumption_water = energyData.prefs.device_consumption_water;
   const stats = energyData.state.stats;
 
-  const timeSet = new Set<number>();
-  Object.values(stats).forEach((stat) => {
-    stat.forEach((datapoint) => {
-      timeSet.add(datapoint.start);
-    });
-  });
-  const times = Array.from(timeSet).sort();
-
-  const headers =
-    "entity_id,type,unit," +
-    times.map((t) => new Date(t).toISOString()).join(",") +
-    "\n";
-  const csv: string[] = [];
-  csv[0] = headers;
+  interface CsvRow {
+    id: string;
+    type: string;
+    unit: string;
+    data: StatisticValue[];
+  }
+  const rows: CsvRow[] = [];
 
   const processCsvRow = function (
     id: string,
@@ -1930,20 +1976,7 @@ export const downloadEnergyData = (
     unit: string,
     data: StatisticValue[]
   ) {
-    let n = 0;
-    const row: string[] = [];
-    row.push(id);
-    row.push(type);
-    row.push(unit.normalize("NFKD"));
-    times.forEach((t) => {
-      if (n < data.length && data[n].start === t) {
-        row.push((data[n].change ?? "").toString());
-        n++;
-      } else {
-        row.push("");
-      }
-    });
-    csv.push(row.join(",") + "\n");
+    rows.push({ id, type, unit, data });
   };
 
   const processStat = function (stat: string, type: string, unit: string) {
@@ -2189,6 +2222,33 @@ export const downloadEnergyData = (
       consumption.used_total
     );
   }
+
+  const timeSet = new Set<number>();
+  rows.forEach((row) => {
+    row.data.forEach((datapoint) => {
+      timeSet.add(datapoint.start);
+    });
+  });
+  const times = Array.from(timeSet).sort();
+
+  const csv: string[] = [
+    "entity_id,type,unit," +
+      times.map((t) => new Date(t).toISOString()).join(",") +
+      "\n",
+  ];
+  rows.forEach(({ id, type, unit, data }) => {
+    let n = 0;
+    const row: string[] = [id, type, unit.normalize("NFKD")];
+    times.forEach((t) => {
+      if (n < data.length && data[n].start === t) {
+        row.push((data[n].change ?? "").toString());
+        n++;
+      } else {
+        row.push("");
+      }
+    });
+    csv.push(row.join(",") + "\n");
+  });
 
   const blob = new Blob(csv, {
     type: "text/csv",

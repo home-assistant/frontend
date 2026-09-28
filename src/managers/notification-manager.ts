@@ -300,7 +300,16 @@ class NotificationManager extends LitElement {
       border: none;
       overflow: visible;
       background: transparent;
-      transform: translateX(calc(-50% * var(--scale-direction)));
+      transform: translateX(
+        calc(
+          -50% * var(--scale-direction) +
+            var(--safe-area-offset-left, 0px) - var(
+              --safe-area-offset-right,
+              0px
+            )
+        )
+      );
+      max-width: var(--safe-width);
       display: flex;
       flex-direction: column;
       align-items: center;

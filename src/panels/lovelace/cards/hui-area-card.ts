@@ -25,8 +25,6 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-container";

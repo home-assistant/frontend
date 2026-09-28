@@ -10,7 +10,6 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-state-icon";
 import { apiContext } from "../../../data/context";
 import type { LockEntity } from "../../../data/lock";

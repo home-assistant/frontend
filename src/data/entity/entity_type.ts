@@ -1,6 +1,7 @@
 import { computeDomain } from "../../common/entity/compute_domain";
 import type { HomeAssistant } from "../../types";
-import { DOMAIN_DEVICE_CLASSES, NO_DEVICE_CLASS } from "./device_class";
+import { DOMAIN_DEVICE_CLASSES } from "../device_classes";
+import { NO_DEVICE_CLASS } from "./device_class";
 
 const SEPARATOR = "/";
 

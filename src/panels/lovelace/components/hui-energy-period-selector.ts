@@ -841,7 +841,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     ha-ripple {
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
-    :host([narrow]) ha-date-range-picker {
+    :host([narrow]) ha-date-range-picker::part(range-input) {
       --ha-icon-button-size: 24px;
       --mdc-icon-size: 16px;
     }
@@ -852,10 +852,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       right: 0;
       bottom: 0;
       z-index: var(--dialog-z-index, 8);
-      -webkit-backdrop-filter: var(
-        --ha-dialog-scrim-backdrop-filter,
-        var(--dialog-backdrop-filter)
-      );
       backdrop-filter: var(
         --ha-dialog-scrim-backdrop-filter,
         var(--dialog-backdrop-filter)

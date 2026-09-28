@@ -192,6 +192,7 @@ export const colorStyles = css`
     --state-binary_sensor-battery-on-color: var(--red-color);
     --state-binary_sensor-carbon_monoxide-on-color: var(--red-color);
     --state-binary_sensor-gas-on-color: var(--red-color);
+    --state-binary_sensor-glass_break-on-color: var(--red-color);
     --state-binary_sensor-heat-on-color: var(--red-color);
     --state-binary_sensor-lock-on-color: var(--red-color);
     --state-binary_sensor-moisture-on-color: var(--red-color);

@@ -131,6 +131,10 @@ class MoreInfoFan extends LitElement {
       return nothing;
     }
 
+    const supportsOnOff =
+      supportsFeature(this.stateObj, FanEntityFeature.TURN_ON) ||
+      supportsFeature(this.stateObj, FanEntityFeature.TURN_OFF);
+
     const supportsSpeed = supportsFeature(
       this.stateObj,
       FanEntityFeature.SET_SPEED
@@ -174,21 +178,15 @@ class MoreInfoFan extends LitElement {
               `
         }
         ${
-          supportSpeedPercentage
+          supportSpeedPercentage && supportsOnOff
             ? html`
                 <div class="buttons">
-                  ${
-                    supportSpeedPercentage
-                      ? html`
-                          <ha-outlined-icon-button
-                            .disabled=${this.stateObj.state === UNAVAILABLE}
-                            @click=${this._toggle}
-                          >
-                            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                          </ha-outlined-icon-button>
-                        `
-                      : nothing
-                  }
+                  <ha-outlined-icon-button
+                    .disabled=${this.stateObj.state === UNAVAILABLE}
+                    @click=${this._toggle}
+                  >
+                    <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                  </ha-outlined-icon-button>
                 </div>
               `
             : nothing

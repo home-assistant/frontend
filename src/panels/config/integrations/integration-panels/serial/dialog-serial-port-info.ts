@@ -1,11 +1,13 @@
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-adaptive-dialog";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/item/ha-list-item-value";
+import "../../../../../components/list/ha-grouped-list";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import type { SerialPortInfoDialogParams } from "./show-dialog-serial-port-info";
@@ -85,64 +87,34 @@ class DialogSerialPortInfo extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-adaptive-dialog
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.serial.port_information"
         )}
         @closed=${this._dialogClosed}
       >
-        <table>
-          <tbody>
-            ${this._fields().map(
-              ([label, value]) => html`
-                <tr>
-                  <th>${label}</th>
-                  <td>${value}</td>
-                </tr>
-              `
-            )}
-          </tbody>
-        </table>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._copyToClipboard}
-          >
-            ${this.hass.localize("ui.common.copy")}
-          </ha-button>
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            ${this.hass.localize("ui.common.close")}
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-dialog>
+        <ha-icon-button
+          slot="headerActionItems"
+          .label=${this.hass.localize("ui.common.copy")}
+          .path=${mdiContentCopy}
+          @click=${this._copyToClipboard}
+        ></ha-icon-button>
+        <ha-grouped-list>
+          ${this._fields().map(
+            ([label, value]) =>
+              html`<ha-list-item-value .label=${label}
+                >${value}</ha-list-item-value
+              >`
+          )}
+        </ha-grouped-list>
+      </ha-adaptive-dialog>
     `;
   }
 
   static readonly styles: CSSResultGroup = css`
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      text-align: start;
-      vertical-align: top;
-      white-space: nowrap;
-      padding-inline-end: var(--ha-space-4);
-      color: var(--secondary-text-color);
-      font-weight: var(--ha-font-weight-normal);
-    }
-
-    td {
-      width: 100%;
-      word-break: break-all;
-    }
-
-    tr:not(:first-child) th,
-    tr:not(:first-child) td {
-      padding-top: var(--ha-space-2);
+    ha-grouped-list {
+      --ha-list-item-value-max-width: 80%;
     }
   `;
 }

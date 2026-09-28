@@ -6,7 +6,6 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
 import { fetchSupportPackage } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
@@ -151,7 +150,6 @@ export class DialogSupportPackage extends LitElement {
     }
 
     table > tbody > tr {
-      -webkit-transition: background-color 0.25s ease;
       transition: background-color 0.25s ease;
     }
 

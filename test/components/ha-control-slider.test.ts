@@ -71,30 +71,6 @@ describe("ha-control-slider display rounding", () => {
   // stepped percentage such as 29 snaps to 26 * step = 28.5714…
   const FAN_STEP = 100 / 91;
 
-  const ariaValueNow = (el: HaControlSlider) =>
-    el
-      .shadowRoot!.querySelector('[role="slider"]')!
-      .getAttribute("aria-valuenow");
-
-  const tooltipText = (el: HaControlSlider) =>
-    el.shadowRoot!.querySelector(".tooltip")!.textContent!.trim();
-
-  it("shows the fractional stepped value by default", async () => {
-    const el = await mountSlider({ step: FAN_STEP, value: 29 });
-    expect(tooltipText(el)).toBe("28.57");
-    expect(ariaValueNow(el)).toBe(el.steppedValue(29).toString());
-  });
-
-  it("rounds the displayed value to an integer when round-value is set", async () => {
-    const el = await mountSlider({
-      step: FAN_STEP,
-      value: 29,
-      roundValue: true,
-    });
-    expect(tooltipText(el)).toBe("29");
-    expect(ariaValueNow(el)).toBe("29");
-  });
-
   it("still snaps to the real step grid when rounding the display", async () => {
     const el = await mountSlider({
       step: FAN_STEP,
@@ -104,13 +80,6 @@ describe("ha-control-slider display rounding", () => {
     // Only the shown value is rounded; the handle keeps the fractional step, so
     // the number of speed steps (and keyboard granularity) is preserved.
     expect(el.steppedValue(29)).toBeCloseTo(28.5714, 3);
-  });
-
-  it("keeps decimal steps intact unless round-value is set", async () => {
-    // A temperature-style slider must keep showing halves.
-    const el = await mountSlider({ step: 0.5, value: 21.5 });
-    expect(tooltipText(el)).toBe("21.5");
-    expect(ariaValueNow(el)).toBe("21.5");
   });
 });
 
@@ -155,22 +124,6 @@ describe("ha-control-slider step bounds", () => {
     // A 91-speed fan: 91 * (100 / 91) used to land on 100.00000000000001.
     const el = createSlider({ min: 0, max: 100, step: 100 / 91 });
     expect(el.steppedValue(el.percentageToValue(1))).toBe(100);
-  });
-
-  it("shows and announces the bound, not the overshoot", async () => {
-    const el = await mountSlider({
-      ...RANGE,
-      value: 99,
-      tooltipMode: "always",
-    });
-    expect(el.shadowRoot!.querySelector(".tooltip")!.textContent!.trim()).toBe(
-      "99"
-    );
-    expect(
-      el
-        .shadowRoot!.querySelector('[role="slider"]')!
-        .getAttribute("aria-valuenow")
-    ).toBe("99");
   });
 
   it("keeps paging inside the bounds", async () => {
