@@ -1,4 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
@@ -9,7 +9,7 @@ import {
 import "../../layouts/hass-error-screen";
 import type { Redirect, Redirects } from "../my/ha-panel-my";
 import type { HomeAssistant, Route } from "../../types";
-import type { MarketplaceData } from "./data/marketplace";
+import type { MarketplaceData } from "../../data/marketplace/marketplace";
 
 const repositoryRedirect: Redirect = {
   redirect: "/marketplace/repository",
@@ -35,7 +35,7 @@ class HaMarketplaceMyRedirect extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _error?: TemplateResult | string;
+  @state() private _error?: string;
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
@@ -92,7 +92,7 @@ class HaMarketplaceMyRedirect extends LitElement {
     if (!redirect.params && !Object.keys(params).length) {
       return "";
     }
-    const resultParams = {};
+    const resultParams: Record<string, string> = {};
     for (const [key, type] of Object.entries(redirect.params || {})) {
       if (!params[key] && type.endsWith("?")) {
         continue;

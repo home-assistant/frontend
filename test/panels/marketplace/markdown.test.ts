@@ -1,0 +1,167 @@
+import { describe, expect, it } from "vitest";
+import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
+import { markdownWithRepositoryContext } from "../../../src/panels/marketplace/tools/markdown";
+
+const repository = {
+  id: "42",
+  full_name: "owner/repo",
+  available_version: "v1.0.0",
+  default_branch: "main",
+} as RepositoryInfo;
+
+describe("markdownWithRepositoryContext", () => {
+  it("serves files linked on GitHub from raw", () => {
+    expect(
+      markdownWithRepositoryContext(
+        "![card](https://github.com/owner/repo/blob/main/card.png)"
+      )
+    ).toBe(
+      "![card](https://raw.githubusercontent.com/owner/repo/main/card.png)"
+    );
+  });
+
+  it("keeps GitHub links to markdown documents", () => {
+    const input = "[guide](https://github.com/owner/repo/blob/main/GUIDE.md)";
+
+    expect(markdownWithRepositoryContext(input)).toBe(input);
+  });
+
+  it("points relative documents at GitHub for the available version", () => {
+    expect(
+      markdownWithRepositoryContext("[setup](docs/setup.md)", repository)
+    ).toBe("[setup](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)");
+  });
+
+  it("points relative files at raw for the available version", () => {
+    expect(
+      markdownWithRepositoryContext("![card](/images/card.png)", repository)
+    ).toBe(
+      "![card](https://raw.githubusercontent.com/owner/repo/v1.0.0/images/card.png)"
+    );
+  });
+
+  it("uses the default branch for a repository without releases", () => {
+    expect(
+      markdownWithRepositoryContext("![card](card.png)", {
+        ...repository,
+        available_version: "",
+      })
+    ).toBe(
+      "![card](https://raw.githubusercontent.com/owner/repo/main/card.png)"
+    );
+  });
+
+  it("keeps anchors on the repository page", () => {
+    expect(
+      markdownWithRepositoryContext("[install](#installation)", repository)
+    ).toBe("[install](/marketplace/repository/42#installation)");
+  });
+
+  it("links issue references to the repository", () => {
+    expect(markdownWithRepositoryContext("Fixed in #12.", repository)).toBe(
+      "Fixed in [#12](https://github.com/owner/repo/issues/12)."
+    );
+  });
+
+  it("links issue references to another repository", () => {
+    expect(
+      markdownWithRepositoryContext("See other/project#3.", repository)
+    ).toBe("See [other/project#3](https://github.com/other/project/issues/3).");
+  });
+
+  it("keeps absolute links", () => {
+    const input = "[site](https://example.com/page)";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps relative links without a repository", () => {
+    const input = "[setup](docs/setup.md) and #12";
+
+    expect(markdownWithRepositoryContext(input)).toBe(input);
+  });
+
+  it("keeps fenced code blocks as written", () => {
+    const input = [
+      "```",
+      "color: #123456;",
+      "[setup](docs/setup.md)",
+      "```",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps tilde fenced code blocks as written", () => {
+    const input = ["~~~", "Fixed in #12.", "~~~"].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps fenced code blocks with a language tag as written", () => {
+    const input = ["```yaml", "color: '#123456'", "```"].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps a longer fence open past a shorter one", () => {
+    const input = ["````", "```", "#12", "```", "````"].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps an unclosed fence as code to the end", () => {
+    const input = ["Before #1.", "```", "#12", "[setup](docs/setup.md)"].join(
+      "\n"
+    );
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      [
+        "Before [#1](https://github.com/owner/repo/issues/1).",
+        "```",
+        "#12",
+        "[setup](docs/setup.md)",
+      ].join("\n")
+    );
+  });
+
+  it("rewrites around fenced code blocks", () => {
+    const input = ["See #1.", "```", "#12", "```", "See #2."].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      [
+        "See [#1](https://github.com/owner/repo/issues/1).",
+        "```",
+        "#12",
+        "```",
+        "See [#2](https://github.com/owner/repo/issues/2).",
+      ].join("\n")
+    );
+  });
+
+  it("keeps inline code spans as written", () => {
+    expect(
+      markdownWithRepositoryContext("Use `#12` as in #12.", repository)
+    ).toBe("Use `#12` as in [#12](https://github.com/owner/repo/issues/12).");
+  });
+
+  it("keeps inline code spans with longer backtick runs as written", () => {
+    expect(
+      markdownWithRepositoryContext("Use `` a`#12 `` here.", repository)
+    ).toBe("Use `` a`#12 `` here.");
+  });
+
+  it("rewrites links with inline code in the text", () => {
+    expect(
+      markdownWithRepositoryContext("[`setup`](docs/setup.md)", repository)
+    ).toBe(
+      "[`setup`](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
+    );
+  });
+
+  it("rewrites after an unmatched backtick", () => {
+    expect(markdownWithRepositoryContext("A ` and #12.", repository)).toBe(
+      "A ` and [#12](https://github.com/owner/repo/issues/12)."
+    );
+  });
+});

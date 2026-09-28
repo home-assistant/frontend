@@ -5,11 +5,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
 import type {
   DataTableColumnContainer,
-  DataTableRowData,
   SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -23,22 +23,31 @@ import type {
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
+import type { HaIconButton } from "../../../components/ha-icon-button";
 
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
-import type { MarketplaceData } from "../data/marketplace";
-import type { RepositoryBase, RepositoryType } from "../data/repository";
-import { repositoriesClearNew } from "../data/websocket";
+import type { MarketplaceData } from "../../../data/marketplace/marketplace";
+import type {
+  RepositoryBase,
+  RepositoryType,
+} from "../../../data/marketplace/repository";
+import { repositoriesClearNew } from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
-import { marketplaceDocumentationUrl } from "../tools/documentation";
+import {
+  DEFAULT_GROUP_COLUMN,
+  filterRepositories,
+  repositoryGroupOrder,
+  STATUS_ORDER,
+} from "./dashboard-repositories";
+import { documentationUrl } from "../../../util/documentation-url";
 import { typeIcon } from "../tools/type-icon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
@@ -47,14 +56,6 @@ const defaultKeyData = {
   filterable: true,
   hidden: true,
 };
-
-const STATUS_ORDER = [
-  "pending-restart",
-  "pending-upgrade",
-  "installed",
-  "new",
-  "default",
-] as const satisfies readonly RepositoryBase["status"][];
 
 // The backend reports why the Marketplace is disabled, mapped so it can be shown
 // as a translated sentence.
@@ -171,9 +172,12 @@ export class HaMarketplaceDashboard extends LitElement {
         has-filters
         .filters=${this._activeFilters?.length}
         .noDataText=${this.hass.localize("ui.panel.marketplace.dashboard.no_data")}
-        .initialGroupColumn=${this._activeGrouping || "translated_status"}
+        .initialGroupColumn=${this._activeGrouping || DEFAULT_GROUP_COLUMN}
         .initialCollapsedGroups=${this._activeCollapsed || []}
-        .groupOrder=${this._groupOrder(this.hass.localize, this._activeGrouping)}
+        .groupOrder=${this._groupOrder(
+          this.hass.localize,
+          this._activeGrouping || DEFAULT_GROUP_COLUMN
+        )}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._orderTableColumns}
         .hiddenColumns=${this._hiddenTableColumns}
@@ -261,53 +265,7 @@ export class HaMarketplaceDashboard extends LitElement {
       </ha-dropdown>`;
   }
 
-  private _filterRepositories = memoize(
-    (
-      repositories: RepositoryBase[],
-      localizeFunc: LocalizeFunc,
-      activeFilters?: string[]
-    ): DataTableRowData[] =>
-      repositories
-        .filter((repository) => {
-          if (
-            activeFilters?.filter((filter) => filter.startsWith("status_"))
-              .length &&
-            !activeFilters.includes(`status_${repository.status}`)
-          ) {
-            return false;
-          }
-          if (
-            activeFilters?.filter((filter) => filter.startsWith("type_"))
-              .length &&
-            !activeFilters.includes(`type_${repository.category}`)
-          ) {
-            return false;
-          }
-          return true;
-        })
-        .sort((a, b) => {
-          if (a.installed !== b.installed) {
-            return a.installed ? -1 : 1;
-          }
-          if (a.new !== b.new) {
-            return a.new ? -1 : 1;
-          }
-          if (a.stars !== b.stars) {
-            return a.stars > b.stars ? -1 : 1;
-          }
-          return a.name.localeCompare(b.name);
-        })
-        .map((repository) => ({
-          ...repository,
-          translated_status:
-            localizeFunc(
-              `ui.panel.marketplace.repository_status.${repository.status}`
-            ) || repository.status,
-          translated_category: localizeFunc(
-            `ui.panel.marketplace.common.type.${repository.category}`
-          ),
-        }))
-  );
+  private _filterRepositories = memoize(filterRepositories);
 
   private _columns = memoize(
     (
@@ -438,7 +396,7 @@ export class HaMarketplaceDashboard extends LitElement {
         type: "overflow-menu",
         template: (repository: RepositoryBase) => html`
           <ha-icon-button
-            .repository=${repository}
+            data-repository-id=${repository.id}
             .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._showOverflowRepositoryMenu}
@@ -448,14 +406,19 @@ export class HaMarketplaceDashboard extends LitElement {
     })
   );
 
-  private _showOverflowRepositoryMenu = (ev) => {
-    if (this._repositoryOverflowMenu.anchorElement === ev.target) {
+  private _showOverflowRepositoryMenu = (
+    ev: HASSDomCurrentTargetEvent<HaIconButton>
+  ) => {
+    const button = ev.currentTarget;
+    if (this._repositoryOverflowMenu.anchorElement === button) {
       this._repositoryOverflowMenu.anchorElement = undefined;
       return;
     }
     this._openingOverflowMenu = true;
-    this._repositoryOverflowMenu.anchorElement = ev.target;
-    this._overflowMenuRepository = ev.target.repository;
+    this._repositoryOverflowMenu.anchorElement = button;
+    this._overflowMenuRepository = this.marketplace.repositories.find(
+      (repository) => repository.id === button.dataset.repositoryId
+    );
     this._repositoryOverflowMenu.open = true;
   };
 
@@ -500,7 +463,11 @@ export class HaMarketplaceDashboard extends LitElement {
   };
 
   private _openDocumentation() {
-    window.open(marketplaceDocumentationUrl(), "_blank", "noreferrer=true");
+    window.open(
+      documentationUrl(this.hass, "/integrations/marketplace"),
+      "_blank",
+      "noreferrer=true"
+    );
   }
 
   private _showCustomRepositories() {
@@ -537,14 +504,7 @@ export class HaMarketplaceDashboard extends LitElement {
     }
   }
 
-  private _groupOrder = memoize(
-    (localize: LocalizeFunc, activeGrouping: string | undefined) =>
-      activeGrouping === "translated_status"
-        ? STATUS_ORDER.map((filter) =>
-            localize(`ui.panel.marketplace.repository_status.${filter}`)
-          )
-        : undefined
-  );
+  private _groupOrder = memoize(repositoryGroupOrder);
 
   private _filterSchema = memoize(
     (localizeFunc: LocalizeFunc, types: string[]) =>
@@ -642,7 +602,6 @@ export class HaMarketplaceDashboard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
       marketplaceStyles,
       css`
         .repository-icon {

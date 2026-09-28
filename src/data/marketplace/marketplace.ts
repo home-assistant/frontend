@@ -1,9 +1,10 @@
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import type { RepositoryBase, RepositoryType } from "./repository";
 
 declare global {
   interface HASSDomEvents {
-    // Fired when the repository list changed and has to be refetched.
+    // Fired when the Marketplace information or the repository list changed
+    // and has to be refetched.
     "marketplace-refresh": undefined;
   }
 
@@ -14,13 +15,15 @@ declare global {
 
 export interface MarketplaceInfo {
   categories: RepositoryType[];
-  country: string;
   debug: boolean;
   disabled_reason: string | null;
+  github_connected: boolean;
   lovelace_mode: "yaml" | "storage";
   stage: "startup" | "waiting" | "running" | "setup";
   startup: boolean;
   version: string;
+  warning_accepted: boolean;
+  warning_reminder_due: boolean;
 }
 
 export interface MarketplaceData {

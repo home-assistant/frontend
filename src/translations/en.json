@@ -2768,7 +2768,7 @@
           },
           "marketplace": {
             "main": "Marketplace",
-            "secondary": "Download integrations, dashboard resources and themes shared by the community"
+            "secondary": "Download integrations, dashboard resources, and themes shared by the community"
           },
           "dashboards": {
             "main": "Dashboards",
@@ -12117,7 +12117,24 @@
         "error_no_data": "You need to select some data sources first."
       },
       "marketplace": {
-        "not_loaded": "The Marketplace has not been set up yet. Add it from the integrations page in Settings.",
+        "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
+        "load_failed": "The Marketplace could not load its data: {error}",
+        "warning": {
+          "title": "Before you use the Marketplace",
+          "intro": "Everything in the Marketplace is made and published by the community. What you download runs inside Home Assistant, with full access to your home, your data, and the system Home Assistant runs on.",
+          "risks_title": "Serious risks are involved",
+          "risks": {
+            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home Assistant project.",
+            "own_risk": "You use everything you download from the Marketplace at your own risk.",
+            "privacy": "It can violate your privacy, for example by sending your data to others.",
+            "security": "It can compromise the security of Home Assistant, your home, and your network.",
+            "stability": "It can degrade the stability and performance of Home Assistant."
+          },
+          "reminder": "It has been a while, so here is the warning again.",
+          "understand": "I understand the risks",
+          "continue": "Continue",
+          "go_back": "Go back"
+        },
         "common": {
           "add": "Add",
           "cancel": "Cancel",
@@ -12127,6 +12144,7 @@
           "reload": "Reload",
           "remove": "Remove",
           "repository": "Repository",
+          "retry": "Retry",
           "save": "Save",
           "show": "Show details",
           "unknown_error": "Unknown error, check the Home Assistant logs",
@@ -12134,15 +12152,25 @@
             "integration": "Integration",
             "plugin": "Dashboard",
             "theme": "Theme",
-            "python_script": "Python script",
-            "appdaemon": "AppDaemon",
-            "netdaemon": "NetDaemon",
             "template": "Template"
           }
         },
         "dashboard": {
           "no_data": "No repositories matching search and filters",
           "repository_not_found": "Repository not found"
+        },
+        "entry": {
+          "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
+          "open_integration": "Open integration page",
+          "failed": "The Marketplace could not be loaded, check the Home Assistant logs for more information.",
+          "failed_reason": "The Marketplace could not be loaded: {reason}",
+          "retrying": "The Marketplace could not start yet, retrying in a moment"
+        },
+        "github": {
+          "connect": "Connect GitHub",
+          "add_repository_needs_github": "Connect GitHub to add the custom repository {repository}, then open the link again.",
+          "rate_limited_title": "GitHub limit reached",
+          "rate_limited": "GitHub limits how often the Marketplace can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
         },
         "column": {
           "actions": "Quick actions",
@@ -12175,14 +12203,14 @@
           "title": "Custom repositories",
           "type": "Type",
           "no_repository": "Missing repository",
-          "no_type": "Missing type"
+          "no_type": "Missing type",
+          "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first."
         },
         "dialog_download": {
           "loading": "Loading repository",
           "already_downloading": "Already downloading, hold on",
           "download_failed": "Could not download the repository, check the Home Assistant logs for more information",
           "pre_release": "Pre-release",
-          "waiting_for_information": "Still updating the repository information, try again in a moment",
           "will_download_version": "Version {ref} will be downloaded",
           "will_download_commit": "Commit {ref} will be downloaded",
           "different_version": "Need a different version?",
@@ -12192,7 +12220,13 @@
           "release_warning": "It is not advised to use this section to do a rollback, restore a backup instead.",
           "restart": "Remember that you need to restart Home Assistant before changes to integrations (custom_components) are applied.",
           "note_downloaded": "When downloaded, this will be located in {location}",
-          "lovelace_instruction": "After the download completes, since you are not using Lovelace in storage mode, you need to add the resource with these settings manually:"
+          "lovelace_instruction": "After the download completes, since you are not using Lovelace in storage mode, you need to add the resource with these settings manually:",
+          "releases_failed": "The versions could not be fetched. Collapse and expand this section to try again.",
+          "new_download_title": "You install this at your own risk",
+          "new_download_warning": "{repository} is made by {authors}. It is not reviewed or supported by the Home Assistant project.",
+          "replaces_built_in_title": "This replaces the built-in {domain} integration",
+          "replaces_built_in_warning": "{repository} uses the {domain} domain, which belongs to an integration that comes with Home Assistant. After a restart, Home Assistant loads this download instead of the built-in integration, for everything you set up with it. Devices and services you already set up may stop working. Fixes and improvements to the built-in integration no longer reach you with Home Assistant updates, and the Home Assistant project cannot help with problems this download causes. To go back to the built-in integration, remove this download and restart Home Assistant.",
+          "replaces_built_in_confirm": "I understand this replaces the built-in integration"
         },
         "dialog_info": {
           "version_installed": "Version downloaded",
@@ -12200,7 +12234,9 @@
           "stars": "Stars",
           "downloads": "Downloads",
           "author": "Author",
-          "no_info": "The developer has not provided any more information for this repository"
+          "no_info": "The developer has not provided any more information for this repository",
+          "requires_homeassistant": "This repository needs Home Assistant {version} or newer. Update Home Assistant to download it.",
+          "requires_newer_homeassistant": "This repository needs a newer version of Home Assistant. Update Home Assistant to download it."
         },
         "repository_card": {
           "dismiss_new": "Dismiss new",

@@ -462,7 +462,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   marketplace_repository: {
     component: "marketplace",
-    redirect: "/marketplace/_my_redirect/hacs_repository",
+    redirect: "/marketplace/_my_redirect/marketplace_repository",
     params: {
       owner: "string",
       repository: "string",

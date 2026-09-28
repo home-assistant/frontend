@@ -1,9 +1,12 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiDelete } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
@@ -14,22 +17,48 @@ import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/progress/ha-progress-bar";
-import type { HomeAssistant } from "../../../types";
-import { MarketplaceDispatchEvent } from "../data/common";
 import {
+  apiContext,
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
+import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
+import type {
+  RepositoryBase,
+  RepositoryType,
+} from "../../../data/marketplace/repository";
+import {
+  ERROR_GITHUB_NOT_CONNECTED,
   getRepositories,
+  handleWarningNotAccepted,
+  isWebSocketError,
   repositoryAdd,
   repositoryDelete,
   websocketSubscription,
-} from "../data/websocket";
+} from "../../../data/marketplace/websocket";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { marketplaceStyleVariables } from "../styles/variables";
+import type { MarketplaceHass } from "../tools/connect-github";
+import { showConnectGitHubFlow } from "../tools/connect-github";
 import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace";
 
 @customElement("dialog-marketplace-custom-repositories")
-export class DialogMarketplaceCustomRepositories extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+export class DialogMarketplaceCustomRepositories extends DialogMixin<MarketplaceCustomRepositoriesDialogParams>(
+  LitElement
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _dialogParams?: MarketplaceCustomRepositoriesDialogParams;
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state() private _repositories: RepositoryBase[] = [];
 
   @state() private _waiting?: boolean;
 
@@ -37,50 +66,71 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
 
   @state() private _data?: { repository: string; category: string };
 
+  @state() private _githubConnected = false;
+
   private _errorSubscription?: UnsubscribeFunc;
 
-  public async showDialog(
-    dialogParams: MarketplaceCustomRepositoriesDialogParams
-  ): Promise<void> {
-    this._dialogParams = dialogParams;
-    this._errorSubscription = await websocketSubscription(
-      this.hass,
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.params) {
+      return;
+    }
+
+    this._repositories = this.params.marketplace.repositories;
+    this._githubConnected = this.params.marketplace.info.github_connected;
+    this._subscribeErrors();
+  }
+
+  public disconnectedCallback(): void {
+    this._errorSubscription?.();
+    this._errorSubscription = undefined;
+    super.disconnectedCallback();
+  }
+
+  // The Marketplace helpers take a hass object, dialogs only get contexts.
+  private get _hass(): MarketplaceHass {
+    return {
+      callApi: this._api.callApi,
+      connection: this._connection.connection,
+      localize: this._i18n.localize,
+    };
+  }
+
+  private async _subscribeErrors(): Promise<void> {
+    const errorSubscription = await websocketSubscription(
+      this._hass,
       (data) => {
         this._errors = { base: data?.message || data };
       },
       MarketplaceDispatchEvent.ERROR
     );
-    await this.updateComplete;
-  }
 
-  public closeDialog(): void {
-    this._dialogParams = undefined;
-    this._waiting = undefined;
-    this._errors = undefined;
-    if (this._errorSubscription) {
-      this._errorSubscription();
+    // Closed before the subscription came in, nothing is left to unsubscribe it.
+    if (!this.isConnected) {
+      errorSubscription();
+      return;
     }
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+
+    this._errorSubscription = errorSubscription;
   }
 
   protected render() {
-    if (!this._dialogParams) {
+    if (!this.params) {
       return nothing;
     }
     return html`
       <ha-dialog
         open
-        .headerTitle=${this.hass.localize(
+        .headerTitle=${this._i18n.localize(
           "ui.panel.marketplace.dialog_custom_repositories.title"
         )}
-        @closed=${this.closeDialog}
       >
         <div>
           <div class="list">
-            ${this._dialogParams.marketplace.repositories
+            ${this._repositories
               .filter((repository) => repository.custom)
-              ?.filter((repository) =>
-                this._dialogParams!.marketplace.info.categories.includes(
+              .filter((repository) =>
+                this.params!.marketplace.info.categories.includes(
                   repository.category
                 )
               )
@@ -92,46 +142,38 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
                       >${repository.full_name} (${repository.category})</span
                     >
 
-                    <ha-icon-button
-                      .label=${this.hass.localize(
-                        "ui.panel.marketplace.common.remove"
-                      )}
-                      .repositoryId=${String(repository.id)}
-                      @click=${this._handleRemoveClick}
-                    >
-                      <ha-svg-icon
-                        class="delete"
-                        .path=${mdiDelete}
-                      ></ha-svg-icon>
-                    </ha-icon-button>
+                    ${
+                      // Forgetting a download would leave its files running
+                      repository.installed
+                        ? nothing
+                        : html`<ha-icon-button
+                            .label=${this._i18n.localize(
+                              "ui.panel.marketplace.common.remove"
+                            )}
+                            data-repository-id=${repository.id}
+                            @click=${this._handleRemoveClick}
+                          >
+                            <ha-svg-icon
+                              class="delete"
+                              .path=${mdiDelete}
+                            ></ha-svg-icon>
+                          </ha-icon-button>`
+                    }
                   </ha-settings-row>`
               )}
           </div>
+          ${
+            this._githubConnected
+              ? nothing
+              : html`<ha-alert alert-type="info">
+                  ${this._i18n.localize(
+                    "ui.panel.marketplace.dialog_custom_repositories.github_needed"
+                  )}
+                </ha-alert>`
+          }
           <ha-form
-            .hass=${this.hass}
-            .data=${this._data}
-            .schema=${[
-              {
-                name: "repository",
-                selector: { text: {} },
-              },
-              {
-                name: "category",
-                selector: {
-                  select: {
-                    mode: "dropdown",
-                    options: this._dialogParams.marketplace.info.categories.map(
-                      (category) => ({
-                        value: category,
-                        label: this.hass.localize(
-                          `ui.panel.marketplace.common.type.${category}`
-                        ),
-                      })
-                    ),
-                  },
-                },
-              },
-            ]}
+            .data=${this._data ?? {}}
+            .schema=${this._schema(this.params.marketplace.info.categories)}
             .error=${this._errors}
             .computeLabel=${this._computeLabel}
             @value-changed=${this._valueChanged}
@@ -149,7 +191,7 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.panel.marketplace.common.cancel")}
+            ${this._i18n.localize("ui.panel.marketplace.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -162,29 +204,50 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
             }
             @click=${this._addRepository}
           >
-            ${this.hass.localize("ui.panel.marketplace.common.add")}
+            ${this._i18n.localize("ui.panel.marketplace.common.add")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
+  private _schema = memoizeOne(
+    (categories: RepositoryType[]): HaFormSchema[] => [
+      {
+        name: "repository",
+        selector: { text: {} },
+      },
+      {
+        name: "category",
+        selector: {
+          select: {
+            mode: "dropdown",
+            options: categories.map((category) => ({
+              value: category,
+              label: this._i18n.localize(
+                `ui.panel.marketplace.common.type.${category}`
+              ),
+            })),
+          },
+        },
+      },
+    ]
+  );
+
   private _computeLabel = (schema: HaFormSchema): string =>
     schema.name === "category"
-      ? this.hass.localize(
+      ? this._i18n.localize(
           "ui.panel.marketplace.dialog_custom_repositories.type"
         )
-      : this.hass.localize("ui.panel.marketplace.common.repository");
+      : this._i18n.localize("ui.panel.marketplace.common.repository");
 
   private _valueChanged(ev: CustomEvent) {
     this._data = { ...this._data, ...ev.detail.value };
   }
 
-  private _handleRemoveClick(
-    ev: HASSDomCurrentTargetEvent<HaIconButton & { repositoryId: string }>
-  ) {
+  private _handleRemoveClick(ev: HASSDomCurrentTargetEvent<HaIconButton>) {
     ev.preventDefault();
-    this._removeRepository(ev.currentTarget.repositoryId);
+    this._removeRepository(ev.currentTarget.dataset.repositoryId!);
   }
 
   private async _addRepository() {
@@ -192,7 +255,7 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
 
     if (!this._data?.category) {
       this._errors = {
-        base: this.hass.localize(
+        base: this._i18n.localize(
           "ui.panel.marketplace.dialog_custom_repositories.no_type"
         ),
       };
@@ -200,26 +263,47 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
     }
     if (!this._data?.repository) {
       this._errors = {
-        base: this.hass.localize(
+        base: this._i18n.localize(
           "ui.panel.marketplace.dialog_custom_repositories.no_repository"
         ),
       };
       return;
     }
+
+    // Connect first and then add what was typed, so one press is enough.
+    if (!this._githubConnected) {
+      this._githubConnected = await showConnectGitHubFlow(this, this._hass);
+      if (!this._githubConnected || !this.isConnected) {
+        return;
+      }
+    }
+
     this._waiting = true;
     try {
-      const errors = await repositoryAdd(
-        this.hass,
+      await repositoryAdd(
+        this._hass,
         this._data.repository,
         this._data.category
       );
-      if (errors) {
-        this._errors = errors;
+      await this._updateRepositories();
+    } catch (err: any) {
+      if (handleWarningNotAccepted(err)) {
+        this.closeDialog();
         return;
       }
 
-      await this._updateRepositories();
-    } catch (err: any) {
+      // The dialog can be closed while waiting for the backend.
+      if (!this.isConnected) {
+        return;
+      }
+
+      // GitHub got disconnected after the dialog opened, the hint comes back
+      // and the next press connects again.
+      if (isWebSocketError(err, ERROR_GITHUB_NOT_CONNECTED)) {
+        this._githubConnected = false;
+        return;
+      }
+
       this._errors = { base: this._errorMessage(err) };
     } finally {
       this._waiting = false;
@@ -229,10 +313,12 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
   private async _removeRepository(repository: string) {
     this._waiting = true;
     try {
-      await repositoryDelete(this.hass, repository);
+      await repositoryDelete(this._hass, repository);
       await this._updateRepositories();
     } catch (err: any) {
-      this._errors = { base: this._errorMessage(err) };
+      if (this.isConnected) {
+        this._errors = { base: this._errorMessage(err) };
+      }
     } finally {
       this._waiting = false;
     }
@@ -241,17 +327,18 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
   private _errorMessage(err: { message?: string }): string {
     return (
       err?.message ||
-      this.hass.localize("ui.panel.marketplace.common.unknown_error")
+      this._i18n.localize("ui.panel.marketplace.common.unknown_error")
     );
   }
 
   private async _updateRepositories() {
-    const repositories = await getRepositories(this.hass);
-    fireEvent(this, "marketplace-refresh");
-    this._dialogParams = {
-      ...this._dialogParams,
-      marketplace: { ...this._dialogParams!.marketplace, repositories },
-    };
+    const repositories = await getRepositories(this._hass);
+    // A dialog closed meanwhile is detached, its events reach nobody.
+    fireEvent(window, "marketplace-refresh");
+
+    if (this.isConnected) {
+      this._repositories = repositories;
+    }
   }
 
   static get styles() {
@@ -264,6 +351,10 @@ export class DialogMarketplaceCustomRepositories extends LitElement {
         }
         ha-settings-row {
           padding: 0;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: var(--ha-space-2);
         }
         .delete {
           color: var(--marketplace-color-error);

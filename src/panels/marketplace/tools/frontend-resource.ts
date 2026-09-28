@@ -1,4 +1,4 @@
-import type { RepositoryBase } from "../data/repository";
+import type { RepositoryBase } from "../../../data/marketplace/repository";
 
 // Downloaded frontend resources land in www/community/, which is served as /local/.
 export const generateFrontendResourceURL = (options: {

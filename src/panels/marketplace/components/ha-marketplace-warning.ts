@@ -1,0 +1,253 @@
+import { mdiAlert } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
+import "../../../components/ha-svg-icon";
+import "../../../layouts/hass-subpage";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import { acceptWarning } from "../../../data/marketplace/websocket";
+
+const RISKS = [
+  "not_supported",
+  "own_risk",
+  "privacy",
+  "security",
+  "stability",
+] as const;
+
+@customElement("ha-marketplace-warning")
+export class HaMarketplaceWarning extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  // Shown again for an acceptance that has grown old, not for a first visit.
+  @property({ type: Boolean }) public reminder = false;
+
+  @state() private _understood = false;
+
+  @state() private _accepting = false;
+
+  @state() private _error?: string;
+
+  protected render() {
+    return html`
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.dashboard.marketplace.main")}
+        back-path="/config"
+      >
+        <div class="content">
+          <ha-card>
+            <div class="card-content">
+              ${
+                this.reminder
+                  ? html`<p class="reminder">
+                      ${this.hass.localize(
+                        "ui.panel.marketplace.warning.reminder"
+                      )}
+                    </p>`
+                  : nothing
+              }
+              <div class="heading">
+                <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
+                <h1>
+                  ${this.hass.localize("ui.panel.marketplace.warning.title")}
+                </h1>
+              </div>
+              <p class="intro">
+                ${this.hass.localize("ui.panel.marketplace.warning.intro")}
+              </p>
+              <ha-alert
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.panel.marketplace.warning.risks_title"
+                )}
+              >
+                <ul>
+                  ${RISKS.map(
+                    (risk) =>
+                      html`<li>
+                        ${this.hass.localize(
+                          `ui.panel.marketplace.warning.risks.${risk}`
+                        )}
+                      </li>`
+                  )}
+                </ul>
+              </ha-alert>
+              ${
+                this._error
+                  ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+                  : nothing
+              }
+              <ha-checkbox
+                .checked=${this._understood}
+                .disabled=${this._accepting}
+                @change=${this._understoodChanged}
+              >
+                ${this.hass.localize("ui.panel.marketplace.warning.understand")}
+              </ha-checkbox>
+            </div>
+            <div class="card-actions">
+              <ha-button appearance="plain" href="/config">
+                ${this.hass.localize("ui.panel.marketplace.warning.go_back")}
+              </ha-button>
+              <ha-button
+                variant="warning"
+                .disabled=${!this._understood}
+                .loading=${this._accepting}
+                @click=${this._accept}
+              >
+                ${this.hass.localize("ui.panel.marketplace.warning.continue")}
+              </ha-button>
+            </div>
+          </ha-card>
+        </div>
+      </hass-subpage>
+    `;
+  }
+
+  private _understoodChanged(ev: Event): void {
+    this._understood = (ev.target as HaCheckbox).checked;
+  }
+
+  private async _accept(): Promise<void> {
+    if (!this._understood || this._accepting) {
+      return;
+    }
+
+    this._accepting = true;
+    this._error = undefined;
+
+    try {
+      await acceptWarning(this.hass);
+    } catch (err: any) {
+      this._accepting = false;
+      this._error =
+        err?.message ||
+        this.hass.localize("ui.panel.marketplace.common.unknown_error");
+      return;
+    }
+
+    // Stays busy, the panel swaps this screen for the Marketplace once the
+    // refetched information says the warning is accepted.
+    fireEvent(this, "marketplace-refresh");
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .content {
+          box-sizing: border-box;
+          max-width: calc(65ch + 2 * var(--ha-space-6));
+          margin-inline: auto;
+          padding: var(--ha-space-4);
+        }
+
+        ha-card {
+          border: var(--ha-border-width-lg) solid var(--warning-color);
+          border-block-start-width: var(--ha-space-3);
+        }
+
+        .card-content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+          padding: var(--ha-space-6);
+        }
+
+        .heading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-2);
+          text-align: center;
+        }
+
+        .heading ha-svg-icon {
+          --mdc-icon-size: 96px;
+          color: var(--warning-color);
+        }
+
+        h1 {
+          margin: 0;
+          font-size: var(--ha-font-size-3xl);
+          font-weight: var(--ha-font-weight-bold);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--warning-color);
+        }
+
+        .reminder {
+          margin: 0;
+          text-align: center;
+          color: var(--secondary-text-color);
+        }
+
+        .intro {
+          margin: 0;
+          font-size: var(--ha-font-size-l);
+          line-height: var(--ha-line-height-normal);
+          text-align: center;
+        }
+
+        ha-alert {
+          display: block;
+        }
+
+        ul {
+          margin: 0;
+          padding-inline-start: var(--ha-space-5);
+        }
+
+        li {
+          margin-block: var(--ha-space-2);
+          font-weight: var(--ha-font-weight-medium);
+        }
+
+        ha-checkbox {
+          font-weight: var(--ha-font-weight-bold);
+        }
+
+        .card-actions {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: var(--ha-space-2);
+        }
+
+        @media (max-width: 600px) {
+          .content {
+            padding: var(--ha-space-2);
+          }
+
+          .card-content {
+            padding: var(--ha-space-4);
+          }
+
+          .heading ha-svg-icon {
+            --mdc-icon-size: 72px;
+          }
+
+          h1 {
+            font-size: var(--ha-font-size-2xl);
+          }
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-marketplace-warning": HaMarketplaceWarning;
+  }
+}

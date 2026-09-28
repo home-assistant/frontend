@@ -4,7 +4,7 @@ import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../types";
 
-import type { MarketplaceData } from "./data/marketplace";
+import type { MarketplaceData } from "../../data/marketplace/marketplace";
 
 interface MarketplacePageElement extends HTMLElement {
   hass: HomeAssistant;

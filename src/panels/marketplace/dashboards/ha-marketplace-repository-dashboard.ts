@@ -37,12 +37,31 @@ import type { HomeAssistant, Route } from "../../../types";
 import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
-import type { MarketplaceData } from "../data/marketplace";
-import type { RepositoryBase, RepositoryInfo } from "../data/repository";
-import { fetchRepositoryInformation } from "../data/repository";
-import { getRepositories, repositoryAdd } from "../data/websocket";
+import type { MarketplaceData } from "../../../data/marketplace/marketplace";
+import type {
+  RepositoryBase,
+  RepositoryInfo,
+} from "../../../data/marketplace/repository";
+import { fetchRepositoryInformation } from "../../../data/marketplace/repository";
+import {
+  getRepositories,
+  handleWarningNotAccepted,
+  repositoryAdd,
+} from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
+import {
+  ensureGitHubConnected,
+  handleGitHubNotConnected,
+  handleGitHubRateLimited,
+} from "../tools/connect-github";
+import { downloadBlockedReason } from "../tools/download-blocked-reason";
 import { markdownWithRepositoryContext } from "../tools/markdown";
+
+// Repository pages live at /repository/<id>, my links at /repository.
+const repositoryIdFromRoute = (route: Route): string => {
+  const dividerPos = route.path.indexOf("/", 1);
+  return dividerPos === -1 ? "" : route.path.substring(dividerPos + 1);
+};
 
 @customElement("ha-marketplace-repository-dashboard")
 export class HaMarketplaceRepositoryDashboard extends LitElement {
@@ -63,6 +82,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   private _openingOverflowMenu = false;
 
+  // Answers for a repository navigated away from are dropped.
+  private _requestedRepositoryId?: string;
+
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
   ): Promise<void> {
@@ -78,6 +100,14 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           requestedRepository.toLocaleLowerCase()
       );
       if (!existing && params.category) {
+        if (!ensureGitHubConnected(this, this.hass, this.marketplace.info)) {
+          this._error = this.hass.localize(
+            "ui.panel.marketplace.github.add_repository_needs_github",
+            { repository: requestedRepository }
+          );
+          return;
+        }
+
         if (
           !(await showConfirmationDialog(this, {
             title: this.hass.localize(
@@ -113,7 +143,18 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
               requestedRepository.toLocaleLowerCase()
           );
         } catch (err: any) {
-          this._error = err?.message;
+          // The panel swaps to the warning screen, accepting it brings the
+          // user back here to add the repository.
+          if (handleWarningNotAccepted(err)) {
+            return;
+          }
+
+          this._error = handleGitHubNotConnected(this, this.hass, err)
+            ? this.hass.localize(
+                "ui.panel.marketplace.github.add_repository_needs_github",
+                { repository: requestedRepository }
+              )
+            : err?.message;
           return;
         }
       }
@@ -128,16 +169,27 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         );
       }
     } else {
-      const dividerPos = this.route.path.indexOf("/", 1);
-      const repositoryId = this.route.path.substr(dividerPos + 1);
-      if (!repositoryId) {
-        this._error = this.hass.localize(
-          "ui.panel.marketplace.dashboard.repository_not_found"
-        );
-        return;
-      }
-      this._fetchRepository(repositoryId);
+      this._loadRepositoryFromRoute();
     }
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+
+    // The router reuses this element when going from one repository to
+    // another, the first one is loaded by firstUpdated.
+    const previousRoute = changedProps.get("route");
+    if (
+      !this.hasUpdated ||
+      !previousRoute ||
+      repositoryIdFromRoute(previousRoute) === repositoryIdFromRoute(this.route)
+    ) {
+      return;
+    }
+
+    this._repository = undefined;
+    this._error = undefined;
+    this._loadRepositoryFromRoute();
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
@@ -162,22 +214,46 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
   }
 
+  private _loadRepositoryFromRoute(): void {
+    const repositoryId = repositoryIdFromRoute(this.route);
+    if (!repositoryId) {
+      this._requestedRepositoryId = undefined;
+      this._error = this.hass.localize(
+        "ui.panel.marketplace.dashboard.repository_not_found"
+      );
+      return;
+    }
+
+    this._fetchRepository(repositoryId);
+  }
+
   private async _fetchRepository(repositoryId?: string) {
+    const requestedRepositoryId = repositoryId || String(this._repository!.id);
+    this._requestedRepositoryId = requestedRepositoryId;
+
     try {
       const repository = await fetchRepositoryInformation(
         this.hass,
-        repositoryId || String(this._repository!.id)
+        requestedRepositoryId
       );
-      if (!this.isConnected) {
+      if (!this._isCurrentRequest(requestedRepositoryId)) {
         return;
       }
       this._repository = repository;
     } catch (err: any) {
-      if (!this.isConnected) {
+      if (!this._isCurrentRequest(requestedRepositoryId)) {
         return;
       }
-      this._error = err?.message;
+
+      this._error = handleGitHubRateLimited(this, this.hass, err)
+        ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
+        : err?.message ||
+          this.hass.localize("ui.panel.marketplace.common.unknown_error");
     }
+  }
+
+  private _isCurrentRequest(repositoryId: string): boolean {
+    return this.isConnected && this._requestedRepositoryId === repositoryId;
   }
 
   private _getAuthors = memoizeOne((repository: RepositoryInfo) => {
@@ -224,7 +300,6 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
         back-path="/marketplace"
         .header=${this._repository.name}
       >
@@ -291,6 +366,13 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                 ></ha-svg-icon>
               </ha-assist-chip>
             </ha-chip-set>
+            ${
+              this._repository.can_download
+                ? nothing
+                : html`<ha-alert alert-type="warning">
+                    ${downloadBlockedReason(this.hass.localize, this._repository)}
+                  </ha-alert>`
+            }
             <ha-markdown
               .content=${
                 markdownWithRepositoryContext(
@@ -304,7 +386,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         </div>
 
         ${
-          !this._repository.installed_version
+          !this._repository.installed_version && this._repository.can_download
             ? html`<ha-button
                 slot="fab"
                 size="l"
@@ -400,6 +482,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
         ha-chip-set {
           padding-bottom: 8px;
+        }
+
+        ha-alert {
+          display: block;
+          margin-bottom: 8px;
         }
 
         @media all and (max-width: 500px) {

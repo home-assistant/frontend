@@ -1,22 +1,39 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import "../../components/ha-button";
+import type { ConfigEntry, ConfigEntryUpdate } from "../../data/config_entries";
+import { subscribeConfigEntries } from "../../data/config_entries";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../types";
-import { MarketplaceDispatchEvent } from "./data/common";
-import type { MarketplaceData, MarketplaceInfo } from "./data/marketplace";
-import type { RepositoryBase } from "./data/repository";
+import { MarketplaceDispatchEvent } from "../../data/marketplace/common";
+import type {
+  MarketplaceData,
+  MarketplaceInfo,
+} from "../../data/marketplace/marketplace";
+import type { RepositoryBase } from "../../data/marketplace/repository";
 import {
+  ERROR_NOT_LOADED,
   fetchMarketplaceInfo,
   getRepositories,
+  isWebSocketError,
   websocketSubscription,
-} from "./data/websocket";
+} from "../../data/marketplace/websocket";
+import "./components/ha-marketplace-warning";
 import "./ha-marketplace-router";
 import { marketplaceStyles } from "./styles/marketplace-common-style";
+
+// The entry is not going to load without the user stepping in.
+const ENTRY_FAILED_STATES: ConfigEntry["state"][] = [
+  "setup_error",
+  "migration_error",
+  "failed_unload",
+];
 
 @customElement("ha-panel-marketplace")
 class HaPanelMarketplace extends SubscribeMixin(LitElement) {
@@ -30,9 +47,21 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
   @state() private _info?: MarketplaceInfo;
 
+  // Only shown while the first fetch has nothing to show yet.
+  @state() private _loadError?: string;
+
   // The panel is registered on every install, the integration is not. Gate
   // the subscriptions on this so SubscribeMixin retries once it shows up.
   @state() private _integrationLoaded?: true;
+
+  // The Marketplace commands answer with `not_loaded` until its config entry
+  // is loaded, which happens a moment after Home Assistant started and again
+  // on every reload of the entry.
+  private _entryLoaded = false;
+
+  @state() private _entry?: ConfigEntry;
+
+  private _marketplaceUnsubs: Promise<UnsubscribeFunc>[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_integrationLoaded"];
 
@@ -56,30 +85,14 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("marketplace-refresh", this._handleRefresh);
+    this._unsubscribeMarketplace();
+    this._entryLoaded = false;
+    this._entry = undefined;
   }
 
   public hassSubscribe() {
     return [
-      websocketSubscription(
-        this.hass,
-        this._refreshInfo,
-        MarketplaceDispatchEvent.CONFIG
-      ),
-      websocketSubscription(
-        this.hass,
-        this._refreshInfo,
-        MarketplaceDispatchEvent.STATUS
-      ),
-      websocketSubscription(
-        this.hass,
-        this._refreshInfo,
-        MarketplaceDispatchEvent.STAGE
-      ),
-      websocketSubscription(
-        this.hass,
-        this._refreshRepositories,
-        MarketplaceDispatchEvent.REPOSITORY
-      ),
+      subscribeConfigEntries(this.hass, this._handleConfigEntryUpdates),
       this.hass.connection.subscribeEvents(
         this._refreshInfo,
         "lovelace_updated"
@@ -103,8 +116,6 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     }
 
     this._integrationLoaded = true;
-    this._refreshInfo();
-    this._refreshRepositories();
   }
 
   protected render() {
@@ -118,12 +129,77 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
       `;
     }
 
+    if (this._entry?.disabled_by) {
+      return html`
+        <hass-error-screen
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .error=${this.hass.localize("ui.panel.marketplace.entry.disabled")}
+        >
+          <ha-button
+            appearance="filled"
+            size="s"
+            href="/config/integrations/integration/marketplace"
+          >
+            ${this.hass.localize("ui.panel.marketplace.entry.open_integration")}
+          </ha-button>
+        </hass-error-screen>
+      `;
+    }
+
+    if (this._entry && ENTRY_FAILED_STATES.includes(this._entry.state)) {
+      return html`
+        <hass-error-screen
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .error=${
+            this._entry.reason
+              ? this.hass.localize("ui.panel.marketplace.entry.failed_reason", {
+                  reason: this._entry.reason,
+                })
+              : this.hass.localize("ui.panel.marketplace.entry.failed")
+          }
+        ></hass-error-screen>
+      `;
+    }
+
+    if ((!this._repositories || !this._info) && this._loadError) {
+      return html`
+        <hass-error-screen
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .error=${this.hass.localize("ui.panel.marketplace.load_failed", {
+            error: this._loadError,
+          })}
+        >
+          <ha-button appearance="filled" size="s" @click=${this._handleRetry}>
+            ${this.hass.localize("ui.panel.marketplace.common.retry")}
+          </ha-button>
+        </hass-error-screen>
+      `;
+    }
+
     if (!this._repositories || !this._info) {
       return html`
         <hass-loading-screen
           .hass=${this.hass}
           .narrow=${this.narrow}
+          .message=${
+            this._entry?.state === "setup_retry"
+              ? this.hass.localize("ui.panel.marketplace.entry.retrying")
+              : undefined
+          }
         ></hass-loading-screen>
+      `;
+    }
+
+    if (!this._info.warning_accepted || this._info.warning_reminder_due) {
+      return html`
+        <ha-marketplace-warning
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .reminder=${this._info.warning_accepted}
+        ></ha-marketplace-warning>
       `;
     }
 
@@ -141,27 +217,125 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     return isComponentLoaded(this.hass.config, "marketplace");
   }
 
-  private _handleRefresh = (): void => {
+  private _handleConfigEntryUpdates = (updates: ConfigEntryUpdate[]): void => {
+    const update = updates.find(({ entry }) => entry.domain === "marketplace");
+    if (!update) {
+      return;
+    }
+
+    this._entry = update.type === "removed" ? undefined : update.entry;
+
+    const entryLoaded = this._entry?.state === "loaded";
+    if (entryLoaded === this._entryLoaded) {
+      return;
+    }
+
+    this._entryLoaded = entryLoaded;
+
+    // Resubscribe on every load, the signals are not guaranteed to survive
+    // an unload of the entry.
+    this._unsubscribeMarketplace();
+    if (!entryLoaded) {
+      return;
+    }
+
+    this._loadError = undefined;
+    this._subscribeMarketplace();
+    this._refreshInfo();
     this._refreshRepositories();
   };
+
+  private _subscribeMarketplace(): void {
+    const signals: [MarketplaceDispatchEvent, () => void][] = [
+      [MarketplaceDispatchEvent.CONFIG, this._refreshInfo],
+      [MarketplaceDispatchEvent.STATUS, this._refreshInfo],
+      [MarketplaceDispatchEvent.STAGE, this._refreshInfo],
+      [MarketplaceDispatchEvent.REPOSITORY, this._refreshRepositories],
+    ];
+
+    this._marketplaceUnsubs = signals.map(([signal, callback]) => {
+      const unsub = websocketSubscription(this.hass, callback, signal);
+      unsub.catch((err) => this._logError("subscribe to", err));
+      return unsub;
+    });
+  }
+
+  private _unsubscribeMarketplace(): void {
+    this._marketplaceUnsubs.forEach((unsub) =>
+      unsub.then((unsubscribe) => unsubscribe()).catch(() => undefined)
+    );
+    this._marketplaceUnsubs = [];
+  }
+
+  private _handleRefresh = (): void => {
+    this._refreshInfo();
+    this._refreshRepositories();
+  };
+
+  private _handleRetry(): void {
+    this._loadError = undefined;
+    this._handleRefresh();
+  }
 
   private _refreshInfo = async (): Promise<void> => {
     try {
       this._info = await fetchMarketplaceInfo(this.hass);
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to fetch Community marketplace information", err);
+      this._handleFetchError("fetch information from", err, this._info);
+      return;
     }
+
+    this._clearLoadError();
   };
 
   private _refreshRepositories = async (): Promise<void> => {
     try {
       this._repositories = await getRepositories(this.hass);
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to fetch Community marketplace repositories", err);
+      this._handleFetchError(
+        "fetch repositories from",
+        err,
+        this._repositories
+      );
+      return;
     }
+
+    this._clearLoadError();
   };
+
+  private _handleFetchError(
+    action: string,
+    err: unknown,
+    currentData: unknown
+  ): void {
+    this._logError(action, err);
+
+    // Not loaded refetches once it is, and earlier data beats an error screen.
+    if (isWebSocketError(err, ERROR_NOT_LOADED) || currentData) {
+      return;
+    }
+
+    this._loadError =
+      (err as { message?: string } | null)?.message ||
+      this.hass.localize("ui.panel.marketplace.common.unknown_error");
+  }
+
+  // Either fetch failing keeps the error up until both have data.
+  private _clearLoadError(): void {
+    if (this._info && this._repositories) {
+      this._loadError = undefined;
+    }
+  }
+
+  // Expected while the entry is not loaded, it refetches once it is.
+  private _logError(action: string, err: unknown): void {
+    if (isWebSocketError(err, ERROR_NOT_LOADED)) {
+      return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.error(`Failed to ${action} the Marketplace`, err);
+  }
 
   static get styles() {
     return marketplaceStyles;

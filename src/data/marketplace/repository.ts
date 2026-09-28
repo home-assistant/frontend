@@ -1,13 +1,6 @@
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../types";
 
-export type RepositoryType =
-  | "appdaemon"
-  | "integration"
-  | "netdaemon"
-  | "plugin"
-  | "python_script"
-  | "template"
-  | "theme";
+export type RepositoryType = "integration" | "plugin" | "template" | "theme";
 
 export interface RepositoryBase {
   authors: string[];
@@ -15,7 +8,6 @@ export interface RepositoryBase {
   can_download: boolean;
   category: RepositoryType;
   config_flow: boolean;
-  country: string[];
   custom: boolean;
   description: string;
   domain: string | null;
@@ -46,12 +38,13 @@ export interface RepositoryInfo extends RepositoryBase {
   issues: number;
   releases: string[];
   ref: string;
+  replaces_built_in: boolean;
   selected_tag: string | null;
   version_or_commit: "version" | "commit";
 }
 
 export const fetchRepositoryInformation = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   repositoryId: string
 ): Promise<RepositoryInfo> =>
   hass.connection.sendMessagePromise({
@@ -60,7 +53,7 @@ export const fetchRepositoryInformation = async (
   });
 
 export const repositoryDownloadVersion = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   repository: string,
   version?: string
 ) =>
@@ -71,7 +64,7 @@ export const repositoryDownloadVersion = async (
   });
 
 export const repositoryReleases = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   repositoryId: string
 ) =>
   hass.connection.sendMessagePromise<

@@ -1,84 +1,80 @@
+import { consume, type ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { customElement, state } from "lit/decorators";
+import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-form/ha-form";
-import type {
-  HaFormDataContainer,
-  HaFormSchema,
-} from "../../../components/ha-form/types";
-import "../../../components/ha-settings-row";
 import "../../../components/progress/ha-progress-bar";
-import type { HomeAssistant } from "../../../types";
-import { MarketplaceDispatchEvent } from "../data/common";
-import { websocketSubscription } from "../data/websocket";
+import {
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
+import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
+import { websocketSubscription } from "../../../data/marketplace/websocket";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import type { MarketplaceFormDialogParams } from "./show-dialog-marketplace";
 
 @customElement("dialog-marketplace-form")
-class DialogMarketplaceForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+class DialogMarketplaceForm extends DialogMixin<MarketplaceFormDialogParams>(
+  LitElement
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _dialogParams?: MarketplaceFormDialogParams;
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @state() private _waiting?: boolean;
 
-  @state() private _errors?: Record<string, string>;
+  @state() private _error?: string;
 
   private _errorSubscription?: UnsubscribeFunc;
 
-  public async showDialog(
-    dialogParams: MarketplaceFormDialogParams
-  ): Promise<void> {
-    this._dialogParams = dialogParams;
-    this._errorSubscription = await websocketSubscription(
-      this.hass,
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._subscribeErrors();
+  }
+
+  public disconnectedCallback(): void {
+    this._errorSubscription?.();
+    this._errorSubscription = undefined;
+    super.disconnectedCallback();
+  }
+
+  private async _subscribeErrors(): Promise<void> {
+    const errorSubscription = await websocketSubscription(
+      this._connection,
       (data) => {
-        this._errors = { base: data?.message || data };
+        this._error = data?.message || data;
       },
       MarketplaceDispatchEvent.ERROR
     );
-    await this.updateComplete;
-  }
 
-  public closeDialog(): void {
-    this._dialogParams = undefined;
-    this._waiting = undefined;
-    this._errors = undefined;
-    if (this._errorSubscription) {
-      this._errorSubscription();
+    // Closed before the subscription came in, nothing is left to unsubscribe it.
+    if (!this.isConnected) {
+      errorSubscription();
+      return;
     }
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+
+    this._errorSubscription = errorSubscription;
   }
 
   protected render() {
-    if (!this._dialogParams) {
+    if (!this.params) {
       return nothing;
     }
     return html`
-      <ha-dialog
-        open
-        .headerTitle=${this._dialogParams.title}
-        @closed=${this.closeDialog}
-      >
+      <ha-dialog open .headerTitle=${this.params.title}>
         <div>
-          ${this._dialogParams.description || nothing}
+          ${this.params.description || nothing}
           ${
-            this._dialogParams.schema && this._dialogParams.saveAction
-              ? html`<ha-form
-                  .hass=${this.hass}
-                  .data=${this._dialogParams.data || {}}
-                  .schema=${this._dialogParams.schema || []}
-                  .error=${this._errors}
-                  .computeLabel=${this._computeLabel}
-                  .computeHelper=${this._computeHelper}
-                  .computeError=${this._computeError}
-                  @value-changed=${this._valueChanged}
-                  autofocus
-                ></ha-form>`
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
               : nothing
           }
           ${
@@ -88,31 +84,25 @@ class DialogMarketplaceForm extends LitElement {
           }
         </div>
         ${
-          this._dialogParams.saveAction
+          this.params.saveAction
             ? html`<ha-dialog-footer slot="footer">
                 <ha-button
                   slot="secondaryAction"
                   appearance="plain"
                   @click=${this.closeDialog}
                 >
-                  ${this.hass.localize("ui.panel.marketplace.common.cancel")}
+                  ${this._i18n.localize("ui.panel.marketplace.common.cancel")}
                 </ha-button>
                 <ha-button
                   slot="primaryAction"
                   appearance="filled"
-                  variant=${this._dialogParams.destructive ? "danger" : "brand"}
-                  .disabled=${
-                    this._waiting ||
-                    (this._dialogParams.schema?.some(
-                      (entry) => entry.required
-                    ) &&
-                      !this._dialogParams.data)
-                  }
+                  variant=${this.params.destructive ? "danger" : "brand"}
+                  .disabled=${!!this._waiting}
                   @click=${this._saveClicked}
                 >
                   ${
-                    this._dialogParams.saveLabel ||
-                    this.hass.localize("ui.panel.marketplace.common.save")
+                    this.params.saveLabel ||
+                    this._i18n.localize("ui.panel.marketplace.common.save")
                   }
                 </ha-button>
               </ha-dialog-footer>`
@@ -122,57 +112,45 @@ class DialogMarketplaceForm extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    this._dialogParams = {
-      ...this._dialogParams!,
-      data: { ...this._dialogParams!.data, ...ev.detail.value },
-    };
-  }
-
   private async _saveClicked(): Promise<void> {
-    if (!this._dialogParams?.saveAction) {
+    if (!this.params?.saveAction) {
       return;
     }
-    this._errors = {};
+    this._error = undefined;
     this._waiting = true;
+
+    let error: string | undefined;
     try {
-      await this._dialogParams.saveAction(this._dialogParams.data);
+      await this.params.saveAction();
     } catch (err: any) {
-      this._errors = {
-        base:
-          err?.message ||
-          this.hass.localize("ui.panel.marketplace.common.unknown_error"),
-      };
+      error =
+        err?.message ||
+        this._i18n.localize("ui.panel.marketplace.common.unknown_error");
     }
+
+    // The dialog can be closed while the action runs.
+    if (!this.isConnected) {
+      return;
+    }
+
     this._waiting = false;
 
-    if (!Object.keys(this._errors).length) {
+    if (error) {
+      this._error = error;
+      return;
+    }
+
+    // Errors can also arrive through the error subscription meanwhile.
+    if (!this._error) {
       this.closeDialog();
     }
   }
 
-  private _computeLabel = (
-    schema: HaFormSchema,
-    data: HaFormDataContainer
-  ): string =>
-    this._dialogParams?.computeLabelCallback
-      ? this._dialogParams.computeLabelCallback(schema, data)
-      : schema.name || "";
-
-  private _computeHelper = (schema: HaFormSchema): string | undefined =>
-    this._dialogParams?.computeHelper
-      ? this._dialogParams.computeHelper(schema)
-      : "";
-
-  private _computeError = (
-    error: string,
-    schema: HaFormSchema | readonly HaFormSchema[]
-  ): string =>
-    this._dialogParams?.computeError
-      ? this._dialogParams.computeError(error, schema)
-      : error || "";
-
   static styles: CSSResultGroup = css`
+    ha-alert {
+      display: block;
+      margin-top: var(--ha-space-2);
+    }
     ha-progress-bar {
       margin-bottom: -8px;
       margin-top: 4px;

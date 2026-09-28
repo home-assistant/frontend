@@ -16,18 +16,19 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { RepositoryBase } from "../data/repository";
+import type { RepositoryBase } from "../../../data/marketplace/repository";
 import {
   repositoriesClearNewRepository,
   repositoryUninstall,
   repositoryUpdate,
-} from "../data/websocket";
+} from "../../../data/marketplace/websocket";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
 import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
 import {
   showMarketplaceDownloadDialog,
   showMarketplaceFormDialog,
 } from "../dialogs/show-dialog-marketplace";
+import { handleGitHubRateLimited } from "../tools/connect-github";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 
 export interface MarketplaceRepositoryMenuItem {
@@ -145,11 +146,17 @@ export const repositoryMenuItems = (
         try {
           await repositoryUpdate(element.hass, String(repository.id));
         } catch (err: any) {
-          showError(element, localize, err);
+          if (!handleGitHubRateLimited(element, element.hass, err)) {
+            showError(element, localize, err);
+          }
         }
       },
-    },
-    {
+    }
+  );
+
+  // The backend refuses the download when Home Assistant is too old for it.
+  if (repository.can_download) {
+    entries.push({
       value: "download",
       path: repository.installed_version ? mdiReload : mdiDownload,
       label: localize(
@@ -162,8 +169,8 @@ export const repositoryMenuItems = (
           marketplace: element.marketplace,
           repositoryId: repository.id,
         }),
-    }
-  );
+    });
+  }
 
   if (repository.new) {
     entries.push({
