@@ -160,6 +160,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Boolean }) public loading = false;
 
+  /**
+   * Error to show below the column headings, with a retry action, when loading the table's data failed.
+   * @type {String}
+   */
+  @property({ attribute: false }) public loadError?: string;
+
   @property({ attribute: false }) public route!: Route;
 
   /**
@@ -522,6 +528,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .data=${this.data}
                   .loading=${this.loading}
                   .noDataText=${this.noDataText}
+                  .loadError=${this.loadError}
                   .filter=${this.filter}
                   .selectable=${this._selectMode}
                   .id=${this.id}
