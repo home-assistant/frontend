@@ -4,6 +4,7 @@ import {
   mdiChevronDown,
   mdiChevronLeft,
   mdiOpenInNew,
+  mdiShield,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -12,12 +13,11 @@ import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
-import { navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
-import "../../components/entity/ha-entity-toggle";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-spinner";
@@ -63,7 +63,6 @@ import {
   type ESPHomeSetupStatus,
 } from "../../data/esphome_setup";
 import {
-  fetchHassioAddonInfo,
   fetchHassioAddonsInfo,
   installHassioAddon,
   startHassioAddon,
@@ -78,7 +77,12 @@ import { DialogMixin } from "../dialog-mixin";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-device-setup";
 
-type SetupView = "checklist" | "zwave-adapters";
+type SetupView =
+  | "checklist"
+  | "zwave-adapters"
+  | "audio-offer"
+  | "audio-working"
+  | "audio-pin";
 
 const SERIAL_PORT_TYPE_LABELS: Record<ESPHomeSerialPortType, LocalizeKeys> = {
   TTL: "ui.panel.config.devices.esphome.setup_serial_port_ttl",
@@ -177,8 +181,14 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   @state() private _installStatus?: string;
 
-  /** Optimistic guest-access value until the entity state catches up. */
-  @state() private _guestToggleOn?: boolean;
+  /** True until the Sendspin switch state catches up after we turn it on. */
+  @state() private _sendspinOptimisticOn = false;
+
+  /** Require-PIN value for the guest switch, applied when the step is finished. */
+  @state() private _pinRequired?: boolean;
+
+  /** Bumps when the user leaves the audio flow, so an in-flight step stops. */
+  private _audioFlowId = 0;
 
   private _loaded = false;
 
@@ -196,12 +206,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (this._guestToggleOn !== undefined && changedProps.has("_states")) {
-      const entityId = this._audioControls().guestEntityId;
-      const previous = changedProps.get("_states") as
-        ContextType<typeof statesContext> | undefined;
-      if (entityId && previous?.[entityId] !== this._states?.[entityId]) {
-        this._guestToggleOn = undefined;
+    if (this._sendspinOptimisticOn && changedProps.has("_states")) {
+      const entityId = this._audioControls().sendspinEntityId;
+      if (entityId && this._states?.[entityId]?.state === "on") {
+        this._sendspinOptimisticOn = false;
       }
     }
     if (
@@ -242,7 +250,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
               `
             : nothing
         }
-        ${this._renderContent()}
+        ${this._renderContent()} ${this._renderFooter()}
       </ha-dialog>
     `;
   }
@@ -266,6 +274,15 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
     if (this._view === "zwave-adapters") {
       return this._renderZWaveAdapters();
+    }
+    if (this._view === "audio-offer") {
+      return this._renderAudioOffer();
+    }
+    if (this._view === "audio-working") {
+      return this._renderAudioWorking();
+    }
+    if (this._view === "audio-pin") {
+      return this._renderAudioPin();
     }
     return this._renderChecklist();
   }
@@ -351,7 +368,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       : nothing
                   }
                   <p>${localize(CAPABILITY_DESCRIPTION_KEYS[id])}</p>
-                  ${id === "audio" ? this._renderAudioActions() : nothing}
+                  ${id === "audio" ? this._renderAudioActions(status) : nothing}
                   ${
                     id === "connectivity"
                       ? this._renderConnectivityActions(status)
@@ -383,209 +400,190 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _renderAudioActions() {
+  private _renderAudioActions(status: ESPHomeCapabilityStatus) {
     const localize = this._i18n!.localize;
-    const hassio = isComponentLoaded(this._hassConfig!.config, "hassio");
-    const musicAssistantReady = isComponentLoaded(
-      this._hassConfig!.config,
-      "music_assistant"
-    );
     const audio = this._audioControls();
+    // Finished setup only continues when there is a guest switch to configure.
+    if (status === "completed") {
+      if (!audio.guestEntityId) {
+        return nothing;
+      }
+      return html`
+        <div class="actions">
+          <ha-button appearance="outlined" @click=${this._manageSendspin}>
+            ${localize("ui.panel.config.devices.esphome.setup_manage_sendspin")}
+          </ha-button>
+        </div>
+      `;
+    }
     return html`
-      <div class="audio-players">
-        ${
-          musicAssistantReady
-            ? html`
-                <div class="audio-player stacked">
-                  <div class="audio-player-row">
-                    <span class="audio-icon">
-                      <ha-domain-icon
-                        domain="music_assistant"
-                        brand-fallback
-                      ></ha-domain-icon>
-                    </span>
-                    <span class="audio-text">
-                      <span class="audio-name">
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_music_assistant"
-                        )}
-                      </span>
-                      <span class="audio-meta">
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_installed"
-                        )}
-                      </span>
-                    </span>
-                    ${this._statusBadge("completed")}
-                  </div>
-                  <div class="actions">
-                    <ha-button
-                      appearance="outlined"
-                      @click=${this._openMusicAssistant}
-                    >
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_open_music_assistant"
-                      )}
-                    </ha-button>
-                  </div>
-                </div>
-                ${this._renderSendspinRows(audio)}
-              `
-            : html`
-                <div class="ma-flat">
-                  <div class="ma-flat-head">
-                    <span class="audio-icon">
-                      <ha-domain-icon
-                        domain="music_assistant"
-                        brand-fallback
-                      ></ha-domain-icon>
-                    </span>
-                    <span class="audio-name">
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_audio_music_assistant"
-                      )}
-                    </span>
-                  </div>
-                  <div class="ma-upsell-benefits">
-                    <div class="ma-benefit">
-                      <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-                      <span>
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_benefit_multiroom"
-                        )}
-                      </span>
-                    </div>
-                    <div class="ma-benefit">
-                      <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-                      <span>
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_benefit_lossless"
-                        )}
-                      </span>
-                    </div>
-                    <div class="ma-benefit">
-                      <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-                      <span>
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_audio_benefit_album_art"
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                  <p class="sendspin-hint">
-                    ${localize(
-                      "ui.panel.config.devices.esphome.setup_audio_install_first"
-                    )}
-                  </p>
-                  ${
-                    this._installingAudio
-                      ? html`<p class="install-status">
-                          ${this._installStatus}
-                        </p>`
-                      : nothing
-                  }
-                  <div class="actions">
-                    ${
-                      hassio
-                        ? html`
-                            <ha-button
-                              .loading=${this._installingAudio}
-                              @click=${this._installMusicAssistant}
-                            >
-                              ${localize(
-                                "ui.panel.config.devices.esphome.setup_install_music_assistant"
-                              )}
-                            </ha-button>
-                          `
-                        : nothing
-                    }
-                    <ha-button
-                      appearance="plain"
-                      href=${MUSIC_ASSISTANT_DOCS_URL}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_learn_more"
-                      )}
-                      <ha-svg-icon
-                        slot="end"
-                        .path=${mdiOpenInNew}
-                      ></ha-svg-icon>
-                    </ha-button>
-                  </div>
-                </div>
-              `
-        }
+      <div class="actions">
+        <ha-button @click=${this._startAudioFlow}>
+          ${localize(
+            "ui.panel.config.devices.esphome.setup_enable_stream_audio"
+          )}
+        </ha-button>
       </div>
     `;
   }
 
-  private _renderSendspinRows(audio: ESPHomeAudioControls) {
-    if (!audio.sendspinEntityId && !audio.guestEntityId) {
-      return nothing;
-    }
+  private _renderAudioOffer() {
     const localize = this._i18n!.localize;
-    const sendspinBlocked = !audio.sendspinOn;
-    const guestDisabled = sendspinBlocked || !audio.guestAvailable;
     return html`
-      <div class="sendspin-list">
-        ${
-          audio.sendspinEntityId
-            ? html`
-                <div class="sendspin-row">
-                  <span class="sendspin-text">
-                    <span class="audio-name">
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_audio_sendspin"
-                      )}
-                    </span>
-                    <span class="audio-meta">
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_audio_sendspin_meta"
-                      )}
-                    </span>
-                  </span>
-                  <ha-entity-toggle
-                    .stateObj=${this._states?.[audio.sendspinEntityId]}
-                  ></ha-entity-toggle>
-                </div>
-              `
-            : nothing
-        }
-        ${
-          audio.guestEntityId
-            ? html`
-                <div class="sendspin-row ${guestDisabled ? "is-disabled" : ""}">
-                  <span class="sendspin-text">
-                    <span class="audio-name">
-                      ${localize(
-                        "ui.panel.config.devices.esphome.setup_audio_guest"
-                      )}
-                    </span>
-                    <span class="audio-meta">
-                      ${localize(
-                        sendspinBlocked
-                          ? "ui.panel.config.devices.esphome.setup_audio_guest_needs_sendspin"
-                          : "ui.panel.config.devices.esphome.setup_audio_guest_meta"
-                      )}
-                    </span>
-                  </span>
-                  <ha-switch
-                    .checked=${
-                      sendspinBlocked
-                        ? false
-                        : (this._guestToggleOn ?? audio.guestOn)
-                    }
-                    .disabled=${guestDisabled}
-                    @change=${this._guestToggled}
-                  ></ha-switch>
-                </div>
-              `
-            : nothing
-        }
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+      <div class="ma-offer">
+        <div class="ma-offer-head">
+          <span class="audio-icon">
+            <ha-domain-icon
+              domain="music_assistant"
+              brand-fallback
+            ></ha-domain-icon>
+          </span>
+          <span class="audio-text">
+            <span class="audio-name">
+              ${localize(
+                "ui.panel.config.devices.esphome.setup_audio_music_assistant"
+              )}
+            </span>
+            <span class="audio-meta">
+              ${localize("ui.panel.config.devices.esphome.setup_audio_byline")}
+            </span>
+          </span>
+        </div>
+        <p>
+          ${localize("ui.panel.config.devices.esphome.setup_audio_offer_body")}
+        </p>
+        <div class="ma-benefits">
+          ${this._renderBenefit(
+            "ui.panel.config.devices.esphome.setup_audio_benefit_multiroom"
+          )}
+          ${this._renderBenefit(
+            "ui.panel.config.devices.esphome.setup_audio_benefit_lossless"
+          )}
+          ${this._renderBenefit(
+            "ui.panel.config.devices.esphome.setup_audio_benefit_album_art"
+          )}
+        </div>
       </div>
     `;
+  }
+
+  private _renderBenefit(key: LocalizeKeys) {
+    return html`
+      <div class="ma-benefit">
+        <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
+        <span>${this._i18n!.localize(key)}</span>
+      </div>
+    `;
+  }
+
+  private _renderAudioWorking() {
+    return html`
+      <div class="audio-working">
+        <ha-spinner></ha-spinner>
+        ${this._installStatus ? html`<p>${this._installStatus}</p>` : nothing}
+      </div>
+    `;
+  }
+
+  private _renderAudioPin() {
+    const localize = this._i18n!.localize;
+    const audio = this._audioControls();
+    const pinDisabled =
+      Boolean(audio.sendspinEntityId) && !this._sendspinIsOn(audio);
+    return html`
+      <div class="pin-screen">
+        <span class="pin-hero">
+          <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
+        </span>
+        <h3 class="pin-title">
+          ${localize("ui.panel.config.devices.esphome.setup_require_pin_title")}
+        </h3>
+        <p>
+          ${localize("ui.panel.config.devices.esphome.setup_require_pin_body")}
+        </p>
+        <div class="pin-row ${pinDisabled ? "is-disabled" : ""}">
+          <span class="audio-text">
+            <span class="audio-name">
+              ${localize("ui.panel.config.devices.esphome.setup_require_pin")}
+            </span>
+            <span class="audio-meta">
+              ${localize(
+                "ui.panel.config.devices.esphome.setup_require_pin_meta"
+              )}
+            </span>
+          </span>
+          <ha-switch
+            .checked=${pinDisabled ? false : Boolean(this._pinRequired)}
+            .disabled=${pinDisabled}
+            @change=${this._pinToggled}
+          ></ha-switch>
+        </div>
+      </div>
+    `;
+  }
+
+  private _renderFooter() {
+    if (!this._i18n || !this._hassConfig) {
+      return nothing;
+    }
+    const localize = this._i18n.localize;
+    if (this._view === "audio-offer") {
+      const hassio = isComponentLoaded(this._hassConfig.config, "hassio");
+      return html`
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._skipMusicAssistant}
+          >
+            ${localize("ui.panel.config.devices.esphome.setup_audio_skip")}
+          </ha-button>
+          ${
+            hassio
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    .loading=${this._installingAudio}
+                    @click=${this._installMusicAssistant}
+                  >
+                    ${localize(
+                      "ui.panel.config.devices.esphome.setup_install_music_assistant"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="primaryAction"
+                    appearance="plain"
+                    href=${MUSIC_ASSISTANT_DOCS_URL}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    ${localize(
+                      "ui.panel.config.devices.esphome.setup_learn_more"
+                    )}
+                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-button>
+                `
+          }
+        </ha-dialog-footer>
+      `;
+    }
+    if (this._view === "audio-pin") {
+      return html`
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" @click=${this._finishPin}>
+            ${localize("ui.panel.config.devices.esphome.setup_finish")}
+          </ha-button>
+        </ha-dialog-footer>
+      `;
+    }
+    return nothing;
   }
 
   private _renderConnectivityActions(status: ESPHomeCapabilityStatus) {
@@ -764,6 +762,17 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (this._view === "zwave-adapters") {
       return localize("ui.panel.config.devices.esphome.setup_adapters_title");
     }
+    if (this._view === "audio-offer") {
+      return localize(
+        "ui.panel.config.devices.esphome.setup_audio_offer_title"
+      );
+    }
+    if (this._view === "audio-working") {
+      return localize("ui.panel.config.devices.esphome.setup_audio_sendspin");
+    }
+    if (this._view === "audio-pin") {
+      return localize("ui.panel.config.devices.esphome.setup_protect_speaker");
+    }
     return localize("ui.panel.config.devices.esphome.setup_title");
   }
 
@@ -776,7 +785,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       mediaPlayerSupported:
         Boolean(this.params.mediaPlayerSupported) || audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
-      sendspinEnabled: audio.sendspinOn,
+      sendspinEnabled: this._sendspinIsOn(audio),
       musicAssistantLoaded: isComponentLoaded(
         this._hassConfig.config,
         "music_assistant"
@@ -856,7 +865,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   }
 
   private _showChecklist = () => {
+    this._audioFlowId += 1;
     this._view = "checklist";
+    this._installingAudio = false;
+    this._installStatus = undefined;
+    this._pinRequired = undefined;
   };
 
   private _showZWaveAdapters = (ev: Event) => {
@@ -887,56 +900,166 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return key ? this._i18n!.localize(key) : portType;
   }
 
-  private _guestToggled = async (
-    ev: Event & HASSDomTargetEvent<HaSwitch>
-  ): Promise<void> => {
+  private _sendspinIsOn(audio: ESPHomeAudioControls): boolean {
+    return this._sendspinOptimisticOn || audio.sendspinOn;
+  }
+
+  private _audioFlowCurrent(flowId: number): boolean {
+    return this.isConnected && this._audioFlowId === flowId;
+  }
+
+  private _startAudioFlow = (ev: Event) => {
     ev.stopPropagation();
-    const audio = this._audioControls();
-    const entityId = audio.guestEntityId;
-    if (!entityId || !audio.sendspinOn || !this._api) {
+    if (!isComponentLoaded(this._hassConfig!.config, "music_assistant")) {
+      this._view = "audio-offer";
       return;
     }
-    const guestOn = ev.target.checked;
-    const turnOn = audio.guestRequiresPin ? !guestOn : guestOn;
+    void this._continueAfterMusicAssistant(this._audioFlowId);
+  };
+
+  private _skipMusicAssistant = (ev: Event) => {
+    ev.stopPropagation();
+    void this._continueAfterMusicAssistant(this._audioFlowId);
+  };
+
+  private _manageSendspin = (ev: Event) => {
+    ev.stopPropagation();
+    this._openPinScreen();
+  };
+
+  private _pinToggled = (ev: Event & HASSDomTargetEvent<HaSwitch>) => {
+    this._pinRequired = ev.target.checked;
+  };
+
+  /**
+   * After Music Assistant is installed or skipped: turn Sendspin on, then the
+   * PIN step when that switch exists.
+   */
+  private async _continueAfterMusicAssistant(flowId: number) {
+    if (!this._audioFlowCurrent(flowId)) {
+      return;
+    }
+    const audio = this._audioControls();
+    if (audio.sendspinEntityId && !this._sendspinIsOn(audio)) {
+      const enabled = await this._enableSendspin(
+        flowId,
+        audio.sendspinEntityId
+      );
+      if (!enabled || !this._audioFlowCurrent(flowId)) {
+        return;
+      }
+    }
+    if (!this._audioFlowCurrent(flowId)) {
+      return;
+    }
+    if (this._audioControls().guestEntityId) {
+      this._openPinScreen();
+      return;
+    }
+    this._view = "checklist";
+    this._installStatus = undefined;
+  }
+
+  private async _enableSendspin(
+    flowId: number,
+    entityId: string
+  ): Promise<boolean> {
+    if (!this._api || !this._i18n || !this._audioFlowCurrent(flowId)) {
+      return false;
+    }
+    this._view = "audio-working";
+    this._installingAudio = true;
+    this._installStatus = this._i18n.localize(
+      "ui.panel.config.devices.esphome.setup_enabling_sendspin"
+    );
     const stateBefore = this._states?.[entityId];
-    this._guestToggleOn = guestOn;
     try {
-      await this._api.callService("switch", turnOn ? "turn_on" : "turn_off", {
+      await this._api.callService("switch", "turn_on", {
         entity_id: entityId,
       });
-    } catch {
-      // callService already shows the failure toast.
-      this._guestToggleOn = undefined;
-    } finally {
-      // Same two-second resync as ha-entity-toggle when the state does not follow.
+      if (!this._audioFlowCurrent(flowId)) {
+        return false;
+      }
+      this._sendspinOptimisticOn = true;
       window.setTimeout(() => {
         if (
           this._states?.[entityId] === stateBefore &&
-          this._guestToggleOn !== undefined
+          this._sendspinOptimisticOn
         ) {
-          this._guestToggleOn = undefined;
+          this._sendspinOptimisticOn = false;
         }
       }, SWITCH_RESYNC_MS);
+      return true;
+    } catch {
+      // callService already shows the failure toast.
+      if (this._audioFlowCurrent(flowId)) {
+        this._view = "checklist";
+        this._installStatus = undefined;
+      }
+      return false;
+    } finally {
+      if (this._audioFlowCurrent(flowId)) {
+        this._installingAudio = false;
+      }
     }
+  }
+
+  private _openPinScreen() {
+    const audio = this._audioControls();
+    this._pinRequired = audio.guestRequiresPin ? audio.guestOn : !audio.guestOn;
+    this._installStatus = undefined;
+    this._view = "audio-pin";
+  }
+
+  private _finishPin = async (ev: Event) => {
+    ev.stopPropagation();
+    const audio = this._audioControls();
+    const entityId = audio.guestEntityId;
+    const pinRequired = this._pinRequired ?? false;
+    const sendspinAllows = !audio.sendspinEntityId || this._sendspinIsOn(audio);
+    if (entityId && this._api && sendspinAllows) {
+      const turnOn = audio.guestRequiresPin ? pinRequired : !pinRequired;
+      if (turnOn !== audio.guestOn) {
+        try {
+          await this._api.callService(
+            "switch",
+            turnOn ? "turn_on" : "turn_off",
+            { entity_id: entityId }
+          );
+        } catch {
+          // callService already shows the failure toast.
+        }
+      }
+    }
+    this._pinRequired = undefined;
+    this._view = "checklist";
   };
 
-  private async _installMusicAssistant(ev: Event) {
+  private _installMusicAssistant = async (ev: Event) => {
     ev.stopPropagation();
     if (!this._api || !this._i18n || !this._connection) {
       return;
     }
+    const flowId = this._audioFlowId;
+    this._view = "audio-working";
     this._installingAudio = true;
     this._error = undefined;
+    this._installStatus = this._i18n.localize(
+      "ui.panel.config.devices.esphome.setup_installing_music_assistant"
+    );
     try {
       const { addons } = await fetchHassioAddonsInfo(this._api);
+      if (!this._audioFlowCurrent(flowId)) {
+        return;
+      }
       const addon = addons.find(
         (item) => item.slug === MUSIC_ASSISTANT_ADDON_SLUG
       );
       if (!addon) {
-        this._installStatus = this._i18n.localize(
-          "ui.panel.config.devices.esphome.setup_installing_music_assistant"
-        );
         await installHassioAddon(this._api.callWS, MUSIC_ASSISTANT_ADDON_SLUG);
+      }
+      if (!this._audioFlowCurrent(flowId)) {
+        return;
       }
       if (!addon || addon.state !== "started") {
         this._installStatus = this._i18n.localize(
@@ -944,12 +1067,19 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         );
         await startHassioAddon(this._api.callWS, MUSIC_ASSISTANT_ADDON_SLUG);
       }
+      if (!this._audioFlowCurrent(flowId)) {
+        return;
+      }
       this._installStatus = this._i18n.localize(
         "ui.panel.config.devices.esphome.setup_discovering_music_assistant"
       );
-      await this._openMusicAssistantFlow();
+      await this._openMusicAssistantFlow(flowId);
     } catch (err: unknown) {
+      if (!this._audioFlowCurrent(flowId) || !this._i18n) {
+        return;
+      }
       this._error = extractApiErrorMessage(err);
+      this._view = "audio-offer";
       await showAlertDialog(this, {
         title: this._i18n.localize(
           "ui.panel.config.devices.esphome.setup_error_music_assistant"
@@ -957,33 +1087,35 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         text: this._error,
       });
     } finally {
-      this._installingAudio = false;
-      this._installStatus = undefined;
+      if (this._audioFlowCurrent(flowId)) {
+        this._installingAudio = false;
+      }
     }
-  }
+  };
 
-  private async _openMusicAssistantFlow() {
+  private async _openMusicAssistantFlow(flowId: number) {
     if (!this._connection) {
       return;
     }
     const flow = await this._waitForHassioMusicAssistantFlow();
-    if (!this.isConnected) {
+    if (!this._audioFlowCurrent(flowId)) {
       return;
     }
+    const continueSetup = () => {
+      if (this._audioFlowCurrent(flowId)) {
+        void this._continueAfterMusicAssistant(flowId);
+      }
+    };
     if (flow) {
       showConfigFlowDialog(this, {
         continueFlowId: flow.flow_id,
-        dialogClosedCallback: () => {
-          this._load();
-        },
+        dialogClosedCallback: continueSetup,
       });
       return;
     }
     showConfigFlowDialog(this, {
       startFlowHandler: "music_assistant",
-      dialogClosedCallback: () => {
-        this._load();
-      },
+      dialogClosedCallback: continueSetup,
     });
   }
 
@@ -1033,30 +1165,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         })
         .catch(() => this._finishMusicAssistantDiscovery(undefined));
     });
-  }
-
-  private async _openMusicAssistant(ev: Event) {
-    ev.stopPropagation();
-    if (
-      this._api &&
-      this._hassConfig &&
-      isComponentLoaded(this._hassConfig.config, "hassio")
-    ) {
-      try {
-        const addon = await fetchHassioAddonInfo(
-          this._api.callWS,
-          MUSIC_ASSISTANT_ADDON_SLUG
-        );
-        if (addon.ingress) {
-          navigate(`/app/${MUSIC_ASSISTANT_ADDON_SLUG}`);
-          this.closeDialog();
-          return;
-        }
-      } catch (_err) {
-        // Fall through to the public Music Assistant site.
-      }
-    }
-    window.open(MUSIC_ASSISTANT_DOCS_URL, "_blank", "noreferrer");
   }
 
   private async _setupZWave(ev: Event) {
@@ -1231,29 +1339,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           align-items: center;
           gap: var(--ha-space-2);
         }
-        .audio-players {
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-2);
-        }
-        .audio-player {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-3);
-          padding: var(--ha-space-3);
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-lg);
-          background: var(--card-background-color);
-        }
-        .audio-player.stacked {
-          flex-direction: column;
-          align-items: stretch;
-          gap: var(--ha-space-3);
-        }
-        .audio-player-row {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-3);
+        ha-dialog-footer > ha-button[slot="secondaryAction"] {
+          margin-inline-end: auto;
         }
         .audio-icon {
           display: flex;
@@ -1299,48 +1386,74 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           background: var(--success-color);
           color: var(--ha-color-on-success-loud);
         }
-        .ma-flat {
+        .ma-offer {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
-          padding: var(--ha-space-4);
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-lg);
-          background: var(--card-background-color);
         }
-        .ma-flat-head {
+        .ma-offer-head {
           display: flex;
           align-items: center;
           gap: var(--ha-space-3);
         }
-        .sendspin-hint {
+        .ma-offer p,
+        .pin-screen p,
+        .audio-working p {
           margin: 0;
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-normal);
         }
-        .sendspin-list {
+        .audio-working {
           display: flex;
           flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-4);
+          padding: var(--ha-space-10) 0;
         }
-        .sendspin-row {
+        .pin-screen {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-3);
+          text-align: center;
+        }
+        .pin-hero {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 56px;
+          height: 56px;
+          border-radius: var(--ha-border-radius-circle);
+          background: color-mix(
+            in srgb,
+            var(--light-green-color) 12%,
+            transparent
+          );
+          color: var(--light-green-color);
+        }
+        .pin-hero ha-svg-icon {
+          --mdc-icon-size: 30px;
+        }
+        .pin-title {
+          margin: 0;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+        }
+        .pin-row {
           display: flex;
           align-items: center;
           gap: var(--ha-space-4);
-          min-height: 52px;
-          padding: var(--ha-space-2) var(--ha-space-1);
+          width: 100%;
+          margin-top: var(--ha-space-2);
+          padding: var(--ha-space-3) var(--ha-space-4);
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-lg);
+          background: var(--card-background-color);
+          text-align: start;
         }
-        .sendspin-row + .sendspin-row {
-          border-top: 1px solid var(--divider-color);
-        }
-        .sendspin-text {
-          display: flex;
-          flex: 1;
-          flex-direction: column;
-          gap: 2px;
-          min-width: 0;
-        }
-        .sendspin-row.is-disabled .audio-name,
-        .sendspin-row.is-disabled .audio-meta {
+        .pin-row.is-disabled .audio-name,
+        .pin-row.is-disabled .audio-meta {
           opacity: 0.55;
         }
         .sendspin-lockup {
@@ -1355,7 +1468,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         .sendspin-lockup.dark {
           filter: invert(1) hue-rotate(180deg);
         }
-        .ma-upsell-benefits {
+        .ma-benefits {
           display: flex;
           flex-direction: column;
           gap: 9px;
@@ -1369,7 +1482,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         }
         .ma-benefit ha-svg-icon {
           flex-shrink: 0;
-          color: var(--capability-accent, var(--success-color));
+          color: var(--light-green-color);
           --mdc-icon-size: 16px;
         }
         .ports {
