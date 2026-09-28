@@ -19,6 +19,7 @@ import type {
   EMIncomingMessageImprovDeviceSetupDone,
   EMIncomingMessageBarCodeScanResult,
   EMIncomingMessageBarCodeScanAborted,
+  EMIncomingMessageModalAction,
 } from "../../src/external_app/external_messaging";
 
 vi.mock("../../src/common/dom/fire_event", () => ({
@@ -279,6 +280,30 @@ describe("handleExternalMessage", () => {
     expect(listener).toHaveBeenCalledWith(msg);
     expect(fireMessage).toHaveBeenCalledWith({
       id: 12,
+      type: "result",
+      success: true,
+      result: null,
+    });
+    expect(result).toBe(true);
+  });
+
+  // The page inside a native modal listens for this and answers as its own
+  // header button would; nothing here knows what the id means.
+  it("handles modal/action command", () => {
+    const msg: EMIncomingMessageModalAction = {
+      type: "command",
+      command: "modal/action",
+      id: 13,
+      payload: { id: "history" },
+    };
+
+    const result = handleExternalMessage(hassMainEl, msg);
+
+    expect(fireEvent).toHaveBeenCalledWith(hassMainEl, "native-modal-action", {
+      id: "history",
+    });
+    expect(fireMessage).toHaveBeenCalledWith({
+      id: 13,
       type: "result",
       success: true,
       result: null,

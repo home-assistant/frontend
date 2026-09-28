@@ -7,7 +7,10 @@ import {
   createMoreInfoUrl,
   removeMoreInfoUrl,
 } from "../common/url/more-info-query-params";
+import { createNativeModalDialogUrl } from "../common/url/native-modal-url";
 import { showDialog } from "../dialogs/make-dialog-manager";
+import { computeMoreInfoHeader } from "../dialogs/more-info/compute-more-info-header";
+import { computeMoreInfoModalSize } from "../dialogs/more-info/more-info-modal-size";
 import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
@@ -35,12 +38,40 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       ev: HASSDomEvent<HASSDomEvents["hass-more-info"]>
     ) {
       const view = ev.detail.view || ev.detail.tab || "info";
+
+      // The app shows the frontend's route in a modal of its own, so hand it the
+      // modal route instead of opening the dialog. The modal carries the entity
+      // in its own URL, so this page keeps the one it has: a page already inside
+      // a modal would otherwise follow the entity it is asking for and change
+      // under the modal opening over it. A null entity id would only close a
+      // dialog, and none is open.
+      const external = this.hass!.auth.external;
+      if (external?.config.hasNativeModal) {
+        const entityId = ev.detail.entityId;
+        if (entityId) {
+          // The app draws the header itself, so it gets what the dialog would show.
+          external.fireMessage({
+            type: "modal/open",
+            payload: {
+              path: createNativeModalDialogUrl({
+                tag: "ha-more-info-dialog",
+                params: { entityId, view },
+              }),
+              ...computeMoreInfoHeader(this.hass!, entityId),
+              size: computeMoreInfoModalSize(entityId),
+            },
+          });
+        }
+        return;
+      }
+
       const currentUrl = `${mainWindow.location.pathname}${mainWindow.location.search}${mainWindow.location.hash}`;
       const returnUrl = ev.detail.fromUrl
         ? removeMoreInfoUrl(currentUrl)
         : currentUrl;
 
       replaceCurrentUrl(returnUrl);
+
       const shown = await showDialog(
         this,
         "ha-more-info-dialog",
