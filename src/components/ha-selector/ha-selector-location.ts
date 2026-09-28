@@ -12,7 +12,10 @@ import type { OpenStreetMapPlace } from "../../data/openstreetmap";
 import { searchPlaces } from "../../data/openstreetmap";
 import type { HomeAssistant } from "../../types";
 import type { SchemaUnion } from "../ha-form/types";
-import type { MarkerLocation } from "../map/ha-locations-editor";
+import type {
+  HaLocationsEditor,
+  MarkerLocation,
+} from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
 import "../ha-alert";
@@ -45,6 +48,8 @@ export class HaLocationSelector extends LitElement {
   @state() private _searchError = false;
 
   @query("ha-input") private _input?: HaInput;
+
+  @query("ha-locations-editor") private _map!: HaLocationsEditor;
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc, radius?: boolean, radius_readonly?: boolean) =>
@@ -368,7 +373,7 @@ export class HaLocationSelector extends LitElement {
     `;
   };
 
-  private _placeSelected(ev: Event) {
+  private async _placeSelected(ev: Event) {
     const placeId = (ev.currentTarget as HTMLElement & { placeId: number })
       .placeId;
 
@@ -387,6 +392,8 @@ export class HaLocationSelector extends LitElement {
     });
 
     this._places = undefined;
+    await this.updateComplete;
+    await this._map.fitMarker("location");
   }
 
   static styles = css`
