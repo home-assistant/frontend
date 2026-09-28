@@ -74,7 +74,9 @@ const checkSprites = (name, style, sheet) => {
 
 const buildMapAssets = async () => {
   await fs.emptyDir(outputDir);
-  const sheet = await fs.readJson(path.join(spritesDir, `${SPRITE_SHEET}.json`));
+  const sheet = await fs.readJson(
+    path.join(spritesDir, `${SPRITE_SHEET}.json`)
+  );
 
   await Promise.all(
     // Both themes up front: dark is a real cartography, not an inverted raster.
