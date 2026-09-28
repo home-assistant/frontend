@@ -2,7 +2,6 @@ import { deleteSync } from "del";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import gulp from "gulp";
 import { join, resolve } from "node:path";
-import { runInNewContext } from "node:vm";
 import paths from "../paths.cjs";
 
 const formatjsDir = join(paths.root_dir, "node_modules", "@formatjs");
@@ -40,26 +39,32 @@ const convertToJSON = async (
     }
     throw e;
   }
-  let data;
-  try {
-    runInNewContext(localeData, {
-      Intl: {
-        [INTL_POLYFILLS[pkg]]: {
-          [addFunc]: (d) => {
-            data = d;
-          },
-        },
-      },
-    });
-  } catch (e) {
-    throw Error(
-      `Failed to evaluate data for language ${lang} from ${pkg}: ${e}`
-    );
-  }
-  if (!data) {
+  // Convert to JSON
+  const parts = localeData.split("} else {");
+  const firstBlock = parts[0];
+  const obj = INTL_POLYFILLS[pkg];
+  const dataRegex = new RegExp(
+    `Intl\\.${obj}\\.${addFunc}\\((?<data>.*)\\)`,
+    "s"
+  );
+  const encodedData = localeData.match(
+    /\(JSON\.parse\((?<data>"(?:[^"\\]|\\.)*")\)\);?\s*$/s
+  )?.groups?.data;
+  localeData = firstBlock.match(dataRegex)?.groups?.data;
+  if (!localeData && !encodedData) {
     throw Error(`Failed to extract data for language ${lang} from ${pkg}`);
   }
-  await writeFile(join(outDir, `${pkg}/${lang}.json`), JSON.stringify(data));
+  // Parse to validate JSON, then stringify to minify
+  try {
+    localeData = JSON.stringify(
+      JSON.parse(localeData || JSON.parse(encodedData))
+    );
+    await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
+  } catch (e) {
+    throw Error(`Failed to parse JSON for language ${lang} from ${pkg}: ${e}`, {
+      cause: e,
+    });
+  }
 };
 
 gulp.task("clean-locale-data", async () => deleteSync([outDir]));
