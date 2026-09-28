@@ -305,6 +305,7 @@ export interface SeverityConfig {
 
 export interface GaugeSegment {
   from: number;
+  to?: number;
   color: string;
   label?: string;
 }

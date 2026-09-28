@@ -1,6 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { PropertyValues } from "lit";
-import { css, LitElement, svg } from "lit";
+import { css, LitElement, svg, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/number/format_number";
@@ -16,12 +16,16 @@ const getAngle = (value: number, min: number, max: number) => {
 
 export interface LevelDefinition {
   level: number;
+  level_to?: number;
   stroke: string;
   label?: string;
 }
 
 @customElement("ha-gauge")
 export class HaGauge extends LitElement {
+  @property({ type: Boolean, attribute: "preserve-order" })
+  public preserveOrder = false;
+
   @property({ type: Number }) public min = 0;
 
   @property({ type: Number }) public max = 100;
@@ -89,18 +93,28 @@ export class HaGauge extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("levels") || changedProperties.has("min")) {
+    if (
+      changedProperties.has("levels") ||
+      changedProperties.has("min") ||
+      changedProperties.has("preserveOrder")
+    ) {
       if (this.levels) {
-        this._sortedLevels = [...this.levels].sort((a, b) => a.level - b.level);
+        if (this.preserveOrder) {
+          this._sortedLevels = [...this.levels];
+        } else {
+          this._sortedLevels = [...this.levels].sort(
+            (a, b) => a.level - b.level
+          );
 
-        if (
-          this._sortedLevels.length > 0 &&
-          this._sortedLevels[0].level !== this.min
-        ) {
-          this._sortedLevels.unshift({
-            level: this.min,
-            stroke: "var(--info-color)",
-          });
+          if (
+            this._sortedLevels.length > 0 &&
+            this._sortedLevels[0].level !== this.min
+          ) {
+            this._sortedLevels.unshift({
+              level: this.min,
+              stroke: "var(--info-color)",
+            });
+          }
         }
       } else {
         this._sortedLevels = undefined;
@@ -142,7 +156,13 @@ export class HaGauge extends LitElement {
 
         ${this._sortedLevels?.map((level, i, arr) => {
           const startLevel = level.level;
-          const endLevel = i + 1 < arr.length ? arr[i + 1].level : this.max;
+          const endLevel =
+            level.level_to ??
+            (i + 1 < arr.length ? arr[i + 1].level : this.max);
+
+          if (startLevel >= endLevel) {
+            return nothing;
+          }
 
           const startAngle = getAngle(startLevel, this.min, this.max);
           const endAngle = getAngle(endLevel, this.min, this.max);
@@ -151,8 +171,18 @@ export class HaGauge extends LitElement {
           const x1 = -arcRadius * Math.cos((startAngle * Math.PI) / 180);
           const y1 = -arcRadius * Math.sin((startAngle * Math.PI) / 180);
 
-          const isFirst = i === 0;
-          const isLast = i === arr.length - 1;
+          let x2 = 40;
+          let y2 = 0;
+          if (
+            level.level_to !== undefined ||
+            (i + 1 < arr.length && !this.preserveOrder)
+          ) {
+            x2 = -arcRadius * Math.cos((endAngle * Math.PI) / 180);
+            y2 = -arcRadius * Math.sin((endAngle * Math.PI) / 180);
+          }
+
+          const isFirst = i === 0 && !this.preserveOrder;
+          const isLast = i === arr.length - 1 && !this.preserveOrder;
 
           if (isFirst) {
             return svg`
@@ -160,12 +190,12 @@ export class HaGauge extends LitElement {
                 class="level"
                 stroke="${level.stroke}"
                 style="stroke-linecap: butt"
-                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0"
+                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
               />
             `;
           }
 
-          if (isLast) {
+          if (isLast && level.level_to === undefined) {
             const offsetAngle = 0.5;
             const midAngle = endAngle - offsetAngle;
             const xm = -arcRadius * Math.cos((midAngle * Math.PI) / 180);
@@ -173,7 +203,7 @@ export class HaGauge extends LitElement {
 
             return svg`
                 <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
-                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0" />
+                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}" />
                 <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
                       d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 40 0" />
             `;
@@ -184,7 +214,7 @@ export class HaGauge extends LitElement {
               class="level"
               stroke="${level.stroke}"
               style="stroke-linecap: butt"
-              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0"
+              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
             ></path>
           `;
         })}

@@ -168,6 +168,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           })}
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
+          .preserveOrder=${!!this._config.segments}
         ></ha-gauge>
         <p class="title" .title=${name}>${name}</p>
       </ha-card>
@@ -204,17 +205,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     // new format
-    let segments = this._config!.segments;
+    const segments = this._config!.segments;
     if (segments) {
-      segments = [...segments].sort((a, b) => a.from - b.from);
-
-      for (let i = 0; i < segments.length; i++) {
+      // Evaluate in reverse order so the last drawn (top) segment wins
+      for (let i = segments.length - 1; i >= 0; i--) {
         const segment = segments[i];
-        if (
-          segment &&
-          numberValue >= segment.from &&
-          (i + 1 === segments.length || numberValue < segments[i + 1]?.from)
-        ) {
+        if (!segment) continue;
+
+        const from = segment.from;
+        const to = segment.to ?? this._config!.max ?? DEFAULT_MAX;
+
+        if (numberValue >= from && numberValue <= to) {
           return segment.color;
         }
       }
@@ -259,6 +260,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (segments) {
       return segments.map((segment) => ({
         level: segment?.from,
+        level_to: segment?.to,
         stroke: segment?.color,
         label: segment?.label,
       }));
