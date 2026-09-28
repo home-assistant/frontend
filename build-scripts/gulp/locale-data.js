@@ -47,16 +47,23 @@ const convertToJSON = async (
     `Intl\\.${obj}\\.${addFunc}\\((?<data>.*)\\)`,
     "s"
   );
+  const encodedData = localeData.match(
+    /JSON\.parse\((?<data>"(?:[^"\\]|\\.)*")\)/
+  )?.groups?.data;
   localeData = firstBlock.match(dataRegex)?.groups?.data;
-  if (!localeData) {
+  if (!localeData && !encodedData) {
     throw Error(`Failed to extract data for language ${lang} from ${pkg}`);
   }
   // Parse to validate JSON, then stringify to minify
   try {
-    localeData = JSON.stringify(JSON.parse(localeData));
+    localeData = JSON.stringify(
+      JSON.parse(encodedData ? JSON.parse(encodedData) : localeData)
+    );
     await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
   } catch (e) {
-    throw Error(`Failed to parse JSON for language ${lang} from ${pkg}: ${e}`);
+    throw Error(`Failed to parse JSON for language ${lang} from ${pkg}: ${e}`, {
+      cause: e,
+    });
   }
 };
 
