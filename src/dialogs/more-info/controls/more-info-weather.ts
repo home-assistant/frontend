@@ -567,6 +567,7 @@ class MoreInfoWeather extends LitElement {
         .attribution {
           text-align: center;
           margin-top: var(--ha-space-4);
+          direction: ltr;
         }
 
         .time-ago,
@@ -642,6 +643,7 @@ class MoreInfoWeather extends LitElement {
         .attribute {
           font-size: var(--ha-font-size-m);
           line-height: 1;
+          direction: ltr;
         }
 
         .name-state {

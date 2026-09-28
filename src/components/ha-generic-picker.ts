@@ -360,7 +360,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         this._initialFieldValue = undefined;
       }
       if (
-        this._hassConfig?.auth.external &&
+        this._hassConfig?.auth?.external &&
         isIosApp(this._hassConfig.auth.external)
       ) {
         this._hassConfig.auth.external.fireMessage({

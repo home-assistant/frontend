@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
   mdiCommentEditOutline,
@@ -25,7 +24,10 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
+import {
+  ACTION_BUILDING_BLOCKS,
+  getAutomationActionType,
+} from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import { domainToName } from "../../../../data/integration";
@@ -37,11 +39,12 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import "../action/ha-automation-action-editor";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-sidebar-action")
 export default class HaAutomationSidebarAction extends LitElement {
@@ -217,17 +220,7 @@ export default class HaAutomationSidebarAction extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span>C</span>
                 </span>`
@@ -248,17 +241,7 @@ export default class HaAutomationSidebarAction extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span>X</span>
                 </span>`
@@ -282,17 +265,7 @@ export default class HaAutomationSidebarAction extends LitElement {
                   ${
                     !this.narrow
                       ? html`<span class="shortcut">
-                          <span
-                            >${
-                              isMac
-                                ? html`<ha-svg-icon
-                                    .path=${mdiAppleKeyboardCommand}
-                                  ></ha-svg-icon>`
-                                : this.hass.localize(
-                                    "ui.panel.config.automation.editor.ctrl"
-                                  )
-                            }</span
-                          >
+                          <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                           <span>+</span>
                           <span>V</span>
                         </span>`
@@ -376,17 +349,7 @@ export default class HaAutomationSidebarAction extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span
                     >${this.hass.localize(

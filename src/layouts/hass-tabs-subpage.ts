@@ -352,7 +352,9 @@ export class HassTabsSubpage extends LitElement {
           position: absolute;
           bottom: 0;
           left: 0;
-          padding: 0 16px;
+          padding: 0 calc(16px + var(--safe-area-inset-right))
+            var(--safe-area-inset-bottom)
+            calc(16px + var(--safe-area-inset-left));
           box-sizing: border-box;
           background-color: var(--sidebar-background-color);
           border-top: 1px solid var(--divider-color);
@@ -360,7 +362,6 @@ export class HassTabsSubpage extends LitElement {
           z-index: 2;
           font-size: var(--ha-font-size-s);
           width: 100%;
-          padding-bottom: var(--safe-area-inset-bottom);
         }
 
         #tabbar:not(.bottom-bar) {
@@ -396,14 +397,13 @@ export class HassTabsSubpage extends LitElement {
         .content {
           position: relative;
           width: 100%;
-          margin-right: var(--safe-area-inset-right);
-          margin-inline-end: var(--safe-area-inset-right);
+          box-sizing: border-box;
+          padding-right: var(--safe-area-inset-right);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
         :host([narrow]) .content {
-          margin-left: var(--safe-area-inset-left);
-          margin-inline-start: var(--safe-area-inset-left);
+          padding-left: var(--safe-area-inset-left);
         }
         :host([narrow][show-tabs]) .content {
           /* Bottom bar reuses header height */

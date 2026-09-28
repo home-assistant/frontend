@@ -430,9 +430,14 @@ export class VoiceAssistantsExpose extends LitElement {
   };
 
   private async _fetchEntities() {
-    this._extEntities = await getExtendedEntityRegistryEntries(
+    const entries = await getExtendedEntityRegistryEntries(
       this.hass,
       Object.keys(this._entities)
+    );
+    this._extEntities = Object.fromEntries(
+      Object.entries(entries).filter(
+        (entry): entry is [string, ExtEntityRegistryEntry] => entry[1] !== null
+      )
     );
     this._fetchSupportedEntities();
   }
@@ -710,6 +715,9 @@ export class VoiceAssistantsExpose extends LitElement {
       extEntityReg: this._extEntities?.[entityId],
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");
+      },
+      entityEntryUpdated: (entry) => {
+        this._extEntities = { ...this._extEntities, [entityId]: entry };
       },
     });
   }

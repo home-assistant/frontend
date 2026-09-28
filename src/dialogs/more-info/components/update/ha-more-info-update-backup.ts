@@ -1,4 +1,5 @@
-import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
+import "../../../../components/skeleton/ha-skeleton";
+import "../../../../components/skeleton/ha-skeleton-text";
 import { consume } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
@@ -112,14 +113,14 @@ export class HaMoreInfoUpdateBackup extends LitElement {
         ${
           !createBackupTexts
             ? html`<ha-fade-in slot="headline" .delay=${500}
-                ><wa-skeleton effect="sheen"></wa-skeleton
+                ><ha-skeleton-text></ha-skeleton-text
               ></ha-fade-in>`
             : nothing
         }
         ${
           this._createBackupLoading
             ? html`<ha-fade-in class="skeleton-end" slot="end" .delay=${500}
-                ><wa-skeleton effect="sheen"></wa-skeleton
+                ><ha-skeleton></ha-skeleton
               ></ha-fade-in>`
             : html`<ha-switch
                 slot="end"
@@ -307,6 +308,7 @@ export class HaMoreInfoUpdateBackup extends LitElement {
       width: 48px;
       height: 24px;
       display: block;
+      --ha-skeleton-border-radius: var(--ha-border-radius-pill);
     }
   `;
 }

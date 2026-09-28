@@ -1537,7 +1537,10 @@
         "title": "Map vacuum segments to areas",
         "no_segments": "No segments available",
         "area_label": "Area",
-        "description": "Configure which areas correspond to each vacuum segment"
+        "description": "Configure which areas correspond to each vacuum segment",
+        "orphaned_header": "Segments no longer on the vacuum",
+        "orphaned_description": "These areas were mapped to segments the vacuum no longer reports. Remove them to keep the mapping up to date.",
+        "orphaned_remove": "Remove mapping for {name}"
       },
       "codemirror": {
         "open_documentation": "Open documentation"
@@ -2979,7 +2982,8 @@
           "copy_url": "Copy URL",
           "configure": "Configure",
           "error_load": "Failed to load the Model Context Protocol configuration",
-          "error_delete_entry": "Failed to disable the Model Context Protocol server"
+          "error_delete_entry": "Failed to disable the Model Context Protocol server",
+          "error_enable": "Failed to enable the Model Context Protocol server"
         },
         "apps": {
           "caption": "Apps",
@@ -3001,7 +3005,7 @@
             "not_available": "Not available"
           },
           "installed": {
-            "search": "Search apps",
+            "search": "Search {number} {number, plural,\n  one {app}\n  other {apps}\n}",
             "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
             "add_app": "Install app",
             "app_stopped": "App is stopped",
@@ -3140,7 +3144,7 @@
               },
               "rating": {
                 "title": "Security rating",
-                "description": "This shows the security rating of the app. Higher is better."
+                "description": "This shows the security rating of the app on a scale from 1 to {max}. Higher is better."
               },
               "host_network": {
                 "title": "Host network",
@@ -4716,7 +4720,7 @@
             "debug": "DEBUG"
           },
           "custom_integration": "custom integration",
-          "error_from_custom_integration": "This error originated from a custom integration.",
+          "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
@@ -4742,6 +4746,31 @@
           "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
+            "report_issue": {
+              "frontend": {
+                "introduction": "This log entry was reported by a browser (or the Home Assistant app).",
+                "report": "If you think it relates to Home Assistant’s user interface, {report_link}.",
+                "guidance": "Core, custom integrations, or custom Frontend modules may also be involved. See the {guide_link} for further guidance.",
+                "link_text": "report it on the Frontend repository"
+              },
+              "core": {
+                "introduction": "This log entry was reported by Home Assistant Core.",
+                "report": "If you think it indicates a bug, {report_link}.",
+                "guidance": "See the {guide_link} for further guidance.",
+                "link_text": "report it on the Core repository"
+              },
+              "custom": {
+                "introduction": "This log entry is from {integration}, a custom integration.",
+                "report": "If you think it indicates a bug, you can {report_link}.",
+                "link_text": "report it on its issue tracker"
+              },
+              "custom_fallback": {
+                "introduction": "This log entry is from {integration}, a custom integration. Its issue tracker is unavailable.",
+                "report": "If you think it indicates a Home Assistant Core bug, {report_link}.",
+                "guidance": "See the {guide_link} for further guidance."
+              },
+              "guide_link_text": "reporting guide"
+            },
             "source": "Source",
             "integration": "[%key:ui::components::related-items::integration%]",
             "documentation": "documentation",
@@ -4926,7 +4955,9 @@
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice",
                   "wake_word_entity": "Wake word engine",
-                  "wake_word_id": "Wake word"
+                  "wake_word_id": "Wake word",
+                  "user_id": "Acts as user",
+                  "user_id_description": "Voice requests have no user of their own. Pick one and this assistant speaks for them, so integrations that link a Home Assistant user to an account of their own use the right account."
                 },
                 "steps": {
                   "config": {
@@ -6182,9 +6213,25 @@
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
             "newer_trace": "Newer trace",
+            "previous_tracked_node": "Previous tracked node",
+            "next_tracked_node": "Next tracked node",
             "no_traces_found": "No traces found",
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
+            "graph": {
+              "node_label": "{description}, {state}",
+              "state": {
+                "executed": "executed",
+                "not_executed": "not executed",
+                "passed": "passed",
+                "failed": "failed",
+                "passed_and_failed": "passed and failed",
+                "not_triggered": "did not trigger",
+                "error": "error",
+                "disabled": "disabled",
+                "repeated": "repeated {count} times"
+              }
+            },
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",
@@ -6793,8 +6840,6 @@
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
-              "drop_connection_warning_title": "Remote login has been deactivated",
-              "drop_connection_warning": "The below security options may make it appear the system is not running.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details",
@@ -7272,6 +7317,7 @@
             "entries_helper": "Helpers",
             "entries_hardware": "Hardware",
             "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
+            "entries_virtual": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
             "yaml_entry": "This integration was not set up via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
@@ -7283,7 +7329,8 @@
             "add_helper": "Add helper",
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
           },
           "config_entry": {
             "application_credentials": {
@@ -7370,7 +7417,8 @@
               "setup_retry": "Failed setup, will retry",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload",
-              "setup_in_progress": "Initializing"
+              "setup_in_progress": "Initializing",
+              "unload_in_progress": "Unloading"
             },
             "open_configuration_url": "Visit device",
             "bronze_quality": "Bronze quality",
@@ -9062,7 +9110,7 @@
             "invalid_host": "Enter a valid IP address or hostname.",
             "invalid_network": "Enter a valid IP address or network.",
             "invalid_port": "Enter a port number between 1 and 65535.",
-            "invalid_login_attempts_threshold": "Enter a number between -1 and 1000.",
+            "invalid_login_attempts_threshold": "Enter a number between 1 and 1000.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
             "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
             "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
@@ -9097,6 +9145,7 @@
               "trusted_proxies": "Trusted proxies",
               "use_x_frame_options": "Send X-Frame-Options",
               "ip_ban_enabled": "Enable IP banning",
+              "login_attempts_unlimited": "Unlimited login attempts",
               "login_attempts_threshold": "Login attempts before ban"
             },
             "helpers": {
@@ -9110,8 +9159,9 @@
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
               "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
-              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins.",
-              "login_attempts_threshold": "Failed login attempts before an IP is banned. Set to -1 to disable automatic bans."
+              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. To remove a ban, delete the IP address from ip_bans.yaml in your configuration directory, then restart Home Assistant.",
+              "login_attempts_unlimited": "Never ban an IP address, no matter how many login attempts fail.",
+              "login_attempts_threshold": "Failed login attempts before an IP address is banned."
             }
           },
           "network_adapter": "Network adapter",
@@ -9394,7 +9444,19 @@
           },
           "map": {
             "reset_focus": "Reset focus",
-            "toggle_grouping": "Toggle grouping"
+            "toggle_grouping": "Toggle grouping",
+            "overview": {
+              "people": "People",
+              "devices": "Devices",
+              "zones": "Zones",
+              "no_people": "No people",
+              "no_devices": "No devices with a location",
+              "no_zones": "No zones",
+              "activity": "Activity",
+              "no_activity": "No recent activity",
+              "activity_unavailable": "Activity couldn't be loaded",
+              "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"
+            }
           },
           "energy": {
             "loading": "Loading…",

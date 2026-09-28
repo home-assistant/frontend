@@ -11,7 +11,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
+import {
+  stopKeydownEnterSpacePropagation,
+  stopPropagation,
+} from "../../../common/dom/stop_propagation";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
@@ -19,6 +22,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-tree-indicator";
+import "../../../components/item/ha-list-item-button";
 import {
   disableConfigEntry,
   type ConfigEntry,
@@ -74,8 +78,7 @@ class HaConfigEntryDeviceRow extends LitElement {
       area ? area.name : undefined,
     ].filter(Boolean);
 
-    return html`<ha-md-list-item
-      type="button"
+    return html`<ha-list-item-button
       @click=${this._handleNavigateToDevice}
       class=${classMap({ disabled: Boolean(device.disabled_by) })}
     >
@@ -125,15 +128,14 @@ class HaConfigEntryDeviceRow extends LitElement {
             : nothing
         }</span
       >
-      ${
-        !this.narrow ? html`<ha-icon-next slot="end"> </ha-icon-next>` : nothing
-      }
+      ${!this.narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
       <div class="vertical-divider" slot="end" @click=${stopPropagation}></div>
       ${
         !this.narrow
           ? html`<ha-icon-button
               slot="end"
               @click=${this._handleEditDeviceButton}
+              @keydown=${stopKeydownEnterSpacePropagation}
               .path=${mdiPencil}
               .label=${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.device.edit"
@@ -145,6 +147,7 @@ class HaConfigEntryDeviceRow extends LitElement {
       <ha-dropdown
         slot="end"
         @click=${stopPropagation}
+        @keydown=${stopKeydownEnterSpacePropagation}
         @wa-select=${this._handleMenuAction}
       >
         <ha-icon-button
@@ -221,7 +224,7 @@ class HaConfigEntryDeviceRow extends LitElement {
             : nothing
         }
       </ha-dropdown>
-    </ha-md-list-item> `;
+    </ha-list-item-button>`;
   }
 
   private _getEntities = (): EntityRegistryEntry[] =>
@@ -376,25 +379,26 @@ class HaConfigEntryDeviceRow extends LitElement {
   static styles = [
     haStyle,
     css`
-      :host {
+      ha-list-item-button {
         border-top: 1px solid var(--divider-color);
+        --ha-row-item-padding-inline: 56px 16px;
       }
-      ha-md-list-item {
-        --md-list-item-leading-space: 56px;
-        --md-ripple-hover-color: transparent;
-        --md-ripple-pressed-color: transparent;
+      ha-icon-button,
+      ha-icon-next,
+      ha-svg-icon {
+        color: var(--ha-color-fill-neutral-loud-resting);
       }
-      :host([is-child]) ha-md-list-item {
-        --md-list-item-leading-space: 88px;
+      :host([is-child]) ha-list-item-button {
+        --ha-row-item-padding-inline: 88px 16px;
       }
       .disabled {
         opacity: 0.5;
       }
-      :host([narrow]) ha-md-list-item {
-        --md-list-item-leading-space: 16px;
+      :host([narrow]) ha-list-item-button {
+        --ha-row-item-padding-inline: 16px;
       }
-      :host([narrow][is-child]) ha-md-list-item {
-        --md-list-item-leading-space: 48px;
+      :host([narrow][is-child]) ha-list-item-button {
+        --ha-row-item-padding-inline: 48px 16px;
       }
       ha-tree-indicator {
         width: 48px;
@@ -405,8 +409,9 @@ class HaConfigEntryDeviceRow extends LitElement {
         width: 1px;
         background: var(--divider-color);
       }
-      a {
-        text-decoration: none;
+      ha-list-item-button::part(end) {
+        align-self: stretch;
+        gap: var(--ha-space-4);
       }
     `,
   ];

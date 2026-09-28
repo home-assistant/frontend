@@ -123,6 +123,8 @@ const RATING_ICON = {
   8: mdiNumeric8,
 };
 
+const MAX_RATING = 8;
+
 const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
@@ -897,7 +899,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 this._uninstalling
                               }
                               @change=${this._panelToggled}
-                              .checked=${this._currentAddon.ingress_panel}
+                              .checked=${
+                                this._currentAddon.ingress_panel || false
+                              }
                               haptic
                             ></ha-switch>
                           </ha-row-item>
@@ -1088,7 +1092,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         `ui.panel.config.apps.dashboard.capability.${id}.title` as LocalizeKeys
       ),
       text: this.i18n.localize(
-        `ui.panel.config.apps.dashboard.capability.${id}.description`
+        `ui.panel.config.apps.dashboard.capability.${id}.description`,
+        { max: MAX_RATING }
       ),
     });
   }

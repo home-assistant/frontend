@@ -2,7 +2,7 @@ import type { HomeAssistant } from "../types";
 
 export interface ThreadRouter {
   instance_name: string;
-  addresses: [string];
+  addresses: string[];
   border_agent_id: string | null;
   brand: string | null;
   extended_address: string;
@@ -28,11 +28,16 @@ export interface ThreadDataSet {
   source: string;
 }
 
-export interface ThreadRouterDiscoveryEvent {
-  key: string;
-  type: "router_discovered" | "router_removed";
-  data: ThreadRouter;
-}
+export type ThreadRouterDiscoveryEvent =
+  | {
+      key: string;
+      type: "router_discovered";
+      data: ThreadRouter;
+    }
+  | {
+      key: string;
+      type: "router_removed";
+    };
 
 class DiscoveryStream {
   routers: Record<string, ThreadRouter>;
@@ -81,7 +86,7 @@ export const addThreadDataSet = (
   hass: HomeAssistant,
   source: string,
   tlv: string
-): Promise<void> =>
+): Promise<{ result: "stored" | "discarded" }> =>
   hass.callWS({
     type: "thread/add_dataset_tlv",
     source,
