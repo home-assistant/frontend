@@ -361,7 +361,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           padding: 8px;
         }
 
-        ha-svg-icon {
+        .flex-container ha-svg-icon {
           width: 68px;
           height: 48px;
         }
