@@ -30,29 +30,17 @@ export interface ESPHomeDeviceEntityRef {
   entity_id: string;
   device_id?: string | null;
   platform?: string;
-  translation_key?: string | null;
-  name?: string | null;
-  original_name?: string | null;
 }
 
 export interface ESPHomeEntityStateRef {
   state: string;
-  attributes?: { friendly_name?: string };
 }
 
 export interface ESPHomeAudioControls {
   supported: boolean;
   sendspinEntityId?: string;
+  /** True when the Sendspin client switch is on. On means the client is running. */
   sendspinOn: boolean;
-  sendspinAvailable: boolean;
-  guestEntityId?: string;
-  guestOn: boolean;
-  guestAvailable: boolean;
-  /**
-   * True when the guest switch's on state means a PIN is required.
-   * The Sendspin client switch is not inverted: on means the client is running.
-   */
-  guestRequiresPin: boolean;
 }
 
 export const CAPABILITY_ORDER: ESPHomeCapabilityId[] = [
@@ -91,10 +79,13 @@ export const ESPHOME_CAPABILITY_TITLE_KEYS: Record<
 /**
  * Object id of the Sendspin client switch.
  *
- * https://github.com/esphome/esphome/pull/19361 names it "Sendspin Enabled" and
- * does not set a translation_key or device class. Home Assistant slugs that
- * name to `sendspin_enabled`, prefixed with the device name. On starts the
- * client (the restore default); off stops it. Guest mode has no entity yet.
+ * The platform does not set a default name, translation_key, or device class
+ * (https://github.com/esphome/esphome/pull/19361). Home Assistant slugs the
+ * YAML name, so this matches `sendspin_enabled` or a device-prefixed
+ * `*_sendspin_enabled` only. The published docs and tests use
+ * "Sendspin Enabled". A different YAML name, or a renamed entity id, does
+ * not match. On starts the client (the restore default); off stops it.
+ * Guest mode has no entity yet.
  */
 const SENDSPIN_ENABLED_OBJECT_ID = "sendspin_enabled";
 
@@ -108,9 +99,6 @@ const isSendspinEnabledSwitch = (entityId: string): boolean => {
     objectId.endsWith(`_${SENDSPIN_ENABLED_OBJECT_ID}`)
   );
 };
-
-const switchIsAvailable = (state?: string): boolean =>
-  state === "on" || state === "off";
 
 export const deviceHasMediaPlayerEntity = (
   deviceId: string,
@@ -157,11 +145,6 @@ export const getESPHomeAudioControls = (
       Boolean(sendspinEntityId),
     sendspinEntityId,
     sendspinOn: sendspinState === "on",
-    sendspinAvailable: switchIsAvailable(sendspinState),
-    guestEntityId: undefined,
-    guestOn: false,
-    guestAvailable: false,
-    guestRequiresPin: false,
   };
 };
 
@@ -251,17 +234,16 @@ export const hasStartedNonBluetoothESPHomeSetup = (
   status.connectivity === "completed" ||
   status.serial === "completed";
 
-export type ESPHomeSetupBannerState = "setup" | "continue" | "complete";
+export type ESPHomeSetupBannerState = "setup" | "continue";
 
-/** Headline state for the device-page setup banner. */
+/**
+ * Headline for the device-page setup banner.
+ * The banner is hidden once nothing is left; finished setup uses the reminder.
+ */
 export const getESPHomeSetupBannerState = (
   status: ESPHomeSetupStatus
-): ESPHomeSetupBannerState => {
-  if (countRemainingESPHomeCapabilities(status) === 0) {
-    return "complete";
-  }
-  return hasStartedNonBluetoothESPHomeSetup(status) ? "continue" : "setup";
-};
+): ESPHomeSetupBannerState =>
+  hasStartedNonBluetoothESPHomeSetup(status) ? "continue" : "setup";
 
 export const isESPHomeSetupDeferred = (
   data: ESPHomeFrontendUserData | null | undefined,

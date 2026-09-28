@@ -4,7 +4,6 @@ import {
   mdiChevronDown,
   mdiChevronLeft,
   mdiOpenInNew,
-  mdiShield,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -12,7 +11,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -22,8 +20,6 @@ import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
-import type { HaSwitch } from "../../components/ha-switch";
-import "../../components/ha-switch";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-nav";
 import {
@@ -78,11 +74,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-device-setup";
 
 type SetupView =
-  | "checklist"
-  | "zwave-adapters"
-  | "audio-offer"
-  | "audio-working"
-  | "audio-pin";
+  "checklist" | "zwave-adapters" | "audio-offer" | "audio-working";
 
 const SERIAL_PORT_TYPE_LABELS: Record<ESPHomeSerialPortType, LocalizeKeys> = {
   TTL: "ui.panel.config.devices.esphome.setup_serial_port_ttl",
@@ -184,9 +176,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   /** True until the Sendspin switch state catches up after we turn it on. */
   @state() private _sendspinOptimisticOn = false;
 
-  /** Require-PIN value for the guest switch, applied when the step is finished. */
-  @state() private _pinRequired?: boolean;
-
   /** Bumps when the user leaves the audio flow, so an in-flight step stops. */
   private _audioFlowId = 0;
 
@@ -208,7 +197,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     super.willUpdate(changedProps);
     if (this._sendspinOptimisticOn && changedProps.has("_states")) {
       const entityId = this._audioControls().sendspinEntityId;
-      if (entityId && this._states?.[entityId]?.state === "on") {
+      const oldStates = changedProps.get("_states") as typeof this._states;
+      if (entityId && this._states?.[entityId] !== oldStates?.[entityId]) {
         this._sendspinOptimisticOn = false;
       }
     }
@@ -275,14 +265,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (this._view === "zwave-adapters") {
       return this._renderZWaveAdapters();
     }
-    if (this._view === "audio-offer") {
-      return this._renderAudioOffer();
-    }
-    if (this._view === "audio-working") {
+    // Footer hides Install and Skip while this flag is set. Progress is the body.
+    if (this._installingAudio || this._view === "audio-working") {
       return this._renderAudioWorking();
     }
-    if (this._view === "audio-pin") {
-      return this._renderAudioPin();
+    if (this._view === "audio-offer") {
+      return this._renderAudioOffer();
     }
     return this._renderChecklist();
   }
@@ -402,19 +390,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private _renderAudioActions(status: ESPHomeCapabilityStatus) {
     const localize = this._i18n!.localize;
-    const audio = this._audioControls();
-    // Finished setup only continues when there is a guest switch to configure.
     if (status === "completed") {
-      if (!audio.guestEntityId) {
-        return nothing;
-      }
-      return html`
-        <div class="actions">
-          <ha-button appearance="outlined" @click=${this._manageSendspin}>
-            ${localize("ui.panel.config.devices.esphome.setup_manage_sendspin")}
-          </ha-button>
-        </div>
-      `;
+      return nothing;
     }
     return html`
       <div class="actions">
@@ -430,11 +407,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   private _renderAudioOffer() {
     const localize = this._i18n!.localize;
     return html`
-      ${
-        this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing
-      }
       <div class="ma-offer">
         <div class="ma-offer-head">
           <span class="audio-icon">
@@ -490,49 +462,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _renderAudioPin() {
-    const localize = this._i18n!.localize;
-    const audio = this._audioControls();
-    const pinDisabled =
-      Boolean(audio.sendspinEntityId) && !this._sendspinIsOn(audio);
-    return html`
-      <div class="pin-screen">
-        <span class="pin-hero">
-          <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
-        </span>
-        <h3 class="pin-title">
-          ${localize("ui.panel.config.devices.esphome.setup_require_pin_title")}
-        </h3>
-        <p>
-          ${localize("ui.panel.config.devices.esphome.setup_require_pin_body")}
-        </p>
-        <div class="pin-row ${pinDisabled ? "is-disabled" : ""}">
-          <span class="audio-text">
-            <span class="audio-name">
-              ${localize("ui.panel.config.devices.esphome.setup_require_pin")}
-            </span>
-            <span class="audio-meta">
-              ${localize(
-                "ui.panel.config.devices.esphome.setup_require_pin_meta"
-              )}
-            </span>
-          </span>
-          <ha-switch
-            .checked=${pinDisabled ? false : Boolean(this._pinRequired)}
-            .disabled=${pinDisabled}
-            @change=${this._pinToggled}
-          ></ha-switch>
-        </div>
-      </div>
-    `;
-  }
-
   private _renderFooter() {
     if (!this._i18n || !this._hassConfig) {
       return nothing;
     }
     const localize = this._i18n.localize;
-    if (this._view === "audio-offer") {
+    if (this._view === "audio-offer" && !this._installingAudio) {
       const hassio = isComponentLoaded(this._hassConfig.config, "hassio");
       return html`
         <ha-dialog-footer slot="footer">
@@ -548,7 +483,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
               ? html`
                   <ha-button
                     slot="primaryAction"
-                    .loading=${this._installingAudio}
                     @click=${this._installMusicAssistant}
                   >
                     ${localize(
@@ -571,15 +505,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                   </ha-button>
                 `
           }
-        </ha-dialog-footer>
-      `;
-    }
-    if (this._view === "audio-pin") {
-      return html`
-        <ha-dialog-footer slot="footer">
-          <ha-button slot="primaryAction" @click=${this._finishPin}>
-            ${localize("ui.panel.config.devices.esphome.setup_finish")}
-          </ha-button>
         </ha-dialog-footer>
       `;
     }
@@ -762,16 +687,13 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (this._view === "zwave-adapters") {
       return localize("ui.panel.config.devices.esphome.setup_adapters_title");
     }
+    if (this._installingAudio || this._view === "audio-working") {
+      return localize(ESPHOME_CAPABILITY_TITLE_KEYS.audio);
+    }
     if (this._view === "audio-offer") {
       return localize(
         "ui.panel.config.devices.esphome.setup_audio_offer_title"
       );
-    }
-    if (this._view === "audio-working") {
-      return localize("ui.panel.config.devices.esphome.setup_audio_sendspin");
-    }
-    if (this._view === "audio-pin") {
-      return localize("ui.panel.config.devices.esphome.setup_protect_speaker");
     }
     return localize("ui.panel.config.devices.esphome.setup_title");
   }
@@ -866,10 +788,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private _showChecklist = () => {
     this._audioFlowId += 1;
+    this._finishMusicAssistantDiscovery(undefined);
     this._view = "checklist";
     this._installingAudio = false;
     this._installStatus = undefined;
-    this._pinRequired = undefined;
+    this._error = undefined;
   };
 
   private _showZWaveAdapters = (ev: Event) => {
@@ -882,10 +805,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return {
         supported: false,
         sendspinOn: false,
-        sendspinAvailable: false,
-        guestOn: false,
-        guestAvailable: false,
-        guestRequiresPin: false,
       };
     }
     return getESPHomeAudioControls(
@@ -922,19 +841,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     void this._continueAfterMusicAssistant(this._audioFlowId);
   };
 
-  private _manageSendspin = (ev: Event) => {
-    ev.stopPropagation();
-    this._openPinScreen();
-  };
-
-  private _pinToggled = (ev: Event & HASSDomTargetEvent<HaSwitch>) => {
-    this._pinRequired = ev.target.checked;
-  };
-
-  /**
-   * After Music Assistant is installed or skipped: turn Sendspin on, then the
-   * PIN step when that switch exists.
-   */
+  /** After Music Assistant is installed or skipped, turn Sendspin on. */
   private async _continueAfterMusicAssistant(flowId: number) {
     if (!this._audioFlowCurrent(flowId)) {
       return;
@@ -950,10 +857,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       }
     }
     if (!this._audioFlowCurrent(flowId)) {
-      return;
-    }
-    if (this._audioControls().guestEntityId) {
-      this._openPinScreen();
       return;
     }
     this._view = "checklist";
@@ -973,6 +876,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       "ui.panel.config.devices.esphome.setup_enabling_sendspin"
     );
     const stateBefore = this._states?.[entityId];
+    this._sendspinOptimisticOn = true;
     try {
       await this._api.callService("switch", "turn_on", {
         entity_id: entityId,
@@ -980,7 +884,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       if (!this._audioFlowCurrent(flowId)) {
         return false;
       }
-      this._sendspinOptimisticOn = true;
       window.setTimeout(() => {
         if (
           this._states?.[entityId] === stateBefore &&
@@ -992,6 +895,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return true;
     } catch {
       // callService already shows the failure toast.
+      this._sendspinOptimisticOn = false;
       if (this._audioFlowCurrent(flowId)) {
         this._view = "checklist";
         this._installStatus = undefined;
@@ -1003,37 +907,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       }
     }
   }
-
-  private _openPinScreen() {
-    const audio = this._audioControls();
-    this._pinRequired = audio.guestRequiresPin ? audio.guestOn : !audio.guestOn;
-    this._installStatus = undefined;
-    this._view = "audio-pin";
-  }
-
-  private _finishPin = async (ev: Event) => {
-    ev.stopPropagation();
-    const audio = this._audioControls();
-    const entityId = audio.guestEntityId;
-    const pinRequired = this._pinRequired ?? false;
-    const sendspinAllows = !audio.sendspinEntityId || this._sendspinIsOn(audio);
-    if (entityId && this._api && sendspinAllows) {
-      const turnOn = audio.guestRequiresPin ? pinRequired : !pinRequired;
-      if (turnOn !== audio.guestOn) {
-        try {
-          await this._api.callService(
-            "switch",
-            turnOn ? "turn_on" : "turn_off",
-            { entity_id: entityId }
-          );
-        } catch {
-          // callService already shows the failure toast.
-        }
-      }
-    }
-    this._pinRequired = undefined;
-    this._view = "checklist";
-  };
 
   private _installMusicAssistant = async (ev: Event) => {
     ev.stopPropagation();
@@ -1078,13 +951,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       if (!this._audioFlowCurrent(flowId) || !this._i18n) {
         return;
       }
-      this._error = extractApiErrorMessage(err);
       this._view = "audio-offer";
       await showAlertDialog(this, {
         title: this._i18n.localize(
           "ui.panel.config.devices.esphome.setup_error_music_assistant"
         ),
-        text: this._error,
+        text: extractApiErrorMessage(err),
       });
     } finally {
       if (this._audioFlowCurrent(flowId)) {
@@ -1397,7 +1269,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           gap: var(--ha-space-3);
         }
         .ma-offer p,
-        .pin-screen p,
         .audio-working p {
           margin: 0;
           color: var(--secondary-text-color);
@@ -1410,51 +1281,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           align-items: center;
           gap: var(--ha-space-4);
           padding: var(--ha-space-10) 0;
-        }
-        .pin-screen {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: var(--ha-space-3);
-          text-align: center;
-        }
-        .pin-hero {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 56px;
-          height: 56px;
-          border-radius: var(--ha-border-radius-circle);
-          background: color-mix(
-            in srgb,
-            var(--light-green-color) 12%,
-            transparent
-          );
-          color: var(--light-green-color);
-        }
-        .pin-hero ha-svg-icon {
-          --mdc-icon-size: 30px;
-        }
-        .pin-title {
-          margin: 0;
-          font-size: var(--ha-font-size-l);
-          font-weight: var(--ha-font-weight-medium);
-        }
-        .pin-row {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-4);
-          width: 100%;
-          margin-top: var(--ha-space-2);
-          padding: var(--ha-space-3) var(--ha-space-4);
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-lg);
-          background: var(--card-background-color);
-          text-align: start;
-        }
-        .pin-row.is-disabled .audio-name,
-        .pin-row.is-disabled .audio-meta {
-          opacity: 0.55;
         }
         .sendspin-lockup {
           display: block;

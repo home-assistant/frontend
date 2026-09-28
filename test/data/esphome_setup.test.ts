@@ -373,7 +373,6 @@ describe("remaining capabilities and continue-setup", () => {
     );
     expect(countRemainingESPHomeCapabilities(withoutSwitch)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(withoutSwitch)).toBe(true);
-    expect(getESPHomeSetupBannerState(withoutSwitch)).toBe("complete");
 
     const switchOff = deriveESPHomeSetupStatus(
       capabilities({
@@ -402,7 +401,6 @@ describe("remaining capabilities and continue-setup", () => {
     );
     expect(countRemainingESPHomeCapabilities(switchOn)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(switchOn)).toBe(true);
-    expect(getESPHomeSetupBannerState(switchOn)).toBe("complete");
   });
 
   it("treats a configured serial port as remaining-zero and started", () => {
@@ -417,7 +415,6 @@ describe("remaining capabilities and continue-setup", () => {
     expect(status.serial).toBe("completed");
     expect(countRemainingESPHomeCapabilities(status)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
-    expect(getESPHomeSetupBannerState(status)).toBe("complete");
   });
 
   it("keeps the continue headline while other non-Bluetooth work remains", () => {
@@ -453,13 +450,11 @@ describe("getESPHomeAudioControls", () => {
             entity_id: "switch.proxy_sendspin_enabled",
             device_id: "dev-1",
             platform: "esphome",
-            name: "Sendspin Enabled",
           },
           {
             entity_id: "switch.other_sendspin_enabled",
             device_id: "dev-2",
             platform: "esphome",
-            name: "Sendspin Enabled",
           },
         ],
         {
@@ -471,10 +466,6 @@ describe("getESPHomeAudioControls", () => {
       supported: true,
       sendspinEntityId: "switch.proxy_sendspin_enabled",
       sendspinOn: true,
-      sendspinAvailable: true,
-      guestEntityId: undefined,
-      guestOn: false,
-      guestRequiresPin: false,
     });
   });
 
@@ -495,7 +486,6 @@ describe("getESPHomeAudioControls", () => {
       supported: true,
       sendspinEntityId: "switch.sendspin_enabled",
       sendspinOn: false,
-      sendspinAvailable: true,
     });
   });
 
@@ -508,38 +498,26 @@ describe("getESPHomeAudioControls", () => {
             entity_id: "switch.guest_room_night_light",
             device_id: "dev-1",
             platform: "esphome",
-            name: "Night light",
           },
           {
             entity_id: "switch.guest_room_sendspin",
             device_id: "dev-1",
             platform: "esphome",
-            translation_key: "sendspin",
-            name: "Sendspin",
           },
           {
             entity_id: "switch.guest_room_require_pin_to_stream",
             device_id: "dev-1",
             platform: "esphome",
-            name: "Require PIN to stream",
           },
           {
             entity_id: "switch.proxy_sendspin_guest_mode",
             device_id: "dev-1",
             platform: "esphome",
-            name: "Sendspin Guest mode",
-            original_name: "Sendspin Guest mode",
           },
         ],
         {
-          "switch.guest_room_night_light": {
-            state: "on",
-            attributes: { friendly_name: "Guest room Night light" },
-          },
-          "switch.guest_room_sendspin": {
-            state: "off",
-            attributes: { friendly_name: "Guest room Sendspin" },
-          },
+          "switch.guest_room_night_light": { state: "on" },
+          "switch.guest_room_sendspin": { state: "off" },
           "switch.guest_room_require_pin_to_stream": { state: "on" },
           "switch.proxy_sendspin_guest_mode": { state: "on" },
         }
@@ -548,9 +526,6 @@ describe("getESPHomeAudioControls", () => {
       supported: false,
       sendspinEntityId: undefined,
       sendspinOn: false,
-      guestEntityId: undefined,
-      guestOn: false,
-      guestRequiresPin: false,
     });
   });
 });
