@@ -405,6 +405,11 @@ export class HassTabsSubpage extends LitElement {
         :host([narrow]) .content {
           padding-left: var(--safe-area-inset-left);
         }
+        /* In RTL the sidebar sits on the right, so the free edge is the left one. */
+        :host(:not([narrow])) .content:dir(rtl) {
+          padding-right: 0;
+          padding-left: var(--safe-area-inset-left);
+        }
         :host([narrow][show-tabs]) .content {
           /* Bottom bar reuses header height */
           margin-bottom: calc(
