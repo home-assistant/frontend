@@ -15,12 +15,14 @@ import type { SchemaUnion } from "../ha-form/types";
 import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
+import "../ha-alert";
 import "../ha-icon-button";
 import "../ha-list";
 import "../ha-list-item";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
 
 @customElement("ha-selector-location")
 export class HaLocationSelector extends LitElement {
@@ -40,7 +42,9 @@ export class HaLocationSelector extends LitElement {
 
   @state() private _places?: OpenStreetMapPlace[] | null;
 
-  @query("ha-input") private _input?: HTMLElement & { value?: string };
+  @state() private _searchError = false;
+
+  @query("ha-input") private _input?: HaInput;
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc, radius?: boolean, radius_readonly?: boolean) =>
@@ -104,6 +108,7 @@ export class HaLocationSelector extends LitElement {
             "ui.panel.page-onboarding.core-config.address_label"
           )}
           .disabled=${this.disabled || this._working}
+          @input=${this._inputChanged}
           @keyup=${this._addressSearch}
         >
           <ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>
@@ -124,7 +129,16 @@ export class HaLocationSelector extends LitElement {
         </ha-input>
 
         ${
-          this._places !== undefined && this._places !== null
+          this._searchError
+            ? html`<ha-alert alert-type="error">
+                ${this.hass.localize(
+                  "ui.components.selectors.location.search_error"
+                )}
+              </ha-alert>`
+            : nothing
+        }
+        ${
+          Array.isArray(this._places)
             ? html`
                 <ha-list activatable>
                   ${
@@ -133,7 +147,7 @@ export class HaLocationSelector extends LitElement {
                       : html`
                           <ha-list-item noninteractive>
                             ${this.hass.localize(
-                               "ui.components.media-browser.search.no_results"
+                              "ui.components.media-browser.search.no_results"
                             )}
                           </ha-list-item>
                         `
@@ -142,6 +156,28 @@ export class HaLocationSelector extends LitElement {
               `
             : nothing
         }
+
+        <p class="attribution">
+          ${this.hass.localize(
+            "ui.components.selectors.location.location_address",
+            {
+              openstreetmap: html`<a
+                href="https://www.openstreetmap.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >OpenStreetMap</a
+              >`,
+              osm_privacy_policy: html`<a
+                href="https://wiki.osmfoundation.org/wiki/Privacy_Policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                >${this.hass.localize(
+                  "ui.components.selectors.location.osm_privacy_policy"
+                )}</a
+              >`,
+            }
+          )}
+        </p>
       </div>
 
       <ha-locations-editor
@@ -255,6 +291,11 @@ export class HaLocationSelector extends LitElement {
     this._searchPlaces(this._input?.value ?? "");
   }
 
+  private _inputChanged(): void {
+    this._places = undefined;
+    this._searchError = false;
+  }
+
   private _searchButtonClicked() {
     this._searchPlaces(this._input?.value ?? "");
   }
@@ -266,16 +307,23 @@ export class HaLocationSelector extends LitElement {
 
     this._working = true;
     this._places = null;
+    this._searchError = false;
 
     try {
-      this._places = await searchPlaces(
-         encodeURIComponent(address.trim()),
-         this.hass,
-         true,
-         3
-       );
+      const places = await searchPlaces(
+        encodeURIComponent(address.trim()),
+        this.hass,
+        true,
+        3
+      );
+      if (this._input?.value?.trim() === address.trim()) {
+        this._places = places;
+      }
     } catch (_err) {
-      this._places = undefined;
+      if (this._input?.value?.trim() === address.trim()) {
+        this._places = undefined;
+        this._searchError = true;
+      }
     } finally {
       this._working = false;
     }
@@ -344,6 +392,12 @@ export class HaLocationSelector extends LitElement {
   static styles = css`
     .location-search {
       margin-bottom: 16px;
+    }
+
+    .attribution {
+      margin: var(--ha-space-2) 0 0;
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-xs);
     }
 
     ha-list {
