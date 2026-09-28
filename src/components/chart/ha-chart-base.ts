@@ -720,7 +720,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     // costs the user their place in the tab order, so stay programmatically
     // focusable for as long as we hold focus, however we stop being sonifiable.
     this._sonificationFocusHeld = true;
-    if (this._sonification || this._sonificationLoading) {
+    // Clicks and taps focus the chart too. Chart2Music only responds to the
+    // keyboard, and once connected it moves the tooltip to the first point, so
+    // pointer focus must not start it.
+    if (
+      this._sonification ||
+      this._sonificationLoading ||
+      !this._chartContainer?.matches(":focus-visible")
+    ) {
       return;
     }
     await this._applyDeferredWork();
