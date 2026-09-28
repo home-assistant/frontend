@@ -7,7 +7,7 @@
 
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { colorful, eclipse } from "@versatiles/style";
+import { osm } from "@versatiles/style";
 import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
@@ -51,10 +51,12 @@ const useTileJson = (name, style) => {
 };
 
 const styleOptions = {
-  // Keeps the generated URLs origin relative.
-  baseUrl: "",
-  glyphs: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
-  sprite: [{ id: "basics", url: `${PROXY_PATH}/sprites/basics/sprites` }],
+  urls: {
+    // Keeps the generated URLs origin relative.
+    base: "",
+    glyphsPattern: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
+    sprite: [{ id: "base", url: `${PROXY_PATH}/sprites/base/sprites` }],
+  },
 };
 
 const buildMapAssets = async () => {
@@ -63,12 +65,14 @@ const buildMapAssets = async () => {
   await Promise.all(
     // Both themes up front: dark is a real cartography, not an inverted raster.
     [
-      ["light", colorful],
-      ["dark", eclipse],
-    ].map(([name, builder]) =>
+      ["light", "colorful"],
+      ["dark", "colorful-dark"],
+    ].map(([name, theme]) =>
       writeFile(
         path.join(outputDir, `${name}.json`),
-        JSON.stringify(addLatinLabels(useTileJson(name, builder(styleOptions))))
+        JSON.stringify(
+          addLatinLabels(useTileJson(name, osm({ theme, ...styleOptions })))
+        )
       )
     )
   );
