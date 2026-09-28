@@ -155,13 +155,15 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         newName = name.replace(oldDeviceName, newDeviceName);
       }
 
-      if (newName !== undefined && !newEntityId) {
+      const entityIdChanged = !!newEntityId && newEntityId !== entity.entity_id;
+
+      if (newName === undefined && !entityIdChanged) {
         return undefined;
       }
 
       return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
         name: newName,
-        new_entity_id: newEntityId || undefined,
+        new_entity_id: entityIdChanged ? newEntityId : undefined,
       });
     });
     await Promise.all(updateProms);
