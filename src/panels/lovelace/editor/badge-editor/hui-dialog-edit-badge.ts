@@ -106,7 +106,7 @@ export class HuiDialogEditBadge
 
     this._containerConfig = containerConfig;
 
-    if ("badgeConfig" in params) {
+    if (params.badgeConfig !== undefined) {
       this._badgeConfig = params.badgeConfig;
     } else {
       const badge = getAtPath<Partial<LovelaceBadgeConfig> | string>(
@@ -125,7 +125,7 @@ export class HuiDialogEditBadge
       : undefined;
     const normalize = (config: LovelaceBadgeConfig) =>
       stripDefaults(config, effectiveDefaults);
-    if ("badgeConfig" in params && this._badgeConfig) {
+    if (params.badgeConfig !== undefined && this._badgeConfig) {
       this._initDirtyTracking({ type: "deep" }, { type: "" }, normalize);
       this._updateDirtyState(this._badgeConfig);
     } else {
@@ -135,7 +135,9 @@ export class HuiDialogEditBadge
 
   private get _collectionPath(): LovelacePath {
     const params = this._params!;
-    return "badgeConfig" in params ? params.path : getParentPath(params.path);
+    return params.badgeConfig !== undefined
+      ? params.path
+      : getParentPath(params.path);
   }
 
   public closeDialog(): boolean {
@@ -423,7 +425,7 @@ export class HuiDialogEditBadge
     this._saving = true;
     const params = this._params!;
     await params.saveConfig(
-      "badgeConfig" in params
+      params.badgeConfig !== undefined
         ? appendAtPath(
             params.lovelaceConfig,
             this._collectionPath,

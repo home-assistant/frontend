@@ -3,11 +3,12 @@ import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelacePath } from "../lovelace-path";
 
-export type EditBadgeDialogParams = {
+export interface EditBadgeDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
   path: LovelacePath;
-} & ({ badgeConfig: LovelaceBadgeConfig } | {});
+  badgeConfig?: LovelaceBadgeConfig;
+}
 
 export const importEditBadgeDialog = () => import("./hui-dialog-edit-badge");
 
