@@ -146,7 +146,7 @@
     "@bundle-stats/plugin-webpack-filter": "4.22.3",
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
-    "@html-eslint/eslint-plugin": "0.65.0",
+    "@html-eslint/eslint-plugin": "0.66.1",
     "@lokalise/node-api": "16.4.1",
     "@octokit/auth-oauth-device": "8.0.5",
     "@octokit/plugin-retry": "8.1.1",
