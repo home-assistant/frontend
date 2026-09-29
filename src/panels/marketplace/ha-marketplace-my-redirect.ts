@@ -40,8 +40,7 @@ class HaMarketplaceMyRedirect extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
-    const dividerPos = this.route.path.indexOf("/", 1);
-    const path = this.route.path.substr(dividerPos + 1);
+    const path = this.route.path.substring(1);
     const redirect = REDIRECTS[path];
 
     if (!redirect) {

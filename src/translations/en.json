@@ -12271,12 +12271,13 @@
           "replaces_built_in_confirm": "I understand this replaces the built-in integration"
         },
         "dialog_info": {
-          "version_installed": "Version downloaded",
+          "version_available": "Version {version}",
+          "version_downloaded": "Version {version} downloaded",
+          "version_update": "Version {installed} downloaded, {version} available",
           "open_issues": "Open issues",
           "stars": "Stars",
           "downloads": "Downloads",
           "author": "Author",
-          "no_info": "The developer has not provided any more information for this repository",
           "requires_homeassistant": "This repository needs Home Assistant {version} or newer. Update Home Assistant to download it.",
           "requires_newer_homeassistant": "This repository needs a newer version of Home Assistant. Update Home Assistant to download it."
         },

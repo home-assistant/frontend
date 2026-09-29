@@ -84,8 +84,8 @@ const MARKETPLACE = {
 } as unknown as MarketplaceData;
 
 const repositoryRoute = (repositoryId: string): Route => ({
-  prefix: "/marketplace",
-  path: `/repository/${repositoryId}`,
+  prefix: "/marketplace/repository",
+  path: `/${repositoryId}`,
 });
 
 type FetchRepository = (repositoryId: string) => Promise<RepositoryInfo>;
@@ -261,17 +261,47 @@ describe("ha-marketplace-repository-dashboard", () => {
     );
   });
 
-  it("offers the download when Home Assistant is new enough", async () => {
+  it.each([
+    {
+      name: "a download",
+      extra: {},
+      buttons: ["ui.panel.marketplace.common.download"],
+    },
+    {
+      name: "an update",
+      extra: { installed: true, pending_upgrade: true },
+      buttons: ["ui.panel.marketplace.common.update"],
+    },
+    {
+      name: "nothing when up to date",
+      extra: { installed: true, pending_upgrade: false },
+      buttons: [],
+    },
+  ])("offers $name in the info card", async ({ extra, buttons }) => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) =>
+        repositoryInfo(repositoryId, extra as Partial<RepositoryInfo>),
+      repositoryRoute("1")
+    );
+    await settle(page);
+
+    expect(
+      [...page.shadowRoot!.querySelectorAll(".card-actions ha-button")].map(
+        (button) => button.textContent!.trim()
+      )
+    ).toEqual(buttons);
+    expect(page.shadowRoot!.querySelector(".content > ha-alert")).toBeNull();
+  });
+
+  it("leaves the README card out when there is nothing to show", async () => {
     const { page } = await openRepositoryPage(
       async (repositoryId) => repositoryInfo(repositoryId),
       repositoryRoute("1")
     );
     await settle(page);
 
-    expect(
-      page.shadowRoot!.querySelector('ha-button[slot="fab"]')
-    ).not.toBeNull();
-    expect(page.shadowRoot!.querySelector("ha-card ha-alert")).toBeNull();
+    expect(page.shadowRoot!.querySelectorAll("ha-card")).toHaveLength(1);
+    expect(page.shadowRoot!.querySelector("ha-markdown")).toBeNull();
   });
 
   it.each([
@@ -289,10 +319,12 @@ describe("ha-marketplace-repository-dashboard", () => {
 
       // Still offered, the download dialog has the older versions
       expect(
-        page.shadowRoot!.querySelector('ha-button[slot="fab"]')
+        page.shadowRoot!.querySelector(".card-actions ha-button")
       ).not.toBeNull();
       expect(
-        page.shadowRoot!.querySelector("ha-card ha-alert")?.textContent?.trim()
+        page
+          .shadowRoot!.querySelector(".content > ha-alert")
+          ?.textContent?.trim()
       ).toBe(reason);
     }
   );

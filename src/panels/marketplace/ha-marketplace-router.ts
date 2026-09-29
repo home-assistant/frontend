@@ -56,7 +56,7 @@ class HaMarketplaceRouter extends HassRouterPage {
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
     el.hass = this.hass;
     el.marketplace = this.marketplace;
-    el.route = this.route;
+    el.route = this.routeTail;
     el.narrow = this.narrow;
     el.isWide = isWide;
   }

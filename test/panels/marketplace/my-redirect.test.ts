@@ -33,7 +33,10 @@ const openRedirect = async (redirect: string, search: string) => {
   );
   const element = document.createElement("ha-marketplace-my-redirect");
   element.hass = { localize: (key: string) => key } as unknown as HomeAssistant;
-  element.route = { prefix: "/marketplace", path: `/_my_redirect/${redirect}` };
+  element.route = {
+    prefix: "/marketplace/_my_redirect",
+    path: `/${redirect}`,
+  };
   document.body.appendChild(element);
   await element.updateComplete;
   return element;

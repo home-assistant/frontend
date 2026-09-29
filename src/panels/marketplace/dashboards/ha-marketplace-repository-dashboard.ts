@@ -1,7 +1,7 @@
 import {
   mdiAccount,
   mdiArrowDownBold,
-  mdiCube,
+  mdiArrowUpBoldCircleOutline,
   mdiDotsVertical,
   mdiDownload,
   mdiExclamationThick,
@@ -9,9 +9,8 @@ import {
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -23,13 +22,9 @@ import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-dropdown";
-import type {
-  HaDropdown,
-  HaDropdownSelectEvent,
-} from "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
@@ -57,14 +52,13 @@ import {
   handleGitHubNotConnected,
   handleGitHubRateLimited,
 } from "../tools/connect-github";
+import { brandsUrl } from "../../../util/brands-url";
 import { downloadBlockedReason } from "../tools/download-blocked-reason";
+import { typeIcon } from "../tools/type-icon";
 import { markdownWithRepositoryContext } from "../tools/markdown";
 
-// Repository pages live at /repository/<id>, my links at /repository.
-const repositoryIdFromRoute = (route: Route): string => {
-  const dividerPos = route.path.indexOf("/", 1);
-  return dividerPos === -1 ? "" : route.path.substring(dividerPos + 1);
-};
+// Repository pages live at /<id> below /repository, my links at /repository itself.
+const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
 
 @customElement("ha-marketplace-repository-dashboard")
 export class HaMarketplaceRepositoryDashboard extends LitElement {
@@ -79,11 +73,6 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   @state() private _repository?: RepositoryInfo;
 
   @state() private _error?: string;
-
-  @query("#overflow-menu")
-  private _repositoryOverflowMenu!: HaDropdown;
-
-  private _openingOverflowMenu = false;
 
   // Answers for a repository navigated away from are dropped.
   private _requestedRepositoryId?: string;
@@ -297,146 +286,193 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       ></hass-loading-screen>`;
     }
 
-    const authors = this._getAuthors(this._repository);
+    const repository = this._repository;
+    const authors = this._getAuthors(repository);
+    const readme = markdownWithRepositoryContext(
+      repository.additional_info,
+      repository
+    );
 
     return html`
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${this._repository.name}
+        .header=${repository.name}
       >
-        <ha-icon-button
+        <ha-dropdown
           slot="toolbar-icon"
-          .label=${this.hass.localize("ui.common.overflow_menu")}
-          .path=${mdiDotsVertical}
-          @click=${this._showOverflowRepositoryMenu}
-        ></ha-icon-button>
+          @wa-select=${this._handleOverflowAction}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          ${repositoryMenuItems(this, repository, this.hass.localize).map(
+            (entry) =>
+              "divider" in entry
+                ? html`<wa-divider></wa-divider>`
+                : html`
+                    <ha-dropdown-item
+                      .value=${entry.value}
+                      variant=${entry.variant || "default"}
+                    >
+                      <ha-svg-icon
+                        .path=${entry.path}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${entry.label}
+                    </ha-dropdown-item>
+                  `
+          )}
+        </ha-dropdown>
         <div class="content">
-          <ha-card>
-            <ha-chip-set>
+          ${
+            repository.can_download
+              ? nothing
+              : html`<ha-alert alert-type="warning">
+                  ${downloadBlockedReason(this.hass.localize, repository)}
+                </ha-alert>`
+          }
+          <ha-card outlined>
+            <div class="card-content">
+              <div class="header">
+                ${this._renderIcon(repository)}
+                <div class="title">
+                  ${this.narrow ? nothing : html`<h1>${repository.name}</h1>`}
+                  <div class="version">${this._versionText(repository)}</div>
+                </div>
+              </div>
               ${
-                this._repository.installed
-                  ? html`
-                      <ha-assist-chip
-                        .label=${this._repository.installed_version}
-                        title=${this.hass.localize("ui.panel.marketplace.dialog_info.version_installed")}
-                      >
-                        <ha-svg-icon slot="icon" .path=${mdiCube}></ha-svg-icon>
-                      </ha-assist-chip>
-                    `
-                  : ""
+                repository.description
+                  ? html`<p class="description">${repository.description}</p>`
+                  : nothing
               }
-              ${authors.map(
-                (author) =>
-                  html`<ha-assist-chip
-                    href="https://github.com/${author}"
-                    target="_blank"
-                    .label=${`@${author}`}
-                    title=${this.hass.localize("ui.panel.marketplace.dialog_info.author")}
-                  >
-                    <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
-                  </ha-assist-chip>`
-              )}
-              ${
-                this._repository.downloads
-                  ? html` <ha-assist-chip
-                      title=${this.hass.localize("ui.panel.marketplace.dialog_info.downloads")}
-                      .label=${String(this._repository.downloads)}
+              <ha-chip-set>
+                ${authors.map(
+                  (author) =>
+                    html`<ha-assist-chip
+                      href="https://github.com/${author}"
+                      target="_blank"
+                      .label=${`@${author}`}
+                      title=${this.hass.localize("ui.panel.marketplace.dialog_info.author")}
                     >
                       <ha-svg-icon
                         slot="icon"
-                        .path=${mdiArrowDownBold}
+                        .path=${mdiAccount}
                       ></ha-svg-icon>
                     </ha-assist-chip>`
-                  : ""
-              }
-              <ha-assist-chip
-                .label=${String(this._repository.stars)}
-                title=${this.hass.localize("ui.panel.marketplace.dialog_info.stars")}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
-              </ha-assist-chip>
-              <ha-assist-chip
-                href="https://github.com/${this._repository.full_name}/issues"
-                target="_blank"
-                .label=${String(this._repository.issues)}
-                title=${this.hass.localize("ui.panel.marketplace.dialog_info.open_issues")}
-              >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiExclamationThick}
-                ></ha-svg-icon>
-              </ha-assist-chip>
-            </ha-chip-set>
-            ${
-              this._repository.can_download
-                ? nothing
-                : html`<ha-alert alert-type="warning">
-                    ${downloadBlockedReason(this.hass.localize, this._repository)}
-                  </ha-alert>`
-            }
-            <ha-markdown
-              .content=${
-                markdownWithRepositoryContext(
-                  this._repository.additional_info,
-                  this._repository
-                ) ||
-                this.hass.localize("ui.panel.marketplace.dialog_info.no_info")
-              }
-            ></ha-markdown>
+                )}
+                ${
+                  repository.downloads
+                    ? html`<ha-assist-chip
+                        title=${this.hass.localize("ui.panel.marketplace.dialog_info.downloads")}
+                        .label=${String(repository.downloads)}
+                      >
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiArrowDownBold}
+                        ></ha-svg-icon>
+                      </ha-assist-chip>`
+                    : nothing
+                }
+                <ha-assist-chip
+                  .label=${String(repository.stars)}
+                  title=${this.hass.localize("ui.panel.marketplace.dialog_info.stars")}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
+                </ha-assist-chip>
+                <ha-assist-chip
+                  href="https://github.com/${repository.full_name}/issues"
+                  target="_blank"
+                  .label=${String(repository.issues)}
+                  title=${this.hass.localize("ui.panel.marketplace.dialog_info.open_issues")}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiExclamationThick}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+              </ha-chip-set>
+            </div>
+            ${this._renderActions(repository)}
           </ha-card>
+          ${
+            readme
+              ? html`<ha-card class="readme" outlined>
+                  <div class="card-content">
+                    <ha-markdown .content=${readme} lazy-images></ha-markdown>
+                  </div>
+                </ha-card>`
+              : nothing
+          }
         </div>
-
-        ${
-          !this._repository.installed_version
-            ? html`<ha-button
-                slot="fab"
-                size="l"
-                @click=${this._downloadRepositoryDialog}
-              >
-                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                ${this.hass.localize("ui.panel.marketplace.common.download")}
-              </ha-button>`
-            : nothing
-        }
       </hass-subpage>
-      <ha-dropdown
-        id="overflow-menu"
-        @wa-select=${this._handleOverflowAction}
-        @wa-after-show=${this._overflowMenuOpened}
-        @wa-after-hide=${this._overflowMenuClosed}
-      >
-        ${repositoryMenuItems(this, this._repository, this.hass.localize).map(
-          (entry) =>
-            "divider" in entry
-              ? html`<wa-divider></wa-divider>`
-              : html`
-                  <ha-dropdown-item
-                    .value=${entry.value}
-                    variant=${entry.variant || "default"}
-                  >
-                    <ha-svg-icon .path=${entry.path} slot="icon"></ha-svg-icon>
-                    ${entry.label}
-                  </ha-dropdown-item>
-                `
-        )}
-      </ha-dropdown>
     `;
   }
 
-  private _showOverflowRepositoryMenu = (
-    ev: HASSDomCurrentTargetEvent<HaIconButton>
-  ) => {
-    const button = ev.currentTarget;
-    if (this._repositoryOverflowMenu.anchorElement === button) {
-      this._repositoryOverflowMenu.anchorElement = undefined;
-      return;
+  private _renderIcon(repository: RepositoryInfo) {
+    return repository.category === "integration" && repository.domain
+      ? html`<img
+          class="icon"
+          alt=""
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          src=${brandsUrl(
+            {
+              domain: repository.domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )}
+        />`
+      : html`<ha-svg-icon
+          class="icon"
+          .path=${typeIcon(repository.category)}
+        ></ha-svg-icon>`;
+  }
+
+  private _versionText(repository: RepositoryInfo): string {
+    if (!repository.installed) {
+      return this.hass.localize(
+        "ui.panel.marketplace.dialog_info.version_available",
+        { version: repository.available_version }
+      );
     }
-    this._openingOverflowMenu = true;
-    this._repositoryOverflowMenu.anchorElement = button;
-    this._repositoryOverflowMenu.open = true;
-  };
+
+    return repository.pending_upgrade
+      ? this.hass.localize("ui.panel.marketplace.dialog_info.version_update", {
+          installed: repository.installed_version,
+          version: repository.available_version,
+        })
+      : this.hass.localize(
+          "ui.panel.marketplace.dialog_info.version_downloaded",
+          { version: repository.installed_version }
+        );
+  }
+
+  // Like the Install and Update buttons of an app, a redownload stays in the menu
+  private _renderActions(repository: RepositoryInfo) {
+    if (repository.installed && !repository.pending_upgrade) {
+      return nothing;
+    }
+
+    return html`<div class="card-actions">
+      <ha-button appearance="filled" @click=${this._downloadRepositoryDialog}>
+        <ha-svg-icon
+          slot="start"
+          .path=${repository.installed ? mdiArrowUpBoldCircleOutline : mdiDownload}
+        ></ha-svg-icon>
+        ${this.hass.localize(
+          repository.installed
+            ? "ui.panel.marketplace.common.update"
+            : "ui.panel.marketplace.common.download"
+        )}
+      </ha-button>
+    </div>`;
+  }
 
   private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
     if (!this._repository) {
@@ -451,19 +487,6 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       ?.action();
   };
 
-  private _overflowMenuOpened = () => {
-    this._openingOverflowMenu = false;
-  };
-
-  private _overflowMenuClosed = () => {
-    // Changing the anchor element fires a close event, ignore that one.
-    if (this._openingOverflowMenu) {
-      return;
-    }
-
-    this._repositoryOverflowMenu.anchorElement = undefined;
-  };
-
   private _downloadRepositoryDialog() {
     showMarketplaceDownloadDialog(this, {
       marketplace: this.marketplace,
@@ -476,30 +499,49 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     return [
       marketplaceStyles,
       css`
-        ha-card {
-          display: block;
-          padding: var(--ha-space-4);
-        }
         .content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
           margin: auto;
-          padding: var(--ha-space-2);
-          max-width: 1536px;
+          padding: var(--ha-space-4);
+          max-width: 1200px;
         }
-
+        .header {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+        }
+        .icon {
+          width: 48px;
+          height: 48px;
+          flex: none;
+          --mdc-icon-size: 48px;
+          color: var(--secondary-text-color);
+        }
+        h1 {
+          margin: 0;
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+        }
+        .version {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
+        }
+        .description {
+          margin-block: var(--ha-space-4) 0;
+        }
         ha-chip-set {
-          padding-block-end: var(--ha-space-2);
+          margin-block-start: var(--ha-space-4);
         }
-
-        ha-alert {
-          display: block;
-          margin-block-end: var(--ha-space-2);
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: var(--ha-space-2);
         }
-
-        @media all and (max-width: 500px) {
-          .content {
-            margin: var(--ha-space-2) var(--ha-space-1) var(--ha-space-16);
-            max-width: none;
-          }
+        .readme {
+          direction: ltr;
         }
       `,
     ];
