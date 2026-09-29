@@ -1,7 +1,8 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
