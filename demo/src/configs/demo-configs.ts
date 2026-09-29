@@ -33,9 +33,9 @@ const initialDemo = () => {
   return slug && demos.includes(slug) ? slug : demos[0];
 };
 
-// eslint-disable-next-line import-x/no-mutable-exports
+// oxlint-disable-next-line import/no-mutable-exports
 export let selectedDemo = initialDemo();
-// eslint-disable-next-line import-x/no-mutable-exports
+// oxlint-disable-next-line import/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
   demoConfigs[selectedDemo]();
 

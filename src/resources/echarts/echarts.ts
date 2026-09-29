@@ -1,4 +1,3 @@
-/* eslint-disable import-x/namespace -- echarts/core uses complex re-exports that static analysis can't resolve */
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
 import * as echarts from "echarts/core";
 

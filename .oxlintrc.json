@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript"],
+  "plugins": ["typescript", "import"],
   "categories": {
     "correctness": "off"
   },
@@ -152,7 +152,30 @@
     "typescript/no-inferrable-types": "error",
     "typescript/prefer-for-of": "error",
     "typescript/prefer-function-type": "error",
-    "typescript/no-import-type-side-effects": "error"
+    "typescript/no-import-type-side-effects": "error",
+    "import/namespace": "error",
+    "import/default": "error",
+    "import/export": "error",
+    "import/no-named-as-default": "warn",
+    "import/no-named-as-default-member": "warn",
+    "import/no-duplicates": "warn",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never",
+        "js": "never"
+      }
+    ],
+    "import/no-mutable-exports": "error",
+    "import/no-amd": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-absolute-path": "error",
+    "import/no-dynamic-require": "error",
+    "import/no-webpack-loader-syntax": "error",
+    "import/no-named-default": "error",
+    "import/no-self-import": "error"
   },
   "overrides": [
     {
@@ -194,7 +217,9 @@
     {
       "files": ["build-scripts/**"],
       "rules": {
-        "prefer-arrow-callback": "off"
+        "prefer-arrow-callback": "off",
+        "import/extensions": "off",
+        "import/no-dynamic-require": "off"
       }
     }
   ]

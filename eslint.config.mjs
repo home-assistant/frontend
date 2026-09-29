@@ -9,7 +9,7 @@ import { configs as litConfigs } from "eslint-plugin-lit";
 import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 import html from "@html-eslint/eslint-plugin";
-import importX from "eslint-plugin-import-x";
+import { importX } from "eslint-plugin-import-x";
 
 const rspackConfigPath = fileURLToPath(
   new URL("./rspack.config.cjs", import.meta.url)
@@ -23,9 +23,9 @@ export default tseslint.config(
   litConfigs["flat/all"],
   wcConfigs["flat/recommended"],
   a11yConfigs.recommended,
-  importX.flatConfigs.recommended,
   {
     plugins: {
+      "import-x": importX,
       "unused-imports": unusedImports,
     },
 
@@ -102,33 +102,11 @@ export default tseslint.config(
       ],
       "wc/no-self-class": "off",
 
-      // import-x rules
-      "import-x/named": "off",
-      "import-x/prefer-default-export": "off",
-      "import-x/no-default-export": "off",
-      "import-x/no-unresolved": "off",
-      "import-x/no-cycle": "off",
-      "import-x/extensions": [
-        "error",
-        "ignorePackages",
-        {
-          ts: "never",
-          js: "never",
-        },
-      ],
-      "import-x/no-mutable-exports": "error",
-      "import-x/no-amd": "error",
-      "import-x/first": "error",
+      // import-x rules without an Oxlint equivalent
       "import-x/order": [
         "error",
         { groups: [["builtin", "external", "internal"]] },
       ],
-      "import-x/newline-after-import": "error",
-      "import-x/no-absolute-path": "error",
-      "import-x/no-dynamic-require": "error",
-      "import-x/no-webpack-loader-syntax": "error",
-      "import-x/no-named-default": "error",
-      "import-x/no-self-import": "error",
       "import-x/no-useless-path-segments": ["error", { commonjs: true }],
       "import-x/no-import-module-exports": ["error", { exceptions: [] }],
       "import-x/no-relative-packages": "error",
