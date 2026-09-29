@@ -12165,17 +12165,16 @@
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
           "title": "Before you use the Marketplace",
-          "intro": "Everything in the Marketplace is made and published by the community. What you download runs inside Home Assistant, with full access to your home, your data, and the system Home Assistant runs on.",
+          "intro": "Everything in the Marketplace is made and published by the community. What you download runs inside Home\u00a0Assistant, with full access to your home, your data, and the system Home\u00a0Assistant runs on.",
           "risks_title": "Serious risks are involved",
           "risks": {
-            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home Assistant project.",
+            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home\u00a0Assistant project.",
             "own_risk": "You use everything you download from the Marketplace at your own risk.",
             "privacy": "It can violate your privacy, for example by sending your data to others.",
-            "security": "It can compromise the security of Home Assistant, your home, and your network.",
-            "stability": "It can degrade the stability and performance of Home Assistant."
+            "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
+            "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
           },
-          "reminder": "It has been a while, so here is the warning again.",
-          "understand": "I understand the risks",
+          "understand": "I understand the risks, remind me again in 90 days",
           "continue": "Continue"
         },
         "common": {

@@ -31,9 +31,6 @@ export class HaMarketplaceWarning extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  // Shown again for an acceptance that has grown old, not for a first visit.
-  @property({ type: Boolean }) public reminder = false;
-
   @state() private _understood = false;
 
   @state() private _accepting = false;
@@ -49,15 +46,11 @@ export class HaMarketplaceWarning extends LitElement {
         back-path="/config"
       >
         <div class="content">
-          <ha-card>
+          <ha-card outlined>
             <div class="card-content">
               ${
-                this.reminder
-                  ? html`<p class="reminder">
-                      ${this.hass.localize(
-                        "ui.panel.marketplace.warning.reminder"
-                      )}
-                    </p>`
+                this._error
+                  ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                   : nothing
               }
               <div class="heading">
@@ -86,11 +79,6 @@ export class HaMarketplaceWarning extends LitElement {
                   )}
                 </ul>
               </ha-alert>
-              ${
-                this._error
-                  ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-                  : nothing
-              }
               <ha-checkbox
                 .checked=${this._understood}
                 .disabled=${this._accepting}
@@ -145,8 +133,17 @@ export class HaMarketplaceWarning extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+          height: 100%;
+        }
+
         .content {
           box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 100%;
           max-width: calc(65ch + 2 * var(--ha-space-6));
           margin-inline: auto;
           padding: var(--ha-space-4);
@@ -154,7 +151,6 @@ export class HaMarketplaceWarning extends LitElement {
 
         ha-card {
           border: var(--ha-border-width-lg) solid var(--warning-color);
-          border-block-start-width: var(--ha-space-3);
         }
 
         .card-content {
@@ -183,12 +179,6 @@ export class HaMarketplaceWarning extends LitElement {
           font-weight: var(--ha-font-weight-bold);
           line-height: var(--ha-line-height-condensed);
           color: var(--warning-color);
-        }
-
-        .reminder {
-          margin: 0;
-          text-align: center;
-          color: var(--secondary-text-color);
         }
 
         .intro {

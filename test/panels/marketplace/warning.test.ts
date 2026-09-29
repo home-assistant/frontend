@@ -52,3 +52,26 @@ it("can be continued again when the Marketplace did not take over", async () => 
   // The panel swaps the screen once its refetch works, until then it stays usable
   expect(internals._accepting).toBe(false);
 });
+
+it("shows a failure above the warning, on an outlined card", async () => {
+  const warning = await openWarning();
+  (warning as unknown as Record<string, any>)._error = "Busy";
+  await warning.updateComplete;
+
+  const content = warning.shadowRoot!.querySelector(".card-content")!;
+  expect(content.firstElementChild?.getAttribute("alert-type")).toBe("error");
+  expect(
+    warning.shadowRoot!.querySelector("ha-card")!.hasAttribute("outlined")
+  ).toBe(true);
+});
+
+it("says how long the acceptance lasts, instead of a reminder", async () => {
+  const warning = await openWarning();
+
+  expect(
+    warning.shadowRoot!.querySelector("ha-checkbox")!.textContent!.trim()
+  ).toBe("ui.panel.marketplace.warning.understand");
+  expect(
+    warning.shadowRoot!.querySelector('ha-alert[alert-type="info"]')
+  ).toBeNull();
+});
