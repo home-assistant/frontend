@@ -29,22 +29,19 @@ import {
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
 import type {
   MarketplaceRelease,
   RepositoryInfo,
 } from "../../../data/marketplace/repository";
 import {
-  fetchRepositoryInformation,
-  repositoryDownloadVersion,
-  repositoryReleases,
+  fetchMarketplaceRepository,
+  downloadMarketplaceRepository,
+  fetchMarketplaceRepositoryReleases,
 } from "../../../data/marketplace/repository";
 import {
-  handleWarningNotAccepted,
   websocketErrorMessage,
-  websocketSubscription,
+  subscribeMarketplaceDownloadProgress,
 } from "../../../data/marketplace/websocket";
-import type { MarketplaceHass } from "../tools/connect-github";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { downloadBlockedReason } from "../tools/download-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
@@ -88,15 +85,6 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     if (this.params) {
       this._load(this.params);
     }
-  }
-
-  // The Marketplace helpers take a hass object, dialogs only get contexts.
-  private get _hass(): MarketplaceHass {
-    return {
-      callApi: this._api.callApi,
-      connection: this._connection.connection,
-      localize: this._i18n.localize,
-    };
   }
 
   private async _load(params: MarketplaceDownloadDialogParams): Promise<void> {
@@ -145,13 +133,18 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
   private async _fetchRepository(repositoryId: string) {
     let repository: RepositoryInfo;
     try {
-      repository = await fetchRepositoryInformation(this._hass, repositoryId);
+      repository = await fetchMarketplaceRepository(this._api, repositoryId);
     } catch (err) {
       if (!this.isConnected) {
         return;
       }
 
-      this._error = handleGitHubRateLimited(this, this._hass, err)
+      this._error = handleGitHubRateLimited(
+        this,
+        this._api,
+        this._i18n.localize,
+        err
+      )
         ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
         : websocketErrorMessage(err) ||
           this._i18n.localize("ui.panel.marketplace.common.unknown_error");
@@ -425,22 +418,21 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
     // Subscribed before the download starts, or its first steps are missed.
     // Progress is a nicety, the download goes ahead without it.
-    const unsubscribeProgress = await websocketSubscription(
-      this._hass,
-      (data) => {
+    const unsubscribeProgress = await subscribeMarketplaceDownloadProgress(
+      this._connection,
+      (update) => {
         if (
-          data?.repository === repository.full_name &&
-          typeof data.progress === "number"
+          update.repository === repository.full_name &&
+          typeof update.progress === "number"
         ) {
-          this._progress = data.progress;
+          this._progress = update.progress;
         }
-      },
-      MarketplaceDispatchEvent.REPOSITORY_DOWNLOAD_PROGRESS
+      }
     ).catch(() => undefined);
 
     try {
-      await repositoryDownloadVersion(
-        this._hass,
+      await downloadMarketplaceRepository(
+        this._api,
         String(repository.id),
         this._selectedVersion || repository.available_version,
         { confirmReplaceBuiltIn: this._replacementAccepted }
@@ -451,12 +443,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
         return;
       }
 
-      if (handleWarningNotAccepted(err)) {
-        this.closeDialog();
-        return;
-      }
-
-      if (handleGitHubRateLimited(this, this._hass, err)) {
+      if (handleGitHubRateLimited(this, this._api, this._i18n.localize, err)) {
         return;
       }
 
@@ -519,8 +506,8 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
     let downloaded: RepositoryInfo;
     try {
-      downloaded = await fetchRepositoryInformation(
-        this._hass,
+      downloaded = await fetchMarketplaceRepository(
+        this._api,
         String(repository.id)
       );
     } catch (_err: unknown) {
@@ -569,14 +556,17 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
     let releases: MarketplaceRelease[];
     try {
-      releases = await repositoryReleases(this._hass, String(repository.id));
+      releases = await fetchMarketplaceRepositoryReleases(
+        this._api,
+        String(repository.id)
+      );
     } catch (err) {
       if (!this._isShowing(repository)) {
         return;
       }
 
       this._releasesFailed = true;
-      if (!handleGitHubRateLimited(this, this._hass, err)) {
+      if (!handleGitHubRateLimited(this, this._api, this._i18n.localize, err)) {
         this._error =
           websocketErrorMessage(err) ||
           this._i18n.localize("ui.panel.marketplace.common.unknown_error");

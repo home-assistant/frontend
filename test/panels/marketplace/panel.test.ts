@@ -67,6 +67,7 @@ const openPanel = async (answers: Answers) => {
         answers[message.type]()
       ),
     },
+    callWS: (message: { type: string }) => answers[message.type](),
   } as unknown as HomeAssistant;
 
   const panel = document.createElement("ha-panel-marketplace");
@@ -123,6 +124,23 @@ describe("ha-panel-marketplace", () => {
     expect(screen(panel, "hass-error-screen")?.error).toBe(
       "ui.panel.marketplace.not_loaded"
     );
+  });
+
+  it("refetches for a page inside it, not for the whole window", async () => {
+    const info = vi.fn(async () => INFO);
+    const panel = await openPanel({
+      "marketplace/info": info,
+      "marketplace/repositories/list": async () => [],
+    });
+    info.mockClear();
+
+    window.dispatchEvent(new Event("marketplace-refresh"));
+    await settle(panel);
+    expect(info).not.toHaveBeenCalled();
+
+    panel.dispatchEvent(new Event("marketplace-refresh"));
+    await settle(panel);
+    expect(info).toHaveBeenCalled();
   });
 
   it("keeps loading while the entry is not loaded yet", async () => {

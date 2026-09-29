@@ -38,10 +38,8 @@ import type {
   RepositoryBase,
   RepositoryType,
 } from "../../../data/marketplace/repository";
-import {
-  repositoriesClearNew,
-  websocketErrorMessage,
-} from "../../../data/marketplace/websocket";
+import { websocketErrorMessage } from "../../../data/marketplace/websocket";
+import { dismissNewMarketplaceRepositories } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
   DEFAULT_GROUP_COLUMN,
@@ -524,7 +522,10 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private async _dismissNew() {
     try {
-      await repositoriesClearNew(this.hass, this.marketplace);
+      await dismissNewMarketplaceRepositories(
+        this.hass,
+        this.marketplace.info.categories
+      );
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.marketplace.dialog.error.title"),

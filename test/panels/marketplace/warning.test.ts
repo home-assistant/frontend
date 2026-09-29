@@ -20,7 +20,7 @@ vi.mock("../../../src/components/ha-svg-icon", () =>
   stubElement("ha-svg-icon")
 );
 vi.mock("../../../src/data/marketplace/websocket", () => ({
-  acceptWarning: vi.fn(async () => undefined),
+  acceptMarketplaceWarning: vi.fn(async () => undefined),
 }));
 
 const openWarning = async () => {

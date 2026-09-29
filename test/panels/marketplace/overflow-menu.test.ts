@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { repositoryUninstall } from "../../../src/data/marketplace/websocket";
+import { removeMarketplaceDownload } from "../../../src/data/marketplace/repository";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -21,9 +21,9 @@ vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
   showAlertDialog: vi.fn(),
   showConfirmationDialog: vi.fn(),
 }));
-vi.mock("../../../src/data/marketplace/websocket", async (importOriginal) => ({
+vi.mock("../../../src/data/marketplace/repository", async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  repositoryUninstall: vi.fn(),
+  removeMarketplaceDownload: vi.fn(),
 }));
 
 const localize = ((key: string) => key) as LocalizeFunc;
@@ -105,13 +105,13 @@ describe("repositoryMenuItems", () => {
     await params.action!();
 
     expect(params.destructive).toBe(true);
-    expect(repositoryUninstall).toHaveBeenCalledWith(PAGE.hass, "1");
+    expect(removeMarketplaceDownload).toHaveBeenCalledWith(PAGE.hass, "1");
     expect(showAlertDialog).not.toHaveBeenCalled();
   });
 
   it("keeps the removal dialog open with an alert when it fails", async () => {
     const error = new Error("Busy");
-    vi.mocked(repositoryUninstall).mockRejectedValueOnce(error);
+    vi.mocked(removeMarketplaceDownload).mockRejectedValueOnce(error);
     const params = await confirmRemoval();
 
     await expect(params.action!()).rejects.toBe(error);

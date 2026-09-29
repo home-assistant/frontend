@@ -5,7 +5,6 @@ import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -19,27 +18,23 @@ import "../../../components/ha-md-list-item";
 import "../../../components/ha-tooltip";
 import "../../../components/ha-svg-icon";
 import "../../../components/progress/ha-progress-bar";
-import {
-  apiContext,
-  connectionContext,
-  internationalizationContext,
-} from "../../../data/context";
+import { apiContext, internationalizationContext } from "../../../data/context";
 import type {
   RepositoryBase,
   RepositoryType,
 } from "../../../data/marketplace/repository";
 import {
   ERROR_GITHUB_NOT_CONNECTED,
-  getRepositories,
-  handleWarningNotAccepted,
   isWebSocketError,
-  repositoryAdd,
-  repositoryDelete,
   websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
+import {
+  addMarketplaceRepository,
+  fetchMarketplaceRepositories,
+  removeMarketplaceRepository,
+} from "../../../data/marketplace/repository";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { MarketplaceHass } from "../tools/connect-github";
 import { showConnectGitHubFlow } from "../tools/connect-github";
 import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace-custom-repositories";
 
@@ -52,10 +47,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
-  @consume({ context: connectionContext, subscribe: true })
-  private _connection!: ContextType<typeof connectionContext>;
-
-  @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
@@ -65,7 +56,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
   @state() private _errors?: Record<string, string>;
 
-  @state() private _data?: { repository: string; category: string };
+  @state() private _data?: { repository: string; category: RepositoryType };
 
   @state() private _githubConnected = false;
 
@@ -77,15 +68,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
     this._repositories = this.params.marketplace.repositories;
     this._githubConnected = this.params.marketplace.info.github_connected;
-  }
-
-  // The Marketplace helpers take a hass object, dialogs only get contexts.
-  private get _hass(): MarketplaceHass {
-    return {
-      callApi: this._api.callApi,
-      connection: this._connection.connection,
-      localize: this._i18n.localize,
-    };
   }
 
   protected render() {
@@ -266,7 +248,11 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
     // Connect first and then add what was typed, so one press is enough.
     if (!this._githubConnected) {
-      this._githubConnected = await showConnectGitHubFlow(this, this._hass);
+      this._githubConnected = await showConnectGitHubFlow(
+        this,
+        this._api,
+        this._i18n.localize
+      );
       if (!this._githubConnected || !this.isConnected) {
         return;
       }
@@ -274,18 +260,13 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
     this._waiting = true;
     try {
-      await repositoryAdd(
-        this._hass,
+      await addMarketplaceRepository(
+        this._api,
         this._data.repository,
         this._data.category
       );
       await this._updateRepositories();
     } catch (err: unknown) {
-      if (handleWarningNotAccepted(err)) {
-        this.closeDialog();
-        return;
-      }
-
       // The dialog can be closed while waiting for the backend.
       if (!this.isConnected) {
         return;
@@ -307,7 +288,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   private async _removeRepository(repository: string) {
     this._waiting = true;
     try {
-      await repositoryDelete(this._hass, repository);
+      await removeMarketplaceRepository(this._api, repository);
       await this._updateRepositories();
     } catch (err: unknown) {
       if (this.isConnected) {
@@ -326,9 +307,8 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   }
 
   private async _updateRepositories() {
-    const repositories = await getRepositories(this._hass);
-    // A dialog closed meanwhile is detached, its events reach nobody.
-    fireEvent(window, "marketplace-refresh");
+    // The panel hears the change from the backend, this is for the dialog
+    const repositories = await fetchMarketplaceRepositories(this._api);
 
     if (this.isConnected) {
       this._repositories = repositories;

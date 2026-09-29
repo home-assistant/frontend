@@ -102,6 +102,7 @@ const openRepositoryPage = async (
   page.hass = {
     localize: (key: string) => key,
     connection: { sendMessagePromise },
+    callWS: sendMessagePromise,
   } as unknown as HomeAssistant;
   page.marketplace = MARKETPLACE;
   page.narrow = false;

@@ -233,10 +233,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
       if (!redirectEntry && targetPath.startsWith("/marketplace/repository/")) {
         // Marketplace repository pages are addressed by id, the My link by name
-        const { fetchRepositoryInformation } =
+        const { fetchMarketplaceRepository } =
           await import("../data/marketplace/repository");
         try {
-          const repository = await fetchRepositoryInformation(
+          const repository = await fetchMarketplaceRepository(
             this.hass,
             targetPath.split("/")[3]
           );

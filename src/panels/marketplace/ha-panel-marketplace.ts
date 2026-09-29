@@ -20,10 +20,10 @@ import type { RepositoryBase } from "../../data/marketplace/repository";
 import {
   ERROR_NOT_LOADED,
   fetchMarketplaceInfo,
-  getRepositories,
   isWebSocketError,
-  websocketSubscription,
+  subscribeMarketplaceChanges,
 } from "../../data/marketplace/websocket";
+import { fetchMarketplaceRepositories } from "../../data/marketplace/repository";
 import "./components/ha-marketplace-warning";
 import "./ha-marketplace-router";
 import { haStyle } from "../../resources/styles";
@@ -79,14 +79,13 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    // Dialogs are appended outside of this panel, so their refresh requests
-    // never bubble through here.
-    window.addEventListener("marketplace-refresh", this._handleRefresh);
+    // Changes arrive as signals from the backend, pages that need more ask here
+    this.addEventListener("marketplace-refresh", this._handleRefresh);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener("marketplace-refresh", this._handleRefresh);
+    this.removeEventListener("marketplace-refresh", this._handleRefresh);
     this._unsubscribeMarketplace();
     this._entryLoaded = false;
     this._entry = undefined;
@@ -263,7 +262,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     ];
 
     this._marketplaceUnsubs = signals.map(([signal, callback]) => {
-      const unsub = websocketSubscription(this.hass, callback, signal);
+      const unsub = subscribeMarketplaceChanges(this.hass, signal, callback);
       unsub.catch((err) => this._logError("subscribe to", err));
       return unsub;
     });
@@ -299,7 +298,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
   private _refreshRepositories = async (): Promise<void> => {
     try {
-      this._repositories = await getRepositories(this.hass);
+      this._repositories = await fetchMarketplaceRepositories(this.hass);
     } catch (err) {
       this._handleFetchError(
         "fetch repositories from",

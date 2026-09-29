@@ -18,12 +18,12 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
+import { websocketErrorMessage } from "../../../data/marketplace/websocket";
 import {
-  repositoriesClearNewRepository,
-  repositoryUninstall,
-  repositoryUpdate,
-  websocketErrorMessage,
-} from "../../../data/marketplace/websocket";
+  dismissNewMarketplaceRepository,
+  refreshMarketplaceRepository,
+  removeMarketplaceDownload,
+} from "../../../data/marketplace/repository";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
 import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
 import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace-download";
@@ -60,7 +60,7 @@ const removeRepository = async (
   element: MarketplaceDashboardElement,
   repository: RepositoryBase
 ) => {
-  await repositoryUninstall(element.hass, String(repository.id));
+  await removeMarketplaceDownload(element.hass, String(repository.id));
   if (element.nodeName === "HA-MARKETPLACE-REPOSITORY-DASHBOARD") {
     navigate("/marketplace", { replace: true });
   }
@@ -152,9 +152,12 @@ export const repositoryMenuItems = (
       ),
       action: async () => {
         try {
-          await repositoryUpdate(element.hass, String(repository.id));
+          await refreshMarketplaceRepository(
+            element.hass,
+            String(repository.id)
+          );
         } catch (err: unknown) {
-          if (!handleGitHubRateLimited(element, element.hass, err)) {
+          if (!handleGitHubRateLimited(element, element.hass, localize, err)) {
             showError(element, localize, err);
           }
         }
@@ -199,7 +202,7 @@ export const repositoryMenuItems = (
       label: localize("ui.panel.marketplace.repository_menu.dismiss_new"),
       action: async () => {
         try {
-          await repositoriesClearNewRepository(
+          await dismissNewMarketplaceRepository(
             element.hass,
             String(repository.id)
           );

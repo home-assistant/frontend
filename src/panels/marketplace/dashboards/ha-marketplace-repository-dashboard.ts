@@ -38,12 +38,16 @@ import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import type {
   RepositoryBase,
   RepositoryInfo,
+  RepositoryType,
 } from "../../../data/marketplace/repository";
-import { fetchRepositoryInformation } from "../../../data/marketplace/repository";
 import {
-  getRepositories,
-  handleWarningNotAccepted,
-  repositoryAdd,
+  addMarketplaceRepository,
+  fetchMarketplaceRepositories,
+  fetchMarketplaceRepository,
+} from "../../../data/marketplace/repository";
+import {
+  ERROR_WARNING_NOT_ACCEPTED,
+  isWebSocketError,
   websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 import { haStyle } from "../../../resources/styles";
@@ -92,7 +96,14 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           requestedRepository.toLocaleLowerCase()
       );
       if (!existing && params.category) {
-        if (!ensureGitHubConnected(this, this.hass, this.marketplace.info)) {
+        if (
+          !ensureGitHubConnected(
+            this,
+            this.hass,
+            this.hass.localize,
+            this.marketplace.info
+          )
+        ) {
           this._error = this.hass.localize(
             "ui.panel.marketplace.github.add_repository_needs_github",
             { repository: requestedRepository }
@@ -124,9 +135,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           return;
         }
         try {
-          await repositoryAdd(this.hass, requestedRepository, params.category);
-          fireEvent(this, "marketplace-refresh");
-          const repositories = await getRepositories(this.hass);
+          await addMarketplaceRepository(
+            this.hass,
+            requestedRepository,
+            params.category as RepositoryType
+          );
+          const repositories = await fetchMarketplaceRepositories(this.hass);
           existing = repositories.find(
             (repository) =>
               repository.full_name.toLocaleLowerCase() ===
@@ -135,11 +149,17 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         } catch (err: unknown) {
           // The panel swaps to the warning screen, accepting it brings the
           // user back here to add the repository.
-          if (handleWarningNotAccepted(err)) {
+          if (isWebSocketError(err, ERROR_WARNING_NOT_ACCEPTED)) {
+            fireEvent(this, "marketplace-refresh");
             return;
           }
 
-          this._error = handleGitHubNotConnected(this, this.hass, err)
+          this._error = handleGitHubNotConnected(
+            this,
+            this.hass,
+            this.hass.localize,
+            err
+          )
             ? this.hass.localize(
                 "ui.panel.marketplace.github.add_repository_needs_github",
                 { repository: requestedRepository }
@@ -222,7 +242,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._requestedRepositoryId = requestedRepositoryId;
 
     try {
-      const repository = await fetchRepositoryInformation(
+      const repository = await fetchMarketplaceRepository(
         this.hass,
         requestedRepositoryId
       );
@@ -235,7 +255,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         return;
       }
 
-      this._error = handleGitHubRateLimited(this, this.hass, err)
+      this._error = handleGitHubRateLimited(
+        this,
+        this.hass,
+        this.hass.localize,
+        err
+      )
         ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
         : websocketErrorMessage(err) ||
           this.hass.localize("ui.panel.marketplace.common.unknown_error");

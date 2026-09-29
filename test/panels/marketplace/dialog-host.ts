@@ -87,6 +87,9 @@ export const openDialog = async <Tag extends keyof HTMLElementTagNameMap>(
     context: apiContext,
     initialValue: {
       callApi: vi.fn(async () => undefined),
+      // Like the real one, it answers through the connection
+      callWS: (message: Parameters<MockConnection["sendMessagePromise"]>[0]) =>
+        connection.sendMessagePromise(message),
     } as unknown as HomeAssistantApi,
   });
   document.body.appendChild(host);

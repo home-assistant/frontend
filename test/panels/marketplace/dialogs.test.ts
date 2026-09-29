@@ -99,17 +99,12 @@ describe("dialog-marketplace-custom-repositories", () => {
         ? repositories.promise
         : null
     );
-    const refresh = vi.fn();
-    window.addEventListener("marketplace-refresh", refresh);
-
     const removing = getInternals(dialog)._removeRepository("1");
     await dialog.closeDialog();
     repositories.resolve([]);
     await removing;
-    window.removeEventListener("marketplace-refresh", refresh);
 
-    // The panel still refetches, the closed dialog keeps its list.
-    expect(refresh).toHaveBeenCalledTimes(1);
+    // The panel hears it from the backend, the closed dialog keeps its list.
     expect(getInternals(dialog)._repositories).toEqual([REPOSITORY]);
     expect(getInternals(dialog)._errors).toBeUndefined();
   });
@@ -249,7 +244,8 @@ describe("dialog-marketplace-custom-repositories", () => {
 
     expect(showConnectGitHubFlow).toHaveBeenCalledWith(
       dialog,
-      expect.objectContaining({ localize: expect.any(Function) })
+      expect.objectContaining({ callWS: expect.any(Function) }),
+      expect.any(Function)
     );
     expect(sendMessagePromise).toHaveBeenCalledWith({
       type: "marketplace/repositories/add",

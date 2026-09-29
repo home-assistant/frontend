@@ -16,6 +16,7 @@ import {
   handleGitHubRateLimited,
   showConnectGitHubFlow,
 } from "../../../src/panels/marketplace/tools/connect-github";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { HomeAssistant } from "../../../src/types";
 
 vi.mock("../../../src/data/config_flow", () => ({
@@ -38,19 +39,19 @@ const mockHass = ({
   connectError,
 }: { githubConnected?: boolean; connectError?: unknown } = {}) =>
   ({
-    localize: (key: string) => key,
-    connection: {
-      sendMessagePromise: vi.fn(async (message: { type: string }) => {
-        if (message.type === "marketplace/github/connect") {
-          if (connectError) {
-            throw connectError;
-          }
-          return { flow_id: FLOW_ID };
+    callApi: vi.fn(async () => undefined),
+    callWS: vi.fn(async (message: { type: string }) => {
+      if (message.type === "marketplace/github/connect") {
+        if (connectError) {
+          throw connectError;
         }
-        return { github_connected: githubConnected };
-      }),
-    },
+        return { flow_id: FLOW_ID };
+      }
+      return { github_connected: githubConnected };
+    }),
   }) as unknown as HomeAssistant;
+
+const localize = ((key: string) => key) as LocalizeFunc;
 
 // The flow dialog reports how it closed through its callback.
 const closeFlowDialog = (flowFinished: boolean) => {
@@ -70,7 +71,7 @@ describe("showConnectGitHubFlow", () => {
     closeFlowDialog(true);
     const hass = mockHass();
 
-    expect(await showConnectGitHubFlow(element, hass)).toBe(true);
+    expect(await showConnectGitHubFlow(element, hass, localize)).toBe(true);
     expect(showConfigFlowDialog).toHaveBeenCalledWith(
       element,
       expect.objectContaining({ continueFlowId: FLOW_ID })
@@ -82,7 +83,7 @@ describe("showConnectGitHubFlow", () => {
     closeFlowDialog(false);
     const hass = mockHass();
 
-    expect(await showConnectGitHubFlow(element, hass)).toBe(false);
+    expect(await showConnectGitHubFlow(element, hass, localize)).toBe(false);
     expect(deleteConfigFlow).toHaveBeenCalledWith(hass, FLOW_ID);
   });
 
@@ -90,25 +91,18 @@ describe("showConnectGitHubFlow", () => {
     closeFlowDialog(true);
 
     expect(
-      await showConnectGitHubFlow(element, mockHass({ githubConnected: false }))
+      await showConnectGitHubFlow(
+        element,
+        mockHass({ githubConnected: false }),
+        localize
+      )
     ).toBe(false);
-  });
-
-  it("refreshes the panel once the dialog closes", async () => {
-    closeFlowDialog(true);
-    const refresh = vi.fn();
-    window.addEventListener("marketplace-refresh", refresh);
-
-    await showConnectGitHubFlow(element, mockHass());
-
-    window.removeEventListener("marketplace-refresh", refresh);
-    expect(refresh).toHaveBeenCalledTimes(1);
   });
 
   it("shows why the flow could not start", async () => {
     const hass = mockHass({ connectError: { message: "No entry" } });
 
-    expect(await showConnectGitHubFlow(element, hass)).toBe(false);
+    expect(await showConnectGitHubFlow(element, hass, localize)).toBe(false);
     expect(showAlertDialog).toHaveBeenCalledWith(
       element,
       expect.objectContaining({ text: "No entry" })
@@ -126,7 +120,9 @@ describe("ensureGitHubConnected", () => {
   it("lets adding go ahead while connected", () => {
     const info = { github_connected: true } as MarketplaceInfo;
 
-    expect(ensureGitHubConnected(element, mockHass(), info)).toBe(true);
+    expect(ensureGitHubConnected(element, mockHass(), localize, info)).toBe(
+      true
+    );
     expect(showConfigFlowDialog).not.toHaveBeenCalled();
   });
 
@@ -134,7 +130,7 @@ describe("ensureGitHubConnected", () => {
     const hass = mockHass();
     const info = { github_connected: false } as MarketplaceInfo;
 
-    expect(ensureGitHubConnected(element, hass, info)).toBe(false);
+    expect(ensureGitHubConnected(element, hass, localize, info)).toBe(false);
     await vi.waitFor(() => expect(showConfigFlowDialog).toHaveBeenCalled());
   });
 });
@@ -147,7 +143,7 @@ describe("handleGitHubNotConnected", () => {
 
   it("starts the connect flow", async () => {
     expect(
-      handleGitHubNotConnected(element, mockHass(), {
+      handleGitHubNotConnected(element, mockHass(), localize, {
         code: ERROR_GITHUB_NOT_CONNECTED,
       })
     ).toBe(true);
@@ -156,7 +152,9 @@ describe("handleGitHubNotConnected", () => {
 
   it("leaves other errors to the caller", () => {
     expect(
-      handleGitHubNotConnected(element, mockHass(), { code: "unknown_error" })
+      handleGitHubNotConnected(element, mockHass(), localize, {
+        code: "unknown_error",
+      })
     ).toBe(false);
     expect(showConfigFlowDialog).not.toHaveBeenCalled();
   });
@@ -170,7 +168,7 @@ describe("handleGitHubRateLimited", () => {
 
   it("offers to connect GitHub", async () => {
     expect(
-      handleGitHubRateLimited(element, mockHass(), {
+      handleGitHubRateLimited(element, mockHass(), localize, {
         code: ERROR_GITHUB_RATE_LIMITED,
       })
     ).toBe(true);
@@ -184,7 +182,9 @@ describe("handleGitHubRateLimited", () => {
 
   it("leaves other errors to the caller", () => {
     expect(
-      handleGitHubRateLimited(element, mockHass(), { code: "unknown_error" })
+      handleGitHubRateLimited(element, mockHass(), localize, {
+        code: "unknown_error",
+      })
     ).toBe(false);
     expect(showConfirmationDialog).not.toHaveBeenCalled();
   });

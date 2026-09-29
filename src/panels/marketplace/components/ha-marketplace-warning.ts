@@ -3,7 +3,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -14,7 +13,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import {
-  acceptWarning,
+  acceptMarketplaceWarning,
   websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 
@@ -129,18 +128,17 @@ export class HaMarketplaceWarning extends LitElement {
     this._error = undefined;
 
     try {
-      await acceptWarning(this.hass);
+      await acceptMarketplaceWarning(this.hass);
     } catch (err: unknown) {
       this._error =
         websocketErrorMessage(err) ||
         this.hass.localize("ui.panel.marketplace.common.unknown_error");
       return;
     } finally {
-      // The panel swaps this screen once its refetch works, until then it stays usable
+      // The panel swaps this screen once the backend reports the acceptance,
+      // until then it stays usable
       this._accepting = false;
     }
-
-    fireEvent(this, "marketplace-refresh");
   }
 
   static get styles(): CSSResultGroup {
