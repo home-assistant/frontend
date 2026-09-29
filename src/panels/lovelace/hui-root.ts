@@ -377,9 +377,7 @@ class HUIRoot extends LitElement {
         : dashboardActions.resolve(this._dashboardActionContext());
     const overflowItems = items.filter((i) => i.visible && i.overflow);
     const overflowCanPromote =
-      contributedActions.length === 0 &&
-      overflowItems.length === 1 &&
-      overflowItems[0].overflow_can_promote;
+      overflowItems.length === 1 && overflowItems[0].overflow_can_promote;
     const buttonItems = items.filter(
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
@@ -433,8 +431,8 @@ class HUIRoot extends LitElement {
     });
 
     if (
-      (overflowItems.length || contributedActions.length) &&
-      !overflowCanPromote
+      (overflowItems.length && !overflowCanPromote) ||
+      contributedActions.length
     ) {
       result.push(html`
         <ha-dropdown
@@ -448,7 +446,7 @@ class HUIRoot extends LitElement {
             .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
             hide-title
           ></ha-icon-button>
-          ${overflowItems.map((i) => {
+          ${(overflowCanPromote ? [] : overflowItems).map((i) => {
             const title = [this.hass!.localize(i.key), i.suffix].join(" ");
             return html`<ha-dropdown-item .value=${i.key} .data=${i}>
               <ha-svg-icon slot="icon" .path=${i.icon}></ha-svg-icon>

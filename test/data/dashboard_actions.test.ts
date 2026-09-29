@@ -67,7 +67,8 @@ describe("dashboard action registrations", () => {
   });
   it("reports a failing action once until resolution recovers", () => {
     const report = vi.fn();
-    vi.stubGlobal("reportError", report);
+    context.host.addEventListener("write_log", report);
+    vi.stubGlobal("reportError", undefined);
     try {
       const registry = new DashboardActions();
       let broken = true;
@@ -94,12 +95,14 @@ describe("dashboard action registrations", () => {
       registry.resolve(context);
       expect(report).toHaveBeenCalledTimes(3);
     } finally {
+      context.host.removeEventListener("write_log", report);
       vi.unstubAllGlobals();
     }
   });
   it("isolates a broken resource and reports its exception", () => {
     const report = vi.fn();
-    vi.stubGlobal("reportError", report);
+    context.host.addEventListener("write_log", report);
+    vi.stubGlobal("reportError", undefined);
     try {
       const registry = new DashboardActions();
       registry.register({
@@ -113,7 +116,11 @@ describe("dashboard action registrations", () => {
         "example:call",
       ]);
       expect(report).toHaveBeenCalledOnce();
+      expect(
+        (report.mock.calls[0][0] as HTMLElementEventMap["write_log"]).detail.message
+      ).toContain("broken:call");
     } finally {
+      context.host.removeEventListener("write_log", report);
       vi.unstubAllGlobals();
     }
   });

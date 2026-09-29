@@ -1,3 +1,4 @@
+import { fireEvent } from "../common/dom/fire_event";
 import type { ShowDialogParams } from "../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../types";
 
@@ -70,7 +71,9 @@ export class DashboardActions {
         // A broken resource must not prevent built-in dashboard actions rendering.
         if (!this._failedActions.has(action)) {
           this._failedActions.add(action);
-          reportError(error);
+          fireEvent(context.host, "write_log", {
+            message: `Error resolving dashboard action ${action.id}: ${String(error)}`,
+          });
         }
       }
     }
