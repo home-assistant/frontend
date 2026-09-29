@@ -260,7 +260,7 @@ export class MapLibreMapEngine implements MapEngine {
       attributionControl: {},
       // Proxied by core behind a token; absolute so the worker can resolve them
       transformRequest: (url) => ({
-        url: withMapTilesToken(url),
+        ...withMapTilesToken(url),
         referrerPolicy: __DEMO__ ? "origin" : undefined,
       }),
     });

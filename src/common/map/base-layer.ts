@@ -157,7 +157,7 @@ const createVectorLayer = async (
       style: await loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"]),
       // Absolute, or the worker fetching tiles cannot resolve them.
       transformRequest: (url) => ({
-        url: withMapTilesToken(url),
+        ...withMapTilesToken(url),
         // OSM asks a website for a referrer, and the demo has no instance
         // hostname to leak.
         referrerPolicy: __DEMO__ ? "origin" : undefined,

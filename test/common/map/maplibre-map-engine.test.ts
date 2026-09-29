@@ -341,7 +341,7 @@ const refreshMapTilesToken = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/data/map_tiles", () => ({
   MAP_TILES_PATH: "/api/map_tiles",
   mapTilesUrl: (path: string) => path,
-  withMapTilesToken: (url: string) => url,
+  withMapTilesToken: (url: string) => ({ url }),
   refreshMapTilesToken,
   subscribeMapTilesToken: (listener: (token: string) => void) => {
     tokenListeners.add(listener);

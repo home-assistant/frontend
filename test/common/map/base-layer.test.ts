@@ -33,7 +33,9 @@ vi.mock("../../../src/data/map_tiles", () => ({
     tokenListeners.add(listener);
     return () => tokenListeners.delete(listener);
   },
-  withMapTilesToken: (url: string) => new URL(url, location.href).href,
+  withMapTilesToken: (url: string) => ({
+    url: new URL(url, location.href).href,
+  }),
 }));
 const emitToken = (token: string) =>
   tokenListeners.forEach((listener) => listener(token));
