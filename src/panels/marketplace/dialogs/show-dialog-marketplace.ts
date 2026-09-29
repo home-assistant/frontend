@@ -18,6 +18,8 @@ export interface MarketplaceFormDialogParams extends BaseMarketplaceDialogParams
 export interface MarketplaceDownloadDialogParams extends BaseMarketplaceDialogParams {
   repositoryId: string;
   repository?: RepositoryInfo;
+  // Opens with the versions to choose from, instead of the newest one
+  chooseVersion?: boolean;
 }
 
 export type MarketplaceCustomRepositoriesDialogParams =

@@ -3,17 +3,13 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type {
-  HASSDomEvent,
-  HASSDomTargetEvent,
-} from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-expansion-panel";
 import "../../../components/ha-select";
 import type {
   HaSelectOption,
@@ -33,10 +29,7 @@ import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
-import type {
-  RepositoryBase,
-  RepositoryInfo,
-} from "../../../data/marketplace/repository";
+import type { RepositoryInfo } from "../../../data/marketplace/repository";
 import {
   fetchRepositoryInformation,
   repositoryDownloadVersion,
@@ -126,20 +119,25 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     if (this._repository && this._repository.version_or_commit !== "commit") {
       this._selectedVersion = this._repository.available_version;
     }
+
+    if (this._repository && this._choosingVersion(this._repository)) {
+      await this._loadReleases();
+    }
+  }
+
+  // The newest version can need a newer Home Assistant, an earlier one is
+  // then the only way to download it.
+  private _choosingVersion(repository: RepositoryInfo): boolean {
+    return (
+      this._selectedVersion !== undefined &&
+      (this.params!.chooseVersion === true || !repository.can_download)
+    );
   }
 
   // Answers for a closed dialog, or for another repository, are dropped.
   private _isShowing(repository: RepositoryInfo): boolean {
     return this.isConnected && this._repository === repository;
   }
-
-  private _getInstallPath = memoizeOne((repository: RepositoryBase) => {
-    let path: string = repository.local_path;
-    if (["template", "theme"].includes(repository.category)) {
-      path = `${path}/${repository.file_name}`;
-    }
-    return path;
-  });
 
   private _getAuthors = memoizeOne((repository: RepositoryInfo): string[] => {
     const authors = (repository.authors ?? []).map((author) =>
@@ -223,7 +221,6 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
   }
 
   private _renderDownload(repository: RepositoryInfo) {
-    const installPath = this._getInstallPath(repository);
     const needsAcceptance =
       repository.replaces_built_in &&
       !repository.installed &&
@@ -233,158 +230,127 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       !repository.can_download &&
       (this._selectedVersion ?? repository.available_version) ===
         repository.available_version;
+    const version = this._selectedVersion || repository.available_version;
+    // Alerts span the dialog above the content, like the more-info dialog
+    // shows them for a disabled entity
     return html`
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+      ${
+        repository.replaces_built_in
+          ? html`<ha-alert
+              class="replaces-built-in"
+              alert-type="error"
+              .title=${this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.replaces_built_in_title",
+                { domain: repository.domain }
+              )}
+            >
+              ${this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.replaces_built_in_warning",
+                { repository: repository.name, domain: repository.domain }
+              )}
+              ${
+                repository.installed
+                  ? nothing
+                  : html`<ha-checkbox
+                      .checked=${this._replacementAccepted}
+                      @change=${this._replacementAcceptedChanged}
+                    >
+                      ${this._i18n.localize(
+                        "ui.panel.marketplace.dialog_download.replaces_built_in_confirm"
+                      )}
+                    </ha-checkbox>`
+              }
+            </ha-alert>`
+          : nothing
+      }
+      ${
+        tooNew
+          ? html`<ha-alert alert-type="warning">
+              ${downloadBlockedReason(this._i18n.localize, repository)}
+              ${this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.older_version_hint"
+              )}
+            </ha-alert>`
+          : nothing
+      }
+      ${
+        repository.installed
+          ? nothing
+          : html`<ha-alert
+              alert-type="warning"
+              .title=${this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.new_download_title"
+              )}
+            >
+              ${this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.new_download_warning",
+                {
+                  repository: repository.name,
+                  authors: formatListWithAnds(
+                    this._i18n.locale,
+                    this._getAuthors(repository)
+                  ),
+                }
+              )}
+            </ha-alert>`
+      }
       <div class="content">
         ${
-          repository.replaces_built_in
-            ? html`<ha-alert
-                class="replaces-built-in"
-                alert-type="error"
-                .title=${this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.replaces_built_in_title",
-                  { domain: repository.domain }
-                )}
-              >
-                ${this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.replaces_built_in_warning",
-                  { repository: repository.name, domain: repository.domain }
-                )}
-                ${
-                  repository.installed
-                    ? nothing
-                    : html`<ha-checkbox
-                        .checked=${this._replacementAccepted}
-                        @change=${this._replacementAcceptedChanged}
-                      >
-                        ${this._i18n.localize(
-                          "ui.panel.marketplace.dialog_download.replaces_built_in_confirm"
-                        )}
-                      </ha-checkbox>`
-                }
-              </ha-alert>`
-            : nothing
-        }
-        <p>
-          ${this._i18n.localize(
-            repository.version_or_commit === "commit"
-              ? "ui.panel.marketplace.dialog_download.will_download_commit"
-              : "ui.panel.marketplace.dialog_download.will_download_version",
-            {
-              ref: html`
-                <code
-                  >${this._selectedVersion || repository.available_version}</code
-                >
-              `,
-            }
-          )}
-        </p>
-        <div class="note">
-          ${this._i18n.localize(
-            "ui.panel.marketplace.dialog_download.note_downloaded",
-            {
-              location: html`<code>'${installPath}'</code>`,
-            }
-          )}
-          ${
-            repository.category === "plugin" &&
-            this.params!.marketplace.info.lovelace_mode !== "storage"
-              ? html`
-                  <p>
-                    ${this._i18n.localize(`ui.panel.marketplace.dialog_download.lovelace_instruction`)}
-                  </p>
-                  <pre class="frontend-resource">
-              url: ${generateFrontendResourceURL({ repository })}
-              type: module
-              </pre>
-                `
-              : nothing
-          }
-          ${
-            repository.category === "integration"
-              ? html`<p>
-                  ${this._i18n.localize("ui.panel.marketplace.dialog_download.restart")}
-                </p>`
-              : nothing
-          }
-        </div>
-        ${
-          this._selectedVersion
-            ? html`<ha-expansion-panel
-                @expanded-changed=${this._fetchReleases}
-                .header=${this._i18n.localize(`ui.panel.marketplace.dialog_download.different_version`)}
-              >
-                <p>
-                  ${this._i18n.localize("ui.panel.marketplace.dialog_download.release_warning")}
-                </p>
-                ${
-                  this._releasesFailed
-                    ? this._i18n.localize(
-                        "ui.panel.marketplace.dialog_download.releases_failed"
-                      )
-                    : this._releases === undefined
-                      ? this._i18n.localize(
-                          "ui.panel.marketplace.dialog_download.fetching_releases"
-                        )
-                      : this._releases.length === 0
-                        ? this._i18n.localize(
-                            "ui.panel.marketplace.dialog_download.no_releases"
-                          )
-                        : html`<ha-select
-                            .label=${this._i18n.localize(
-                              "ui.panel.marketplace.dialog_download.release"
-                            )}
-                            .value=${this._selectedVersion}
-                            .options=${this._releaseOptions(this._releases)}
-                            @selected=${this._versionChanged}
-                          ></ha-select>`
-                }
-              </ha-expansion-panel>`
-            : nothing
-        }
-        ${
-          repository.installed
-            ? nothing
-            : html`<ha-alert
-                alert-type="warning"
-                .title=${this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.new_download_title"
-                )}
-              >
-                ${this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.new_download_warning",
-                  {
-                    repository: repository.name,
-                    authors: formatListWithAnds(
-                      this._i18n.locale,
-                      this._getAuthors(repository)
-                    ),
-                  }
-                )}
-              </ha-alert>`
-        }
-        ${
-          tooNew
-            ? html`<ha-alert alert-type="warning">
-                ${downloadBlockedReason(this._i18n.localize, repository)}
-                ${this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.older_version_hint"
-                )}
-              </ha-alert>`
-            : nothing
-        }
-        ${
-          this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing
-        }
-        ${
+          // Where the update dialog shows an update in progress
           this._installing
             ? html`<ha-progress-bar
                 .value=${this._progress ?? 0}
                 .indeterminate=${this._progress === undefined}
+                .loading=${this._progress !== undefined}
               ></ha-progress-bar>`
             : nothing
         }
+        <p>
+          ${
+            repository.installed
+              ? this._i18n.localize(
+                  "ui.panel.marketplace.dialog_download.update_intro",
+                  {
+                    name: repository.name,
+                    installed: repository.installed_version,
+                    version,
+                  }
+                )
+              : this._i18n.localize(
+                  "ui.panel.marketplace.dialog_download.download_intro",
+                  { name: repository.name, version }
+                )
+          }
+        </p>
+        ${
+          // A first download can often be set up right away, an update runs
+          // the old code until Home Assistant restarts
+          repository.category === "integration" && repository.installed
+            ? html`<p>
+                ${this._i18n.localize("ui.panel.marketplace.dialog_download.restart")}
+              </p>`
+            : nothing
+        }
+        ${
+          repository.category === "plugin" &&
+          this.params!.marketplace.info.lovelace_mode !== "storage"
+            ? html`
+                <p>
+                  ${this._i18n.localize("ui.panel.marketplace.dialog_download.lovelace_instruction")}
+                </p>
+                <pre class="frontend-resource">
+              url: ${generateFrontendResourceURL({ repository })}
+              type: module
+              </pre>
+              `
+            : nothing
+        }
+        ${this._choosingVersion(repository) ? this._renderVersions() : nothing}
       </div>
       <ha-dialog-footer slot="footer">
         <ha-button
@@ -397,13 +363,53 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
         <ha-button
           slot="primaryAction"
           appearance="filled"
+          .loading=${this._installing}
           ?disabled=${this._installing || tooNew || needsAcceptance}
           @click=${this._installRepository}
         >
-          ${this._i18n.localize("ui.panel.marketplace.common.download")}
+          ${this._i18n.localize(
+            repository.installed
+              ? "ui.panel.marketplace.common.update"
+              : "ui.panel.marketplace.common.download"
+          )}
         </ha-button>
       </ha-dialog-footer>
     `;
+  }
+
+  private _renderVersions() {
+    return html`<div class="versions">
+      <p>
+        ${this._i18n.localize(
+          "ui.panel.marketplace.dialog_download.release_warning"
+        )}
+      </p>
+      ${
+        this._releasesFailed
+          ? html`${this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.releases_failed"
+              )}
+              <ha-button appearance="plain" @click=${this._loadReleases}>
+                ${this._i18n.localize("ui.panel.marketplace.common.retry")}
+              </ha-button>`
+          : this._releases === undefined
+            ? this._i18n.localize(
+                "ui.panel.marketplace.dialog_download.fetching_releases"
+              )
+            : this._releases.length === 0
+              ? this._i18n.localize(
+                  "ui.panel.marketplace.dialog_download.no_releases"
+                )
+              : html`<ha-select
+                  .label=${this._i18n.localize(
+                    "ui.panel.marketplace.dialog_download.release"
+                  )}
+                  .value=${this._selectedVersion}
+                  .options=${this._releaseOptions(this._releases)}
+                  @selected=${this._versionChanged}
+                ></ha-select>`
+      }
+    </div>`;
   }
 
   private async _installRepository(): Promise<void> {
@@ -559,11 +565,8 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     });
   }
 
-  private async _fetchReleases(
-    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
-  ) {
-    // Collapsing the panel fires this too, and would repeat a failed fetch.
-    if (!ev.detail.expanded || this._releases !== undefined) {
+  private async _loadReleases() {
+    if (this._releases !== undefined) {
       return;
     }
 
@@ -618,25 +621,22 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     return [
       marketplaceStyles,
       css`
-        .note {
-          margin-block-start: var(--ha-space-3);
+        ha-dialog {
+          --dialog-content-padding: 0;
+        }
+        ha-alert {
+          display: block;
+        }
+        .content {
+          padding: var(--ha-space-6);
+        }
+        .versions ha-select {
+          display: block;
         }
         pre {
           white-space: pre-line;
           user-select: all;
           padding: var(--ha-space-2);
-        }
-        ha-progress-bar {
-          margin-block-end: calc(-1 * var(--ha-space-2));
-          margin-block-start: var(--ha-space-1);
-        }
-        ha-expansion-panel {
-          background-color: var(--secondary-background-color);
-          padding: var(--ha-space-2);
-        }
-        .replaces-built-in {
-          display: block;
-          margin-block-end: var(--ha-space-4);
         }
         .replaces-built-in ha-checkbox {
           display: block;

@@ -4,6 +4,7 @@ import {
   mdiClose,
   mdiDownload,
   mdiGithub,
+  mdiHistory,
   mdiInformation,
   mdiLanguageJavascript,
   mdiMoonNew,
@@ -172,6 +173,20 @@ export const repositoryMenuItems = (
       showMarketplaceDownloadDialog(element, {
         marketplace: element.marketplace,
         repositoryId: String(repository.id),
+      }),
+  });
+
+  entries.push({
+    value: "download_other_version",
+    path: mdiHistory,
+    label: localize(
+      "ui.panel.marketplace.repository_card.download_other_version"
+    ),
+    action: () =>
+      showMarketplaceDownloadDialog(element, {
+        marketplace: element.marketplace,
+        repositoryId: String(repository.id),
+        chooseVersion: true,
       }),
   });
 

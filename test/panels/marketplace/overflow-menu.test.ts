@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { showMarketplaceDownloadDialog } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import type { MarketplaceRepositoryMenuEntry } from "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu";
@@ -60,4 +61,17 @@ describe("repositoryMenuItems", () => {
       ).toContain("download");
     }
   );
+
+  it("opens the versions to choose from for another version", () => {
+    const entry = repositoryMenuItems(PAGE, repository({}), localize).find(
+      (item) => "value" in item && item.value === "download_other_version"
+    ) as { action: () => void };
+
+    entry.action();
+
+    expect(showMarketplaceDownloadDialog).toHaveBeenCalledWith(
+      PAGE,
+      expect.objectContaining({ repositoryId: "1", chooseVersion: true })
+    );
+  });
 });
