@@ -6,6 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -154,7 +155,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   @state() private _capabilities?: ESPHomeDeviceCapabilities;
 
-  @state() private _serialPorts: SerialPortUsage[] = [];
+  /** Last successful USB usage scan. Undefined until a scan completes. */
+  @state() private _serialPorts?: SerialPortUsage[];
+
+  @state() private _serialUsageError?: string;
+
+  private _serialUsageRequest = 0;
 
   @state() private _fetching = true;
 
@@ -285,6 +291,13 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       ${
         this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+      ${
+        this._serialUsageError
+          ? html`<ha-alert alert-type="error"
+              >${this._serialUsageError}</ha-alert
+            >`
           : nothing
       }
       <div class="checklist">
@@ -573,7 +586,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return this._configEntries.find((entry) => entry.entry_id === entryId);
   }
 
+  /** Undefined when USB usage has not been loaded. An empty array is a real scan. */
   private _serialConsumers(url: string) {
+    if (!this._serialPorts) {
+      return undefined;
+    }
     return (
       this._serialPorts.find((port) => port.device === url)?.consumers ?? []
     );
@@ -601,7 +618,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                     : nothing
                 }
                 ${
-                  consumers.length
+                  consumers?.length
                     ? html`<span class="port-type">
                         ${consumers.map((consumer) => consumer.title).join(", ")}
                       </span>`
@@ -609,21 +626,23 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                 }
               </span>
               ${
-                consumers.length
-                  ? html`
-                      <span class="chip active">
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_serial_configured"
-                        )}
-                      </span>
-                    `
-                  : html`
-                      <ha-button size="s" @click=${this._setupSerialPort}>
-                        ${localize(
-                          "ui.panel.config.devices.esphome.setup_action"
-                        )}
-                      </ha-button>
-                    `
+                consumers === undefined
+                  ? nothing
+                  : consumers.length
+                    ? html`
+                        <span class="chip active">
+                          ${localize(
+                            "ui.panel.config.devices.esphome.setup_serial_configured"
+                          )}
+                        </span>
+                      `
+                    : html`
+                        <ha-button size="s" @click=${this._setupSerialPort}>
+                          ${localize(
+                            "ui.panel.config.devices.esphome.setup_action"
+                          )}
+                        </ha-button>
+                      `
               }
             </li>
           `;
@@ -697,7 +716,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return undefined;
     }
     const audio = this._audioControls();
-    return deriveESPHomeSetupStatus(this._capabilities, {
+    const status = deriveESPHomeSetupStatus(this._capabilities, {
       mediaPlayerSupported:
         Boolean(this.params.mediaPlayerSupported) || audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
@@ -706,11 +725,24 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         this._hassConfig.config,
         "music_assistant"
       ),
-      serialConfigured: isESPHomeSerialConfigured(
-        this._capabilities.serial_proxies,
-        this._serialPorts
-      ),
+      serialConfigured:
+        this._serialPorts === undefined
+          ? undefined
+          : isESPHomeSerialConfigured(
+              this._capabilities.serial_proxies,
+              this._serialPorts
+            ),
     });
+    // A failed scan left no usage data. Keep the row, but do not show
+    // Configured or Set up from that missing result.
+    if (
+      this._serialUsageError &&
+      this._capabilities.serial_proxies.length > 0 &&
+      this._serialPorts === undefined
+    ) {
+      status.serial = "not-started";
+    }
+    return status;
   }
 
   private async _load() {
@@ -724,9 +756,14 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         this._api,
         this.params.deviceId
       );
-      const serialPorts = await this._fetchSerialUsage(capabilities);
+      if (!this.isConnected) {
+        return;
+      }
       this._capabilities = capabilities;
-      this._serialPorts = serialPorts;
+      await this._refreshSerialPorts();
+      if (!this.isConnected) {
+        return;
+      }
       const status = this._status();
       if (status && this._expanded === undefined) {
         this._expanded =
@@ -746,36 +783,63 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
   }
 
-  private async _fetchSerialUsage(
+  private async _readSerialUsage(
     capabilities: ESPHomeDeviceCapabilities
-  ): Promise<SerialPortUsage[]> {
+  ): Promise<
+    { ok: true; ports: SerialPortUsage[] } | { ok: false; error: unknown }
+  > {
     if (
       !capabilities.serial_proxies.length ||
       !this._api ||
       !this._hassConfig ||
       !isComponentLoaded(this._hassConfig.config, "usb")
     ) {
-      return [];
+      return { ok: true, ports: [] };
     }
     try {
-      return await listSerialPortsWithUsage(this._api);
-    } catch {
-      return [];
+      return { ok: true, ports: await listSerialPortsWithUsage(this._api) };
+    } catch (err: unknown) {
+      return { ok: false, error: err };
     }
   }
 
   private async _refreshSerialPorts() {
-    if (!this._capabilities) {
+    const capabilities = this._capabilities;
+    if (!capabilities) {
       return;
     }
-    const ports = await this._fetchSerialUsage(this._capabilities);
-    if (this.isConnected) {
-      this._serialPorts = ports;
+    const request = ++this._serialUsageRequest;
+    const result = await this._readSerialUsage(capabilities);
+    if (
+      request !== this._serialUsageRequest ||
+      !this.isConnected ||
+      this._capabilities !== capabilities
+    ) {
+      return;
     }
+    if (!result.ok) {
+      this._serialUsageError = this._requestError(
+        result.error,
+        this._i18n!.localize("ui.panel.config.serial.loading_error")
+      );
+      return;
+    }
+    this._serialUsageError = undefined;
+    this._serialPorts = result.ports;
   }
 
-  private _toggleCapability(ev: Event) {
-    const capability = (ev.currentTarget as HTMLElement).dataset
+  private _requestError(err: unknown, fallback: string): string {
+    if (typeof err === "object" && err !== null && "message" in err) {
+      const { message } = err as { message: unknown };
+      if (typeof message === "string" && message) {
+        return message;
+      }
+    }
+    return fallback;
+  }
+
+  private _toggleCapability(ev: HASSDomCurrentTargetEvent<HTMLButtonElement>) {
+    const capability = ev.currentTarget.dataset
       .capability as ESPHomeCapabilityId;
     this._expanded = this._expanded === capability ? undefined : capability;
   }
@@ -1042,27 +1106,34 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private async _setupZWave(ev: Event) {
     ev.stopPropagation();
-    if (!this._connection || !this._capabilities) {
+    if (!this._connection || !this._capabilities || !this._i18n) {
       return;
     }
     const homeId = String(this._capabilities.zwave_proxy.home_id);
-    const flow = (
-      await fetchConfigFlowInProgress(this._connection.connection)
-    ).find(
+    let flows: DataEntryFlowProgress[];
+    try {
+      flows = await fetchConfigFlowInProgress(this._connection.connection);
+    } catch {
+      if (this.isConnected) {
+        this._error = this._i18n.localize(
+          "ui.panel.config.devices.esphome.setup_error_zwave"
+        );
+      }
+      return;
+    }
+    if (!this.isConnected) {
+      return;
+    }
+    const flow = flows.find(
       (item) =>
         item.handler === "zwave_js" &&
         item.context?.source === "esphome" &&
         item.context?.unique_id === homeId
     );
-    if (!this.isConnected) {
-      return;
-    }
     if (!flow) {
-      if (this._i18n) {
-        this._error = this._i18n.localize(
-          "ui.panel.config.devices.esphome.setup_error_zwave"
-        );
-      }
+      this._error = this._i18n.localize(
+        "ui.panel.config.devices.esphome.setup_error_zwave"
+      );
       return;
     }
     this._error = undefined;

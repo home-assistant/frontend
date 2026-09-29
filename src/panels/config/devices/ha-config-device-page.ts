@@ -231,7 +231,10 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _esphomeCapabilities?: ESPHomeDeviceCapabilities;
 
-  @state() private _esphomeSerialConfigured = false;
+  /** Undefined until a USB usage scan succeeds. Failures keep the previous value. */
+  @state() private _esphomeSerialConfigured?: boolean;
+
+  @state() private _esphomeSerialError?: string;
 
   @state() private _esphomeUserData: ESPHomeFrontendUserData | null = null;
 
@@ -242,6 +245,8 @@ export class HaConfigDevicePage extends LitElement {
   private _unsubEsphomeUserData?: UnsubscribeFunc;
 
   private _esphomeUserDataSubGeneration = 0;
+
+  private _esphomeCapabilitiesRequest = 0;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -403,7 +408,8 @@ export class HaConfigDevicePage extends LitElement {
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
       this._esphomeCapabilities = undefined;
-      this._esphomeSerialConfigured = false;
+      this._esphomeSerialConfigured = undefined;
+      this._esphomeSerialError = undefined;
     }
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -509,7 +515,10 @@ export class HaConfigDevicePage extends LitElement {
       this._esphomeUserData,
       this.deviceId
     );
-    const esphomeStatus = this._esphomeCapabilities
+    const serialUsageUnknown =
+      (this._esphomeCapabilities?.serial_proxies.length ?? 0) > 0 &&
+      this._esphomeSerialConfigured === undefined;
+    let esphomeStatus = this._esphomeCapabilities
       ? deriveESPHomeSetupStatus(this._esphomeCapabilities, {
           mediaPlayerSupported,
           sendspinSupported: Boolean(audio.sendspinEntityId),
@@ -521,6 +530,11 @@ export class HaConfigDevicePage extends LitElement {
           serialConfigured: this._esphomeSerialConfigured,
         })
       : undefined;
+    // Unknown usage is not a completed setup. List the row so the banner stays,
+    // without storing a configured or unconfigured scan.
+    if (esphomeStatus && serialUsageUnknown) {
+      esphomeStatus = { ...esphomeStatus, serial: "not-started" };
+    }
     const esphomeRemaining = esphomeStatus
       ? countRemainingESPHomeCapabilities(esphomeStatus)
       : 0;
@@ -1206,6 +1220,13 @@ export class HaConfigDevicePage extends LitElement {
           </div>
         </div>
         ${
+          this._esphomeSerialError
+            ? html`<ha-alert alert-type="error" class="fullwidth"
+                >${this._esphomeSerialError}</ha-alert
+              >`
+            : nothing
+        }
+        ${
           showESPHomeSetup && !esphomeDeferred && esphomeRemaining > 0
             ? html`
                 <ha-esphome-setup-banner
@@ -1264,12 +1285,33 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
+  private _requestError(err: unknown, fallback: string): string {
+    if (typeof err === "object" && err !== null && "message" in err) {
+      const { message } = err as { message: unknown };
+      if (typeof message === "string" && message) {
+        return message;
+      }
+    }
+    return fallback;
+  }
+
   private async _fetchESPHomeCapabilities() {
+    const request = ++this._esphomeCapabilitiesRequest;
     const deviceId = this.deviceId;
-    const device = this.hass.devices[deviceId];
-    if (!device) {
+    const stillCurrent = () =>
+      request === this._esphomeCapabilitiesRequest &&
+      this.deviceId === deviceId;
+    const clearSetup = () => {
       this._esphomeCapabilities = undefined;
-      this._esphomeSerialConfigured = false;
+      this._esphomeSerialConfigured = undefined;
+      this._esphomeSerialError = undefined;
+    };
+    const device = this.hass.devices[deviceId];
+    if (!stillCurrent()) {
+      return;
+    }
+    if (!device) {
+      clearSetup();
       return;
     }
     const domains = this._integrations(
@@ -1278,8 +1320,10 @@ export class HaConfigDevicePage extends LitElement {
       this.manifests
     ).map((entry) => entry.domain);
     if (!domains.includes("esphome")) {
-      this._esphomeCapabilities = undefined;
-      this._esphomeSerialConfigured = false;
+      if (!stillCurrent()) {
+        return;
+      }
+      clearSetup();
       return;
     }
     try {
@@ -1287,32 +1331,47 @@ export class HaConfigDevicePage extends LitElement {
         this.hass,
         deviceId
       );
-      let serialConfigured = false;
+      if (!stillCurrent()) {
+        return;
+      }
+      let serialConfigured = this._esphomeSerialConfigured;
+      let serialError: string | undefined;
       if (
         capabilities.serial_proxies.length > 0 &&
         isComponentLoaded(this.hass.config, "usb")
       ) {
         try {
           const ports = await listSerialPortsWithUsage(this.hass);
+          if (!stillCurrent()) {
+            return;
+          }
           serialConfigured = isESPHomeSerialConfigured(
             capabilities.serial_proxies,
             ports
           );
-        } catch (_err) {
-          serialConfigured = false;
+        } catch (err: unknown) {
+          if (!stillCurrent()) {
+            return;
+          }
+          serialError = this._requestError(
+            err,
+            this.hass.localize("ui.panel.config.serial.loading_error")
+          );
         }
+      } else if (stillCurrent()) {
+        serialConfigured = false;
       }
-      if (this.deviceId !== deviceId) {
+      if (!stillCurrent()) {
         return;
       }
       this._esphomeCapabilities = capabilities;
       this._esphomeSerialConfigured = serialConfigured;
+      this._esphomeSerialError = serialError;
     } catch (_err) {
-      if (this.deviceId !== deviceId) {
+      if (!stillCurrent()) {
         return;
       }
-      this._esphomeCapabilities = undefined;
-      this._esphomeSerialConfigured = false;
+      clearSetup();
     }
   }
 

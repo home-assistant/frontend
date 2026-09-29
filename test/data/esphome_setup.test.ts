@@ -272,6 +272,19 @@ describe("deriveESPHomeSetupStatus", () => {
         .serial
     ).toBe("completed");
   });
+
+  it("leaves serial unset when USB usage was not loaded", () => {
+    const caps = capabilities({
+      serial_proxies: [serialProxy()],
+    });
+
+    expect(
+      deriveESPHomeSetupStatus(caps, {
+        mediaPlayerSupported: false,
+        musicAssistantLoaded: false,
+      }).serial
+    ).toBeUndefined();
+  });
 });
 
 describe("isESPHomeSerialConfigured", () => {

@@ -208,7 +208,11 @@ export const deriveESPHomeSetupStatus = (
     }
   }
 
-  if (capabilities.serial_proxies.length > 0) {
+  // Missing usage is not an empty scan: leave serial unset until a boolean result exists.
+  if (
+    capabilities.serial_proxies.length > 0 &&
+    options.serialConfigured !== undefined
+  ) {
     status.serial = options.serialConfigured ? "completed" : "not-started";
   }
 
