@@ -925,9 +925,10 @@ class DialogAddAutomationElement
           const area = device
             ? getDeviceArea(device, this.hass.areas, this.hass.devices)
             : undefined;
-          const parentDevice = device?.parent_device_id
-            ? this.hass.devices[device.parent_device_id]
-            : undefined;
+          const parentDevice =
+            device?.parent_device_id && device.next_name_part !== "area"
+              ? this.hass.devices[device.parent_device_id]
+              : undefined;
           if (area) {
             subtitle = [
               computeAreaName(area) || area.area_id,
