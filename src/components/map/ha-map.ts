@@ -1,10 +1,12 @@
-import { ContextConsumer } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume } from "../../common/decorators/consume";
+import {
+  consume,
+  ContextSubscriptionController,
+} from "../../common/decorators/consume";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -385,7 +387,9 @@ export class HaMap extends ReactiveElement {
   // Registry creation order decides the palette colors
   @state() private _entityReg: EntityRegistryEntry[] = [];
 
-  private _registryConsumer?: ContextConsumer<typeof fullEntitiesContext, this>;
+  private _registryConsumer?: ContextSubscriptionController<
+    EntityRegistryEntry[]
+  >;
 
   private _entityHandles: MapMarkerHandle[] = [];
 
@@ -425,13 +429,13 @@ export class HaMap extends ReactiveElement {
     if (this._registryConsumer || !this.entities?.length) {
       return;
     }
-    this._registryConsumer = new ContextConsumer(this, {
-      context: fullEntitiesContext,
-      subscribe: true,
-      callback: (entries) => {
+    this._registryConsumer = new ContextSubscriptionController(
+      this,
+      fullEntitiesContext,
+      (entries) => {
         this._entityReg = entries;
-      },
-    });
+      }
+    );
   }
 
   private _handleVisibilityChange = async () => {
