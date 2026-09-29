@@ -46,7 +46,7 @@ const STYLE = {
   version: 8,
   sources: {},
   layers: [],
-  sprite: [{ id: "basics", url: "/static/map/sprites/basics/sprites" }],
+  sprite: [{ id: "base", url: "/static/map/sprites/base?v=abc12345" }],
 };
 
 const rasterLayer = {
@@ -102,6 +102,53 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+describe("loadStyle", () => {
+  const load = async () =>
+    (await import("../../../src/common/map/base-layer")).loadStyle(
+      "/static/map/light.json"
+    );
+
+  it("makes the bundled sprite URL absolute against this page", async () => {
+    const style = await load();
+
+    expect(style.sprite).toEqual([
+      {
+        id: "base",
+        url: `${location.origin}/static/map/sprites/base?v=abc12345`,
+      },
+    ]);
+  });
+
+  it("keeps the bundled sprites in the demo, with tiles and glyphs upstream", async () => {
+    vi.stubGlobal("__DEMO__", true);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        json: async () => ({
+          ...structuredClone(STYLE),
+          glyphs: "/api/map_tiles/fonts/{fontstack}/{range}.pbf",
+          sources: {
+            osm: { type: "vector", url: "/api/map_tiles/tilejson.json" },
+          },
+        }),
+      }))
+    );
+
+    const style = await load();
+
+    expect(style.sprite).toEqual([
+      {
+        id: "base",
+        url: `${location.origin}/static/map/sprites/base?v=abc12345`,
+      },
+    ]);
+    expect(style.glyphs).toMatch(/^https:\/\/tiles\.versatiles\.org\//);
+    expect((style.sources.osm as { url: string }).url).toMatch(
+      /^https:\/\/vector\.openstreetmap\.org\//
+    );
+  });
 });
 
 describe("createBaseLayer", () => {

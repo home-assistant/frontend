@@ -169,7 +169,7 @@
     "@types/sortablejs": "1.15.9",
     "@types/tar": "7.0.87",
     "@typescript/native": "npm:typescript@7.0.2",
-    "@versatiles/style": "5.13.1",
+    "@versatiles/style": "6.0.1",
     "@vitest/coverage-v8": "5.0.2",
     "babel-loader": "10.1.1",
     "babel-plugin-polyfill-corejs3": "1.0.0",
