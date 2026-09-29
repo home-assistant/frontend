@@ -30,6 +30,7 @@ import {
   internationalizationContext,
 } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
 import type {
@@ -497,9 +498,65 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       });
     }
 
+    if (!repository.installed && promptHost) {
+      await this._offerSetUp(promptHost, repository);
+    }
+
     if (this.isConnected) {
       this.closeDialog();
     }
+  }
+
+  // A first download that needs no restart can be set up right away. The
+  // backend knows, it read the manifest of the version that was written.
+  private async _offerSetUp(
+    promptHost: HTMLElement,
+    repository: RepositoryInfo
+  ): Promise<void> {
+    if (repository.category !== "integration") {
+      return;
+    }
+
+    let downloaded: RepositoryInfo;
+    try {
+      downloaded = await fetchRepositoryInformation(
+        this._hass,
+        String(repository.id)
+      );
+    } catch (_err: unknown) {
+      // Setting it up is still offered on the integrations page
+      return;
+    }
+
+    const domain = downloaded.domain;
+    if (
+      !domain ||
+      !downloaded.config_flow ||
+      downloaded.status === "pending-restart"
+    ) {
+      return;
+    }
+
+    await showConfirmationDialog(promptHost, {
+      title: this._i18n.localize("ui.panel.marketplace.dialog.set_up.title", {
+        name: downloaded.name,
+      }),
+      text: this._i18n.localize("ui.panel.marketplace.dialog.set_up.message", {
+        name: downloaded.name,
+      }),
+      dismissText: this._i18n.localize(
+        "ui.panel.marketplace.dialog.set_up.later"
+      ),
+      confirmText: this._i18n.localize(
+        "ui.panel.marketplace.dialog.set_up.confirm"
+      ),
+      confirm: () => {
+        showConfigFlowDialog(promptHost, {
+          startFlowHandler: domain,
+          navigateToResult: true,
+        });
+      },
+    });
   }
 
   private async _fetchReleases(

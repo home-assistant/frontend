@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { showConfigFlowDialog } from "../../../src/dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
@@ -26,6 +27,9 @@ const stubElement = vi.hoisted(() => (tag: string) => {
 
 vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
   showConfirmationDialog: vi.fn(async () => false),
+}));
+vi.mock("../../../src/dialogs/config-flow/show-dialog-config-flow", () => ({
+  showConfigFlowDialog: vi.fn(),
 }));
 vi.mock("../../../src/components/ha-alert", () => stubElement("ha-alert"));
 vi.mock("../../../src/components/ha-button", () => stubElement("ha-button"));
@@ -131,6 +135,69 @@ describe("dialog-marketplace-download", () => {
     expect(dialog.isConnected).toBe(false);
     expect(showConfirmationDialog).toHaveBeenCalledWith(app, expect.anything());
   });
+
+  it.each([
+    {
+      name: "a new integration it can set up now",
+      installed: false,
+      downloaded: { config_flow: true, status: "installed" },
+      flows: ["example"],
+    },
+    {
+      name: "an update",
+      installed: true,
+      downloaded: { config_flow: true, status: "installed" },
+      flows: [],
+    },
+    {
+      name: "an integration waiting for a restart",
+      installed: false,
+      downloaded: { config_flow: true, status: "pending-restart" },
+      flows: [],
+    },
+    {
+      name: "an integration set up from YAML",
+      installed: false,
+      downloaded: { config_flow: false, status: "installed" },
+      flows: [],
+    },
+  ])(
+    "offers to set up $name: $flows",
+    async ({ installed, downloaded, flows }) => {
+      vi.mocked(showConfirmationDialog).mockImplementationOnce(
+        async (_element, params) => {
+          params.confirm?.();
+          return true;
+        }
+      );
+      const dialog = await openDownloadDialog(
+        { repository: repositoryInfo("1", { installed, domain: "example" }) },
+        mockConnection(async (message: { type: string }) =>
+          message.type === "marketplace/repository/info"
+            ? repositoryInfo("1", {
+                installed: true,
+                domain: "example",
+                ...downloaded,
+              } as Partial<RepositoryInfo>)
+            : null
+        )
+      );
+      await settle(dialog);
+
+      dialog
+        .shadowRoot!.querySelector("ha-button[slot=primaryAction]")!
+        .dispatchEvent(new Event("click"));
+      await settle(dialog);
+      await settle(dialog);
+
+      expect(
+        vi
+          .mocked(showConfigFlowDialog)
+          .mock.calls.map(([, params]) => params.startFlowHandler)
+      ).toEqual(flows);
+      vi.mocked(showConfigFlowDialog).mockClear();
+    }
+  );
 
   it("shows how far the download of its repository is", async () => {
     const download = deferred<null>();

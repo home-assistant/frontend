@@ -12278,6 +12278,12 @@
               "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."
             }
           },
+          "set_up": {
+            "title": "Set up {name}?",
+            "message": "{name} is downloaded and can be set up right away, no restart needed.",
+            "confirm": "Set up",
+            "later": "Later"
+          },
           "configured": {
             "title": "Integration is configured",
             "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Marketplace.",
