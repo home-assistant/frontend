@@ -91,7 +91,8 @@ export class HaMarketplaceDashboard extends LitElement {
   @property({ attribute: false }) public isWide!: boolean;
 
   @storage({
-    key: "marketplace-dashboard-table-filtering",
+    storage: "sessionStorage",
+    key: "marketplace-dashboard-table-filters",
     state: true,
     subscribe: false,
   })
@@ -119,7 +120,8 @@ export class HaMarketplaceDashboard extends LitElement {
   private _activeCollapsed?: string[];
 
   @storage({
-    key: "marketplace-dashboard-active-search",
+    storage: "sessionStorage",
+    key: "marketplace-dashboard-table-search",
     state: true,
     subscribe: false,
   })
@@ -189,7 +191,7 @@ export class HaMarketplaceDashboard extends LitElement {
         @columns-changed=${this._handleColumnsChanged}
         @row-click=${this._handleRowClicked}
         @clear-filter=${this._handleClearFilter}
-        @value-changed=${this._handleSearchFilterChanged}
+        @search-changed=${this._handleSearchFilterChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}

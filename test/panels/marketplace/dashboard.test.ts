@@ -103,3 +103,17 @@ it("offers dismissing new repositories the filter hides", async () => {
   ).not.toBeNull();
   filtered._activeFilters = [];
 });
+
+it("remembers the search for this session", async () => {
+  const dashboard = await openDashboard();
+  dashboard
+    .shadowRoot!.querySelector("hass-tabs-subpage-data-table")!
+    .dispatchEvent(
+      new CustomEvent("search-changed", { detail: { value: "spook" } })
+    );
+  await dashboard.updateComplete;
+
+  expect(
+    JSON.parse(sessionStorage.getItem("marketplace-dashboard-table-search")!)
+  ).toBe("spook");
+});
