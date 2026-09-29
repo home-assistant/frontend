@@ -113,7 +113,7 @@
     "lit": "3.3.3",
     "lit-html": "3.3.3",
     "luxon": "3.7.2",
-    "maplibre-gl": "5.24.0",
+    "maplibre-gl": "6.4.1",
     "marked": "18.0.14",
     "memoize-one": "6.0.0",
     "nanoid": "6.0.1",
