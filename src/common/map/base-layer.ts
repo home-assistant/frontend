@@ -1,6 +1,10 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 import type { Map as LeafletMap, TileLayerOptions } from "leaflet";
-import type { setRTLTextPlugin, StyleSpecification } from "maplibre-gl";
+import type {
+  setRTLTextPlugin,
+  setWorkerUrl,
+  StyleSpecification,
+} from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import {
   MAP_TILES_PATH,
@@ -69,6 +73,16 @@ export const supportsWebGL2 = (): boolean => {
   return webGL2Supported;
 };
 
+// The one gate for MapLibre, whether through the Leaflet adapter or the
+// engine `ha-map` drives directly. Its worker is bundled per build target
+// like the rest of it, so wherever the page runs, the worker runs too - with
+// one exception. Babel transpiles everything MapLibre is written in except
+// BigInt literals, which have no ES2017 spelling. A browser without BigInt
+// (Chromium below 67, such as Fire OS 5 tablets) cannot parse the chunk, and
+// a worker that cannot parse never reports back, hence the check up front.
+export const supportsVectorMaps = (): boolean =>
+  supportsWebGL2() && typeof BigInt === "function";
+
 // The demo has no core to proxy through. OSM sets CORS on its tiles but not on
 // its glyphs, which is why those come from VersaTiles.
 const DEMO_UPSTREAM = {
@@ -101,6 +115,18 @@ export const loadStyle = async (url: string): Promise<StyleSpecification> => {
     }));
   }
   return __DEMO__ ? useDemoUpstream(style) : style;
+};
+
+// Global to MapLibre; set once before the first map is created. Absolute,
+// because on Cast the page is not served from the instance. The URL comes
+// from the build: the worker is an entry of its own, next to the app.
+let workerUrlSet = false;
+export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
+  if (workerUrlSet) {
+    return;
+  }
+  workerUrlSet = true;
+  setUrl(new URL(__MAPLIBRE_WORKER_URL__, location.href).href);
 };
 
 // Global to MapLibre, and it throws when set twice.
@@ -137,8 +163,10 @@ const createVectorLayer = async (
         referrerPolicy: __DEMO__ ? "origin" : undefined,
       }),
     });
-    // The plugin builds the MapLibre map in `onAdd`, so a refused context or a
-    // blocked worker throws here. Keep it guarded or those lose the fallback.
+    // The plugin builds the MapLibre map in `onAdd`, so a refused WebGL
+    // context throws here. Keep it guarded or that loses the fallback. The
+    // worker is spawned asynchronously and its failures never surface, which
+    // is why the worker is built to run wherever the page does.
     layer.addTo(map);
   } catch {
     if (layer) {
@@ -301,13 +329,14 @@ export const createBaseLayer = async (
   // Skip the vector layer, e.g. after a permanent WebGL context loss
   rasterOnly = false
 ): Promise<MapBaseLayer> => {
-  if (!rasterOnly && supportsWebGL2()) {
+  if (!rasterOnly && supportsVectorMaps()) {
     let vectorLayer: MapBaseLayer | undefined;
     try {
       const [{ maplibreGL: createLayer }, maplibre] = await Promise.all([
         import("@maplibre/maplibre-gl-leaflet"),
         import("maplibre-gl"),
       ]);
+      ensureWorkerUrl(maplibre.setWorkerUrl);
       ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
       vectorLayer = await createVectorLayer(
         createLayer,

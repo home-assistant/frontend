@@ -124,6 +124,12 @@ export default tseslint.config(
               message:
                 "Use consume from src/common/decorators/consume. The @lit/context version forces a host update on every context change, even for fields without @state().",
             },
+            {
+              name: "@lit/context",
+              importNames: ["ContextConsumer"],
+              message:
+                "Use ContextSubscriptionController from src/common/decorators/consume. The @lit/context ContextConsumer forces a host update on every context change.",
+            },
           ],
         },
       ],
