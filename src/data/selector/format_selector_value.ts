@@ -139,16 +139,16 @@ export const formatSelectorValue = (
     if (!data) {
       return "";
     }
-    const { negative, ...components } = normalizeDuration(data);
-    const duration = formatDurationLong(hass.locale, components);
+    const { negative, duration } = normalizeDuration(data);
+    const formatted = formatDurationLong(hass.locale, duration);
     const mode = getDurationSelectorMode(selector.duration);
-    if (!duration || mode === "positive") {
-      return duration;
+    if (!formatted || mode === "positive") {
+      return formatted;
     }
     const sign = negative ? "negative" : "positive";
     return hass.localize(
       `ui.components.selectors.duration.summary.${mode}_${sign}`,
-      { duration }
+      { duration: formatted }
     );
   }
 

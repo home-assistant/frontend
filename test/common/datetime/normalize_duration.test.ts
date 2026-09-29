@@ -8,19 +8,14 @@ describe("normalizeDuration", () => {
   it("splits the sign from the components", () => {
     expect(normalizeDuration({ hours: -1, minutes: -30 })).toEqual({
       negative: true,
-      days: 0,
-      hours: 1,
-      minutes: 30,
-      seconds: 0,
-      milliseconds: 0,
+      duration: { days: 0, hours: 1, minutes: 30, seconds: 0, milliseconds: 0 },
     });
   });
 
   it("uses the total when components have mixed signs", () => {
     expect(normalizeDuration({ hours: 1, minutes: -30 })).toMatchObject({
       negative: false,
-      hours: 0,
-      minutes: 30,
+      duration: { hours: 0, minutes: 30 },
     });
   });
 
@@ -30,7 +25,10 @@ describe("normalizeDuration", () => {
         { days: 1, hours: 2, seconds: 5, milliseconds: 500 },
         { enableDay: false, enableMillisecond: false }
       )
-    ).toEqual({ negative: false, hours: 26, minutes: 0, seconds: 5.5 });
+    ).toEqual({
+      negative: false,
+      duration: { hours: 26, minutes: 0, seconds: 5.5 },
+    });
   });
 
   it("leaves out zero seconds when seconds are not shown", () => {
@@ -39,7 +37,7 @@ describe("normalizeDuration", () => {
         { hours: 1 },
         { enableDay: false, enableSecond: false, enableMillisecond: false }
       )
-    ).toEqual({ negative: false, hours: 1, minutes: 0 });
+    ).toEqual({ negative: false, duration: { hours: 1, minutes: 0 } });
   });
 });
 

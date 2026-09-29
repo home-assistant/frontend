@@ -1,8 +1,9 @@
 import type { HaDurationData } from "../../components/ha-duration-input";
 import { durationDataToSeconds } from "./duration_to_seconds";
 
-export interface NormalizedDuration extends HaDurationData {
+export interface NormalizedDuration {
   negative: boolean;
+  duration: HaDurationData;
 }
 
 interface DurationUnits {
@@ -21,7 +22,7 @@ export const normalizeDuration = (
 ): NormalizedDuration => {
   const total = Math.round(durationDataToSeconds(duration) * 1000);
   let rest = Math.abs(total);
-  const result: NormalizedDuration = { negative: total < 0 };
+  const result: HaDurationData = {};
   if (enableDay) {
     result.days = Math.floor(rest / 86400000);
     rest %= 86400000;
@@ -39,7 +40,7 @@ export const normalizeDuration = (
   if (!enableSecond && !result.seconds) {
     delete result.seconds;
   }
-  return result;
+  return { negative: total < 0, duration: result };
 };
 
 export const applyDurationSign = (

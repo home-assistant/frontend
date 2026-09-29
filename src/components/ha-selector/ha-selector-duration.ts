@@ -4,6 +4,7 @@ import {
   mdiClockPlusOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -15,6 +16,7 @@ import {
 } from "../../common/datetime/normalize_duration";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import { deepEqual } from "../../common/util/deep-equal";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DurationSelector } from "../../data/selector";
 import { getDurationSelectorMode } from "../../data/selector";
@@ -26,6 +28,14 @@ import "../ha-select";
 import type { HaSelectSelectEvent } from "../ha-select";
 
 type OffsetType = "none" | "before" | "after";
+
+const offsetTypeOf = (data?: HaDurationData): OffsetType => {
+  const total = data ? durationDataToSeconds(data) : 0;
+  if (!total) {
+    return "none";
+  }
+  return total < 0 ? "before" : "after";
+};
 
 const OFFSET_TYPES: { value: OffsetType; iconPath: string }[] = [
   { value: "none", iconPath: mdiClockOutline },
@@ -54,7 +64,9 @@ export class HaTimeDuration extends LitElement {
 
   @query("ha-duration-input") private _input?: HaDurationInput;
 
-  private _pending?: { type: OffsetType; value: HaDurationData };
+  @state() private _offsetType: OffsetType = "none";
+
+  private _emittedValue?: HaDurationData;
 
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
@@ -64,6 +76,15 @@ export class HaTimeDuration extends LitElement {
     (value?: HaDurationData | string | number): HaDurationData | undefined =>
       createDurationData(value)
   );
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (
+      changedProps.has("value") &&
+      !deepEqual(this.value, this._emittedValue)
+    ) {
+      this._offsetType = offsetTypeOf(this._data(this.value));
+    }
+  }
 
   private _offsetTypeOptions = memoizeOne((localize: LocalizeFunc) =>
     OFFSET_TYPES.map(({ value, iconPath }) => ({
@@ -86,7 +107,6 @@ export class HaTimeDuration extends LitElement {
       );
     }
 
-    const offsetType = this._getOffsetType(data);
     return html`
       <div class="container">
         ${
@@ -103,18 +123,19 @@ export class HaTimeDuration extends LitElement {
         >
           <ha-select
             aria-label=${ifDefined(this.label)}
-            .value=${offsetType}
+            .value=${this._offsetType}
             .options=${this._offsetTypeOptions(this._localize)}
             .disabled=${this.disabled}
             @selected=${this._offsetTypeChanged}
           ></ha-select>
           ${
-            offsetType === "none"
+            this._offsetType === "none"
               ? nothing
               : html`<div
                   class="value-row"
                   role="group"
                   aria-labelledby="duration-label"
+                  @value-changed=${this._durationChanged}
                 >
                   <span id="duration-label" class="value-label"
                     >${this._localize(
@@ -151,51 +172,30 @@ export class HaTimeDuration extends LitElement {
         .enableMillisecond=${this.selector.duration?.enable_millisecond}
         .allowNegative=${allowNegative}
         .enableSecond=${this.selector.duration?.enable_second ?? true}
-        @value-changed=${this._durationChanged}
       ></ha-duration-input>
     `;
   }
 
-  private _getOffsetType(data?: HaDurationData): OffsetType {
-    const total = data ? durationDataToSeconds(data) : 0;
-    if (total) {
-      return total < 0 ? "before" : "after";
-    }
-    const pending = this._pending;
-    return pending && pending.value === this.value ? pending.type : "none";
-  }
-
   private _durationChanged(ev: ValueChangedEvent<HaDurationData | undefined>) {
-    if (getDurationSelectorMode(this.selector.duration) !== "offset") {
-      return;
-    }
     ev.stopPropagation();
-    const type = this._getOffsetType(this._data(this.value));
-    this._fireValue(type, ev.detail.value);
+    this._fireValue(this._offsetType, ev.detail.value);
   }
 
   private _offsetTypeChanged(ev: HaSelectSelectEvent<OffsetType>) {
     ev.stopPropagation();
-    const type = ev.detail.value;
-    const data = this._data(this.value);
-    if (!type || type === this._getOffsetType(data)) {
-      return;
-    }
-    this._fireValue(type, data);
+    this._fireValue(ev.detail.value ?? "none", this._data(this.value));
   }
 
   private _fireValue(type: OffsetType, data: HaDurationData = {}) {
     const config = this.selector.duration;
-    const { negative: _negative, ...components } = normalizeDuration(
-      type === "none" ? {} : data,
-      {
-        enableDay: !!config?.enable_day,
-        enableSecond: config?.enable_second ?? true,
-        enableMillisecond: !!config?.enable_millisecond,
-      }
-    );
-    const value = applyDurationSign(components, type === "before");
-    this._pending = { type, value };
+    const { duration } = normalizeDuration(type === "none" ? {} : data, {
+      enableDay: !!config?.enable_day,
+      enableSecond: config?.enable_second ?? true,
+      enableMillisecond: !!config?.enable_millisecond,
+    });
+    const value = applyDurationSign(duration, type === "before");
+    this._offsetType = type;
+    this._emittedValue = value;
     fireEvent(this, "value-changed", { value });
   }
 

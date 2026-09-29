@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { live } from "lit/directives/live";
 import {
   applyDurationSign,
   normalizeDuration,
@@ -56,7 +57,7 @@ export class HaDurationInput extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const data =
+    const normalized =
       this.data &&
       normalizeDuration(this.data, {
         enableDay: this.enableDay,
@@ -76,13 +77,13 @@ export class HaDurationInput extends LitElement {
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           .enableSign=${this.allowNegative}
-          .negative=${data?.negative ?? false}
+          .negative=${live(normalized?.negative ?? false)}
           format="24"
-          .days=${this._component(data, "days")}
-          .hours=${this._component(data, "hours")}
-          .minutes=${this._component(data, "minutes")}
-          .seconds=${this._component(data, "seconds")}
-          .milliseconds=${this._component(data, "milliseconds")}
+          .days=${live(this._fieldValue(normalized?.duration, "days"))}
+          .hours=${live(this._fieldValue(normalized?.duration, "hours"))}
+          .minutes=${live(this._fieldValue(normalized?.duration, "minutes"))}
+          .seconds=${live(this._fieldValue(normalized?.duration, "seconds"))}
+          .milliseconds=${live(this._fieldValue(normalized?.duration, "milliseconds"))}
           @value-changed=${this._durationChanged}
           no-hours-limit
           day-label="dd"
@@ -95,7 +96,7 @@ export class HaDurationInput extends LitElement {
     `;
   }
 
-  private _component(
+  private _fieldValue(
     data: HaDurationData | undefined,
     field: keyof HaDurationData
   ): number {
