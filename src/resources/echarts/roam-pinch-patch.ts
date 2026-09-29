@@ -22,7 +22,7 @@ const isAvailableBehavior = () => true;
   // Every pinch event on the chart is cancelled, including the ones that do
   // not zoom or whose center is off the plot area, like over the axis labels,
   // or the browser takes over the gesture and scrolls or zooms the page. Only
-  // a pinch that zooms stops propagating, as it does in ECharts.
+  // a pinch over the plot area stops propagating, as it does in ECharts.
   e.event.preventDefault();
   const x: number = e.pinchX;
   const y: number = e.pinchY;
