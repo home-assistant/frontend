@@ -45,7 +45,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, compact: boolean) =>
       [
         {
           name: "type",
@@ -111,9 +111,14 @@ export class HuiViewEditor extends LitElement {
             },
             {
               name: "dense_section_placement",
+              disabled: compact,
               selector: {
                 boolean: {},
               },
+            },
+            {
+              name: "compact_section_placement",
+              selector: { boolean: {} },
             },
             {
               name: "top_margin",
@@ -151,7 +156,7 @@ export class HuiViewEditor extends LitElement {
     return html`
       <ha-form
         .data=${data}
-        .schema=${this._schema(this._localize)}
+        .schema=${this._schema(this._localize, this._config.compact_section_placement === true)}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
         .computeError=${this._computeError}
@@ -167,6 +172,7 @@ export class HuiViewEditor extends LitElement {
     if (config.type !== SECTIONS_VIEW_LAYOUT) {
       delete config.max_columns;
       delete config.dense_section_placement;
+      delete config.compact_section_placement;
       delete config.top_margin;
     }
 
@@ -214,6 +220,7 @@ export class HuiViewEditor extends LitElement {
       case "subview":
       case "max_columns":
       case "dense_section_placement":
+      case "compact_section_placement":
       case "top_margin":
       case "section_specifics":
         return this._localize(
@@ -234,6 +241,7 @@ export class HuiViewEditor extends LitElement {
       case "show_icon_and_title":
       case "subview":
       case "dense_section_placement":
+      case "compact_section_placement":
       case "top_margin":
         return this._localize(
           `ui.panel.lovelace.editor.edit_view.${schema.name}_helper`
