@@ -30,6 +30,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import LinearGradient from "zrender/lib/graphic/LinearGradient";
 
 import "./axis-proxy-patch";
+import "./roam-pinch-patch";
 
 import type {
   // The series option types are defined with the SeriesOption suffix
