@@ -101,13 +101,35 @@ const rewriteLinks = (input: string, repository?: RepositoryInfo) => {
 const FENCE_OPENING = /^ {0,3}(?:(`{3,})[^`]*|(~{3,}).*)$/;
 const FENCE_CLOSING = /^ {0,3}(`{3,}|~{3,})\s*$/;
 const CODE_PLACEHOLDER = /\0(\d+)\0/g;
-const INDENTED_CODE = /^(?: {4}|\t)/;
-const LIST_ITEM = /^ {0,3}(?:[-*+]|\d{1,9}[.)])\s/;
+const LIST_ITEM = /^( *)([-*+]|\d{1,9}[.)])( +|$)/;
 
 interface MarkdownBlock {
   code: boolean;
   lines: string[];
 }
+
+// A tab moves on to the next multiple of four, like CommonMark.
+const indentationWidth = (line: string) => {
+  let width = 0;
+  for (const character of line) {
+    if (character === " ") {
+      width += 1;
+    } else if (character === "\t") {
+      width += 4 - (width % 4);
+    } else {
+      break;
+    }
+  }
+  return width;
+};
+
+// The column the text of a list item starts at, the marker and its spacing.
+const listItemContent = (item: RegExpExecArray) => {
+  const [, before, marker, after] = item;
+  // More than four spaces after the marker start code, one of them belongs to it
+  const spacing = after.length === 0 || after.length > 4 ? 1 : after.length;
+  return before.length + marker.length + spacing;
+};
 
 const isClosingFence = (line: string, fence: string) => {
   const closing = FENCE_CLOSING.exec(line);
@@ -126,7 +148,8 @@ const splitCodeBlocks = (input: string) => {
 
   let indented = false;
   let previousBlank = true;
-  let inList = false;
+  // Where the text of the list item starts, its code is indented past that
+  let listContent = 0;
 
   for (const line of input.split("\n")) {
     if (current?.code && fence) {
@@ -138,13 +161,14 @@ const splitCodeBlocks = (input: string) => {
     }
 
     const blank = line.trim() === "";
-    const indentation = INDENTED_CODE.test(line);
+    const width = blank ? 0 : indentationWidth(line);
+    const indentation = !blank && width >= listContent + 4;
 
-    // Indented lines in a list continue its item, they are not code
-    if (LIST_ITEM.test(line)) {
-      inList = true;
-    } else if (!blank && !indentation) {
-      inList = false;
+    const item = indentation ? null : LIST_ITEM.exec(line);
+    if (item) {
+      listContent = listItemContent(item);
+    } else if (!blank && width < listContent) {
+      listContent = 0;
     }
 
     // Indented code runs on over blank lines, until a line is not indented
@@ -156,7 +180,7 @@ const splitCodeBlocks = (input: string) => {
     indented = false;
 
     // It can not interrupt a paragraph, a blank line comes before it
-    if (indentation && previousBlank && !blank && !inList) {
+    if (indentation && previousBlank) {
       indented = true;
       current = { code: true, lines: [line] };
       blocks.push(current);

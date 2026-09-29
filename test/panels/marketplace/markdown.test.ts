@@ -234,6 +234,18 @@ describe("markdownWithRepositoryContext", () => {
     );
   });
 
+  it("keeps indented code inside a list item", () => {
+    const input = "- Configure the card:\n\n      color: '#123456'";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps indented code inside a nested list item", () => {
+    const input = "1. Install\n   - Add:\n\n         color: '#123456'";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
   it("keeps indented code after a list has ended", () => {
     const input = "- Item\n\nText\n\n    color: '#123456'";
 
