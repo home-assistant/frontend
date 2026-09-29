@@ -1,7 +1,8 @@
 import { mdiClose } from "@mdi/js";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { internationalizationContext } from "../data/context";
 import "./ha-bottom-sheet";

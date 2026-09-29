@@ -3,6 +3,9 @@ import { waitForMs } from "../common/util/wait";
 
 export const MAP_TILES_PATH = "/api/map_tiles";
 
+// Mirrors TOKEN_HEADER in homeassistant/components/map_tiles/const.py.
+const TOKEN_HEADER = "X-Map-Tiles-Token";
+
 // Core rotates every 30 minutes and keeps two tokens live, so one handed out
 // now is good for at least 30 more. Refreshing sooner leaves room for a slow
 // or missed round trip.
@@ -157,20 +160,25 @@ const instanceOrigin = () =>
 export const mapTilesUrl = (path: string): string =>
   path.startsWith("/") ? `${instanceOrigin()}${path}` : path;
 
+export interface MapTilesRequest {
+  url: string;
+  headers?: Record<string, string>;
+}
+
 /**
  * MapLibre hands tile URLs to a worker, which has no document to resolve a
  * relative URL against, so the result has to be absolute.
  */
-export const withMapTilesToken = (url: string): string => {
+export const withMapTilesToken = (url: string): MapTilesRequest => {
   let parsed: URL;
   try {
     parsed = new URL(url, instanceOrigin());
   } catch {
-    return url;
+    return { url };
   }
 
   if (!parsed.pathname.startsWith(`${MAP_TILES_PATH}/`)) {
-    return parsed.href;
+    return { url: parsed.href };
   }
 
   // Rebuilt against the instance: MapLibre resolves the style's paths against
@@ -178,8 +186,17 @@ export const withMapTilesToken = (url: string): string => {
   const onInstance = new URL(
     `${instanceOrigin()}${parsed.pathname}${parsed.search}`
   );
-  if (token) {
-    onInstance.searchParams.set("token", token);
+  if (!token) {
+    return { url: onInstance.href };
   }
-  return onInstance.href;
+
+  // A token in the URL is part of the browser's cache key, so every rotation
+  // empties the tile cache. In a header the URL is stable - but cross-origin,
+  // as on Cast, a custom header costs a CORS preflight per tile.
+  if (onInstance.origin === location.origin) {
+    return { url: onInstance.href, headers: { [TOKEN_HEADER]: token } };
+  }
+
+  onInstance.searchParams.set("token", token);
+  return { url: onInstance.href };
 };

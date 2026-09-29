@@ -1,5 +1,5 @@
 import { mdiContentCopy, mdiRefresh } from "@mdi/js";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { addHours } from "date-fns";
 import type {
   HassEntities,
@@ -10,6 +10,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";

@@ -1,5 +1,4 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
@@ -13,6 +12,7 @@ import {
 } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { labelsContext } from "../data/context";

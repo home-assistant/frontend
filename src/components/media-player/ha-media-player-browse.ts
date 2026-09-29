@@ -46,6 +46,7 @@ import {
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { getWsErrorMessage } from "../../util/ws-error";
 import { panelIsReady } from "../../layouts/panel-ready";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -922,7 +923,9 @@ export class HaMediaPlayerBrowse extends LitElement {
         title: this.hass.localize(
           "ui.components.media-browser.media_browsing_error"
         ),
-        text: err instanceof Error ? err.message : String(err),
+        text:
+          getWsErrorMessage(err) ??
+          this.hass.localize("ui.common.unknown_error"),
       });
     } finally {
       // Only the most recent search controls the loading state

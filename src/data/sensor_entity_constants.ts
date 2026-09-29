@@ -70,6 +70,7 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
   aqi: [null],
   area: ["ac", "cm²", "ft²", "ha", "in²", "km²", "mi²", "mm²", "m²", "yd²"],
   atmospheric_pressure: [
+    "atm",
     "bar",
     "cbar",
     "hPa",
@@ -139,6 +140,7 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
     "MJ",
     "MWh",
     "mWh",
+    "thm",
     "TWh",
     "Wh",
   ],
@@ -156,6 +158,7 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
     "MJ",
     "MWh",
     "mWh",
+    "thm",
     "TWh",
     "Wh",
   ],
@@ -179,6 +182,7 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
   precipitation: ["cm", "in", "mm"],
   precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
   pressure: [
+    "atm",
     "bar",
     "cbar",
     "hPa",
@@ -256,6 +260,7 @@ export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<
   apparent_power: ["kVA", "mVA", "VA"],
   area: ["ac", "cm²", "ft²", "ha", "in²", "km²", "mi²", "mm²", "m²", "yd²"],
   atmospheric_pressure: [
+    "atm",
     "bar",
     "cbar",
     "hPa",
@@ -323,6 +328,7 @@ export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<
     "MJ",
     "MWh",
     "mWh",
+    "thm",
     "TWh",
     "Wh",
   ],
@@ -340,6 +346,7 @@ export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<
     "MJ",
     "MWh",
     "mWh",
+    "thm",
     "TWh",
     "Wh",
   ],
@@ -353,6 +360,7 @@ export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<
   precipitation: ["cm", "in", "mm"],
   precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
   pressure: [
+    "atm",
     "bar",
     "cbar",
     "hPa",

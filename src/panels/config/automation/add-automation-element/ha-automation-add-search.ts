@@ -1,5 +1,4 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
-import { consume } from "@lit/context";
 import "@material/mwc-list/mwc-list";
 import { mdiPlus, mdiTextureBox, mdiUnfoldMoreHorizontal } from "@mdi/js";
 import Fuse from "fuse.js";
@@ -14,6 +13,7 @@ import {
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   LocalizeFunc,
