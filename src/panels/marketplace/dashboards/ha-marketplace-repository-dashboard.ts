@@ -11,6 +11,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -28,6 +29,7 @@ import type {
 } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
@@ -47,6 +49,7 @@ import {
   getRepositories,
   handleWarningNotAccepted,
   repositoryAdd,
+  websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
 import {
@@ -142,7 +145,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
               repository.full_name.toLocaleLowerCase() ===
               requestedRepository.toLocaleLowerCase()
           );
-        } catch (err: any) {
+        } catch (err: unknown) {
           // The panel swaps to the warning screen, accepting it brings the
           // user back here to add the repository.
           if (handleWarningNotAccepted(err)) {
@@ -154,7 +157,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                 "ui.panel.marketplace.github.add_repository_needs_github",
                 { repository: requestedRepository }
               )
-            : err?.message;
+            : websocketErrorMessage(err);
           return;
         }
       }
@@ -240,14 +243,14 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         return;
       }
       this._repository = repository;
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (!this._isCurrentRequest(requestedRepositoryId)) {
         return;
       }
 
       this._error = handleGitHubRateLimited(this, this.hass, err)
         ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
-        : err?.message ||
+        : websocketErrorMessage(err) ||
           this.hass.localize("ui.panel.marketplace.common.unknown_error");
     }
   }
@@ -422,13 +425,16 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     `;
   }
 
-  private _showOverflowRepositoryMenu = (ev) => {
-    if (this._repositoryOverflowMenu.anchorElement === ev.target) {
+  private _showOverflowRepositoryMenu = (
+    ev: HASSDomCurrentTargetEvent<HaIconButton>
+  ) => {
+    const button = ev.currentTarget;
+    if (this._repositoryOverflowMenu.anchorElement === button) {
       this._repositoryOverflowMenu.anchorElement = undefined;
       return;
     }
     this._openingOverflowMenu = true;
-    this._repositoryOverflowMenu.anchorElement = ev.target;
+    this._repositoryOverflowMenu.anchorElement = button;
     this._repositoryOverflowMenu.open = true;
   };
 
@@ -461,7 +467,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   private _downloadRepositoryDialog() {
     showMarketplaceDownloadDialog(this, {
       marketplace: this.marketplace,
-      repositoryId: this._repository!.id,
+      repositoryId: String(this._repository!.id),
       repository: this._repository!,
     });
   }
@@ -472,26 +478,26 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       css`
         ha-card {
           display: block;
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
         .content {
           margin: auto;
-          padding: 8px;
+          padding: var(--ha-space-2);
           max-width: 1536px;
         }
 
         ha-chip-set {
-          padding-bottom: 8px;
+          padding-block-end: var(--ha-space-2);
         }
 
         ha-alert {
           display: block;
-          margin-bottom: 8px;
+          margin-block-end: var(--ha-space-2);
         }
 
         @media all and (max-width: 500px) {
           .content {
-            margin: 8px 4px 64px;
+            margin: var(--ha-space-2) var(--ha-space-1) var(--ha-space-16);
             max-width: none;
           }
         }

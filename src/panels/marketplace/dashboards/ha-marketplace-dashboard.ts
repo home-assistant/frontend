@@ -39,7 +39,10 @@ import type {
   RepositoryBase,
   RepositoryType,
 } from "../../../data/marketplace/repository";
-import { repositoriesClearNew } from "../../../data/marketplace/websocket";
+import {
+  repositoriesClearNew,
+  websocketErrorMessage,
+} from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
 import {
   DEFAULT_GROUP_COLUMN,
@@ -496,11 +499,11 @@ export class HaMarketplaceDashboard extends LitElement {
   private async _dismissNew() {
     try {
       await repositoriesClearNew(this.hass, this.marketplace);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.marketplace.dialog.error.title"),
         text:
-          err?.message ||
+          websocketErrorMessage(err) ||
           this.hass.localize("ui.panel.marketplace.common.unknown_error"),
       });
     }
@@ -564,16 +567,14 @@ export class HaMarketplaceDashboard extends LitElement {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
-  private _handleFilterChanged(ev: CustomEvent) {
+  private _handleFilterChanged(
+    ev: CustomEvent<{ value: Record<string, string | null | undefined> }>
+  ) {
     ev.stopPropagation();
-    const data = ev.detail.value;
-    const updatedFilters: string[] = Object.entries<any>(data)
-      .filter(
-        ([key, value]) =>
-          ["status", "type"].includes(key) &&
-          ![undefined, null, ""].includes(value)
-      )
-      .map(([_, value]) => value);
+    const updatedFilters = Object.entries(ev.detail.value).flatMap(
+      ([key, value]) =>
+        ["status", "type"].includes(key) && value ? [value] : []
+    );
     this._activeFilters = updatedFilters.length ? updatedFilters : undefined;
   }
 

@@ -21,6 +21,7 @@ import {
   repositoriesClearNewRepository,
   repositoryUninstall,
   repositoryUpdate,
+  websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
 import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
@@ -48,11 +49,13 @@ type MarketplaceDashboardElement =
 const showError = (
   element: MarketplaceDashboardElement,
   localize: LocalizeFunc,
-  err: { message?: string }
+  err: unknown
 ) =>
   showAlertDialog(element, {
     title: localize("ui.panel.marketplace.dialog.error.title"),
-    text: err?.message || localize("ui.panel.marketplace.common.unknown_error"),
+    text:
+      websocketErrorMessage(err) ||
+      localize("ui.panel.marketplace.common.unknown_error"),
   });
 
 const removeRepository = async (
@@ -145,7 +148,7 @@ export const repositoryMenuItems = (
       action: async () => {
         try {
           await repositoryUpdate(element.hass, String(repository.id));
-        } catch (err: any) {
+        } catch (err: unknown) {
           if (!handleGitHubRateLimited(element, element.hass, err)) {
             showError(element, localize, err);
           }
@@ -166,7 +169,7 @@ export const repositoryMenuItems = (
     action: () =>
       showMarketplaceDownloadDialog(element, {
         marketplace: element.marketplace,
-        repositoryId: repository.id,
+        repositoryId: String(repository.id),
       }),
   });
 
@@ -177,8 +180,11 @@ export const repositoryMenuItems = (
       label: localize("ui.panel.marketplace.repository_card.dismiss_new"),
       action: async () => {
         try {
-          await repositoriesClearNewRepository(element.hass, repository.id);
-        } catch (err: any) {
+          await repositoriesClearNewRepository(
+            element.hass,
+            String(repository.id)
+          );
+        } catch (err: unknown) {
           showError(element, localize, err);
         }
       },

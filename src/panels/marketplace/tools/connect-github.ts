@@ -8,11 +8,12 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { MarketplaceInfo } from "../../../data/marketplace/marketplace";
 import {
+  connectGitHub,
   ERROR_GITHUB_NOT_CONNECTED,
   ERROR_GITHUB_RATE_LIMITED,
-  connectGitHub,
   fetchMarketplaceInfo,
   isWebSocketError,
+  websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 
 // Dialogs get these from their contexts, not a whole hass object.
@@ -29,11 +30,11 @@ export const showConnectGitHubFlow = async (
   let flowId: string;
   try {
     flowId = (await connectGitHub(hass)).flow_id;
-  } catch (err: any) {
+  } catch (err: unknown) {
     showAlertDialog(element, {
       title: hass.localize("ui.panel.marketplace.dialog.error.title"),
       text:
-        err?.message ||
+        websocketErrorMessage(err) ||
         hass.localize("ui.panel.marketplace.common.unknown_error"),
     });
     return false;

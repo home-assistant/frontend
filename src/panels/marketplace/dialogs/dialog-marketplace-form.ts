@@ -8,6 +8,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/progress/ha-progress-bar";
 import { internationalizationContext } from "../../../data/context";
+import { websocketErrorMessage } from "../../../data/marketplace/websocket";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import type { MarketplaceFormDialogParams } from "./show-dialog-marketplace";
 
@@ -81,9 +82,9 @@ class DialogMarketplaceForm extends DialogMixin<MarketplaceFormDialogParams>(
     let error: string | undefined;
     try {
       await this.params.saveAction();
-    } catch (err: any) {
+    } catch (err: unknown) {
       error =
-        err?.message ||
+        websocketErrorMessage(err) ||
         this._i18n.localize("ui.panel.marketplace.common.unknown_error");
     }
 
@@ -111,8 +112,8 @@ class DialogMarketplaceForm extends DialogMixin<MarketplaceFormDialogParams>(
       margin-top: var(--ha-space-2);
     }
     ha-progress-bar {
-      margin-bottom: -8px;
-      margin-top: 4px;
+      margin-block-end: calc(-1 * var(--ha-space-2));
+      margin-block-start: var(--ha-space-1);
     }
   `;
 }

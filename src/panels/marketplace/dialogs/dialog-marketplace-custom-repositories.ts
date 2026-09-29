@@ -32,6 +32,7 @@ import {
   isWebSocketError,
   repositoryAdd,
   repositoryDelete,
+  websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { marketplaceStyleVariables } from "../styles/variables";
@@ -259,7 +260,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         this._data.category
       );
       await this._updateRepositories();
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (handleWarningNotAccepted(err)) {
         this.closeDialog();
         return;
@@ -288,7 +289,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     try {
       await repositoryDelete(this._hass, repository);
       await this._updateRepositories();
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (this.isConnected) {
         this._errors = { base: this._errorMessage(err) };
       }
@@ -297,9 +298,9 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     }
   }
 
-  private _errorMessage(err: { message?: string }): string {
+  private _errorMessage(err: unknown): string {
     return (
-      err?.message ||
+      websocketErrorMessage(err) ||
       this._i18n.localize("ui.panel.marketplace.common.unknown_error")
     );
   }
@@ -319,8 +320,8 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       marketplaceStyleVariables,
       css`
         ha-progress-bar {
-          margin-bottom: -8px;
-          margin-top: 4px;
+          margin-block-end: calc(-1 * var(--ha-space-2));
+          margin-block-start: var(--ha-space-1);
         }
         ha-settings-row {
           padding: 0;

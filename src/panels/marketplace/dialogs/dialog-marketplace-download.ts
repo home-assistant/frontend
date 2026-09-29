@@ -3,6 +3,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
@@ -36,7 +40,10 @@ import {
   repositoryDownloadVersion,
   repositoryReleases,
 } from "../../../data/marketplace/repository";
-import { handleWarningNotAccepted } from "../../../data/marketplace/websocket";
+import {
+  handleWarningNotAccepted,
+  websocketErrorMessage,
+} from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
 import type { MarketplaceHass } from "../tools/connect-github";
 import { handleGitHubRateLimited } from "../tools/connect-github";
@@ -50,16 +57,6 @@ interface MarketplaceRelease {
   published_at: string;
   prerelease: boolean;
 }
-
-// The backend reports errors both as plain strings and as objects with a
-// message, the dialog only ever shows a single line of text.
-const errorMessage = (error: unknown): string => {
-  if (typeof error === "string") {
-    return error;
-  }
-  const message = (error as { message?: unknown } | null)?.message;
-  return typeof message === "string" ? message : String(error);
-};
 
 @customElement("dialog-marketplace-download")
 export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDialogParams>(
@@ -156,7 +153,8 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
       this._error = handleGitHubRateLimited(this, this._hass, err)
         ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
-        : errorMessage(err);
+        : websocketErrorMessage(err) ||
+          this._i18n.localize("ui.panel.marketplace.common.unknown_error");
       return;
     }
 
@@ -214,8 +212,8 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     `;
   }
 
-  private _replacementAcceptedChanged(ev: Event) {
-    this._replacementAccepted = (ev.target as HaCheckbox).checked;
+  private _replacementAcceptedChanged(ev: HASSDomTargetEvent<HaCheckbox>) {
+    this._replacementAccepted = ev.target.checked;
   }
 
   private _renderDownload(repository: RepositoryInfo) {
@@ -438,7 +436,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       }
 
       this._error =
-        errorMessage(err) ||
+        websocketErrorMessage(err) ||
         this._i18n.localize(
           "ui.panel.marketplace.dialog_download.download_failed"
         );
@@ -478,7 +476,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     }
   }
 
-  private async _fetchReleases(ev: CustomEvent<{ expanded: boolean }>) {
+  private async _fetchReleases(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
+  ) {
     // Collapsing the panel fires this too, and would repeat a failed fetch.
     if (!ev.detail.expanded || this._releases !== undefined) {
       return;
@@ -489,7 +489,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
     let releases: MarketplaceRelease[];
     try {
-      releases = await repositoryReleases(this._hass, repository.id);
+      releases = await repositoryReleases(this._hass, String(repository.id));
     } catch (err) {
       if (!this._isShowing(repository)) {
         return;
@@ -497,7 +497,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
       this._releasesFailed = true;
       if (!handleGitHubRateLimited(this, this._hass, err)) {
-        this._error = errorMessage(err);
+        this._error =
+          websocketErrorMessage(err) ||
+          this._i18n.localize("ui.panel.marketplace.common.unknown_error");
       }
       return;
     }
@@ -534,32 +536,32 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       marketplaceStyles,
       css`
         .note {
-          margin-top: 12px;
+          margin-block-start: var(--ha-space-3);
         }
         pre {
           white-space: pre-line;
           user-select: all;
-          padding: 8px;
+          padding: var(--ha-space-2);
         }
         ha-progress-bar {
-          margin-bottom: -8px;
-          margin-top: 4px;
+          margin-block-end: calc(-1 * var(--ha-space-2));
+          margin-block-start: var(--ha-space-1);
         }
         ha-expansion-panel {
           background-color: var(--secondary-background-color);
-          padding: 8px;
+          padding: var(--ha-space-2);
         }
         .replaces-built-in {
           display: block;
-          margin-bottom: 16px;
+          margin-block-end: var(--ha-space-4);
         }
         .replaces-built-in ha-checkbox {
           display: block;
-          margin-top: 8px;
+          margin-block-start: var(--ha-space-2);
         }
         .loading {
           text-align: center;
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
       `,
     ];

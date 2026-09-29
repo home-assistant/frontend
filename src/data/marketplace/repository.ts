@@ -16,16 +16,17 @@ export interface RepositoryBase {
   full_name: string;
   hide: boolean;
   homeassistant: string | null;
-  id: string;
+  // The backend keeps the id it got, a number from GitHub or a string from the catalog
+  id: string | number;
   installed_version: string;
   installed: boolean;
-  last_updated: string;
+  last_updated: string | number;
   local_path: string;
   name: string;
   new: boolean;
   pending_upgrade: boolean;
   stars: number;
-  state: string;
+  state: string | null;
   status:
     "pending-restart" | "pending-upgrade" | "new" | "installed" | "default";
   topics: string[];
@@ -34,7 +35,6 @@ export interface RepositoryBase {
 export interface RepositoryInfo extends RepositoryBase {
   additional_info: string;
   default_branch: string;
-  hide_default_branch: boolean;
   issues: number;
   releases: string[];
   ref: string;

@@ -111,9 +111,18 @@ export const repositoriesClearNewRepository = async (
     repository,
   });
 
+// The backend sends its errors translated, as an object with a message or a string.
+export const websocketErrorMessage = (err: unknown): string | undefined => {
+  if (typeof err === "string") {
+    return err || undefined;
+  }
+  const message = (err as { message?: unknown } | null)?.message;
+  return typeof message === "string" && message ? message : undefined;
+};
+
 export const websocketSubscription = (
   hass: Pick<HomeAssistant, "connection">,
-  onChange: (result: Record<any, any> | null) => void,
+  onChange: (result: Record<string, unknown> | null) => void,
   event: MarketplaceDispatchEvent
 ) =>
   hass.connection.subscribeMessage(onChange, {

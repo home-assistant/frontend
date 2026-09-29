@@ -6,7 +6,7 @@ import { haStyle } from "../../../resources/styles";
 
 export const marketplaceCommonClasses = css`
   .filters {
-    margin: 16px;
+    margin: var(--ha-space-4);
   }
 
   code,

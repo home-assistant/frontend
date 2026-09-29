@@ -18,8 +18,10 @@ export interface MarketplaceInfo {
   debug: boolean;
   disabled_reason: string | null;
   github_connected: boolean;
+  has_pending_tasks: boolean;
   lovelace_mode: "yaml" | "storage";
-  stage: "startup" | "waiting" | "running" | "setup";
+  // Not set while the entry sets up or after it unloaded
+  stage: "startup" | "waiting" | "running" | "setup" | null;
   startup: boolean;
   version: string;
   warning_accepted: boolean;

@@ -2,6 +2,7 @@ import { mdiAlert } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -12,7 +13,10 @@ import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { acceptWarning } from "../../../data/marketplace/websocket";
+import {
+  acceptWarning,
+  websocketErrorMessage,
+} from "../../../data/marketplace/websocket";
 
 const RISKS = [
   "not_supported",
@@ -115,8 +119,8 @@ export class HaMarketplaceWarning extends LitElement {
     `;
   }
 
-  private _understoodChanged(ev: Event): void {
-    this._understood = (ev.target as HaCheckbox).checked;
+  private _understoodChanged(ev: HASSDomTargetEvent<HaCheckbox>): void {
+    this._understood = ev.target.checked;
   }
 
   private async _accept(): Promise<void> {
@@ -129,9 +133,9 @@ export class HaMarketplaceWarning extends LitElement {
 
     try {
       await acceptWarning(this.hass);
-    } catch (err: any) {
+    } catch (err: unknown) {
       this._error =
-        err?.message ||
+        websocketErrorMessage(err) ||
         this.hass.localize("ui.panel.marketplace.common.unknown_error");
       return;
     } finally {
