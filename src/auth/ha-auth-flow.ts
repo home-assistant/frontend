@@ -131,7 +131,7 @@ export class HaAuthFlow extends LitElement {
           width: 100%;
         }
       </style>
-      <form>${this._renderForm()}</form>
+      <form @submit=${this._handleSubmit}>${this._renderForm()}</form>
     `;
   }
 
