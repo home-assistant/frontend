@@ -114,6 +114,19 @@ export default tseslint.config(
       "no-bitwise": "error",
       "no-console": "error",
       "no-restricted-globals": [2, "event"],
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@lit/context",
+              importNames: ["consume"],
+              message:
+                "Use consume from src/common/decorators/consume. The @lit/context version forces a host update on every context change, even for fields without @state().",
+            },
+          ],
+        },
+      ],
       "no-restricted-syntax": [
         "error",
         ...restrictedSyntax,

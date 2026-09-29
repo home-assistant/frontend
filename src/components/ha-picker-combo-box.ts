@@ -1,6 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
@@ -14,6 +14,7 @@ import {
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../common/decorators/consume";
 import {
   fireEvent,
   type HASSDomCurrentTargetEvent,

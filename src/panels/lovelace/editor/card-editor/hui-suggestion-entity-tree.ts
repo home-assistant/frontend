@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiChevronDown,
   mdiChevronRight,
@@ -11,6 +10,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";

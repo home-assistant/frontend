@@ -1,11 +1,12 @@
 import "@lit-labs/virtualizer";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import {
   computeEntityPickerDisplay,
@@ -59,6 +60,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   @consume({ context: statesContext, subscribe: true })
   protected _states!: ContextType<typeof statesContext>;
 
+  @state()
   @consume({ context: registriesContext, subscribe: true })
   protected _registries!: ContextType<typeof registriesContext>;
 

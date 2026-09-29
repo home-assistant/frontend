@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
 import type { HomeAssistantFormatters } from "../../../types";
