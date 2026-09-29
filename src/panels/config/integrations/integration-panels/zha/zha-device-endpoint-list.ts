@@ -25,6 +25,7 @@ import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
 } from "../../../../../data/zha";
+import { computeZHAEntityName } from "../../../../../data/zha";
 
 export interface DeviceEndpointRowData {
   id: string;
@@ -251,8 +252,8 @@ export class ZHADeviceEndpointList extends LitElement {
   private _deviceEndpointDetails(
     deviceEndpoint: DeviceEndpointRowData
   ): string {
-    const entityNames = deviceEndpoint.entities.map(
-      (entity) => entity.name || entity.original_name || entity.entity_id
+    const entityNames = deviceEndpoint.entities.map((entity) =>
+      computeZHAEntityName(entity, deviceEndpoint.name)
     );
     const entitySummary = entityNames.length
       ? entityNames.length > 2
