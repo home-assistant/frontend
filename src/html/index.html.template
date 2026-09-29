@@ -141,10 +141,11 @@
       </div>
     </div>
     <home-assistant></home-assistant>
+    <script src="<%= scopedRegistryJS %>"></script>
     <%= renderTemplate("_js_base.html.template") %>
     <%= renderTemplate("_preload_roboto.html.template") %>
     <script crossorigin="use-credentials">
-      if (isModern) {
+      if (window.__haScopedRegistryReady && isModern) {
         <% for (const entry of latestEntryJS) { %>
           import("<%= entry %>");
         <% } %>
@@ -154,16 +155,18 @@
     </script>
     <% if (obj.hassUrl === "") { %>
       <script>
-        {%- for extra_module in extra_modules -%}
-        // Caught, or the boot recovery guard reads it as a stale build.
-        import("{{ extra_module }}").catch(function (err) {
-          console.error("Failed to load extra module {{ extra_module }}", err);
-        });
-        {%- endfor -%}
+        if (window.__haScopedRegistryReady) {
+          {%- for extra_module in extra_modules -%}
+          // Caught, or the boot recovery guard reads it as a stale build.
+          import("{{ extra_module }}").catch(function (err) {
+            console.error("Failed to load extra module {{ extra_module }}", err);
+          });
+          {%- endfor -%}
+        }
       </script>
     <% } %>
     <script>
-        if (!window.latestJS) {
+        if (window.__haScopedRegistryReady && !window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
           <% for (const entry of es5EntryJS) { %>
             _ls("<%= entry %>", true);
@@ -173,7 +176,7 @@
 
     <% if (obj.hassUrl === "") { %>
       <script>
-        if (!window.latestJS) {
+        if (window.__haScopedRegistryReady && !window.latestJS) {
           {%- for extra_script in extra_js_es5 -%}
           _ls("{{ extra_script }}");
           {%- endfor -%}
