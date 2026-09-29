@@ -1,6 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
 import { mdiDelete } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -22,7 +21,6 @@ import {
   connectionContext,
   internationalizationContext,
 } from "../../../data/context";
-import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
 import type {
   RepositoryBase,
   RepositoryType,
@@ -34,7 +32,6 @@ import {
   isWebSocketError,
   repositoryAdd,
   repositoryDelete,
-  websocketSubscription,
 } from "../../../data/marketplace/websocket";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { marketplaceStyleVariables } from "../styles/variables";
@@ -68,8 +65,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
   @state() private _githubConnected = false;
 
-  private _errorSubscription?: UnsubscribeFunc;
-
   public connectedCallback(): void {
     super.connectedCallback();
     if (!this.params) {
@@ -78,13 +73,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
     this._repositories = this.params.marketplace.repositories;
     this._githubConnected = this.params.marketplace.info.github_connected;
-    this._subscribeErrors();
-  }
-
-  public disconnectedCallback(): void {
-    this._errorSubscription?.();
-    this._errorSubscription = undefined;
-    super.disconnectedCallback();
   }
 
   // The Marketplace helpers take a hass object, dialogs only get contexts.
@@ -94,24 +82,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       connection: this._connection.connection,
       localize: this._i18n.localize,
     };
-  }
-
-  private async _subscribeErrors(): Promise<void> {
-    const errorSubscription = await websocketSubscription(
-      this._hass,
-      (data) => {
-        this._errors = { base: data?.message || data };
-      },
-      MarketplaceDispatchEvent.ERROR
-    );
-
-    // Closed before the subscription came in, nothing is left to unsubscribe it.
-    if (!this.isConnected) {
-      errorSubscription();
-      return;
-    }
-
-    this._errorSubscription = errorSubscription;
   }
 
   protected render() {
@@ -139,7 +109,10 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
                   html` <ha-settings-row>
                     <span slot="heading">${repository.name}</span>
                     <span slot="description"
-                      >${repository.full_name} (${repository.category})</span
+                      >${repository.full_name}
+                      (${this._i18n.localize(
+                        `ui.panel.marketplace.common.type.${repository.category}`
+                      )})</span
                     >
 
                     ${

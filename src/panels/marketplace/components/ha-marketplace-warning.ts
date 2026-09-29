@@ -42,7 +42,7 @@ export class HaMarketplaceWarning extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.dashboard.marketplace.main")}
+        .header=${this.hass.localize("ui.panel.marketplace.title")}
         back-path="/config"
       >
         <div class="content">

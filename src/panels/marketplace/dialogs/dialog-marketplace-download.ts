@@ -1,5 +1,4 @@
 import { consume, type ContextType } from "@lit/context";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -28,7 +27,6 @@ import {
 } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
 import type {
   RepositoryBase,
   RepositoryInfo,
@@ -38,10 +36,7 @@ import {
   repositoryDownloadVersion,
   repositoryReleases,
 } from "../../../data/marketplace/repository";
-import {
-  handleWarningNotAccepted,
-  websocketSubscription,
-} from "../../../data/marketplace/websocket";
+import { handleWarningNotAccepted } from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
 import type { MarketplaceHass } from "../tools/connect-github";
 import { handleGitHubRateLimited } from "../tools/connect-github";
@@ -96,19 +91,11 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
   @state() private _replacementAccepted = false;
 
-  private _errorSubscription?: UnsubscribeFunc;
-
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.params) {
       this._load(this.params);
     }
-  }
-
-  public disconnectedCallback(): void {
-    this._errorSubscription?.();
-    this._errorSubscription = undefined;
-    super.disconnectedCallback();
   }
 
   // The Marketplace helpers take a hass object, dialogs only get contexts.
@@ -136,23 +123,6 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     if (this._repository && this._repository.version_or_commit !== "commit") {
       this._selectedVersion = this._repository.available_version;
     }
-
-    const errorSubscription = await websocketSubscription(
-      this._hass,
-      (data) => {
-        this._error = errorMessage(data);
-        this._installing = false;
-      },
-      MarketplaceDispatchEvent.ERROR
-    );
-
-    // Closed before the subscription came in, nothing is left to unsubscribe it.
-    if (!this.isConnected) {
-      errorSubscription();
-      return;
-    }
-
-    this._errorSubscription = errorSubscription;
   }
 
   // Answers for a closed dialog, or for another repository, are dropped.

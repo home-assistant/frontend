@@ -37,11 +37,11 @@ vi.mock(
   () => ({ repositoryMenuItems: () => [] })
 );
 
-const openDashboard = async () => {
+const openDashboard = async (repositories: unknown[] = []) => {
   const dashboard = document.createElement("ha-marketplace-dashboard");
   dashboard.hass = { localize: (key: string) => key } as HomeAssistant;
   dashboard.marketplace = {
-    repositories: [],
+    repositories,
     info: { categories: [] },
   } as unknown as MarketplaceData;
   document.body.append(dashboard);
@@ -81,4 +81,25 @@ it("remembers choosing no grouping when the Marketplace opens again", async () =
     "hass-tabs-subpage-data-table"
   ) as HTMLElement & { initialGroupColumn: string };
   expect(reopenedTable.initialGroupColumn).toBe("");
+});
+
+it("offers dismissing new repositories the filter hides", async () => {
+  const dashboard = await openDashboard([
+    {
+      id: "1",
+      name: "New",
+      full_name: "owner/new",
+      category: "integration",
+      status: "new",
+      new: true,
+    },
+  ]);
+  const filtered = dashboard as unknown as { _activeFilters: string[] };
+  filtered._activeFilters = ["status_installed"];
+  await dashboard.updateComplete;
+
+  expect(
+    dashboard.shadowRoot!.querySelector('ha-dropdown-item[value="dismiss_new"]')
+  ).not.toBeNull();
+  filtered._activeFilters = [];
 });

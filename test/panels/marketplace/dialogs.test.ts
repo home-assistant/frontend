@@ -12,7 +12,6 @@ import {
   getInternals,
   mockConnection,
   openDialog,
-  settle,
 } from "./dialog-host";
 
 // The real components need more browser than jsdom has, the dialogs only
@@ -134,32 +133,6 @@ describe("dialog-marketplace-form", () => {
       expect(getInternals(dialog)._error).toBeUndefined();
     }
   );
-
-  it("unsubscribes from errors once closed", async () => {
-    const unsubscribe = vi.fn();
-    const connection = mockConnection();
-    connection.subscribeMessage.mockResolvedValue(unsubscribe);
-    const dialog = await openFormDialog(undefined, connection);
-    await settle(dialog);
-
-    await dialog.closeDialog();
-
-    expect(unsubscribe).toHaveBeenCalledTimes(1);
-  });
-
-  it("unsubscribes when closed before the subscription came in", async () => {
-    const unsubscribe = vi.fn();
-    const subscription = deferred<() => void>();
-    const connection = mockConnection();
-    connection.subscribeMessage.mockReturnValue(subscription.promise as never);
-    const dialog = await openFormDialog(undefined, connection);
-
-    await dialog.closeDialog();
-    subscription.resolve(unsubscribe);
-    await settle(dialog);
-
-    expect(unsubscribe).toHaveBeenCalledTimes(1);
-  });
 });
 
 const openCustomRepositoriesDialog = (
@@ -198,6 +171,15 @@ describe("dialog-marketplace-custom-repositories", () => {
     expect(refresh).toHaveBeenCalledTimes(1);
     expect(getInternals(dialog)._repositories).toEqual([REPOSITORY]);
     expect(getInternals(dialog)._errors).toBeUndefined();
+  });
+
+  it("names the category of a repository in the language of the user", async () => {
+    const dialog = await openCustomRepositoriesDialog(async () => null);
+    await dialog.updateComplete;
+
+    expect(
+      dialog.shadowRoot!.querySelector('span[slot="description"]')!.textContent
+    ).toContain("ui.panel.marketplace.common.type.integration");
   });
 
   it("offers no removal for a downloaded repository", async () => {

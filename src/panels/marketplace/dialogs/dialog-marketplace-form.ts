@@ -1,5 +1,4 @@
 import { consume, type ContextType } from "@lit/context";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -8,12 +7,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/progress/ha-progress-bar";
-import {
-  connectionContext,
-  internationalizationContext,
-} from "../../../data/context";
-import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
-import { websocketSubscription } from "../../../data/marketplace/websocket";
+import { internationalizationContext } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import type { MarketplaceFormDialogParams } from "./show-dialog-marketplace";
 
@@ -25,44 +19,9 @@ class DialogMarketplaceForm extends DialogMixin<MarketplaceFormDialogParams>(
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state()
-  @consume({ context: connectionContext, subscribe: true })
-  private _connection!: ContextType<typeof connectionContext>;
-
   @state() private _waiting?: boolean;
 
   @state() private _error?: string;
-
-  private _errorSubscription?: UnsubscribeFunc;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._subscribeErrors();
-  }
-
-  public disconnectedCallback(): void {
-    this._errorSubscription?.();
-    this._errorSubscription = undefined;
-    super.disconnectedCallback();
-  }
-
-  private async _subscribeErrors(): Promise<void> {
-    const errorSubscription = await websocketSubscription(
-      this._connection,
-      (data) => {
-        this._error = data?.message || data;
-      },
-      MarketplaceDispatchEvent.ERROR
-    );
-
-    // Closed before the subscription came in, nothing is left to unsubscribe it.
-    if (!this.isConnected) {
-      errorSubscription();
-      return;
-    }
-
-    this._errorSubscription = errorSubscription;
-  }
 
   protected render() {
     if (!this.params) {

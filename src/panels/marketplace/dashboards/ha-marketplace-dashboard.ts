@@ -150,7 +150,8 @@ export class HaMarketplaceDashboard extends LitElement {
       this.hass.localize,
       this._activeFilters
     );
-    const repositoriesContainsNew = repositories.some(
+    // Dismissing clears all of them, not only the ones the filters show
+    const repositoriesContainsNew = this.marketplace.repositories.some(
       (repository) => repository.new
     );
 

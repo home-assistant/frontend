@@ -182,38 +182,6 @@ describe("dialog-marketplace-download", () => {
     expect(dialog.shadowRoot!.querySelector("ha-dialog-footer")).toBeNull();
   });
 
-  it("unsubscribes from errors once closed", async () => {
-    const unsubscribe = vi.fn();
-    const connection = mockConnection();
-    connection.subscribeMessage.mockResolvedValue(unsubscribe);
-    const dialog = await openDownloadDialog(
-      { repository: repositoryInfo("1") },
-      connection
-    );
-    await settle(dialog);
-
-    await dialog.closeDialog();
-
-    expect(unsubscribe).toHaveBeenCalledTimes(1);
-  });
-
-  it("unsubscribes when closed before the subscription came in", async () => {
-    const unsubscribe = vi.fn();
-    const subscription = deferred<() => void>();
-    const connection = mockConnection();
-    connection.subscribeMessage.mockReturnValue(subscription.promise as never);
-    const dialog = await openDownloadDialog(
-      { repository: repositoryInfo("1") },
-      connection
-    );
-
-    await dialog.closeDialog();
-    subscription.resolve(unsubscribe);
-    await settle(dialog);
-
-    expect(unsubscribe).toHaveBeenCalledTimes(1);
-  });
-
   it("lists the releases of the repository it shows", async () => {
     const dialog = await openDownloadDialog(
       { repositoryId: "2", repository: repositoryInfo("2") },
