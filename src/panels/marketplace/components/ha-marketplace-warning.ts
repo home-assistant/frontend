@@ -101,9 +101,6 @@ export class HaMarketplaceWarning extends LitElement {
               </ha-checkbox>
             </div>
             <div class="card-actions">
-              <ha-button appearance="plain" href="/config">
-                ${this.hass.localize("ui.panel.marketplace.warning.go_back")}
-              </ha-button>
               <ha-button
                 variant="warning"
                 .disabled=${!this._understood}

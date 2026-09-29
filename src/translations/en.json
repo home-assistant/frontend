@@ -12133,8 +12133,7 @@
           },
           "reminder": "It has been a while, so here is the warning again.",
           "understand": "I understand the risks",
-          "continue": "Continue",
-          "go_back": "Go back"
+          "continue": "Continue"
         },
         "common": {
           "add": "Add",
