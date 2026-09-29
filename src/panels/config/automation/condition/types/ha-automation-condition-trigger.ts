@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { mdiAlert, mdiLinkVariantOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";

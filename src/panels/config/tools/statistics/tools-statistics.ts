@@ -12,10 +12,18 @@ import {
 
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { consume, type ContextType } from "@lit/context";
-import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { ContextType } from "@lit/context";
+import {
+  css,
+  type CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -67,7 +75,7 @@ import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistantRegistries } from "../../../../types";
-import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
@@ -108,6 +116,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
+  @state() private _loading = true;
+
   @state() private filter = "";
 
   @state() private _selected: string[] = [];
@@ -146,8 +156,12 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
-  protected firstUpdated() {
-    this._validateStatistics();
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._validateStatistics();
+    }
   }
 
   private _displayData = memoizeOne(
@@ -554,6 +568,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
         <ha-data-table
           .narrow=${this.narrow}
+          .loading=${this._loading}
           .columns=${columns}
           .data=${this._displayData(
             this._data,
@@ -722,38 +737,42 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _validateStatistics() {
-    const [statisticIds, issues] = await Promise.all([
-      getStatisticIds(this._api),
-      validateStatistics(this._api),
-    ]);
+    try {
+      const [statisticIds, issues] = await Promise.all([
+        getStatisticIds(this._api),
+        validateStatistics(this._api),
+      ]);
 
-    updateStatisticsIssues(this._api);
+      updateStatisticsIssues(this._api);
 
-    const statsIds = new Set();
+      const statsIds = new Set();
 
-    this._data = statisticIds.map((statistic) => {
-      statsIds.add(statistic.statistic_id);
-      return {
-        ...statistic,
-        state: this._states[statistic.statistic_id],
-        issues: issues[statistic.statistic_id],
-      };
-    });
+      this._data = statisticIds.map((statistic) => {
+        statsIds.add(statistic.statistic_id);
+        return {
+          ...statistic,
+          state: this._states[statistic.statistic_id],
+          issues: issues[statistic.statistic_id],
+        };
+      });
 
-    Object.keys(issues).forEach((statisticId) => {
-      if (!statsIds.has(statisticId)) {
-        this._data.push({
-          statistic_id: statisticId,
-          statistics_unit_of_measurement: "",
-          source: "",
-          state: this._states[statisticId],
-          issues: issues[statisticId],
-          mean_type: StatisticMeanType.NONE,
-          has_sum: false,
-          unit_class: null,
-        });
-      }
-    });
+      Object.keys(issues).forEach((statisticId) => {
+        if (!statsIds.has(statisticId)) {
+          this._data.push({
+            statistic_id: statisticId,
+            statistics_unit_of_measurement: "",
+            source: "",
+            state: this._states[statisticId],
+            issues: issues[statisticId],
+            mean_type: StatisticMeanType.NONE,
+            has_sum: false,
+            unit_class: null,
+          });
+        }
+      });
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _clearSelected = async () => {
@@ -849,12 +868,27 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
 
         .narrow-header-row {
+          --header-row-inset-start: var(--safe-area-inset-left, 0px);
+          --header-row-inset-end: var(--safe-area-inset-right, 0px);
           display: flex;
           align-items: center;
           gap: var(--ha-space-4);
-          padding: 0 var(--ha-space-4);
+          padding: 0;
+          padding-inline-start: calc(
+            var(--ha-space-4) + var(--header-row-inset-start)
+          );
           overflow-x: scroll;
           scrollbar-width: none;
+        }
+
+        .narrow-header-row:dir(rtl) {
+          --header-row-inset-start: var(--safe-area-inset-right, 0px);
+          --header-row-inset-end: var(--safe-area-inset-left, 0px);
+        }
+
+        .narrow-header-row::after {
+          content: "";
+          flex: 0 0 var(--header-row-inset-end);
         }
 
         .selection-bar {

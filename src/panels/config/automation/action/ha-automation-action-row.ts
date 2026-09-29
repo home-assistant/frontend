@@ -1,8 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAlertCircleCheck,
-  mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
   mdiCheckboxBlankOutline,
@@ -28,6 +26,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import "../trigger/ha-automation-trigger-references";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
@@ -56,6 +55,7 @@ import {
   ACTION_BUILDING_BLOCKS,
   ACTION_COMBINED_BLOCKS,
   ACTION_ICONS,
+  getAutomationActionType,
   YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
@@ -81,7 +81,7 @@ import type {
   RepeatAction,
   ServiceAction,
 } from "../../../../data/script";
-import { getActionType, isAction } from "../../../../data/script";
+import { isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import type { TargetSelector } from "../../../../data/selector";
 import { callExecuteScript } from "../../../../data/service";
@@ -114,23 +114,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-
-export const getAutomationActionType = memoizeOne(
-  (action: Action | undefined) => {
-    if (!action) {
-      return undefined;
-    }
-    if ("action" in action) {
-      return getActionType(action) as "action";
-    }
-    if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
-      return "condition" as const;
-    }
-    return Object.keys(ACTION_ICONS).find(
-      (option) => option in action
-    ) as keyof typeof ACTION_ICONS;
-  }
-);
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -442,6 +426,16 @@ export default class HaAutomationActionRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${this.action.enabled === false && !this._running}
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._running}
         .variant=${this._runResult?.variant}
         slot="event"
@@ -512,17 +506,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.copy"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>C</span>
             </span>`
@@ -536,17 +520,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.cut"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>X</span>
             </span>`
@@ -566,17 +540,7 @@ export default class HaAutomationActionRow extends LitElement {
                       "ui.panel.config.automation.editor.actions.paste"
                     ),
                     html`<span class="shortcut">
-                      <span
-                        >${
-                          isMac
-                            ? html`<ha-svg-icon
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )
-                        }</span
-                      >
+                      <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                       <span>+</span>
                       <span>V</span>
                     </span>`
@@ -681,17 +645,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.actions.delete"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span
                 >${this.hass.localize(
@@ -748,17 +702,6 @@ export default class HaAutomationActionRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        ${
-          this.action.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row

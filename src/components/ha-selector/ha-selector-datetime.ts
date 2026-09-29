@@ -1,6 +1,6 @@
-import { consume } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { transform } from "../../common/decorators/transform";
 import type { DateTimeSelector } from "../../data/selector";

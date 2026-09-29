@@ -1,7 +1,7 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { BRANCH_HEIGHT, SPACING } from "./hat-graph-const";
 
 interface BranchConfig {
@@ -10,6 +10,9 @@ interface BranchConfig {
   start: boolean;
   end: boolean;
   track: boolean;
+  // A branch the run entered but never finished, because a step in it raised.
+  // Its incoming curve is tracked, everything leaving it is not.
+  trackEnd: boolean;
 }
 
 /**
@@ -32,34 +35,85 @@ export class HatGraphBranch extends LitElement {
 
   private _maxHeight = 0;
 
-  private _updateBranches(ev: HASSDomTargetEvent<HTMLSlotElement>) {
+  @query("#branches slot") private _slot?: HTMLSlotElement;
+
+  // The branch children are Lit rendered by the parent, so their track
+  // attribute can flip (another trace, another run) without a slot change,
+  // and nested nodes can change without the assigned elements changing.
+  private _trackObserver = new MutationObserver((mutations) => {
+    if (
+      mutations.some(
+        (m) =>
+          m.type === "childList" || (m.target as Element).parentElement === this
+      )
+    ) {
+      this._updateBranches();
+    }
+  });
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._trackObserver.observe(this, {
+      subtree: true,
+      attributes: true,
+      childList: true,
+      attributeFilter: ["track", "unfinished"],
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._trackObserver.disconnect();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    // The branches are read from the DOM, so they are refreshed on every
+    // update to pick up size changes as well.
+    this._updateBranches();
+  }
+
+  private _updateBranches() {
+    if (!this._slot) {
+      return;
+    }
     let total_width = 0;
     const heights: number[] = [];
     const branches: BranchConfig[] = [];
-    (ev.target as HTMLSlotElement).assignedElements().forEach((c) => {
+    this._slot.assignedElements().forEach((c) => {
       const width = c.clientWidth;
       const height = c.clientHeight;
+      const track = c.hasAttribute("track");
       branches.push({
         x: width / 2 + total_width,
         height,
         start: c.hasAttribute("graph-start"),
         end: c.hasAttribute("graph-end"),
-        track: c.hasAttribute("track"),
+        track,
+        trackEnd: track && !c.hasAttribute("unfinished"),
       });
       total_width += width;
       heights.push(height);
     });
+    const maxHeight = Math.max(...heights);
+    // Tracked branches are drawn last, so they are never covered by the
+    // untracked ones where the paths overlap.
+    branches.sort(
+      (a, b) =>
+        Number(a.trackEnd) - Number(b.trackEnd) ||
+        Number(a.track) - Number(b.track)
+    );
+    if (
+      total_width === this._totalWidth &&
+      maxHeight === this._maxHeight &&
+      JSON.stringify(branches) === JSON.stringify(this._branches)
+    ) {
+      // Nothing changed, don't trigger another update.
+      return;
+    }
     this._totalWidth = total_width;
-    this._maxHeight = Math.max(...heights);
-    this._branches = branches.sort((a, b) => {
-      if (a.track && !b.track) {
-        return 1;
-      }
-      if (a.track && b.track) {
-        return 0;
-      }
-      return -1;
-    });
+    this._maxHeight = maxHeight;
+    this._branches = branches;
   }
 
   render() {
@@ -79,7 +133,9 @@ export class HatGraphBranch extends LitElement {
                     })}
                     d="
                       M ${this._totalWidth / 2} 0
-                      L ${branch.x} ${BRANCH_HEIGHT}
+                      C ${this._totalWidth / 2} ${BRANCH_HEIGHT / 2}
+                        ${branch.x} ${BRANCH_HEIGHT / 2}
+                        ${branch.x} ${BRANCH_HEIGHT}
                       "/>
                 `
                 )}
@@ -94,7 +150,7 @@ export class HatGraphBranch extends LitElement {
             return svg`
                     <path
                       class=${classMap({
-                        track: branch.track,
+                        track: branch.trackEnd,
                       })}
                       d="
                         M ${branch.x} ${branch.height}
@@ -115,12 +171,14 @@ export class HatGraphBranch extends LitElement {
                   return svg`
                   <path
                     class=${classMap({
-                      track: branch.track,
+                      track: branch.trackEnd,
                     })}
                     d="
                       M ${branch.x} 0
                       V ${SPACING}
-                      L ${this._totalWidth / 2} ${BRANCH_HEIGHT + SPACING}
+                      C ${branch.x} ${SPACING + BRANCH_HEIGHT / 2}
+                        ${this._totalWidth / 2} ${SPACING + BRANCH_HEIGHT / 2}
+                        ${this._totalWidth / 2} ${BRANCH_HEIGHT + SPACING}
                       "/>
                 `;
                 })}
@@ -161,14 +219,19 @@ export class HatGraphBranch extends LitElement {
     }
     #bottom {
       height: calc(var(--hat-graph-branch-height) + var(--hat-graph-spacing));
+      position: relative;
+      z-index: 2;
     }
     path {
-      stroke: var(--stroke-clr);
-      stroke-width: 2;
+      stroke: var(--connector-clr, var(--stroke-clr));
+      stroke-width: 1;
+      stroke-dasharray: 4 3;
       fill: none;
     }
     path.track {
       stroke: var(--track-clr);
+      stroke-width: 2;
+      stroke-dasharray: none;
     }
     :host([disabled]) path {
       stroke: var(--disabled-clr);

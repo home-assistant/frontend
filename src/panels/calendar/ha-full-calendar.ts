@@ -476,6 +476,13 @@ export class HAFullCalendar extends LitElement {
     const wasShowingToday = this._isShowingToday();
     const nextMidnight = new TZDate(new Date(), this._calendarTimeZone());
     nextMidnight.setHours(24, 0, 0, 0);
+    const delay = nextMidnight.getTime() - Date.now();
+
+    // Guard against a NaN/negative delay (e.g. Intl longOffset unsupported on
+    // Chromium < 95) so the midnight refresh can't fire in a tight loop (#54182).
+    if (!Number.isFinite(delay) || delay <= 0) {
+      return;
+    }
 
     this._midnightRefreshTimeout = window.setTimeout(() => {
       if (wasShowingToday) {
@@ -485,7 +492,7 @@ export class HAFullCalendar extends LitElement {
       }
 
       this._scheduleMidnightRefresh();
-    }, nextMidnight.getTime() - Date.now());
+    }, delay);
   }
 
   private _clearMidnightRefreshTimeout(): void {

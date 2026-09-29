@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import {
   css,
@@ -15,6 +15,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { tinykeys } from "tinykeys";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { configContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
@@ -360,7 +361,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         this._initialFieldValue = undefined;
       }
       if (
-        this._hassConfig?.auth.external &&
+        this._hassConfig?.auth?.external &&
         isIosApp(this._hassConfig.auth.external)
       ) {
         this._hassConfig.auth.external.fireMessage({

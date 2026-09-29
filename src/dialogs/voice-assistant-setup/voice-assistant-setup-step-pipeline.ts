@@ -371,7 +371,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         "select",
         "select_option",
         { option: cloudPipeline.name },
-        { entity_id: this.assistConfiguration?.pipeline_entity_id }
+        { entity_id: this.assistConfiguration?.pipeline_entity_id ?? undefined }
       );
       fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
       return true;

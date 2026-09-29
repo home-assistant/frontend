@@ -12,7 +12,6 @@ import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
 import "./ha-chart-base";
 import "./ha-chart-tooltip-marker";
-import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
 
 export interface Node {
@@ -43,6 +42,7 @@ const OVERFLOW_MARGIN = 5;
 const FONT_SIZE = 12;
 const NODE_GAP = 6;
 const LABEL_DISTANCE = 5;
+const NODE_SIZE = 30;
 const LABEL_MIN_MARGIN = 5;
 const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 

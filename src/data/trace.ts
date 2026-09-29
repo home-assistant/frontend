@@ -37,7 +37,6 @@ export interface ConditionTraceStep extends BaseTraceStep {
 
 export interface CallServiceActionTraceStep extends BaseTraceStep {
   result?: {
-    limit: number;
     running_script: boolean;
     params: Record<string, unknown>;
   };
@@ -60,6 +59,22 @@ export interface StopActionTraceStep extends BaseTraceStep {
   result?: { stop: string; error: boolean };
 }
 
+export interface WaitActionTraceStep extends BaseTraceStep {
+  result?: {
+    enabled?: boolean;
+    wait?: {
+      completed: boolean;
+      remaining: number | null;
+      trigger?: Record<string, unknown> | null;
+    };
+    timeout?: boolean;
+  };
+}
+
+export interface DelayActionTraceStep extends BaseTraceStep {
+  result?: { delay: number; done: boolean };
+}
+
 export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
   result?: { result: boolean };
 }
@@ -70,6 +85,10 @@ export type ActionTraceStep =
   | ConditionTraceStep
   | CallServiceActionTraceStep
   | ChooseActionTraceStep
+  | IfActionTraceStep
+  | StopActionTraceStep
+  | WaitActionTraceStep
+  | DelayActionTraceStep
   | ChooseChoiceActionTraceStep;
 
 interface BaseTrace {
@@ -105,7 +124,11 @@ interface BaseTrace {
     | "cancelled"
     // No action was executed because a trigger evaluated a relevant change but
     // decided not to fire; the reason is in the trigger step of the trace
-    | "not_triggered";
+    | "not_triggered"
+    // A script called itself, directly or through another script
+    | "disallowed_recursion_detected"
+    // The run has not stopped yet, so it has no stop reason
+    | null;
 }
 
 interface BaseTraceExtended {
@@ -122,7 +145,7 @@ export interface AutomationTrace extends BaseTrace {
 export interface AutomationTraceExtended
   extends AutomationTrace, BaseTraceExtended {
   config: ManualAutomationConfig;
-  blueprint_inputs?: BlueprintAutomationConfig;
+  blueprint_inputs?: BlueprintAutomationConfig | null;
 }
 
 export interface ScriptTrace extends BaseTrace {
@@ -131,7 +154,7 @@ export interface ScriptTrace extends BaseTrace {
 
 export interface ScriptTraceExtended extends ScriptTrace, BaseTraceExtended {
   config: ScriptConfig;
-  blueprint_inputs?: BlueprintScriptConfig;
+  blueprint_inputs?: BlueprintScriptConfig | null;
 }
 
 export type Trace = AutomationTrace | ScriptTrace;
