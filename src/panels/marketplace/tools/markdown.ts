@@ -102,6 +102,7 @@ const FENCE_OPENING = /^ {0,3}(?:(`{3,})[^`]*|(~{3,}).*)$/;
 const FENCE_CLOSING = /^ {0,3}(`{3,}|~{3,})\s*$/;
 const CODE_PLACEHOLDER = /\0(\d+)\0/g;
 const INDENTED_CODE = /^(?: {4}|\t)/;
+const LIST_ITEM = /^ {0,3}(?:[-*+]|\d{1,9}[.)])\s/;
 
 interface MarkdownBlock {
   code: boolean;
@@ -125,6 +126,7 @@ const splitCodeBlocks = (input: string) => {
 
   let indented = false;
   let previousBlank = true;
+  let inList = false;
 
   for (const line of input.split("\n")) {
     if (current?.code && fence) {
@@ -138,6 +140,13 @@ const splitCodeBlocks = (input: string) => {
     const blank = line.trim() === "";
     const indentation = INDENTED_CODE.test(line);
 
+    // Indented lines in a list continue its item, they are not code
+    if (LIST_ITEM.test(line)) {
+      inList = true;
+    } else if (!blank && !indentation) {
+      inList = false;
+    }
+
     // Indented code runs on over blank lines, until a line is not indented
     if (current?.code && indented && (blank || indentation)) {
       current.lines.push(line);
@@ -147,7 +156,7 @@ const splitCodeBlocks = (input: string) => {
     indented = false;
 
     // It can not interrupt a paragraph, a blank line comes before it
-    if (indentation && previousBlank && !blank) {
+    if (indentation && previousBlank && !blank && !inList) {
       indented = true;
       current = { code: true, lines: [line] };
       blocks.push(current);
@@ -218,6 +227,11 @@ export const markdownWithRepositoryContext = (
   input: string,
   repository?: RepositoryInfo
 ) => {
+  // The placeholders would be mistaken for content, a README never has them
+  if (input.includes("\0") || input.includes("\uE000")) {
+    return input;
+  }
+
   // Code is swapped for placeholders rather than split off, so links with code in their text still match.
   const code: string[] = [];
   const mask = (text: string) => {

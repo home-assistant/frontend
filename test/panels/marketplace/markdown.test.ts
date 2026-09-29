@@ -222,4 +222,27 @@ describe("markdownWithRepositoryContext", () => {
       "[![badge](https://raw.githubusercontent.com/owner/repo/v1.0.0/badge.svg)](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
     );
   });
+
+  it("rewrites the indented continuation of a list item", () => {
+    expect(
+      markdownWithRepositoryContext(
+        "- Changes\n\n    Fixed #12, see [setup](docs/setup.md)",
+        repository
+      )
+    ).toBe(
+      "- Changes\n\n    Fixed [#12](https://github.com/owner/repo/issues/12), see [setup](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
+    );
+  });
+
+  it("keeps indented code after a list has ended", () => {
+    const input = "- Item\n\nText\n\n    color: '#123456'";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps text that looks like a placeholder", () => {
+    const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
 });
