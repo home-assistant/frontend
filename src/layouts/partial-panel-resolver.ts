@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
@@ -6,6 +5,7 @@ import {
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { promiseTimeout } from "../common/util/promise-timeout";

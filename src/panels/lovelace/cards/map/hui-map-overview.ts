@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiHistory } from "@mdi/js";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -12,6 +11,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../../common/decorators/consume";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
 import {
   HOME_ZONE_ENTITY_ID,

@@ -76,6 +76,9 @@ jobs:
       - name: Check dependency licenses
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
         run: yarn run lint:licenses
+      - name: Check the bundled map sprite sheet
+        if: ${{ !cancelled() }}
+        run: ./node_modules/.bin/gulp check-map-sprites
   test:
     name: Run tests
     needs: prepare-dependencies

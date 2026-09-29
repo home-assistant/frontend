@@ -947,8 +947,8 @@ class DialogZWaveJSAddNode extends LitElement {
                   (entity.name === oldDeviceName ||
                     entity.name === newDeviceName)
                 ) {
-                  // clear name if it matches the device name and it uses the device name (entity naming)
-                  newName = null;
+                  // Use the device name when the entity name matches it
+                  newName = "";
                 } else if (name && name.includes(oldDeviceName)) {
                   newName = name.replace(oldDeviceName, newDeviceName);
                 }
@@ -961,7 +961,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 }
 
                 return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                  name: newName || name,
+                  name: newName ?? name,
                   new_entity_id: newEntityId || undefined,
                 });
               })

@@ -83,20 +83,15 @@ export const supportsWebGL2 = (): boolean => {
 export const supportsVectorMaps = (): boolean =>
   supportsWebGL2() && typeof BigInt === "function";
 
-// MapLibre rejects a relative sprite URL. Not the glyph URL: encoding would
-// mangle its {fontstack} and {range} placeholders.
 // The demo has no core to proxy through. OSM sets CORS on its tiles but not on
-// its glyphs and sprites, which is why those come from VersaTiles.
+// its glyphs, which is why those come from VersaTiles.
 const DEMO_UPSTREAM = {
   tilejson: "https://vector.openstreetmap.org/shortbread_v1/tilejson.json",
-  assets: "https://tiles.versatiles.org/assets",
+  glyphs: "https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf",
 };
 
 const useDemoUpstream = (style: StyleSpecification): StyleSpecification => {
-  style.glyphs = `${DEMO_UPSTREAM.assets}/glyphs/{fontstack}/{range}.pbf`;
-  style.sprite = [
-    { id: "basics", url: `${DEMO_UPSTREAM.assets}/sprites/basics/sprites` },
-  ];
+  style.glyphs = DEMO_UPSTREAM.glyphs;
   Object.values(style.sources).forEach((source) => {
     if ("url" in source) {
       source.url = DEMO_UPSTREAM.tilejson;
@@ -105,22 +100,21 @@ const useDemoUpstream = (style: StyleSpecification): StyleSpecification => {
   return style;
 };
 
+// MapLibre rejects a relative sprite URL
+const absoluteSprite = (url: string) => new URL(url, location.href).href;
+
 export const loadStyle = async (url: string): Promise<StyleSpecification> => {
   const style: StyleSpecification = await (await fetch(url)).json();
 
-  if (__DEMO__) {
-    return useDemoUpstream(style);
-  }
-
   if (typeof style.sprite === "string") {
-    style.sprite = mapTilesUrl(style.sprite);
+    style.sprite = absoluteSprite(style.sprite);
   } else if (Array.isArray(style.sprite)) {
     style.sprite = style.sprite.map((sprite) => ({
       ...sprite,
-      url: mapTilesUrl(sprite.url),
+      url: absoluteSprite(sprite.url),
     }));
   }
-  return style;
+  return __DEMO__ ? useDemoUpstream(style) : style;
 };
 
 // Global to MapLibre; set once before the first map is created. Absolute,

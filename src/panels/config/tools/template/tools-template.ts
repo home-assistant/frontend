@@ -345,10 +345,10 @@ class HaPanelDevTemplate extends LitElement {
                     </ha-label>
                     <pre class="rendered">
 ${
-  type === "object"
-    ? JSON.stringify(this._templateResult.result, null, 2)
-    : this._templateResult.result
-}</pre>
+                        type === "object"
+                          ? JSON.stringify(this._templateResult.result, null, 2)
+                          : this._templateResult.result
+                      }</pre>
                     ${
                       this._templateResult.listeners.time
                         ? html`

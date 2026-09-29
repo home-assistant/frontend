@@ -1,9 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiCommentTextOutline } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { truncateWithEllipsis } from "../../common/string/truncate-with-ellipsis";
 import type { Condition } from "../../data/automation";
 import type { ConditionDescription } from "../../data/condition";

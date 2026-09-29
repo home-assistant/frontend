@@ -20,6 +20,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { getShadowRootHost } from "../../common/dom/get-shadow-root-host";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
@@ -45,6 +46,7 @@ import {
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { getWsErrorMessage } from "../../util/ws-error";
 import { panelIsReady } from "../../layouts/panel-ready";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -921,7 +923,9 @@ export class HaMediaPlayerBrowse extends LitElement {
         title: this.hass.localize(
           "ui.components.media-browser.media_browsing_error"
         ),
-        text: err instanceof Error ? err.message : String(err),
+        text:
+          getWsErrorMessage(err) ??
+          this.hass.localize("ui.common.unknown_error"),
       });
     } finally {
       // Only the most recent search controls the loading state
@@ -1161,14 +1165,9 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
     this._initialReady = true;
-    const root = this.getRootNode();
-    panelIsReady(
-      root instanceof ShadowRoot &&
-        root.host instanceof HTMLElement &&
-        root.host.tagName.startsWith("HA-PANEL-")
-        ? root.host
-        : this
-    );
+
+    const host = getShadowRootHost(this);
+    panelIsReady(host?.tagName.startsWith("HA-PANEL-") ? host : this);
   }
 
   private _setError(error: any) {

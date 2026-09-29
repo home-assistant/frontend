@@ -20,9 +20,6 @@ export const haMdListStyles = [
       align-items: var(--md-item-align-items, center);
       gap: var(--ha-md-list-item-gap, 16px);
     }
-    ::slotted(span[slot="supporting-text"]) {
-      display: flex;
-    }
   `,
 ];
 

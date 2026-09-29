@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -13,6 +12,7 @@ import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   fireEvent,
@@ -82,6 +82,7 @@ export class HaScriptTrace extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   _manifests?: DomainManifestLookup;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry?: EntityRegistryEntry[];
 
