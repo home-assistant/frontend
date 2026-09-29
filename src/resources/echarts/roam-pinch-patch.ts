@@ -9,7 +9,6 @@
 
 import RoamController from "echarts/lib/component/helper/RoamController";
 import { isTaken } from "echarts/lib/component/helper/interactionMutex";
-import { stop } from "zrender/lib/core/event";
 
 // Guards against a jump when the finger distance is tiny or glitches.
 const MAX_PINCH_STEP = 2;
@@ -23,7 +22,8 @@ const isAvailableBehavior = () => true;
   // Every pinch event on the chart is cancelled, including the ones that do
   // not zoom or whose center is off the plot area, like over the axis labels,
   // or the browser takes over the gesture and scrolls or zooms the page.
-  stop(e.event);
+  e.event.preventDefault();
+  e.event.stopPropagation();
   const x: number = e.pinchX;
   const y: number = e.pinchY;
   if (!this._checkPointer(e, x, y)) {
