@@ -1,5 +1,6 @@
 export default {
   "*.?(c|m){js,ts}": [
+    "oxlint --no-ignore --fix --max-warnings=0",
     "eslint --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --fix",
     "prettier --cache --write",
     "lit-analyzer --quiet",

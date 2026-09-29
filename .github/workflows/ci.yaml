@@ -62,6 +62,8 @@ jobs:
             node_modules/.cache/typescript
           key: lint-${{ github.sha }}
           restore-keys: lint-
+      - name: Run oxlint
+        run: yarn run lint:oxlint
       - name: Run eslint
         run: yarn run lint:eslint --quiet
       - name: Run tsc

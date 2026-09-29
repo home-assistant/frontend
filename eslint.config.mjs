@@ -4,9 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
-import js from "@eslint/js";
 import tseslint from "typescript-eslint";
-import eslintConfigPrettier from "eslint-config-prettier";
 import { configs as litConfigs } from "eslint-plugin-lit";
 import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
@@ -21,12 +19,8 @@ const rspackConfigPath = fileURLToPath(
 const restrictedSyntax = ["LabeledStatement", "WithStatement"];
 
 export default tseslint.config(
-  js.configs.recommended,
-  eslintConfigPrettier,
+  tseslint.configs.base,
   litConfigs["flat/all"],
-  tseslint.configs.recommended,
-  tseslint.configs.strict,
-  tseslint.configs.stylistic,
   wcConfigs["flat/recommended"],
   a11yConfigs.recommended,
   importX.flatConfigs.recommended,
@@ -65,46 +59,29 @@ export default tseslint.config(
     },
 
     rules: {
-      "array-callback-return": ["error", { allowImplicit: true }],
-      "block-scoped-var": "error",
+      // Native rules live in .oxlintrc.json. Keep only the remaining checks here.
       "consistent-return": "error",
       curly: ["error", "multi-line"],
-      "default-case-last": "error",
       eqeqeq: ["error", "always", { null: "ignore" }],
       "guard-for-in": "error",
       "no-await-in-loop": "error",
-      "no-caller": "error",
-      "no-constructor-return": "error",
-      "no-eval": "error",
-      "no-extend-native": "error",
-      "no-implied-eval": "error",
-      "no-iterator": "error",
+      "no-control-regex": "error",
+      "no-dupe-args": "error",
+      "no-empty": "error",
+      "no-global-assign": "error",
+      "no-misleading-character-class": "error",
       "no-new-func": "error",
-      "no-new-wrappers": "error",
+      "no-octal": "error",
       "no-octal-escape": "error",
-      "no-promise-executor-return": "error",
+      "no-prototype-builtins": "error",
       "no-return-assign": ["error", "always"],
       "no-script-url": "error",
       "no-self-compare": "error",
-      "no-sequences": "error",
       "no-template-curly-in-string": "error",
+      "no-undef": "error",
       "no-unreachable-loop": "error",
-
-      "no-else-return": ["error", { allowElseIf: false }],
-      "no-lonely-if": "error",
-      "no-unneeded-ternary": ["error", { defaultAssignment: false }],
-      "no-useless-computed-key": "error",
-      "no-useless-concat": "error",
-      "no-useless-rename": "error",
+      "no-unsafe-optional-chaining": "error",
       "no-useless-return": "error",
-      "one-var": ["error", "never"],
-      "operator-assignment": ["error", "always"],
-      "prefer-arrow-callback": "error",
-      "prefer-exponentiation-operator": "error",
-      "prefer-object-spread": "error",
-      "prefer-regex-literals": ["error", { disallowRedundantWrapping: true }],
-      "symbol-description": "error",
-      yoda: "error",
 
       // TODO: Enable once violations are fixed (43 instances as of 2026-04)
       // "no-useless-assignment": "error",
@@ -113,7 +90,6 @@ export default tseslint.config(
       // Project rules
       "no-bitwise": "error",
       "no-console": "error",
-      "no-restricted-globals": [2, "event"],
       "no-restricted-syntax": [
         "error",
         ...restrictedSyntax,
@@ -158,10 +134,13 @@ export default tseslint.config(
       "import-x/no-relative-packages": "error",
 
       // TypeScript rules
-      "@typescript-eslint/ban-ts-comment": "off",
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/array-type": "error",
+      "@typescript-eslint/no-empty-function": "error",
+      "@typescript-eslint/no-namespace": "error",
+      "@typescript-eslint/no-require-imports": "error",
       "@typescript-eslint/no-shadow": ["error"],
+      "@typescript-eslint/no-this-alias": "error",
+      "@typescript-eslint/triple-slash-reference": "error",
 
       "@typescript-eslint/naming-convention": [
         "error",
@@ -223,15 +202,14 @@ export default tseslint.config(
       "lit-a11y/anchor-is-valid": "error",
       "lit-a11y/role-has-required-aria-attrs": "error",
       "@typescript-eslint/consistent-type-imports": "error",
-      "@typescript-eslint/no-import-type-side-effects": "error",
-      "@typescript-eslint/no-dynamic-delete": "off",
-      "@typescript-eslint/no-empty-object-type": [
-        "error",
-        {
-          allowInterfaces: "always",
-          allowObjectTypes: "always",
-        },
-      ],
+    },
+  },
+  {
+    files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+    rules: {
+      "no-dupe-args": "off",
+      "no-undef": "off",
+      "no-var": "error",
     },
   },
   {

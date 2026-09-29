@@ -15,6 +15,5 @@ export default tseslint.config(...rootConfig, {
     "import-x/no-dynamic-require": "off",
     "global-require": "off",
     "@typescript-eslint/no-require-imports": "off",
-    "prefer-arrow-callback": "off",
   },
 });
