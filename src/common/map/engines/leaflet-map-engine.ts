@@ -24,6 +24,7 @@ import type {
   MapMarkerOptions,
   MapPath,
 } from "../map-engine";
+import type { ResolvedMapStyle } from "../map-styles";
 import { setMarkerAccessibility } from "../marker-accessibility";
 
 /** A leaflet marker that knows the engine handle it was created for */
@@ -85,7 +86,7 @@ export class LeafletMapEngine implements MapEngine {
     this._baseLayer = await createBaseLayer(
       Leaflet,
       map,
-      options.darkMode,
+      options.mapStyle,
       options.token,
       options.rasterOnly ?? false
     );
@@ -138,8 +139,8 @@ export class LeafletMapEngine implements MapEngine {
     return false;
   }
 
-  public setDarkMode(darkMode: boolean): void {
-    this._baseLayer?.setDarkMode(darkMode);
+  public setMapStyle(style: ResolvedMapStyle): void {
+    this._baseLayer?.setMapStyle(style);
   }
 
   public setZoomControlPosition(position: MapControlPosition): void {

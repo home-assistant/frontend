@@ -3,6 +3,7 @@ import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   consume,
   ContextSubscriptionController,
@@ -38,6 +39,9 @@ import {
   circleBoundsPoints,
   distanceMeters,
 } from "../../common/map/map-engine";
+import type { MapStyleConfig } from "../../common/map/map-styles";
+import { resolveMapStyle } from "../../common/map/map-styles";
+import { readMapThemeColors } from "../../common/map/map-theme-colors";
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
 import {
@@ -362,6 +366,10 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
 
+  /** Cartography to draw; the theme mode picks its light or dark palette */
+  @property({ attribute: false })
+  public mapStyle?: MapStyleConfig;
+
   @property({ type: Number }) public zoom = 14;
 
   @property({ attribute: "cluster-markers", type: Boolean })
@@ -571,6 +579,10 @@ export class HaMap extends ReactiveElement {
       });
     }
 
+    if (changedProps.has("mapStyle")) {
+      this._engine?.setMapStyle(this._resolvedMapStyle);
+    }
+
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
@@ -579,7 +591,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    this._updateMapStyle();
+    this._updateMapAppearance();
     // Marker, trail and circle colors were resolved from the theme when drawn
     this._drawEntities();
     this._drawPaths();
@@ -596,13 +608,44 @@ export class HaMap extends ReactiveElement {
     );
   }
 
-  private _updateMapStyle(): void {
+  // Memoized: it is read on every appearance sync, and the engines compare
+  // what they are handed against what they applied.
+  private _resolveMapStyle = memoizeOne(resolveMapStyle);
+
+  // Read from the live stylesheet, so it is only re-read when the theme could
+  // have changed - which is exactly when _updateMapAppearance runs.
+  private _themeColors?: Record<string, string>;
+
+  // Kept by identity, not just by value: _resolveMapStyle memoizes on its
+  // arguments, and a fresh object per read would defeat it.
+  private _readThemeColors(): void {
+    const colors = readMapThemeColors(this);
+    if (!deepEqual(colors, this._themeColors)) {
+      this._themeColors = colors;
+    }
+  }
+
+  private get _resolvedMapStyle() {
+    return this._resolveMapStyle(
+      this.mapStyle,
+      this._darkMode,
+      this._themeColors
+    );
+  }
+
+  private _updateMapAppearance(): void {
+    // A theme repaints the map by setting --ha-color-map-* on this element;
+    // WebGL cannot read those, so they are collected here and rebuilt into
+    // the style. Undefined when the theme says nothing, which is the common
+    // case and keeps the map on the style the build generated.
+    this._readThemeColors();
+
     const map = this._mapElement!;
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
-    this._engine?.setDarkMode(this._darkMode);
+    this._engine?.setMapStyle(this._resolvedMapStyle);
   }
 
   private _loading = false;
@@ -660,6 +703,9 @@ export class HaMap extends ReactiveElement {
         ? await ensureMapTilesToken(this._connection.connection)
         : undefined;
 
+      // Before init, or the first style the engine builds is the unthemed one.
+      this._readThemeColors();
+
       const rasterOnly = this._forceLeaflet;
       engine = await this._createEngine();
       if (attempt !== this._setupAttempt) {
@@ -672,7 +718,7 @@ export class HaMap extends ReactiveElement {
           this._config?.longitude ?? 4.8903147,
         ],
         zoom: this.zoom,
-        darkMode: this._darkMode,
+        mapStyle: this._resolvedMapStyle,
         token,
         rasterOnly: this._forceLeaflet,
         zoomControlPosition: this.zoomPosition,
@@ -700,7 +746,7 @@ export class HaMap extends ReactiveElement {
         throw new Error("Map engine failed during setup");
       }
       this._engine = engine;
-      this._updateMapStyle();
+      this._updateMapAppearance();
       this._loaded = true;
       fireEvent(this, "editing-available-changed", {
         available: !!engine.editing,

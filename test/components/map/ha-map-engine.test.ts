@@ -67,7 +67,7 @@ const fakeEngine = vi.hoisted(() => {
 
     hasUsableSize = () => true;
 
-    setDarkMode = vi.fn();
+    setMapStyle = vi.fn();
 
     setZoomControlPosition = vi.fn();
 
