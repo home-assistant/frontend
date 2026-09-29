@@ -26,7 +26,6 @@ import type {
 } from "../../common/validate-condition";
 import type { ConditionsEntityContext } from "./context";
 import { conditionsEntityContext } from "./context";
-import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
   getConditionClassName,

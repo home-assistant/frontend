@@ -3,7 +3,7 @@ import { mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import punycode from "punycode";
+import { toASCII } from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
@@ -174,7 +174,7 @@ export class HaAuthorize extends provideLiteI18nMixin(
                         clientId: html`<b
                           >${
                             this.clientId
-                              ? punycode.toASCII(this.clientId)
+                              ? toASCII(this.clientId)
                               : this.clientId
                           }</b
                         >`,
