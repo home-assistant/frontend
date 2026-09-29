@@ -83,6 +83,7 @@ export class HaTimeDuration extends LitElement {
       !deepEqual(this.value, this._emittedValue)
     ) {
       this._offsetType = offsetTypeOf(this._data(this.value));
+      this._emittedValue = undefined;
     }
   }
 
