@@ -31,9 +31,10 @@ import type {
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type {
-  LightColorCardFeatureConfig,
-  LovelaceCardFeatureContext,
+import {
+  DEFAULT_LIGHT_COLOR_CONTROLS,
+  type LightColorCardFeatureConfig,
+  type LovelaceCardFeatureContext,
 } from "./types";
 
 type ColorAxis = "hue" | "saturation";
@@ -130,7 +131,7 @@ class HuiLightColorCardFeature
     const previewHue = this._liveHue ?? hue ?? 0;
     const saturationGradient = `hsl(${previewHue} 0% 100%), hsl(${previewHue} 100% 50%)`;
 
-    const controls = this._config.controls ?? "hue";
+    const controls = this._config.controls ?? DEFAULT_LIGHT_COLOR_CONTROLS;
     const showHue = controls !== "saturation";
     const showSaturation = controls !== "hue";
     const single = !(showHue && showSaturation);
@@ -147,9 +148,9 @@ class HuiLightColorCardFeature
                 axis: "hue",
                 expanded: single || this._expanded === "hue",
                 gradient: HUE_GRADIENT,
+                previewPosition: (hue ?? 0) / 360,
                 label: hueLabel,
                 disabled,
-                onExpand: this._expandHue,
                 control: html`
                   <ha-control-scrubber
                     .value=${hue}
@@ -176,7 +177,6 @@ class HuiLightColorCardFeature
                 gradient: saturationGradient,
                 label: saturationLabel,
                 disabled,
-                onExpand: this._expandSaturation,
                 control: html`
                   <ha-control-slider
                     .value=${saturation}
@@ -203,9 +203,9 @@ class HuiLightColorCardFeature
     axis: ColorAxis;
     expanded: boolean;
     gradient: string;
+    previewPosition?: number;
     label: string;
     disabled: boolean;
-    onExpand: (ev: Event) => void;
     control: TemplateResult;
   }) {
     return html`
@@ -215,7 +215,10 @@ class HuiLightColorCardFeature
           [options.axis]: true,
           expanded: options.expanded,
         })}
-        style=${styleMap({ "--gradient": options.gradient })}
+        style=${styleMap({
+          "--gradient": options.gradient,
+          "--preview-position": options.previewPosition,
+        })}
       >
         ${
           options.expanded
@@ -224,9 +227,12 @@ class HuiLightColorCardFeature
                 <ha-control-button
                   .label=${options.label}
                   .disabled=${options.disabled}
-                  @click=${options.onExpand}
+                  data-axis=${options.axis}
+                  @click=${this._expand}
                 >
-                  <div class="preview"></div>
+                  <div class="preview">
+                    <div class="preview-track"></div>
+                  </div>
                 </ha-control-button>
               `
         }
@@ -242,17 +248,12 @@ class HuiLightColorCardFeature
     }
   }
 
-  private _expandHue = (ev: Event) => {
+  private _expand(ev: Event) {
     ev.stopPropagation();
     this._focusExpanded = true;
-    this._expanded = "hue";
-  };
-
-  private _expandSaturation = (ev: Event) => {
-    ev.stopPropagation();
-    this._focusExpanded = true;
-    this._expanded = "saturation";
-  };
+    this._expanded = (ev.currentTarget as HTMLElement).dataset
+      .axis as ColorAxis;
+  }
 
   private _hueMoved = (ev: CustomEvent) => {
     ev.stopPropagation();
@@ -261,9 +262,9 @@ class HuiLightColorCardFeature
 
   private _hueChanged = (ev: CustomEvent) => {
     ev.stopPropagation();
-    const current = this._stateObj!.attributes.hs_color?.[1];
-    const visible = current && lightIsInColorMode(this._stateObj!);
-    this._setColor([ev.detail.value, visible ? current : 100]);
+    const saturation = this._stateObj!.attributes.hs_color?.[1];
+    const keepSaturation = saturation && lightIsInColorMode(this._stateObj!);
+    this._setColor([ev.detail.value, keepSaturation ? saturation : 100]);
   };
 
   private _saturationChanged = (ev: CustomEvent) => {
@@ -284,6 +285,10 @@ class HuiLightColorCardFeature
       cardFeatureStyles,
       css`
         .container {
+          --hue-track-width: max(
+            100% * 12 / var(--column-size, 12),
+            var(--feature-height) * 3
+          );
           display: flex;
           align-items: stretch;
           gap: var(--feature-button-spacing);
@@ -303,10 +308,7 @@ class HuiLightColorCardFeature
             to right,
             var(--gradient)
           );
-          --control-scrubber-track-width: max(
-            100% * 12 / var(--column-size, 12),
-            320px
-          );
+          --control-scrubber-track-width: var(--hue-track-width);
         }
         ha-control-slider {
           --control-slider-background: linear-gradient(
@@ -322,10 +324,25 @@ class HuiLightColorCardFeature
           --control-button-padding: 0;
         }
         .preview {
+          position: relative;
           width: 100%;
           height: 100%;
+          overflow: hidden;
           border-radius: inherit;
           background: linear-gradient(to right, var(--gradient));
+        }
+        .hue .preview-track {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          height: 100%;
+          width: calc(3 * var(--hue-track-width));
+          background: linear-gradient(to right, var(--gradient));
+          background-size: calc(100% / 3) 100%;
+          background-repeat: repeat-x;
+          transform: translateX(
+            calc((1 + var(--preview-position, 0)) * -100% / 3)
+          );
         }
         .saturation .preview {
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);

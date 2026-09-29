@@ -31,7 +31,7 @@ export class DemoHaControlScrubber extends LitElement {
               </tr>
               <tr>
                 <td>value</td>
-                <td>${this.hue ?? "-"}</td>
+                <td>${this.hue}</td>
               </tr>
             </tbody>
           </table>

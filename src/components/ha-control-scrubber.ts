@@ -16,6 +16,10 @@ declare global {
   }
 }
 
+const WRAP_TRACK_COPIES = 3;
+const WRAP_POSITION_MIN = 1 - WRAP_TRACK_COPIES / 2;
+const WRAP_POSITION_MAX = WRAP_TRACK_COPIES / 2;
+
 const A11Y_KEY_CODES = new Set([
   "ArrowRight",
   "ArrowUp",
@@ -69,6 +73,10 @@ export class HaControlScrubber extends LitElement {
   @state()
   public pressed = false;
 
+  @state() private _snapping = false;
+
+  private _trackPosition = 0;
+
   private _mc?: HammerManager;
 
   private get _range() {
@@ -96,6 +104,54 @@ export class HaControlScrubber extends LitElement {
     return this.roundValue ? Math.round(stepped) : stepped;
   }
 
+  private get _valuePosition() {
+    return this.valueToPercentage(this.value ?? this.min);
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("value") ||
+      changedProps.has("min") ||
+      changedProps.has("max") ||
+      changedProps.has("wrap")
+    ) {
+      this._updateTrackPosition();
+    }
+  }
+
+  private _updateTrackPosition() {
+    const target = this._valuePosition;
+    if (!this.wrap || !this.hasUpdated) {
+      this._trackPosition = target;
+      return;
+    }
+    const closest = target + Math.round(this._trackPosition - target);
+    if (closest < WRAP_POSITION_MIN || closest > WRAP_POSITION_MAX) {
+      this._snapTrackTo(target);
+      return;
+    }
+    this._trackPosition = closest;
+  }
+
+  private _snapTrackTo(position: number) {
+    this._trackPosition = position;
+    this._snapping = true;
+  }
+
+  private _endSnapAfterStylesApply() {
+    this._track?.getBoundingClientRect();
+    requestAnimationFrame(() => {
+      this._snapping = false;
+    });
+  }
+
+  private _handleTransitionEnd() {
+    if (this._trackPosition !== this._valuePosition) {
+      this._snapTrackTo(this._valuePosition);
+    }
+  }
+
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
@@ -103,16 +159,8 @@ export class HaControlScrubber extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
-    if (changedProps.has("value") || changedProps.has("roundValue")) {
-      const valuenow = this._displayedValue(this.value ?? this.min);
-      this.setAttribute("aria-valuenow", valuenow.toString());
-      this.setAttribute("aria-valuetext", this._formatValue(valuenow));
-    }
-    if (changedProps.has("min")) {
-      this.setAttribute("aria-valuemin", this.min.toString());
-    }
-    if (changedProps.has("max")) {
-      this.setAttribute("aria-valuemax", this.max.toString());
+    if (this._snapping) {
+      this._endSnapAfterStylesApply();
     }
   }
 
@@ -198,7 +246,8 @@ export class HaControlScrubber extends LitElement {
   }
 
   private _deltaToValue(deltaX: number) {
-    const trackWidth = this._track!.clientWidth / (this.wrap ? 3 : 1);
+    const trackWidth =
+      this._track!.clientWidth / (this.wrap ? WRAP_TRACK_COPIES : 1);
     return (-deltaX * this._range) / trackWidth;
   }
 
@@ -250,10 +299,12 @@ export class HaControlScrubber extends LitElement {
     const valuenow = this._displayedValue(this.value ?? this.min);
     return html`
       <div
-        class="container ${classMap({ pressed: this.pressed, wrap: this.wrap })}"
-        style=${styleMap({
-          "--value": `${this.valueToPercentage(this.value ?? this.min)}`,
-        })}
+        class="container ${classMap({
+          pressed: this.pressed,
+          wrap: this.wrap,
+          snapping: this._snapping,
+        })}"
+        style=${styleMap({ "--value": `${this._trackPosition}` })}
       >
         <div
           id="scrubber"
@@ -271,7 +322,7 @@ export class HaControlScrubber extends LitElement {
           @keyup=${this._handleKeyUp}
         >
           <div class="rail"></div>
-          <div class="track"></div>
+          <div class="track" @transitionend=${this._handleTransitionEnd}></div>
           <div class="window"></div>
         </div>
       </div>
@@ -349,7 +400,8 @@ export class HaControlScrubber extends LitElement {
       background-repeat: repeat-x;
       transform: translate3d(calc((1 + var(--value, 0)) * -100% / 3), 0, 0);
     }
-    .pressed .track {
+    .pressed .track,
+    .snapping .track {
       transition: none;
     }
     .window {

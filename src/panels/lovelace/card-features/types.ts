@@ -39,8 +39,17 @@ export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
 
+export const LIGHT_COLOR_CONTROLS = [
+  "hue",
+  "saturation",
+  "hue_saturation",
+] as const;
+
 export type LightColorCardFeatureControls =
-  "hue" | "saturation" | "hue_saturation";
+  (typeof LIGHT_COLOR_CONTROLS)[number];
+
+export const DEFAULT_LIGHT_COLOR_CONTROLS: LightColorCardFeatureControls =
+  "hue";
 
 export interface LightColorCardFeatureConfig {
   type: "light-color";

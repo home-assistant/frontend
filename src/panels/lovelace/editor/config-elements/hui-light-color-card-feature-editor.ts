@@ -6,18 +6,13 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  LightColorCardFeatureConfig,
-  LightColorCardFeatureControls,
-  LovelaceCardFeatureContext,
+import {
+  DEFAULT_LIGHT_COLOR_CONTROLS,
+  LIGHT_COLOR_CONTROLS,
+  type LightColorCardFeatureConfig,
+  type LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-
-const CONTROLS: LightColorCardFeatureControls[] = [
-  "hue",
-  "saturation",
-  "hue_saturation",
-];
 
 @customElement("hui-light-color-card-feature-editor")
 export class HuiLightColorCardFeatureEditor
@@ -43,7 +38,7 @@ export class HuiLightColorCardFeatureEditor
             select: {
               multiple: false,
               mode: "list",
-              options: CONTROLS.map((controls) => ({
+              options: LIGHT_COLOR_CONTROLS.map((controls) => ({
                 value: controls,
                 label: localize(
                   `ui.panel.lovelace.editor.features.types.light-color.controls_list.${controls}`
@@ -61,7 +56,7 @@ export class HuiLightColorCardFeatureEditor
     }
 
     const data: LightColorCardFeatureConfig = {
-      controls: "hue",
+      controls: DEFAULT_LIGHT_COLOR_CONTROLS,
       ...this._config,
     };
 
