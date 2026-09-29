@@ -97,24 +97,13 @@ const formatDateNumericMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) => {
     const localeString =
       locale.date_format === DateFormat.system ? undefined : locale.language;
-
-    if (
-      locale.date_format === DateFormat.language ||
-      locale.date_format === DateFormat.system
-    ) {
-      return new Intl.DateTimeFormat(localeString, {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
-      });
-    }
+    const timeZone = resolveTimeZone(locale.time_zone, serverTimeZone);
 
     return new Intl.DateTimeFormat(localeString, {
       year: "numeric",
       month: "numeric",
       day: "numeric",
-      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone,
     });
   }
 );
