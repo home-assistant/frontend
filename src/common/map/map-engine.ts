@@ -7,6 +7,8 @@
  * Positions are [latitude, longitude]; zoom levels use Leaflet semantics.
  */
 
+import type { ResolvedMapStyle } from "./map-styles";
+
 export type MapLatLng = [latitude: number, longitude: number];
 
 export type MapControlPosition =
@@ -26,7 +28,8 @@ export interface MapEngineEvents {
 export interface MapEngineOptions {
   center: MapLatLng;
   zoom: number;
-  darkMode: boolean;
+  /** Cartography to draw; the host resolves the config and theme mode into one */
+  mapStyle: ResolvedMapStyle;
   /** Token for core's tile proxy */
   token?: string;
   zoomControlPosition: MapControlPosition;
@@ -199,7 +202,7 @@ export interface MapEngine {
   /** Whether the map has a non-zero size, re-measuring if needed */
   hasUsableSize(): boolean;
 
-  setDarkMode(darkMode: boolean): void;
+  setMapStyle(style: ResolvedMapStyle): void;
 
   setZoomControlPosition(position: MapControlPosition): void;
 

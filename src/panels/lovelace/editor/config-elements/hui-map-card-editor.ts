@@ -12,6 +12,7 @@ import {
   number,
   object,
   optional,
+  record,
   string,
   union,
 } from "superstruct";
@@ -30,6 +31,17 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
+import {
+  DEFAULT_MAP_STYLE,
+  isCustomMapStyle,
+  MAP_STYLES,
+} from "../../../../common/map/map-styles";
+import type {
+  CustomMapStyleConfig,
+  MapStyle,
+  MapStyleRecolor,
+} from "../../../../common/map/map-styles";
+import { hex2rgb, rgb2hex } from "../../../../common/color/convert-color";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
@@ -65,6 +77,19 @@ export const mapEntitiesConfigStruct = union([
   string(),
 ]);
 
+const mapStyleConfigStruct = union([
+  string(),
+  object({
+    base: optional(string()),
+    colors: optional(record(string(), string())),
+    colors_dark: optional(record(string(), string())),
+    recolor: optional(record(string(), any())),
+    text: optional(record(string(), any())),
+    icon: optional(record(string(), any())),
+    layers: optional(any()),
+  }),
+]);
+
 const geoSourcesConfigStruct = union([
   object({
     source: string(),
@@ -91,6 +116,7 @@ const cardConfigStruct = assign(
     cluster: optional(boolean()),
     dark_mode: optional(boolean()), // legacy option
     theme_mode: optional(string()),
+    map_style: optional(mapStyleConfigStruct),
     conditions: optional(any()),
     scale_ruler: optional(boolean()),
   })
@@ -159,6 +185,21 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                   },
                 },
                 {
+                  name: "map_style",
+                  default: DEFAULT_MAP_STYLE,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: MAP_STYLES.map((mapStyle) => ({
+                        value: mapStyle,
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.map.map_styles.${mapStyle}`
+                        ),
+                      })),
+                    },
+                  },
+                },
+                {
                   name: "hours_to_show",
                   default: DEFAULT_HOURS_TO_SHOW,
                   selector: { number: { mode: "box", min: 0 } },
@@ -167,6 +208,56 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                 { name: "auto_fit", selector: { boolean: {} } },
                 { name: "fit_zones", selector: { boolean: {} } },
                 { name: "cluster", default: true, selector: { boolean: {} } },
+              ],
+            },
+            {
+              name: "map_style_recolor",
+              type: "expandable",
+              title: localize(
+                `ui.panel.lovelace.editor.card.map.map_style_recolor`
+              ),
+              schema: [
+                {
+                  name: "",
+                  type: "grid",
+                  schema: [
+                    {
+                      name: "invert_brightness",
+                      selector: { boolean: {} },
+                    },
+                    {
+                      name: "saturate",
+                      selector: {
+                        number: { min: -1, max: 1, step: 0.05, mode: "slider" },
+                      },
+                    },
+                    {
+                      name: "brightness",
+                      selector: {
+                        number: { min: -1, max: 1, step: 0.05, mode: "slider" },
+                      },
+                    },
+                    {
+                      name: "contrast",
+                      selector: {
+                        number: { min: 0, max: 2, step: 0.05, mode: "slider" },
+                      },
+                    },
+                    {
+                      name: "rotate_hue",
+                      selector: {
+                        number: { min: 0, max: 360, step: 1, mode: "slider" },
+                      },
+                    },
+                    {
+                      name: "tint_amount",
+                      selector: {
+                        number: { min: 0, max: 1, step: 0.05, mode: "slider" },
+                      },
+                    },
+                  ],
+                },
+                { name: "tint_color", selector: { color_rgb: {} } },
               ],
             },
           ],
@@ -246,6 +337,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     })
   );
 
+  // The config holds one `map_style`, a preset name or an object; the form
+  // shows the cartography and its adjustments apart. Reassembled in
+  // _valueChanged, so neither of these two keys reaches a config.
+  private _formData = memoizeOne((config: MapCardConfig) => {
+    const style = config.map_style;
+    const custom = isCustomMapStyle(style) ? style : undefined;
+    const { tint, ...recolor } = custom?.recolor ?? {};
+    return {
+      ...config,
+      map_style: (custom ? custom.base : style) ?? DEFAULT_MAP_STYLE,
+      // The builder nests the tint; the form shows its two halves as fields.
+      map_style_recolor: {
+        ...recolor,
+        tint_amount: tint?.amount,
+        tint_color: tint?.color ? hex2rgb(tint.color) : undefined,
+      },
+    };
+  });
+
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
 
@@ -315,7 +425,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._formData(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -495,6 +605,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (config.show_all && config.entities?.length === 0) {
       delete config.entities;
     }
+    config.map_style = this._mapStyleConfig(
+      config.map_style,
+      config.map_style_recolor
+    );
+    delete config.map_style_recolor;
+    if (config.map_style === undefined) {
+      delete config.map_style;
+    }
     config = this._orderProperties(config);
     fireEvent(this, "config-changed", { config });
   }
@@ -529,6 +647,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   ) => {
     switch (schema.name) {
       case "theme_mode":
+      case "map_style":
+      case "map_style_recolor":
+      case "invert_brightness":
+      case "saturate":
+      case "brightness":
+      case "contrast":
+      case "rotate_hue":
+      case "tint_amount":
+      case "tint_color":
       case "default_zoom":
       case "scale_ruler":
       case "auto_fit":
@@ -549,6 +676,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "map_style":
+      case "map_style_recolor":
       case "show_all":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}_helper`
@@ -557,6 +686,58 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         return undefined;
     }
   };
+
+  /**
+   * The two style fields back into one config value: a bare preset name while
+   * there is nothing to adjust, an object once there is.
+   */
+  private _mapStyleConfig(
+    base: string | undefined,
+    formRecolor: Record<string, unknown> | undefined
+  ): MapCardConfig["map_style"] {
+    const recolor: MapStyleRecolor = {};
+    const tint: { color?: string; amount?: number } = {};
+    for (const [name, value] of Object.entries(formRecolor ?? {})) {
+      // A cleared field comes back empty rather than absent.
+      if (value === undefined || value === null || value === "") {
+        continue;
+      }
+      if (name === "tint_color") {
+        tint.color = rgb2hex(value as [number, number, number]);
+      } else if (name === "tint_amount") {
+        tint.amount = value as number;
+      } else {
+        (recolor as Record<string, unknown>)[name] = value;
+      }
+    }
+    // A tint color on its own changes nothing and would look like an
+    // adjustment; the amount is what applies it.
+    if (tint.amount !== undefined) {
+      recolor.tint = tint;
+    }
+
+    const style = base ? (base as MapStyle) : undefined;
+
+    // Colors, colors_dark, text, icon and layers have no field in this form:
+    // they can only be written as YAML. Carry them over, or opening the card
+    // in the editor and touching anything would delete them.
+    const current = this._config?.map_style;
+    const carried: Record<string, unknown> = isCustomMapStyle(current)
+      ? { ...current }
+      : {};
+    delete carried.base;
+    delete carried.recolor;
+
+    const adjusted = Object.keys(recolor).length > 0;
+    if (!adjusted && !Object.keys(carried).length) {
+      return style;
+    }
+    return {
+      ...(style && { base: style }),
+      ...carried,
+      ...(adjusted && { recolor }),
+    } as CustomMapStyleConfig;
+  }
 
   // remove "label_mode", "attribute" & "unit" options when needed
   private _deleteOptions(config: MapEntityConfig): MapEntityConfig {
