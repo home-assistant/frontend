@@ -28,7 +28,6 @@ export interface RepositoryBase {
   new: boolean;
   pending_upgrade: boolean;
   stars: number;
-  state: string | null;
   status:
     "pending-restart" | "pending-upgrade" | "new" | "installed" | "default";
   topics: string[];

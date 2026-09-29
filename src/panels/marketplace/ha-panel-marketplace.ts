@@ -160,7 +160,15 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
                 })
               : this.hass.localize("ui.panel.marketplace.entry.failed")
           }
-        ></hass-error-screen>
+        >
+          <ha-button
+            appearance="filled"
+            size="s"
+            href="/config/integrations/integration/marketplace"
+          >
+            ${this.hass.localize("ui.panel.marketplace.entry.open_integration")}
+          </ha-button>
+        </hass-error-screen>
       `;
     }
 

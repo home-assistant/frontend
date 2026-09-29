@@ -51,10 +51,38 @@ describe("markdownWithRepositoryContext", () => {
     );
   });
 
-  it("keeps anchors on the repository page", () => {
+  it("leaves anchors as they are", () => {
     expect(
       markdownWithRepositoryContext("[install](#installation)", repository)
-    ).toBe("[install](/marketplace/repository/42#installation)");
+    ).toBe("[install](#installation)");
+  });
+
+  it.each([
+    {
+      name: "an image",
+      input: '<img src="images/card.png" width="400">',
+      output:
+        '<img src="https://raw.githubusercontent.com/owner/repo/v1.0.0/images/card.png" width="400">',
+    },
+    {
+      name: "a link",
+      input: "<a href='docs/setup.md'>Setup</a>",
+      output:
+        "<a href='https://github.com/owner/repo/blob/v1.0.0/docs/setup.md'>Setup</a>",
+    },
+    {
+      name: "an absolute image",
+      input: '<img alt="Logo" src="https://example.com/logo.png">',
+      output: '<img alt="Logo" src="https://example.com/logo.png">',
+    },
+  ])("points $name in HTML at the repository", ({ input, output }) => {
+    expect(markdownWithRepositoryContext(input, repository)).toBe(output);
+  });
+
+  it("keeps HTML in code as written", () => {
+    const input = '`<img src="images/card.png">`';
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
   it("links issue references to the repository", () => {

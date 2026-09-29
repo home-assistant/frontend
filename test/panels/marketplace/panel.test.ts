@@ -126,6 +126,49 @@ describe("ha-panel-marketplace", () => {
     );
   });
 
+  it.each([
+    {
+      name: "a disabled entry",
+      entry: { state: "not_loaded", disabled_by: "user" },
+      error: "ui.panel.marketplace.entry.disabled",
+    },
+    {
+      name: "a failed setup",
+      entry: { state: "setup_error", reason: "Could not read" },
+      error:
+        'ui.panel.marketplace.entry.failed_reason {"reason":"Could not read"}',
+    },
+  ])("points $name to the integration page", async ({ entry, error }) => {
+    const panel = await openPanel({
+      "marketplace/info": async () => INFO,
+      "marketplace/repositories/list": async () => [],
+    });
+
+    configEntriesCallback([
+      {
+        type: "updated",
+        entry: { domain: "marketplace", ...entry },
+      } as unknown as ConfigEntryUpdate,
+    ]);
+    await settle(panel);
+
+    const errorScreen = screen(panel, "hass-error-screen");
+    expect(errorScreen?.error).toBe(error);
+    expect(errorScreen!.querySelector("ha-button")!.getAttribute("href")).toBe(
+      "/config/integrations/integration/marketplace"
+    );
+  });
+
+  it("shows the warning instead of the Marketplace until it is accepted", async () => {
+    const panel = await openPanel({
+      "marketplace/info": async () => ({ ...INFO, warning_accepted: false }),
+      "marketplace/repositories/list": async () => [],
+    });
+
+    expect(screen(panel, "ha-marketplace-warning")).not.toBeNull();
+    expect(screen(panel, "ha-marketplace-router")).toBeNull();
+  });
+
   it("refetches for a page inside it, not for the whole window", async () => {
     const info = vi.fn(async () => INFO);
     const panel = await openPanel({

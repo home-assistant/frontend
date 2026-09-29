@@ -232,23 +232,26 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         );
 
       if (!redirectEntry && targetPath.startsWith("/marketplace/repository/")) {
-        // Marketplace repository pages are addressed by id, the My link by name
-        const { fetchMarketplaceRepository } =
+        // Marketplace repository pages are addressed by id, the My link by name.
+        // Looked up in the list, asking for one repository refreshes it from GitHub
+        const { fetchMarketplaceRepositories } =
           await import("../data/marketplace/repository");
         try {
-          const repository = await fetchMarketplaceRepository(
-            this.hass,
-            targetPath.split("/")[3]
-          );
-          const [owner, name] = repository.full_name.split("/");
-          myParams.append("redirect", "marketplace_repository");
-          myParams.append("owner", owner);
-          myParams.append("repository", name);
-          myParams.append("category", repository.category);
-          openCreateLink();
-          return;
+          const repositoryId = targetPath.split("/")[3];
+          const repository = (
+            await fetchMarketplaceRepositories(this.hass)
+          ).find((item) => String(item.id) === repositoryId);
+          if (repository) {
+            const [owner, name] = repository.full_name.split("/");
+            myParams.append("redirect", "marketplace_repository");
+            myParams.append("owner", owner);
+            myParams.append("repository", name);
+            myParams.append("category", repository.category);
+            openCreateLink();
+            return;
+          }
         } catch (err: unknown) {
-          // The Marketplace says why, not loaded or an unknown repository
+          // The Marketplace says why, for example when it is not loaded
           const message = (err as { message?: string } | null)?.message;
           if (message) {
             showToast(this, { message });

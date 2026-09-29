@@ -196,3 +196,23 @@ it.each([
     ).toBe(empty);
   }
 );
+
+it("opens the row menu of a repository with a numeric id", async () => {
+  const repository = { id: 1296269, name: "One", category: "integration" };
+  const dashboard = await openDashboard([repository]);
+  const table = dashboard.shadowRoot!.querySelector(
+    "hass-tabs-subpage-data-table"
+  ) as unknown as {
+    columns: { actions: { template: (row: unknown) => unknown } };
+  };
+  const cell = document.createElement("div");
+  dashboard.shadowRoot!.append(cell);
+  render(table.columns.actions.template(repository), cell);
+
+  cell.querySelector("ha-icon-button")!.dispatchEvent(new Event("click"));
+
+  expect(
+    (dashboard as unknown as { _overflowMenuRepository?: unknown })
+      ._overflowMenuRepository
+  ).toBe(repository);
+});

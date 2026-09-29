@@ -8,6 +8,9 @@ const showGitHubWeb = (text: string) =>
 const HAS_SCHEME = /^[a-z][a-z\d+.-]*:/i;
 // The destination of a link or an image, one at a time, so nested badges work.
 const LINK_DESTINATION = /\]\(\s*([^\s)]+)([^)]*)\)/g;
+// The address of an image or a link written in HTML, which READMEs often use.
+const HTML_DESTINATION =
+  /(<(?:a|img)\b[^>]*?\s(?:href|src)\s*=\s*)(["'])([^"']*)\2/gi;
 const LINK = /!?\[[^[\]]*\]\([^)]*\)/g;
 const BARE_URL = /[a-z][a-z\d+.-]*:\/\/\S+/gi;
 const ISSUE_REFERENCE = /(?:\w[\w-.]+\/\w[\w-.]+|\B)#[1-9]\d*\b/g;
@@ -26,11 +29,12 @@ const repositoryDestination = (
   destination: string,
   repository: RepositoryInfo
 ) => {
-  if (destination.startsWith("#")) {
-    return `/marketplace/repository/${repository.id}${destination}`;
-  }
-
-  if (HAS_SCHEME.test(destination) || destination.startsWith("//")) {
+  // Headings get no ids, so an anchor has nothing to point at on this page
+  if (
+    destination.startsWith("#") ||
+    HAS_SCHEME.test(destination) ||
+    destination.startsWith("//")
+  ) {
     return destination;
   }
 
@@ -88,11 +92,17 @@ const rewriteLinks = (input: string, repository?: RepositoryInfo) => {
   }
 
   return linkIssueReferences(
-    output.replace(
-      LINK_DESTINATION,
-      (_link, destination, title) =>
-        `](${repositoryDestination(destination, repository)}${title})`
-    ),
+    output
+      .replace(
+        LINK_DESTINATION,
+        (_link, destination, title) =>
+          `](${repositoryDestination(destination, repository)}${title})`
+      )
+      .replace(
+        HTML_DESTINATION,
+        (_attribute, before, quote, destination) =>
+          `${before}${quote}${repositoryDestination(destination, repository)}${quote}`
+      ),
     repository
   );
 };
