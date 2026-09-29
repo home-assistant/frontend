@@ -1,9 +1,9 @@
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 
-// The backend only refuses a download when Home Assistant is older than the
+// The backend only refuses an installation when Home Assistant is older than the
 // repository asks for.
-export const downloadBlockedReason = (
+export const installBlockedReason = (
   localize: LocalizeFunc,
   repository: RepositoryBase
 ): string =>

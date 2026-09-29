@@ -4,9 +4,9 @@ import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import { ERROR_GITHUB_RATE_LIMITED } from "../../../src/data/marketplace/websocket";
-import "../../../src/panels/marketplace/dialogs/dialog-marketplace-download";
-import type { DialogMarketplaceDownload } from "../../../src/panels/marketplace/dialogs/dialog-marketplace-download";
-import type { MarketplaceDownloadDialogParams } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-download";
+import "../../../src/panels/marketplace/dialogs/dialog-marketplace-install";
+import type { DialogMarketplaceInstall } from "../../../src/panels/marketplace/dialogs/dialog-marketplace-install";
+import type { MarketplaceInstallDialogParams } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-install";
 import type { Deferred, MockConnection } from "./dialog-host";
 import {
   deferred,
@@ -71,7 +71,7 @@ const repositoryInfo = (id: string, extra: Partial<RepositoryInfo> = {}) =>
     installed: true,
     available_version: "1.0.0",
     version_or_commit: "version",
-    can_download: true,
+    can_install: true,
     homeassistant: null,
     ...extra,
   }) as unknown as RepositoryInfo;
@@ -83,31 +83,31 @@ const release = (tag: string): Release => ({
   prerelease: false,
 });
 
-const openDownloadDialog = (
-  params: Partial<MarketplaceDownloadDialogParams>,
+const openInstallDialog = (
+  params: Partial<MarketplaceInstallDialogParams>,
   connection: MockConnection
-): Promise<DialogMarketplaceDownload> =>
+): Promise<DialogMarketplaceInstall> =>
   openDialog(
-    "dialog-marketplace-download",
+    "dialog-marketplace-install",
     { marketplace: MARKETPLACE, repositoryId: "1", ...params },
     connection
   );
 
-describe("dialog-marketplace-download", () => {
+describe("dialog-marketplace-install", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.mocked(showConfirmationDialog).mockClear();
   });
 
-  it("asks to reload after a plugin download, also when closed meanwhile", async () => {
+  it("asks to reload after installing a plugin, also when closed meanwhile", async () => {
     const app = document.createElement("home-assistant");
     document.body.appendChild(app);
-    const download = deferred<null>();
-    const dialog = await openDownloadDialog(
+    const install = deferred<null>();
+    const dialog = await openInstallDialog(
       { repository: repositoryInfo("1", { category: "plugin" }) },
       mockConnection(async (message: { type: string }) =>
-        message.type === "marketplace/repository/download"
-          ? download.promise
+        message.type === "marketplace/repository/install"
+          ? install.promise
           : null
       )
     );
@@ -118,7 +118,7 @@ describe("dialog-marketplace-download", () => {
       .dispatchEvent(new Event("click"));
     await dialog.closeDialog();
     await settle(dialog);
-    download.resolve(null);
+    install.resolve(null);
     await settle(dialog);
 
     // The closed dialog is gone, the app shows the prompt instead
@@ -128,46 +128,40 @@ describe("dialog-marketplace-download", () => {
 
   it.each([
     {
-      name: "a new integration it can set up now",
+      name: "a new integration it can set up right away",
       installed: false,
-      downloaded: { config_flow: true, status: "installed" },
+      written: { config_flow: true, status: "installed" },
       flows: ["example"],
     },
     {
       name: "an update",
       installed: true,
-      downloaded: { config_flow: true, status: "installed" },
+      written: { config_flow: true, status: "installed" },
       flows: [],
     },
     {
       name: "an integration waiting for a restart",
       installed: false,
-      downloaded: { config_flow: true, status: "pending-restart" },
+      written: { config_flow: true, status: "pending-restart" },
       flows: [],
     },
     {
       name: "an integration set up from YAML",
       installed: false,
-      downloaded: { config_flow: false, status: "installed" },
+      written: { config_flow: false, status: "installed" },
       flows: [],
     },
   ])(
-    "offers to set up $name: $flows",
-    async ({ installed, downloaded, flows }) => {
-      vi.mocked(showConfirmationDialog).mockImplementationOnce(
-        async (_element, params) => {
-          params.confirm?.();
-          return true;
-        }
-      );
-      const dialog = await openDownloadDialog(
+    "starts setting up $name: $flows",
+    async ({ installed, written, flows }) => {
+      const dialog = await openInstallDialog(
         { repository: repositoryInfo("1", { installed, domain: "example" }) },
         mockConnection(async (message: { type: string }) =>
           message.type === "marketplace/repository/info"
             ? repositoryInfo("1", {
                 installed: true,
                 domain: "example",
-                ...downloaded,
+                ...written,
               } as Partial<RepositoryInfo>)
             : null
         )
@@ -185,6 +179,8 @@ describe("dialog-marketplace-download", () => {
           .mocked(showConfigFlowDialog)
           .mock.calls.map(([, params]) => params.startFlowHandler)
       ).toEqual(flows);
+      // Installing was the ask, there is no second question
+      expect(showConfirmationDialog).not.toHaveBeenCalled();
       vi.mocked(showConfigFlowDialog).mockClear();
     }
   );
@@ -193,17 +189,17 @@ describe("dialog-marketplace-download", () => {
     {
       name: "an update",
       installed: true,
-      intro: "ui.panel.marketplace.dialog_download.update_intro",
+      intro: "ui.panel.marketplace.dialog_install.update_intro",
       button: "ui.common.update",
     },
     {
-      name: "a first download",
+      name: "a first installation",
       installed: false,
-      intro: "ui.panel.marketplace.dialog_download.download_intro",
-      button: "ui.common.download",
+      intro: "ui.panel.marketplace.dialog_install.install_intro",
+      button: "ui.panel.marketplace.common.install",
     },
   ])("says what $name does", async ({ installed, intro, button }) => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {
         repository: repositoryInfo("1", {
           installed,
@@ -219,20 +215,18 @@ describe("dialog-marketplace-download", () => {
     expect(
       root.querySelector("ha-button[slot=primaryAction]")!.textContent!.trim()
     ).toBe(button);
-    // Where the files land is not something to decide a download on
+    // Where the files land is not something to decide an installation on
     expect(root.textContent).not.toContain("/config/custom_components");
     // Choosing another version is a menu entry of its own
     expect(root.querySelector("ha-select")).toBeNull();
   });
 
-  it("shows how far the download of its repository is", async () => {
-    const download = deferred<null>();
+  it("shows how far the installation of its repository is", async () => {
+    const install = deferred<null>();
     const unsubscribe = vi.fn();
     let progress!: (data: Record<string, unknown>) => void;
     const connection = mockConnection(async (message: { type: string }) =>
-      message.type === "marketplace/repository/download"
-        ? download.promise
-        : null
+      message.type === "marketplace/repository/install" ? install.promise : null
     );
     connection.subscribeMessage.mockImplementation((async (
       callback: (data: Record<string, unknown>) => void
@@ -240,7 +234,7 @@ describe("dialog-marketplace-download", () => {
       progress = callback;
       return unsubscribe;
     }) as never);
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       { repository: repositoryInfo("1") },
       connection
     );
@@ -263,18 +257,18 @@ describe("dialog-marketplace-download", () => {
     expect(bar().value).toBe(50);
     expect(bar().indeterminate).toBe(false);
 
-    download.resolve(null);
+    install.resolve(null);
     await settle(dialog);
     expect(unsubscribe).toHaveBeenCalledTimes(1);
   });
 
   it("offers nothing for a rate limit once closed", async () => {
-    const download = deferred<null>();
-    const dialog = await openDownloadDialog(
+    const install = deferred<null>();
+    const dialog = await openInstallDialog(
       { repository: repositoryInfo("1") },
       mockConnection(async (message: { type: string }) =>
-        message.type === "marketplace/repository/download"
-          ? download.promise
+        message.type === "marketplace/repository/install"
+          ? install.promise
           : null
       )
     );
@@ -284,7 +278,7 @@ describe("dialog-marketplace-download", () => {
       .shadowRoot!.querySelector("ha-button[slot=primaryAction]")!
       .dispatchEvent(new Event("click"));
     await dialog.closeDialog();
-    download.reject({ code: ERROR_GITHUB_RATE_LIMITED, message: "Limited" });
+    install.reject({ code: ERROR_GITHUB_RATE_LIMITED, message: "Limited" });
     await settle(dialog);
 
     // The prompt would open from the detached dialog, where nobody sees it
@@ -292,7 +286,7 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("shows why the repository could not load, without a spinner", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {},
       mockConnection(async () => {
         throw { code: "unknown_error", message: "Broken" };
@@ -309,7 +303,7 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("closes from the footer after a failed load", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {},
       mockConnection(async () => {
         throw { code: "unknown_error", message: "Broken" };
@@ -328,7 +322,7 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("shows a spinner while the repository loads", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {},
       mockConnection(
         () =>
@@ -343,7 +337,7 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("lists the releases of the repository it shows", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {
         repositoryId: "2",
         repository: repositoryInfo("2"),
@@ -376,7 +370,7 @@ describe("dialog-marketplace-download", () => {
     "drops releases that %s after the dialog closed",
     async (_outcome, finish) => {
       const releases = deferred<Release[]>();
-      const dialog = await openDownloadDialog(
+      const dialog = await openInstallDialog(
         { repository: repositoryInfo("1"), chooseVersion: true },
         mockConnection(async (message) =>
           message.type === "marketplace/repository/releases"
@@ -396,11 +390,11 @@ describe("dialog-marketplace-download", () => {
   );
 
   it("offers an older release when the newest needs a newer Home Assistant", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {
         repository: repositoryInfo("1", {
           available_version: "2.0.0",
-          can_download: false,
+          can_install: false,
           homeassistant: "9999.1.0",
         }),
       },
@@ -429,10 +423,10 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("does not offer the newest version Home Assistant is too old for", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {
         repository: repositoryInfo("1", {
-          can_download: false,
+          can_install: false,
           homeassistant: "2099.1.0",
         }),
       },
@@ -446,7 +440,7 @@ describe("dialog-marketplace-download", () => {
       root.querySelector("ha-alert")?.textContent?.trim().split(/\s+/)
     ).toEqual([
       "ui.panel.marketplace.repository.requires_homeassistant",
-      "ui.panel.marketplace.dialog_download.older_version_hint",
+      "ui.panel.marketplace.dialog_install.older_version_hint",
     ]);
     expect(
       root
@@ -455,8 +449,8 @@ describe("dialog-marketplace-download", () => {
     ).toBe(true);
   });
 
-  it("gates a first download that replaces a built-in integration", async () => {
-    const dialog = await openDownloadDialog(
+  it("gates a first installation that replaces a built-in integration", async () => {
+    const dialog = await openInstallDialog(
       {
         repository: repositoryInfo("1", {
           installed: false,
@@ -467,11 +461,11 @@ describe("dialog-marketplace-download", () => {
       mockConnection()
     );
     const root = dialog.shadowRoot!;
-    const download = () =>
+    const install = () =>
       root.querySelector('ha-button[slot="primaryAction"]')!;
 
     expect(root.querySelector("ha-alert.replaces-built-in")).not.toBeNull();
-    expect(download().hasAttribute("disabled")).toBe(true);
+    expect(install().hasAttribute("disabled")).toBe(true);
 
     const checkbox = root.querySelector<HTMLInputElement>(
       "ha-alert.replaces-built-in ha-checkbox"
@@ -480,17 +474,17 @@ describe("dialog-marketplace-download", () => {
     checkbox.dispatchEvent(new Event("change"));
     await dialog.updateComplete;
 
-    expect(download().hasAttribute("disabled")).toBe(false);
+    expect(install().hasAttribute("disabled")).toBe(false);
   });
 
-  it("sends the confirmation along with the download", async () => {
-    // After the download the dialog asks the backend what was written
+  it("sends the confirmation along with the installation", async () => {
+    // After the installation the dialog asks the backend what was written
     const sendMessagePromise = vi.fn(async (message: { type: string }) =>
       message.type === "marketplace/repository/info"
         ? repositoryInfo("1", { installed: true, status: "pending-restart" })
         : null
     );
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {
         repository: repositoryInfo("1", {
           installed: false,
@@ -514,7 +508,7 @@ describe("dialog-marketplace-download", () => {
 
     expect(sendMessagePromise).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: "marketplace/repository/download",
+        type: "marketplace/repository/install",
         repository: "1",
         confirm_replace_built_in: true,
       })
@@ -522,7 +516,7 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("keeps warning on an update, without asking again", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       {
         repository: repositoryInfo("1", {
           replaces_built_in: true,
@@ -543,7 +537,7 @@ describe("dialog-marketplace-download", () => {
   });
 
   it("does not warn for an integration of its own", async () => {
-    const dialog = await openDownloadDialog(
+    const dialog = await openInstallDialog(
       { repository: repositoryInfo("1", { installed: false }) },
       mockConnection()
     );

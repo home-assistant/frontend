@@ -22,11 +22,11 @@ import { websocketErrorMessage } from "../../../data/marketplace/websocket";
 import {
   dismissNewMarketplaceRepository,
   refreshMarketplaceRepository,
-  removeMarketplaceDownload,
+  uninstallMarketplaceRepository,
 } from "../../../data/marketplace/repository";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
 import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
-import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace-download";
+import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 
@@ -56,17 +56,17 @@ const showError = (
       localize("ui.panel.marketplace.common.unknown_error"),
   });
 
-const removeRepository = async (
+const uninstallRepository = async (
   element: MarketplaceDashboardElement,
   repository: RepositoryBase
 ) => {
-  await removeMarketplaceDownload(element.hass, String(repository.id));
+  await uninstallMarketplaceRepository(element.hass, String(repository.id));
   if (element.nodeName === "HA-MARKETPLACE-REPOSITORY-DASHBOARD") {
     navigate("/marketplace", { replace: true });
   }
 };
 
-const confirmRemoveRepository = async (
+const confirmUninstallRepository = async (
   element: MarketplaceDashboardElement,
   repository: RepositoryBase,
   localize: LocalizeFunc
@@ -98,15 +98,15 @@ const confirmRemoveRepository = async (
   }
 
   showConfirmationDialog(element, {
-    title: localize("ui.panel.marketplace.dialog.remove.title", {
+    title: localize("ui.panel.marketplace.dialog.uninstall.title", {
       name: repository.name,
     }),
-    text: localize("ui.panel.marketplace.dialog.remove.message"),
-    confirmText: localize("ui.common.remove"),
+    text: localize("ui.panel.marketplace.dialog.uninstall.message"),
+    confirmText: localize("ui.panel.marketplace.common.uninstall"),
     destructive: true,
     action: async () => {
       try {
-        await removeRepository(element, repository);
+        await uninstallRepository(element, repository);
       } catch (err: unknown) {
         // Like removing an app repository, the dialog stays open to try again
         showError(element, localize, err);
@@ -167,28 +167,28 @@ export const repositoryMenuItems = (
 
   // Always offered, the dialog refuses only a version Home Assistant is too old for.
   entries.push({
-    value: "download",
+    value: "install",
     path: repository.installed_version ? mdiReload : mdiDownload,
     label: localize(
       repository.installed_version
-        ? "ui.panel.marketplace.repository_menu.redownload"
-        : "ui.common.download"
+        ? "ui.panel.marketplace.repository_menu.reinstall"
+        : "ui.panel.marketplace.common.install"
     ),
     action: () =>
-      showMarketplaceDownloadDialog(element, {
+      showMarketplaceInstallDialog(element, {
         marketplace: element.marketplace,
         repositoryId: String(repository.id),
       }),
   });
 
   entries.push({
-    value: "download_other_version",
+    value: "install_other_version",
     path: mdiHistory,
     label: localize(
-      "ui.panel.marketplace.repository_menu.download_other_version"
+      "ui.panel.marketplace.repository_menu.install_other_version"
     ),
     action: () =>
-      showMarketplaceDownloadDialog(element, {
+      showMarketplaceInstallDialog(element, {
         marketplace: element.marketplace,
         repositoryId: String(repository.id),
         chooseVersion: true,
@@ -244,10 +244,10 @@ export const repositoryMenuItems = (
 
   if (repository.installed_version) {
     entries.push({
-      value: "remove",
+      value: "uninstall",
       path: mdiDelete,
-      label: localize("ui.common.remove"),
-      action: () => confirmRemoveRepository(element, repository, localize),
+      label: localize("ui.panel.marketplace.common.uninstall"),
+      action: () => confirmUninstallRepository(element, repository, localize),
       variant: "danger",
     });
   }

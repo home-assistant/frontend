@@ -31,7 +31,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace-download";
+import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
@@ -57,7 +57,7 @@ import {
   handleGitHubRateLimited,
 } from "../tools/connect-github";
 import { brandsUrl } from "../../../util/brands-url";
-import { downloadBlockedReason } from "../tools/download-blocked-reason";
+import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
 import { markdownWithRepositoryContext } from "../tools/markdown";
 
@@ -352,10 +352,10 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         </ha-dropdown>
         <div class="content">
           ${
-            repository.can_download
+            repository.can_install
               ? nothing
               : html`<ha-alert alert-type="warning">
-                  ${downloadBlockedReason(this.hass.localize, repository)}
+                  ${installBlockedReason(this.hass.localize, repository)}
                 </ha-alert>`
           }
           <ha-card outlined>
@@ -471,25 +471,27 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           version: repository.available_version,
         })
       : this.hass.localize(
-          "ui.panel.marketplace.repository.version_downloaded",
+          "ui.panel.marketplace.repository.version_installed",
           { version: repository.installed_version }
         );
   }
 
-  // Like the Install and Update buttons of an app, a redownload stays in the menu
+  // Like the Install and Update buttons of an app, a reinstall stays in the menu
   private _renderActions(repository: RepositoryInfo) {
     if (repository.installed && !repository.pending_upgrade) {
       return nothing;
     }
 
     return html`<div class="card-actions">
-      <ha-button appearance="filled" @click=${this._downloadRepositoryDialog}>
+      <ha-button appearance="filled" @click=${this._installRepositoryDialog}>
         <ha-svg-icon
           slot="start"
           .path=${repository.installed ? mdiArrowUpBoldCircleOutline : mdiDownload}
         ></ha-svg-icon>
         ${this.hass.localize(
-          repository.installed ? "ui.common.update" : "ui.common.download"
+          repository.installed
+            ? "ui.common.update"
+            : "ui.panel.marketplace.common.install"
         )}
       </ha-button>
     </div>`;
@@ -508,8 +510,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       ?.action();
   };
 
-  private _downloadRepositoryDialog() {
-    showMarketplaceDownloadDialog(this, {
+  private _installRepositoryDialog() {
+    showMarketplaceInstallDialog(this, {
       marketplace: this.marketplace,
       repositoryId: String(this._repository!.id),
       repository: this._repository!,

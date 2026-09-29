@@ -34,7 +34,7 @@ const repositoryDestination = (
     return destination;
   }
 
-  // A downloaded repository shows the README of the downloaded version
+  // An installed repository shows the README of the installed version
   const ref =
     (repository.installed && repository.installed_version) ||
     repository.available_version ||

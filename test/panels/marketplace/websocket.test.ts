@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   addMarketplaceRepository,
   dismissNewMarketplaceRepositories,
-  downloadMarketplaceRepository,
+  installMarketplaceRepository,
 } from "../../../src/data/marketplace/repository";
 import {
   ERROR_GITHUB_NOT_CONNECTED,
@@ -53,10 +53,10 @@ describe("commands", () => {
   it("downloads the version the catalog names when none is picked", async () => {
     const hass = mockHass();
 
-    await downloadMarketplaceRepository(hass, "42");
+    await installMarketplaceRepository(hass, "42");
 
     expect(hass.callWS).toHaveBeenCalledWith({
-      type: "marketplace/repository/download",
+      type: "marketplace/repository/install",
       repository: "42",
       version: undefined,
     });
@@ -65,10 +65,10 @@ describe("commands", () => {
   it("downloads a picked version", async () => {
     const hass = mockHass();
 
-    await downloadMarketplaceRepository(hass, "42", "v1.0.0");
+    await installMarketplaceRepository(hass, "42", "v1.0.0");
 
     expect(hass.callWS).toHaveBeenCalledWith({
-      type: "marketplace/repository/download",
+      type: "marketplace/repository/install",
       repository: "42",
       version: "v1.0.0",
     });
@@ -77,12 +77,12 @@ describe("commands", () => {
   it("confirms replacing a built-in integration when asked to", async () => {
     const hass = mockHass();
 
-    await downloadMarketplaceRepository(hass, "42", "v1.0.0", {
+    await installMarketplaceRepository(hass, "42", "v1.0.0", {
       confirmReplaceBuiltIn: true,
     });
 
     expect(hass.callWS).toHaveBeenCalledWith({
-      type: "marketplace/repository/download",
+      type: "marketplace/repository/install",
       repository: "42",
       version: "v1.0.0",
       confirm_replace_built_in: true,

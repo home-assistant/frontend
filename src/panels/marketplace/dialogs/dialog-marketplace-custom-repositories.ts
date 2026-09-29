@@ -112,9 +112,9 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
                     ></ha-icon-button>
                     <ha-tooltip slot="end" .for=${`remove-${repository.id}`}>
                       ${this._i18n.localize(
-                        // Forgetting a download would leave its files running
+                        // Forgetting an installed repository would leave its files running
                         repository.installed
-                          ? "ui.panel.marketplace.dialog_custom_repositories.remove_downloaded"
+                          ? "ui.panel.marketplace.dialog_custom_repositories.remove_installed"
                           : "ui.common.remove"
                       )}
                     </ha-tooltip>

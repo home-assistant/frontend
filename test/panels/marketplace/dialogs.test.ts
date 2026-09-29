@@ -119,7 +119,7 @@ describe("dialog-marketplace-custom-repositories", () => {
     ).toContain("ui.panel.marketplace.common.type.integration");
   });
 
-  it("offers no removal for a downloaded repository, and says why", async () => {
+  it("offers no removal for an installed repository, and says why", async () => {
     const dialog = await openCustomRepositoriesDialog(async () => null);
     getInternals(dialog)._repositories = [
       REPOSITORY,
@@ -143,7 +143,7 @@ describe("dialog-marketplace-custom-repositories", () => {
       )
     ).toEqual([
       "ui.common.remove",
-      "ui.panel.marketplace.dialog_custom_repositories.remove_downloaded",
+      "ui.panel.marketplace.dialog_custom_repositories.remove_installed",
     ]);
   });
 

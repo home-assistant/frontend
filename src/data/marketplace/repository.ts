@@ -7,7 +7,7 @@ export type RepositoryType = "integration" | "plugin" | "template" | "theme";
 export interface RepositoryBase {
   authors: string[];
   available_version: string;
-  can_download: boolean;
+  can_install: boolean;
   category: RepositoryType;
   config_flow: boolean;
   custom: boolean;
@@ -73,24 +73,27 @@ export const fetchMarketplaceRepositoryReleases = (
     repository_id: repositoryId,
   });
 
-export const downloadMarketplaceRepository = (
+export const installMarketplaceRepository = (
   hass: CallWS,
   repositoryId: string,
   version?: string,
   options: { confirmReplaceBuiltIn?: boolean } = {}
 ) =>
   hass.callWS<null>({
-    type: "marketplace/repository/download",
+    type: "marketplace/repository/install",
     repository: repositoryId,
     version,
-    // A first download over a built-in integration is refused without it
+    // A first installation over a built-in integration is refused without it
     ...(options.confirmReplaceBuiltIn
       ? { confirm_replace_built_in: true }
       : {}),
   });
 
-// Removes what was downloaded, the repository stays in the Marketplace
-export const removeMarketplaceDownload = (hass: CallWS, repositoryId: string) =>
+// Removes what was installed, the repository stays in the Marketplace
+export const uninstallMarketplaceRepository = (
+  hass: CallWS,
+  repositoryId: string
+) =>
   hass.callWS<null>({
     type: "marketplace/repository/remove",
     repository: repositoryId,

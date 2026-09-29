@@ -2,7 +2,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import type { RepositoryInfo } from "../../../data/marketplace/repository";
 
-export interface MarketplaceDownloadDialogParams {
+export interface MarketplaceInstallDialogParams {
   marketplace: MarketplaceData;
   repositoryId: string;
   repository?: RepositoryInfo;
@@ -10,16 +10,16 @@ export interface MarketplaceDownloadDialogParams {
   chooseVersion?: boolean;
 }
 
-export const loadMarketplaceDownloadDialog = () =>
-  import("./dialog-marketplace-download");
+export const loadMarketplaceInstallDialog = () =>
+  import("./dialog-marketplace-install");
 
-export const showMarketplaceDownloadDialog = (
+export const showMarketplaceInstallDialog = (
   element: HTMLElement,
-  dialogParams: MarketplaceDownloadDialogParams
+  dialogParams: MarketplaceInstallDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-marketplace-download",
-    dialogImport: loadMarketplaceDownloadDialog,
+    dialogTag: "dialog-marketplace-install",
+    dialogImport: loadMarketplaceInstallDialog,
     dialogParams,
   });
 };

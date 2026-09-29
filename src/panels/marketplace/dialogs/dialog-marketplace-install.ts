@@ -35,20 +35,20 @@ import type {
 } from "../../../data/marketplace/repository";
 import {
   fetchMarketplaceRepository,
-  downloadMarketplaceRepository,
+  installMarketplaceRepository,
   fetchMarketplaceRepositoryReleases,
 } from "../../../data/marketplace/repository";
 import {
   websocketErrorMessage,
-  subscribeMarketplaceDownloadProgress,
+  subscribeMarketplaceInstallProgress,
 } from "../../../data/marketplace/websocket";
 import { handleGitHubRateLimited } from "../tools/connect-github";
-import { downloadBlockedReason } from "../tools/download-blocked-reason";
+import { installBlockedReason } from "../tools/install-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
-import type { MarketplaceDownloadDialogParams } from "./show-dialog-marketplace-download";
+import type { MarketplaceInstallDialogParams } from "./show-dialog-marketplace-install";
 
-@customElement("dialog-marketplace-download")
-export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDialogParams>(
+@customElement("dialog-marketplace-install")
+export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDialogParams>(
   LitElement
 ) {
   @state()
@@ -65,7 +65,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
   @state() private _installing = false;
 
-  // What the backend reports while downloading, unknown until its first step
+  // What the backend reports while installing, unknown until its first step
   @state() private _progress?: number;
 
   @state() private _error?: string;
@@ -87,7 +87,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     }
   }
 
-  private async _load(params: MarketplaceDownloadDialogParams): Promise<void> {
+  private async _load(params: MarketplaceInstallDialogParams): Promise<void> {
     this._replacementAccepted = false;
     if (params.repository) {
       this._repository = params.repository;
@@ -110,11 +110,11 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
   }
 
   // The newest version can need a newer Home Assistant, an earlier one is
-  // then the only way to download it.
+  // then the only way to install it.
   private _choosingVersion(repository: RepositoryInfo): boolean {
     return (
       this._selectedVersion !== undefined &&
-      (this.params!.chooseVersion === true || !repository.can_download)
+      (this.params!.chooseVersion === true || !repository.can_install)
     );
   }
 
@@ -167,7 +167,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       <ha-dialog open .headerTitle=${this._headerTitle()}>
         ${
           this._repository
-            ? this._renderDownload(this._repository)
+            ? this._renderInstall(this._repository)
             : this._error
               ? this._renderLoadError(this._error)
               : html`<div class="loading">
@@ -186,7 +186,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     return this._i18n.localize(
       this._error
         ? "ui.panel.marketplace.dialog.error.title"
-        : "ui.panel.marketplace.dialog_download.loading"
+        : "ui.panel.marketplace.dialog_install.loading"
     );
   }
 
@@ -209,14 +209,14 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     this._replacementAccepted = ev.target.checked;
   }
 
-  private _renderDownload(repository: RepositoryInfo) {
+  private _renderInstall(repository: RepositoryInfo) {
     const needsAcceptance =
       repository.replaces_built_in &&
       !repository.installed &&
       !this._replacementAccepted;
     // Home Assistant can be too old for the newest version, not for an older one
     const tooNew =
-      !repository.can_download &&
+      !repository.can_install &&
       (this._selectedVersion ?? repository.available_version) ===
         repository.available_version;
     const version = this._selectedVersion || repository.available_version;
@@ -234,12 +234,12 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
               class="replaces-built-in"
               alert-type="error"
               .title=${this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.replaces_built_in_title",
+                "ui.panel.marketplace.dialog_install.replaces_built_in_title",
                 { domain: repository.domain }
               )}
             >
               ${this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.replaces_built_in_warning",
+                "ui.panel.marketplace.dialog_install.replaces_built_in_warning",
                 { repository: repository.name, domain: repository.domain }
               )}
               ${
@@ -250,7 +250,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
                       @change=${this._replacementAcceptedChanged}
                     >
                       ${this._i18n.localize(
-                        "ui.panel.marketplace.dialog_download.replaces_built_in_confirm"
+                        "ui.panel.marketplace.dialog_install.replaces_built_in_confirm"
                       )}
                     </ha-checkbox>`
               }
@@ -260,9 +260,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       ${
         tooNew
           ? html`<ha-alert alert-type="warning">
-              ${downloadBlockedReason(this._i18n.localize, repository)}
+              ${installBlockedReason(this._i18n.localize, repository)}
               ${this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.older_version_hint"
+                "ui.panel.marketplace.dialog_install.older_version_hint"
               )}
             </ha-alert>`
           : nothing
@@ -273,11 +273,11 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           : html`<ha-alert
               alert-type="warning"
               .title=${this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.new_download_title"
+                "ui.panel.marketplace.dialog_install.new_install_title"
               )}
             >
               ${this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.new_download_warning",
+                "ui.panel.marketplace.dialog_install.new_install_warning",
                 {
                   repository: repository.name,
                   authors: formatListWithAnds(
@@ -303,7 +303,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           ${
             repository.installed
               ? this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.update_intro",
+                  "ui.panel.marketplace.dialog_install.update_intro",
                   {
                     name: repository.name,
                     installed: repository.installed_version,
@@ -311,17 +311,17 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
                   }
                 )
               : this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.download_intro",
+                  "ui.panel.marketplace.dialog_install.install_intro",
                   { name: repository.name, version }
                 )
           }
         </p>
         ${
-          // A first download can often be set up right away, an update runs
+          // A first installation can often be set up right away, an update runs
           // the old code until Home Assistant restarts
           repository.category === "integration" && repository.installed
             ? html`<p>
-                ${this._i18n.localize("ui.panel.marketplace.dialog_download.restart")}
+                ${this._i18n.localize("ui.panel.marketplace.dialog_install.restart")}
               </p>`
             : nothing
         }
@@ -330,7 +330,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           this.params!.marketplace.info.lovelace_mode !== "storage"
             ? html`
                 <p>
-                  ${this._i18n.localize("ui.panel.marketplace.dialog_download.lovelace_instruction")}
+                  ${this._i18n.localize("ui.panel.marketplace.dialog_install.lovelace_instruction")}
                 </p>
                 <pre class="frontend-resource">
               url: ${generateFrontendResourceURL({ repository })}
@@ -357,7 +357,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           @click=${this._installRepository}
         >
           ${this._i18n.localize(
-            repository.installed ? "ui.common.update" : "ui.common.download"
+            repository.installed
+              ? "ui.common.update"
+              : "ui.panel.marketplace.common.install"
           )}
         </ha-button>
       </ha-dialog-footer>
@@ -368,28 +370,28 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     return html`<div class="versions">
       <p>
         ${this._i18n.localize(
-          "ui.panel.marketplace.dialog_download.release_warning"
+          "ui.panel.marketplace.dialog_install.release_warning"
         )}
       </p>
       ${
         this._releasesFailed
           ? html`${this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.releases_failed"
+                "ui.panel.marketplace.dialog_install.releases_failed"
               )}
               <ha-button appearance="plain" @click=${this._loadReleases}>
                 ${this._i18n.localize("ui.panel.marketplace.common.retry")}
               </ha-button>`
           : this._releases === undefined
             ? this._i18n.localize(
-                "ui.panel.marketplace.dialog_download.fetching_releases"
+                "ui.panel.marketplace.dialog_install.fetching_releases"
               )
             : this._releases.length === 0
               ? this._i18n.localize(
-                  "ui.panel.marketplace.dialog_download.no_releases"
+                  "ui.panel.marketplace.dialog_install.no_releases"
                 )
               : html`<ha-select
                   .label=${this._i18n.localize(
-                    "ui.panel.marketplace.dialog_download.release"
+                    "ui.panel.marketplace.dialog_install.release"
                   )}
                   .value=${this._selectedVersion}
                   .options=${this._releaseOptions(this._releases)}
@@ -407,7 +409,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
     if (this._installing) {
       this._error = this._i18n.localize(
-        "ui.panel.marketplace.dialog_download.already_downloading"
+        "ui.panel.marketplace.dialog_install.already_installing"
       );
       return;
     }
@@ -416,9 +418,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     this._progress = undefined;
     this._error = undefined;
 
-    // Subscribed before the download starts, or its first steps are missed.
-    // Progress is a nicety, the download goes ahead without it.
-    const unsubscribeProgress = await subscribeMarketplaceDownloadProgress(
+    // Subscribed before the installation starts, or its first steps are missed.
+    // Progress is a nicety, the installation goes ahead without it.
+    const unsubscribeProgress = await subscribeMarketplaceInstallProgress(
       this._connection,
       (update) => {
         if (
@@ -431,7 +433,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     ).catch(() => undefined);
 
     try {
-      await downloadMarketplaceRepository(
+      await installMarketplaceRepository(
         this._api,
         String(repository.id),
         this._selectedVersion || repository.available_version,
@@ -450,7 +452,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       this._error =
         websocketErrorMessage(err) ||
         this._i18n.localize(
-          "ui.panel.marketplace.dialog_download.download_failed"
+          "ui.panel.marketplace.dialog_install.install_failed"
         );
       return;
     } finally {
@@ -463,7 +465,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       return;
     }
 
-    // A dialog closed during the download is detached, the app itself can
+    // A dialog closed during the installation is detached, the app itself can
     // still show the reload prompt.
     const promptHost = this.isConnected
       ? this
@@ -486,7 +488,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     }
 
     if (!repository.installed && promptHost) {
-      await this._offerSetUp(promptHost, repository);
+      await this._startSetUp(promptHost, repository);
     }
 
     if (this.isConnected) {
@@ -494,9 +496,10 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     }
   }
 
-  // A first download that needs no restart can be set up right away. The
-  // backend knows, it read the manifest of the version that was written.
-  private async _offerSetUp(
+  // Installing is the ask, a first installation that needs no restart goes
+  // straight into setting it up. The backend knows, it read the manifest of
+  // the version that was written.
+  private async _startSetUp(
     promptHost: HTMLElement,
     repository: RepositoryInfo
   ): Promise<void> {
@@ -504,9 +507,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       return;
     }
 
-    let downloaded: RepositoryInfo;
+    let installed: RepositoryInfo;
     try {
-      downloaded = await fetchMarketplaceRepository(
+      installed = await fetchMarketplaceRepository(
         this._api,
         String(repository.id)
       );
@@ -515,34 +518,18 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       return;
     }
 
-    const domain = downloaded.domain;
+    const domain = installed.domain;
     if (
       !domain ||
-      !downloaded.config_flow ||
-      downloaded.status === "pending-restart"
+      !installed.config_flow ||
+      installed.status === "pending-restart"
     ) {
       return;
     }
 
-    await showConfirmationDialog(promptHost, {
-      title: this._i18n.localize("ui.panel.marketplace.dialog.set_up.title", {
-        name: downloaded.name,
-      }),
-      text: this._i18n.localize("ui.panel.marketplace.dialog.set_up.message", {
-        name: downloaded.name,
-      }),
-      dismissText: this._i18n.localize(
-        "ui.panel.marketplace.dialog.set_up.later"
-      ),
-      confirmText: this._i18n.localize(
-        "ui.panel.marketplace.dialog.set_up.confirm"
-      ),
-      confirm: () => {
-        showConfigFlowDialog(promptHost, {
-          startFlowHandler: domain,
-          navigateToResult: true,
-        });
-      },
+    showConfigFlowDialog(promptHost, {
+      startFlowHandler: domain,
+      navigateToResult: true,
     });
   }
 
@@ -586,7 +573,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       secondary: [
         release.prerelease
           ? this._i18n.localize(
-              "ui.panel.marketplace.dialog_download.pre_release"
+              "ui.panel.marketplace.dialog_install.pre_release"
             )
           : undefined,
         relativeTime(new Date(release.published_at), this._i18n.locale),
@@ -639,6 +626,6 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-marketplace-download": DialogMarketplaceDownload;
+    "dialog-marketplace-install": DialogMarketplaceInstall;
   }
 }

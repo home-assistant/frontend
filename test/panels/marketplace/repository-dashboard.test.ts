@@ -73,7 +73,7 @@ const repositoryInfo = (id: string, extra: Partial<RepositoryInfo> = {}) =>
     additional_info: "",
     stars: 0,
     issues: 0,
-    can_download: true,
+    can_install: true,
     homeassistant: null,
     ...extra,
   }) as unknown as RepositoryInfo;
@@ -264,9 +264,9 @@ describe("ha-marketplace-repository-dashboard", () => {
 
   it.each([
     {
-      name: "a download",
+      name: "an install",
       extra: {},
-      buttons: ["ui.common.download"],
+      buttons: ["ui.panel.marketplace.common.install"],
     },
     {
       name: "an update",
@@ -313,12 +313,12 @@ describe("ha-marketplace-repository-dashboard", () => {
     async (homeassistant, reason) => {
       const { page } = await openRepositoryPage(
         async (repositoryId) =>
-          repositoryInfo(repositoryId, { can_download: false, homeassistant }),
+          repositoryInfo(repositoryId, { can_install: false, homeassistant }),
         repositoryRoute("1")
       );
       await settle(page);
 
-      // Still offered, the download dialog has the older versions
+      // Still offered, the install dialog has the older versions
       expect(
         page.shadowRoot!.querySelector(".card-actions ha-button")
       ).not.toBeNull();

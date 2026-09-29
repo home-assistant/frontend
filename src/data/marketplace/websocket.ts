@@ -48,17 +48,17 @@ export const subscribeMarketplaceChanges = (
     signal,
   });
 
-export interface MarketplaceDownloadProgress {
+export interface MarketplaceInstallProgress {
   repository: string;
-  // A step of the download, or false once it is done
+  // A step of the installation, or false once it is done
   progress: number | false;
 }
 
-export const subscribeMarketplaceDownloadProgress = (
+export const subscribeMarketplaceInstallProgress = (
   hass: Pick<HomeAssistant, "connection">,
-  callback: (progress: MarketplaceDownloadProgress) => void
+  callback: (progress: MarketplaceInstallProgress) => void
 ) =>
-  hass.connection.subscribeMessage<MarketplaceDownloadProgress>(callback, {
+  hass.connection.subscribeMessage<MarketplaceInstallProgress>(callback, {
     type: "marketplace/subscribe",
-    signal: MarketplaceDispatchEvent.REPOSITORY_DOWNLOAD_PROGRESS,
+    signal: MarketplaceDispatchEvent.REPOSITORY_INSTALL_PROGRESS,
   });

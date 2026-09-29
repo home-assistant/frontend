@@ -1,7 +1,7 @@
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 
 // Downloaded frontend resources land in www/community/, which is served as /local/.
-// A card keeps the folder it was downloaded to, also when it is renamed later on.
+// A card keeps the folder it was installed to, also when it is renamed later on.
 export const generateFrontendResourceURL = (options: {
   repository: RepositoryBase;
 }): string => {

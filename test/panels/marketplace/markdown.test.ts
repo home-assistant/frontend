@@ -165,7 +165,7 @@ describe("markdownWithRepositoryContext", () => {
     );
   });
 
-  it("resolves a downloaded README against the downloaded version", () => {
+  it("resolves an installed README against the installed version", () => {
     expect(
       markdownWithRepositoryContext("![old](old.png)", {
         ...repository,

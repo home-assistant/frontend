@@ -55,7 +55,7 @@ describe("filterRepositories", () => {
     ).toEqual(expected);
   });
 
-  it("puts downloaded first, then new, then the most starred, then by name", () => {
+  it("puts installed first, then new, then the most starred, then by name", () => {
     const sorted = filterRepositories(
       [
         repository("Beta", { stars: 5 }),
