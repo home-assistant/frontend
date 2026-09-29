@@ -153,8 +153,9 @@ export class HaDataTable extends LitElement {
 
   /**
    * Error to show below the column headings, with a retry action, when loading the table's data failed.
+   * Pass `true` to show the default message.
    */
-  @property({ attribute: false }) public loadError?: string;
+  @property({ attribute: false }) public loadError?: boolean | string;
 
   @property({ attribute: false }) public searchLabel?: string;
 
@@ -536,14 +537,24 @@ export class HaDataTable extends LitElement {
               ? html`<div class="load-error" role="row" aria-rowindex="2">
                   <div role="cell">
                     <ha-alert alert-type="error">
-                      ${this.loadError}
+                      ${
+                        typeof this.loadError === "string"
+                          ? this.loadError
+                          : this._i18n?.localize?.(
+                              "ui.components.data-table.load_error"
+                            ) || "Failed to load data"
+                      }
                       <ha-button
                         slot="action"
                         appearance="plain"
                         .loading=${this.loading}
                         @click=${this._retryLoad}
                       >
-                        ${this._i18n?.localize?.("ui.components.data-table.retry")}
+                        ${
+                          this._i18n?.localize?.(
+                            "ui.components.data-table.retry"
+                          ) || "Retry"
+                        }
                       </ha-button>
                     </ha-alert>
                   </div>

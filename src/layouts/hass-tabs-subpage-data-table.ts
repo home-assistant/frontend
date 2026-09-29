@@ -162,9 +162,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   /**
    * Error to show below the column headings, with a retry action, when loading the table's data failed.
-   * @type {String}
+   * Pass `true` to show the default message.
    */
-  @property({ attribute: false }) public loadError?: string;
+  @property({ attribute: false }) public loadError?: boolean | string;
 
   @property({ attribute: false }) public route!: Route;
 

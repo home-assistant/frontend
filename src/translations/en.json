@@ -1220,6 +1220,7 @@
           "done": "Done",
           "restore": "Restore defaults"
         },
+        "load_error": "Failed to load data",
         "retry": "[%key:ui::panel::app::retry%]"
       },
       "siren": {
