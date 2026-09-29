@@ -76,6 +76,8 @@ const POSITIONS: Record<
 };
 
 const MAPLIBRE_CSS_URL = "/static/map/maplibre-gl.css";
+// Fully hidden behind the globe, not MapLibre's faint ghost
+const MARKER_OPTIONS = { opacityWhenCovered: 0 };
 
 // Roughly one zoom level per two wheel notches (MapLibre's default is 1/450)
 const WHEEL_ZOOM_RATE = 1 / 200;
@@ -660,6 +662,7 @@ export class MapLibreMapEngine implements MapEngine {
     if (!managed.mlMarker) {
       const { options } = managed;
       managed.mlMarker = new this._maplibre.Marker({
+        ...MARKER_OPTIONS,
         element: managed.element,
         draggable: managed.draggable ?? false,
         ...(options.anchor
@@ -793,6 +796,7 @@ export class MapLibreMapEngine implements MapEngine {
     }
     this._placedElements.add(centerEl);
     const centerMarker = new maplibre.Marker({
+      ...MARKER_OPTIONS,
       element: centerEl,
       draggable: options.moveable ?? false,
     })
@@ -821,6 +825,7 @@ export class MapLibreMapEngine implements MapEngine {
       const east = pointEastOf(center, options.radius);
       resizeHandle = createResizeHandleElement(options.resizeLabel);
       resizeMarker = new maplibre.Marker({
+        ...MARKER_OPTIONS,
         element: resizeHandle,
         draggable: true,
       })
@@ -1199,6 +1204,7 @@ export class MapLibreMapEngine implements MapEngine {
     root.className = "cluster-open";
     root.append(members, tail);
     group.iconMarker = new this._maplibre!.Marker({
+      ...MARKER_OPTIONS,
       element: root,
       anchor: "bottom",
     })
@@ -1370,6 +1376,7 @@ export class MapLibreMapEngine implements MapEngine {
       });
       const location = icon.location ?? group.center;
       group.iconMarker = new this._maplibre!.Marker({
+        ...MARKER_OPTIONS,
         element: icon.element,
         ...(icon.anchor
           ? {

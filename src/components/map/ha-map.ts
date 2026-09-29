@@ -1555,6 +1555,19 @@ export class HaMap extends ReactiveElement {
     #map.clickable {
       cursor: pointer;
     }
+    .maplibregl-marker {
+      transition:
+        opacity var(--ha-animation-duration-fast),
+        visibility var(--ha-animation-duration-fast);
+    }
+    .maplibregl-marker-covered {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    /* A zone fades in once the bubble over it is opaque, not through it */
+    .zone-circle:not(.maplibregl-marker-covered) {
+      transition-delay: var(--ha-animation-duration-fast);
+    }
     #map.dark {
       background: #090909;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
