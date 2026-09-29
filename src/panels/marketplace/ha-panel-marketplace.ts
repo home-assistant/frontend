@@ -26,7 +26,7 @@ import {
 } from "../../data/marketplace/websocket";
 import "./components/ha-marketplace-warning";
 import "./ha-marketplace-router";
-import { marketplaceStyles } from "./styles/marketplace-common-style";
+import { haStyle } from "../../resources/styles";
 
 // The entry is not going to load without the user stepping in.
 const ENTRY_FAILED_STATES: ConfigEntry["state"][] = [
@@ -347,7 +347,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
   }
 
   static get styles() {
-    return marketplaceStyles;
+    return haStyle;
   }
 }
 

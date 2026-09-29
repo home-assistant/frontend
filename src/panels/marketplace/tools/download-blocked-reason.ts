@@ -8,7 +8,7 @@ export const downloadBlockedReason = (
   repository: RepositoryBase
 ): string =>
   repository.homeassistant
-    ? localize("ui.panel.marketplace.dialog_info.requires_homeassistant", {
+    ? localize("ui.panel.marketplace.repository.requires_homeassistant", {
         version: repository.homeassistant,
       })
-    : localize("ui.panel.marketplace.dialog_info.requires_newer_homeassistant");
+    : localize("ui.panel.marketplace.repository.requires_newer_homeassistant");

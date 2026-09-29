@@ -30,7 +30,7 @@ import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace";
+import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace-custom-repositories";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
@@ -42,7 +42,7 @@ import {
   repositoriesClearNew,
   websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
-import { marketplaceStyles } from "../styles/marketplace-common-style";
+import { haStyle } from "../../../resources/styles";
 import {
   DEFAULT_GROUP_COLUMN,
   filterRepositories,
@@ -247,7 +247,7 @@ export class HaMarketplaceDashboard extends LitElement {
         }
         <ha-filter-states
           slot="filter-pane"
-          .label=${this.hass.localize("ui.panel.marketplace.dialog_overview.status")}
+          .label=${this.hass.localize("ui.panel.marketplace.filters.status")}
           .value=${this._filters[STATUS_FILTER]}
           .states=${this._statusStates(this.hass.localize)}
           .narrow=${this.narrow}
@@ -255,7 +255,7 @@ export class HaMarketplaceDashboard extends LitElement {
         ></ha-filter-states>
         <ha-filter-states
           slot="filter-pane"
-          .label=${this.hass.localize("ui.panel.marketplace.dialog_overview.type")}
+          .label=${this.hass.localize("ui.panel.marketplace.filters.type")}
           .value=${this._filters[TYPE_FILTER]}
           .states=${this._typeStates(
             this.hass.localize,
@@ -591,7 +591,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      marketplaceStyles,
+      haStyle,
       css`
         .empty {
           --mdc-icon-size: 80px;

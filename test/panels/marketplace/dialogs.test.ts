@@ -3,10 +3,10 @@ import type { MarketplaceData } from "../../../src/data/marketplace/marketplace"
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import "../../../src/panels/marketplace/dialogs/dialog-marketplace-custom-repositories";
 import type { DialogMarketplaceCustomRepositories } from "../../../src/panels/marketplace/dialogs/dialog-marketplace-custom-repositories";
-import "../../../src/panels/marketplace/dialogs/dialog-marketplace-form";
+import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { showConnectGitHubFlow } from "../../../src/panels/marketplace/tools/connect-github";
 import type * as ConnectGitHubModule from "../../../src/panels/marketplace/tools/connect-github";
-import type { Deferred, MockConnection, SendMessage } from "./dialog-host";
+import type { SendMessage } from "./dialog-host";
 import {
   deferred,
   getInternals,
@@ -38,9 +38,15 @@ vi.mock("../../../src/components/ha-form/ha-form", () =>
 vi.mock("../../../src/components/ha-icon-button", () =>
   stubElement("ha-icon-button")
 );
-vi.mock("../../../src/components/ha-settings-row", () =>
-  stubElement("ha-settings-row")
+vi.mock("../../../src/components/ha-md-list", () => stubElement("ha-md-list"));
+vi.mock("../../../src/components/ha-md-list-item", () =>
+  stubElement("ha-md-list-item")
 );
+vi.mock("../../../src/components/ha-tooltip", () => stubElement("ha-tooltip"));
+vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
+  showAlertDialog: vi.fn(),
+  showConfirmationDialog: vi.fn(),
+}));
 vi.mock("../../../src/components/ha-svg-icon", () =>
   stubElement("ha-svg-icon")
 );
@@ -61,6 +67,7 @@ const REPOSITORY = {
   full_name: "owner/repository",
   category: "integration",
   custom: true,
+  installed: false,
 } as unknown as RepositoryBase;
 
 const marketplaceData = (githubConnected = true) =>
@@ -68,72 +75,6 @@ const marketplaceData = (githubConnected = true) =>
     repositories: [REPOSITORY],
     info: { github_connected: githubConnected, categories: ["integration"] },
   }) as unknown as MarketplaceData;
-
-const openFormDialog = (
-  saveAction?: () => Promise<void>,
-  connection?: MockConnection
-): Promise<HTMLElementTagNameMap["dialog-marketplace-form"]> =>
-  openDialog(
-    "dialog-marketplace-form",
-    { marketplace: marketplaceData(), title: "Title", saveAction },
-    connection
-  );
-
-describe("dialog-marketplace-form", () => {
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("closes once the action succeeds", async () => {
-    const dialog = await openFormDialog(async () => undefined);
-    const closed = vi.fn();
-    dialog.addEventListener("dialog-closed", closed);
-
-    await getInternals(dialog)._saveClicked();
-
-    expect(closed).toHaveBeenCalledTimes(1);
-    expect(dialog.isConnected).toBe(false);
-  });
-
-  it("stays open and shows why the action failed", async () => {
-    const dialog = await openFormDialog(async () => {
-      throw new Error("Nope");
-    });
-
-    await getInternals(dialog)._saveClicked();
-    await dialog.updateComplete;
-
-    expect(dialog.isConnected).toBe(true);
-    expect(dialog.shadowRoot!.querySelector("ha-alert")?.textContent).toBe(
-      "Nope"
-    );
-    expect(getInternals(dialog)._waiting).toBe(false);
-  });
-
-  it.each([
-    ["succeeds", (action: Deferred<undefined>) => action.resolve(undefined)],
-    [
-      "fails",
-      (action: Deferred<undefined>) => action.reject(new Error("Late")),
-    ],
-  ])(
-    "leaves a dialog closed during the action alone when it %s",
-    async (_outcome, finish) => {
-      const action = deferred<undefined>();
-      const dialog = await openFormDialog(() => action.promise);
-      const closed = vi.fn();
-      dialog.addEventListener("dialog-closed", closed);
-
-      const saving = getInternals(dialog)._saveClicked();
-      await dialog.closeDialog();
-      finish(action);
-      await saving;
-
-      expect(closed).toHaveBeenCalledTimes(1);
-      expect(getInternals(dialog)._error).toBeUndefined();
-    }
-  );
-});
 
 const openCustomRepositoriesDialog = (
   sendMessagePromise: SendMessage,
@@ -178,11 +119,12 @@ describe("dialog-marketplace-custom-repositories", () => {
     await dialog.updateComplete;
 
     expect(
-      dialog.shadowRoot!.querySelector('span[slot="description"]')!.textContent
+      dialog.shadowRoot!.querySelector('span[slot="supporting-text"]')!
+        .textContent
     ).toContain("ui.panel.marketplace.common.type.integration");
   });
 
-  it("offers no removal for a downloaded repository", async () => {
+  it("offers no removal for a downloaded repository, and says why", async () => {
     const dialog = await openCustomRepositoriesDialog(async () => null);
     getInternals(dialog)._repositories = [
       REPOSITORY,
@@ -192,11 +134,43 @@ describe("dialog-marketplace-custom-repositories", () => {
 
     expect(
       [
-        ...dialog.shadowRoot!.querySelectorAll<HTMLElement>(
-          "ha-icon-button[data-repository-id]"
-        ),
-      ].map((button) => button.dataset.repositoryId)
-    ).toEqual(["1"]);
+        ...dialog.shadowRoot!.querySelectorAll<
+          HTMLElement & { disabled: boolean }
+        >("ha-icon-button[data-repository-id]"),
+      ].map((button) => [button.dataset.repositoryId, button.disabled])
+    ).toEqual([
+      ["1", false],
+      ["2", true],
+    ]);
+    expect(
+      [...dialog.shadowRoot!.querySelectorAll("ha-tooltip")].map((tooltip) =>
+        tooltip.textContent!.trim()
+      )
+    ).toEqual([
+      "ui.common.remove",
+      "ui.panel.marketplace.dialog_custom_repositories.remove_downloaded",
+    ]);
+  });
+
+  it("asks before removing a repository from the list", async () => {
+    const sendMessagePromise = vi.fn(async () => [] as unknown);
+    const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
+    await dialog.updateComplete;
+
+    dialog
+      .shadowRoot!.querySelector("ha-icon-button[data-repository-id]")!
+      .dispatchEvent(new Event("click"));
+    const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
+    expect(params.destructive).toBe(true);
+    expect(sendMessagePromise).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: "marketplace/repositories/remove" })
+    );
+
+    await params.action!();
+
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "marketplace/repositories/remove" })
+    );
   });
 
   it("leaves a dialog closed while adding a repository alone", async () => {

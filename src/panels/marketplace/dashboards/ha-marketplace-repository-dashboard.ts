@@ -31,7 +31,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace";
+import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace-download";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
@@ -46,7 +46,7 @@ import {
   repositoryAdd,
   websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
-import { marketplaceStyles } from "../styles/marketplace-common-style";
+import { haStyle } from "../../../resources/styles";
 import {
   ensureGitHubConnected,
   handleGitHubNotConnected,
@@ -111,10 +111,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                 repository: requestedRepository,
               }
             ),
-            confirmText: this.hass.localize("ui.panel.marketplace.common.add"),
-            dismissText: this.hass.localize(
-              "ui.panel.marketplace.common.cancel"
-            ),
+            confirmText: this.hass.localize("ui.common.add"),
+            dismissText: this.hass.localize("ui.common.cancel"),
           }))
         ) {
           this._error = this.hass.localize(
@@ -356,7 +354,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                       href="https://github.com/${author}"
                       target="_blank"
                       .label=${`@${author}`}
-                      title=${this.hass.localize("ui.panel.marketplace.dialog_info.author")}
+                      title=${this.hass.localize("ui.panel.marketplace.repository.author")}
                     >
                       <ha-svg-icon
                         slot="icon"
@@ -367,7 +365,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                 ${
                   repository.downloads
                     ? html`<ha-assist-chip
-                        title=${this.hass.localize("ui.panel.marketplace.dialog_info.downloads")}
+                        title=${this.hass.localize("ui.panel.marketplace.repository.downloads")}
                         .label=${String(repository.downloads)}
                       >
                         <ha-svg-icon
@@ -379,7 +377,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                 }
                 <ha-assist-chip
                   .label=${String(repository.stars)}
-                  title=${this.hass.localize("ui.panel.marketplace.dialog_info.stars")}
+                  title=${this.hass.localize("ui.panel.marketplace.repository.stars")}
                 >
                   <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
                 </ha-assist-chip>
@@ -387,7 +385,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                   href="https://github.com/${repository.full_name}/issues"
                   target="_blank"
                   .label=${String(repository.issues)}
-                  title=${this.hass.localize("ui.panel.marketplace.dialog_info.open_issues")}
+                  title=${this.hass.localize("ui.panel.marketplace.repository.open_issues")}
                 >
                   <ha-svg-icon
                     slot="icon"
@@ -437,18 +435,18 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   private _versionText(repository: RepositoryInfo): string {
     if (!repository.installed) {
       return this.hass.localize(
-        "ui.panel.marketplace.dialog_info.version_available",
+        "ui.panel.marketplace.repository.version_available",
         { version: repository.available_version }
       );
     }
 
     return repository.pending_upgrade
-      ? this.hass.localize("ui.panel.marketplace.dialog_info.version_update", {
+      ? this.hass.localize("ui.panel.marketplace.repository.version_update", {
           installed: repository.installed_version,
           version: repository.available_version,
         })
       : this.hass.localize(
-          "ui.panel.marketplace.dialog_info.version_downloaded",
+          "ui.panel.marketplace.repository.version_downloaded",
           { version: repository.installed_version }
         );
   }
@@ -466,9 +464,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           .path=${repository.installed ? mdiArrowUpBoldCircleOutline : mdiDownload}
         ></ha-svg-icon>
         ${this.hass.localize(
-          repository.installed
-            ? "ui.panel.marketplace.common.update"
-            : "ui.panel.marketplace.common.download"
+          repository.installed ? "ui.common.update" : "ui.common.download"
         )}
       </ha-button>
     </div>`;
@@ -497,7 +493,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   static get styles() {
     return [
-      marketplaceStyles,
+      haStyle,
       css`
         .content {
           display: flex;

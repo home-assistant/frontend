@@ -68,13 +68,18 @@ export const repositoryDownloadVersion = async (
       : {}),
   });
 
+export interface MarketplaceRelease {
+  tag: string;
+  name: string;
+  published_at: string;
+  prerelease: boolean;
+}
+
 export const repositoryReleases = async (
   hass: Pick<HomeAssistant, "connection">,
   repositoryId: string
 ) =>
-  hass.connection.sendMessagePromise<
-    { tag: string; name: string; published_at: string; prerelease: boolean }[]
-  >({
+  hass.connection.sendMessagePromise<MarketplaceRelease[]>({
     type: "marketplace/repository/releases",
     repository_id: repositoryId,
   });

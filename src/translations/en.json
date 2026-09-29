@@ -12179,16 +12179,10 @@
           "continue": "Continue"
         },
         "common": {
-          "add": "Add",
-          "cancel": "Cancel",
-          "download": "Download",
           "ignore": "Ignore",
-          "update": "Update",
           "reload": "Reload",
-          "remove": "Remove",
           "repository": "Repository",
           "retry": "Retry",
-          "save": "Save",
           "show": "Show details",
           "unknown_error": "Unknown error, check the Home Assistant logs",
           "type": {
@@ -12236,10 +12230,7 @@
           "add_repository_title": "Add custom repository",
           "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Marketplace. Do you want to add it?"
         },
-        "dialog_overview": {
-          "sections": {
-            "filters": "Change active filters"
-          },
+        "filters": {
           "status": "Status",
           "type": "Type"
         },
@@ -12248,7 +12239,10 @@
           "type": "Type",
           "no_repository": "Missing repository",
           "no_type": "Missing type",
-          "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first."
+          "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first.",
+          "remove_title": "Remove {name} from the list?",
+          "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
+          "remove_downloaded": "Remove the download first"
         },
         "dialog_download": {
           "loading": "Loading repository",
@@ -12271,7 +12265,7 @@
           "replaces_built_in_warning": "{repository} uses the {domain} domain, which belongs to an integration that comes with Home Assistant. After a restart, Home Assistant loads this download instead of the built-in integration, for everything you set up with it. Devices and services you already set up may stop working. Fixes and improvements to the built-in integration no longer reach you with Home Assistant updates, and the Home Assistant project cannot help with problems this download causes. To go back to the built-in integration, remove this download and restart Home Assistant.",
           "replaces_built_in_confirm": "I understand this replaces the built-in integration"
         },
-        "dialog_info": {
+        "repository": {
           "version_available": "Version {version}",
           "version_downloaded": "Version {version} downloaded",
           "version_update": "Version {installed} downloaded, {version} available",
@@ -12282,7 +12276,7 @@
           "requires_homeassistant": "This repository needs Home Assistant {version} or newer. Update Home Assistant to download it.",
           "requires_newer_homeassistant": "This repository needs a newer version of Home Assistant. Update Home Assistant to download it."
         },
-        "repository_card": {
+        "repository_menu": {
           "dismiss_new": "Dismiss new",
           "open_issue": "Open issue",
           "open_source": "Open resource file",

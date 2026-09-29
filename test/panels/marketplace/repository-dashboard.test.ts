@@ -265,12 +265,12 @@ describe("ha-marketplace-repository-dashboard", () => {
     {
       name: "a download",
       extra: {},
-      buttons: ["ui.panel.marketplace.common.download"],
+      buttons: ["ui.common.download"],
     },
     {
       name: "an update",
       extra: { installed: true, pending_upgrade: true },
-      buttons: ["ui.panel.marketplace.common.update"],
+      buttons: ["ui.common.update"],
     },
     {
       name: "nothing when up to date",
@@ -305,8 +305,8 @@ describe("ha-marketplace-repository-dashboard", () => {
   });
 
   it.each([
-    ["2099.1.0", "ui.panel.marketplace.dialog_info.requires_homeassistant"],
-    [null, "ui.panel.marketplace.dialog_info.requires_newer_homeassistant"],
+    ["2099.1.0", "ui.panel.marketplace.repository.requires_homeassistant"],
+    [null, "ui.panel.marketplace.repository.requires_newer_homeassistant"],
   ])(
     "explains why the newest version does not fit a repository needing %s",
     async (homeassistant, reason) => {

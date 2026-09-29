@@ -30,7 +30,10 @@ import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
-import type { RepositoryInfo } from "../../../data/marketplace/repository";
+import type {
+  MarketplaceRelease,
+  RepositoryInfo,
+} from "../../../data/marketplace/repository";
 import {
   fetchRepositoryInformation,
   repositoryDownloadVersion,
@@ -41,19 +44,11 @@ import {
   websocketErrorMessage,
   websocketSubscription,
 } from "../../../data/marketplace/websocket";
-import { marketplaceStyles } from "../styles/marketplace-common-style";
 import type { MarketplaceHass } from "../tools/connect-github";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { downloadBlockedReason } from "../tools/download-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
-import type { MarketplaceDownloadDialogParams } from "./show-dialog-marketplace";
-
-interface MarketplaceRelease {
-  tag: string;
-  name: string;
-  published_at: string;
-  prerelease: boolean;
-}
+import type { MarketplaceDownloadDialogParams } from "./show-dialog-marketplace-download";
 
 @customElement("dialog-marketplace-download")
 export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDialogParams>(
@@ -211,7 +206,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           appearance="plain"
           @click=${this.closeDialog}
         >
-          ${this._i18n.localize("ui.panel.marketplace.common.cancel")}
+          ${this._i18n.localize("ui.common.cancel")}
         </ha-button>
       </ha-dialog-footer>
     `;
@@ -359,7 +354,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           appearance="plain"
           @click=${this.closeDialog}
         >
-          ${this._i18n.localize("ui.panel.marketplace.common.cancel")}
+          ${this._i18n.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
           slot="primaryAction"
@@ -369,9 +364,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           @click=${this._installRepository}
         >
           ${this._i18n.localize(
-            repository.installed
-              ? "ui.panel.marketplace.common.update"
-              : "ui.panel.marketplace.common.download"
+            repository.installed ? "ui.common.update" : "ui.common.download"
           )}
         </ha-button>
       </ha-dialog-footer>
@@ -497,7 +490,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
         text: html`${this._i18n.localize(
             "ui.panel.marketplace.dialog.reload.description"
           )}<br />${this._i18n.localize("ui.panel.marketplace.dialog.reload.confirm")}`,
-        dismissText: this._i18n.localize("ui.panel.marketplace.common.cancel"),
+        dismissText: this._i18n.localize("ui.common.cancel"),
         confirmText: this._i18n.localize("ui.panel.marketplace.common.reload"),
         confirm: () => {
           location.reload();
@@ -620,7 +613,6 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
 
   static get styles(): CSSResultGroup {
     return [
-      marketplaceStyles,
       css`
         ha-dialog {
           --dialog-content-padding: 0;
@@ -638,6 +630,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           white-space: pre-line;
           user-select: all;
           padding: var(--ha-space-2);
+          background-color: var(--markdown-code-background-color, none);
+          border-radius: var(--ha-border-radius-sm);
+          color: var(--markdown-code-text-color, inherit);
         }
         .replaces-built-in ha-checkbox {
           display: block;

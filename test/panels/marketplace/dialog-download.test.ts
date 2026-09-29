@@ -6,7 +6,7 @@ import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import { ERROR_GITHUB_RATE_LIMITED } from "../../../src/data/marketplace/websocket";
 import "../../../src/panels/marketplace/dialogs/dialog-marketplace-download";
 import type { DialogMarketplaceDownload } from "../../../src/panels/marketplace/dialogs/dialog-marketplace-download";
-import type { MarketplaceDownloadDialogParams } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace";
+import type { MarketplaceDownloadDialogParams } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-download";
 import type { Deferred, MockConnection } from "./dialog-host";
 import {
   deferred,
@@ -194,13 +194,13 @@ describe("dialog-marketplace-download", () => {
       name: "an update",
       installed: true,
       intro: "ui.panel.marketplace.dialog_download.update_intro",
-      button: "ui.panel.marketplace.common.update",
+      button: "ui.common.update",
     },
     {
       name: "a first download",
       installed: false,
       intro: "ui.panel.marketplace.dialog_download.download_intro",
-      button: "ui.panel.marketplace.common.download",
+      button: "ui.common.download",
     },
   ])("says what $name does", async ({ installed, intro, button }) => {
     const dialog = await openDownloadDialog(
@@ -445,7 +445,7 @@ describe("dialog-marketplace-download", () => {
     expect(
       root.querySelector("ha-alert")?.textContent?.trim().split(/\s+/)
     ).toEqual([
-      "ui.panel.marketplace.dialog_info.requires_homeassistant",
+      "ui.panel.marketplace.repository.requires_homeassistant",
       "ui.panel.marketplace.dialog_download.older_version_hint",
     ]);
     expect(

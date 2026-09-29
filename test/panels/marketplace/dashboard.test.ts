@@ -137,8 +137,8 @@ it("filters with the standard filter panes of Settings", async () => {
       ),
     ].map((filter) => (filter as HTMLElement & { label: string }).label)
   ).toEqual([
-    "ui.panel.marketplace.dialog_overview.status",
-    "ui.panel.marketplace.dialog_overview.type",
+    "ui.panel.marketplace.filters.status",
+    "ui.panel.marketplace.filters.type",
   ]);
   expect(dashboard.shadowRoot!.querySelector("ha-form")).toBeNull();
 });

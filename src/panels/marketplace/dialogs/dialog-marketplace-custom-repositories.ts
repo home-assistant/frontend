@@ -1,5 +1,5 @@
 import type { ContextType } from "@lit/context";
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiDeleteOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -14,7 +14,9 @@ import "../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import type { HaIconButton } from "../../../components/ha-icon-button";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-tooltip";
 import "../../../components/ha-svg-icon";
 import "../../../components/progress/ha-progress-bar";
 import {
@@ -36,10 +38,10 @@ import {
   websocketErrorMessage,
 } from "../../../data/marketplace/websocket";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
-import { marketplaceStyleVariables } from "../styles/variables";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { MarketplaceHass } from "../tools/connect-github";
 import { showConnectGitHubFlow } from "../tools/connect-github";
-import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace";
+import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace-custom-repositories";
 
 @customElement("dialog-marketplace-custom-repositories")
 export class DialogMarketplaceCustomRepositories extends DialogMixin<MarketplaceCustomRepositoriesDialogParams>(
@@ -98,7 +100,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         )}
       >
         <div>
-          <div class="list">
+          <ha-md-list>
             ${this._repositories
               .filter((repository) => repository.custom)
               .filter((repository) =>
@@ -108,35 +110,35 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
               )
               .map(
                 (repository) =>
-                  html` <ha-settings-row>
-                    <span slot="heading">${repository.name}</span>
-                    <span slot="description"
+                  html`<ha-md-list-item>
+                    <span slot="headline">${repository.name}</span>
+                    <span slot="supporting-text"
                       >${repository.full_name}
                       (${this._i18n.localize(
                         `ui.panel.marketplace.common.type.${repository.category}`
                       )})</span
                     >
-
-                    ${
-                      // Forgetting a download would leave its files running
-                      repository.installed
-                        ? nothing
-                        : html`<ha-icon-button
-                            .label=${this._i18n.localize(
-                              "ui.panel.marketplace.common.remove"
-                            )}
-                            data-repository-id=${repository.id}
-                            @click=${this._handleRemoveClick}
-                          >
-                            <ha-svg-icon
-                              class="delete"
-                              .path=${mdiDelete}
-                            ></ha-svg-icon>
-                          </ha-icon-button>`
-                    }
-                  </ha-settings-row>`
+                    <ha-icon-button
+                      slot="end"
+                      id="remove-${repository.id}"
+                      class="delete"
+                      .label=${this._i18n.localize("ui.common.remove")}
+                      .path=${repository.installed ? mdiDeleteOff : mdiDelete}
+                      .disabled=${repository.installed}
+                      data-repository-id=${repository.id}
+                      @click=${this._handleRemoveClick}
+                    ></ha-icon-button>
+                    <ha-tooltip slot="end" .for=${`remove-${repository.id}`}>
+                      ${this._i18n.localize(
+                        // Forgetting a download would leave its files running
+                        repository.installed
+                          ? "ui.panel.marketplace.dialog_custom_repositories.remove_downloaded"
+                          : "ui.common.remove"
+                      )}
+                    </ha-tooltip>
+                  </ha-md-list-item>`
               )}
-          </div>
+          </ha-md-list>
           ${
             this._githubConnected
               ? nothing
@@ -166,7 +168,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this._i18n.localize("ui.panel.marketplace.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
@@ -179,7 +181,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
             }
             @click=${this._addRepository}
           >
-            ${this._i18n.localize("ui.panel.marketplace.common.add")}
+            ${this._i18n.localize("ui.common.add")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -222,7 +224,24 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
   private _handleRemoveClick(ev: HASSDomCurrentTargetEvent<HaIconButton>) {
     ev.preventDefault();
-    this._removeRepository(ev.currentTarget.dataset.repositoryId!);
+    const repositoryId = ev.currentTarget.dataset.repositoryId!;
+    const repository = this._repositories.find(
+      (item) => String(item.id) === repositoryId
+    );
+
+    // Like removing an app repository, and it can be added again later
+    showConfirmationDialog(this, {
+      title: this._i18n.localize(
+        "ui.panel.marketplace.dialog_custom_repositories.remove_title",
+        { name: repository?.name ?? repositoryId }
+      ),
+      text: this._i18n.localize(
+        "ui.panel.marketplace.dialog_custom_repositories.remove_text"
+      ),
+      confirmText: this._i18n.localize("ui.common.remove"),
+      destructive: true,
+      action: () => this._removeRepository(repositoryId),
+    });
   }
 
   private async _addRepository() {
@@ -318,13 +337,12 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
   static get styles() {
     return [
-      marketplaceStyleVariables,
       css`
         ha-progress-bar {
           margin-block-end: calc(-1 * var(--ha-space-2));
           margin-block-start: var(--ha-space-1);
         }
-        ha-settings-row {
+        ha-md-list {
           padding: 0;
         }
         ha-alert {
@@ -332,7 +350,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
           margin-bottom: var(--ha-space-2);
         }
         .delete {
-          color: var(--marketplace-color-error);
+          color: var(--error-color);
         }
       `,
     ];

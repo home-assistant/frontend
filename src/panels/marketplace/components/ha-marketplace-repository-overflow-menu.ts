@@ -26,10 +26,7 @@ import {
 } from "../../../data/marketplace/websocket";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
 import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
-import {
-  showMarketplaceDownloadDialog,
-  showMarketplaceFormDialog,
-} from "../dialogs/show-dialog-marketplace";
+import { showMarketplaceDownloadDialog } from "../dialogs/show-dialog-marketplace-download";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 
@@ -100,17 +97,22 @@ const confirmRemoveRepository = async (
     }
   }
 
-  showMarketplaceFormDialog(element, {
-    marketplace: element.marketplace,
+  showConfirmationDialog(element, {
     title: localize("ui.panel.marketplace.dialog.remove.title", {
       name: repository.name,
     }),
-    saveLabel: localize("ui.panel.marketplace.common.remove"),
-    description: localize("ui.panel.marketplace.dialog.remove.message"),
-    saveAction: async () => {
-      await removeRepository(element, repository);
-    },
+    text: localize("ui.panel.marketplace.dialog.remove.message"),
+    confirmText: localize("ui.common.remove"),
     destructive: true,
+    action: async () => {
+      try {
+        await removeRepository(element, repository);
+      } catch (err: unknown) {
+        // Like removing an app repository, the dialog stays open to try again
+        showError(element, localize, err);
+        throw err;
+      }
+    },
   });
 };
 
@@ -146,7 +148,7 @@ export const repositoryMenuItems = (
       value: "update_information",
       path: mdiArrowDownCircle,
       label: localize(
-        "ui.panel.marketplace.repository_card.update_information"
+        "ui.panel.marketplace.repository_menu.update_information"
       ),
       action: async () => {
         try {
@@ -166,8 +168,8 @@ export const repositoryMenuItems = (
     path: repository.installed_version ? mdiReload : mdiDownload,
     label: localize(
       repository.installed_version
-        ? "ui.panel.marketplace.repository_card.redownload"
-        : "ui.panel.marketplace.common.download"
+        ? "ui.panel.marketplace.repository_menu.redownload"
+        : "ui.common.download"
     ),
     action: () =>
       showMarketplaceDownloadDialog(element, {
@@ -180,7 +182,7 @@ export const repositoryMenuItems = (
     value: "download_other_version",
     path: mdiHistory,
     label: localize(
-      "ui.panel.marketplace.repository_card.download_other_version"
+      "ui.panel.marketplace.repository_menu.download_other_version"
     ),
     action: () =>
       showMarketplaceDownloadDialog(element, {
@@ -194,7 +196,7 @@ export const repositoryMenuItems = (
     entries.push({
       value: "dismiss_new",
       path: mdiMoonNew,
-      label: localize("ui.panel.marketplace.repository_card.dismiss_new"),
+      label: localize("ui.panel.marketplace.repository_menu.dismiss_new"),
       action: async () => {
         try {
           await repositoriesClearNewRepository(
@@ -212,7 +214,7 @@ export const repositoryMenuItems = (
     entries.push({
       value: "open_source",
       path: mdiLanguageJavascript,
-      label: localize("ui.panel.marketplace.repository_card.open_source"),
+      label: localize("ui.panel.marketplace.repository_menu.open_source"),
       action: () =>
         window.open(
           `${generateFrontendResourceURL({ repository })}?v=${Date.now()}`,
@@ -227,7 +229,7 @@ export const repositoryMenuItems = (
     {
       value: "open_issue",
       path: mdiAlertCircleOutline,
-      label: localize("ui.panel.marketplace.repository_card.open_issue"),
+      label: localize("ui.panel.marketplace.repository_menu.open_issue"),
       action: () =>
         window.open(
           `https://github.com/${repository.full_name}/issues`,
@@ -241,7 +243,7 @@ export const repositoryMenuItems = (
     entries.push({
       value: "remove",
       path: mdiDelete,
-      label: localize("ui.panel.marketplace.common.remove"),
+      label: localize("ui.common.remove"),
       action: () => confirmRemoveRepository(element, repository, localize),
       variant: "danger",
     });

@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { showMarketplaceDownloadDialog } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace";
+import { repositoryUninstall } from "../../../src/data/marketplace/websocket";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
+import { showMarketplaceDownloadDialog } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-download";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import type { MarketplaceRepositoryMenuEntry } from "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu";
@@ -7,12 +12,19 @@ import { repositoryMenuItems } from "../../../src/panels/marketplace/components/
 import type { HaMarketplaceRepositoryDashboard } from "../../../src/panels/marketplace/dashboards/ha-marketplace-repository-dashboard";
 
 vi.mock(
-  "../../../src/panels/marketplace/dialogs/show-dialog-marketplace",
+  "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-download",
   () => ({
     showMarketplaceDownloadDialog: vi.fn(),
-    showMarketplaceFormDialog: vi.fn(),
   })
 );
+vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
+  showAlertDialog: vi.fn(),
+  showConfirmationDialog: vi.fn(),
+}));
+vi.mock("../../../src/data/marketplace/websocket", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  repositoryUninstall: vi.fn(),
+}));
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
@@ -73,5 +85,36 @@ describe("repositoryMenuItems", () => {
       PAGE,
       expect.objectContaining({ repositoryId: "1", chooseVersion: true })
     );
+  });
+
+  const confirmRemoval = async () => {
+    const entry = repositoryMenuItems(
+      PAGE,
+      repository({ installed_version: "1.0.0", category: "theme" }),
+      localize
+    ).find((item) => "value" in item && item.value === "remove") as unknown as {
+      action: () => Promise<void>;
+    };
+    await entry.action();
+    return vi.mocked(showConfirmationDialog).mock.lastCall![1];
+  };
+
+  it("asks before a removal and removes it once confirmed", async () => {
+    const params = await confirmRemoval();
+
+    await params.action!();
+
+    expect(params.destructive).toBe(true);
+    expect(repositoryUninstall).toHaveBeenCalledWith(PAGE.hass, "1");
+    expect(showAlertDialog).not.toHaveBeenCalled();
+  });
+
+  it("keeps the removal dialog open with an alert when it fails", async () => {
+    const error = new Error("Busy");
+    vi.mocked(repositoryUninstall).mockRejectedValueOnce(error);
+    const params = await confirmRemoval();
+
+    await expect(params.action!()).rejects.toBe(error);
+    expect(showAlertDialog).toHaveBeenCalledTimes(1);
   });
 });
