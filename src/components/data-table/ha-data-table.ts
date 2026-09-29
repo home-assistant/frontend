@@ -433,7 +433,7 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          aria-rowcount=${filteredDataLength + 1}
+          aria-rowcount=${filteredDataLength + (this.loadError ? 2 : 1)}
           style=${styleMap({
             height: this.autoHeight
               ? `${(filteredDataLength || 1) * 53 + 53}px`
@@ -533,16 +533,21 @@ export class HaDataTable extends LitElement {
           </div>
           ${
             this.loadError
-              ? html`<ha-alert class="load-error" alert-type="error">
-                  ${this.loadError}
-                  <ha-button
-                    slot="action"
-                    appearance="plain"
-                    @click=${this._retryLoad}
-                  >
-                    ${this._i18n?.localize?.("ui.components.data-table.retry")}
-                  </ha-button>
-                </ha-alert>`
+              ? html`<div class="load-error" role="row" aria-rowindex="2">
+                  <div role="cell">
+                    <ha-alert alert-type="error">
+                      ${this.loadError}
+                      <ha-button
+                        slot="action"
+                        appearance="plain"
+                        .loading=${this.loading}
+                        @click=${this._retryLoad}
+                      >
+                        ${this._i18n?.localize?.("ui.components.data-table.retry")}
+                      </ha-button>
+                    </ha-alert>
+                  </div>
+                </div>`
               : nothing
           }
           ${
@@ -682,7 +687,7 @@ export class HaDataTable extends LitElement {
     }
     return html`
       <div
-        aria-rowindex=${index + 2}
+        aria-rowindex=${index + (this.loadError ? 3 : 2)}
         role="row"
         .rowId=${row[this.id]}
         @click=${this._handleRowClick}
@@ -1371,11 +1376,14 @@ export class HaDataTable extends LitElement {
           position: relative;
         }
 
-        ha-alert.load-error {
-          display: block;
+        .load-error {
           flex-shrink: 0;
-          margin: var(--ha-space-2) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-space-4);
           white-space: normal;
+        }
+
+        .load-error ha-alert {
+          display: block;
         }
 
         .mdc-data-table__cell {
