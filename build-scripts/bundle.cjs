@@ -237,12 +237,15 @@ module.exports.config = {
       name: "demo" + nameSuffix(latestBuild),
       entry: {
         main: path.resolve(paths.demo_dir, "src/entrypoint.ts"),
+        embed: path.resolve(paths.demo_dir, "src/embed/entrypoint.ts"),
       },
       outputPath: outputPath(paths.demo_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       defineOverlay: {
         __VERSION__: JSON.stringify(`DEMO-${env.version()}`),
         __DEMO__: true,
+        // The embed sets the global to load static files from its own server.
+        __STATIC_PATH__: '(globalThis.__HA_STATIC_PATH__ || "/static/")',
       },
       isProdBuild,
       latestBuild,
