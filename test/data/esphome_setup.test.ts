@@ -417,6 +417,19 @@ describe("remaining capabilities and continue-setup", () => {
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
   });
 
+  it("treats a detected Z-Wave controller as started setup", () => {
+    const status = deriveESPHomeSetupStatus(
+      capabilities({
+        zwave_proxy: { supported: true, home_id: 123456 },
+      }),
+      deriveOptions()
+    );
+
+    expect(status.connectivity).toBe("detected");
+    expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
+    expect(getESPHomeSetupBannerState(status)).toBe("continue");
+  });
+
   it("keeps the continue headline while other non-Bluetooth work remains", () => {
     const status = deriveESPHomeSetupStatus(
       capabilities({

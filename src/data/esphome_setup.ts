@@ -231,6 +231,8 @@ export const hasStartedNonBluetoothESPHomeSetup = (
   status: ESPHomeSetupStatus
 ): boolean =>
   status.audio === "completed" ||
+  // A non-zero home id means Core already started Z-Wave discovery.
+  status.connectivity === "detected" ||
   status.connectivity === "completed" ||
   status.serial === "completed";
 

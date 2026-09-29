@@ -1,10 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
-import {
-  mdiCheck,
-  mdiChevronDown,
-  mdiChevronLeft,
-  mdiOpenInNew,
-} from "@mdi/js";
+import { mdiCheck, mdiChevronDown, mdiOpenInNew } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -17,7 +12,7 @@ import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-domain-icon";
-import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-prev";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-button";
@@ -231,12 +226,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         ${
           this._view !== "checklist"
             ? html`
-                <ha-icon-button
+                <ha-icon-button-prev
                   slot="headerNavigationIcon"
-                  .path=${mdiChevronLeft}
                   .label=${this._i18n.localize("ui.common.back")}
                   @click=${this._showChecklist}
-                ></ha-icon-button>
+                ></ha-icon-button-prev>
               `
             : nothing
         }
@@ -973,10 +967,17 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (!this._audioFlowCurrent(flowId)) {
       return;
     }
-    const continueSetup = () => {
-      if (this._audioFlowCurrent(flowId)) {
-        void this._continueAfterMusicAssistant(flowId);
+    const continueSetup = ({ flowFinished }: { flowFinished: boolean }) => {
+      if (!this._audioFlowCurrent(flowId)) {
+        return;
       }
+      if (!flowFinished) {
+        this._installingAudio = false;
+        this._installStatus = undefined;
+        this._view = "audio-offer";
+        return;
+      }
+      void this._continueAfterMusicAssistant(flowId);
     };
     if (flow) {
       showConfigFlowDialog(this, {
@@ -1053,17 +1054,20 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         item.context?.source === "esphome" &&
         item.context?.unique_id === homeId
     );
-    if (flow) {
-      showConfigFlowDialog(this, {
-        continueFlowId: flow.flow_id,
-        dialogClosedCallback: () => {
-          this._load();
-        },
-      });
+    if (!this.isConnected) {
       return;
     }
+    if (!flow) {
+      if (this._i18n) {
+        this._error = this._i18n.localize(
+          "ui.panel.config.devices.esphome.setup_error_zwave"
+        );
+      }
+      return;
+    }
+    this._error = undefined;
     showConfigFlowDialog(this, {
-      startFlowHandler: "zwave_js",
+      continueFlowId: flow.flow_id,
       dialogClosedCallback: () => {
         this._load();
       },

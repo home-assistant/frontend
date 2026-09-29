@@ -7156,6 +7156,7 @@
             "setup_error_music_assistant": "Couldn't install Music Assistant",
             "setup_error_capabilities": "Couldn't load device capabilities",
             "setup_error_defer": "Couldn't save setup for later",
+            "setup_error_zwave": "Z-Wave setup for this device isn't available right now. Try again in a moment.",
             "setup_status_completed": "Completed",
             "setup_zwave": "Set up Z-Wave",
             "setup_zwave_configured": "Configured",
