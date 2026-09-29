@@ -101,6 +101,21 @@ describe("commands", () => {
     });
   });
 
+  it("confirms replacing a built-in integration when asked to", async () => {
+    const hass = mockHass();
+
+    await repositoryDownloadVersion(hass, "42", "v1.0.0", {
+      confirmReplaceBuiltIn: true,
+    });
+
+    expect(hass.connection.sendMessagePromise).toHaveBeenCalledWith({
+      type: "marketplace/repository/download",
+      repository: "42",
+      version: "v1.0.0",
+      confirm_replace_built_in: true,
+    });
+  });
+
   it("clears new repositories in the active categories", async () => {
     const hass = mockHass();
     const marketplace = {

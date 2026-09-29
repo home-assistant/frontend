@@ -316,6 +316,39 @@ describe("dialog-marketplace-download", () => {
     expect(download().hasAttribute("disabled")).toBe(false);
   });
 
+  it("sends the confirmation along with the download", async () => {
+    const sendMessagePromise = vi.fn(async () => null);
+    const dialog = await openDownloadDialog(
+      {
+        repository: repositoryInfo("1", {
+          installed: false,
+          replaces_built_in: true,
+          domain: "light",
+        }),
+      },
+      mockConnection(sendMessagePromise)
+    );
+    const checkbox = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+      "ha-alert.replaces-built-in ha-checkbox"
+    )!;
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event("change"));
+    await dialog.updateComplete;
+
+    dialog
+      .shadowRoot!.querySelector("ha-button[slot=primaryAction]")!
+      .dispatchEvent(new Event("click"));
+    await settle(dialog);
+
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "marketplace/repository/download",
+        repository: "1",
+        confirm_replace_built_in: true,
+      })
+    );
+  });
+
   it("keeps warning on an update, without asking again", async () => {
     const dialog = await openDownloadDialog(
       {

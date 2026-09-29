@@ -55,12 +55,17 @@ export const fetchRepositoryInformation = async (
 export const repositoryDownloadVersion = async (
   hass: Pick<HomeAssistant, "connection">,
   repository: string,
-  version?: string
+  version?: string,
+  options: { confirmReplaceBuiltIn?: boolean } = {}
 ) =>
   hass.connection.sendMessagePromise<unknown>({
     type: "marketplace/repository/download",
     repository: repository,
     version,
+    // A first download over a built-in integration is refused without it
+    ...(options.confirmReplaceBuiltIn
+      ? { confirm_replace_built_in: true }
+      : {}),
   });
 
 export const repositoryReleases = async (

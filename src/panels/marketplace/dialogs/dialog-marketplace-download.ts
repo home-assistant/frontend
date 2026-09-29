@@ -443,7 +443,8 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       await repositoryDownloadVersion(
         this._hass,
         String(repository.id),
-        this._selectedVersion || repository.available_version
+        this._selectedVersion || repository.available_version,
+        { confirmReplaceBuiltIn: this._replacementAccepted }
       );
     } catch (err) {
       this._installing = false;
