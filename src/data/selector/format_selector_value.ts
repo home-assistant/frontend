@@ -1,10 +1,13 @@
 import { ensureArray } from "../../common/array/ensure-array";
+import { createDurationData } from "../../common/datetime/create_duration_data";
+import { formatDurationLong } from "../../common/datetime/format_duration";
+import { normalizeDuration } from "../../common/datetime/normalize_duration";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_display";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import type { HomeAssistant } from "../../types";
 import type { Selector } from "../selector";
-import { formatDurationSelectorValue } from "./format_duration_selector_value";
+import { getDurationSelectorMode } from "../selector";
 
 export const formatSelectorValue = (
   hass: HomeAssistant,
@@ -132,11 +135,20 @@ export const formatSelectorValue = (
   }
 
   if ("duration" in selector) {
-    return formatDurationSelectorValue(
-      hass.localize,
-      hass.locale,
-      value,
-      selector.duration
+    const data = createDurationData(value);
+    if (!data) {
+      return "";
+    }
+    const { negative, ...components } = normalizeDuration(data);
+    const duration = formatDurationLong(hass.locale, components);
+    const mode = getDurationSelectorMode(selector.duration);
+    if (!duration || mode === "positive") {
+      return duration;
+    }
+    const sign = negative ? "negative" : "positive";
+    return hass.localize(
+      `ui.components.selectors.duration.summary.${mode}_${sign}`,
+      { duration }
     );
   }
 

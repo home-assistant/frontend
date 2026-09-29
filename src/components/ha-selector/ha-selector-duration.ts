@@ -4,7 +4,6 @@ import {
   mdiClockPlusOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import type { PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -55,9 +54,7 @@ export class HaTimeDuration extends LitElement {
 
   @query("ha-duration-input") private _input?: HaDurationInput;
 
-  @state() private _offsetType?: OffsetType;
-
-  private _valueChangedFromChild = false;
+  private _pending?: { type: OffsetType; value: HaDurationData };
 
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
@@ -67,15 +64,6 @@ export class HaTimeDuration extends LitElement {
     (value?: HaDurationData | string | number): HaDurationData | undefined =>
       createDurationData(value)
   );
-
-  protected willUpdate(changedProps: PropertyValues<this>) {
-    if (changedProps.has("value")) {
-      if (!this._valueChangedFromChild) {
-        this._offsetType = undefined;
-      }
-      this._valueChangedFromChild = false;
-    }
-  }
 
   private _offsetTypeOptions = memoizeOne((localize: LocalizeFunc) =>
     OFFSET_TYPES.map(({ value, iconPath }) => ({
@@ -133,10 +121,7 @@ export class HaTimeDuration extends LitElement {
                       "ui.components.selectors.duration.duration"
                     )}${this.required ? "*" : ""}</span
                   >
-                  ${this._renderInput(
-                    data && this._components(data),
-                    undefined
-                  )}
+                  ${this._renderInput(data, undefined)}
                 </div>`
           }
         </div>
@@ -172,39 +157,12 @@ export class HaTimeDuration extends LitElement {
   }
 
   private _getOffsetType(data?: HaDurationData): OffsetType {
-    if (!data) {
-      return this._offsetType ?? "none";
+    const total = data ? durationDataToSeconds(data) : 0;
+    if (total) {
+      return total < 0 ? "before" : "after";
     }
-    const { negative, ...components } = normalizeDuration(data);
-    if (durationDataToSeconds(components) === 0) {
-      return this._offsetType ?? "none";
-    }
-    return negative ? "before" : "after";
-  }
-
-  private _components(data: HaDurationData): HaDurationData {
-    const { negative: _negative, ...components } = normalizeDuration(data);
-    return components;
-  }
-
-  private _zeroDuration(): HaDurationData {
-    const config = this.selector.duration;
-    const value: HaDurationData = { hours: 0, minutes: 0 };
-    if (config?.enable_day) value.days = 0;
-    if (config?.enable_second ?? true) value.seconds = 0;
-    if (config?.enable_millisecond) value.milliseconds = 0;
-    return value;
-  }
-
-  private _withOffsetType(
-    type: OffsetType,
-    data?: HaDurationData
-  ): HaDurationData {
-    if (type === "none") {
-      return this._zeroDuration();
-    }
-    const components = this._components(data ?? this._zeroDuration());
-    return applyDurationSign(components, type === "before");
+    const pending = this._pending;
+    return pending && pending.value === this.value ? pending.type : "none";
   }
 
   private _durationChanged(ev: ValueChangedEvent<HaDurationData | undefined>) {
@@ -226,10 +184,18 @@ export class HaTimeDuration extends LitElement {
     this._fireValue(type, data);
   }
 
-  private _fireValue(type: OffsetType, data?: HaDurationData) {
-    const value = this._withOffsetType(type, data);
-    this._offsetType = type;
-    this._valueChangedFromChild = true;
+  private _fireValue(type: OffsetType, data: HaDurationData = {}) {
+    const config = this.selector.duration;
+    const { negative: _negative, ...components } = normalizeDuration(
+      type === "none" ? {} : data,
+      {
+        enableDay: !!config?.enable_day,
+        enableSecond: config?.enable_second ?? true,
+        enableMillisecond: !!config?.enable_millisecond,
+      }
+    );
+    const value = applyDurationSign(components, type === "before");
+    this._pending = { type, value };
     fireEvent(this, "value-changed", { value });
   }
 

@@ -56,10 +56,12 @@ export class HaDurationInput extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const folded = this._data;
-    const normalized =
-      folded && this.allowNegative ? normalizeDuration(folded) : undefined;
-    const data = normalized ?? folded;
+    const data =
+      this.data &&
+      normalizeDuration(this.data, {
+        enableDay: this.enableDay,
+        enableMillisecond: this.enableMillisecond,
+      });
     return html`
       <div class="row">
         <ha-base-time-input
@@ -74,7 +76,7 @@ export class HaDurationInput extends LitElement {
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           .enableSign=${this.allowNegative}
-          .negative=${normalized?.negative ?? false}
+          .negative=${data?.negative ?? false}
           format="24"
           .days=${this._component(data, "days")}
           .hours=${this._component(data, "hours")}
@@ -93,33 +95,11 @@ export class HaDurationInput extends LitElement {
     `;
   }
 
-  // Fold units we do not render into the smallest unit we do, so a value the
-  // user cannot see is not silently dropped on the next edit.
-  private get _data(): HaDurationData | undefined {
-    if (!this.data) {
-      return this.data;
-    }
-    const data = { ...this.data };
-    if (!this.enableDay && data.days) {
-      data.hours = (data.hours || 0) + data.days * 24;
-      delete data.days;
-    }
-    if (!this.enableMillisecond && data.milliseconds) {
-      data.seconds = (data.seconds || 0) + data.milliseconds / 1000;
-      delete data.milliseconds;
-    }
-    return data;
-  }
-
   private _component(
     data: HaDurationData | undefined,
     field: keyof HaDurationData
   ): number {
-    const amount = data?.[field];
-    if (amount) {
-      return Number(amount);
-    }
-    return this.required || data ? 0 : NaN;
+    return data?.[field] ?? (this.required ? 0 : NaN);
   }
 
   private _durationChanged(

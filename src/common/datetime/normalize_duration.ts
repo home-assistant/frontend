@@ -1,61 +1,45 @@
 import type { HaDurationData } from "../../components/ha-duration-input";
 import { durationDataToSeconds } from "./duration_to_seconds";
 
-const COMPONENTS = [
-  "days",
-  "hours",
-  "minutes",
-  "seconds",
-  "milliseconds",
-] as const;
-
 export interface NormalizedDuration extends HaDurationData {
   negative: boolean;
 }
 
-const splitSeconds = (
-  total: number,
-  fields: HaDurationData
-): HaDurationData => {
-  let rest = total;
-  const result: HaDurationData = {};
-  if ("days" in fields) {
-    result.days = Math.floor(rest / 86400);
-    rest -= result.days * 86400;
-  }
-  result.hours = Math.floor(rest / 3600);
-  rest -= result.hours * 3600;
-  result.minutes = Math.floor(rest / 60);
-  rest -= result.minutes * 60;
-  if ("milliseconds" in fields) {
-    result.seconds = Math.floor(rest);
-    result.milliseconds = Math.round((rest - result.seconds) * 1000);
-  } else {
-    result.seconds = rest;
-  }
-  return result;
-};
+interface DurationUnits {
+  enableDay?: boolean;
+  enableSecond?: boolean;
+  enableMillisecond?: boolean;
+}
 
 export const normalizeDuration = (
-  duration: HaDurationData
+  duration: HaDurationData,
+  {
+    enableDay = true,
+    enableSecond = true,
+    enableMillisecond = true,
+  }: DurationUnits = {}
 ): NormalizedDuration => {
-  const total = durationDataToSeconds(duration);
-  const negative = total < 0;
-  const mixed = COMPONENTS.some((field) => {
-    const amount = duration[field];
-    return amount ? amount < 0 !== negative : false;
-  });
-  if (mixed) {
-    return { negative, ...splitSeconds(Math.abs(total), duration) };
+  const total = Math.round(durationDataToSeconds(duration) * 1000);
+  let rest = Math.abs(total);
+  const result: NormalizedDuration = { negative: total < 0 };
+  if (enableDay) {
+    result.days = Math.floor(rest / 86400000);
+    rest %= 86400000;
   }
-  const components = { ...duration };
-  for (const field of COMPONENTS) {
-    const amount = components[field];
-    if (amount !== undefined) {
-      components[field] = Math.abs(amount);
-    }
+  result.hours = Math.floor(rest / 3600000);
+  rest %= 3600000;
+  result.minutes = Math.floor(rest / 60000);
+  rest %= 60000;
+  if (enableMillisecond) {
+    result.seconds = Math.floor(rest / 1000);
+    result.milliseconds = rest % 1000;
+  } else {
+    result.seconds = rest / 1000;
   }
-  return { negative, ...components };
+  if (!enableSecond && !result.seconds) {
+    delete result.seconds;
+  }
+  return result;
 };
 
 export const applyDurationSign = (
@@ -66,10 +50,9 @@ export const applyDurationSign = (
     return duration;
   }
   const signed = { ...duration };
-  for (const field of COMPONENTS) {
-    const amount = signed[field];
-    if (amount) {
-      signed[field] = -amount;
+  for (const field of Object.keys(signed) as (keyof HaDurationData)[]) {
+    if (signed[field]) {
+      signed[field] = -signed[field];
     }
   }
   return signed;

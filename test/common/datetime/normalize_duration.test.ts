@@ -5,34 +5,41 @@ import {
 } from "../../../src/common/datetime/normalize_duration";
 
 describe("normalizeDuration", () => {
-  it("derives the sign from components sharing a sign", () => {
+  it("splits the sign from the components", () => {
     expect(normalizeDuration({ hours: -1, minutes: -30 })).toEqual({
       negative: true,
+      days: 0,
       hours: 1,
       minutes: 30,
-    });
-    expect(normalizeDuration({ hours: 0, minutes: 0 })).toEqual({
-      negative: false,
-      hours: 0,
-      minutes: 0,
-    });
-  });
-
-  it("splits the total again when components have mixed signs", () => {
-    expect(normalizeDuration({ hours: 1, minutes: -30, seconds: 0 })).toEqual({
-      negative: false,
-      hours: 0,
-      minutes: 30,
-      seconds: 0,
-    });
-    expect(normalizeDuration({ days: -1, hours: 2, milliseconds: 0 })).toEqual({
-      negative: true,
-      days: 0,
-      hours: 22,
-      minutes: 0,
       seconds: 0,
       milliseconds: 0,
     });
+  });
+
+  it("uses the total when components have mixed signs", () => {
+    expect(normalizeDuration({ hours: 1, minutes: -30 })).toMatchObject({
+      negative: false,
+      hours: 0,
+      minutes: 30,
+    });
+  });
+
+  it("folds units that are not shown into the smaller ones", () => {
+    expect(
+      normalizeDuration(
+        { days: 1, hours: 2, seconds: 5, milliseconds: 500 },
+        { enableDay: false, enableMillisecond: false }
+      )
+    ).toEqual({ negative: false, hours: 26, minutes: 0, seconds: 5.5 });
+  });
+
+  it("leaves out zero seconds when seconds are not shown", () => {
+    expect(
+      normalizeDuration(
+        { hours: 1 },
+        { enableDay: false, enableSecond: false, enableMillisecond: false }
+      )
+    ).toEqual({ negative: false, hours: 1, minutes: 0 });
   });
 });
 
@@ -41,9 +48,6 @@ describe("applyDurationSign", () => {
     expect(
       applyDurationSign({ hours: 1, minutes: 30, seconds: 0 }, true)
     ).toEqual({ hours: -1, minutes: -30, seconds: 0 });
-    expect(applyDurationSign({ hours: 1, minutes: 30 }, false)).toEqual({
-      hours: 1,
-      minutes: 30,
-    });
+    expect(applyDurationSign({ hours: 1 }, false)).toEqual({ hours: 1 });
   });
 });

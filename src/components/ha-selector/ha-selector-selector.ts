@@ -10,7 +10,6 @@ import type {
 } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-form/ha-form";
-import type { HaFormSchema } from "../ha-form/types";
 import { unitOfMeasurementOptions } from "../../data/number";
 
 const SELECTOR_DEFAULTS = {
@@ -77,6 +76,7 @@ const SELECTOR_SCHEMAS = {
       selector: {
         select: {
           mode: "dropdown",
+          translation_key: "duration_mode",
           options: ["positive", "signed", "offset"],
         },
       },
@@ -174,36 +174,6 @@ const SELECTOR_SCHEMAS = {
   time: [] as const,
 };
 
-const localizeSelectOptions = (
-  schemas: readonly HaFormSchema[],
-  localize: LocalizeFunc
-): HaFormSchema[] =>
-  schemas.map((field) => {
-    if (!("selector" in field) || !("select" in field.selector)) {
-      return field;
-    }
-    const select = field.selector.select;
-    const options = select?.options;
-    if (!options?.every((option) => typeof option === "string")) {
-      return field;
-    }
-    return {
-      ...field,
-      selector: {
-        select: {
-          ...select,
-          options: options.map((value) => ({
-            value,
-            label:
-              localize(
-                `ui.components.selectors.selector.${field.name}_options.${value}` as LocalizeKeys
-              ) || value,
-          })),
-        },
-      },
-    };
-  });
-
 @customElement("ha-selector-selector")
 export class HaSelectorSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -233,9 +203,7 @@ export class HaSelectorSelector extends LitElement {
   }
 
   private _schema = memoizeOne((choice: string, localize: LocalizeFunc) => {
-    const schemas = SELECTOR_SCHEMAS[choice]
-      ? localizeSelectOptions(SELECTOR_SCHEMAS[choice], localize)
-      : undefined;
+    const schemas = SELECTOR_SCHEMAS[choice];
     return [
       {
         name: "type",
@@ -291,12 +259,8 @@ export class HaSelectorSelector extends LitElement {
         type,
         ...(typeof value0 === "object" ? value0 : []),
       };
-      if (
-        type === "duration" &&
-        data.mode === undefined &&
-        data.allow_negative
-      ) {
-        data.mode = "signed";
+      if (type === "duration" && data.allow_negative) {
+        data.mode ??= "signed";
       }
     }
 
@@ -309,6 +273,7 @@ export class HaSelectorSelector extends LitElement {
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .localizeValue=${this._localizeValueCallback}
         @value-changed=${this._valueChanged}
         .narrow=${this.narrow}
       ></ha-form>
@@ -360,6 +325,9 @@ export class HaSelectorSelector extends LitElement {
     this._localize!(
       `ui.components.selectors.selector.${schema.name}` as LocalizeKeys
     ) || schema.name;
+
+  private _localizeValueCallback = (key: string): string =>
+    this._localize!(`ui.components.selectors.selector.${key}` as LocalizeKeys);
 
   static styles = css`
     .title {
