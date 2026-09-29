@@ -215,7 +215,7 @@ export class HaColorPicker extends LitElement {
     item: PickerComboBoxItem,
     index?: number
   ) => ReturnType<typeof html> = (item) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${this._renderItemIcon(item)}
       <span slot="headline">${item.primary}</span>
       ${

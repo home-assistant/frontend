@@ -437,8 +437,6 @@ export class HaSerialPortSelector extends LitElement {
     const { port_type, used_by, description } = item as SerialPickerItem;
     return html`
       <ha-combo-box-item
-        type="button"
-        compact
         .borderTop=${manual}
         style=${styleMap({
           marginTop: manual ? "var(--ha-space-3)" : "",

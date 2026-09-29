@@ -243,7 +243,7 @@ export class HaAreaControlsPicker extends LitElement {
   );
 
   private _rowRenderer = (item: AreaControlPickerItem) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${
         item.type === "entity" && item.stateObj
           ? html`<ha-state-icon

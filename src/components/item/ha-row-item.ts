@@ -87,9 +87,7 @@ export class HaRowItem extends LitElement {
     const hasContent = this._slotController.test("content");
 
     return html`
-      <div part="start" class="start" ?hidden=${!this._hasStart}>
-        <slot name="start" @slotchange=${this._onSlotChange("start")}></slot>
-      </div>
+      ${this._renderStart()}
       <div part="content" class="content">
         ${
           hasContent
@@ -97,10 +95,20 @@ export class HaRowItem extends LitElement {
             : this._renderDefaultContent()
         }
       </div>
-      <div part="end" class="end" ?hidden=${!this._hasEnd}>
-        <slot name="end" @slotchange=${this._onSlotChange("end")}></slot>
-      </div>
+      ${this._renderEnd()}
     `;
+  }
+
+  protected _renderStart(): TemplateResult {
+    return html`<div part="start" class="start" ?hidden=${!this._hasStart}>
+      <slot name="start" @slotchange=${this._onSlotChange("start")}></slot>
+    </div>`;
+  }
+
+  protected _renderEnd(): TemplateResult {
+    return html`<div part="end" class="end" ?hidden=${!this._hasEnd}>
+      <slot name="end" @slotchange=${this._onSlotChange("end")}></slot>
+    </div>`;
   }
 
   protected _renderDefaultContent(): TemplateResult {

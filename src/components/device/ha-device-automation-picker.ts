@@ -170,7 +170,7 @@ export abstract class HaDeviceAutomationPicker<
   // Device automation labels (entity name + subtype) are often longer than the
   // field, so let the option wrap onto multiple lines instead of truncating.
   private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
-    html`<ha-combo-box-item type="button" compact multiline>
+    html`<ha-combo-box-item multiline>
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
     </ha-combo-box-item>`;
 
