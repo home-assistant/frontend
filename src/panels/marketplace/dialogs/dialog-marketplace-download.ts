@@ -31,6 +31,7 @@ import {
 } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { MarketplaceDispatchEvent } from "../../../data/marketplace/common";
 import type {
   RepositoryBase,
   RepositoryInfo,
@@ -43,6 +44,7 @@ import {
 import {
   handleWarningNotAccepted,
   websocketErrorMessage,
+  websocketSubscription,
 } from "../../../data/marketplace/websocket";
 import { marketplaceStyles } from "../styles/marketplace-common-style";
 import type { MarketplaceHass } from "../tools/connect-github";
@@ -75,6 +77,9 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
   private _api!: ContextType<typeof apiContext>;
 
   @state() private _installing = false;
+
+  // What the backend reports while downloading, unknown until its first step
+  @state() private _progress?: number;
 
   @state() private _error?: string;
 
@@ -373,7 +378,10 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
         }
         ${
           this._installing
-            ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
+            ? html`<ha-progress-bar
+                .value=${this._progress ?? 0}
+                .indeterminate=${this._progress === undefined}
+              ></ha-progress-bar>`
             : nothing
         }
       </div>
@@ -411,7 +419,23 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
     }
 
     this._installing = true;
+    this._progress = undefined;
     this._error = undefined;
+
+    // Subscribed before the download starts, or its first steps are missed.
+    // Progress is a nicety, the download goes ahead without it.
+    const unsubscribeProgress = await websocketSubscription(
+      this._hass,
+      (data) => {
+        if (
+          data?.repository === repository.full_name &&
+          typeof data.progress === "number"
+        ) {
+          this._progress = data.progress;
+        }
+      },
+      MarketplaceDispatchEvent.REPOSITORY_DOWNLOAD_PROGRESS
+    ).catch(() => undefined);
 
     try {
       await repositoryDownloadVersion(
@@ -441,6 +465,8 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
           "ui.panel.marketplace.dialog_download.download_failed"
         );
       return;
+    } finally {
+      unsubscribeProgress?.();
     }
 
     this._installing = false;

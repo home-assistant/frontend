@@ -132,6 +132,49 @@ describe("dialog-marketplace-download", () => {
     expect(showConfirmationDialog).toHaveBeenCalledWith(app, expect.anything());
   });
 
+  it("shows how far the download of its repository is", async () => {
+    const download = deferred<null>();
+    const unsubscribe = vi.fn();
+    let progress!: (data: Record<string, unknown>) => void;
+    const connection = mockConnection(async (message: { type: string }) =>
+      message.type === "marketplace/repository/download"
+        ? download.promise
+        : null
+    );
+    connection.subscribeMessage.mockImplementation((async (
+      callback: (data: Record<string, unknown>) => void
+    ) => {
+      progress = callback;
+      return unsubscribe;
+    }) as never);
+    const dialog = await openDownloadDialog(
+      { repository: repositoryInfo("1") },
+      connection
+    );
+    await settle(dialog);
+
+    dialog
+      .shadowRoot!.querySelector("ha-button[slot=primaryAction]")!
+      .dispatchEvent(new Event("click"));
+    await settle(dialog);
+    const bar = () =>
+      dialog.shadowRoot!.querySelector("ha-progress-bar") as HTMLElement & {
+        value?: number;
+        indeterminate?: boolean;
+      };
+    expect(bar().indeterminate).toBe(true);
+
+    progress({ repository: "owner/repository-1", progress: 50 });
+    progress({ repository: "owner/another", progress: 90 });
+    await settle(dialog);
+    expect(bar().value).toBe(50);
+    expect(bar().indeterminate).toBe(false);
+
+    download.resolve(null);
+    await settle(dialog);
+    expect(unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
   it("offers nothing for a rate limit once closed", async () => {
     const download = deferred<null>();
     const dialog = await openDownloadDialog(
