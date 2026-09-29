@@ -95,7 +95,7 @@ export const uninstallMarketplaceRepository = (
   repositoryId: string
 ) =>
   hass.callWS<null>({
-    type: "marketplace/repository/remove",
+    type: "marketplace/repository/uninstall",
     repository: repositoryId,
   });
 
