@@ -164,4 +164,62 @@ describe("markdownWithRepositoryContext", () => {
       "A ` and [#12](https://github.com/owner/repo/issues/12)."
     );
   });
+
+  it("resolves a downloaded README against the downloaded version", () => {
+    expect(
+      markdownWithRepositoryContext("![old](old.png)", {
+        ...repository,
+        installed: true,
+        installed_version: "v0.9.0",
+      })
+    ).toBe(
+      "![old](https://raw.githubusercontent.com/owner/repo/v0.9.0/old.png)"
+    );
+  });
+
+  it("rewrites a relative link followed by an absolute link", () => {
+    expect(
+      markdownWithRepositoryContext(
+        "[guide](guide.md) [website](https://example.com)",
+        repository
+      )
+    ).toBe(
+      "[guide](https://github.com/owner/repo/blob/v1.0.0/guide.md) [website](https://example.com)"
+    );
+  });
+
+  it("keeps links with a scheme of their own", () => {
+    const input = "[Email](mailto:maintainer@example.com)";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("does not link an issue reference that is already a link", () => {
+    const input = "Fixed [#123](https://github.com/owner/repo/issues/123).";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("does not link an issue reference inside an address", () => {
+    const input = "See https://example.com/page#123 for details.";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps indented code blocks as they are", () => {
+    const input = "Configuration:\n\n    color: '#123456'\n    value: 1\n";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("rewrites both the image and the link of a badge", () => {
+    expect(
+      markdownWithRepositoryContext(
+        "[![badge](badge.svg)](docs/setup.md)",
+        repository
+      )
+    ).toBe(
+      "[![badge](https://raw.githubusercontent.com/owner/repo/v1.0.0/badge.svg)](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
+    );
+  });
 });

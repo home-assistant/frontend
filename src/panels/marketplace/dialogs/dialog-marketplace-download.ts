@@ -254,6 +254,11 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       repository.replaces_built_in &&
       !repository.installed &&
       !this._replacementAccepted;
+    // Home Assistant can be too old for the newest version, not for an older one
+    const tooNew =
+      !repository.can_download &&
+      (this._selectedVersion ?? repository.available_version) ===
+        repository.available_version;
     return html`
       <div class="content">
         ${
@@ -384,11 +389,14 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
               </ha-alert>`
         }
         ${
-          repository.can_download
-            ? nothing
-            : html`<ha-alert alert-type="warning">
+          tooNew
+            ? html`<ha-alert alert-type="warning">
                 ${downloadBlockedReason(this._i18n.localize, repository)}
+                ${this._i18n.localize(
+                  "ui.panel.marketplace.dialog_download.older_version_hint"
+                )}
               </ha-alert>`
+            : nothing
         }
         ${
           this._error
@@ -412,9 +420,7 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
         <ha-button
           slot="primaryAction"
           appearance="filled"
-          ?disabled=${
-            this._installing || !repository.can_download || needsAcceptance
-          }
+          ?disabled=${this._installing || tooNew || needsAcceptance}
           @click=${this._installRepository}
         >
           ${this._i18n.localize("ui.panel.marketplace.common.download")}

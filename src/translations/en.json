@@ -12117,6 +12117,7 @@
         "error_no_data": "You need to select some data sources first."
       },
       "marketplace": {
+        "title": "Marketplace",
         "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
@@ -12218,6 +12219,7 @@
           "no_releases": "No releases found",
           "release": "Release",
           "release_warning": "It is not advised to use this section to do a rollback, restore a backup instead.",
+          "older_version_hint": "An older version can still work, pick one under Need a different version?",
           "restart": "Remember that you need to restart Home Assistant before changes to integrations (custom_components) are applied.",
           "note_downloaded": "When downloaded, this will be located in {location}",
           "lovelace_instruction": "After the download completes, since you are not using Lovelace in storage mode, you need to add the resource with these settings manually:",

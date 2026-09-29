@@ -263,7 +263,7 @@ describe("ha-marketplace-repository-dashboard", () => {
     ["2099.1.0", "ui.panel.marketplace.dialog_info.requires_homeassistant"],
     [null, "ui.panel.marketplace.dialog_info.requires_newer_homeassistant"],
   ])(
-    "explains why it offers no download for a repository needing %s",
+    "explains why the newest version does not fit a repository needing %s",
     async (homeassistant, reason) => {
       const { page } = await openRepositoryPage(
         async (repositoryId) =>
@@ -272,9 +272,10 @@ describe("ha-marketplace-repository-dashboard", () => {
       );
       await settle(page);
 
+      // Still offered, the download dialog has the older versions
       expect(
         page.shadowRoot!.querySelector('ha-button[slot="fab"]')
-      ).toBeNull();
+      ).not.toBeNull();
       expect(
         page.shadowRoot!.querySelector("ha-card ha-alert")?.textContent?.trim()
       ).toBe(reason);

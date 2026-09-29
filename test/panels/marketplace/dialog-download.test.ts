@@ -266,7 +266,40 @@ describe("dialog-marketplace-download", () => {
     }
   );
 
-  it("does not offer a download Home Assistant is too old for", async () => {
+  it("offers an older release when the newest needs a newer Home Assistant", async () => {
+    const dialog = await openDownloadDialog(
+      {
+        repository: repositoryInfo("1", {
+          available_version: "2.0.0",
+          can_download: false,
+          homeassistant: "9999.1.0",
+        }),
+      },
+      mockConnection(async (message) =>
+        message.type === "marketplace/repository/releases"
+          ? [release("2.0.0"), release("1.0.0")]
+          : null
+      )
+    );
+    expandReleases(dialog);
+    await settle(dialog);
+
+    dialog
+      .shadowRoot!.querySelector("ha-select")!
+      .dispatchEvent(
+        new CustomEvent("selected", { detail: { value: "1.0.0" } })
+      );
+    await settle(dialog);
+
+    expect(getInternals(dialog)._selectedVersion).toBe("1.0.0");
+    expect(
+      dialog
+        .shadowRoot!.querySelector('ha-button[slot="primaryAction"]')!
+        .hasAttribute("disabled")
+    ).toBe(false);
+  });
+
+  it("does not offer the newest version Home Assistant is too old for", async () => {
     const dialog = await openDownloadDialog(
       {
         repository: repositoryInfo("1", {
@@ -278,9 +311,12 @@ describe("dialog-marketplace-download", () => {
     );
     const root = dialog.shadowRoot!;
 
-    expect(root.querySelector("ha-alert")?.textContent?.trim()).toBe(
-      "ui.panel.marketplace.dialog_info.requires_homeassistant"
-    );
+    expect(
+      root.querySelector("ha-alert")?.textContent?.trim().split(/\s+/)
+    ).toEqual([
+      "ui.panel.marketplace.dialog_info.requires_homeassistant",
+      "ui.panel.marketplace.dialog_download.older_version_hint",
+    ]);
     expect(
       root
         .querySelector('ha-button[slot="primaryAction"]')!

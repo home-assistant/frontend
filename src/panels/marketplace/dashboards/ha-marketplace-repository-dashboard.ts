@@ -386,7 +386,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         </div>
 
         ${
-          !this._repository.installed_version && this._repository.can_download
+          !this._repository.installed_version
             ? html`<ha-button
                 slot="fab"
                 size="l"

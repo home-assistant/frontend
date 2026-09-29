@@ -42,18 +42,22 @@ describe("repositoryMenuItems", () => {
     ).toContain("download");
   });
 
+  // The dialog refuses only the newest version, an older one can still fit.
   it.each([
     ["a download", {}],
     ["a redownload", { installed_version: "1.0.0" }],
-  ])("offers no %s when Home Assistant is too old", (_offer, extra) => {
-    expect(
-      menuValues(
-        repositoryMenuItems(
-          PAGE,
-          repository({ ...extra, can_download: false }),
-          localize
+  ])(
+    "offers %s when Home Assistant is too old for the newest",
+    (_offer, extra) => {
+      expect(
+        menuValues(
+          repositoryMenuItems(
+            PAGE,
+            repository({ ...extra, can_download: false }),
+            localize
+          )
         )
-      )
-    ).not.toContain("download");
-  });
+      ).toContain("download");
+    }
+  );
 });

@@ -66,9 +66,10 @@ type DisabledReason = (typeof DISABLED_REASONS)[number];
 const isKnownDisabledReason = (reason: string): reason is DisabledReason =>
   DISABLED_REASONS.includes(reason as DisabledReason);
 
+// From the Marketplace translations, a direct visit does not load those of Settings
 const TABS: PageNavigation[] = [
   {
-    translationKey: "ui.panel.config.dashboard.marketplace.main",
+    translationKey: "ui.panel.marketplace.title",
     path: "/marketplace",
   },
 ];
@@ -172,11 +173,11 @@ export class HaMarketplaceDashboard extends LitElement {
         has-filters
         .filters=${this._activeFilters?.length}
         .noDataText=${this.hass.localize("ui.panel.marketplace.dashboard.no_data")}
-        .initialGroupColumn=${this._activeGrouping || DEFAULT_GROUP_COLUMN}
+        .initialGroupColumn=${this._activeGrouping ?? DEFAULT_GROUP_COLUMN}
         .initialCollapsedGroups=${this._activeCollapsed || []}
         .groupOrder=${this._groupOrder(
           this.hass.localize,
-          this._activeGrouping || DEFAULT_GROUP_COLUMN
+          this._activeGrouping ?? DEFAULT_GROUP_COLUMN
         )}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._orderTableColumns}

@@ -154,23 +154,21 @@ export const repositoryMenuItems = (
     }
   );
 
-  // The backend refuses the download when Home Assistant is too old for it.
-  if (repository.can_download) {
-    entries.push({
-      value: "download",
-      path: repository.installed_version ? mdiReload : mdiDownload,
-      label: localize(
-        repository.installed_version
-          ? "ui.panel.marketplace.repository_card.redownload"
-          : "ui.panel.marketplace.common.download"
-      ),
-      action: () =>
-        showMarketplaceDownloadDialog(element, {
-          marketplace: element.marketplace,
-          repositoryId: repository.id,
-        }),
-    });
-  }
+  // Always offered, the dialog refuses only a version Home Assistant is too old for.
+  entries.push({
+    value: "download",
+    path: repository.installed_version ? mdiReload : mdiDownload,
+    label: localize(
+      repository.installed_version
+        ? "ui.panel.marketplace.repository_card.redownload"
+        : "ui.panel.marketplace.common.download"
+    ),
+    action: () =>
+      showMarketplaceDownloadDialog(element, {
+        marketplace: element.marketplace,
+        repositoryId: repository.id,
+      }),
+  });
 
   if (repository.new) {
     entries.push({

@@ -4,56 +4,104 @@ const showGitHubWeb = (text: string) =>
   text.toLowerCase().includes(".md") ||
   text.toLowerCase().includes(".markdown");
 
-const rewriteLinks = (input: string, repository?: RepositoryInfo) => {
-  // Handle conversion to raw GitHub URL
-  input = input.replace(
-    /https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^\s]+)/g,
-    (x, owner, repo, path) => {
-      return showGitHubWeb(x)
-        ? x
-        : `https://raw.githubusercontent.com/${owner}/${repo}/${path}`;
-    }
+// A destination with a scheme of its own, like https: or mailto:, stays as is.
+const HAS_SCHEME = /^[a-z][a-z\d+.-]*:/i;
+// The destination of a link or an image, one at a time, so nested badges work.
+const LINK_DESTINATION = /\]\(\s*([^\s)]+)([^)]*)\)/g;
+const LINK = /!?\[[^[\]]*\]\([^)]*\)/g;
+const BARE_URL = /[a-z][a-z\d+.-]*:\/\/\S+/gi;
+const ISSUE_REFERENCE = /(?:\w[\w-.]+\/\w[\w-.]+|\B)#[1-9]\d*\b/g;
+const LINK_PLACEHOLDER = /\uE000(\d+)\uE000/g;
+
+const rawGitHubFiles = (input: string) =>
+  input.replace(
+    /https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^\s)]+)/g,
+    (url, owner, repo, path) =>
+      showGitHubWeb(url)
+        ? url
+        : `https://raw.githubusercontent.com/${owner}/${repo}/${path}`
   );
 
-  // Handle relative links
-  if (repository) {
-    input = input.replace(/\[.*?\]\([^#](?!.*?:\/\/).*?\)/g, (x) => {
-      const showWeb = showGitHubWeb(x);
-      return x
-        .replace("(/", "(")
-        .replace(
-          "(",
-          `(${showWeb ? `https://github.com` : `https://raw.githubusercontent.com`}/${
-            repository.full_name
-          }${showWeb ? "/blob" : ""}/${repository.available_version || repository.default_branch}/`
-        );
-    });
-
-    // Handle anchor references
-    input = input.replace(/\[.*\]\(#.*\)/g, (x) => {
-      return x.replace("(#", `(/marketplace/repository/${repository.id}#`);
-    });
-
-    // Add references to issues and PRs
-    input = input.replace(
-      /(?:\w[\w-.]+\/\w[\w-.]+|\B)#[1-9]\d*\b/g,
-      (reference) => {
-        const fullReference = reference.replace(
-          /^#/,
-          `${repository.full_name}#`
-        );
-        const [fullName, issue] = fullReference.split("#");
-        return `[${reference}](https://github.com/${fullName}/issues/${issue})`;
-      }
-    );
+const repositoryDestination = (
+  destination: string,
+  repository: RepositoryInfo
+) => {
+  if (destination.startsWith("#")) {
+    return `/marketplace/repository/${repository.id}${destination}`;
   }
-  return input;
+
+  if (HAS_SCHEME.test(destination) || destination.startsWith("//")) {
+    return destination;
+  }
+
+  // A downloaded repository shows the README of the downloaded version
+  const ref =
+    (repository.installed && repository.installed_version) ||
+    repository.available_version ||
+    repository.default_branch;
+  const path = destination.replace(/^\//, "");
+
+  return showGitHubWeb(path)
+    ? `https://github.com/${repository.full_name}/blob/${ref}/${path}`
+    : `https://raw.githubusercontent.com/${repository.full_name}/${ref}/${path}`;
+};
+
+// Links and addresses are set aside, a reference inside one is not an issue.
+const linkIssueReferences = (input: string, repository: RepositoryInfo) => {
+  const setAside: string[] = [];
+  const setAsideMatch = (match: string) => {
+    setAside.push(match);
+    return `\uE000${setAside.length - 1}\uE000`;
+  };
+
+  let masked = input;
+  let previous: string;
+  // A badge is a link around an image, so the inner one goes first
+  do {
+    previous = masked;
+    masked = masked.replace(LINK, setAsideMatch);
+  } while (masked !== previous);
+  masked = masked.replace(BARE_URL, setAsideMatch);
+
+  let output = masked.replace(ISSUE_REFERENCE, (reference) => {
+    const [fullName, issue] = reference
+      .replace(/^#/, `${repository.full_name}#`)
+      .split("#");
+    return `[${reference}](https://github.com/${fullName}/issues/${issue})`;
+  });
+
+  do {
+    previous = output;
+    output = output.replace(
+      LINK_PLACEHOLDER,
+      (_placeholder, index) => setAside[Number(index)]
+    );
+  } while (output !== previous);
+
+  return output;
+};
+
+const rewriteLinks = (input: string, repository?: RepositoryInfo) => {
+  const output = rawGitHubFiles(input);
+  if (!repository) {
+    return output;
+  }
+
+  return linkIssueReferences(
+    output.replace(
+      LINK_DESTINATION,
+      (_link, destination, title) =>
+        `](${repositoryDestination(destination, repository)}${title})`
+    ),
+    repository
+  );
 };
 
 // A backtick fence cannot have a backtick in its info string, a tilde fence can.
 const FENCE_OPENING = /^ {0,3}(?:(`{3,})[^`]*|(~{3,}).*)$/;
 const FENCE_CLOSING = /^ {0,3}(`{3,}|~{3,})\s*$/;
 const CODE_PLACEHOLDER = /\0(\d+)\0/g;
+const INDENTED_CODE = /^(?: {4}|\t)/;
 
 interface MarkdownBlock {
   code: boolean;
@@ -70,10 +118,13 @@ const isClosingFence = (line: string, fence: string) => {
 };
 
 // An unclosed fence runs to the end of the document, like CommonMark.
-const splitFencedCodeBlocks = (input: string) => {
+const splitCodeBlocks = (input: string) => {
   const blocks: MarkdownBlock[] = [];
   let current: MarkdownBlock | undefined;
   let fence: string | undefined;
+
+  let indented = false;
+  let previousBlank = true;
 
   for (const line of input.split("\n")) {
     if (current?.code && fence) {
@@ -83,6 +134,27 @@ const splitFencedCodeBlocks = (input: string) => {
       }
       continue;
     }
+
+    const blank = line.trim() === "";
+    const indentation = INDENTED_CODE.test(line);
+
+    // Indented code runs on over blank lines, until a line is not indented
+    if (current?.code && indented && (blank || indentation)) {
+      current.lines.push(line);
+      previousBlank = blank;
+      continue;
+    }
+    indented = false;
+
+    // It can not interrupt a paragraph, a blank line comes before it
+    if (indentation && previousBlank && !blank) {
+      indented = true;
+      current = { code: true, lines: [line] };
+      blocks.push(current);
+      previousBlank = false;
+      continue;
+    }
+    previousBlank = blank;
 
     const opening = FENCE_OPENING.exec(line);
     if (opening) {
@@ -153,7 +225,7 @@ export const markdownWithRepositoryContext = (
     return `\0${code.length - 1}\0`;
   };
 
-  const masked = splitFencedCodeBlocks(input)
+  const masked = splitCodeBlocks(input)
     .map((block) => {
       const text = block.lines.join("\n");
       return block.code ? mask(text) : maskInlineCode(text, mask);
