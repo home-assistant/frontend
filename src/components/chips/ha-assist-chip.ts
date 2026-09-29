@@ -57,6 +57,10 @@ export class HaAssistChip extends HaChipBase {
           );
         }
         .primary {
+          padding-inline-start: var(
+            --md-assist-chip-leading-space,
+            var(--ha-space-4)
+          );
           padding-inline-end: var(
             --md-assist-chip-trailing-space,
             var(--ha-space-4)
