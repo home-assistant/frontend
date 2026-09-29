@@ -1,9 +1,10 @@
-import { consume, ContextConsumer } from "@lit/context";
+import { ContextConsumer } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,

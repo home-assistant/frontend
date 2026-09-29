@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiCogRefresh,
   mdiDelete,
@@ -9,6 +9,7 @@ import {
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../../../common/decorators/consume";
 import checkValidDate from "../../../../../../common/datetime/check_valid_date";
 import { formatDateTimeWithSeconds } from "../../../../../../common/datetime/format_date_time";
 import { navigate } from "../../../../../../common/navigate";
