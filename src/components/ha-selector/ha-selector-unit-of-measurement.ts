@@ -28,8 +28,8 @@ export class HaUnitOfMeasurementSelector extends LitElement {
 
   private _units = memoizeOne(
     (
-      deviceClasses: string | string[] | undefined,
-      stateClasses: string | string[] | undefined,
+      deviceClasses: string | string[] | null | undefined,
+      stateClasses: string | string[] | null | undefined,
       filterDeviceClass: string | string[] | undefined,
       filterStateClass: string | string[] | undefined
     ) =>
