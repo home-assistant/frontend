@@ -986,6 +986,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         .sections {
           display: flex;
+          flex-shrink: 0;
           flex-wrap: nowrap;
           gap: var(--ha-space-2);
           padding: 0 var(--ha-space-3) var(--ha-space-3);
