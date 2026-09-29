@@ -645,8 +645,8 @@
           "row_label": {
             "above": "above {value}",
             "below": "below {value}",
-            "between": "in range {value}",
-            "outside": "outside {value}"
+            "between": "between {from} and {to}",
+            "outside": "outside {from} and {to}"
           },
           "crossed": {
             "type": "Fire when the value goes",
