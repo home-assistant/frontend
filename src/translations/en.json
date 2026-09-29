@@ -12141,7 +12141,6 @@
           "cancel": "Cancel",
           "download": "Download",
           "ignore": "Ignore",
-          "navigate": "Navigate",
           "reload": "Reload",
           "remove": "Remove",
           "repository": "Repository",
@@ -12243,9 +12242,9 @@
         "repository_card": {
           "dismiss_new": "Dismiss new",
           "open_issue": "Open issue",
-          "open_source": "Open source",
+          "open_source": "Open resource file",
           "redownload": "Redownload",
-          "update_information": "Update information"
+          "update_information": "Refresh information"
         },
         "repository_status": {
           "pending-restart": "Pending restart",
@@ -12268,8 +12267,8 @@
             "confirm": "Do you want to do that now?"
           },
           "remove": {
-            "title": "Remove",
-            "message": "Do you really want to remove {name}?"
+            "title": "Remove {name}?",
+            "message": "This deletes what the Marketplace downloaded for it."
           },
           "disabled": {
             "title": "The Marketplace is disabled",
@@ -12282,7 +12281,8 @@
           },
           "configured": {
             "title": "Integration is configured",
-            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Marketplace."
+            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Marketplace.",
+            "open_integrations": "Open integrations"
           }
         }
       },

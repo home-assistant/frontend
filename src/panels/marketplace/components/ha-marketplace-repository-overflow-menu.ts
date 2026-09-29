@@ -85,7 +85,9 @@ const confirmRemoveRepository = async (
           name: repository.name,
         }),
         dismissText: localize("ui.panel.marketplace.common.ignore"),
-        confirmText: localize("ui.panel.marketplace.common.navigate"),
+        confirmText: localize(
+          "ui.panel.marketplace.dialog.configured.open_integrations"
+        ),
         confirm: () => {
           navigate("/config/integrations", { replace: true });
         },
@@ -99,11 +101,11 @@ const confirmRemoveRepository = async (
 
   showMarketplaceFormDialog(element, {
     marketplace: element.marketplace,
-    title: localize("ui.panel.marketplace.dialog.remove.title"),
-    saveLabel: localize("ui.panel.marketplace.dialog.remove.title"),
-    description: localize("ui.panel.marketplace.dialog.remove.message", {
+    title: localize("ui.panel.marketplace.dialog.remove.title", {
       name: repository.name,
     }),
+    saveLabel: localize("ui.panel.marketplace.common.remove"),
+    description: localize("ui.panel.marketplace.dialog.remove.message"),
     saveAction: async () => {
       await removeRepository(element, repository);
     },
