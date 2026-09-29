@@ -12,6 +12,7 @@ import {
 } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { consume } from "../common/decorators/consume";
 import {
@@ -301,9 +302,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           ? html`
               <div class="section-title-wrapper">
                 <div
-                  class="section-title ${
-                    !this._selectedSection && this._sectionTitle ? "show" : ""
-                  }"
+                  class=${classMap({
+                    "section-title": true,
+                    show: !this._selectedSection && !!this._sectionTitle,
+                  })}
                 >
                   ${this._sectionTitle}
                 </div>
@@ -311,7 +313,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
             `
           : nothing
       }
-      <div class="list-wrapper ${this._plainList ? "" : "virtualized"}">
+      <div
+        class=${classMap({
+          "list-wrapper": true,
+          virtualized: !this._plainList,
+        })}
+      >
         ${this._plainList ? this._renderPlainList() : this._renderVirtualList()}
         ${this.renderScrollableFades()}
       </div>`;
@@ -321,7 +328,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _renderPlainList() {
     return html`
       <ha-list-selectable
-        class="list plain-list ${this._contentScrolled ? "scrolled" : ""}"
+        class=${classMap({
+          list: true,
+          "plain-list": true,
+          scrolled: this._contentScrolled,
+        })}
         virtual-focus
         controlled
         tabindex="0"
@@ -341,7 +352,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
     return html`
       <ha-list-selectable-virtualized
-        class="list ${this._contentScrolled ? "scrolled" : ""}"
+        class=${classMap({
+          list: true,
+          scrolled: this._contentScrolled,
+          "with-sections": !!this.sections?.length,
+        })}
         virtual-focus
         controlled
         tabindex="0"
@@ -895,6 +910,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         .plain-list {
           overflow: auto;
+        }
+
+        /* Keep the active row clear of the section title laid over the list. */
+        .list.with-sections {
+          --ha-list-scroll-padding-block-start: calc(var(--ha-space-8) + 1px);
         }
 
         .list:focus-visible {

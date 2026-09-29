@@ -51,6 +51,8 @@ export interface HaListVirtualizedItem {
  * `center` (default), `end`, or `nearest`.
  *
  * @fires ha-list-activated - Fired when a row is activated via Enter/Space. `detail: { index, item }`.
+ * @cssprop --ha-list-scroll-padding-block-start - Space at the top of the scroll area that revealed rows stay below, like for an overlaid header. Defaults to `0px`.
+ *
  * @fires ha-list-visibility-changed - Fired when the range of visible rows changes. `detail: { first, last }`.
  */
 @customElement("ha-list-virtualized")
@@ -119,8 +121,9 @@ export class HaListVirtualized extends HaListBase {
       return nothing;
     }
 
-    return html`<div part="base" class="base ha-scrollbar">
+    return html`<div part="base" class="base">
       <lit-virtualizer
+        class="ha-scrollbar"
         .keyFunction=${this._keyFunction}
         tabindex="-1"
         scroller
@@ -396,6 +399,10 @@ export class HaListVirtualized extends HaListBase {
       }
       lit-virtualizer {
         flex: 1;
+        scroll-padding-block-start: var(
+          --ha-list-scroll-padding-block-start,
+          0px
+        );
       }
       /* The virtualizer positions rows absolutely, so they would otherwise
          shrink to their content. */
