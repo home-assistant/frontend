@@ -1,5 +1,8 @@
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
+import {
+  isStackSection,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
@@ -47,6 +50,13 @@ export const checkSectionConfig = (
   section: LovelaceSectionRawConfig
 ): LovelaceSectionRawConfig => {
   const updatedSection = { ...section };
+
+  if (isStackSection(updatedSection)) {
+    return {
+      ...updatedSection,
+      sections: updatedSection.sections.map(checkSectionConfig),
+    };
+  }
 
   // Move title to a heading card
   if (section.title) {

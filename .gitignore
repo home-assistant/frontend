@@ -8,6 +8,15 @@ dist/
 /translations/
 /.compress-cache/
 /.rspack-cache/
+
+# Build archives
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tgz
+*.whl
 # Composite action source, not build output
 !/.github/actions/build/
 

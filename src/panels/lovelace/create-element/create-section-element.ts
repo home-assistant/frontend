@@ -6,7 +6,9 @@ import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_LAYOUTS = new Set(["grid"]);
 
-const LAZY_LOAD_LAYOUTS = {};
+const LAZY_LOAD_LAYOUTS = {
+  stack: () => import("../sections/hui-stack-section"),
+};
 
 export const createSectionElement = (
   config: LovelaceSectionConfig

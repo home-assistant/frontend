@@ -1,3 +1,4 @@
+import { isStackSection } from "../../../data/lovelace/config/section";
 import type { HuiSection } from "../sections/hui-section";
 
 /**
@@ -17,6 +18,11 @@ export function computeSectionsBackgroundAlignment(
 
   // Single column layout never has side-by-side sections
   if (columnCount <= 1) return sectionsNeedingMargin;
+
+  // The first child supplies the background at the top of an invisible stack.
+  const backgrounds = sections.map(({ config }) =>
+    isStackSection(config) ? config.sections[0]?.background : config.background
+  );
 
   // Group visible sections into rows by accumulating column spans
   const rows: { indices: number[]; hasBackground: boolean }[] = [];
@@ -39,7 +45,7 @@ export function computeSectionsBackgroundAlignment(
     columnsUsed += span;
     currentRow.indices.push(idx);
 
-    if (section.config.background !== undefined) {
+    if (backgrounds[idx] !== undefined) {
       currentRow.hasBackground = true;
     }
   }
@@ -49,7 +55,7 @@ export function computeSectionsBackgroundAlignment(
   for (const row of rows) {
     if (!row.hasBackground) continue;
     for (const idx of row.indices) {
-      if (sections[idx].config.background === undefined) {
+      if (backgrounds[idx] === undefined) {
         sectionsNeedingMargin.add(idx);
       }
     }

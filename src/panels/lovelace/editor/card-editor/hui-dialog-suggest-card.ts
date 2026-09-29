@@ -257,7 +257,7 @@ export class HuiDialogSuggestCard extends LitElement {
     const newCards = this._sectionConfig
       ? this._sectionConfig.cards || []
       : this._cardConfig!;
-    return addCards(config, [viewIndex, sectionIndex], newCards);
+    return addCards(config, path, newCards);
   }
 
   private async _save(): Promise<void> {

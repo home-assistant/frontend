@@ -21,6 +21,7 @@ import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { isStackSection } from "../../../../data/lovelace/config/section";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { saveConfig } from "../../../../data/lovelace/config/types";
@@ -91,12 +92,12 @@ export class HuiDialogEditSection
 
     this.lovelace = params.lovelace;
 
-    this._config = findLovelaceContainer(this._params.lovelaceConfig, [
-      this._params.viewIndex,
-      this._params.sectionIndex,
-    ]);
+    this._config = findLovelaceContainer(
+      this._params.lovelaceConfig,
+      this._params.path
+    );
     this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
-      this._params.viewIndex,
+      this._params.path[0],
     ]);
     this._initDirtyTracking({ type: "deep" }, this._config);
   }
@@ -140,6 +141,7 @@ export class HuiDialogEditSection
             <hui-section-settings-editor
               .config=${this._config}
               .viewConfig=${this._viewConfig}
+              .inStack=${this._params.path.length === 3}
               @value-changed=${this._configChanged}
             >
             </hui-section-settings-editor>
@@ -207,7 +209,10 @@ export class HuiDialogEditSection
             !this._yamlMode
               ? html`
                   <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                    ${TABS.map(
+                    ${(isStackSection(this._config)
+                      ? TABS.slice(0, 1)
+                      : TABS
+                    ).map(
                       (tab) => html`
                         <ha-tab-group-tab
                           slot="nav"
@@ -316,8 +321,10 @@ export class HuiDialogEditSection
       return;
     }
 
-    const fromViewIndex = this._params.viewIndex;
-    const fromSectionIndex = this._params.sectionIndex;
+    const fromPath = this._params.path;
+    const fromViewIndex = fromPath[0];
+    const fromSectionIndex = fromPath[fromPath.length - 1];
+    const fromStackIndex = fromPath.length === 3 ? fromPath[1] : undefined;
 
     // Same dashboard
     if (urlPath === this.lovelace.urlPath) {
@@ -325,11 +332,7 @@ export class HuiDialogEditSection
       const toIndex = toView.sections?.length ?? 0;
       try {
         await this.lovelace.saveConfig(
-          moveSection(
-            oldConfig,
-            [fromViewIndex, fromSectionIndex],
-            [viewIndex, toIndex]
-          )
+          moveSection(oldConfig, fromPath, [viewIndex, toIndex])
         );
         this.lovelace.showToast({
           message: this.hass!.localize(
@@ -361,10 +364,10 @@ export class HuiDialogEditSection
     const oldFromConfig = this.lovelace.config;
     const oldToConfig = selectedDashConfig;
     try {
-      const section = findLovelaceContainer(oldFromConfig, [
-        fromViewIndex,
-        fromSectionIndex,
-      ]) as LovelaceSectionRawConfig;
+      const section = findLovelaceContainer(
+        oldFromConfig,
+        fromPath
+      ) as LovelaceSectionRawConfig;
 
       await saveConfig(
         this.hass!,
@@ -373,7 +376,12 @@ export class HuiDialogEditSection
       );
 
       await this.lovelace.saveConfig(
-        deleteSection(oldFromConfig, fromViewIndex, fromSectionIndex)
+        deleteSection(
+          oldFromConfig,
+          fromViewIndex,
+          fromSectionIndex,
+          fromStackIndex
+        )
       );
 
       this.lovelace.showToast({
@@ -428,7 +436,7 @@ export class HuiDialogEditSection
     }
     const newConfig = updateLovelaceContainer(
       this._params.lovelaceConfig,
-      [this._params.viewIndex, this._params.sectionIndex],
+      this._params.path,
       this._config
     );
 
