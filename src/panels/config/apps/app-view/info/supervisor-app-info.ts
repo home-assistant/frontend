@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiApplicationImport,
   mdiArrowUpBoldCircleOutline,
@@ -36,6 +36,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { consumeEntityState } from "../../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
@@ -123,6 +124,8 @@ const RATING_ICON = {
   8: mdiNumeric8,
 };
 
+const MAX_RATING = 8;
+
 const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
@@ -141,6 +144,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @consume({ context: internationalizationContext, subscribe: true })
   private i18n!: ContextType<typeof internationalizationContext>;
 
+  @state()
   @consume({ context: registriesContext, subscribe: true })
   private registries!: ContextType<typeof registriesContext>;
 
@@ -897,7 +901,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 this._uninstalling
                               }
                               @change=${this._panelToggled}
-                              .checked=${this._currentAddon.ingress_panel}
+                              .checked=${
+                                this._currentAddon.ingress_panel || false
+                              }
                               haptic
                             ></ha-switch>
                           </ha-row-item>
@@ -1088,7 +1094,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         `ui.panel.config.apps.dashboard.capability.${id}.title` as LocalizeKeys
       ),
       text: this.i18n.localize(
-        `ui.panel.config.apps.dashboard.capability.${id}.description`
+        `ui.panel.config.apps.dashboard.capability.${id}.description`,
+        { max: MAX_RATING }
       ),
     });
   }

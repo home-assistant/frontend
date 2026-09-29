@@ -3,6 +3,7 @@ import type { EntityRegistryEntry } from "../../../src/data/entity/entity_regist
 import {
   entityMapColor,
   HOME_ZONE_ENTITY_ID,
+  nextZoneColor,
   zoneColor,
 } from "../../../src/common/map/entity-map-colors";
 
@@ -60,6 +61,23 @@ describe("entity map colors", () => {
       "secondary-text-color"
     );
     expect(zoneColor("zone.quiet", false, entries, styles)).toBe("color-1");
+  });
+
+  it("previews the next slot for a new zone", () => {
+    const entries = [
+      entry(HOME_ZONE_ENTITY_ID, 10), // excluded from the palette
+      entry("zone.work", 20),
+      entry("person.anne", 30),
+    ];
+
+    // Two ordered entities take color-1 and color-2, so the next is color-3
+    expect(nextZoneColor(false, entries, styles)).toBe("color-3");
+  });
+
+  it("mutes a new passive zone", () => {
+    expect(nextZoneColor(true, [entry("zone.work", 10)], styles)).toBe(
+      "secondary-text-color"
+    );
   });
 
   it("gives entities outside the registry a stable color", () => {

@@ -264,7 +264,8 @@ export async function openOnboarding(page: Page, baseURL: string) {
 
 export async function createOwner(page: Page) {
   await page
-    .locator("onboarding-welcome ha-button.start")
+    .locator("onboarding-welcome")
+    .getByRole("button", { name: "Create my smart home", exact: true })
     .click({ timeout: SHELL_TIMEOUT });
 
   const inputs = page.locator("onboarding-create-user ha-input >> input");

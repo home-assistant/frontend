@@ -19,6 +19,7 @@ export interface BlueprintMetaData {
   description?: string;
   source_url?: string;
   author?: string;
+  homeassistant?: { min_version?: string };
 }
 
 export interface BlueprintInput {
@@ -39,7 +40,7 @@ export interface BlueprintInputSection {
 export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
-  exists?: boolean;
+  exists: boolean;
   blueprint: Blueprint;
   validation_errors: string[] | null;
 }
@@ -63,7 +64,7 @@ export const saveBlueprint = (
   source_url?: string,
   allow_override?: boolean
 ) =>
-  hass.callWS({
+  hass.callWS<{ overrides_existing: boolean }>({
     type: "blueprint/save",
     domain,
     path,
@@ -77,7 +78,7 @@ export const deleteBlueprint = (
   domain: BlueprintDomain,
   path: string
 ) =>
-  hass.callWS<BlueprintImportResult>({
+  hass.callWS<undefined>({
     type: "blueprint/delete",
     domain,
     path,

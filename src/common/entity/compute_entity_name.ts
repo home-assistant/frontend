@@ -29,7 +29,7 @@ export const computeEntityEntryName = (
   fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
-    entry.name ||
+    entry.name ??
     ("original_name" in entry && entry.original_name != null
       ? String(entry.original_name)
       : undefined);
@@ -48,8 +48,8 @@ export const computeEntityEntryName = (
 
   const deviceName = computeDeviceName(device);
 
-  // If the device name is the same as the entity name, consider empty entity name
-  if (deviceName === name) {
+  // An empty entity name or one equal to the device name means the entity uses the device name
+  if (!name || deviceName === name) {
     return undefined;
   }
 

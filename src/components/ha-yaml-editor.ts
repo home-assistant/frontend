@@ -4,7 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { ContextType } from "@lit/context";
-import { consume } from "@lit/context";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";

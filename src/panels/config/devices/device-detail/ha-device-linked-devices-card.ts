@@ -168,10 +168,6 @@ export class HaDeviceLinkedDevicesCard extends LitElement {
       overflow: hidden;
     }
 
-    .card-header {
-      padding-bottom: 0;
-    }
-
     .card-content {
       color: var(--secondary-text-color);
       padding-bottom: var(--ha-space-2);

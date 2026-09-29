@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import {
   css,
@@ -10,6 +10,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { internationalizationContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";

@@ -21,7 +21,7 @@ export interface LogbookStreamMessage {
 export interface LogbookEntry {
   // Base data
   when: number; // Python timestamp. Do *1000 to get JS timestamp.
-  name: string;
+  name?: string; // Only sent when the backend resolves entity names
   message?: string;
   entity_id?: string;
   icon?: string;
