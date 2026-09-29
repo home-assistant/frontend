@@ -179,12 +179,13 @@ export const computeEntityEntryNameList = (
   // area are left out. An entity without a name of its own is still named
   // after its device.
   const nameDevice =
-    keepAllParts || entry.next_name_part !== "area" || !entityName
+    keepAllParts || entry.next_name_part === "device" || !entityName
       ? device
       : null;
   const nameParentDevice =
     keepAllParts ||
-    (entry.next_name_part !== "area" && device?.next_name_part !== "area")
+    (entry.next_name_part === "device" &&
+      device?.next_name_part === "parent_device")
       ? parentDevice
       : null;
 
