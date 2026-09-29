@@ -37,6 +37,8 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
 
+  @state() private _loading = true;
+
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
@@ -154,6 +156,7 @@ export class HaConfigApplicationCredentials extends LitElement {
         back-path="/config"
         .tabs=${configSections.devices}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._getApplicationCredentials(
           this._applicationCredentials,
           this.hass.localize
@@ -278,7 +281,13 @@ export class HaConfigApplicationCredentials extends LitElement {
   }
 
   private async _fetchApplicationCredentials() {
-    this._applicationCredentials = await fetchApplicationCredentials(this.hass);
+    try {
+      this._applicationCredentials = await fetchApplicationCredentials(
+        this.hass
+      );
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _addApplicationCredential() {

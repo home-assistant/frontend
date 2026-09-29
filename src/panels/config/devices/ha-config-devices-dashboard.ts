@@ -42,6 +42,8 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/skeleton/ha-skeleton-icon";
+import "../../../components/skeleton/ha-skeleton-text";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -115,13 +117,13 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public entries!: ConfigEntry[];
+  @property({ attribute: false }) public entries?: ConfigEntry[];
 
   @state() private _subEntries?: SubEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  entities: EntityRegistryEntry[] = [];
+  entities?: EntityRegistryEntry[];
 
   @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
@@ -238,13 +240,13 @@ export class HaConfigDeviceDashboard extends LitElement {
       this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
-    if (changedProps.has("_selected")) {
+    if (changedProps.has("_selected") || changedProps.has("entries")) {
       this._selectedCanDelete = this._selected.filter((d) => {
         const device = this.hass.devices[d];
         const entries = device.config_entries;
         return entries.some(
           (entryId) =>
-            this.entries.find((e) => e.entry_id === entryId)
+            this.entries?.find((e) => e.entry_id === entryId)
               ?.supports_remove_device
         );
       });
@@ -317,8 +319,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _devicesAndFilterDomains = memoizeOne(
     (
       devices: HomeAssistant["devices"],
-      entries: ConfigEntry[],
-      entities: EntityRegistryEntry[],
+      entries: ConfigEntry[] | undefined,
+      entities: EntityRegistryEntry[] = [],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
       filters: DataTableFilters,
@@ -346,7 +348,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       const entryLookup: Record<string, ConfigEntry> = {};
-      for (const entry of entries) {
+
+      for (const entry of entries ?? []) {
         entryLookup[entry.entry_id] = entry;
       }
 
@@ -371,7 +374,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             )
           );
 
-          const configEntries = entries.filter(
+          const configEntries = (entries ?? []).filter(
             (entry) =>
               entry.entry_id &&
               (filter.value as string[]).includes(entry.entry_id)
@@ -412,7 +415,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           Array.isArray(filter.value) &&
           filter.value.length
         ) {
-          const entryIds = entries
+          const entryIds = (entries ?? [])
             .filter((entry) =>
               (filter.value as string[]).includes(entry.domain)
             )
@@ -531,16 +534,19 @@ export class HaConfigDeviceDashboard extends LitElement {
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           area: areaName,
           floor: floorName,
-          integration: deviceEntries.length
-            ? deviceEntries
-                .map(
-                  (entry) =>
-                    localize(`component.${entry.domain}.title`) || entry.domain
-                )
-                .join(", ")
-            : this.hass.localize(
-                "ui.panel.config.devices.data_table.no_integration"
-              ),
+          integration: !entries
+            ? localize("ui.common.loading")
+            : deviceEntries.length
+              ? deviceEntries
+                  .map(
+                    (entry) =>
+                      localize(`component.${entry.domain}.title`) ||
+                      entry.domain
+                  )
+                  .join(", ")
+              : this.hass.localize(
+                  "ui.panel.config.devices.data_table.no_integration"
+                ),
           domains: deviceEntries.map((entry) => entry.domain),
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(
@@ -599,21 +605,23 @@ export class HaConfigDeviceDashboard extends LitElement {
         moveable: false,
         showNarrow: true,
         template: (device) =>
-          device.domains.length
-            ? html`<img
-                alt=""
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${brandsUrl(
-                  {
-                    domain: device.domains[0],
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  },
-                  this.hass.auth.data.hassUrl
-                )}
-              />`
-            : "",
+          !this.entries
+            ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+            : device.domains.length
+              ? html`<img
+                  alt=""
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl(
+                    {
+                      domain: device.domains[0],
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
+                />`
+              : "",
       },
       name: {
         title: localize("ui.panel.config.devices.data_table.device"),
@@ -642,7 +650,9 @@ export class HaConfigDeviceDashboard extends LitElement {
                     .labels=${device.label_entries}
                   ></ha-data-table-labels>
                 `
-              : nothing
+              : device.labels.length && !this._labels
+                ? html`<ha-skeleton-text></ha-skeleton-text>`
+                : nothing
           }
         `,
       },
@@ -654,6 +664,10 @@ export class HaConfigDeviceDashboard extends LitElement {
         filterable: true,
         groupable: true,
         minWidth: "120px",
+        template: (device) =>
+          !this.entries
+            ? html`<ha-skeleton-text></ha-skeleton-text>`
+            : device.integration,
       },
       device_family_name: {
         title: localize("ui.panel.config.devices.data_table.parent_device"),
@@ -697,6 +711,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         minWidth: "101px",
         valueColumn: "battery_level",
         template: (device) => {
+          if (!this.entities) {
+            return html`<ha-skeleton-text></ha-skeleton-text>`;
+          }
           const batteryEntityPair = device.battery_entity;
           const battery =
             batteryEntityPair && batteryEntityPair[0]
@@ -903,10 +920,13 @@ export class HaConfigDeviceDashboard extends LitElement {
                   "ui.panel.config.devices.filtering_by_config_entry"
                 )}
                 ${
-                  this.entries?.find(
-                    (entry) =>
-                      entry.entry_id === this._filters.config_entry!.value![0]
-                  )?.title || this._filters.config_entry.value[0]
+                  !this.entries
+                    ? html`<ha-skeleton-text></ha-skeleton-text>`
+                    : this.entries.find(
+                        (entry) =>
+                          entry.entry_id ===
+                          this._filters.config_entry!.value![0]
+                      )?.title || this._filters.config_entry.value[0]
                 }${
                   this._filters.config_entry.value.length === 1 &&
                   Array.isArray(this._filters.sub_entry?.value) &&
@@ -1356,6 +1376,9 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-alert ha-skeleton-text {
+          --ha-skeleton-text-width: 100px;
         }
         ha-dropdown::part(menu),
         ha-dropdown::part(submenu) {
