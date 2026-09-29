@@ -1,11 +1,11 @@
 import {
   mdiAlertCircleOutline,
   mdiArrowDownCircle,
-  mdiClose,
+  mdiDelete,
   mdiDownload,
   mdiGithub,
   mdiHistory,
-  mdiInformation,
+  mdiInformationOutline,
   mdiLanguageJavascript,
   mdiMoonNew,
   mdiReload,
@@ -124,7 +124,7 @@ export const repositoryMenuItems = (
   if (element.nodeName === "HA-MARKETPLACE-DASHBOARD") {
     entries.push({
       value: "show",
-      path: mdiInformation,
+      path: mdiInformationOutline,
       label: localize("ui.panel.marketplace.common.show"),
       action: () => navigate(`/marketplace/repository/${repository.id}`),
     });
@@ -240,7 +240,7 @@ export const repositoryMenuItems = (
   if (repository.installed_version) {
     entries.push({
       value: "remove",
-      path: mdiClose,
+      path: mdiDelete,
       label: localize("ui.panel.marketplace.common.remove"),
       action: () => confirmRemoveRepository(element, repository, localize),
       variant: "danger",

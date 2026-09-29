@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { mdiDotsVertical, mdiFileDocument, mdiGit, mdiNewBox } from "@mdi/js";
+import { mdiDotsVertical, mdiOpenInNew, mdiStore } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -21,12 +21,11 @@ import type {
   HaDropdownSelectEvent,
 } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-form/ha-form";
+import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
 import type { HaIconButton } from "../../../components/ha-icon-button";
 
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
@@ -48,8 +47,11 @@ import {
   DEFAULT_GROUP_COLUMN,
   filterRepositories,
   repositoryGroupOrder,
+  STATUS_FILTER,
   STATUS_ORDER,
+  TYPE_FILTER,
 } from "./dashboard-repositories";
+import type { RepositoryFilters } from "./dashboard-repositories";
 import { documentationUrl } from "../../../util/documentation-url";
 import { typeIcon } from "../tools/type-icon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -96,7 +98,7 @@ export class HaMarketplaceDashboard extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _activeFilters?: string[] = [];
+  private _filters: RepositoryFilters = {};
 
   @storage({
     key: "marketplace-dashboard-table-sorting",
@@ -153,7 +155,7 @@ export class HaMarketplaceDashboard extends LitElement {
     const repositories = this._filterRepositories(
       this.marketplace.repositories,
       this.hass.localize,
-      this._activeFilters
+      this._filters
     );
     // Dismissing clears all of them, not only the ones the filters show
     const repositoriesContainsNew = this.marketplace.repositories.some(
@@ -177,8 +179,11 @@ export class HaMarketplaceDashboard extends LitElement {
         clickable
         .filter=${this._activeSearch || ""}
         has-filters
-        .filters=${this._activeFilters?.length}
+        .filters=${
+          Object.values(this._filters).filter((values) => values?.length).length
+        }
         .noDataText=${this.hass.localize("ui.panel.marketplace.dashboard.no_data")}
+        .empty=${!this.marketplace.repositories.length}
         .initialGroupColumn=${this._activeGrouping ?? DEFAULT_GROUP_COLUMN}
         .initialCollapsedGroups=${this._activeCollapsed || []}
         .groupOrder=${this._groupOrder(
@@ -199,45 +204,66 @@ export class HaMarketplaceDashboard extends LitElement {
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
-            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           <ha-dropdown-item value="documentation">
-            <ha-svg-icon .path=${mdiFileDocument} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.marketplace.menu.documentation")}
           </ha-dropdown-item>
           <ha-dropdown-item value="custom_repositories">
-            <ha-svg-icon .path=${mdiGit} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.marketplace.menu.custom_repositories")}
           </ha-dropdown-item>
           ${
             repositoriesContainsNew
               ? html`<ha-dropdown-item value="dismiss_new">
-                  <ha-svg-icon .path=${mdiNewBox} slot="icon"></ha-svg-icon>
                   ${this.hass.localize("ui.panel.marketplace.menu.dismiss")}
                 </ha-dropdown-item>`
               : nothing
           }
         </ha-dropdown>
 
-        <ha-form
+        ${
+          this.marketplace.repositories.length
+            ? nothing
+            : html`<div class="empty" slot="empty">
+                <ha-svg-icon .path=${mdiStore}></ha-svg-icon>
+                <h1>
+                  ${this.hass.localize("ui.panel.marketplace.dashboard.empty_header")}
+                </h1>
+                <p>
+                  ${this.hass.localize("ui.panel.marketplace.dashboard.empty_text")}
+                </p>
+                <ha-button
+                  href=${documentationUrl(this.hass, "/integrations/marketplace")}
+                  target="_blank"
+                  appearance="plain"
+                  rel="noreferrer"
+                  size="s"
+                >
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                </ha-button>
+              </div>`
+        }
+        <ha-filter-states
           slot="filter-pane"
-          class="filters"
-          .hass=${this.hass}
-          .data=${{
-            status:
-              this._activeFilters?.find((filter) =>
-                filter.startsWith("status_")
-              ) || "",
-            type:
-              this._activeFilters?.find((filter) =>
-                filter.startsWith("type_")
-              ) || "",
-          }}
-          .schema=${this._filterSchema(this.hass.localize, this.marketplace.info.categories)}
-          .computeLabel=${this._computeFilterFormLabel}
-          @value-changed=${this._handleFilterChanged}
-        ></ha-form>
+          .label=${this.hass.localize("ui.panel.marketplace.dialog_overview.status")}
+          .value=${this._filters[STATUS_FILTER]}
+          .states=${this._statusStates(this.hass.localize)}
+          .narrow=${this.narrow}
+          @data-table-filter-changed=${this._statusFilterChanged}
+        ></ha-filter-states>
+        <ha-filter-states
+          slot="filter-pane"
+          .label=${this.hass.localize("ui.panel.marketplace.dialog_overview.type")}
+          .value=${this._filters[TYPE_FILTER]}
+          .states=${this._typeStates(
+            this.hass.localize,
+            this.marketplace.info.categories
+          )}
+          .narrow=${this.narrow}
+          @data-table-filter-changed=${this._typeFilterChanged}
+        ></ha-filter-states>
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="repository-overflow-menu"
@@ -287,28 +313,25 @@ export class HaMarketplaceDashboard extends LitElement {
         hidden: false,
         moveable: false,
         showNarrow: true,
+        // Like the icons on the devices page, the category icon without a domain
         template: (repository: RepositoryBase) =>
-          repository.category === "integration"
-            ? html`
-                <img
-                  class="repository-icon"
-                  slot="item-icon"
-                  alt=""
-                  src=${brandsUrl({
-                    domain: repository.domain || "invalid",
+          repository.category === "integration" && repository.domain
+            ? html`<img
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl(
+                  {
+                    domain: repository.domain,
                     type: "icon",
                     darkOptimized: darkMode,
-                  })}
-                  referrerpolicy="no-referrer"
-                />
-              `
-            : html`
-                <ha-svg-icon
-                  class="repository-icon"
-                  slot="item-icon"
-                  .path=${typeIcon(repository.category)}
-                ></ha-svg-icon>
-              `,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
+              />`
+            : html`<ha-svg-icon
+                .path=${typeIcon(repository.category)}
+              ></ha-svg-icon>`,
       },
       name: {
         ...defaultKeyData,
@@ -395,8 +418,9 @@ export class HaMarketplaceDashboard extends LitElement {
       id: defaultKeyData,
       topics: defaultKeyData,
       actions: {
+        lastFixed: true,
         title: "",
-        label: localizeFunc("ui.panel.marketplace.column.actions"),
+        label: localizeFunc("ui.panel.config.generic.headers.actions"),
         moveable: false,
         hideable: false,
         showNarrow: true,
@@ -513,71 +537,31 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _groupOrder = memoize(repositoryGroupOrder);
 
-  private _filterSchema = memoize(
-    (localizeFunc: LocalizeFunc, types: string[]) =>
-      [
-        {
-          name: "filters",
-          type: "constant",
-          value: "",
-        },
-        {
-          name: "status",
-          selector: {
-            select: {
-              options: STATUS_ORDER.map((filter) => ({
-                value: `status_${filter}`,
-                label: localizeFunc(
-                  `ui.panel.marketplace.repository_status.${filter}`
-                ),
-              })),
-              mode: "dropdown",
-              sort: false,
-            },
-          },
-        },
-        {
-          name: "type",
-          selector: {
-            select: {
-              options: types.map((type: string) => ({
-                label: localizeFunc(
-                  `ui.panel.marketplace.common.type.${type as RepositoryType}`
-                ),
-                value: `type_${type}`,
-              })),
-              mode: "dropdown",
-              sort: true,
-            },
-          },
-        },
-      ] as const satisfies readonly HaFormSchema[]
+  private _statusStates = memoize((localize: LocalizeFunc) =>
+    STATUS_ORDER.map((status) => ({
+      value: status,
+      label: localize(`ui.panel.marketplace.repository_status.${status}`),
+    }))
   );
 
-  private _computeFilterFormLabel = (schema: {
-    name: "filters" | "status" | "type";
-  }): string =>
-    schema.name === "filters"
-      ? this.hass.localize(
-          "ui.panel.marketplace.dialog_overview.sections.filters"
-        )
-      : this.hass.localize(
-          `ui.panel.marketplace.dialog_overview.${schema.name}`
-        );
+  private _typeStates = memoize(
+    (localize: LocalizeFunc, types: RepositoryType[]) =>
+      types.map((type) => ({
+        value: type,
+        label: localize(`ui.panel.marketplace.common.type.${type}`),
+      }))
+  );
 
   private _handleRowClicked(ev: CustomEvent) {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
-  private _handleFilterChanged(
-    ev: CustomEvent<{ value: Record<string, string | null | undefined> }>
-  ) {
-    ev.stopPropagation();
-    const updatedFilters = Object.entries(ev.detail.value).flatMap(
-      ([key, value]) =>
-        ["status", "type"].includes(key) && value ? [value] : []
-    );
-    this._activeFilters = updatedFilters.length ? updatedFilters : undefined;
+  private _statusFilterChanged(ev: CustomEvent<{ value: string[] }>) {
+    this._filters = { ...this._filters, [STATUS_FILTER]: ev.detail.value };
+  }
+
+  private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
+    this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
   }
 
   private _handleSearchFilterChanged(ev: CustomEvent) {
@@ -602,19 +586,22 @@ export class HaMarketplaceDashboard extends LitElement {
   }
 
   private _handleClearFilter() {
-    this._activeFilters = undefined;
+    this._filters = {};
   }
 
   static get styles(): CSSResultGroup {
     return [
       marketplaceStyles,
       css`
-        .repository-icon {
-          height: 32px;
-          width: 32px;
+        .empty {
+          --mdc-icon-size: 80px;
+          max-width: 500px;
         }
-        ha-svg-icon.repository-icon {
-          fill: var(--secondary-text-color);
+        .empty ha-button {
+          --mdc-icon-size: 24px;
+        }
+        .empty h1 {
+          font-size: var(--ha-font-size-3xl);
         }
       `,
     ];

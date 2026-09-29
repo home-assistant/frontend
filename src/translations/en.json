@@ -12199,6 +12199,8 @@
           }
         },
         "dashboard": {
+          "empty_header": "Nothing in the Marketplace yet",
+          "empty_text": "The Marketplace fills itself from the community catalog. When it could not be reached, what it offers shows up here once it can.",
           "no_data": "No repositories matching search and filters",
           "repository_not_found": "Repository not found"
         },
@@ -12216,7 +12218,6 @@
           "rate_limited": "GitHub limits how often the Marketplace can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
         },
         "column": {
-          "actions": "Quick actions",
           "name": "Repository name",
           "downloads": "Downloads",
           "stars": "Stars",

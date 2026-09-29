@@ -37,20 +37,18 @@ describe("filterRepositories", () => {
 
   it("shows everything without filters", () => {
     expect(names(filterRepositories(repositories, localize))).toHaveLength(4);
-    expect(names(filterRepositories(repositories, localize, []))).toHaveLength(
+    expect(names(filterRepositories(repositories, localize, {}))).toHaveLength(
       4
     );
   });
 
   it.each([
-    [["status_installed"], ["Downloaded"]],
-    [
-      ["status_installed", "status_new"],
-      ["Downloaded", "Fresh"],
-    ],
-    [["type_theme"], ["Theme"]],
-    [["status_default", "type_theme"], ["Theme"]],
-    [["status_new", "type_theme"], []],
+    [{ status: ["installed"] }, ["Downloaded"]],
+    [{ status: ["installed", "new"] }, ["Downloaded", "Fresh"]],
+    [{ type: ["theme"] }, ["Theme"]],
+    [{ status: ["default"], type: ["theme"] }, ["Theme"]],
+    [{ status: ["new"], type: ["theme"] }, []],
+    [{ status: [], type: [] }, ["Downloaded", "Fresh", "Plain", "Theme"]],
   ])("keeps what matches %j", (activeFilters, expected) => {
     expect(
       names(filterRepositories(repositories, localize, activeFilters))

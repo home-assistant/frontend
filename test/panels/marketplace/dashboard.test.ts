@@ -1,3 +1,4 @@
+import { render } from "lit";
 import { afterEach, expect, it, vi } from "vitest";
 import type { HomeAssistant } from "../../../src/types";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
@@ -26,6 +27,9 @@ vi.mock("../../../src/components/ha-dropdown-item", () =>
 vi.mock("../../../src/components/ha-form/ha-form", () =>
   stubElement("ha-form")
 );
+vi.mock("../../../src/components/ha-filter-states", () =>
+  stubElement("ha-filter-states")
+);
 vi.mock("../../../src/components/ha-icon-button", () =>
   stubElement("ha-icon-button")
 );
@@ -39,7 +43,10 @@ vi.mock(
 
 const openDashboard = async (repositories: unknown[] = []) => {
   const dashboard = document.createElement("ha-marketplace-dashboard");
-  dashboard.hass = { localize: (key: string) => key } as HomeAssistant;
+  dashboard.hass = {
+    localize: (key: string) => key,
+    config: { version: "2026.11.0" },
+  } as unknown as HomeAssistant;
   dashboard.marketplace = {
     repositories,
     info: { categories: [] },
@@ -94,14 +101,16 @@ it("offers dismissing new repositories the filter hides", async () => {
       new: true,
     },
   ]);
-  const filtered = dashboard as unknown as { _activeFilters: string[] };
-  filtered._activeFilters = ["status_installed"];
+  const filtered = dashboard as unknown as {
+    _filters: Record<string, string[]>;
+  };
+  filtered._filters = { status: ["installed"] };
   await dashboard.updateComplete;
 
   expect(
     dashboard.shadowRoot!.querySelector('ha-dropdown-item[value="dismiss_new"]')
   ).not.toBeNull();
-  filtered._activeFilters = [];
+  filtered._filters = {};
 });
 
 it("remembers the search for this session", async () => {
@@ -117,3 +126,73 @@ it("remembers the search for this session", async () => {
     JSON.parse(sessionStorage.getItem("marketplace-dashboard-table-search")!)
   ).toBe("spook");
 });
+
+it("filters with the standard filter panes of Settings", async () => {
+  const dashboard = await openDashboard();
+
+  expect(
+    [
+      ...dashboard.shadowRoot!.querySelectorAll(
+        'ha-filter-states[slot="filter-pane"]'
+      ),
+    ].map((filter) => (filter as HTMLElement & { label: string }).label)
+  ).toEqual([
+    "ui.panel.marketplace.dialog_overview.status",
+    "ui.panel.marketplace.dialog_overview.type",
+  ]);
+  expect(dashboard.shadowRoot!.querySelector("ha-form")).toBeNull();
+});
+
+it.each([
+  { name: "a brand icon", domain: "spook", tag: "img" },
+  {
+    name: "the category icon without a domain",
+    domain: null,
+    tag: "ha-svg-icon",
+  },
+])("shows $name for an integration", async ({ domain, tag }) => {
+  const dashboard = await openDashboard();
+  dashboard.hass = {
+    localize: (key: string) => key,
+    config: { version: "2026.11.0" },
+    auth: { data: { hassUrl: "http://localhost:8123" } },
+  } as unknown as HomeAssistant;
+  await dashboard.updateComplete;
+  const table = dashboard.shadowRoot!.querySelector(
+    "hass-tabs-subpage-data-table"
+  ) as unknown as {
+    columns: { icon: { template: (row: unknown) => unknown } };
+  };
+  const cell = document.createElement("div");
+
+  render(
+    table.columns.icon.template({ category: "integration", domain }),
+    cell
+  );
+
+  expect(cell.firstElementChild?.localName).toBe(tag);
+});
+
+it.each([
+  { name: "an empty Marketplace", repositories: [], empty: true },
+  {
+    name: "a Marketplace with repositories",
+    repositories: [
+      { id: "1", name: "One", category: "theme", status: "default" },
+    ],
+    empty: false,
+  },
+])(
+  "shows the empty state for $name: $empty",
+  async ({ repositories, empty }) => {
+    const dashboard = await openDashboard(repositories);
+    const table = dashboard.shadowRoot!.querySelector(
+      "hass-tabs-subpage-data-table"
+    ) as HTMLElement & { empty: boolean };
+
+    expect(table.empty).toBe(empty);
+    expect(
+      dashboard.shadowRoot!.querySelector('.empty[slot="empty"]') !== null
+    ).toBe(empty);
+  }
+);

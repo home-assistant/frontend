@@ -12,21 +12,25 @@ export const STATUS_ORDER = [
 
 export const DEFAULT_GROUP_COLUMN = "translated_status";
 
+export const STATUS_FILTER = "status";
+export const TYPE_FILTER = "type";
+
+// What the filter panes picked, nothing picked in a pane shows everything
+export type RepositoryFilters = Partial<
+  Record<typeof STATUS_FILTER | typeof TYPE_FILTER, string[]>
+>;
+
 const matchesFilters = (
   repository: RepositoryBase,
-  activeFilters: string[] | undefined
+  filters: RepositoryFilters = {}
 ): boolean => {
-  if (
-    activeFilters?.some((filter) => filter.startsWith("status_")) &&
-    !activeFilters.includes(`status_${repository.status}`)
-  ) {
+  const statuses = filters[STATUS_FILTER];
+  if (statuses?.length && !statuses.includes(repository.status)) {
     return false;
   }
 
-  if (
-    activeFilters?.some((filter) => filter.startsWith("type_")) &&
-    !activeFilters.includes(`type_${repository.category}`)
-  ) {
+  const types = filters[TYPE_FILTER];
+  if (types?.length && !types.includes(repository.category)) {
     return false;
   }
 
@@ -50,10 +54,10 @@ const compareRepositories = (a: RepositoryBase, b: RepositoryBase): number => {
 export const filterRepositories = (
   repositories: RepositoryBase[],
   localize: LocalizeFunc,
-  activeFilters?: string[]
+  filters?: RepositoryFilters
 ): DataTableRowData[] =>
   repositories
-    .filter((repository) => matchesFilters(repository, activeFilters))
+    .filter((repository) => matchesFilters(repository, filters))
     .sort(compareRepositories)
     .map((repository) => ({
       ...repository,
