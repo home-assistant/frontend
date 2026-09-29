@@ -21,14 +21,15 @@ const isAvailableBehavior = () => true;
   }
   // Every pinch event on the chart is cancelled, including the ones that do
   // not zoom or whose center is off the plot area, like over the axis labels,
-  // or the browser takes over the gesture and scrolls or zooms the page.
+  // or the browser takes over the gesture and scrolls or zooms the page. Only
+  // a pinch that zooms stops propagating, as it does in ECharts.
   e.event.preventDefault();
-  e.event.stopPropagation();
   const x: number = e.pinchX;
   const y: number = e.pinchY;
   if (!this._checkPointer(e, x, y)) {
     return;
   }
+  e.event.stopPropagation();
   e.__ecRoamConsumed = true;
 
   // A finger was added or lifted, so the distance jumps without a real move
