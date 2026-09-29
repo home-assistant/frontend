@@ -1,6 +1,7 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { internationalizationContext } from "../../../data/context";
 import type {
   AutomationBehaviorConditionMode,

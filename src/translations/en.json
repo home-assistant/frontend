@@ -1241,7 +1241,9 @@
           "show": "Show column {title}",
           "done": "Done",
           "restore": "Restore defaults"
-        }
+        },
+        "load_error": "Failed to load data",
+        "retry": "[%key:ui::panel::app::retry%]"
       },
       "siren": {
         "more_controls": "More controls",
@@ -1983,6 +1985,9 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
+          "use_device_name": "Use device name",
+          "change_device_name_link": "change the device name",
+          "restore_name": "Restore default name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', like 'mdi:home'",
           "default_code": "Default code",
@@ -2070,7 +2075,6 @@
           "entity_disabled": "This entity is disabled.",
           "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
-          "device_name_tip": "Consider renaming the device instead to update all its entities at once. {link}",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
           "switch_as_x_remove_confirm": "This {domain} will be removed and the original switch will be visible again. Your existing configurations using the {domain} will no longer work!",
           "switch_as_x_change_confirm": "This {domain_1} will be removed and will be replaced by a new {domain_2}. Your existing configurations using the {domain_1} will no longer work!",
@@ -2091,6 +2095,9 @@
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
           "use_device_area": "Use device area",
+          "use_device_area_confirm_title": "Use the area of the device?",
+          "use_device_area_confirm_text": "This entity is in {area}. Because it uses the device name, it will use the area of its device instead.",
+          "use_device_area_required": "An entity that uses the device name always uses the area of its device. You can {link} in the device settings.",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
@@ -3999,7 +4006,8 @@
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
             "companion_apps": "Companion apps"
-          }
+          },
+          "load_failed": "An unknown error occurred while loading tags."
         },
         "tools": {
           "tabs": {
@@ -4858,7 +4866,8 @@
               "type": {
                 "user_created": "User created",
                 "built_in": "Built-in"
-              }
+              },
+              "load_failed": "An unknown error occurred while loading dashboards."
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
@@ -4977,9 +4986,7 @@
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice",
                   "wake_word_entity": "Wake word engine",
-                  "wake_word_id": "Wake word",
-                  "user_id": "Acts as user",
-                  "user_id_description": "Voice requests have no user of their own. Pick one and this assistant speaks for them, so integrations that link a Home Assistant user to an account of their own use the right account."
+                  "wake_word_id": "Wake word"
                 },
                 "steps": {
                   "config": {
@@ -6985,6 +6992,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
+          "config_entries_load_failed": "An unknown error occurred while loading integrations for your devices.",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
@@ -7508,7 +7516,8 @@
               "local": "Local",
               "icon": "Icon"
             },
-            "add_user": "Add user"
+            "add_user": "Add user",
+            "load_failed": "An unknown error occurred while loading users."
           },
           "editor": {
             "caption": "View user",
@@ -7594,7 +7603,8 @@
               "confirm_text": "Application credentials in use by an integration may not be deleted.",
               "error_title": "Deleting application credentials failed"
             },
-            "selected": "{number} selected"
+            "selected": "{number} selected",
+            "load_failed": "An unknown error occurred while loading application credentials."
           }
         },
         "mqtt": {
@@ -8005,7 +8015,8 @@
             "delete": "Delete group",
             "endpoint": "Endpoint",
             "associated_entities": "Associated entities",
-            "no_associated_entities": "This endpoint has no associated entities"
+            "no_associated_entities": "This endpoint has no associated entities",
+            "load_failed": "An unknown error occurred while loading groups."
           },
           "visualization": {
             "header": "Zigbee visualization",
@@ -8431,7 +8442,8 @@
             "confirm_unprovision_title": "Remove device?",
             "confirm_unprovision_text": "This device will be permanently removed from your Z-Wave network.",
             "confirm_unprovision_text_included": "This device will be permanently removed from Home Assistant and your Z-Wave network.",
-            "active": "Active"
+            "active": "Active",
+            "load_failed": "An unknown error occurred while loading provisioned devices."
           },
           "security_classes": {
             "None": {
@@ -9929,6 +9941,8 @@
             "success": "View moved successfully"
           },
           "section": {
+            "automatic": "Automatic section",
+            "edit_automatic": "Edit automatic section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
@@ -9946,8 +9960,9 @@
           },
           "edit_section": {
             "header": "Edit section",
+            "tab_strategy": "Configuration",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
-            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "tab_appearance": "Appearance",
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
@@ -11306,6 +11321,16 @@
             }
           },
           "strategy": {
+            "common_controls": {
+              "limit": "Maximum number of cards",
+              "limit_helper": "Defaults to 8 cards",
+              "entities": "Entities",
+              "include_entities": "Always include",
+              "include_entities_helper": "Shown first, in the order you choose, within the card limit",
+              "exclude_entities": "Exclude from suggestions",
+              "exclude_entities_helper": "These entities will not be suggested based on your activity",
+              "hide_empty": "Hide when empty"
+            },
             "original-states": {
               "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",
@@ -11465,6 +11490,16 @@
         "logout": "Log out",
         "logout_title": "Log out?",
         "logout_text": "Are you sure you want to log out?",
+        "edit_profile": {
+          "button": "Edit profile",
+          "title": "Edit profile",
+          "name": "Name",
+          "name_helper": "This name is also used for the person linked to your user.",
+          "name_helper_yaml": "Your person is configured in YAML, so only your user name is changed.",
+          "name_error_msg": "Name is required",
+          "no_person": "Your user is not linked to a person, so you cannot add a picture. Ask an administrator to link your user to a person.",
+          "picture_not_editable": "Your person is configured in YAML, so its picture cannot be changed here."
+        },
         "force_narrow": {
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."

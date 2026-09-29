@@ -1,8 +1,8 @@
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";

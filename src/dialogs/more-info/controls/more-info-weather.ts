@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,6 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";

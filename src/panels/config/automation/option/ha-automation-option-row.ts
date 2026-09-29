@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -13,6 +12,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";

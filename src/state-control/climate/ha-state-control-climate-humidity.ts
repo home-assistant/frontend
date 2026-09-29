@@ -1,10 +1,10 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { domainStateColorProperties } from "../../common/entity/state_color";

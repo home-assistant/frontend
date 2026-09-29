@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import type {
   CSSResult,
   LitElement,
@@ -7,6 +6,7 @@ import type {
 } from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
