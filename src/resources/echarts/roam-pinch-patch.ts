@@ -20,14 +20,15 @@ const isAvailableBehavior = () => true;
   if (isTaken(this._zr, "globalPan") || e.__ecRoamConsumed) {
     return;
   }
+  // Every pinch event on the chart is cancelled, including the ones that do
+  // not zoom or whose center is off the plot area, like over the axis labels,
+  // or the browser takes over the gesture and scrolls or zooms the page.
+  stop(e.event);
   const x: number = e.pinchX;
   const y: number = e.pinchY;
   if (!this._checkPointer(e, x, y)) {
     return;
   }
-  // Every pinch event on the chart is cancelled, including the ones that do
-  // not zoom, or the browser takes over the gesture and zooms the page.
-  stop(e.event);
   e.__ecRoamConsumed = true;
 
   // A finger was added or lifted, so the distance jumps without a real move
