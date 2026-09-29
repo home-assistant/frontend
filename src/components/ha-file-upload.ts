@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import { mdiDelete, mdiFileUpload } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { transform } from "../common/decorators/transform";

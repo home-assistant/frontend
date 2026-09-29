@@ -7,6 +7,14 @@ export interface ZHAEntityReference {
   original_name?: string | null;
 }
 
+export const computeZHAEntityName = (
+  entity: ZHAEntityReference,
+  deviceName: string
+): string =>
+  entity.name === ""
+    ? deviceName
+    : entity.name || entity.original_name || deviceName;
+
 export interface ZHADevice {
   available: boolean;
   name: string;

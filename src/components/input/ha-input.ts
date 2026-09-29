@@ -2,7 +2,7 @@ import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import {
   css,
@@ -15,6 +15,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../common/decorators/consume";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { internationalizationContext } from "../../data/context";
 import "../ha-icon-button";

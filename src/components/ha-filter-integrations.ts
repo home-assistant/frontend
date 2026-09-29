@@ -1,5 +1,5 @@
 import type { SelectedDetail } from "@material/mwc-list";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -7,6 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -34,6 +35,7 @@ export class HaFilterIntegrations extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 

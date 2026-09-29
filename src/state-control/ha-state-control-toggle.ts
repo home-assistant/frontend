@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
@@ -6,6 +6,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stateActive } from "../common/entity/state_active";
