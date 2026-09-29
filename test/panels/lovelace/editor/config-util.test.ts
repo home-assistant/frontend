@@ -20,7 +20,11 @@ describe("moveCardToContainer", () => {
       ],
     };
 
-    const result = moveCardToContainer(config, [1, 0], [0]);
+    const result = moveCardToContainer(
+      config,
+      ["views", 1, "cards", 0],
+      ["views", 0]
+    );
     const expected: LovelaceConfig = {
       views: [
         {
@@ -46,7 +50,11 @@ describe("moveCardToContainer", () => {
       ],
     };
 
-    const result = moveCardToContainer(config, [1, 0], [0]);
+    const result = moveCardToContainer(
+      config,
+      ["views", 1, "cards", 0],
+      ["views", 0]
+    );
     const expected: LovelaceConfig = {
       views: [
         {
@@ -73,7 +81,7 @@ describe("moveCardToContainer", () => {
     };
 
     const result = () => {
-      moveCardToContainer(config, [1, 0], [1]);
+      moveCardToContainer(config, ["views", 1, "cards", 0], ["views", 1]);
     };
     assert.throws(
       result,
@@ -158,7 +166,7 @@ describe("duplicateSection", () => {
       ],
     };
 
-    const result = duplicateSection(config, 0, 0);
+    const result = duplicateSection(config, ["views", 0, "sections", 0]);
 
     const expected: LovelaceConfig = {
       views: [
@@ -189,7 +197,7 @@ describe("duplicateSection", () => {
       ],
     };
 
-    const result = duplicateSection(config, 0, 0);
+    const result = duplicateSection(config, ["views", 0, "sections", 0]);
     const view = result.views[0] as LovelaceViewConfig;
 
     assert.equal(view.sections!.length, 2);
@@ -211,7 +219,7 @@ describe("duplicateSection", () => {
       ],
     };
 
-    const result = duplicateSection(config, 0, 0);
+    const result = duplicateSection(config, ["views", 0, "sections", 0]);
     const resultSections = (result.views[0] as LovelaceViewConfig).sections!;
 
     assert.equal(resultSections.length, 2);

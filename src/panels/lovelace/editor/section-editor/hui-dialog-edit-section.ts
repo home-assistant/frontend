@@ -24,10 +24,8 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { saveConfig } from "../../../../data/lovelace/config/types";
-import {
-  isStrategyView,
-  type LovelaceViewConfig,
-} from "../../../../data/lovelace/config/view";
+import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
@@ -37,10 +35,13 @@ import {
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
-import { addSection, deleteSection, moveSection } from "../config-util";
+import { addSection } from "../config-util";
 import {
-  findLovelaceContainer,
-  updateLovelaceContainer,
+  deleteAtPath,
+  getAtPath,
+  getViewPath,
+  moveAtPath,
+  setAtPath,
 } from "../lovelace-path";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import "./hui-section-settings-editor";
@@ -65,7 +66,7 @@ export class HuiDialogEditSection
 
   @state() private _config?: LovelaceSectionRawConfig;
 
-  @state() private _viewConfig?: LovelaceViewConfig;
+  @state() private _viewConfig?: LovelaceViewRawConfig;
 
   @state() private _yamlMode = false;
 
@@ -91,13 +92,15 @@ export class HuiDialogEditSection
 
     this.lovelace = params.lovelace;
 
-    this._config = findLovelaceContainer(this._params.lovelaceConfig, [
-      this._params.viewIndex,
-      this._params.sectionIndex,
-    ]);
-    this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
-      this._params.viewIndex,
-    ]);
+    this._config = getAtPath<LovelaceSectionRawConfig>(
+      params.lovelaceConfig,
+      params.path
+    );
+    const viewPath = getViewPath(params.path);
+    this._viewConfig = getAtPath<LovelaceViewRawConfig>(
+      params.lovelaceConfig,
+      viewPath
+    );
     this._initDirtyTracking({ type: "deep" }, this._config);
   }
 
@@ -316,8 +319,7 @@ export class HuiDialogEditSection
       return;
     }
 
-    const fromViewIndex = this._params.viewIndex;
-    const fromSectionIndex = this._params.sectionIndex;
+    const fromPath = this._params.path;
 
     // Same dashboard
     if (urlPath === this.lovelace.urlPath) {
@@ -325,11 +327,12 @@ export class HuiDialogEditSection
       const toIndex = toView.sections?.length ?? 0;
       try {
         await this.lovelace.saveConfig(
-          moveSection(
-            oldConfig,
-            [fromViewIndex, fromSectionIndex],
-            [viewIndex, toIndex]
-          )
+          moveAtPath(oldConfig, fromPath, [
+            "views",
+            viewIndex,
+            "sections",
+            toIndex,
+          ])
         );
         this.lovelace.showToast({
           message: this.hass!.localize(
@@ -361,20 +364,18 @@ export class HuiDialogEditSection
     const oldFromConfig = this.lovelace.config;
     const oldToConfig = selectedDashConfig;
     try {
-      const section = findLovelaceContainer(oldFromConfig, [
-        fromViewIndex,
-        fromSectionIndex,
-      ]) as LovelaceSectionRawConfig;
+      const section = getAtPath<LovelaceSectionRawConfig>(
+        oldFromConfig,
+        fromPath
+      )!;
 
       await saveConfig(
         this.hass!,
         urlPath,
-        addSection(oldToConfig, viewIndex, section)
+        addSection(oldToConfig, ["views", viewIndex], section)
       );
 
-      await this.lovelace.saveConfig(
-        deleteSection(oldFromConfig, fromViewIndex, fromSectionIndex)
-      );
+      await this.lovelace.saveConfig(deleteAtPath(oldFromConfig, fromPath));
 
       this.lovelace.showToast({
         message: this.hass!.localize(
@@ -426,9 +427,9 @@ export class HuiDialogEditSection
     if (!this._params || !this._config) {
       return;
     }
-    const newConfig = updateLovelaceContainer(
+    const newConfig = setAtPath(
       this._params.lovelaceConfig,
-      [this._params.viewIndex, this._params.sectionIndex],
+      this._params.path,
       this._config
     );
 
