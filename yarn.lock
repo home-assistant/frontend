@@ -3612,7 +3612,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-gl-style-spec@npm:^26.2.1, @maplibre/maplibre-gl-style-spec@npm:^26.4.4":
+"@maplibre/maplibre-gl-style-spec@npm:^26.4.4":
   version: 26.4.4
   resolution: "@maplibre/maplibre-gl-style-spec@npm:26.4.4"
   dependencies:
@@ -3630,12 +3630,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/mlt@npm:^1.1.12":
-  version: 1.2.0
-  resolution: "@maplibre/mlt@npm:1.2.0"
+"@maplibre/mlt@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@maplibre/mlt@npm:1.3.0"
   dependencies:
     "@mapbox/point-geometry": "npm:^1.1.0"
-  checksum: 10/9bc3d30f78dc2090ac80634e08848bf454daed888fcbcace7e1c1c9b8d1db6c5421376f681dffe90bb4274488753775f36e76a1568ba724e64a0ca59207c04c4
+  checksum: 10/4c9226ebd5bda99267dfca202e6fda4ce272b30ee2c1e20ff41b9af2ef0757f408ac0b8491cf425c6709e9e0ac0c67e66db17819b0734190f5846dd9ae262c51
   languageName: node
   linkType: hard
 
@@ -10467,7 +10467,7 @@ __metadata:
     lodash.template: "npm:4.18.1"
     luxon: "npm:3.7.2"
     map-stream: "npm:0.0.7"
-    maplibre-gl: "npm:6.4.1"
+    maplibre-gl: "npm:6.11.2"
     marked: "npm:18.0.14"
     memoize-one: "npm:6.0.0"
     minify-literals: "npm:2.2.0"
@@ -12132,19 +12132,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"maplibre-gl@npm:6.4.1":
-  version: 6.4.1
-  resolution: "maplibre-gl@npm:6.4.1"
+"maplibre-gl@npm:6.11.2":
+  version: 6.11.2
+  resolution: "maplibre-gl@npm:6.11.2"
   dependencies:
     "@mapbox/point-geometry": "npm:^1.1.0"
     "@mapbox/tiny-sdf": "npm:^2.2.0"
     "@mapbox/unitbezier": "npm:^1.0.0"
     "@mapbox/vector-tile": "npm:^3.0.0"
     "@maplibre/geojson-vt": "npm:^6.1.1"
-    "@maplibre/maplibre-gl-style-spec": "npm:^26.2.1"
-    "@maplibre/mlt": "npm:^1.1.12"
+    "@maplibre/maplibre-gl-style-spec": "npm:^26.4.4"
+    "@maplibre/mlt": "npm:^1.3.0"
     "@maplibre/vt-pbf": "npm:^4.3.2"
     "@types/geojson": "npm:^7946.0.16"
+    bidi-js: "npm:^1.1.0"
     earcut: "npm:^3.2.3"
     gl-matrix: "npm:^3.4.4"
     kdbush: "npm:^4.1.0"
@@ -12153,7 +12154,7 @@ __metadata:
     potpack: "npm:^2.1.0"
     quickselect: "npm:^3.0.0"
     tinyqueue: "npm:^3.0.0"
-  checksum: 10/b017bc48f19265d5e49866685d61446b45e1da32844cfb190b7265aa77ddf3647c52ea9760a3ec60ea8d0faab5469b215eceb79c6b02bb982c0514f3c1420e88
+  checksum: 10/64f603a24ab34c7b74ad763e372ec6bf700d19ef9e92e0d68bf52456e14d427bb5dce38b3b73f7e14f416d4a1d5aef65b8756672e8dd1c1970c6b858aee98200
   languageName: node
   linkType: hard
 
