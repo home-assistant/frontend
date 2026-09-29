@@ -1219,7 +1219,9 @@
           "show": "Show column {title}",
           "done": "Done",
           "restore": "Restore defaults"
-        }
+        },
+        "load_error": "Failed to load data",
+        "retry": "[%key:ui::panel::app::retry%]"
       },
       "siren": {
         "more_controls": "More controls",
@@ -3982,7 +3984,8 @@
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
             "companion_apps": "Companion apps"
-          }
+          },
+          "load_failed": "An unknown error occurred while loading tags."
         },
         "tools": {
           "tabs": {
@@ -4841,7 +4844,8 @@
               "type": {
                 "user_created": "User created",
                 "built_in": "Built-in"
-              }
+              },
+              "load_failed": "An unknown error occurred while loading dashboards."
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
@@ -6966,6 +6970,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
+          "config_entries_load_failed": "An unknown error occurred while loading integrations for your devices.",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
@@ -7489,7 +7494,8 @@
               "local": "Local",
               "icon": "Icon"
             },
-            "add_user": "Add user"
+            "add_user": "Add user",
+            "load_failed": "An unknown error occurred while loading users."
           },
           "editor": {
             "caption": "View user",
@@ -7575,7 +7581,8 @@
               "confirm_text": "Application credentials in use by an integration may not be deleted.",
               "error_title": "Deleting application credentials failed"
             },
-            "selected": "{number} selected"
+            "selected": "{number} selected",
+            "load_failed": "An unknown error occurred while loading application credentials."
           }
         },
         "mqtt": {
@@ -7986,7 +7993,8 @@
             "delete": "Delete group",
             "endpoint": "Endpoint",
             "associated_entities": "Associated entities",
-            "no_associated_entities": "This endpoint has no associated entities"
+            "no_associated_entities": "This endpoint has no associated entities",
+            "load_failed": "An unknown error occurred while loading groups."
           },
           "visualization": {
             "header": "Zigbee visualization",
@@ -8412,7 +8420,8 @@
             "confirm_unprovision_title": "Remove device?",
             "confirm_unprovision_text": "This device will be permanently removed from your Z-Wave network.",
             "confirm_unprovision_text_included": "This device will be permanently removed from Home Assistant and your Z-Wave network.",
-            "active": "Active"
+            "active": "Active",
+            "load_failed": "An unknown error occurred while loading provisioned devices."
           },
           "security_classes": {
             "None": {

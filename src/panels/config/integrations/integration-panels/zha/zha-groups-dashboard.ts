@@ -47,6 +47,8 @@ export class ZHAGroupsDashboard extends LitElement {
 
   @state() private _loading = true;
 
+  @state() private _loadFailed = false;
+
   private _firstUpdatedCalled = false;
 
   public connectedCallback(): void {
@@ -118,6 +120,12 @@ export class ZHAGroupsDashboard extends LitElement {
         .columns=${this._columns(this.hass.localize)}
         .loading=${this._loading}
         .data=${this._formattedGroups(this._groups)}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.zha.groups.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchGroups}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
@@ -133,9 +141,17 @@ export class ZHAGroupsDashboard extends LitElement {
   private async _fetchGroups() {
     try {
       this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryFetchGroups() {
+    this._loading = true;
+    this._fetchGroups();
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

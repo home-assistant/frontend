@@ -32,6 +32,8 @@ class ZWaveJSProvisioned extends LitElement {
 
   @state() private _loading = true;
 
+  @state() private _loadFailed = false;
+
   @state() private _nodeIdToDevice: Record<number, DeviceRegistryEntry> = {};
 
   protected render() {
@@ -54,6 +56,14 @@ class ZWaveJSProvisioned extends LitElement {
         .columns=${this._columns(this.hass.localize)}
         .loading=${this._loading}
         .data=${this._getData(this._provisioningEntries, this._nodeIdToDevice)}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.zwave_js.provisioned.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryFetchProvisioningEntries}
       >
       </hass-tabs-subpage-data-table>
     `;
@@ -184,9 +194,17 @@ class ZWaveJSProvisioned extends LitElement {
         this.hass!,
         this.configEntryId
       );
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryFetchProvisioningEntries() {
+    this._loading = true;
+    this._fetchProvisioningEntries();
   }
 
   private _unprovision = async (ev) => {

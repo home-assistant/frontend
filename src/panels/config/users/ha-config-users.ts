@@ -42,6 +42,8 @@ export class HaConfigUsers extends LitElement {
 
   @state() private _loading = true;
 
+  @state() private _loadFailed = false;
+
   @storage({ key: "users-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
 
@@ -183,6 +185,12 @@ export class HaConfigUsers extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .loading=${this._loading}
         .data=${this._userData(this._users, this.hass.localize)}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.users.picker.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchUsers}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
@@ -217,6 +225,11 @@ export class HaConfigUsers extends LitElement {
   private async _fetchUsers() {
     try {
       this._users = await fetchUsers(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+
+      return;
     } finally {
       this._loading = false;
     }
@@ -226,6 +239,11 @@ export class HaConfigUsers extends LitElement {
         user.group_ids.unshift("owner");
       }
     });
+  }
+
+  private _retryFetchUsers() {
+    this._loading = true;
+    this._fetchUsers();
   }
 
   private _editUser(ev: HASSDomEvent<RowClickedEvent>) {

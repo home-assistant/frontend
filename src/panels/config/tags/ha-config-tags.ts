@@ -60,6 +60,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
 
   @state() private _loading = true;
 
+  @state() private _loadFailed = false;
+
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
   }
@@ -200,6 +202,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .loading=${this._loading}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.tag.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchTags}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
@@ -271,9 +279,17 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private async _fetchTags() {
     try {
       this._tags = await fetchTags(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
     } finally {
       this._loading = false;
     }
+  }
+
+  private _retryFetchTags() {
+    this._loading = true;
+    this._fetchTags();
   }
 
   private _openWrite(tag: Tag) {

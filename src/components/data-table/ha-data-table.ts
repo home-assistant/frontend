@@ -33,6 +33,8 @@ import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import "../animation/ha-fade-in";
+import "../ha-alert";
+import "../ha-button";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../skeleton/ha-skeleton-icon";
@@ -148,6 +150,12 @@ export class HaDataTable extends LitElement {
   @property({ type: String }) public id = "id";
 
   @property({ attribute: false }) public noDataText?: string;
+
+  /**
+   * Error to show below the column headings, with a retry action, when loading the table's data failed.
+   * Pass `true` to show the default message.
+   */
+  @property({ attribute: false }) public loadError?: boolean | string;
 
   @property({ attribute: false }) public searchLabel?: string;
 
@@ -426,7 +434,7 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          aria-rowcount=${filteredDataLength + 1}
+          aria-rowcount=${filteredDataLength + (this.loadError ? 2 : 1)}
           style=${styleMap({
             height: this.autoHeight
               ? `${(filteredDataLength || 1) * 53 + 53}px`
@@ -525,6 +533,35 @@ export class HaDataTable extends LitElement {
             </slot>
           </div>
           ${
+            this.loadError
+              ? html`<div class="load-error" role="row" aria-rowindex="2">
+                  <div role="cell">
+                    <ha-alert alert-type="error">
+                      ${
+                        typeof this.loadError === "string"
+                          ? this.loadError
+                          : this._i18n?.localize?.(
+                              "ui.components.data-table.load_error"
+                            ) || "Failed to load data"
+                      }
+                      <ha-button
+                        slot="action"
+                        appearance="plain"
+                        .loading=${this.loading}
+                        @click=${this._retryLoad}
+                      >
+                        ${
+                          this._i18n?.localize?.(
+                            "ui.components.data-table.retry"
+                          ) || "Retry"
+                        }
+                      </ha-button>
+                    </ha-alert>
+                  </div>
+                </div>`
+              : nothing
+          }
+          ${
             !this._filteredData?.length
               ? this.loading ||
                 !this._filteredData ||
@@ -590,28 +627,30 @@ export class HaDataTable extends LitElement {
                       </ha-fade-in>
                     </div>
                   `
-                : html`
-                    <div class="mdc-data-table__content">
-                      <div class="mdc-data-table__row" role="row">
-                        <div
-                          class="mdc-data-table__cell grows center"
-                          role="cell"
-                        >
-                          ${
-                            this.data.length
-                              ? this._i18n?.localize?.(
-                                  "ui.components.data-table.no_match_filter"
-                                ) || "No rows matching current filters"
-                              : this.noDataText ||
-                                this._i18n?.localize?.(
-                                  "ui.components.data-table.no-data"
-                                ) ||
-                                "No data"
-                          }
+                : this.loadError
+                  ? nothing
+                  : html`
+                      <div class="mdc-data-table__content">
+                        <div class="mdc-data-table__row" role="row">
+                          <div
+                            class="mdc-data-table__cell grows center"
+                            role="cell"
+                          >
+                            ${
+                              this.data.length
+                                ? this._i18n?.localize?.(
+                                    "ui.components.data-table.no_match_filter"
+                                  ) || "No rows matching current filters"
+                                : this.noDataText ||
+                                  this._i18n?.localize?.(
+                                    "ui.components.data-table.no-data"
+                                  ) ||
+                                  "No data"
+                            }
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  `
+                    `
               : html`
                   <lit-virtualizer
                     scroller
@@ -659,7 +698,7 @@ export class HaDataTable extends LitElement {
     }
     return html`
       <div
-        aria-rowindex=${index + 2}
+        aria-rowindex=${index + (this.loadError ? 3 : 2)}
         role="row"
         .rowId=${row[this.id]}
         @click=${this._handleRowClick}
@@ -1138,6 +1177,10 @@ export class HaDataTable extends LitElement {
     });
   }
 
+  private _retryLoad() {
+    fireEvent(this, "retry-load");
+  }
+
   private async _calcTableHeight() {
     if (this.autoHeight) {
       return;
@@ -1277,6 +1320,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__header-row {
           height: 56px;
+          flex-shrink: 0;
           display: flex;
           border-bottom: 1px solid var(--divider-color);
           overflow: auto;
@@ -1334,11 +1378,23 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__table {
+          display: flex;
+          flex-direction: column;
           height: 100%;
           width: 100%;
           border: 0;
           white-space: nowrap;
           position: relative;
+        }
+
+        .load-error {
+          flex-shrink: 0;
+          padding: var(--ha-space-2) var(--ha-space-4);
+          white-space: normal;
+        }
+
+        .load-error ha-alert {
+          display: block;
         }
 
         .mdc-data-table__cell {
@@ -1590,7 +1646,8 @@ export class HaDataTable extends LitElement {
           margin-top: 2px;
         }
         .scroller {
-          height: calc(100% - 57px);
+          flex: 1;
+          min-height: 0;
           overflow: overlay !important;
         }
 
@@ -1647,6 +1704,7 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
+    "retry-load": undefined;
     "selection-changed": SelectionChangedEvent;
     "row-click": RowClickedEvent;
     "sorting-changed": SortingChangedEvent;
