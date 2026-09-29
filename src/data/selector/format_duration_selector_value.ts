@@ -1,5 +1,5 @@
 import { durationDataToSeconds } from "../../common/datetime/duration_to_seconds";
-import { durationValueToData } from "../../common/datetime/duration_value_to_data";
+import { createDurationData } from "../../common/datetime/create_duration_data";
 import { normalizeDuration } from "../../common/datetime/normalize_duration";
 import { formatDurationLong } from "../../common/datetime/format_duration";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -18,7 +18,7 @@ export const formatDurationSelectorValue = (
     duration: HaDurationData
   ) => string = formatDurationLong
 ): string => {
-  const data = durationValueToData(value);
+  const data = createDurationData(value);
   if (!data) {
     return "";
   }

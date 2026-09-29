@@ -1,14 +1,16 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { normalizeDuration } from "../common/datetime/normalize_duration";
+import {
+  applyDurationSign,
+  normalizeDuration,
+} from "../common/datetime/normalize_duration";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ValueChangedEvent } from "../types";
 import "./ha-base-time-input";
 import type { HaBaseTimeInput, TimeChangedEvent } from "./ha-base-time-input";
 
 export interface HaDurationData {
-  negative?: boolean;
   days?: number;
   hours?: number;
   minutes?: number;
@@ -55,8 +57,9 @@ export class HaDurationInput extends LitElement {
 
   protected render(): TemplateResult {
     const folded = this._data;
-    const data =
-      folded && this.allowNegative ? normalizeDuration(folded) : folded;
+    const normalized =
+      folded && this.allowNegative ? normalizeDuration(folded) : undefined;
+    const data = normalized ?? folded;
     return html`
       <div class="row">
         <ha-base-time-input
@@ -71,7 +74,7 @@ export class HaDurationInput extends LitElement {
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           .enableSign=${this.allowNegative}
-          .negative=${!!data?.negative}
+          .negative=${normalized?.negative ?? false}
           format="24"
           .days=${this._component(data, "days")}
           .hours=${this._component(data, "hours")}
@@ -127,6 +130,7 @@ export class HaDurationInput extends LitElement {
     const value = ev.detail.value ? { ...ev.detail.value } : undefined;
 
     if (value) {
+      delete value.negative;
       value.hours ||= 0;
       value.minutes ||= 0;
 
@@ -170,14 +174,8 @@ export class HaDurationInput extends LitElement {
     }
 
     fireEvent(this, "value-changed", {
-      value:
-        value && this.allowNegative ? this._withSign(value, negative) : value,
+      value: value && applyDurationSign(value, negative),
     });
-  }
-
-  private _withSign(value: HaDurationData, negative: boolean): HaDurationData {
-    const { negative: _negative, ...components } = normalizeDuration(value);
-    return negative ? { negative: true, ...components } : components;
   }
 
   static styles = css`

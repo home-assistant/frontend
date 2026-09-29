@@ -9,8 +9,11 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { durationDataToSeconds } from "../../common/datetime/duration_to_seconds";
-import { normalizeDuration } from "../../common/datetime/normalize_duration";
-import { durationValueToData } from "../../common/datetime/duration_value_to_data";
+import { createDurationData } from "../../common/datetime/create_duration_data";
+import {
+  applyDurationSign,
+  normalizeDuration,
+} from "../../common/datetime/normalize_duration";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -60,7 +63,10 @@ export class HaTimeDuration extends LitElement {
     return this._input?.reportValidity() ?? true;
   }
 
-  private _data = memoizeOne(durationValueToData);
+  private _data = memoizeOne(
+    (value?: HaDurationData | string | number): HaDurationData | undefined =>
+      createDurationData(value)
+  );
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("value")) {
@@ -198,7 +204,7 @@ export class HaTimeDuration extends LitElement {
       return this._zeroDuration();
     }
     const components = this._components(data ?? this._zeroDuration());
-    return type === "before" ? { negative: true, ...components } : components;
+    return applyDurationSign(components, type === "before");
   }
 
   private _durationChanged(ev: ValueChangedEvent<HaDurationData | undefined>) {

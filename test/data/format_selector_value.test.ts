@@ -90,7 +90,7 @@ describe("formatSelectorValue duration selector", () => {
     expect(
       formatSelectorValue(
         localizedHass,
-        { negative: true, minutes: 30 },
+        { minutes: -30 },
         { duration: { mode: "signed" } }
       )
     ).toBe("-30 minutes");
@@ -105,7 +105,7 @@ describe("formatSelectorValue duration selector", () => {
     expect(
       formatSelectorValue(
         localizedHass,
-        { negative: true, hours: 1, minutes: 30 },
+        { hours: -1, minutes: -30 },
         { duration: { mode: "offset" } }
       )
     ).toBe("1 hour, 30 minutes before");
