@@ -61,6 +61,8 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
   @state() private _entry?: ConfigEntry;
 
+  @state() private _entryRemoved = false;
+
   private _marketplaceUnsubs: Promise<UnsubscribeFunc>[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_integrationLoaded"];
@@ -119,7 +121,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._isLoaded) {
+    if (!this._isLoaded || this._entryRemoved) {
       return html`
         <hass-error-screen
           .hass=${this.hass}
@@ -223,7 +225,14 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._entry = update.type === "removed" ? undefined : update.entry;
+    this._entryRemoved = update.type === "removed";
+    this._entry = this._entryRemoved ? undefined : update.entry;
+
+    // What the removed entry knew is gone with it
+    if (this._entryRemoved) {
+      this._info = undefined;
+      this._repositories = undefined;
+    }
 
     const entryLoaded = this._entry?.state === "loaded";
     if (entryLoaded === this._entryLoaded) {

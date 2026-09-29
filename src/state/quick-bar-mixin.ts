@@ -247,8 +247,13 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           myParams.append("category", repository.category);
           openCreateLink();
           return;
-        } catch {
-          // Fall through to the toast below when the repository is unknown.
+        } catch (err: unknown) {
+          // The Marketplace says why, not loaded or an unknown repository
+          const message = (err as { message?: string } | null)?.message;
+          if (message) {
+            showToast(this, { message });
+            return;
+          }
         }
       }
 

@@ -130,15 +130,15 @@ export class HaMarketplaceWarning extends LitElement {
     try {
       await acceptWarning(this.hass);
     } catch (err: any) {
-      this._accepting = false;
       this._error =
         err?.message ||
         this.hass.localize("ui.panel.marketplace.common.unknown_error");
       return;
+    } finally {
+      // The panel swaps this screen once its refetch works, until then it stays usable
+      this._accepting = false;
     }
 
-    // Stays busy, the panel swaps this screen for the Marketplace once the
-    // refetched information says the warning is accepted.
     fireEvent(this, "marketplace-refresh");
   }
 

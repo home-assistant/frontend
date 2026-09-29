@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
+import { ERROR_GITHUB_RATE_LIMITED } from "../../../src/data/marketplace/websocket";
 import "../../../src/panels/marketplace/dialogs/dialog-marketplace-download";
 import type { DialogMarketplaceDownload } from "../../../src/panels/marketplace/dialogs/dialog-marketplace-download";
 import type { MarketplaceDownloadDialogParams } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace";
@@ -129,6 +130,29 @@ describe("dialog-marketplace-download", () => {
     // The closed dialog is gone, the app shows the prompt instead
     expect(dialog.isConnected).toBe(false);
     expect(showConfirmationDialog).toHaveBeenCalledWith(app, expect.anything());
+  });
+
+  it("offers nothing for a rate limit once closed", async () => {
+    const download = deferred<null>();
+    const dialog = await openDownloadDialog(
+      { repository: repositoryInfo("1") },
+      mockConnection(async (message: { type: string }) =>
+        message.type === "marketplace/repository/download"
+          ? download.promise
+          : null
+      )
+    );
+    await settle(dialog);
+
+    dialog
+      .shadowRoot!.querySelector("ha-button[slot=primaryAction]")!
+      .dispatchEvent(new Event("click"));
+    await dialog.closeDialog();
+    download.reject({ code: ERROR_GITHUB_RATE_LIMITED, message: "Limited" });
+    await settle(dialog);
+
+    // The prompt would open from the detached dialog, where nobody sees it
+    expect(showConfirmationDialog).not.toHaveBeenCalled();
   });
 
   it("shows why the repository could not load, without a spinner", async () => {

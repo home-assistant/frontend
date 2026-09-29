@@ -142,6 +142,21 @@ describe("ha-marketplace-repository-dashboard", () => {
     expect(getInternals(page)._repository.id).toBe("1");
   });
 
+  it("loads the repository in the route when the query is no My link", async () => {
+    window.history.replaceState(null, "", "/marketplace/repository/1?utm=x");
+    const { page, sendMessagePromise } = await openRepositoryPage(
+      async (repositoryId) => repositoryInfo(repositoryId),
+      repositoryRoute("1")
+    );
+    await settle(page);
+    window.history.replaceState(null, "", "/");
+
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({ repository_id: "1" })
+    );
+    expect(getInternals(page)._error).toBeUndefined();
+  });
+
   it("loads the other repository when the route changes", async () => {
     const { page, sendMessagePromise } = await openRepositoryPage(
       async (repositoryId) => repositoryInfo(repositoryId),

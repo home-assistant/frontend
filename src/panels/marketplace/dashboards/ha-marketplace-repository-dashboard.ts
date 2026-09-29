@@ -91,7 +91,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     super.firstUpdated(changedProperties);
 
     const params = extractSearchParamsObject();
-    if (Object.entries(params).length) {
+    if (params.owner && params.repository) {
       let existing: RepositoryBase | undefined;
       const requestedRepository = `${params.owner}/${params.repository}`;
       existing = this.marketplace.repositories.find(

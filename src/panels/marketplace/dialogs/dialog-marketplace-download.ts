@@ -424,6 +424,10 @@ export class DialogMarketplaceDownload extends DialogMixin<MarketplaceDownloadDi
       );
     } catch (err) {
       this._installing = false;
+      if (!this._isShowing(repository)) {
+        return;
+      }
+
       if (handleWarningNotAccepted(err)) {
         this.closeDialog();
         return;

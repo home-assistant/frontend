@@ -175,6 +175,11 @@ class PartialPanelResolver extends HassRouterPage {
       routes[panel.url_path] = data;
     });
 
+    // The Marketplace replaced HACS, links in dashboards still point at /hacs
+    if (routes.marketplace && !routes.hacs) {
+      routes.hacs = "marketplace";
+    }
+
     return {
       beforeRender: (page) => {
         if (!page || !routes[page]) {

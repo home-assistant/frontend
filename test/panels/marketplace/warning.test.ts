@@ -19,6 +19,9 @@ vi.mock("../../../src/components/ha-checkbox", () =>
 vi.mock("../../../src/components/ha-svg-icon", () =>
   stubElement("ha-svg-icon")
 );
+vi.mock("../../../src/data/marketplace/websocket", () => ({
+  acceptWarning: vi.fn(async () => undefined),
+}));
 
 const openWarning = async () => {
   const warning = document.createElement("ha-marketplace-warning");
@@ -37,4 +40,15 @@ it("shows its title from the translations of the Marketplace itself", async () =
 
   // A direct visit loads the Marketplace translations, not those of Settings
   expect(subpage!.header).toBe("ui.panel.marketplace.title");
+});
+
+it("can be continued again when the Marketplace did not take over", async () => {
+  const warning = await openWarning();
+  const internals = warning as unknown as Record<string, any>;
+  internals._understood = true;
+
+  await internals._accept();
+
+  // The panel swaps the screen once its refetch works, until then it stays usable
+  expect(internals._accepting).toBe(false);
 });

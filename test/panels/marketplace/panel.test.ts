@@ -46,8 +46,9 @@ const settle = async (
 
 type Answers = Record<string, () => Promise<unknown>>;
 
+let configEntriesCallback!: (updates: ConfigEntryUpdate[]) => void;
+
 const openPanel = async (answers: Answers) => {
-  let configEntriesCallback!: (updates: ConfigEntryUpdate[]) => void;
   const hass = {
     localize: (key: string, values?: Record<string, string>) =>
       values ? `${key} ${JSON.stringify(values)}` : key,
@@ -102,6 +103,26 @@ describe("ha-panel-marketplace", () => {
     });
 
     expect(screen(panel, "ha-marketplace-router")).not.toBeNull();
+  });
+
+  it("drops the catalog once the entry is removed", async () => {
+    const panel = await openPanel({
+      "marketplace/info": async () => INFO,
+      "marketplace/repositories/list": async () => [],
+    });
+
+    configEntriesCallback([
+      {
+        type: "removed",
+        entry: { domain: "marketplace", state: "not_loaded" },
+      } as unknown as ConfigEntryUpdate,
+    ]);
+    await settle(panel);
+
+    expect(screen(panel, "ha-marketplace-router")).toBeNull();
+    expect(screen(panel, "hass-error-screen")?.error).toBe(
+      "ui.panel.marketplace.not_loaded"
+    );
   });
 
   it("keeps loading while the entry is not loaded yet", async () => {
