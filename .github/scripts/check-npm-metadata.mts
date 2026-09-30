@@ -31,7 +31,9 @@ type PackageJson = Partial<Record<Section, Record<string, string>>>;
 
 interface Dependency {
   name: string;
-  spec: string;
+  // The package npm installs, which differs from name for npm: aliases
+  registryName: string;
+  version: string;
   section: Section;
 }
 
@@ -106,11 +108,17 @@ const readPackageJson = async (
 
 const listDependencies = (pkg: PackageJson): Dependency[] =>
   SECTIONS.flatMap((section) =>
-    Object.entries(pkg[section] ?? {}).map(([name, spec]) => ({
-      name,
-      spec,
-      section,
-    }))
+    Object.entries(pkg[section] ?? {}).map(([name, spec]) => {
+      // npm: aliases install another package, e.g. npm:typescript@7.0.2
+      const alias = spec.match(NPM_ALIAS);
+
+      return {
+        name,
+        registryName: alias?.[1] ?? name,
+        version: alias?.[2] ?? spec,
+        section,
+      };
+    })
   );
 
 const repositoryUrl = (repository: NpmManifest["repository"]) => {
@@ -121,14 +129,15 @@ const repositoryUrl = (repository: NpmManifest["repository"]) => {
 
 const checkPackage = async ({
   name,
-  spec,
+  registryName,
+  version,
   section,
 }: Dependency): Promise<Result> => {
-  // npm: aliases install another package, e.g. npm:typescript@7.0.2
-  const alias = spec.match(NPM_ALIAS);
-  const registryName = alias?.[1] ?? name;
-  const version = alias?.[2] ?? spec;
-  const result = { name, version, section };
+  const result = {
+    name: registryName === name ? name : `${name} (npm:${registryName})`,
+    version,
+    section,
+  };
 
   if (!EXACT_VERSION.test(version)) {
     return { ...result, skipped: "not an exact version" };
@@ -229,11 +238,14 @@ export default async function checkNpmMetadata({
     readPackageJson(github, context, pr.head.sha),
   ]);
 
-  // Moving a package between sections is not a new dependency
-  const existing = new Set(listDependencies(base).map(({ name }) => name));
+  // Compare the packages npm installs, so pointing an npm: alias at another
+  // package counts as new, but moving a package between sections does not
+  const existing = new Set(
+    listDependencies(base).map(({ registryName }) => registryName)
+  );
 
   const added = listDependencies(head).filter(
-    ({ name }) => !existing.has(name)
+    ({ registryName }) => !existing.has(registryName)
   );
 
   if (added.length === 0) {
