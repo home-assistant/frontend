@@ -82,6 +82,7 @@ describe("ScrollFadeController", () => {
   });
 
   it("handles the negative scrollLeft of right-to-left layouts", () => {
+    scroller.dir = "rtl";
     scrollTo(-MAX_SCROLL / 2);
     expect(fades()).toEqual({ start: true, end: true });
     scrollTo(-MAX_SCROLL);
