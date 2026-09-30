@@ -395,11 +395,14 @@ describe("ha-marketplace-repository-dashboard", () => {
       expect(
         page.shadowRoot!.querySelector(".card-actions ha-button")
       ).not.toBeNull();
-      expect(
-        page
-          .shadowRoot!.querySelector(".content > ha-alert")
-          ?.textContent?.trim()
-      ).toBe(reason);
+      const alert = page
+        .shadowRoot!.querySelector(".content > ha-alert")!
+        .textContent!.replace(/\s+/g, " ")
+        .trim();
+      // The way out is an earlier version, not only updating Home Assistant
+      expect(alert).toBe(
+        `${reason} ui.panel.marketplace.repository.earlier_version_hint`
+      );
     }
   );
 });

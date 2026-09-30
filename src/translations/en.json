@@ -2781,7 +2781,7 @@
           },
           "marketplace": {
             "main": "Marketplace",
-            "secondary": "Install integrations, dashboard resources, and themes shared by the community"
+            "secondary": "Install integrations, dashboard cards, themes, and templates shared by the community"
           },
           "dashboards": {
             "main": "Dashboards",
@@ -12202,7 +12202,7 @@
         },
         "dashboard": {
           "empty_header": "Nothing in the Marketplace yet",
-          "empty_text": "The Marketplace fills itself from the community catalog. When it could not be reached, what it offers shows up here once it can.",
+          "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
           "repository_not_found": "Repository not found"
         },
@@ -12265,9 +12265,9 @@
           "no_releases": "There are no other versions to choose from.",
           "release": "Version",
           "release_warning": "To go back to an earlier version, restoring a backup is the safer way.",
-          "older_version_hint": "An earlier version may still work, choose one below.",
+          "older_version_hint": "An earlier version may still work, select one below.",
           "restart": "Home Assistant needs a restart to start using the new version.",
-          "lovelace_instruction": "Your dashboards are managed in YAML, so add this resource to your configuration after the installation:",
+          "lovelace_instruction": "Your dashboard resources are managed in YAML, so add this resource to your configuration after the installation:",
           "releases_failed": "Could not load the versions.",
           "new_install_title": "You install this at your own risk",
           "new_install_warning": "{repository} is made by {authors}. It is not reviewed or supported by the Home Assistant project.",
@@ -12283,8 +12283,9 @@
           "stars": "Stars",
           "downloads": "Downloads",
           "author": "Author",
-          "requires_homeassistant": "This repository needs Home Assistant {version} or newer. Update Home Assistant to install it.",
-          "requires_newer_homeassistant": "This repository needs a newer version of Home Assistant. Update Home Assistant to install it."
+          "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
+          "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
+          "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
         },
         "repository_menu": {
           "dismiss_new": "Dismiss new",

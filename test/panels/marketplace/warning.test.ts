@@ -49,7 +49,7 @@ it("sends the acceptance, and can be continued again after it", async () => {
   vi.mocked(acceptMarketplaceWarning).mockImplementationOnce(
     () =>
       new Promise((resolve) => {
-        accepted = () => resolve(undefined);
+        accepted = () => resolve(null);
       })
   );
   const warning = await openWarning();

@@ -111,3 +111,26 @@ describe("ha-marketplace-my-redirect", () => {
     ).not.toBeNull();
   });
 });
+
+describe("the integration page of HACS", () => {
+  it.each([
+    { name: "hacs", domain: "hacs", url: "?domain=marketplace" },
+    { name: "any other", domain: "hue", url: "?domain=hue" },
+  ])("opens the Marketplace for $name", ({ domain, url }) => {
+    window.history.replaceState(
+      null,
+      "",
+      `/_my_redirect/integration?domain=${domain}`
+    );
+    const panel = document.createElement("ha-panel-my") as unknown as Record<
+      string,
+      any
+    >;
+    panel._redirect = getMyRedirects().integration;
+
+    expect(panel._createRedirectUrl()).toBe(
+      `/config/integrations/integration${url}`
+    );
+    window.history.replaceState(null, "", "/");
+  });
+});

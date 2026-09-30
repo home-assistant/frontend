@@ -385,6 +385,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
               ? nothing
               : html`<ha-alert alert-type="warning">
                   ${installBlockedReason(this.hass.localize, repository)}
+                  ${this.hass.localize(
+                    "ui.panel.marketplace.repository.earlier_version_hint"
+                  )}
                 </ha-alert>`
           }
           <ha-card outlined>
