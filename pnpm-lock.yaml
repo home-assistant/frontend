@@ -91,23 +91,23 @@ importers:
         specifier: 12.3.15
         version: 12.3.15
       '@fullcalendar/core':
-        specifier: 6.1.21
-        version: 6.1.21
+        specifier: 7.1.0
+        version: 7.1.0
       '@fullcalendar/daygrid':
         specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)
+        version: 6.1.21(@fullcalendar/core@7.1.0)
       '@fullcalendar/interaction':
         specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)
+        version: 6.1.21(@fullcalendar/core@7.1.0)
       '@fullcalendar/list':
         specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)
+        version: 6.1.21(@fullcalendar/core@7.1.0)
       '@fullcalendar/luxon3':
         specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)(luxon@3.7.2)
+        version: 6.1.21(@fullcalendar/core@7.1.0)(luxon@3.7.2)
       '@fullcalendar/timegrid':
         specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)
+        version: 6.1.21(@fullcalendar/core@7.1.0)
       '@home-assistant/webawesome':
         specifier: 3.7.0-ha.1
         version: 3.7.0-ha.1(@floating-ui/utils@0.2.12)
@@ -1853,8 +1853,11 @@ packages:
       typescript:
         optional: true
 
-  '@fullcalendar/core@6.1.21':
-    resolution: {integrity: sha512-t3u/+sqh3Iq7TWtUnVLcGDUE6OWZh0UD3c04bI/l7lSLAgAKr3kngBmhHiQD1QXpwC8ZN5iNqG7a7gOVixhSKQ==}
+  '@fullcalendar/core@7.1.0':
+    resolution: {integrity: sha512-a+ABP7zQpPWpwPT8EsOdShpeOVrJyx/XYStqERd8ibld/FLi/dzpd95r7w3RIdFqFm9iUv0gdGvBshSlI/dbPw==}
+    peerDependencies:
+      '@full-ui/headless-calendar': 7.1.0
+      temporal-polyfill: ^1.0.1
 
   '@fullcalendar/daygrid@6.1.21':
     resolution: {integrity: sha512-QYb1y40RGYLlOxKpYWg8O+7njEnKnFG8Tt7qjnubJGR35s1phQg67E+81y2TyAbbm59p2JFOCXGDk9t6KDujIA==}
@@ -6297,9 +6300,6 @@ packages:
   potpack@2.1.0:
     resolution: {integrity: sha512-pcaShQc1Shq0y+E7GqJqvZj8DTthWV1KeHGdi0Z6IAin2Oi3JnLCOfwnCo84qc+HAp52wT9nK9H7FAJp5a44GQ==}
 
-  preact@10.12.1:
-    resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
-
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -9283,31 +9283,29 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  '@fullcalendar/core@6.1.21':
-    dependencies:
-      preact: 10.12.1
+  '@fullcalendar/core@7.1.0': {}
 
-  '@fullcalendar/daygrid@6.1.21(@fullcalendar/core@6.1.21)':
+  '@fullcalendar/daygrid@6.1.21(@fullcalendar/core@7.1.0)':
     dependencies:
-      '@fullcalendar/core': 6.1.21
+      '@fullcalendar/core': 7.1.0
 
-  '@fullcalendar/interaction@6.1.21(@fullcalendar/core@6.1.21)':
+  '@fullcalendar/interaction@6.1.21(@fullcalendar/core@7.1.0)':
     dependencies:
-      '@fullcalendar/core': 6.1.21
+      '@fullcalendar/core': 7.1.0
 
-  '@fullcalendar/list@6.1.21(@fullcalendar/core@6.1.21)':
+  '@fullcalendar/list@6.1.21(@fullcalendar/core@7.1.0)':
     dependencies:
-      '@fullcalendar/core': 6.1.21
+      '@fullcalendar/core': 7.1.0
 
-  '@fullcalendar/luxon3@6.1.21(@fullcalendar/core@6.1.21)(luxon@3.7.2)':
+  '@fullcalendar/luxon3@6.1.21(@fullcalendar/core@7.1.0)(luxon@3.7.2)':
     dependencies:
-      '@fullcalendar/core': 6.1.21
+      '@fullcalendar/core': 7.1.0
       luxon: 3.7.2
 
-  '@fullcalendar/timegrid@6.1.21(@fullcalendar/core@6.1.21)':
+  '@fullcalendar/timegrid@6.1.21(@fullcalendar/core@7.1.0)':
     dependencies:
-      '@fullcalendar/core': 6.1.21
-      '@fullcalendar/daygrid': 6.1.21(@fullcalendar/core@6.1.21)
+      '@fullcalendar/core': 7.1.0
+      '@fullcalendar/daygrid': 6.1.21(@fullcalendar/core@7.1.0)
 
   '@gar/promise-retry@1.0.3': {}
 
@@ -14072,8 +14070,6 @@ snapshots:
       source-map-js: 1.2.1
 
   potpack@2.1.0: {}
-
-  preact@10.12.1: {}
 
   prelude-ls@1.2.1: {}
 
