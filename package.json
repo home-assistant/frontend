@@ -12,7 +12,7 @@
     "format:eslint": "eslint \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
     "lint:prettier": "prettier . --cache --check",
     "format:prettier": "prettier . --cache --write",
-    "lint:types": "node ./node_modules/@typescript/native/bin/tsc",
+    "lint:types": "node ./node_modules/@typescript/native/bin/tsc && node ./node_modules/@typescript/native/bin/tsc -p .github/scripts",
     "lint:lit": "lit-analyzer \"{.,*}/src/**/*.ts\"",
     "lint:licenses": "node --no-deprecation script/check-licenses",
     "lint": "pnpm run lint:eslint && pnpm run lint:prettier && pnpm run lint:types && pnpm run lint:lit",
