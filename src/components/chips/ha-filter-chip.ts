@@ -2,6 +2,7 @@ import { mdiCheck } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../ha-svg-icon";
 import { HaChipBase } from "./ha-chip-base";
 
 @customElement("ha-filter-chip")
