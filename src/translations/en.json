@@ -11880,6 +11880,12 @@
         }
       },
       "page-demo": {
+        "server_switch": {
+          "title": "You're at {server}",
+          "description": "Your location is in the home zone of {server}. Do you want to switch to this server?",
+          "dismiss": "Not now",
+          "switch": "Switch server"
+        },
         "cards": {
           "demo": {
             "demo_by": "by {name}",

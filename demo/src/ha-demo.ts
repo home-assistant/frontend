@@ -1,3 +1,4 @@
+import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
@@ -5,6 +6,7 @@ import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
+import "./components/demo-server-switch-banner";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import {
@@ -72,6 +74,13 @@ const CONFIG_PANEL_COMMANDS = [
 
 @customElement("ha-demo")
 export class HaDemo extends HomeAssistantAppEl {
+  protected renderHass() {
+    return html`
+      ${super.renderHass()}
+      <demo-server-switch-banner .hass=${this.hass}></demo-server-switch-banner>
+    `;
+  }
+
   protected async _initializeHass() {
     const initial: Partial<MockHomeAssistant> = {
       panelUrl: (this as any)._panelUrl,
