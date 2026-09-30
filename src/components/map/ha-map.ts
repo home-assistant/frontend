@@ -649,6 +649,7 @@ export class HaMap extends ReactiveElement {
     const map = this._mapElement!;
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("space", this._vectorEngine);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
     this._engine?.setMapStyle(this._resolvedMapStyle);
@@ -663,9 +664,14 @@ export class HaMap extends ReactiveElement {
 
   private _setupAttempt = 0;
 
+  /** Whether the next engine is the vector one: only it draws a globe */
+  private get _vectorEngine(): boolean {
+    return !this._forceLeaflet && supportsVectorMaps();
+  }
+
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this._forceLeaflet || !supportsVectorMaps()) {
+    if (!this._vectorEngine) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -699,6 +705,8 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.getElementById("map")?.remove();
     const map = document.createElement("div");
     map.id = "map";
+    // Set before the style loads, so a light theme does not flash white first
+    map.classList.toggle("space", this._vectorEngine);
     this.shadowRoot!.append(map);
     this._loading = true;
     const attempt = ++this._setupAttempt;
@@ -1666,6 +1674,26 @@ export class HaMap extends ReactiveElement {
       background: #ffffff;
       color: #000000;
       --map-filter: invert(0);
+    }
+    /* Zoomed out the sky fades out and the globe is left on a transparent
+       canvas, so what surrounds it is this element: night around the dark
+       cartography, day around the light one. */
+    #map.space {
+      background-color: #070a18;
+    }
+    /* The glow sits where the sphere is at the widest zoom out; MapLibre's own
+       atmosphere carries the edge from there in. */
+    #map.space:not(.dark) {
+      background-color: #8fb3da;
+      background-image:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(255, 255, 255, 0.95) 18%,
+          rgba(255, 255, 255, 0.45) 24%,
+          rgba(255, 255, 255, 0) 34%
+        ),
+        linear-gradient(180deg, #dbe8f8 0%, #7aa5d3 100%);
+      background-repeat: no-repeat;
     }
     #map.clickable:active,
     #map:active {
