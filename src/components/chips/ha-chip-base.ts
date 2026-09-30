@@ -33,6 +33,9 @@ export class HaChipBase extends HaButton {
   @property({ type: Number, reflect: true, attribute: "tabindex" })
   override tabIndex = 0;
 
+  @property({ attribute: "referrerpolicy" })
+  referrerPolicy: HTMLAnchorElement["referrerPolicy"] = "";
+
   @property({ attribute: "aria-label-remove" }) ariaLabelRemove: string | null =
     null;
 
@@ -169,6 +172,7 @@ export class HaChipBase extends HaButton {
         target=${this.target || nothing}
         download=${this.download || nothing}
         rel=${this.rel || nothing}
+        referrerpolicy=${this.referrerPolicy || nothing}
         aria-label=${this.ariaLabel || nothing}
         aria-disabled=${disabled ? "true" : nothing}
         tabindex=${
