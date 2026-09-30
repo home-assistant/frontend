@@ -47,7 +47,9 @@
  * @property {{ pull_request?: { base: { sha: string }, head: { sha: string } } }} payload
  */
 
-/** @typedef {"dependencies" | "devDependencies"} Section */
+/**
+ * @typedef {"dependencies" | "devDependencies" | "optionalDependencies" | "peerDependencies"} Section
+ */
 
 /** @typedef {Partial<Record<Section, Record<string, string>>>} PackageJson */
 
@@ -78,7 +80,12 @@
  */
 
 /** @type {Section[]} */
-const SECTIONS = ["dependencies", "devDependencies"];
+const SECTIONS = [
+  "dependencies",
+  "devDependencies",
+  "optionalDependencies",
+  "peerDependencies",
+];
 
 const EXACT_VERSION = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 
@@ -87,17 +94,25 @@ const NPM_ALIAS = /^npm:((?:@[^/]+\/)?[^@]+)@(.+)$/;
 const CONCURRENCY = 8;
 
 /**
+ * Returns undefined when the registry reports 404, and throws on any other
+ * failure so a registry outage fails the job instead of skipping the check.
  * @param {string} url
  * @returns {Promise<unknown>}
  */
 const fetchJson = async (url) => {
-  try {
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    return response.ok ? await response.json() : undefined;
-  } catch {
+  if (response.status === 404) {
     return undefined;
   }
+
+  if (!response.ok) {
+    throw new Error(
+      `Request to ${url} failed: ${response.status} ${response.statusText}`
+    );
+  }
+
+  return response.json();
 };
 
 /**
