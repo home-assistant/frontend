@@ -1,4 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
+import { acceptMarketplaceWarning } from "../../../src/data/marketplace/websocket";
 import type { HomeAssistant } from "../../../src/types";
 import "../../../src/panels/marketplace/components/ha-marketplace-warning";
 
@@ -19,7 +20,8 @@ vi.mock("../../../src/components/ha-checkbox", () =>
 vi.mock("../../../src/components/ha-svg-icon", () =>
   stubElement("ha-svg-icon")
 );
-vi.mock("../../../src/data/marketplace/websocket", () => ({
+vi.mock("../../../src/data/marketplace/websocket", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
   acceptMarketplaceWarning: vi.fn(async () => undefined),
 }));
 
@@ -42,24 +44,51 @@ it("shows its title from the translations of the Marketplace itself", async () =
   expect(subpage!.header).toBe("ui.panel.marketplace.title");
 });
 
-it("can be continued again when the Marketplace did not take over", async () => {
+it("sends the acceptance, and can be continued again after it", async () => {
+  let accepted!: () => void;
+  vi.mocked(acceptMarketplaceWarning).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        accepted = () => resolve(undefined);
+      })
+  );
+  const warning = await openWarning();
+  const internals = warning as unknown as Record<string, any>;
+  internals._understood = true;
+
+  const accepting = internals._accept();
+  expect(acceptMarketplaceWarning).toHaveBeenCalledWith(warning.hass);
+  expect(internals._accepting).toBe(true);
+
+  accepted();
+  await accepting;
+
+  // The panel swaps the screen once its refetch works, until then it stays usable
+  expect(internals._accepting).toBe(false);
+  expect(internals._error).toBeUndefined();
+});
+
+it("sends nothing until the risks are understood", async () => {
+  const warning = await openWarning();
+
+  await (warning as unknown as Record<string, any>)._accept();
+
+  expect(acceptMarketplaceWarning).not.toHaveBeenCalled();
+});
+
+it("shows a failure above the warning, on an outlined card", async () => {
+  vi.mocked(acceptMarketplaceWarning).mockRejectedValueOnce(new Error("Busy"));
   const warning = await openWarning();
   const internals = warning as unknown as Record<string, any>;
   internals._understood = true;
 
   await internals._accept();
-
-  // The panel swaps the screen once its refetch works, until then it stays usable
-  expect(internals._accepting).toBe(false);
-});
-
-it("shows a failure above the warning, on an outlined card", async () => {
-  const warning = await openWarning();
-  (warning as unknown as Record<string, any>)._error = "Busy";
   await warning.updateComplete;
 
   const content = warning.shadowRoot!.querySelector(".card-content")!;
   expect(content.firstElementChild?.getAttribute("alert-type")).toBe("error");
+  expect(content.firstElementChild?.textContent).toContain("Busy");
+  expect(internals._accepting).toBe(false);
   expect(
     warning.shadowRoot!.querySelector("ha-card")!.hasAttribute("outlined")
   ).toBe(true);

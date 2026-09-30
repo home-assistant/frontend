@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   deleteConfigEntry,
   getConfigEntries,
@@ -160,10 +160,6 @@ describe("repositoryMenuItems", () => {
       { entry_id: "b", domain: "example", title: "", source: "ignore" },
     ] as ConfigEntry[];
 
-    afterEach(() => {
-      vi.clearAllMocks();
-    });
-
     const uninstallIntegration = async () => {
       const entry = repositoryMenuItems(
         PAGE,
@@ -191,13 +187,37 @@ describe("repositoryMenuItems", () => {
       expect(uninstallMarketplaceRepository).not.toHaveBeenCalled();
     });
 
-    it("deletes every entry before it uninstalls", async () => {
+    const deleteAndUninstall = async () => {
       vi.mocked(getConfigEntries).mockResolvedValueOnce(ENTRIES);
       await uninstallIntegration();
       const params = vi.mocked(showMarketplaceInUseDialog).mock
         .lastCall![1] as MarketplaceInUseDialogParams;
+      return params.deleteAndUninstall;
+    };
 
-      await params.deleteAndUninstall();
+    it("deletes every entry before it uninstalls", async () => {
+      const deleted: (() => void)[] = [];
+      vi.mocked(deleteConfigEntry).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            deleted.push(() => resolve({ require_restart: false }));
+          })
+      );
+      const settle = () =>
+        new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      const running = (await deleteAndUninstall())();
+
+      await settle();
+      expect(deleteConfigEntry).toHaveBeenCalledTimes(1);
+      deleted[0]();
+      await settle();
+      expect(deleteConfigEntry).toHaveBeenCalledTimes(2);
+      // Core refuses while an entry is left, so it waits for the last one
+      expect(uninstallMarketplaceRepository).not.toHaveBeenCalled();
+      deleted[1]();
+      await running;
 
       expect(
         vi.mocked(deleteConfigEntry).mock.calls.map(([, entryId]) => entryId)
@@ -206,6 +226,18 @@ describe("repositoryMenuItems", () => {
         PAGE.hass,
         "1"
       );
+      vi.mocked(deleteConfigEntry).mockReset();
+    });
+
+    it("uninstalls nothing when an entry can not be deleted", async () => {
+      const error = new Error("Busy");
+      vi.mocked(deleteConfigEntry).mockRejectedValueOnce(error);
+
+      await expect((await deleteAndUninstall())()).rejects.toBe(error);
+
+      expect(deleteConfigEntry).toHaveBeenCalledTimes(1);
+      expect(uninstallMarketplaceRepository).not.toHaveBeenCalled();
+      expect(showAlertDialog).toHaveBeenCalledTimes(1);
     });
 
     it("says why when the entries can not be looked up", async () => {
