@@ -50,7 +50,7 @@ export class HaChipSet extends LitElement {
 
     const chips = this.chips.filter((chip) => chip.focusable);
 
-    if (!chips.length) {
+    if (chips.length < 2) {
       return;
     }
 
