@@ -12181,8 +12181,9 @@
             "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
             "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
           },
-          "understand": "I understand the risks, remind me again in 90 days",
-          "continue": "Continue"
+          "understand": "I understand the risks",
+          "continue": "Continue",
+          "continue_in": "You can continue in {seconds} seconds"
         },
         "common": {
           "install": "Install",

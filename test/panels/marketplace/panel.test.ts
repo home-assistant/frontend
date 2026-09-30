@@ -32,7 +32,7 @@ vi.mock("../../../src/panels/marketplace/ha-marketplace-router", () =>
   stubElement("ha-marketplace-router")
 );
 
-const INFO = { warning_accepted: true, warning_reminder_due: false };
+const INFO = { warning_accepted: true };
 
 // Lets the pending fetches settle and the panel render their result.
 const settle = async (

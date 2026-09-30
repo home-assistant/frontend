@@ -25,7 +25,6 @@ export interface MarketplaceInfo {
   startup: boolean;
   version: string;
   warning_accepted: boolean;
-  warning_reminder_due: boolean;
 }
 
 export interface MarketplaceData {

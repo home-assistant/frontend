@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { acceptMarketplaceWarning } from "../../../src/data/marketplace/websocket";
 import type { HomeAssistant } from "../../../src/types";
 import "../../../src/panels/marketplace/components/ha-marketplace-warning";
@@ -33,7 +33,32 @@ const openWarning = async () => {
   return warning;
 };
 
-afterEach(() => document.body.replaceChildren());
+// Only the countdown is faked, Lit renders on microtasks
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+});
+
+afterEach(() => {
+  document.body.replaceChildren();
+  vi.useRealTimers();
+});
+
+const waitOut = async (
+  warning: HTMLElement & { updateComplete: Promise<boolean> }
+) => {
+  vi.advanceTimersByTime(30_000);
+  await warning.updateComplete;
+};
+
+const countdown = (warning: HTMLElement) =>
+  warning.shadowRoot!.querySelector(".card-actions .countdown");
+
+const continueButton = (warning: HTMLElement) =>
+  warning.shadowRoot!.querySelector(
+    ".card-actions ha-button"
+  ) as HTMLElement & {
+    disabled: boolean;
+  };
 
 it("shows its title from the translations of the Marketplace itself", async () => {
   const warning = await openWarning();
@@ -53,6 +78,7 @@ it("sends the acceptance, and can be continued again after it", async () => {
       })
   );
   const warning = await openWarning();
+  await waitOut(warning);
   const internals = warning as unknown as Record<string, any>;
   internals._understood = true;
 
@@ -70,6 +96,7 @@ it("sends the acceptance, and can be continued again after it", async () => {
 
 it("sends nothing until the risks are understood", async () => {
   const warning = await openWarning();
+  await waitOut(warning);
 
   await (warning as unknown as Record<string, any>)._accept();
 
@@ -79,6 +106,7 @@ it("sends nothing until the risks are understood", async () => {
 it("shows a failure above the warning, on an outlined card", async () => {
   vi.mocked(acceptMarketplaceWarning).mockRejectedValueOnce(new Error("Busy"));
   const warning = await openWarning();
+  await waitOut(warning);
   const internals = warning as unknown as Record<string, any>;
   internals._understood = true;
 
@@ -94,7 +122,45 @@ it("shows a failure above the warning, on an outlined card", async () => {
   ).toBe(true);
 });
 
-it("says how long the acceptance lasts, instead of a reminder", async () => {
+it("counts down 30 seconds before it can be continued", async () => {
+  const warning = await openWarning();
+  const internals = warning as unknown as Record<string, any>;
+  internals._understood = true;
+  await warning.updateComplete;
+
+  expect(continueButton(warning).disabled).toBe(true);
+  // A disabled button is hard to read, the countdown stands next to it
+  expect(continueButton(warning).textContent!.trim()).toBe(
+    "ui.panel.marketplace.warning.continue"
+  );
+  expect(countdown(warning)?.textContent!.trim()).toBe(
+    "ui.panel.marketplace.warning.continue_in"
+  );
+  await internals._accept();
+  expect(acceptMarketplaceWarning).not.toHaveBeenCalled();
+
+  vi.advanceTimersByTime(29_000);
+  await warning.updateComplete;
+  expect(continueButton(warning).disabled).toBe(true);
+
+  vi.advanceTimersByTime(1_000);
+  await warning.updateComplete;
+  expect(continueButton(warning).disabled).toBe(false);
+  expect(countdown(warning)).toBeNull();
+  await internals._accept();
+  expect(acceptMarketplaceWarning).toHaveBeenCalled();
+});
+
+it("stops counting down once it is gone", async () => {
+  const warning = await openWarning();
+  expect(vi.getTimerCount()).toBe(1);
+
+  warning.remove();
+
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+it("asks to understand the risks, without a reminder", async () => {
   const warning = await openWarning();
 
   expect(

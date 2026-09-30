@@ -25,6 +25,9 @@ const RISKS = [
   "stability",
 ] as const;
 
+// Long enough to read the risks before they can be accepted
+const READ_SECONDS = 30;
+
 @customElement("ha-marketplace-warning")
 export class HaMarketplaceWarning extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -36,6 +39,34 @@ export class HaMarketplaceWarning extends LitElement {
   @state() private _accepting = false;
 
   @state() private _error?: string;
+
+  @state() private _secondsLeft = READ_SECONDS;
+
+  private _countdown?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+
+    const shownAt = Date.now();
+    this._secondsLeft = READ_SECONDS;
+    this._countdown = window.setInterval(() => {
+      const elapsed = Math.floor((Date.now() - shownAt) / 1000);
+      this._secondsLeft = Math.max(READ_SECONDS - elapsed, 0);
+      if (this._secondsLeft === 0) {
+        this._stopCountdown();
+      }
+    }, 1000);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._stopCountdown();
+  }
+
+  private _stopCountdown(): void {
+    window.clearInterval(this._countdown);
+    this._countdown = undefined;
+  }
 
   protected render() {
     return html`
@@ -88,9 +119,19 @@ export class HaMarketplaceWarning extends LitElement {
               </ha-checkbox>
             </div>
             <div class="card-actions">
+              ${
+                this._secondsLeft > 0
+                  ? html`<span class="countdown">
+                      ${this.hass.localize(
+                        "ui.panel.marketplace.warning.continue_in",
+                        { seconds: this._secondsLeft }
+                      )}
+                    </span>`
+                  : nothing
+              }
               <ha-button
                 variant="warning"
-                .disabled=${!this._understood}
+                .disabled=${!this._understood || this._secondsLeft > 0}
                 .loading=${this._accepting}
                 @click=${this._accept}
               >
@@ -108,7 +149,7 @@ export class HaMarketplaceWarning extends LitElement {
   }
 
   private async _accept(): Promise<void> {
-    if (!this._understood || this._accepting) {
+    if (!this._understood || this._secondsLeft > 0 || this._accepting) {
       return;
     }
 
@@ -207,8 +248,14 @@ export class HaMarketplaceWarning extends LitElement {
         .card-actions {
           display: flex;
           flex-wrap: wrap;
+          align-items: center;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+        }
+
+        .countdown {
+          color: var(--secondary-text-color);
+          font-variant-numeric: tabular-nums;
         }
 
         @media (max-width: 600px) {
