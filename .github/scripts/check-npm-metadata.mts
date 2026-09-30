@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// @ts-check
 // Checks npm registry metadata for the direct dependencies in package.json:
 // deprecation, source repository and provenance. On pull requests only newly
 // added packages are checked, and a deprecated one fails the check. Scheduled
@@ -8,79 +7,52 @@
 // actions/github-script:
 //
 //   const { default: checkNpmMetadata } =
-//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-npm-metadata.mjs`);
+//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-npm-metadata.mts`);
 //   await checkNpmMetadata({ github, context, core });
 
-/** @typedef {import("@octokit/rest").Octokit} GitHub */
+import type { Octokit } from "@octokit/rest";
+import type {
+  Context,
+  Core,
+  GitHubScriptArgs,
+  PullRequestPayload,
+} from "./github-script.d.ts";
 
-/**
- * The parts of @actions/core used here, as passed in by actions/github-script.
- * @typedef {object} Core
- * @property {(message: string) => void} info
- * @property {(message: string, properties?: AnnotationProperties) => void} notice
- * @property {(message: string, properties?: AnnotationProperties) => void} warning
- * @property {(message: string, properties?: AnnotationProperties) => void} error
- * @property {(message: string) => void} setFailed
- * @property {Summary} summary
- */
+// Scheduled and manual runs have no pull request
+type Payload = Partial<PullRequestPayload>;
 
-/**
- * @typedef {object} AnnotationProperties
- * @property {string} [file]
- */
+type Section =
+  | "dependencies"
+  | "devDependencies"
+  | "optionalDependencies"
+  | "peerDependencies";
 
-/**
- * @typedef {object} Summary
- * @property {(text: string, level?: number) => Summary} addHeading
- * @property {(rows: SummaryTableCell[][]) => Summary} addTable
- * @property {() => Promise<Summary>} write
- */
+type PackageJson = Partial<Record<Section, Record<string, string>>>;
 
-/** @typedef {string | { data: string, header?: boolean }} SummaryTableCell */
+interface Dependency {
+  name: string;
+  spec: string;
+  section: Section;
+}
 
-/**
- * The parts of the actions/github-script context used here.
- * @typedef {object} Context
- * @property {string} eventName
- * @property {string} sha
- * @property {{ owner: string, repo: string }} repo
- * @property {{ pull_request?: { base: { sha: string }, head: { sha: string } } }} payload
- */
+// The fields read from a version document on registry.npmjs.org
+interface NpmManifest {
+  deprecated?: string;
+  repository?: string | { url?: string };
+  dist?: { attestations?: object };
+}
 
-/**
- * @typedef {"dependencies" | "devDependencies" | "optionalDependencies" | "peerDependencies"} Section
- */
+interface Result {
+  name: string;
+  version: string;
+  section: Section;
+  skipped?: string;
+  deprecated?: string;
+  repository?: string;
+  provenance?: boolean;
+}
 
-/** @typedef {Partial<Record<Section, Record<string, string>>>} PackageJson */
-
-/**
- * @typedef {object} Dependency
- * @property {string} name
- * @property {string} spec
- * @property {Section} section
- */
-
-/**
- * The fields read from a version document on registry.npmjs.org.
- * @typedef {object} NpmManifest
- * @property {string} [deprecated]
- * @property {string | { url?: string }} [repository]
- * @property {{ attestations?: unknown }} [dist]
- */
-
-/**
- * @typedef {object} Result
- * @property {string} name
- * @property {string} version
- * @property {Section} section
- * @property {string} [skipped]
- * @property {string} [deprecated]
- * @property {string} [repository]
- * @property {boolean} [provenance]
- */
-
-/** @type {Section[]} */
-const SECTIONS = [
+const SECTIONS: Section[] = [
   "dependencies",
   "devDependencies",
   "optionalDependencies",
@@ -93,13 +65,9 @@ const NPM_ALIAS = /^npm:((?:@[^/]+\/)?[^@]+)@(.+)$/;
 
 const CONCURRENCY = 8;
 
-/**
- * Returns undefined when the registry reports 404, and throws on any other
- * failure so a registry outage fails the job instead of skipping the check.
- * @param {string} url
- * @returns {Promise<unknown>}
- */
-const fetchJson = async (url) => {
+// Returns undefined when the registry reports 404, and throws on any other
+// failure so a registry outage fails the job instead of skipping the check.
+const fetchJson = async <T,>(url: string): Promise<T | undefined> => {
   const response = await fetch(url);
 
   if (response.status === 404) {
@@ -115,13 +83,11 @@ const fetchJson = async (url) => {
   return response.json();
 };
 
-/**
- * @param {GitHub} github
- * @param {Context} context
- * @param {string} ref
- * @returns {Promise<PackageJson>}
- */
-const readPackageJson = async (github, context, ref) => {
+const readPackageJson = async (
+  github: Octokit,
+  context: Context<Payload>,
+  ref: string
+): Promise<PackageJson> => {
   const { data } = await github.rest.repos.getContent({
     ...context.repo,
     path: "package.json",
@@ -129,15 +95,16 @@ const readPackageJson = async (github, context, ref) => {
     mediaType: { format: "raw" },
   });
 
-  // The raw media type returns the file contents as a string
-  return JSON.parse(/** @type {string} */ (/** @type {unknown} */ (data)));
+  // The raw media type returns the file contents as a string, but Octokit
+  // types the response as the JSON form
+  if (typeof data !== "string") {
+    throw new Error("Expected raw package.json contents");
+  }
+
+  return JSON.parse(data);
 };
 
-/**
- * @param {PackageJson} pkg
- * @returns {Dependency[]}
- */
-const listDependencies = (pkg) =>
+const listDependencies = (pkg: PackageJson): Dependency[] =>
   SECTIONS.flatMap((section) =>
     Object.entries(pkg[section] ?? {}).map(([name, spec]) => ({
       name,
@@ -146,21 +113,17 @@ const listDependencies = (pkg) =>
     }))
   );
 
-/**
- * @param {NpmManifest["repository"]} repository
- * @returns {string | undefined}
- */
-const repositoryUrl = (repository) => {
+const repositoryUrl = (repository: NpmManifest["repository"]) => {
   const url = typeof repository === "string" ? repository : repository?.url;
 
   return url?.replace(/^git\+/, "").replace(/\.git$/, "");
 };
 
-/**
- * @param {Dependency} dependency
- * @returns {Promise<Result>}
- */
-const checkPackage = async ({ name, spec, section }) => {
+const checkPackage = async ({
+  name,
+  spec,
+  section,
+}: Dependency): Promise<Result> => {
   // npm: aliases install another package, e.g. npm:typescript@7.0.2
   const alias = spec.match(NPM_ALIAS);
   const registryName = alias?.[1] ?? name;
@@ -171,10 +134,8 @@ const checkPackage = async ({ name, spec, section }) => {
     return { ...result, skipped: "not an exact version" };
   }
 
-  const manifest = /** @type {NpmManifest | undefined} */ (
-    await fetchJson(
-      `https://registry.npmjs.org/${encodeURIComponent(registryName)}/${version}`
-    )
+  const manifest = await fetchJson<NpmManifest>(
+    `https://registry.npmjs.org/${encodeURIComponent(registryName)}/${version}`
   );
 
   if (!manifest) {
@@ -189,13 +150,8 @@ const checkPackage = async ({ name, spec, section }) => {
   };
 };
 
-/**
- * @param {Dependency[]} dependencies
- * @returns {Promise<Result[]>}
- */
-const checkAll = async (dependencies) => {
-  /** @type {Result[]} */
-  const results = [];
+const checkAll = async (dependencies: Dependency[]) => {
+  const results: Result[] = [];
 
   for (let i = 0; i < dependencies.length; i += CONCURRENCY) {
     results.push(
@@ -209,12 +165,7 @@ const checkAll = async (dependencies) => {
   return results;
 };
 
-/**
- * @param {Core} core
- * @param {string} heading
- * @param {Result[]} results
- */
-const writeSummary = async (core, heading, results) => {
+const writeSummary = async (core: Core, heading: string, results: Result[]) => {
   await core.summary
     .addHeading(heading, 2)
     .addTable([
@@ -249,18 +200,18 @@ const writeSummary = async (core, heading, results) => {
     .write();
 };
 
-/**
- * @param {{ github: GitHub, context: Context, core: Core }} args
- */
-export default async function checkNpmMetadata({ github, context, core }) {
+export default async function checkNpmMetadata({
+  github,
+  context,
+  core,
+}: GitHubScriptArgs<Payload>) {
   const pr = context.payload.pull_request;
 
   if (!pr) {
     const pkg = await readPackageJson(github, context, context.sha);
     const results = await checkAll(listDependencies(pkg));
-    /** @param {Result} result */
 
-    const flagged = (result) =>
+    const flagged = (result: Result) =>
       Number(
         Boolean(result.skipped || result.deprecated || !result.repository)
       );

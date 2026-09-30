@@ -50,6 +50,6 @@ jobs:
         with:
           script: |
             const { default: checkNpmMetadata } = await import(
-              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-npm-metadata.mjs`
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-npm-metadata.mts`
             );
             await checkNpmMetadata({ github, context, core });

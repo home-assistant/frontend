@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2024",
-    "lib": ["ES2024"],
+    "lib": ["ES2024", "DOM"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     // actions/github-script imports these directly, relying on Node's type stripping
