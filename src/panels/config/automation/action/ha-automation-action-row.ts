@@ -239,7 +239,6 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     const type = getAutomationActionType(this.action);
-    // Re-check on YAML changes, so fixing the YAML re-enables UI mode
     if (this._warnings && this._yamlMode && type) {
       this._warnings = getUiSupportWarnings(
         this.hass.localize,
@@ -1187,8 +1186,6 @@ export default class HaAutomationActionRow extends LitElement {
       },
       editNote: this._editNoteAction,
       toggleYamlMode: (yamlMode?: boolean) => {
-        // The sidebar can switch to YAML on its own when the UI editor
-        // rejects the config, so honor the requested mode instead of toggling.
         if (yamlMode === undefined || yamlMode !== this._yamlMode) {
           this._toggleYamlMode();
         }

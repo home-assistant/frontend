@@ -348,7 +348,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     ev.stopPropagation();
 
     this.config?.save?.(ev.detail.value);
-    // Re-check on every YAML change, so fixing the YAML re-enables UI mode
     this._warnings = this._checkUiSupport(ev.detail.value);
   }
 

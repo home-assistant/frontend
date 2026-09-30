@@ -2,10 +2,8 @@ import { handleStructError } from "../../../common/structs/handle-errors";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 
 /**
- * Optional static method on trigger, condition and action editor elements.
- * Returns an error when the given config cannot be edited in the visual editor.
- * It must be synchronous and must not depend on element state, so it can be
- * called for configs that are only edited in YAML.
+ * Static check on editor elements, returns an error when the config can't be
+ * edited in the visual editor. Must not depend on element state.
  */
 export type CheckUiSupport<T = any> = (
   localize: LocalizeFunc,
@@ -25,10 +23,6 @@ export const checkElementUiSupport = (
     customElements.get(elementName) as ElementWithUiSupportCheck | undefined
   )?.checkUiSupport?.(localize, config);
 
-/**
- * Warnings to show when the config can't be edited in the visual editor,
- * or `undefined` when it can.
- */
 export const getUiSupportWarnings = (
   localize: LocalizeFunc,
   elementName: string,

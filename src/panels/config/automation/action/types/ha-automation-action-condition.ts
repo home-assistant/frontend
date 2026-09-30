@@ -69,7 +69,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
     localize: LocalizeFunc,
     action: Condition
   ): Error | undefined {
-    // The condition editor is rendered inline, so check the wrapped condition.
     return typeof action.condition === "string"
       ? checkElementUiSupport(
           localize,

@@ -697,7 +697,6 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Trigger | Trigger[]) => boolean;
-  /** Toggles YAML mode, or switches to `yamlMode` when given */
   toggleYamlMode: (yamlMode?: boolean) => void;
   config: Trigger;
   description?: TriggerDescription;
@@ -716,7 +715,6 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Condition | Condition[]) => boolean;
-  /** Toggles YAML mode, or switches to `yamlMode` when given */
   toggleYamlMode: (yamlMode?: boolean) => void;
   config: Condition;
   description?: ConditionDescription;
@@ -736,7 +734,6 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   copy: () => void;
   insertAfter: (value: Action | Action[]) => boolean;
   run: () => void;
-  /** Toggles YAML mode, or switches to `yamlMode` when given */
   toggleYamlMode: (yamlMode?: boolean) => void;
   config: {
     action: Action;

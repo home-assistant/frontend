@@ -543,7 +543,6 @@ export default class HaAutomationConditionRow extends LitElement {
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
     }
-    // Re-check on YAML changes, so fixing the YAML re-enables UI mode
     if (
       changedProperties.has("condition") &&
       this._warnings &&
@@ -923,8 +922,6 @@ export default class HaAutomationConditionRow extends LitElement {
       },
       editNote: this._editNoteCondition,
       toggleYamlMode: (yamlMode?: boolean) => {
-        // The sidebar can switch to YAML on its own when the UI editor
-        // rejects the config, so honor the requested mode instead of toggling.
         if (yamlMode === undefined || yamlMode !== this._yamlMode) {
           this._toggleYamlMode();
         }
