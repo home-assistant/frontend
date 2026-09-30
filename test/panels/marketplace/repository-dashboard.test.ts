@@ -677,6 +677,43 @@ describe("ha-marketplace-repository-dashboard", () => {
     ]);
   });
 
+  it.each([false, true])(
+    "names the repository once, in the summary (narrow: %s)",
+    async (narrow) => {
+      const { page } = await openRepositoryPage(
+        async (repositoryId) => repositoryInfo(repositoryId),
+        repositoryRoute("1")
+      );
+      page.narrow = narrow;
+      await settle(page);
+
+      const subpage = page.shadowRoot!.querySelector("hass-subpage") as
+        (HTMLElement & { header: string }) | null;
+      expect(subpage!.header).toBe("ui.panel.marketplace.title");
+      expect(page.shadowRoot!.querySelector(".summary h1")!.textContent).toBe(
+        "Repository 1"
+      );
+    }
+  );
+
+  it("keeps a signal one line of text, the numbers in it bold", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) => repositoryInfo(repositoryId),
+      repositoryRoute("1")
+    );
+    await settle(page);
+
+    // The row is a flex box, text directly in it would be split in pieces
+    const signal = page.shadowRoot!.querySelector(".details .signals li")!;
+    expect(
+      [...signal.childNodes].filter(
+        (node) =>
+          node.nodeType === Node.TEXT_NODE && node.textContent!.trim() !== ""
+      )
+    ).toEqual([]);
+    expect(signal.querySelector("span")).not.toBeNull();
+  });
+
   it("leaves the README card out when there is nothing to show", async () => {
     const { page } = await openRepositoryPage(
       async (repositoryId) => repositoryInfo(repositoryId),

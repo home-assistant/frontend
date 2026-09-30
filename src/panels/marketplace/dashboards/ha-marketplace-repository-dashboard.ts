@@ -393,7 +393,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${repository.name}
+        .header=${this.hass.localize("ui.panel.marketplace.title")}
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -473,7 +473,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         <div class="header">
           ${this._renderIcon(repository)}
           <div class="title">
-            ${this.narrow ? nothing : html`<h1>${repository.name}</h1>`}
+            <h1>${repository.name}</h1>
             <div class="type">
               ${this.hass.localize(
                 `ui.panel.marketplace.common.type.${repository.category}`
@@ -753,7 +753,7 @@ type: module</pre>`,
             (signal) =>
               html`<li>
                 <ha-svg-icon .path=${signal.icon}></ha-svg-icon>
-                ${signal.text}
+                <span>${signal.text}</span>
               </li>`
           )}
         </ul>
