@@ -551,7 +551,7 @@ export default class HaAutomationConditionRow extends LitElement {
       typeof this.condition.condition === "string"
     ) {
       this._warnings = getUiSupportWarnings(
-        this.hass,
+        this.hass.localize,
         `ha-automation-condition-${this.condition.condition}`,
         this.condition
       );
@@ -876,7 +876,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }

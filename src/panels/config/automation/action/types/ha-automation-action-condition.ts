@@ -66,13 +66,13 @@ export class HaConditionAction extends LitElement implements ActionElement {
   }
 
   public static checkUiSupport(
-    hass: HomeAssistant,
+    localize: LocalizeFunc,
     action: Condition
   ): Error | undefined {
     // The condition editor is rendered inline, so check the wrapped condition.
     return typeof action.condition === "string"
       ? checkElementUiSupport(
-          hass,
+          localize,
           `ha-automation-condition-${action.condition}`,
           action
         )

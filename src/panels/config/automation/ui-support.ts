@@ -1,5 +1,5 @@
 import { handleStructError } from "../../../common/structs/handle-errors";
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 /**
  * Optional static method on trigger, condition and action editor elements.
@@ -8,7 +8,7 @@ import type { HomeAssistant } from "../../../types";
  * called for configs that are only edited in YAML.
  */
 export type CheckUiSupport<T = any> = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   config: T
 ) => Error | undefined;
 
@@ -17,23 +17,23 @@ interface ElementWithUiSupportCheck extends CustomElementConstructor {
 }
 
 export const checkElementUiSupport = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   elementName: string,
   config: unknown
 ): Error | undefined =>
   (
     customElements.get(elementName) as ElementWithUiSupportCheck | undefined
-  )?.checkUiSupport?.(hass, config);
+  )?.checkUiSupport?.(localize, config);
 
 /**
  * Warnings to show when the config can't be edited in the visual editor,
  * or `undefined` when it can.
  */
 export const getUiSupportWarnings = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   elementName: string,
   config: unknown
 ): string[] | undefined => {
-  const err = checkElementUiSupport(hass, elementName, config);
-  return err ? handleStructError(hass, err).warnings : undefined;
+  const err = checkElementUiSupport(localize, elementName, config);
+  return err ? handleStructError(localize, err).warnings : undefined;
 };

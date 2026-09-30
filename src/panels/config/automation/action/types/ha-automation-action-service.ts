@@ -10,6 +10,7 @@ import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
 import type { ServiceAction } from "../../../../../data/script";
 import { serviceActionStruct } from "../../../../../data/script";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -32,7 +33,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
   }
 
   public static checkUiSupport(
-    hass: HomeAssistant,
+    localize: LocalizeFunc,
     action: ServiceAction
   ): Error | undefined {
     try {
@@ -46,9 +47,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
       )
     ) {
-      return Error(
-        hass.localize("ui.errors.config.no_template_editor_support")
-      );
+      return Error(localize("ui.errors.config.no_template_editor_support"));
     }
     return undefined;
   }
@@ -57,7 +56,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (!changedProperties.has("action")) {
       return;
     }
-    const err = HaServiceAction.checkUiSupport(this.hass, this.action);
+    const err = HaServiceAction.checkUiSupport(this.hass.localize, this.action);
     if (err) {
       fireEvent(this, "ui-mode-not-available", err);
       return;

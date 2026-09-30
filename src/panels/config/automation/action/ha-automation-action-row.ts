@@ -242,7 +242,7 @@ export default class HaAutomationActionRow extends LitElement {
     // Re-check on YAML changes, so fixing the YAML re-enables UI mode
     if (this._warnings && this._yamlMode && type) {
       this._warnings = getUiSupportWarnings(
-        this.hass,
+        this.hass.localize,
         `ha-automation-action-${type}`,
         this.action
       );
@@ -1138,7 +1138,7 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }

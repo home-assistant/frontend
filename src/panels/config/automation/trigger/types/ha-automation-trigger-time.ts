@@ -61,12 +61,12 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   }
 
   public static checkUiSupport(
-    hass: HomeAssistant,
+    localize: LocalizeFunc,
     trigger: TimeTrigger
   ): Error | undefined {
     // We don't support multiple times atm.
     if (Array.isArray(trigger.at)) {
-      return Error(hass.localize("ui.errors.config.editor_not_supported"));
+      return Error(localize("ui.errors.config.editor_not_supported"));
     }
     try {
       assert(trigger, timeTriggerStruct);
@@ -143,7 +143,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     if (!changedProperties.has("trigger")) {
       return true;
     }
-    const err = HaTimeTrigger.checkUiSupport(this.hass, this.trigger);
+    const err = HaTimeTrigger.checkUiSupport(this.hass.localize, this.trigger);
     if (err) {
       fireEvent(this, "ui-mode-not-available", err);
       return false;

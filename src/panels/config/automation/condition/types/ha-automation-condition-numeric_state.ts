@@ -52,7 +52,7 @@ export default class HaNumericStateCondition extends LitElement {
   }
 
   public static checkUiSupport(
-    _hass: HomeAssistant,
+    _localize: LocalizeFunc,
     condition: NumericStateCondition
   ): Error | undefined {
     try {
@@ -66,7 +66,7 @@ export default class HaNumericStateCondition extends LitElement {
   public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("condition")) {
       const err = HaNumericStateCondition.checkUiSupport(
-        this.hass,
+        this.hass.localize,
         this.condition
       );
       if (err) {

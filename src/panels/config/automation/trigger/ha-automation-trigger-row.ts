@@ -677,7 +677,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       !isTriggerList(this.trigger)
     ) {
       this._warnings = getUiSupportWarnings(
-        this.hass,
+        this.hass.localize,
         `ha-automation-trigger-${this.trigger.trigger}`,
         this.trigger
       );
@@ -762,7 +762,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }, 5000);
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }

@@ -323,7 +323,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this.yamlMode) {
       this.yamlMode = true;
     }
@@ -357,7 +357,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       return undefined;
     }
     return getUiSupportWarnings(
-      this.hass,
+      this.hass.localize,
       `ha-automation-trigger-${trigger.trigger}`,
       trigger
     );
