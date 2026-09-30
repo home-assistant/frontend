@@ -1676,24 +1676,37 @@ export class HaMap extends ReactiveElement {
       --map-filter: invert(0);
     }
     /* Zoomed out the sky fades out and the globe is left on a transparent
-       canvas, so what surrounds it is this element: night around the dark
-       cartography, day around the light one. */
+       canvas, so what surrounds it is this element. The same sky in both
+       themes, day or night: a glow where the sphere sits at the widest zoom
+       out -- MapLibre's own atmosphere carries the edge from there in -- over
+       a gradient that lightens towards the top. */
     #map.space {
-      background-color: #070a18;
-    }
-    /* The glow sits where the sphere is at the widest zoom out; MapLibre's own
-       atmosphere carries the edge from there in. */
-    #map.space:not(.dark) {
-      background-color: #8fb3da;
+      --ha-map-space-glow: rgba(255, 255, 255, 0.95);
+      --ha-map-space-haze: rgba(255, 255, 255, 0.45);
+      --ha-map-space-fade: rgba(255, 255, 255, 0);
+      --ha-map-space-high: #dbe8f8;
+      --ha-map-space-low: #7aa5d3;
+      background-color: var(--ha-map-space-low);
       background-image:
         radial-gradient(
           circle at 50% 50%,
-          rgba(255, 255, 255, 0.95) 18%,
-          rgba(255, 255, 255, 0.45) 24%,
-          rgba(255, 255, 255, 0) 34%
+          var(--ha-map-space-glow) 18%,
+          var(--ha-map-space-haze) 24%,
+          var(--ha-map-space-fade) 34%
         ),
-        linear-gradient(180deg, #dbe8f8 0%, #7aa5d3 100%);
+        linear-gradient(
+          180deg,
+          var(--ha-map-space-high) 0%,
+          var(--ha-map-space-low) 100%
+        );
       background-repeat: no-repeat;
+    }
+    #map.space.dark {
+      --ha-map-space-glow: rgba(126, 158, 224, 0.5);
+      --ha-map-space-haze: rgba(86, 110, 170, 0.22);
+      --ha-map-space-fade: rgba(86, 110, 170, 0);
+      --ha-map-space-high: #141a30;
+      --ha-map-space-low: #05060f;
     }
     #map.clickable:active,
     #map:active {
