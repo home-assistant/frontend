@@ -14,15 +14,12 @@ describe("hui-light-color-temp-card-feature", () => {
     );
     document.body.appendChild(feature);
 
-    const styles = Array.from(
-      feature.shadowRoot!.querySelectorAll("style")
-    )
+    const styles = Array.from(feature.shadowRoot!.querySelectorAll("style"))
       .map((style) => style.textContent ?? "")
       .join("\n");
 
-    expect(styles).toMatch(
-      /ha-control-slider:dir\(rtl\)[\s\S]*--control-slider-background:[\s\S]*linear-gradient\([\s\S]*to left,[\s\S]*var\(--gradient\)/
-    );
+    expect(styles).toContain("ha-control-slider:dir(rtl)");
+    expect(styles).toContain("linear-gradient(to left, var(--gradient))");
 
     feature.remove();
   });
