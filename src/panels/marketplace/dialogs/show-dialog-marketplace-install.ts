@@ -8,6 +8,8 @@ export interface MarketplaceInstallDialogParams {
   repository?: RepositoryInfo;
   // Opens with the versions to choose from, instead of the newest one
   chooseVersion?: boolean;
+  // Installs the installed version again, instead of the newest one
+  reinstall?: boolean;
 }
 
 export const loadMarketplaceInstallDialog = () =>

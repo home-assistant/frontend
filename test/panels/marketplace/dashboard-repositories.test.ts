@@ -33,22 +33,28 @@ describe("filterRepositories", () => {
     repository("Theme", { category: "theme" }),
     repository("Downloaded", { status: "installed", installed: true }),
     repository("Fresh", { status: "new", new: true }),
+    repository("Outdated", { status: "pending-upgrade", installed: true }),
   ];
 
   it("shows everything without filters", () => {
-    expect(names(filterRepositories(repositories, localize))).toHaveLength(4);
+    expect(names(filterRepositories(repositories, localize))).toHaveLength(5);
     expect(names(filterRepositories(repositories, localize, {}))).toHaveLength(
-      4
+      5
     );
   });
 
   it.each([
-    [{ status: ["installed"] }, ["Downloaded"]],
-    [{ status: ["installed", "new"] }, ["Downloaded", "Fresh"]],
+    // Installed is everything installed, also what has an update waiting
+    [{ status: ["installed"] }, ["Downloaded", "Outdated"]],
+    [{ status: ["pending-upgrade"] }, ["Outdated"]],
+    [{ status: ["installed", "new"] }, ["Downloaded", "Outdated", "Fresh"]],
     [{ type: ["theme"] }, ["Theme"]],
     [{ status: ["default"], type: ["theme"] }, ["Theme"]],
     [{ status: ["new"], type: ["theme"] }, []],
-    [{ status: [], type: [] }, ["Downloaded", "Fresh", "Plain", "Theme"]],
+    [
+      { status: [], type: [] },
+      ["Downloaded", "Outdated", "Fresh", "Plain", "Theme"],
+    ],
   ])("keeps what matches %j", (activeFilters, expected) => {
     expect(
       names(filterRepositories(repositories, localize, activeFilters))

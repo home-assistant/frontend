@@ -12186,6 +12186,7 @@
         },
         "common": {
           "install": "Install",
+          "learn_more": "Learn more",
           "reload": "Reload",
           "repository": "Repository",
           "retry": "Retry",
@@ -12227,7 +12228,8 @@
           "available_version": "Available version",
           "status": "Status",
           "type": "Type",
-          "last_updated": "Activity"
+          "last_updated": "Activity",
+          "actions": "Actions"
         },
         "my": {
           "not_supported": "This redirect is not supported. Check the {link} for the supported redirects and the version they were introduced.",
@@ -12258,6 +12260,7 @@
           "pre_release": "Pre-release",
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
+          "reinstall_intro": "This installs version {version} of {name} again.",
           "fetching_releases": "Loading versions…",
           "no_releases": "There are no other versions to choose from.",
           "release": "Version",

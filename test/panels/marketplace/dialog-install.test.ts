@@ -221,6 +221,37 @@ describe("dialog-marketplace-install", () => {
     expect(root.querySelector("ha-select")).toBeNull();
   });
 
+  it("reinstalls the installed version, not the newest", async () => {
+    const connection = mockConnection(async () => null);
+    const dialog = await openInstallDialog(
+      {
+        reinstall: true,
+        repository: repositoryInfo("1", { installed_version: "0.9.0" }),
+      },
+      connection
+    );
+    await settle(dialog);
+    const root = dialog.shadowRoot!;
+
+    expect(root.querySelector(".content p")!.textContent!.trim()).toBe(
+      "ui.panel.marketplace.dialog_install.reinstall_intro"
+    );
+    const button = root.querySelector("ha-button[slot=primaryAction]")!;
+    expect(button.textContent!.trim()).toBe(
+      "ui.panel.marketplace.repository_menu.reinstall"
+    );
+
+    button.dispatchEvent(new Event("click"));
+    await settle(dialog);
+
+    expect(connection.sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "marketplace/repository/install",
+        version: "0.9.0",
+      })
+    );
+  });
+
   it("shows how far the installation of its repository is", async () => {
     const install = deferred<null>();
     const unsubscribe = vi.fn();
@@ -250,6 +281,12 @@ describe("dialog-marketplace-install", () => {
         indeterminate?: boolean;
       };
     expect(bar().indeterminate).toBe(true);
+    // Closing does not stop it, so it is not called cancelling
+    expect(
+      dialog
+        .shadowRoot!.querySelector("ha-button[slot=secondaryAction]")!
+        .textContent!.trim()
+    ).toBe("ui.common.close");
 
     progress({ repository: "owner/repository-1", progress: 50 });
     progress({ repository: "owner/another", progress: 90 });

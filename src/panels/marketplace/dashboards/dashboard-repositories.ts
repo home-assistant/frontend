@@ -25,7 +25,12 @@ const matchesFilters = (
   filters: RepositoryFilters = {}
 ): boolean => {
   const statuses = filters[STATUS_FILTER];
-  if (statuses?.length && !statuses.includes(repository.status)) {
+  // Installed takes in what waits for an update or a restart, it is installed too
+  if (
+    statuses?.length &&
+    !statuses.includes(repository.status) &&
+    !(statuses.includes("installed") && repository.installed)
+  ) {
     return false;
   }
 

@@ -13,6 +13,8 @@ const HTML_DESTINATION =
   /(<(?:a|img)\b[^>]*?\s(?:href|src)\s*=\s*)(["'])([^"']*)\2/gi;
 const LINK = /!?\[[^[\]]*\]\([^)]*\)/g;
 const BARE_URL = /[a-z][a-z\d+.-]*:\/\/\S+/gi;
+// A tag or a numeric entity, like &#58;, holds no issue reference either
+const HTML_TAG_OR_ENTITY = /<[a-z][^>]*>|&#\d+;/gi;
 const ISSUE_REFERENCE = /(?:\w[\w-.]+\/\w[\w-.]+|\B)#[1-9]\d*\b/g;
 const LINK_PLACEHOLDER = /\uE000(\d+)\uE000/g;
 
@@ -65,6 +67,8 @@ const linkIssueReferences = (input: string, repository: RepositoryInfo) => {
     previous = masked;
     masked = masked.replace(LINK, setAsideMatch);
   } while (masked !== previous);
+  // Before the addresses, one in a tag would take the end of the tag with it
+  masked = masked.replace(HTML_TAG_OR_ENTITY, setAsideMatch);
   masked = masked.replace(BARE_URL, setAsideMatch);
 
   let output = masked.replace(ISSUE_REFERENCE, (reference) => {
@@ -100,8 +104,15 @@ const rewriteLinks = (input: string, repository?: RepositoryInfo) => {
       )
       .replace(
         HTML_DESTINATION,
-        (_attribute, before, quote, destination) =>
-          `${before}${quote}${repositoryDestination(destination, repository)}${quote}`
+        (attribute, before, quote, destination: string) =>
+          // A browser decodes entities in it, what it would read is unknown here
+          destination.includes("&")
+            ? attribute
+            : `${before}${quote}${repositoryDestination(
+                // And a browser trims it, "https:" can follow a space
+                destination.trim(),
+                repository
+              )}${quote}`
       ),
     repository
   );
@@ -223,15 +234,24 @@ const maskInlineCodeSpans = (
   mask: (code: string) => string
 ) => {
   const runs = [...paragraph.matchAll(/`+/g)];
+
+  // The next run of the same length for every run, found in one pass from the
+  // end, so a README full of backticks does not take ages
+  const nextOfLength: number[] = new Array(runs.length).fill(-1);
+  const latestOfLength = new Map<number, number>();
+  for (let runIndex = runs.length - 1; runIndex >= 0; runIndex--) {
+    const length = runs[runIndex][0].length;
+    nextOfLength[runIndex] = latestOfLength.get(length) ?? -1;
+    latestOfLength.set(length, runIndex);
+  }
+
   let output = "";
   let position = 0;
   let index = 0;
 
   while (index < runs.length) {
     const opening = runs[index];
-    const closingIndex = runs.findIndex(
-      (run, runIndex) => runIndex > index && run[0].length === opening[0].length
-    );
+    const closingIndex = nextOfLength[index];
 
     if (closingIndex === -1) {
       index++;

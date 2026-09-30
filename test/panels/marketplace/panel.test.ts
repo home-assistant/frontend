@@ -47,6 +47,7 @@ const settle = async (
 type Answers = Record<string, () => Promise<unknown>>;
 
 let configEntriesCallback!: (updates: ConfigEntryUpdate[]) => void;
+const connectionListeners: Record<string, () => void> = {};
 
 const openPanel = async (answers: Answers) => {
   const hass = {
@@ -54,6 +55,10 @@ const openPanel = async (answers: Answers) => {
       values ? `${key} ${JSON.stringify(values)}` : key,
     config: { components: ["marketplace"] },
     connection: {
+      addEventListener: vi.fn((event: string, listener: () => void) => {
+        connectionListeners[event] = listener;
+      }),
+      removeEventListener: vi.fn(),
       subscribeEvents: vi.fn(async () => vi.fn()),
       subscribeMessage: vi.fn(
         async (callback: (updates: ConfigEntryUpdate[]) => void, message) => {
@@ -167,6 +172,23 @@ describe("ha-panel-marketplace", () => {
 
     expect(screen(panel, "ha-marketplace-warning")).not.toBeNull();
     expect(screen(panel, "ha-marketplace-router")).toBeNull();
+  });
+
+  it("fetches again once the connection is back", async () => {
+    const info = vi.fn(async () => INFO);
+    const repositories = vi.fn(async () => []);
+    const panel = await openPanel({
+      "marketplace/info": info,
+      "marketplace/repositories/list": repositories,
+    });
+    info.mockClear();
+    repositories.mockClear();
+
+    connectionListeners.ready();
+    await settle(panel);
+
+    expect(info).toHaveBeenCalledTimes(1);
+    expect(repositories).toHaveBeenCalledTimes(1);
   });
 
   it("refetches for a page inside it, not for the whole window", async () => {

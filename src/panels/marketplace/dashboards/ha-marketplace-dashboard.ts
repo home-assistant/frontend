@@ -238,7 +238,7 @@ export class HaMarketplaceDashboard extends LitElement {
                   rel="noreferrer"
                   size="s"
                 >
-                  ${this.hass.localize("ui.panel.config.common.learn_more")}
+                  ${this.hass.localize("ui.panel.marketplace.common.learn_more")}
                   <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                 </ha-button>
               </div>`
@@ -418,7 +418,7 @@ export class HaMarketplaceDashboard extends LitElement {
       actions: {
         lastFixed: true,
         title: "",
-        label: localizeFunc("ui.panel.config.generic.headers.actions"),
+        label: localizeFunc("ui.panel.marketplace.column.actions"),
         moveable: false,
         hideable: false,
         showNarrow: true,

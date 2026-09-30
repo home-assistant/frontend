@@ -38,9 +38,11 @@ vi.mock("../../../src/components/ha-form/ha-form", () =>
 vi.mock("../../../src/components/ha-icon-button", () =>
   stubElement("ha-icon-button")
 );
-vi.mock("../../../src/components/ha-md-list", () => stubElement("ha-md-list"));
-vi.mock("../../../src/components/ha-md-list-item", () =>
-  stubElement("ha-md-list-item")
+vi.mock("../../../src/components/list/ha-list-base", () =>
+  stubElement("ha-list-base")
+);
+vi.mock("../../../src/components/item/ha-list-item-base", () =>
+  stubElement("ha-list-item-base")
 );
 vi.mock("../../../src/components/ha-tooltip", () => stubElement("ha-tooltip"));
 vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({

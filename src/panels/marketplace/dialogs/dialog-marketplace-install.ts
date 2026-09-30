@@ -101,7 +101,9 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     }
 
     if (this._repository && this._repository.version_or_commit !== "commit") {
-      this._selectedVersion = this._repository.available_version;
+      this._selectedVersion =
+        (params.reinstall && this._repository.installed_version) ||
+        this._repository.available_version;
     }
 
     if (this._repository && this._choosingVersion(this._repository)) {
@@ -220,6 +222,8 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
       (this._selectedVersion ?? repository.available_version) ===
         repository.available_version;
     const version = this._selectedVersion || repository.available_version;
+    const reinstalling =
+      repository.installed && version === repository.installed_version;
     // Alerts span the dialog above the content, like the more-info dialog
     // shows them for a disabled entity
     return html`
@@ -301,19 +305,24 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         }
         <p>
           ${
-            repository.installed
+            reinstalling
               ? this._i18n.localize(
-                  "ui.panel.marketplace.dialog_install.update_intro",
-                  {
-                    name: repository.name,
-                    installed: repository.installed_version,
-                    version,
-                  }
-                )
-              : this._i18n.localize(
-                  "ui.panel.marketplace.dialog_install.install_intro",
+                  "ui.panel.marketplace.dialog_install.reinstall_intro",
                   { name: repository.name, version }
                 )
+              : repository.installed
+                ? this._i18n.localize(
+                    "ui.panel.marketplace.dialog_install.update_intro",
+                    {
+                      name: repository.name,
+                      installed: repository.installed_version,
+                      version,
+                    }
+                  )
+                : this._i18n.localize(
+                    "ui.panel.marketplace.dialog_install.install_intro",
+                    { name: repository.name, version }
+                  )
           }
         </p>
         ${
@@ -347,7 +356,10 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
           appearance="plain"
           @click=${this.closeDialog}
         >
-          ${this._i18n.localize("ui.common.cancel")}
+          ${this._i18n.localize(
+            // Closing does not stop an install that runs
+            this._installing ? "ui.common.close" : "ui.common.cancel"
+          )}
         </ha-button>
         <ha-button
           slot="primaryAction"
@@ -357,9 +369,11 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
           @click=${this._installRepository}
         >
           ${this._i18n.localize(
-            repository.installed
-              ? "ui.common.update"
-              : "ui.panel.marketplace.common.install"
+            reinstalling
+              ? "ui.panel.marketplace.repository_menu.reinstall"
+              : repository.installed
+                ? "ui.common.update"
+                : "ui.panel.marketplace.common.install"
           )}
         </ha-button>
       </ha-dialog-footer>

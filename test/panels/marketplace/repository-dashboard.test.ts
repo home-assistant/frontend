@@ -220,6 +220,79 @@ describe("ha-marketplace-repository-dashboard", () => {
     expect(getInternals(page)._repository.id).toBe("2");
   });
 
+  it("keeps the repository on a failed refresh, and clears it once one works", async () => {
+    let fails = false;
+    const { page } = await openRepositoryPage(async (repositoryId) => {
+      if (fails) {
+        throw { code: "unknown_error", message: "Connection lost" };
+      }
+      return repositoryInfo(repositoryId);
+    }, repositoryRoute("1"));
+    await settle(page);
+
+    fails = true;
+    getInternals(page)._fetchRepository();
+    await settle(page);
+
+    expect(page.shadowRoot!.querySelector("hass-error-screen")).toBeNull();
+    expect(
+      page.shadowRoot!.querySelector('ha-alert[alert-type="error"]')!
+        .textContent
+    ).toContain("Connection lost");
+
+    fails = false;
+    getInternals(page)._fetchRepository();
+    await settle(page);
+
+    expect(
+      page.shadowRoot!.querySelector('ha-alert[alert-type="error"]')
+    ).toBeNull();
+  });
+
+  it("ignores an older answer for the same repository", async () => {
+    const answers: ((repository: RepositoryInfo) => void)[] = [];
+    const { page } = await openRepositoryPage(
+      () =>
+        new Promise((resolve) => {
+          answers.push(resolve);
+        }),
+      repositoryRoute("1")
+    );
+
+    page.route = repositoryRoute("2");
+    await page.updateComplete;
+    page.route = repositoryRoute("1");
+    await page.updateComplete;
+
+    // The newest request answers first, the first one last
+    answers[2](repositoryInfo("1", { installed: true }));
+    await settle(page);
+    answers[0](repositoryInfo("1", { installed: false }));
+    await settle(page);
+
+    expect(getInternals(page)._repository.installed).toBe(true);
+  });
+
+  it("tries again from the error screen", async () => {
+    let fails = true;
+    const { page } = await openRepositoryPage(async (repositoryId) => {
+      if (fails) {
+        throw { code: "unknown_error", message: "Broken" };
+      }
+      return repositoryInfo(repositoryId);
+    }, repositoryRoute("1"));
+    await settle(page);
+
+    fails = false;
+    page
+      .shadowRoot!.querySelector("hass-error-screen ha-button")!
+      .dispatchEvent(new Event("click"));
+    await settle(page);
+
+    expect(page.shadowRoot!.querySelector("hass-error-screen")).toBeNull();
+    expect(getInternals(page)._repository.id).toBe("1");
+  });
+
   it("does not refetch for a route to the same repository", async () => {
     const { page, sendMessagePromise } = await openRepositoryPage(
       async (repositoryId) => repositoryInfo(repositoryId),

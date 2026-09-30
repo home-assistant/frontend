@@ -91,6 +91,23 @@ describe("repositoryMenuItems", () => {
     }
   );
 
+  it("reinstalls the installed version", () => {
+    const entry = repositoryMenuItems(
+      PAGE,
+      repository({ installed_version: "1.0.0" }),
+      localize
+    ).find((item) => "value" in item && item.value === "install") as {
+      action: () => void;
+    };
+
+    entry.action();
+
+    expect(showMarketplaceInstallDialog).toHaveBeenCalledWith(
+      PAGE,
+      expect.objectContaining({ repositoryId: "1", reinstall: true })
+    );
+  });
+
   it("opens the versions to choose from for another version", () => {
     const entry = repositoryMenuItems(PAGE, repository({}), localize).find(
       (item) => "value" in item && item.value === "install_other_version"

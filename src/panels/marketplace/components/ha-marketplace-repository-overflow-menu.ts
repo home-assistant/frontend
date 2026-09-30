@@ -190,6 +190,7 @@ export const repositoryMenuItems = (
       showMarketplaceInstallDialog(element, {
         marketplace: element.marketplace,
         repositoryId: String(repository.id),
+        reinstall: Boolean(repository.installed_version),
       }),
   });
 

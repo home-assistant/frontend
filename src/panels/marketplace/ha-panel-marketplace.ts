@@ -98,7 +98,22 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
         this._refreshInfo,
         "lovelace_updated"
       ),
+      this._subscribeReconnect(),
     ];
+  }
+
+  // What the signals said while the connection was down is lost, the
+  // entry is still loaded, so nothing else asks again
+  private _subscribeReconnect(): UnsubscribeFunc {
+    const connection = this.hass.connection;
+    const handleReady = () => {
+      if (this._entryLoaded) {
+        this._handleRefresh();
+      }
+    };
+
+    connection.addEventListener("ready", handleReady);
+    return () => connection.removeEventListener("ready", handleReady);
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {

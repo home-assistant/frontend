@@ -79,7 +79,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   @state() private _error?: string;
 
   // Answers for a repository navigated away from are dropped.
-  private _requestedRepositoryId?: string;
+  // A refresh that failed while the repository is shown, told on top of it
+  @state() private _refreshError?: string;
+
+  // Only the newest request counts, also one for the same repository
+  private _request = 0;
 
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
@@ -199,6 +203,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
     this._repository = undefined;
     this._error = undefined;
+    this._refreshError = undefined;
     this._loadRepositoryFromRoute();
   }
 
@@ -227,7 +232,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   private _loadRepositoryFromRoute(): void {
     const repositoryId = repositoryIdFromRoute(this.route);
     if (!repositoryId) {
-      this._requestedRepositoryId = undefined;
+      this._request++;
       this._error = this.hass.localize(
         "ui.panel.marketplace.dashboard.repository_not_found"
       );
@@ -239,23 +244,25 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   private async _fetchRepository(repositoryId?: string) {
     const requestedRepositoryId = repositoryId || String(this._repository!.id);
-    this._requestedRepositoryId = requestedRepositoryId;
+    const request = ++this._request;
 
     try {
       const repository = await fetchMarketplaceRepository(
         this.hass,
         requestedRepositoryId
       );
-      if (!this._isCurrentRequest(requestedRepositoryId)) {
+      if (!this._isCurrentRequest(request)) {
         return;
       }
       this._repository = repository;
+      this._error = undefined;
+      this._refreshError = undefined;
     } catch (err: unknown) {
-      if (!this._isCurrentRequest(requestedRepositoryId)) {
+      if (!this._isCurrentRequest(request)) {
         return;
       }
 
-      this._error = handleGitHubRateLimited(
+      const message = handleGitHubRateLimited(
         this,
         this.hass,
         this.hass.localize,
@@ -264,11 +271,22 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
         : websocketErrorMessage(err) ||
           this.hass.localize("ui.panel.marketplace.common.unknown_error");
+
+      if (String(this._repository?.id) === requestedRepositoryId) {
+        this._refreshError = message;
+      } else {
+        this._error = message;
+      }
     }
   }
 
-  private _isCurrentRequest(repositoryId: string): boolean {
-    return this.isConnected && this._requestedRepositoryId === repositoryId;
+  private _isCurrentRequest(request: number): boolean {
+    return this.isConnected && this._request === request;
+  }
+
+  private _retry() {
+    this._error = undefined;
+    this._loadRepositoryFromRoute();
   }
 
   private _getAuthors = memoizeOne((repository: RepositoryInfo) => {
@@ -299,7 +317,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .error=${this._error}
-      ></hass-error-screen>`;
+      >
+        <ha-button appearance="filled" size="s" @click=${this._retry}>
+          ${this.hass.localize("ui.panel.marketplace.common.retry")}
+        </ha-button>
+      </hass-error-screen>`;
     }
 
     if (!this._repository) {
@@ -351,6 +373,13 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           )}
         </ha-dropdown>
         <div class="content">
+          ${
+            this._refreshError
+              ? html`<ha-alert alert-type="error">
+                  ${this._refreshError}
+                </ha-alert>`
+              : nothing
+          }
           ${
             repository.can_install
               ? nothing

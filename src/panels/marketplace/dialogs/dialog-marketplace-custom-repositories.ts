@@ -5,6 +5,7 @@ import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -12,9 +13,9 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import type { HaIconButton } from "../../../components/ha-icon-button";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-tooltip";
 import "../../../components/ha-svg-icon";
 import "../../../components/progress/ha-progress-bar";
@@ -82,7 +83,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         )}
       >
         <div>
-          <ha-md-list>
+          <ha-list-base>
             ${this._repositories
               .filter((repository) => repository.custom)
               .filter((repository) =>
@@ -92,7 +93,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
               )
               .map(
                 (repository) =>
-                  html`<ha-md-list-item>
+                  html`<ha-list-item-base>
                     <span slot="headline">${repository.name}</span>
                     <span slot="supporting-text"
                       >${repository.full_name}
@@ -118,9 +119,9 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
                           : "ui.common.remove"
                       )}
                     </ha-tooltip>
-                  </ha-md-list-item>`
+                  </ha-list-item-base>`
               )}
-          </ha-md-list>
+          </ha-list-base>
           ${
             this._githubConnected
               ? nothing
@@ -132,7 +133,10 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
           }
           <ha-form
             .data=${this._data ?? {}}
-            .schema=${this._schema(this.params.marketplace.info.categories)}
+            .schema=${this._schema(
+              this._i18n.localize,
+              this.params.marketplace.info.categories
+            )}
             .error=${this._errors}
             .computeLabel=${this._computeLabel}
             @value-changed=${this._valueChanged}
@@ -171,7 +175,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   }
 
   private _schema = memoizeOne(
-    (categories: RepositoryType[]): HaFormSchema[] => [
+    (localize: LocalizeFunc, categories: RepositoryType[]): HaFormSchema[] => [
       {
         name: "repository",
         selector: { text: {} },
@@ -183,9 +187,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
             mode: "dropdown",
             options: categories.map((category) => ({
               value: category,
-              label: this._i18n.localize(
-                `ui.panel.marketplace.common.type.${category}`
-              ),
+              label: localize(`ui.panel.marketplace.common.type.${category}`),
             })),
           },
         },
@@ -322,7 +324,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
           margin-block-end: calc(-1 * var(--ha-space-2));
           margin-block-start: var(--ha-space-1);
         }
-        ha-md-list {
+        ha-list-base {
           padding: 0;
         }
         ha-alert {

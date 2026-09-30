@@ -71,6 +71,16 @@ describe("markdownWithRepositoryContext", () => {
         "<a href='https://github.com/owner/repo/blob/v1.0.0/docs/setup.md'>Setup</a>",
     },
     {
+      name: "an absolute link after a space",
+      input: '<a href=" https://example.com/setup">Setup</a>',
+      output: '<a href="https://example.com/setup">Setup</a>',
+    },
+    {
+      name: "a link with an entity in it",
+      input: '<a href="https&#58;//example.com/setup">Setup</a>',
+      output: '<a href="https&#58;//example.com/setup">Setup</a>',
+    },
+    {
       name: "an absolute image",
       input: '<img alt="Logo" src="https://example.com/logo.png">',
       output: '<img alt="Logo" src="https://example.com/logo.png">',
@@ -228,6 +238,12 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
+  it("does not link an issue reference in an entity or a tag", () => {
+    const input = '&#123; <img alt="#12" src="https://example.com/a.png">';
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
   it("does not link an issue reference inside an address", () => {
     const input = "See https://example.com/page#123 for details.";
 
@@ -284,5 +300,14 @@ describe("markdownWithRepositoryContext", () => {
     const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
 
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps up with a README full of code spans", () => {
+    const input = "`a` ".repeat(80_000);
+    const start = performance.now();
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+    // Scanning all of them again for every one takes seconds
+    expect(performance.now() - start).toBeLessThan(1000);
   });
 });
