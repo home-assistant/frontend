@@ -158,7 +158,7 @@ const checkPackage = async ({ name, spec, section }) => {
 
   const manifest = /** @type {NpmManifest | undefined} */ (
     await fetchJson(
-      `https://registry.npmjs.org/${registryName.replace("/", "%2F")}/${version}`
+      `https://registry.npmjs.org/${encodeURIComponent(registryName)}/${version}`
     )
   );
 
