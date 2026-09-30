@@ -188,7 +188,7 @@ jobs:
           path: demo/dist/
 
       - name: Run Playwright demo tests
-        run: yarn test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload demo blob report
@@ -242,7 +242,7 @@ jobs:
           path: test/e2e/app/dist/
 
       - name: Run Playwright app tests
-        run: yarn test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload app blob report
@@ -296,7 +296,7 @@ jobs:
           path: gallery/dist/
 
       - name: Run Playwright gallery tests
-        run: yarn test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload gallery blob report

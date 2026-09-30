@@ -26,8 +26,8 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 
 ## Pre-Submission Checklist
 
-- `yarn lint` passes when practical for the scope.
-- `yarn test` or focused relevant tests are green when practical for the scope.
+- `pnpm lint` passes when practical for the scope.
+- `pnpm test` or focused relevant tests are green when practical for the scope.
 - Each test added by the change protects real logic, not the look of a component.
 - User-facing text is localized and follows `ha-frontend-user-facing-text` guidance.
 - Components handle loading, error, unavailable, and missing-entity states.

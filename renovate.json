@@ -12,7 +12,7 @@
   ],
   "enabledManagers": ["npm", "nvm", "custom.regex", "github-actions"],
   "minimumReleaseAge": "3 days",
-  "postUpdateOptions": ["yarnDedupeHighest"],
+  "postUpdateOptions": ["pnpmDedupe"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
     "enabled": true,
