@@ -17,6 +17,7 @@ import {
 import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { hasTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -67,6 +68,9 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     // We don't support multiple times atm.
     if (Array.isArray(trigger.at)) {
       return Error(localize("ui.errors.config.editor_not_supported"));
+    }
+    if (hasTemplate(trigger.at) || hasTemplate(trigger.weekday)) {
+      return Error(localize("ui.errors.config.no_template_editor_support"));
     }
     try {
       assert(trigger, timeTriggerStruct);
