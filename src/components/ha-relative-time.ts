@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { parseISO } from "date-fns";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { relativeTime } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import { internationalizationContext } from "../data/context";

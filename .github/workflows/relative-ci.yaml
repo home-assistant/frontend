@@ -14,7 +14,7 @@ permissions:
 jobs:
   upload-frontend-modern:
     name: Upload stats (frontend/modern)
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.repository == 'home-assistant/frontend' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
@@ -27,7 +27,7 @@ jobs:
 
   upload-frontend-legacy:
     name: Upload stats (frontend/legacy)
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.repository == 'home-assistant/frontend' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI

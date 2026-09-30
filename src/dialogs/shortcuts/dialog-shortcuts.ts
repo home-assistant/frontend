@@ -1,6 +1,7 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";

@@ -1,6 +1,7 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import "../../components/ha-alert";
 import "../../components/ha-spinner";
 import { showToast } from "../../util/toast";

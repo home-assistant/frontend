@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../../common/entity/context/get_device_context";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";

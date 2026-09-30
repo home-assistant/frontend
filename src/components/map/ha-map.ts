@@ -1,9 +1,12 @@
-import { consume, ContextConsumer } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import {
+  consume,
+  ContextSubscriptionController,
+} from "../../common/decorators/consume";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -15,7 +18,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
-import { supportsWebGL2 } from "../../common/map/base-layer";
+import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapClusterIcon,
   MapControlPosition,
@@ -257,6 +260,39 @@ const CLUSTER_RADIUS = 40;
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
 
+type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
+
+// Exposes each marker's parts on ha-map, generically and per entity
+const exportedMarkerParts = (entityId: string): string => {
+  const suffix = entityId.replace(".", "-");
+  return `marker, picture, marker: marker-${suffix}, picture: picture-${suffix}`;
+};
+
+// The cached element serves again once it left the screen; Leaflet keeps an
+// outgoing bubble on screen during its zoom animation
+const takeEntityMarker = (
+  cache: Map<string, EntityMarkerElement>,
+  entityId: string | undefined,
+  reusable = true
+): EntityMarkerElement => {
+  const cached = entityId && reusable ? cache.get(entityId) : undefined;
+  if (cached && !cached.isConnected) {
+    return cached;
+  }
+  const marker = document.createElement("ha-entity-marker");
+  if (entityId) {
+    marker.setAttribute("exportparts", exportedMarkerParts(entityId));
+    cache.set(entityId, marker);
+  }
+  return marker;
+};
+
+/**
+ * @csspart marker - The frame of an entity marker or cluster avatar.
+ * @csspart picture - The entity picture inside the frame.
+ * @csspart marker-<entity-id> - The frame for one entity, e.g. `marker-person-anne`.
+ * @csspart picture-<entity-id> - The picture for one entity.
+ */
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
   @state()
@@ -351,9 +387,16 @@ export class HaMap extends ReactiveElement {
   // Registry creation order decides the palette colors
   @state() private _entityReg: EntityRegistryEntry[] = [];
 
-  private _registryConsumer?: ContextConsumer<typeof fullEntitiesContext, this>;
+  private _registryConsumer?: ContextSubscriptionController<
+    EntityRegistryEntry[]
+  >;
 
   private _entityHandles: MapMarkerHandle[] = [];
+
+  // Marker elements survive redraws so unchanged entities keep their DOM
+  private _entityMarkers = new Map<string, EntityMarkerElement>();
+
+  private _clusterAvatars = new Map<string, EntityMarkerElement>();
 
   private _zoneHandles: MapItemHandle[] = [];
 
@@ -386,13 +429,13 @@ export class HaMap extends ReactiveElement {
     if (this._registryConsumer || !this.entities?.length) {
       return;
     }
-    this._registryConsumer = new ContextConsumer(this, {
-      context: fullEntitiesContext,
-      subscribe: true,
-      callback: (entries) => {
+    this._registryConsumer = new ContextSubscriptionController(
+      this,
+      fullEntitiesContext,
+      (entries) => {
         this._entityReg = entries;
-      },
-    });
+      }
+    );
   }
 
   private _handleVisibilityChange = async () => {
@@ -417,6 +460,8 @@ export class HaMap extends ReactiveElement {
     this._startingEngine = undefined;
     this._loading = false;
     this._entityHandles = [];
+    this._entityMarkers.clear();
+    this._clusterAvatars.clear();
     this._zoneHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
@@ -564,7 +609,7 @@ export class HaMap extends ReactiveElement {
 
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this._forceLeaflet || !supportsWebGL2()) {
+    if (this._forceLeaflet || !supportsVectorMaps()) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -576,7 +621,7 @@ export class HaMap extends ReactiveElement {
 
   // An engine that cannot start hands over to the Leaflet fallback
   private async _loadMap(): Promise<void> {
-    const onFallback = this._forceLeaflet || !supportsWebGL2();
+    const onFallback = this._forceLeaflet || !supportsVectorMaps();
     try {
       await this._setUpEngine();
     } catch (err) {
@@ -1129,6 +1174,8 @@ export class HaMap extends ReactiveElement {
     this._focusZonePoints = [];
 
     if (!this.entities) {
+      this._entityMarkers.clear();
+      this._clusterAvatars.clear();
       engine.setClustering(null);
       return;
     }
@@ -1167,6 +1214,7 @@ export class HaMap extends ReactiveElement {
       }
     }
 
+    const drawn = new Set<string>();
     for (const entity of this.entities) {
       const stateObj = states[getEntityId(entity)];
       if (!stateObj) {
@@ -1275,10 +1323,16 @@ export class HaMap extends ReactiveElement {
                 .join("")
                 .substr(0, 3));
 
-      const entityMarker = document.createElement("ha-entity-marker");
+      const entityId = getEntityId(entity);
+      const entityMarker = takeEntityMarker(
+        this._entityMarkers,
+        entityId,
+        !drawn.has(entityId)
+      );
+      drawn.add(entityId);
       entityMarker.showIcon =
         typeof entity !== "string" && entity.label_mode === "icon";
-      entityMarker.entityId = getEntityId(entity);
+      entityMarker.entityId = entityId;
       entityMarker.entityName = entityName;
       entityMarker.entityUnit =
         typeof entity !== "string" &&
@@ -1293,20 +1347,19 @@ export class HaMap extends ReactiveElement {
       // A host may leave the color to the map
       const entityColor =
         (typeof entity !== "string" ? entity.color : undefined) ||
-        entityMapColor(getEntityId(entity), this._entityReg, computedStyles);
+        entityMapColor(entityId, this._entityReg, computedStyles);
       entityMarker.entityColor = entityColor;
-      if (typeof entity !== "string") {
-        entityMarker.selected = entity.selected ?? false;
-      }
+      entityMarker.selected =
+        typeof entity !== "string" && (entity.selected ?? false);
 
       const clusterData: ClusterData = {
-        entityId: getEntityId(entity),
+        entityId,
         picture: entityMarker.entityPicture || undefined,
         label: entityName,
         showIcon: entityMarker.showIcon,
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
-        selected: typeof entity !== "string" && (entity.selected ?? false),
+        selected: entityMarker.selected,
         zoneId: ["person", "device_tracker"].includes(
           computeStateDomain(stateObj)
         )
@@ -1332,6 +1385,15 @@ export class HaMap extends ReactiveElement {
 
       if (typeof entity === "string" || entity.focus !== false) {
         this._focusPoints.push(position);
+      }
+    }
+
+    const shownIds = new Set(this.entities.map(getEntityId));
+    for (const cache of [this._entityMarkers, this._clusterAvatars]) {
+      for (const entityId of cache.keys()) {
+        if (!shownIds.has(entityId)) {
+          cache.delete(entityId);
+        }
       }
     }
 
@@ -1378,8 +1440,16 @@ export class HaMap extends ReactiveElement {
 
     const bubble = document.createElement("div");
     bubble.className = "cluster-bubble";
+    const seen = new Set<string>();
     for (const member of shown) {
-      const avatar = document.createElement("ha-entity-marker");
+      const avatar = takeEntityMarker(
+        this._clusterAvatars,
+        member?.entityId,
+        !seen.has(member?.entityId ?? "")
+      );
+      if (member?.entityId) {
+        seen.add(member.entityId);
+      }
       avatar.entityId = member?.entityId;
       avatar.entityName = member?.label ?? "";
       avatar.entityUnit = member?.unit ?? "";
@@ -1392,10 +1462,11 @@ export class HaMap extends ReactiveElement {
           member?.color ?? "var(--primary-color)"
         );
         avatar.style.setProperty("--ha-marker-border-width", "2px");
+      } else {
+        avatar.style.removeProperty("--ha-marker-color");
+        avatar.style.removeProperty("--ha-marker-border-width");
       }
-      if (member?.selected) {
-        avatar.selected = true;
-      }
+      avatar.selected = member?.selected ?? false;
       bubble.appendChild(avatar);
     }
 

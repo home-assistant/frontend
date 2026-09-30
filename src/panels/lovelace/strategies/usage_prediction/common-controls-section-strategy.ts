@@ -7,7 +7,10 @@ import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
-import type { LovelaceStrategyDependency } from "../types";
+import type {
+  LovelaceStrategyDependency,
+  LovelaceStrategyEditor,
+} from "../types";
 
 const DEFAULT_LIMIT = 8;
 
@@ -29,6 +32,13 @@ export interface CommonControlsSectionStrategyConfig {
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
   static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
+  public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
+    await import("./hui-common-controls-section-strategy-editor");
+    return document.createElement(
+      "hui-common-controls-section-strategy-editor"
+    );
+  }
 
   static async generate(
     config: CommonControlsSectionStrategyConfig,

@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import type { Trigger } from "../../data/automation";
 import { migrateAutomationTrigger } from "../../data/automation";

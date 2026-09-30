@@ -1,6 +1,5 @@
 import { startOfYesterday } from "date-fns";
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiDelete,
@@ -24,6 +23,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
@@ -127,6 +127,7 @@ import {
 import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
+import { isWsErrorCode, getWsErrorMessage } from "../../../util/ws-error";
 import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
@@ -1435,7 +1436,7 @@ export class HaConfigDevicePage extends LitElement {
           try {
             info = await fetchDiagnosticHandler(this.hass, entry.domain);
           } catch (err: unknown) {
-            if (err instanceof Error && err.message.includes("not_found")) {
+            if (isWsErrorCode(err, "not_found")) {
               return false;
             }
             throw err;
@@ -1529,7 +1530,9 @@ export class HaConfigDevicePage extends LitElement {
                 title: this.hass.localize(
                   "ui.panel.config.devices.error_delete"
                 ),
-                text: err instanceof Error ? err.message : String(err),
+                text:
+                  getWsErrorMessage(err) ??
+                  this.hass.localize("ui.common.unknown_error"),
               });
             }
           },
@@ -1866,7 +1869,9 @@ export class HaConfigDevicePage extends LitElement {
                     title: this.hass.localize(
                       "ui.panel.config.integrations.config_entry.disable_error"
                     ),
-                    text: err instanceof Error ? err.message : String(err),
+                    text:
+                      getWsErrorMessage(err) ??
+                      this.hass.localize("ui.common.unknown_error"),
                   });
                   return;
                 }
@@ -1894,7 +1899,9 @@ export class HaConfigDevicePage extends LitElement {
             title: this.hass.localize(
               "ui.panel.config.devices.update_device_error"
             ),
-            text: err instanceof Error ? err.message : String(err),
+            text:
+              getWsErrorMessage(err) ??
+              this.hass.localize("ui.common.unknown_error"),
           });
           return;
         }
@@ -1924,8 +1931,8 @@ export class HaConfigDevicePage extends LitElement {
             entity.has_entity_name &&
             (entity.name === oldDeviceName || entity.name === newDeviceName)
           ) {
-            // clear name if it matches the device name and it uses the device name (entity naming)
-            newName = null;
+            // Use the device name when the entity name matches it
+            newName = "";
           } else if (name?.includes(oldDeviceName)) {
             newName = name.replace(oldDeviceName, newDeviceName);
           } else {
