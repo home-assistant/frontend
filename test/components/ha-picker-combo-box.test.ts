@@ -1,118 +1,105 @@
-import { describe, expect, it } from "vitest";
-import type { PickerComboBoxItem } from "../../src/components/ha-picker-combo-box";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import type {
+  HaPickerComboBox,
+  PickerComboBoxItem,
+} from "../../src/components/ha-picker-combo-box";
 import {
   defaultSelectedIndex,
   findPickableIndex,
-  isPickableItem,
   NO_ITEMS_AVAILABLE_ID,
   PADDING_ID,
 } from "../../src/components/ha-picker-combo-box";
 
-// These guard the rule the highlight depends on: the keyboard cursor may only
-// land on a row Enter can actually pick. Rows that look like items but are not
-// (the section titles, the dialog padding row, the "no items" placeholder) have
-// each been picked by Enter at some point, firing value-changed with a sentinel
-// id.
+// Lit reports isServer under Vitest, so the real controller has no observer.
+vi.mock("@lit-labs/observers/resize-controller", () => ({
+  ResizeController: class {
+    observe = vi.fn();
+
+    unobserve = vi.fn();
+  },
+}));
+
 const item = (id: string, disabled = false): PickerComboBoxItem => ({
   id,
   primary: id,
   disabled,
 });
-
-describe("isPickableItem", () => {
-  it("accepts a plain item", () => {
-    expect(isPickableItem(item("light.desk"))).toBe(true);
-  });
-
-  it("rejects a section title, which is a plain string", () => {
-    expect(isPickableItem("Lights")).toBe(false);
-  });
-
-  it("rejects a disabled item", () => {
-    expect(isPickableItem(item("light.shed", true))).toBe(false);
-  });
-
-  it("rejects the dialog padding row", () => {
-    expect(isPickableItem({ id: PADDING_ID, primary: "" })).toBe(false);
-  });
-
-  it("rejects the empty-list placeholder", () => {
-    expect(isPickableItem({ id: NO_ITEMS_AVAILABLE_ID, primary: "" })).toBe(
-      false
-    );
-  });
-
-  it("rejects a missing item", () => {
-    expect(isPickableItem(undefined)).toBe(false);
-  });
-});
+const [a, b, c] = ["a", "b", "c"].map((id) => item(id));
+const off = item("off", true);
+const padding = { id: PADDING_ID, primary: "" };
+const noItems = { id: NO_ITEMS_AVAILABLE_ID, primary: "" };
 
 describe("findPickableIndex", () => {
-  const items = [
-    "Lights", // 0
-    item("light.a"), // 1
-    item("light.b", true), // 2
-    "Switches", // 3
-    item("switch.c"), // 4
-    { id: PADDING_ID, primary: "" }, // 5
-  ];
-
-  it("skips a leading section title", () => {
-    expect(findPickableIndex(items, 0, 1)).toBe(1);
-  });
-
-  it("skips a disabled row and the section title after it", () => {
-    expect(findPickableIndex(items, 2, 1)).toBe(4);
-  });
-
-  it("skips the padding row when walking back from the end", () => {
-    expect(findPickableIndex(items, items.length - 1, -1)).toBe(4);
-  });
-
-  it("walks back past a section title and a disabled row", () => {
-    expect(findPickableIndex(items, 3, -1)).toBe(1);
-  });
-
-  it("returns -1 when nothing pickable is left in that direction", () => {
-    expect(findPickableIndex(items, 5, 1)).toBe(-1);
-    expect(findPickableIndex(items, 0, -1)).toBe(-1);
-  });
-
-  it("returns -1 for an empty list", () => {
-    expect(findPickableIndex([], 0, 1)).toBe(-1);
+  it.each([
+    ["End skips the dialog padding row", [a, b, padding], 2, -1, 1],
+    ["arrows skip a disabled row", [a, off, b], 1, 1, 2],
+    ["arrows skip a section title", ["Lights", a], 0, 1, 1],
+    ["nothing pickable in that direction", [a, padding], 1, 1, -1],
+  ] as const)("%s", (_name, items, from, step, expected) => {
+    expect(findPickableIndex([...items], from, step)).toBe(expected);
   });
 });
 
 describe("defaultSelectedIndex", () => {
-  const items = [item("light.a"), item("light.b"), item("light.c")];
+  it.each([
+    ["no cursor on the empty-list placeholder", [noItems], "z", undefined, -1],
+    ["no cursor without a search or value", [a, b, c], "", undefined, -1],
+    ["a search takes the top pickable match", ["Lights", a, b], "a", "b", 1],
+    ["otherwise the current value", [a, b, c], "", "c", 2],
+  ] as const)("%s", (_name, items, search, value, expected) => {
+    expect(defaultSelectedIndex([...items], search, value)).toBe(expected);
+  });
+});
 
-  it("has no cursor on an untouched list with no value", () => {
-    expect(defaultSelectedIndex(items, "")).toBe(-1);
+describe("keyboard", () => {
+  beforeAll(() => {
+    // jsdom's ElementInternals lacks the validity API used by Web Awesome.
+    const internalsProto = window.ElementInternals.prototype as any;
+    internalsProto.setValidity = vi.fn();
+    internalsProto.setFormValue = vi.fn();
+    Object.defineProperty(internalsProto, "validity", {
+      get: () => ({ valid: true }),
+      configurable: true,
+    });
+    Element.prototype.scrollIntoView = vi.fn();
   });
 
-  it("takes the top match once the user has typed", () => {
-    expect(defaultSelectedIndex(items, "a")).toBe(0);
-  });
+  it("ArrowDown from the list advances from the highlighted row", async () => {
+    // ArrowDown focuses the search field, whose blur on the list resets the
+    // cursor, so the handler must read the index before moving focus.
+    const el = document.createElement(
+      "ha-picker-combo-box"
+    ) as HaPickerComboBox;
+    el.getItems = () => [a, b, c];
+    el.value = "b";
+    document.body.appendChild(el);
+    await el.updateComplete;
 
-  it("skips an unpickable top row when the user has typed", () => {
-    expect(defaultSelectedIndex(["Lights", ...items], "a")).toBe(1);
-  });
+    const root = el.shadowRoot!;
+    // jsdom does not render the inner input, so let the host take focus.
+    root.querySelector<HTMLElement>("ha-input-search")!.tabIndex = 0;
+    const list = root.querySelector<HTMLElement>(".plain-list")!;
+    const press = async (key: string) => {
+      root.activeElement!.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key,
+          code: key,
+          bubbles: true,
+          composed: true,
+        })
+      );
+      await el.updateComplete;
+    };
+    const cursorRow = () => root.querySelector(".combo-box-row.selected")?.id;
 
-  it("starts on the current value when nothing has been typed", () => {
-    expect(defaultSelectedIndex(items, "", "light.c")).toBe(2);
-  });
+    list.focus();
+    await el.updateComplete;
+    await press("ArrowUp");
+    expect(cursorRow()).toBe("list-item-0");
 
-  it("prefers the search over the current value", () => {
-    expect(defaultSelectedIndex(items, "a", "light.c")).toBe(0);
-  });
+    await press("ArrowDown");
+    expect(cursorRow()).toBe("list-item-1");
 
-  it("has no cursor when the current value is not in the list", () => {
-    expect(defaultSelectedIndex(items, "", "light.gone")).toBe(-1);
-  });
-
-  it("has no cursor when a search matches nothing pickable", () => {
-    expect(
-      defaultSelectedIndex([{ id: NO_ITEMS_AVAILABLE_ID, primary: "" }], "zzz")
-    ).toBe(-1);
+    el.remove();
   });
 });

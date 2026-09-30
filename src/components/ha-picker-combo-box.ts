@@ -83,12 +83,7 @@ const MAX_PLAIN_LIST_ITEMS = 12;
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 export const PADDING_ID = "___padding___";
 
-/**
- * Whether Enter on this row would pick something. Section titles are plain
- * strings, and the padding and empty-list rows are placeholders, so the
- * keyboard cursor skips all of them.
- */
-export const isPickableItem = (
+const isPickableItem = (
   item?: PickerComboBoxItem | string
 ): item is PickerComboBoxItem =>
   !!item &&
@@ -97,7 +92,6 @@ export const isPickableItem = (
   item.id !== NO_ITEMS_AVAILABLE_ID &&
   item.id !== PADDING_ID;
 
-/** Nearest pickable row from `from`, moving by `step`. -1 when there is none. */
 export const findPickableIndex = (
   items: (PickerComboBoxItem | string)[],
   from: number,
@@ -111,18 +105,11 @@ export const findPickableIndex = (
   return -1;
 };
 
-/**
- * Where the cursor sits before the user moves it, or -1 when Enter should do
- * nothing. An untouched list without a value has no cursor: Enter is only ever
- * a shortcut for a row the user has already narrowed to or picked.
- */
 export const defaultSelectedIndex = (
   items: (PickerComboBoxItem | string)[],
   search: string,
   value?: string
 ): number => {
-  // A search narrows the list to what was asked for, so Enter takes the top
-  // match.
   if (search) {
     return findPickableIndex(items, 0, 1);
   }
@@ -275,10 +262,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _allItems: PickerComboBoxItem[] = [];
 
-  /**
-   * The row Enter picks, or -1 when Enter does nothing. The highlight renders
-   * from this, so the cursor and Enter cannot disagree.
-   */
   @state() private _selectedItemIndex = -1;
 
   static shadowRootOptions = {
@@ -312,8 +295,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   protected updated(changedProps: PropertyValues) {
-    // ScrollableFadeMixin attaches its scroll observer here, so the fades stop
-    // updating if this returns without calling it.
+    // ScrollableFadeMixin attaches its scroll observer here.
     super.updated(changedProps);
     if (!this._cursorScrollPending) {
       return;
@@ -328,11 +310,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private async _scrollCursorIntoView(index: number) {
     if (!this._plainList) {
-      // The virtualizer takes its new items in its own update, which runs
-      // after this one, so scrolling now would address the old list.
+      // The virtualizer takes the new items in its own, later update.
       await this.virtualizerElement?.updateComplete;
       if (index !== this._selectedItemIndex) {
-        // The cursor moved on while we waited; that move scrolls itself.
         return;
       }
     }
@@ -558,11 +538,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     return items;
   };
 
-  /**
-   * lit-virtualizer only re-renders its rows when one of its own properties
-   * changes, so anything the rows read off the host has to travel with the
-   * renderer's identity.
-   */
+  // lit-virtualizer only re-renders rows when its own properties change, so
+  // a new cursor position needs a new renderer.
   private _rowRenderer = memoizeOne(
     (selectedIndex: number, _value?: string) =>
       (item: PickerComboBoxItem, index: number) =>
@@ -660,9 +637,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const searchString = (textfield.value ?? "").trim();
     this._search = searchString;
     this._valuePinned = true;
-    // Filtering reseeds the cursor onto the first match, but an already
-    // scrolled list stays where it is, so that row can be off screen. Put it
-    // back in view once the filtered items have rendered.
     this._cursorScrollPending = true;
 
     if (this.sections?.length) {
@@ -736,15 +710,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._resetListScroll();
   }
 
-  /**
-   * The shortcuts are bound to the host, so they arrive wherever focus sits
-   * inside the picker. The navigation keys move the cursor without moving
-   * focus, so off the search field and the list they would highlight a row
-   * that Enter refuses to pick. A section chip keeps its own keys.
-   *
-   * Enter guards inside `_pickItem` instead, which stops propagation before it
-   * bails.
-   */
+  // Shortcuts are bound to the host, so ignore them while a section chip has
+  // focus.
   private _cursorKey =
     (handler: (ev: KeyboardEvent) => void) => (ev: KeyboardEvent) => {
       if (!this._focusOwnsCursor) {
@@ -784,12 +751,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     });
   }
 
-  /**
-   * The search field and the list are the only places Enter reaches the cursor
-   * from, so the cursor exists only while one of them has focus. Anywhere else
-   * inside the picker — a section chip — the highlight would promise a pick
-   * that Enter will not make.
-   */
   private get _focusOwnsCursor(): boolean {
     const focused = this.shadowRoot?.activeElement;
     return (
@@ -798,12 +759,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     );
   }
 
-  /**
-   * The blur handlers drop the cursor, so whichever of the search field and the
-   * list takes focus next puts it back. Enter acts on the cursor, and the row
-   * it points at is highlighted, so both have to survive focus moving between
-   * the two.
-   */
   private _restoreCursor() {
     if (this._selectedItemIndex === -1) {
       this._selectedItemIndex = this._defaultSelectedIndex();
@@ -878,8 +833,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _pickItem = (ev: KeyboardEvent, newTab: boolean) => {
     ev.stopPropagation();
 
-    // Enter is bound to the host, so it arrives wherever focus sits inside the
-    // picker. A focused section chip needs its own Enter to toggle its section.
+    // Let a focused section chip handle its own Enter.
     if (!this._focusOwnsCursor) {
       return;
     }
