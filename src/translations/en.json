@@ -7391,7 +7391,7 @@
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {
               "title": "Also uninstall {name}?",
-              "text": "{name} came from the Marketplace. Its files stay on your system until you uninstall it.",
+              "text": "{name} came from the Marketplace. Its files stay on your system and keep getting updates until you uninstall it.",
               "confirm": "Uninstall",
               "dismiss": "Keep",
               "failed": "Uninstalling failed, check the Home Assistant logs for more information."
@@ -12329,7 +12329,7 @@
           },
           "in_use": {
             "title": "{name} is in use",
-            "message": "{name} is still set up. Delete it before uninstalling, or let the Marketplace delete it and uninstall {name} for you.",
+            "message": "{name} is still set up, and that setup runs on the files the Marketplace installed. Without them it would fail to load and leave its devices and entities behind. Delete it first, or let the Marketplace delete it and uninstall {name} for you.",
             "ignored": "Ignored",
             "view_integration": "View integration",
             "delete_and_uninstall": "Delete and uninstall",
