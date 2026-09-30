@@ -1,6 +1,9 @@
 name: Dependency review
 
 on:
+  push:
+    branches:
+      - new-dependency-review
   pull_request:
     branches:
       - dev
