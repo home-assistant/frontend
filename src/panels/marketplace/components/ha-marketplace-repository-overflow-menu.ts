@@ -10,6 +10,7 @@ import {
   mdiMoonNew,
   mdiReload,
 } from "@mdi/js";
+import { html } from "lit";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { ConfigEntry } from "../../../data/config_entries";
@@ -22,7 +23,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
-import { websocketErrorMessage } from "../../../data/marketplace/websocket";
+import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import {
   dismissNewMarketplaceRepository,
   refreshMarketplaceRepository,
@@ -46,6 +47,21 @@ export interface MarketplaceRepositoryMenuItem {
 export type MarketplaceRepositoryMenuEntry =
   MarketplaceRepositoryMenuItem | { divider: true };
 
+export const renderRepositoryMenuEntry = (
+  entry: MarketplaceRepositoryMenuEntry
+) =>
+  "divider" in entry
+    ? html`<wa-divider></wa-divider>`
+    : html`
+        <ha-dropdown-item
+          .value=${entry.value}
+          variant=${entry.variant || "default"}
+        >
+          <ha-svg-icon .path=${entry.path} slot="icon"></ha-svg-icon>
+          ${entry.label}
+        </ha-dropdown-item>
+      `;
+
 type MarketplaceDashboardElement =
   HaMarketplaceRepositoryDashboard | HaMarketplaceDashboard;
 
@@ -56,9 +72,7 @@ const showError = (
 ) =>
   showAlertDialog(element, {
     title: localize("ui.panel.marketplace.dialog.error.title"),
-    text:
-      websocketErrorMessage(err) ||
-      localize("ui.panel.marketplace.common.unknown_error"),
+    text: marketplaceErrorMessage(err, localize),
   });
 
 const uninstallRepository = async (

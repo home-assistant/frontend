@@ -13,7 +13,7 @@ import {
   ERROR_GITHUB_RATE_LIMITED,
   fetchMarketplaceInfo,
   isWebSocketError,
-  websocketErrorMessage,
+  marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 
 // Pages pass their hass, dialogs the API they get from their context.
@@ -31,9 +31,7 @@ export const showConnectGitHubFlow = async (
   } catch (err: unknown) {
     showAlertDialog(element, {
       title: localize("ui.panel.marketplace.dialog.error.title"),
-      text:
-        websocketErrorMessage(err) ||
-        localize("ui.panel.marketplace.common.unknown_error"),
+      text: marketplaceErrorMessage(err, localize),
     });
     return false;
   }

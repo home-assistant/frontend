@@ -33,7 +33,10 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
-import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
+import {
+  renderRepositoryMenuEntry,
+  repositoryMenuItems,
+} from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import type {
   RepositoryBase,
@@ -48,7 +51,7 @@ import {
 import {
   ERROR_WARNING_NOT_ACCEPTED,
   isWebSocketError,
-  websocketErrorMessage,
+  marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 import { haStyle } from "../../../resources/styles";
 import {
@@ -63,6 +66,16 @@ import { markdownWithRepositoryContext } from "../tools/markdown";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
+
+// GitHub names are not case sensitive, a My link may spell one differently
+const findRepository = (
+  repositories: RepositoryBase[],
+  fullName: string
+): RepositoryBase | undefined =>
+  repositories.find(
+    (repository) =>
+      repository.full_name.toLocaleLowerCase() === fullName.toLocaleLowerCase()
+  );
 
 @customElement("ha-marketplace-repository-dashboard")
 export class HaMarketplaceRepositoryDashboard extends LitElement {
@@ -91,100 +104,106 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     super.firstUpdated(changedProperties);
 
     const params = extractSearchParamsObject();
-    if (params.owner && params.repository) {
-      let existing: RepositoryBase | undefined;
-      const requestedRepository = `${params.owner}/${params.repository}`;
-      existing = this.marketplace.repositories.find(
-        (repository) =>
-          repository.full_name.toLocaleLowerCase() ===
-          requestedRepository.toLocaleLowerCase()
-      );
-      if (!existing && params.category) {
-        if (
-          !ensureGitHubConnected(
-            this,
-            this.hass,
-            this.hass.localize,
-            this.marketplace.info
-          )
-        ) {
-          this._error = this.hass.localize(
-            "ui.panel.marketplace.github.add_repository_needs_github",
-            { repository: requestedRepository }
-          );
-          return;
-        }
+    if (!params.owner || !params.repository) {
+      this._loadRepositoryFromRoute();
+      return;
+    }
 
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.marketplace.my.add_repository_title"
-            ),
-            text: this.hass.localize(
-              "ui.panel.marketplace.my.add_repository_description",
-              {
-                repository: requestedRepository,
-              }
-            ),
-            confirmText: this.hass.localize("ui.common.add"),
-            dismissText: this.hass.localize("ui.common.cancel"),
-          }))
-        ) {
-          this._error = this.hass.localize(
-            "ui.panel.marketplace.my.repository_not_found",
-            {
-              repository: requestedRepository,
-            }
-          );
-          return;
-        }
-        try {
-          await addMarketplaceRepository(
-            this.hass,
-            requestedRepository,
-            params.category as RepositoryType
-          );
-          const repositories = await fetchMarketplaceRepositories(this.hass);
-          existing = repositories.find(
-            (repository) =>
-              repository.full_name.toLocaleLowerCase() ===
-              requestedRepository.toLocaleLowerCase()
-          );
-        } catch (err: unknown) {
-          // The panel swaps to the warning screen, accepting it brings the
-          // user back here to add the repository.
-          if (isWebSocketError(err, ERROR_WARNING_NOT_ACCEPTED)) {
-            fireEvent(this, "marketplace-refresh");
-            return;
-          }
+    await this._loadRepositoryFromMyLink(
+      `${params.owner}/${params.repository}`,
+      params.category as RepositoryType | undefined
+    );
+  }
 
-          this._error = handleGitHubNotConnected(
-            this,
-            this.hass,
-            this.hass.localize,
-            err
-          )
-            ? this.hass.localize(
-                "ui.panel.marketplace.github.add_repository_needs_github",
-                { repository: requestedRepository }
-              )
-            : websocketErrorMessage(err);
-          return;
-        }
+  // A My link names the repository, one the Marketplace does not know yet is
+  // added first when the link also names its category.
+  private async _loadRepositoryFromMyLink(
+    requestedRepository: string,
+    category?: RepositoryType
+  ): Promise<void> {
+    let existing = findRepository(
+      this.marketplace.repositories,
+      requestedRepository
+    );
+
+    if (!existing && category) {
+      if (
+        !ensureGitHubConnected(
+          this,
+          this.hass,
+          this.hass.localize,
+          this.marketplace.info
+        )
+      ) {
+        this._error = this.hass.localize(
+          "ui.panel.marketplace.github.add_repository_needs_github",
+          { repository: requestedRepository }
+        );
+        return;
       }
-      if (existing) {
-        this._fetchRepository(String(existing.id));
-      } else {
+
+      if (
+        !(await showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.marketplace.my.add_repository_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.marketplace.my.add_repository_description",
+            { repository: requestedRepository }
+          ),
+          confirmText: this.hass.localize("ui.common.add"),
+          dismissText: this.hass.localize("ui.common.cancel"),
+        }))
+      ) {
         this._error = this.hass.localize(
           "ui.panel.marketplace.my.repository_not_found",
-          {
-            repository: requestedRepository,
-          }
+          { repository: requestedRepository }
         );
+        return;
       }
-    } else {
-      this._loadRepositoryFromRoute();
+
+      try {
+        await addMarketplaceRepository(
+          this.hass,
+          requestedRepository,
+          category
+        );
+        existing = findRepository(
+          await fetchMarketplaceRepositories(this.hass),
+          requestedRepository
+        );
+      } catch (err: unknown) {
+        // The panel swaps to the warning screen, accepting it brings the
+        // user back here to add the repository.
+        if (isWebSocketError(err, ERROR_WARNING_NOT_ACCEPTED)) {
+          fireEvent(this, "marketplace-refresh");
+          return;
+        }
+
+        this._error = handleGitHubNotConnected(
+          this,
+          this.hass,
+          this.hass.localize,
+          err
+        )
+          ? this.hass.localize(
+              "ui.panel.marketplace.github.add_repository_needs_github",
+              { repository: requestedRepository }
+            )
+          : marketplaceErrorMessage(err, this.hass.localize);
+        return;
+      }
     }
+
+    if (!existing) {
+      this._error = this.hass.localize(
+        "ui.panel.marketplace.my.repository_not_found",
+        { repository: requestedRepository }
+      );
+      return;
+    }
+
+    this._fetchRepository(String(existing.id));
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -269,8 +288,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         err
       )
         ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
-        : websocketErrorMessage(err) ||
-          this.hass.localize("ui.panel.marketplace.common.unknown_error");
+        : marketplaceErrorMessage(err, this.hass.localize);
 
       if (String(this._repository?.id) === requestedRepositoryId) {
         this._refreshError = message;
@@ -355,21 +373,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${repositoryMenuItems(this, repository, this.hass.localize).map(
-            (entry) =>
-              "divider" in entry
-                ? html`<wa-divider></wa-divider>`
-                : html`
-                    <ha-dropdown-item
-                      .value=${entry.value}
-                      variant=${entry.variant || "default"}
-                    >
-                      <ha-svg-icon
-                        .path=${entry.path}
-                        slot="icon"
-                      ></ha-svg-icon>
-                      ${entry.label}
-                    </ha-dropdown-item>
-                  `
+            renderRepositoryMenuEntry
           )}
         </ha-dropdown>
         <div class="content">

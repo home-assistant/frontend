@@ -39,6 +39,7 @@ import {
   fetchMarketplaceRepositoryReleases,
 } from "../../../data/marketplace/repository";
 import {
+  marketplaceErrorMessage,
   websocketErrorMessage,
   subscribeMarketplaceInstallProgress,
 } from "../../../data/marketplace/websocket";
@@ -148,8 +149,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         err
       )
         ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
-        : websocketErrorMessage(err) ||
-          this._i18n.localize("ui.panel.marketplace.common.unknown_error");
+        : marketplaceErrorMessage(err, this._i18n.localize);
       return;
     }
 
@@ -568,9 +568,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
 
       this._releasesFailed = true;
       if (!handleGitHubRateLimited(this, this._api, this._i18n.localize, err)) {
-        this._error =
-          websocketErrorMessage(err) ||
-          this._i18n.localize("ui.panel.marketplace.common.unknown_error");
+        this._error = marketplaceErrorMessage(err, this._i18n.localize);
       }
       return;
     }

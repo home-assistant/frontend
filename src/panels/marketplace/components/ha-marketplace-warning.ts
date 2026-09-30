@@ -14,7 +14,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import {
   acceptMarketplaceWarning,
-  websocketErrorMessage,
+  marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 
 const RISKS = [
@@ -118,9 +118,7 @@ export class HaMarketplaceWarning extends LitElement {
     try {
       await acceptMarketplaceWarning(this.hass);
     } catch (err: unknown) {
-      this._error =
-        websocketErrorMessage(err) ||
-        this.hass.localize("ui.panel.marketplace.common.unknown_error");
+      this._error = marketplaceErrorMessage(err, this.hass.localize);
       return;
     } finally {
       // The panel swaps this screen once the backend reports the acceptance,

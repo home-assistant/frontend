@@ -7,7 +7,9 @@ import {
 import {
   ERROR_GITHUB_NOT_CONNECTED,
   isWebSocketError,
+  marketplaceErrorMessage,
 } from "../../../src/data/marketplace/websocket";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { HomeAssistant } from "../../../src/types";
 
 const mockHass = () =>
@@ -33,6 +35,23 @@ describe("isWebSocketError", () => {
     "does not match %s",
     (err) => {
       expect(isWebSocketError(err, ERROR_GITHUB_NOT_CONNECTED)).toBe(false);
+    }
+  );
+});
+
+describe("marketplaceErrorMessage", () => {
+  const localize = ((key: string) => key) as LocalizeFunc;
+
+  it("tells the message of the error", () => {
+    expect(marketplaceErrorMessage({ message: "Busy" }, localize)).toBe("Busy");
+  });
+
+  it.each([{ code: "unknown_error" }, { message: "" }, null, ""])(
+    "falls back to a generic error for %s",
+    (err) => {
+      expect(marketplaceErrorMessage(err, localize)).toBe(
+        "ui.panel.marketplace.common.unknown_error"
+      );
     }
   );
 });

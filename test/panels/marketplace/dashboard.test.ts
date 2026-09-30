@@ -38,7 +38,7 @@ vi.mock("../../../src/components/ha-svg-icon", () =>
 );
 vi.mock(
   "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu",
-  () => ({ repositoryMenuItems: () => [] })
+  () => ({ repositoryMenuItems: () => [], renderRepositoryMenuEntry: vi.fn() })
 );
 
 const openDashboard = async (repositories: unknown[] = []) => {

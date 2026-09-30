@@ -1,3 +1,4 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import { MarketplaceDispatchEvent } from "./common";
 import type { MarketplaceInfo } from "./marketplace";
@@ -26,6 +27,14 @@ export const websocketErrorMessage = (err: unknown): string | undefined => {
   const message = (err as { message?: unknown } | null)?.message;
   return typeof message === "string" && message ? message : undefined;
 };
+
+// What to tell the user about a failed command, also when it has no message
+export const marketplaceErrorMessage = (
+  err: unknown,
+  localize: LocalizeFunc
+): string =>
+  websocketErrorMessage(err) ||
+  localize("ui.panel.marketplace.common.unknown_error");
 
 export const fetchMarketplaceInfo = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<MarketplaceInfo>({ type: "marketplace/info" });

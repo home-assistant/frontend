@@ -32,13 +32,16 @@ import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace-custom-repositories";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
-import { repositoryMenuItems } from "../components/ha-marketplace-repository-overflow-menu";
+import {
+  renderRepositoryMenuEntry,
+  repositoryMenuItems,
+} from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import type {
   RepositoryBase,
   RepositoryType,
 } from "../../../data/marketplace/repository";
-import { websocketErrorMessage } from "../../../data/marketplace/websocket";
+import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import { dismissNewMarketplaceRepositories } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
@@ -275,22 +278,7 @@ export class HaMarketplaceDashboard extends LitElement {
                 this,
                 this._overflowMenuRepository,
                 this.hass.localize
-              ).map((entry) =>
-                "divider" in entry
-                  ? html`<wa-divider></wa-divider>`
-                  : html`
-                      <ha-dropdown-item
-                        .value=${entry.value}
-                        variant=${entry.variant || "default"}
-                      >
-                        <ha-svg-icon
-                          .path=${entry.path}
-                          slot="icon"
-                        ></ha-svg-icon>
-                        ${entry.label}
-                      </ha-dropdown-item>
-                    `
-              )
+              ).map(renderRepositoryMenuEntry)
             : nothing
         }
       </ha-dropdown>`;
@@ -529,9 +517,7 @@ export class HaMarketplaceDashboard extends LitElement {
     } catch (err: unknown) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.marketplace.dialog.error.title"),
-        text:
-          websocketErrorMessage(err) ||
-          this.hass.localize("ui.panel.marketplace.common.unknown_error"),
+        text: marketplaceErrorMessage(err, this.hass.localize),
       });
     }
   }

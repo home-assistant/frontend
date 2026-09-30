@@ -27,7 +27,7 @@ import type {
 import {
   ERROR_GITHUB_NOT_CONNECTED,
   isWebSocketError,
-  websocketErrorMessage,
+  marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 import {
   addMarketplaceRepository,
@@ -302,10 +302,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   }
 
   private _errorMessage(err: unknown): string {
-    return (
-      websocketErrorMessage(err) ||
-      this._i18n.localize("ui.panel.marketplace.common.unknown_error")
-    );
+    return marketplaceErrorMessage(err, this._i18n.localize);
   }
 
   private async _updateRepositories() {

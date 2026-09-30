@@ -57,7 +57,7 @@ vi.mock("../../../src/layouts/hass-loading-screen", () =>
 vi.mock("../../../src/layouts/hass-subpage", () => stubElement("hass-subpage"));
 vi.mock(
   "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu",
-  () => ({ repositoryMenuItems: () => [] })
+  () => ({ repositoryMenuItems: () => [], renderRepositoryMenuEntry: vi.fn() })
 );
 vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
   showAlertDialog: vi.fn(async () => undefined),
@@ -92,7 +92,8 @@ type FetchRepository = (repositoryId: string) => Promise<RepositoryInfo>;
 
 const openRepositoryPage = async (
   fetchRepository: FetchRepository,
-  route: Route
+  route: Route,
+  marketplace: MarketplaceData = MARKETPLACE
 ) => {
   const sendMessagePromise = vi.fn(
     async (message: { type: string; repository_id: string }) =>
@@ -104,7 +105,7 @@ const openRepositoryPage = async (
     connection: { sendMessagePromise },
     callWS: sendMessagePromise,
   } as unknown as HomeAssistant;
-  page.marketplace = MARKETPLACE;
+  page.marketplace = marketplace;
   page.narrow = false;
   page.route = route;
   document.body.appendChild(page);
@@ -126,6 +127,7 @@ const settle = async (page: HaMarketplaceRepositoryDashboard) => {
 describe("ha-marketplace-repository-dashboard", () => {
   afterEach(() => {
     document.body.innerHTML = "";
+    window.history.replaceState(null, "", "/");
     vi.clearAllMocks();
   });
 
@@ -330,6 +332,47 @@ describe("ha-marketplace-repository-dashboard", () => {
     await settle(page);
 
     expect(showConfirmationDialog).not.toHaveBeenCalled();
+    expect(page.shadowRoot!.querySelector("hass-error-screen")?.error).toBe(
+      "ui.panel.marketplace.common.unknown_error"
+    );
+  });
+
+  it("loads the repository a My link names, in any case", async () => {
+    window.history.replaceState(null, "", "/?owner=Owner&repository=Known");
+
+    const { page, sendMessagePromise } = await openRepositoryPage(
+      async (repositoryId) => repositoryInfo(repositoryId),
+      repositoryRoute("1"),
+      {
+        ...MARKETPLACE,
+        repositories: [{ id: 42, full_name: "owner/known" }],
+      } as unknown as MarketplaceData
+    );
+    await settle(page);
+
+    expect(showConfirmationDialog).not.toHaveBeenCalled();
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({ repository_id: "42" })
+    );
+  });
+
+  it("shows an error when adding from a My link fails without a message", async () => {
+    window.history.replaceState(
+      null,
+      "",
+      "/?owner=owner&repository=new&category=integration"
+    );
+    vi.mocked(showConfirmationDialog).mockResolvedValueOnce(true);
+
+    const { page } = await openRepositoryPage(
+      async () => {
+        throw { code: "unknown_error" };
+      },
+      repositoryRoute("1"),
+      { ...MARKETPLACE, info: { github_connected: true } } as MarketplaceData
+    );
+    await settle(page);
+
     expect(page.shadowRoot!.querySelector("hass-error-screen")?.error).toBe(
       "ui.panel.marketplace.common.unknown_error"
     );
