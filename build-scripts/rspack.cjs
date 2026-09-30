@@ -54,9 +54,9 @@ const CONFIG_FILES = [
   path.join(__dirname, "babel-plugins", "inline-constants-plugin.cjs"),
 ];
 
-// Yarn patches change a package's files but not its version, which is all the
+// Patches change a package's files but not its version, which is all the
 // node_modules snapshot checks, so their contents go into the version too.
-const YARN_PATCHES_DIR = path.join(paths.root_dir, ".yarn", "patches");
+const PATCHES_DIR = path.join(paths.root_dir, "patches");
 
 // Content hash of the toolchain versions and our own build files, used as the
 // persistent cache `version`. Everything here is path-independent so the cache
@@ -69,12 +69,12 @@ const cacheVersion = () => {
     ...CONFIG_FILES.map(
       (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
     ),
-    ...(existsSync(YARN_PATCHES_DIR) ? fs.readdirSync(YARN_PATCHES_DIR) : [])
+    ...(existsSync(PATCHES_DIR) ? fs.readdirSync(PATCHES_DIR) : [])
       .filter((file) => file.endsWith(".patch"))
       .sort()
       .map(
         (file) =>
-          `${file}:${fs.readFileSync(path.join(YARN_PATCHES_DIR, file), "utf8")}`
+          `${file}:${fs.readFileSync(path.join(PATCHES_DIR, file), "utf8")}`
       ),
   ];
   return require("crypto")
@@ -489,7 +489,7 @@ const createRspackConfig = ({
             // `name` is already unique per variant (frontend-modern/-legacy).
             name,
             // Content-based version (node major + toolchain versions + our own
-            // build files + Yarn patches). Everything is path-independent, so
+            // build files + patches). Everything is path-independent, so
             // the cache stays valid when reused on another machine/checkout.
             // Runtime deps are deliberately absent — rspack's node_modules
             // snapshot invalidates their modules per-package, so a single
