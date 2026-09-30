@@ -36,7 +36,7 @@ import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
-import { getUiSupportWarnings } from "../ui-support";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
@@ -352,7 +352,11 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   }
 
   private _checkUiSupport(trigger: Trigger): string[] | undefined {
-    if (!this.config.uiSupported || isTriggerList(trigger)) {
+    if (
+      !this.config.uiSupported ||
+      !isConfigObject(trigger) ||
+      isTriggerList(trigger)
+    ) {
       return undefined;
     }
     return getUiSupportWarnings(

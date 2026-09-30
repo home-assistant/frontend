@@ -43,7 +43,7 @@ import type HaAutomationConditionEditor from "../action/ha-automation-action-edi
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
-import { getUiSupportWarnings } from "../ui-support";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import "../action/ha-automation-action-editor";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
@@ -427,8 +427,11 @@ export default class HaAutomationSidebarAction extends LitElement {
   }
 
   private _checkUiSupport(action: Action): string[] | undefined {
+    if (!this.config.uiSupported || !isConfigObject(action)) {
+      return undefined;
+    }
     const type = getAutomationActionType(action);
-    if (!this.config.uiSupported || !type) {
+    if (!type) {
       return undefined;
     }
     return getUiSupportWarnings(

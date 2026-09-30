@@ -75,7 +75,7 @@ import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
-import { getUiSupportWarnings } from "../ui-support";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
@@ -673,6 +673,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       changedProperties.has("trigger") &&
       this._warnings &&
       this._yamlMode &&
+      isConfigObject(this.trigger) &&
       !isTriggerList(this.trigger)
     ) {
       this._warnings = getUiSupportWarnings(

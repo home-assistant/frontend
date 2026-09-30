@@ -10,6 +10,12 @@ export type CheckUiSupport<T = any> = (
   config: T
 ) => Error | undefined;
 
+/** YAML can parse to scalars like `null`, which are never valid configs */
+export const isConfigObject = (
+  value: unknown
+): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 interface ElementWithUiSupportCheck extends CustomElementConstructor {
   checkUiSupport?: CheckUiSupport;
 }

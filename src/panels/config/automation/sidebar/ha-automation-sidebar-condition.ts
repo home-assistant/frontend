@@ -37,7 +37,7 @@ import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
-import { getUiSupportWarnings } from "../ui-support";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
@@ -393,7 +393,11 @@ export default class HaAutomationSidebarCondition extends LitElement {
   }
 
   private _checkUiSupport(condition: Condition): string[] | undefined {
-    if (!this.config.uiSupported || typeof condition.condition !== "string") {
+    if (
+      !this.config.uiSupported ||
+      !isConfigObject(condition) ||
+      typeof condition.condition !== "string"
+    ) {
       return undefined;
     }
     return getUiSupportWarnings(

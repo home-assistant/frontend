@@ -72,7 +72,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
-import { getUiSupportWarnings } from "../ui-support";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -547,6 +547,7 @@ export default class HaAutomationConditionRow extends LitElement {
       changedProperties.has("condition") &&
       this._warnings &&
       this._yamlMode &&
+      isConfigObject(this.condition) &&
       typeof this.condition.condition === "string"
     ) {
       this._warnings = getUiSupportWarnings(
