@@ -16,7 +16,6 @@ import {
 } from "../../common/datetime/normalize_duration";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
-import { deepEqual } from "../../common/util/deep-equal";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DurationSelector } from "../../data/selector";
 import {
@@ -69,8 +68,6 @@ export class HaTimeDuration extends LitElement {
 
   @state() private _offsetType: OffsetType = "none";
 
-  private _emittedValue?: HaDurationData;
-
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
   }
@@ -81,12 +78,11 @@ export class HaTimeDuration extends LitElement {
   );
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (
-      changedProps.has("value") &&
-      !deepEqual(this.value, this._emittedValue)
-    ) {
-      this._offsetType = offsetTypeOf(this._data(this.value));
-      this._emittedValue = undefined;
+    if (changedProps.has("value")) {
+      const type = offsetTypeOf(this._data(this.value));
+      if (type !== "none") {
+        this._offsetType = type;
+      }
     }
   }
 
@@ -172,8 +168,8 @@ export class HaTimeDuration extends LitElement {
         .data=${data}
         .disabled=${this.disabled}
         .required=${this.required}
-        .enableDay=${this.selector.duration?.enable_day}
-        .enableMillisecond=${this.selector.duration?.enable_millisecond}
+        .enableDay=${this.selector.duration?.enable_day ?? false}
+        .enableMillisecond=${this.selector.duration?.enable_millisecond ?? false}
         .allowNegative=${allowNegative}
         .enableSecond=${this.selector.duration?.enable_second ?? true}
       ></ha-duration-input>
@@ -197,7 +193,6 @@ export class HaTimeDuration extends LitElement {
     );
     const value = applyDurationSign(duration, type === "before");
     this._offsetType = type;
-    this._emittedValue = value;
     fireEvent(this, "value-changed", { value });
   }
 

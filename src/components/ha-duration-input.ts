@@ -1,8 +1,8 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { live } from "lit/directives/live";
-import { durationDataToSeconds } from "../common/datetime/duration_to_seconds";
+import type { DurationUnits } from "../common/datetime/normalize_duration";
 import {
   applyDurationSign,
   normalizeDuration,
@@ -19,8 +19,6 @@ export interface HaDurationData {
   seconds?: number;
   milliseconds?: number;
 }
-
-const FIELDS = ["milliseconds", "seconds", "minutes", "hours", "days"];
 
 @customElement("ha-duration-input")
 export class HaDurationInput extends LitElement {
@@ -48,8 +46,6 @@ export class HaDurationInput extends LitElement {
 
   @query("ha-base-time-input", true) private _input?: HaBaseTimeInput;
 
-  @state() private _negative = false;
-
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
@@ -59,23 +55,8 @@ export class HaDurationInput extends LitElement {
     return this._input?.reportValidity() ?? true;
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>) {
-    if (changedProps.has("data") && this.data) {
-      const total = durationDataToSeconds(this.data);
-      if (total) {
-        this._negative = total < 0;
-      }
-    }
-  }
-
   protected render(): TemplateResult {
-    const normalized =
-      this.data &&
-      normalizeDuration(this.data, {
-        enableDay: this.enableDay,
-        enableSecond: this.enableSecond,
-        enableMillisecond: this.enableMillisecond,
-      });
+    const normalized = this.data && normalizeDuration(this.data, this._units);
     return html`
       <div class="row">
         <ha-base-time-input
@@ -90,7 +71,7 @@ export class HaDurationInput extends LitElement {
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           .enableSign=${this.allowNegative}
-          .negative=${live(this._negative)}
+          .negative=${normalized?.negative ?? false}
           format="24"
           .days=${live(this._fieldValue(normalized?.duration, "days"))}
           .hours=${live(this._fieldValue(normalized?.duration, "hours"))}
@@ -109,6 +90,14 @@ export class HaDurationInput extends LitElement {
     `;
   }
 
+  private get _units(): DurationUnits {
+    return {
+      enableDay: this.enableDay,
+      enableSecond: this.enableSecond,
+      enableMillisecond: this.enableMillisecond,
+    };
+  }
+
   private _fieldValue(
     data: HaDurationData | undefined,
     field: keyof HaDurationData
@@ -120,56 +109,15 @@ export class HaDurationInput extends LitElement {
     ev: ValueChangedEvent<TimeChangedEvent | undefined>
   ) {
     ev.stopPropagation();
-    const negative = ev.detail.value?.negative ?? false;
-    this._negative = negative;
-    const value = ev.detail.value ? { ...ev.detail.value } : undefined;
-
-    if (value) {
-      delete value.negative;
-      value.hours ||= 0;
-      value.minutes ||= 0;
-
-      if ("days" in value) value.days ||= 0;
-      if ("seconds" in value) value.seconds ||= 0;
-      if ("milliseconds" in value) value.milliseconds ||= 0;
-
-      if (this.allowNegative) {
-        FIELDS.forEach((t) => {
-          if (value[t]) {
-            value[t] = Math.abs(value[t]);
-          }
-        });
-      }
-
-      if (!this.enableMillisecond && !value.milliseconds) {
-        // @ts-ignore
-        delete value.milliseconds;
-      } else if (value.milliseconds > 999) {
-        value.seconds += Math.floor(value.milliseconds / 1000);
-        value.milliseconds %= 1000;
-      }
-
-      if (!this.enableSecond && !value.seconds) {
-        // @ts-ignore
-        delete value.seconds;
-      } else if (this.enableSecond && value.seconds > 59) {
-        value.minutes = (value.minutes ?? 0) + Math.floor(value.seconds / 60);
-        value.seconds %= 60;
-      }
-
-      if (value.minutes > 59) {
-        value.hours += Math.floor(value.minutes / 60);
-        value.minutes %= 60;
-      }
-
-      if (this.enableDay && value.hours >= 24) {
-        value.days = (value.days ?? 0) + Math.floor(value.hours / 24);
-        value.hours %= 24;
-      }
+    if (!ev.detail.value) {
+      fireEvent(this, "value-changed", { value: undefined });
+      return;
     }
-
+    const { negative: negativeSign, ...fields } = ev.detail.value;
+    const typed = applyDurationSign(fields, negativeSign ?? false);
+    const { negative, duration } = normalizeDuration(typed, this._units);
     fireEvent(this, "value-changed", {
-      value: value && applyDurationSign(value, negative),
+      value: applyDurationSign(duration, this.allowNegative && negative),
     });
   }
 
