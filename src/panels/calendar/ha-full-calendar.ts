@@ -768,6 +768,30 @@ export class HAFullCalendar extends LitElement {
           padding: 0 1px;
         }
 
+        .tentative .fc-daygrid-event-dot {
+          /* A long title would otherwise squeeze the ring into an oval */
+          flex-shrink: 0;
+          border-width: 2px;
+          width: calc(var(--fc-daygrid-event-dot-width, 8px) - 4px);
+          height: calc(var(--fc-daygrid-event-dot-width, 8px) - 4px);
+        }
+
+        .tentative .fc-list-event-dot {
+          border-width: 2px;
+          width: calc(var(--fc-list-event-dot-width, 10px) - 4px);
+          height: calc(var(--fc-list-event-dot-width, 10px) - 4px);
+        }
+
+        /* fullcalendar sets the colors as inline styles */
+        .fc-h-event.tentative {
+          background-color: transparent !important;
+          border-style: dashed;
+        }
+
+        .fc-h-event.tentative .fc-event-main {
+          color: var(--primary-text-color) !important;
+        }
+
         .fc-day-past .fc-daygrid-day-events {
           opacity: 0.5;
         }
