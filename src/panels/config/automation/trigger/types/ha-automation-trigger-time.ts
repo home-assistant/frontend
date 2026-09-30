@@ -2,6 +2,18 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import {
+  array,
+  assert,
+  assign,
+  literal,
+  object,
+  optional,
+  record,
+  string,
+  union,
+  unknown,
+} from "superstruct";
 import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
@@ -11,12 +23,27 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimeTrigger } from "../../../../../data/automation";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
+import { baseTriggerStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";
 const VALID_DOMAINS = ["sensor", "input_datetime"];
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+
+const timeTriggerStruct = assign(
+  baseTriggerStruct,
+  object({
+    alias: optional(string()),
+    trigger: literal("time"),
+    variables: optional(record(string(), unknown())),
+    at: union([
+      string(),
+      object({ entity_id: string(), offset: optional(string()) }),
+    ]),
+    weekday: optional(union([string(), array(string())])),
+  })
+);
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -40,6 +67,11 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     // We don't support multiple times atm.
     if (Array.isArray(trigger.at)) {
       return Error(hass.localize("ui.errors.config.editor_not_supported"));
+    }
+    try {
+      assert(trigger, timeTriggerStruct);
+    } catch (err: any) {
+      return err;
     }
     return undefined;
   }
@@ -107,16 +139,16 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
   );
 
-  public willUpdate(changedProperties: PropertyValues<this>) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
-      return;
+      return true;
     }
-    const err = this.trigger
-      ? HaTimeTrigger.checkUiSupport(this.hass, this.trigger)
-      : undefined;
+    const err = HaTimeTrigger.checkUiSupport(this.hass, this.trigger);
     if (err) {
       fireEvent(this, "ui-mode-not-available", err);
+      return false;
     }
+    return true;
   }
 
   private _data = memoizeOne(
