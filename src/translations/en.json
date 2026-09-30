@@ -10671,6 +10671,16 @@
                 "light": "Light",
                 "dark": "Dark"
               },
+              "map_style": "Map style",
+              "map_style_helper": "Each style has a light and a dark version. The theme mode picks which one is shown.",
+              "map_styles": {
+                "default": "Default",
+                "colorful": "Colorful",
+                "natural": "Natural",
+                "muted": "Muted",
+                "gray": "Gray",
+                "toner": "Toner"
+              },
               "scale_ruler": "Scale ruler",
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",

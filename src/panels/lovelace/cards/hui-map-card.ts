@@ -305,6 +305,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 : "topleft"
             }
             .themeMode=${themeMode}
+            .mapStyle=${this._config.map_style}
             .clusterMarkers=${this._clusterMarkers}
             .scaleRuler=${this._config.scale_ruler || false}
             @map-clicked=${this._handleMapClicked}
