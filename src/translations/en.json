@@ -642,6 +642,12 @@
           "entity": "Entity",
           "from": "From",
           "to": "To",
+          "row_label": {
+            "above": "above {value}",
+            "below": "below {value}",
+            "between": "between {from} and {to}",
+            "outside": "outside {from} and {to}"
+          },
           "crossed": {
             "type": "Fire when the value goes",
             "above": "Above",
@@ -2332,7 +2338,7 @@
       "config_entry_system_options": {
         "title": "System options for {integration}",
         "enable_new_entities_label": "Enable newly added entities",
-        "enable_new_entities_description": "If newly discovered devices for {integration} should be automatically added.",
+        "enable_new_entities_description": "If newly discovered entities for {integration} should be automatically enabled.",
         "enable_polling_label": "Enable polling for changes",
         "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for state changes.",
         "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
@@ -9829,6 +9835,7 @@
             "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
+            "edit_label": "Edit card",
             "clear": "Clear",
             "delete": "Delete",
             "copy": "Copy",
@@ -9870,6 +9877,7 @@
             "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add badge",
             "edit": "[%key:ui::panel::lovelace::editor::edit_card::edit%]",
+            "edit_label": "Edit badge",
             "clear": "[%key:ui::panel::lovelace::editor::edit_card::clear%]",
             "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
             "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
@@ -9919,6 +9927,8 @@
             "success": "View moved successfully"
           },
           "section": {
+            "automatic": "Automatic section",
+            "edit_automatic": "Edit automatic section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
@@ -9936,8 +9946,9 @@
           },
           "edit_section": {
             "header": "Edit section",
+            "tab_strategy": "Configuration",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
-            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "tab_appearance": "Appearance",
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
@@ -11296,6 +11307,16 @@
             }
           },
           "strategy": {
+            "common_controls": {
+              "limit": "Maximum number of cards",
+              "limit_helper": "Defaults to 8 cards",
+              "entities": "Entities",
+              "include_entities": "Always include",
+              "include_entities_helper": "Shown first, in the order you choose, within the card limit",
+              "exclude_entities": "Exclude from suggestions",
+              "exclude_entities_helper": "These entities will not be suggested based on your activity",
+              "hide_empty": "Hide when empty"
+            },
             "original-states": {
               "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",

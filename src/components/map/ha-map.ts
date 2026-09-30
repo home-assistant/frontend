@@ -1,10 +1,12 @@
-import { ContextConsumer } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume } from "../../common/decorators/consume";
+import {
+  consume,
+  ContextSubscriptionController,
+} from "../../common/decorators/consume";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -16,7 +18,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
-import { supportsWebGL2 } from "../../common/map/base-layer";
+import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapClusterIcon,
   MapControlPosition,
@@ -385,7 +387,9 @@ export class HaMap extends ReactiveElement {
   // Registry creation order decides the palette colors
   @state() private _entityReg: EntityRegistryEntry[] = [];
 
-  private _registryConsumer?: ContextConsumer<typeof fullEntitiesContext, this>;
+  private _registryConsumer?: ContextSubscriptionController<
+    EntityRegistryEntry[]
+  >;
 
   private _entityHandles: MapMarkerHandle[] = [];
 
@@ -425,13 +429,13 @@ export class HaMap extends ReactiveElement {
     if (this._registryConsumer || !this.entities?.length) {
       return;
     }
-    this._registryConsumer = new ContextConsumer(this, {
-      context: fullEntitiesContext,
-      subscribe: true,
-      callback: (entries) => {
+    this._registryConsumer = new ContextSubscriptionController(
+      this,
+      fullEntitiesContext,
+      (entries) => {
         this._entityReg = entries;
-      },
-    });
+      }
+    );
   }
 
   private _handleVisibilityChange = async () => {
@@ -605,7 +609,7 @@ export class HaMap extends ReactiveElement {
 
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this._forceLeaflet || !supportsWebGL2()) {
+    if (this._forceLeaflet || !supportsVectorMaps()) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -617,7 +621,7 @@ export class HaMap extends ReactiveElement {
 
   // An engine that cannot start hands over to the Leaflet fallback
   private async _loadMap(): Promise<void> {
-    const onFallback = this._forceLeaflet || !supportsWebGL2();
+    const onFallback = this._forceLeaflet || !supportsVectorMaps();
     try {
       await this._setUpEngine();
     } catch (err) {

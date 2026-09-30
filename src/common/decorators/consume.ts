@@ -7,7 +7,11 @@ import {
   type consume as litConsume,
 } from "@lit/context";
 /* eslint-enable no-restricted-imports */
-import type { ReactiveController, ReactiveElement } from "lit";
+import type {
+  ReactiveController,
+  ReactiveControllerHost,
+  ReactiveElement,
+} from "lit";
 
 /**
  * Reactive controller that subscribes to a Lit context and hands each
@@ -27,6 +31,10 @@ import type { ReactiveController, ReactiveElement } from "lit";
  * - without either, the field is a plain non-reactive value that is kept up to
  *   date but never triggers a render. Use this for values only read in event
  *   handlers or callbacks (e.g. `apiContext`).
+ *
+ * Use it instead of `ContextConsumer` in controllers or for lazily created
+ * subscriptions. `assign` must store the value in a reactive field or call
+ * `host.requestUpdate()` itself when the host needs to rerender.
  */
 export class ContextSubscriptionController<
   ValueType,
@@ -34,7 +42,7 @@ export class ContextSubscriptionController<
   private _unsubscribe?: () => void;
 
   constructor(
-    private readonly _host: ReactiveElement,
+    private readonly _host: ReactiveControllerHost & HTMLElement,
     private readonly _context: Context<unknown, ValueType>,
     private readonly _assign: (value: ValueType) => void,
     private readonly _subscribe = true
