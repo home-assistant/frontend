@@ -379,6 +379,16 @@ export class HaScriptTrace extends LitElement {
     `;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+  }
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -477,6 +487,22 @@ export class HaScriptTrace extends LitElement {
     this._runId = ev.detail.value;
     this._selected = undefined;
   }
+
+  // A link to another run of this script, like a script that starts itself,
+  // only changes the query string, which does not update the route.
+  private _locationChanged = () => {
+    const runId = new URLSearchParams(location.search).get("run_id");
+    if (
+      !runId ||
+      runId === this._runId ||
+      !this._traces ||
+      location.pathname !== `/config/script/trace/${this.scriptId}`
+    ) {
+      return;
+    }
+    this._selected = undefined;
+    this._loadTraces(runId);
+  };
 
   private _pickNode(ev) {
     this._selected = ev.detail;

@@ -397,6 +397,16 @@ export class HaAutomationTrace extends LitElement {
     `;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+  }
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -496,6 +506,23 @@ export class HaAutomationTrace extends LitElement {
     this._runId = ev.detail.value;
     this._selected = undefined;
   }
+
+  // A link to another run of this automation, like one that triggers itself,
+  // only changes the query string, which does not update the route.
+  private _locationChanged = () => {
+    const runId = new URLSearchParams(location.search).get("run_id");
+    if (
+      !runId ||
+      runId === this._runId ||
+      !this._traces ||
+      location.pathname !==
+        `/config/automation/trace/${encodeURIComponent(this.automationId)}`
+    ) {
+      return;
+    }
+    this._selected = undefined;
+    this._loadTraces(runId);
+  };
 
   private _pickNode(ev) {
     this._selected = ev.detail;
