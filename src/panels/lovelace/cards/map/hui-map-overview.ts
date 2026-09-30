@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiHistory } from "@mdi/js";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -12,6 +11,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../../common/decorators/consume";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
 import {
   HOME_ZONE_ENTITY_ID,
@@ -21,7 +21,10 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../../../common/entity/get_entity_location";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-resizable-bottom-sheet";
@@ -56,13 +59,14 @@ import type {
   HomeAssistantInternationalization,
 } from "../../../../types";
 
-type OverviewTab = "people" | "devices" | "zones";
+export type OverviewTab = "people" | "devices" | "zones";
 
 const ACTIVITY_HOURS = 24;
 
 declare global {
   interface HASSDomEvents {
     "map-overview-select": { entityId?: string };
+    "map-overview-tab": { tab: OverviewTab };
     /** Rendered size, so the host keeps controls and focused markers clear of it */
     "map-overview-resize": { width: number; height: number };
   }
@@ -76,6 +80,8 @@ export class HuiMapOverview extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public selected?: string;
+
+  @property({ attribute: false }) public tab: OverviewTab = "people";
 
   @state()
   @consume({ context: statesContext, subscribe: true })
@@ -104,8 +110,6 @@ export class HuiMapOverview extends LitElement {
 
   @queryAll(".tablist button")
   private _tabButtons!: NodeListOf<HTMLButtonElement>;
-
-  @state() private _tab: OverviewTab = "people";
 
   // On phones the overview is a bottom sheet; elsewhere a floating panel
   @state() private _phone = false;
@@ -579,12 +583,12 @@ export class HuiMapOverview extends LitElement {
     const itemsPerTab: Partial<Record<OverviewTab, HassEntity[]>> = {
       people,
       // A devices tab only for devices with a location, or while it is selected
-      ...(devices.length || this._tab === "devices" ? { devices } : {}),
+      ...(devices.length || this.tab === "devices" ? { devices } : {}),
       zones,
     };
     const tabs = Object.keys(itemsPerTab) as OverviewTab[];
     // The selected tab stays selected even when empty; never switch away from it
-    const tab = tabs.includes(this._tab) ? this._tab : "people";
+    const tab = tabs.includes(this.tab) ? this.tab : "people";
     const items = itemsPerTab[tab]!;
 
     return html`
@@ -724,8 +728,10 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
-  private _handleTabClick(ev: Event) {
-    this._tab = (ev.currentTarget as HTMLElement).dataset.tab as OverviewTab;
+  private _handleTabClick(ev: HASSDomCurrentTargetEvent<HTMLButtonElement>) {
+    fireEvent(this, "map-overview-tab", {
+      tab: ev.currentTarget.dataset.tab as OverviewTab,
+    });
   }
 
   private _handleTabKeydown(ev: KeyboardEvent) {
@@ -743,7 +749,9 @@ export class HuiMapOverview extends LitElement {
         (current + (rtl ? -step : step) + buttons.length) % buttons.length
       ];
     if (next?.dataset.tab) {
-      this._tab = next.dataset.tab as OverviewTab;
+      fireEvent(this, "map-overview-tab", {
+        tab: next.dataset.tab as OverviewTab,
+      });
       next.focus();
     }
   }

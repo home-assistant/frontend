@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../common/decorators/consume";
 import { TimerRemainingTimeController } from "../../../common/controllers/timer-remaining-time-controller";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";

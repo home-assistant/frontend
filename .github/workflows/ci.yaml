@@ -47,7 +47,7 @@ jobs:
         with:
           node-modules-cache: true
       - name: Check for duplicate dependencies
-        run: yarn dedupe --check
+        run: pnpm dedupe --check
       - name: Build resources
         id: build_resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
@@ -63,19 +63,22 @@ jobs:
           key: lint-${{ github.sha }}
           restore-keys: lint-
       - name: Run eslint
-        run: yarn run lint:eslint --quiet
+        run: pnpm run lint:eslint --quiet
       - name: Run tsc
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
-        run: yarn run lint:types
+        run: pnpm run lint:types
       - name: Run lit-analyzer
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
-        run: yarn run lint:lit --quiet
+        run: pnpm run lint:lit --quiet
       - name: Run prettier
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
-        run: yarn run lint:prettier
+        run: pnpm run lint:prettier
       - name: Check dependency licenses
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
-        run: yarn run lint:licenses
+        run: pnpm run lint:licenses
+      - name: Check the bundled map sprite sheet
+        if: ${{ !cancelled() }}
+        run: ./node_modules/.bin/gulp check-map-sprites
   test:
     name: Run tests
     needs: prepare-dependencies
@@ -94,7 +97,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Tests
-        run: yarn run test
+        run: pnpm run test
   build:
     name: Build frontend
     # Runs alongside lint and test rather than after them: the build only needs
@@ -140,7 +143,7 @@ jobs:
           path: build/stats/*.json
           if-no-files-found: error
       - name: Check entrypoint bundle size budget
-        run: yarn run check-bundlesize
+        run: pnpm run check-bundlesize
       - name: Upload frontend build
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

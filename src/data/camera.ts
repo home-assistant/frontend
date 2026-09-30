@@ -16,11 +16,10 @@ export type StreamType = typeof STREAM_TYPE_HLS | typeof STREAM_TYPE_WEB_RTC;
 export { CameraEntityFeature } from "./feature/camera_entity_feature";
 
 interface CameraEntityAttributes extends HassEntityAttributeBase {
-  model_name: string;
+  model_name?: string;
   access_token?: string;
-  brand: string;
-  motion_detection: boolean;
-  frontend_stream_type: string;
+  brand?: string;
+  motion_detection?: boolean;
 }
 
 export interface CameraEntity extends HassEntityBase {

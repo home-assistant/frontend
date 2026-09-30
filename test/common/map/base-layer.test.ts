@@ -3,9 +3,9 @@ import type { LeafletModuleType } from "../../../src/common/dom/setup-leaflet-ma
 
 // The fallback to raster tiles is what keeps the map working on devices
 // without WebGL2, on instances that cannot load the MapLibre chunk, and when
-// building the MapLibre map itself fails - a blocked worker, an exhausted
-// WebGL context budget. None of that is reachable from the `ha-map` tests,
-// which run in jsdom and therefore only ever take the raster branch.
+// building the MapLibre map itself fails - an exhausted WebGL context budget.
+// None of that is reachable from the `ha-map` tests, which run in jsdom and
+// therefore only ever take the raster branch.
 
 const maplibreLayer = vi.hoisted(() => ({
   addTo: vi.fn(),
@@ -33,20 +33,28 @@ vi.mock("../../../src/data/map_tiles", () => ({
     tokenListeners.add(listener);
     return () => tokenListeners.delete(listener);
   },
-  withMapTilesToken: (url: string) => new URL(url, location.href).href,
+  withMapTilesToken: (url: string) => ({
+    url: new URL(url, location.href).href,
+  }),
 }));
 const emitToken = (token: string) =>
   tokenListeners.forEach((listener) => listener(token));
 
 const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
 
-vi.mock("maplibre-gl", () => ({ setRTLTextPlugin }));
+const setWorkerUrl = vi.hoisted(() => vi.fn());
+
+vi.mock("maplibre-gl", () => ({ setRTLTextPlugin, setWorkerUrl }));
+
+// What the build wrote out, which loadStyle fetches instead of building.
+const COLORFUL = { palette: "colorful", shipped: "light" } as const;
+const DARK = { palette: "colorful-dark", shipped: "dark" } as const;
 
 const STYLE = {
   version: 8,
   sources: {},
   layers: [],
-  sprite: [{ id: "basics", url: "/static/map/sprites/basics/sprites" }],
+  sprite: [{ id: "base", url: "/static/map/sprites/base?v=abc12345" }],
 };
 
 const rasterLayer = {
@@ -104,11 +112,56 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+describe("loadStyle", () => {
+  const load = async () =>
+    (await import("../../../src/common/map/base-layer")).loadStyle(COLORFUL);
+
+  it("makes the bundled sprite URL absolute against this page", async () => {
+    const style = await load();
+
+    expect(style.sprite).toEqual([
+      {
+        id: "base",
+        url: `${location.origin}/static/map/sprites/base?v=abc12345`,
+      },
+    ]);
+  });
+
+  it("keeps the bundled sprites in the demo, with tiles and glyphs upstream", async () => {
+    vi.stubGlobal("__DEMO__", true);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        json: async () => ({
+          ...structuredClone(STYLE),
+          glyphs: "/api/map_tiles/fonts/{fontstack}/{range}.pbf",
+          sources: {
+            osm: { type: "vector", url: "/api/map_tiles/tilejson.json" },
+          },
+        }),
+      }))
+    );
+
+    const style = await load();
+
+    expect(style.sprite).toEqual([
+      {
+        id: "base",
+        url: `${location.origin}/static/map/sprites/base?v=abc12345`,
+      },
+    ]);
+    expect(style.glyphs).toMatch(/^https:\/\/tiles\.versatiles\.org\//);
+    expect((style.sources.osm as { url: string }).url).toMatch(
+      /^https:\/\/vector\.openstreetmap\.org\//
+    );
+  });
+});
+
 describe("createBaseLayer", () => {
   it("falls back to raster tiles without WebGL2", async () => {
     const createBaseLayer = await setWebGL2(false);
 
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     expect(isRaster()).toBe(true);
     expect(maplibreGL).not.toHaveBeenCalled();
@@ -136,7 +189,7 @@ describe("createBaseLayer", () => {
   it("falls back to upstream raster in the demo, with a referrer", async () => {
     vi.stubGlobal("__DEMO__", true);
     const createBaseLayer = await setWebGL2(false);
-    await createBaseLayer(leaflet, map, false, undefined);
+    await createBaseLayer(leaflet, map, COLORFUL, undefined);
 
     const [url, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
     expect(url).toBe("https://tile.openstreetmap.org/{z}/{x}/{y}.png");
@@ -145,10 +198,38 @@ describe("createBaseLayer", () => {
     expect(options.referrerPolicy).toBe("origin");
   });
 
+  // MapLibre's code has BigInt literals in it, which Babel cannot transpile
+  // away, and a worker that fails to parse is silent - so no BigInt, no vector.
+  it("falls back to raster tiles without BigInt", async () => {
+    vi.stubGlobal("BigInt", undefined);
+    const createBaseLayer = await setWebGL2(true);
+
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+
+    expect(isRaster()).toBe(true);
+    expect(maplibreGL).not.toHaveBeenCalled();
+  });
+
+  // The worker is an entry of the build, and the build hands over its URL.
+  // Absolute, because on Cast the page is not served from the instance.
+  it("points MapLibre at the built worker once, before the first map", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+
+    expect(setWorkerUrl).toHaveBeenCalledOnce();
+    expect(setWorkerUrl).toHaveBeenCalledWith(
+      `${location.origin}/frontend_latest/maplibre-gl-worker.test.js`
+    );
+    expect(setWorkerUrl.mock.invocationCallOrder[0]).toBeLessThan(
+      maplibreGL.mock.invocationCallOrder[0]
+    );
+  });
+
   it("registers the RTL text plugin once, lazily, from our own host", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     expect(setRTLTextPlugin).toHaveBeenCalledOnce();
     expect(setRTLTextPlugin).toHaveBeenCalledWith(
@@ -160,7 +241,7 @@ describe("createBaseLayer", () => {
   it("uses vector tiles when WebGL2 is available", async () => {
     const createBaseLayer = await setWebGL2(true);
 
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     expect(maplibreGL).toHaveBeenCalledOnce();
     expect(maplibreLayer.addTo).toHaveBeenCalledWith(map);
@@ -170,7 +251,7 @@ describe("createBaseLayer", () => {
   it("renders raster tiles when asked to, even with WebGL2", async () => {
     const createBaseLayer = await setWebGL2(true);
 
-    await createBaseLayer(leaflet, map, false, TOKEN, true);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN, true);
 
     expect(isRaster()).toBe(true);
     expect(maplibreGL).not.toHaveBeenCalled();
@@ -185,7 +266,7 @@ describe("createBaseLayer", () => {
       })
     );
 
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     expect(isRaster()).toBe(true);
   });
@@ -198,7 +279,7 @@ describe("createBaseLayer", () => {
       throw new Error("Failed to initialize WebGL");
     });
 
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     expect(isRaster()).toBe(true);
     expect(maplibreLayer.remove).toHaveBeenCalled();
@@ -213,25 +294,25 @@ describe("createBaseLayer", () => {
       throw new Error("nothing to remove");
     });
 
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     expect(isRaster()).toBe(true);
   });
 });
 
-describe("setDarkMode", () => {
+describe("setMapStyle", () => {
   beforeEach(() => {
     glMap.setStyle.mockClear();
   });
 
   it("swaps the style, and ignores a repeat of the current mode", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
+    const baseLayer = await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
-    baseLayer.setDarkMode(true);
+    baseLayer.setMapStyle(DARK);
     await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
 
-    baseLayer.setDarkMode(true);
+    baseLayer.setMapStyle(DARK);
     expect(glMap.setStyle).toHaveBeenCalledOnce();
   });
 
@@ -240,7 +321,7 @@ describe("setDarkMode", () => {
   // the tracked mode, and the next toggle to that mode would do nothing.
   it("can retry a mode whose request failed while another was in flight", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
+    const baseLayer = await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     const failing = vi.fn(async () => {
       throw new Error("offline");
@@ -248,8 +329,8 @@ describe("setDarkMode", () => {
     vi.stubGlobal("fetch", failing);
 
     // Dark is superseded by light, which then fails: the map is still light.
-    baseLayer.setDarkMode(true);
-    baseLayer.setDarkMode(false);
+    baseLayer.setMapStyle(DARK);
+    baseLayer.setMapStyle(COLORFUL);
     await vi.waitFor(() => expect(failing).toHaveBeenCalledTimes(2));
     // Both rejections have to land before the retry, or this passes whatever
     // the rollback does.
@@ -261,7 +342,7 @@ describe("setDarkMode", () => {
       "fetch",
       vi.fn(async () => ({ json: async () => structuredClone(STYLE) }))
     );
-    baseLayer.setDarkMode(true);
+    baseLayer.setMapStyle(DARK);
 
     await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
   });
@@ -287,13 +368,13 @@ describe("setDarkMode", () => {
 
     // The layer only settles once its first style resolves, so let that one
     // through before the map exists to switch.
-    const pending = createBaseLayer(leaflet, map, false, TOKEN);
+    const pending = createBaseLayer(leaflet, map, COLORFUL, TOKEN);
     await vi.waitFor(() => expect(resolvers).toHaveLength(1));
     resolvers.shift()!(styleResponse("light"));
     const baseLayer = await pending;
 
-    baseLayer.setDarkMode(true);
-    baseLayer.setDarkMode(false);
+    baseLayer.setMapStyle(DARK);
+    baseLayer.setMapStyle(COLORFUL);
     await vi.waitFor(() => expect(resolvers).toHaveLength(2));
 
     // The dark request, which is no longer the newest, comes back last.
@@ -319,7 +400,7 @@ describe("WebGL context loss", () => {
 
   it("falls back to raster tiles when the context stays lost", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
     expect(leaflet.tileLayer).not.toHaveBeenCalled();
 
     glHandlers.webglcontextlost();
@@ -331,7 +412,7 @@ describe("WebGL context loss", () => {
 
   it("keeps the vector layer when the context comes back", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     glHandlers.webglcontextlost();
     glHandlers.webglcontextrestored();
@@ -347,7 +428,7 @@ describe("WebGL context loss", () => {
   it("waits for the page to be visible before falling back", async () => {
     const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(true);
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     glHandlers.webglcontextlost();
     vi.runAllTimers();
@@ -363,7 +444,7 @@ describe("WebGL context loss", () => {
   it("keeps the vector layer when a hidden page gets its context back", async () => {
     const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(true);
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     glHandlers.webglcontextlost();
     glHandlers.webglcontextrestored();
@@ -378,7 +459,7 @@ describe("WebGL context loss", () => {
   it("stops listening for visibility once it has fallen back", async () => {
     const remove = vi.spyOn(document, "removeEventListener");
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     glHandlers.webglcontextlost();
     vi.runAllTimers();
@@ -395,11 +476,11 @@ describe("WebGL context loss", () => {
 
   it("stops answering theme changes once it has fallen back", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
+    const baseLayer = await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     glHandlers.webglcontextlost();
     vi.runAllTimers();
-    baseLayer.setDarkMode(true);
+    baseLayer.setMapStyle(DARK);
 
     expect(glMap.setStyle).not.toHaveBeenCalled();
   });
@@ -411,7 +492,7 @@ describe("WebGL context loss", () => {
 describe("recovering from a refused token", () => {
   it("asks for a new token and re-applies the style once it arrives", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
     glMap.setStyle.mockClear();
 
     glHandlers.error({ error: { status: 403 } });
@@ -423,7 +504,7 @@ describe("recovering from a refused token", () => {
 
   it("does not keep asking while the proxy refuses for another reason", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     for (let i = 0; i < 5; i++) {
       glHandlers.error({ error: { status: 403 } });
@@ -436,11 +517,11 @@ describe("recovering from a refused token", () => {
   // the token is still stale says nothing about whether requests get through.
   it("still recovers when the theme changes before the token arrives", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
+    const baseLayer = await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
     glMap.setStyle.mockClear();
 
     glHandlers.error({ error: { status: 403 } });
-    baseLayer.setDarkMode(true);
+    baseLayer.setMapStyle(DARK);
     await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
 
     emitToken("fresh-token");
@@ -453,7 +534,7 @@ describe("recovering from a refused token", () => {
     "also recovers from status %s",
     async (status) => {
       const createBaseLayer = await setWebGL2(true);
-      await createBaseLayer(leaflet, map, false, TOKEN);
+      await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
       glMap.setStyle.mockClear();
 
       glHandlers.error({ error: { status } });
@@ -466,7 +547,7 @@ describe("recovering from a refused token", () => {
 
   it("ignores errors that are not a refusal", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     glHandlers.error({ error: { status: 500 } });
 
@@ -475,7 +556,7 @@ describe("recovering from a refused token", () => {
 
   it("leaves a working map alone when the token is merely refreshed", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
     glMap.setStyle.mockClear();
 
     emitToken("fresh-token");
@@ -488,7 +569,7 @@ describe("recovering from a refused token", () => {
 
   it("redraws the raster layer so refused tiles are asked for again", async () => {
     const createBaseLayer = await setWebGL2(false);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     emitToken("fresh-token");
 

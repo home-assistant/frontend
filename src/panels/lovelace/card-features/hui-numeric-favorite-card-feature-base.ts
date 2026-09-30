@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type {
   Connection,
@@ -9,6 +8,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import {
   consumeEntityState,
@@ -46,8 +46,8 @@ const OPTION_MIN_WIDTH = 30;
 
 type NumericFavoriteEntity = HassEntity & {
   attributes: HassEntity["attributes"] & {
-    current_position?: number;
-    current_tilt_position?: number;
+    current_position?: number | null;
+    current_tilt_position?: number | null;
   };
 };
 

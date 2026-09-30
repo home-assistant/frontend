@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import "../components/ha-card";
 import "../components/ha-ripple";
 import "../components/ha-svg-icon";

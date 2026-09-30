@@ -1,11 +1,11 @@
 import type { HomeAssistant } from "../types";
 
 export interface OTBRInfo {
-  active_dataset_tlvs: string;
+  active_dataset_tlvs: string | null;
   border_agent_id: string;
-  channel: number;
+  channel: number | null;
   extended_address: string;
-  extended_pan_id: string;
+  extended_pan_id: string | null;
   url: string;
 }
 

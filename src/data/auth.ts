@@ -6,13 +6,14 @@ export interface AuthUrlSearchParams {
   client_id?: string;
   redirect_uri?: string;
   state?: string;
+  code_challenge?: string;
+  code_challenge_method?: string;
 }
 
 export interface AuthProvider {
   name: string;
   id: string;
   type: string;
-  users?: Record<string, string>;
 }
 
 export interface Credential {
@@ -53,7 +54,9 @@ export const fetchAuthProviders = () =>
 export const createLoginFlow = (
   client_id: string | undefined,
   redirect_uri: string | undefined,
-  handler: (string | null)[]
+  handler: (string | null)[],
+  code_challenge?: string,
+  code_challenge_method?: string
 ) =>
   fetch("/auth/login_flow", {
     method: "POST",
@@ -62,6 +65,8 @@ export const createLoginFlow = (
       client_id,
       handler,
       redirect_uri,
+      ...(code_challenge && { code_challenge }),
+      ...(code_challenge_method && { code_challenge_method }),
     }),
   });
 

@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -90,6 +89,7 @@ import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 import { AutomationTriggerController } from "./trigger/automation-trigger-controller";
+import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -218,9 +218,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       : undefined;
 
     const useBlueprint = "use_blueprint" in this.config;
-    const shortcutIcon = isMac
-      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
-      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+    const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
 
     return html`
       <hass-subpage

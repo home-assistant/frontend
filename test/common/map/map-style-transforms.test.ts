@@ -2,28 +2,43 @@
  * @vitest-environment node
  */
 
+import type { StyleSpecification } from "maplibre-gl";
 import { describe, expect, it } from "vitest";
-import { addLatinLabels } from "../../build-scripts/gulp/map-labels.js";
+import { finalizeMapStyle } from "../../../src/common/map/map-style-transforms";
 
-// The rewrite keys on the exact `text-field` @versatiles/style emits; a bump
-// that changed it would silently ship local-only names again.
+// The label rewrite keys on the exact `text-field` @versatiles/style emits; a
+// bump that changed it would silently ship local-only names again.
 
-const layer = (id, layout) => ({ id, type: "symbol", layout });
+const layer = (id: string, layout?: unknown) => ({
+  id,
+  type: "symbol",
+  layout,
+});
 
-const STYLE = {
-  layers: [
-    layer("label-place-city", { "text-field": ["get", "name"] }),
-    layer("label-street-primary", {
-      "symbol-placement": "line",
-      "text-field": ["get", "name"],
-    }),
-    layer("label-motorway-shield", { "text-field": "{ref}" }),
-    { id: "water", type: "fill" },
-  ],
-};
+const style = () =>
+  ({
+    sources: {
+      "versatiles-shortbread": {
+        type: "vector",
+        tiles: ["https://tiles.example.com/{z}/{x}/{y}"],
+        attribution: "upstream",
+        minzoom: 0,
+        maxzoom: 14,
+      },
+    },
+    layers: [
+      layer("label-place-city", { "text-field": ["get", "name"] }),
+      layer("label-street-primary", {
+        "symbol-placement": "line",
+        "text-field": ["get", "name"],
+      }),
+      layer("label-motorway-shield", { "text-field": "{ref}" }),
+      { id: "water", type: "fill" },
+    ],
+  }) as unknown as StyleSpecification;
 
 // Just enough of the expression language for the expressions built here.
-const evaluate = (expression, properties) => {
+const evaluate = (expression: any, properties: Record<string, string>): any => {
   if (!Array.isArray(expression)) {
     return expression;
   }
@@ -56,13 +71,31 @@ const evaluate = (expression, properties) => {
   }
 };
 
-const textField = (style, id) =>
-  style.layers.find((l) => l.id === id).layout["text-field"];
+const textField = (spec: StyleSpecification, id: string) =>
+  (spec.layers.find((l) => l.id === id) as any).layout["text-field"];
 
-describe("addLatinLabels", () => {
-  const style = addLatinLabels(STYLE);
-  const city = textField(style, "label-place-city");
-  const street = textField(style, "label-street-primary");
+describe("finalizeMapStyle", () => {
+  const finalized = finalizeMapStyle("colorful", style());
+  const city = textField(finalized, "label-place-city");
+  const street = textField(finalized, "label-street-primary");
+
+  // Whatever host the builder wrote has to be gone: it would be requested by
+  // every browser showing the map, straight past core's proxy.
+  it("repoints the source at the proxy's TileJSON", () => {
+    expect(finalized.sources["versatiles-shortbread"]).toEqual({
+      type: "vector",
+      url: "/api/map_tiles/tilejson.json",
+    });
+  });
+
+  it("refuses a style whose sources it does not recognize", () => {
+    const twoSources = style();
+    twoSources.sources.extra = { type: "vector", tiles: ["https://x/{z}"] };
+
+    expect(() => finalizeMapStyle("colorful", twoSources)).toThrow(
+      /expected exactly one/
+    );
+  });
 
   it("leaves Latin names alone", () => {
     expect(evaluate(city, { name: "Köln", name_en: "Cologne" })).toBe("Köln");
@@ -100,7 +133,7 @@ describe("addLatinLabels", () => {
   });
 
   it("does not touch other layers", () => {
-    expect(textField(style, "label-motorway-shield")).toBe("{ref}");
-    expect(style.layers[3]).toEqual(STYLE.layers[3]);
+    expect(textField(finalized, "label-motorway-shield")).toBe("{ref}");
+    expect(finalized.layers[3]).toEqual(style().layers[3]);
   });
 });
