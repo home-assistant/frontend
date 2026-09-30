@@ -9,6 +9,7 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
@@ -75,7 +76,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
         : nothing;
 
     return html`
-      <div class="field">
+      <div class=${classMap({ field: true, disabled: this.disabled })}>
         <ha-ripple .disabled=${this.disabled}></ha-ripple>
         ${
           hiddenLabel
@@ -160,7 +161,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
           --ha-ripple-color: var(--primary-text-color);
         }
 
-        :host([disabled]) .field {
+        .field.disabled {
           background-color: var(--ha-color-form-background-disabled);
           opacity: 0.5;
           cursor: not-allowed;
