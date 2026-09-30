@@ -1,7 +1,7 @@
 import {
   mdiChevronDown,
-  mdiChevronRight,
   mdiChevronLeft,
+  mdiChevronRight,
   mdiMagnify,
   mdiTextureBox,
 } from "@mdi/js";
@@ -11,14 +11,16 @@ import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { mainWindow } from "../../../../common/dom/get_main_window";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { ignoreRepeatedActivation } from "../../../../common/keyboard/ignore-repeated-activation";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
-import { mainWindow } from "../../../../common/dom/get_main_window";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-domain-icon";
@@ -30,6 +32,7 @@ import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
+import type { HaListBase } from "../../../../components/list/ha-list-base";
 import "../../../../components/list/ha-list-virtualized";
 import type { HaListVirtualizedItem } from "../../../../components/list/ha-list-virtualized";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -105,6 +108,10 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   @query("ha-input-search") private _searchInput?: HaInputSearch;
 
+  @query(".list") private _list?: HaListBase;
+
+  private _removeKeyboardShortcuts?: () => void;
+
   public async focus(): Promise<void> {
     await this.updateComplete;
     // Wait for the input's inner wa-input to render so focus delegation works.
@@ -115,6 +122,20 @@ export class HuiSuggestionEntityTree extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._loadDomainTranslations();
+    this._removeKeyboardShortcuts = tinykeys(
+      this,
+      {
+        ArrowUp: this._selectPreviousItem,
+        ArrowDown: this._selectNextItem,
+        Home: this._selectFirstItem,
+        End: this._selectLastItem,
+        PageUp: this._selectPreviousPage,
+        PageDown: this._selectNextPage,
+        Enter: this._activateSelectedItem,
+      },
+      // Held arrow keys keep moving, like in lists.
+      { ignore: ignoreRepeatedActivation }
+    );
   }
 
   private async _loadDomainTranslations() {
@@ -125,6 +146,8 @@ export class HuiSuggestionEntityTree extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._setFilter.cancel();
+    this._removeKeyboardShortcuts?.();
+    this._removeKeyboardShortcuts = undefined;
   }
 
   private _deviceDomain(deviceId: string): string | undefined {
@@ -177,7 +200,13 @@ export class HuiSuggestionEntityTree extends LitElement {
         this._tree
           ? this._filter
             ? this._renderSearchResults()
-            : html`<ha-list-base class="tree ha-scrollbar">
+            : html`<ha-list-base
+                class="list tree ha-scrollbar"
+                virtual-focus
+                tabindex="0"
+                @focus=${this._focusList}
+                @blur=${this._resetActiveItem}
+              >
                 ${this._renderTree(this._tree)}
               </ha-list-base>`
           : nothing
@@ -282,9 +311,13 @@ export class HuiSuggestionEntityTree extends LitElement {
     }
     return html`
       <ha-list-virtualized
-        class="search-results"
+        class="list search-results"
+        virtual-focus
+        tabindex="0"
         .rows=${this._getSearchRows(results)}
         .rowRenderer=${this._getSearchRowRenderer(this.selectedEntityId)}
+        @focus=${this._focusList}
+        @blur=${this._resetActiveItem}
       ></ha-list-virtualized>
     `;
   }
@@ -648,6 +681,81 @@ export class HuiSuggestionEntityTree extends LitElement {
     if (changed) this._expanded = next;
   }
 
+  private _focusList() {
+    // A click focuses the list too. Only mark a row when the focus came from
+    // the keyboard, so the clicked row is not preceded by the first one.
+    if (!this._list?.matches(":focus-visible")) {
+      return;
+    }
+    if (this._list.getActiveItemIndex() === -1) {
+      this._list.moveActiveItem("next");
+    }
+  }
+
+  private _resetActiveItem() {
+    this._list?.clearActiveItem();
+  }
+
+  private _selectNextItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("next");
+  };
+
+  private _selectPreviousItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("previous");
+  };
+
+  private _selectFirstItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._list?.moveActiveItem("first");
+  };
+
+  private _selectLastItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._list?.moveActiveItem("last");
+  };
+
+  private _selectNextPage = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("next-page");
+  };
+
+  private _selectPreviousPage = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("previous-page");
+  };
+
+  private _activateSelectedItem = (ev: KeyboardEvent) => {
+    const index = this._list?.getActiveItemIndex() ?? -1;
+    if (index === -1) {
+      return;
+    }
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (!this._filter) {
+      this._list!.items[index]?.activate();
+      return;
+    }
+
+    // Search rows are virtualized, so resolve the entity from the results.
+    const results = this._searchMemo(
+      this._tree!.searchableEntities,
+      this._fuseIndex!,
+      this._filter
+    );
+    const entityId = results[index]?.id;
+    if (entityId) {
+      this._expandToEntity(entityId);
+      fireEvent(this, "entity-picked", { entityId });
+    }
+  };
+
   private _handleFilterChange(ev: Event) {
     this._setFilter((ev.target as HaInputSearch).value ?? "");
   }
@@ -671,6 +779,9 @@ export class HuiSuggestionEntityTree extends LitElement {
         }
         .tree {
           overflow: auto;
+        }
+        .list:focus-visible {
+          outline: none;
         }
         /* Search results render in the list's shadow root, so rows are
            styled through inherited custom properties. */
