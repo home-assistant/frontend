@@ -67,8 +67,6 @@ export class HaPickerField extends PickerMixin(LitElement) {
           </span>`
         : nothing;
 
-    // The clear button sits next to the trigger button, not inside it, so
-    // both stay reachable. Clicks anywhere in the field reach the host.
     return html`
       <div class="field">
         <ha-ripple .disabled=${this.disabled}></ha-ripple>

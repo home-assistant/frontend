@@ -17,16 +17,16 @@ import {
   fireEvent,
   type HASSDomEvent,
 } from "../../../../common/dom/fire_event";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../../../common/translations/localize";
 import { ignoreRepeatedActivation } from "../../../../common/keyboard/ignore-repeated-activation";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 import {
   sortRelatedFirst,
   type RelatedIdSets,
 } from "../../../../common/search/related-context";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../common/translations/localize";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/chips/ha-filter-chip";
 import "../../../../components/entity/state-badge";
@@ -125,7 +125,6 @@ type SearchResultItem =
   | AutomationItemComboBoxItem
   | SearchMoreComboBoxItem;
 
-/** A row of the result list, wrapping a result or a section title. */
 interface SearchResultRow extends HaListVirtualizedItem {
   value: SearchResultItem | string;
 }
@@ -314,7 +313,6 @@ export class HaAutomationAddSearch extends LitElement {
     `;
   }
 
-  // Rows mirror the items one to one, so a list index is an item index.
   private _getRows = memoizeOne(
     (items: (SearchResultItem | string)[]): SearchResultRow[] =>
       items.map((item) =>
@@ -324,8 +322,6 @@ export class HaAutomationAddSearch extends LitElement {
       )
   );
 
-  // The virtualized list only renders its rows again when the renderer
-  // changes, so it gets a new one when what the rows show changes.
   private _getRowRenderer = memoizeOne(
     (_showEntityId?: boolean, _narrow?: boolean) =>
       (row: HaListVirtualizedItem) =>
@@ -483,7 +479,6 @@ export class HaAutomationAddSearch extends LitElement {
     </ha-list-item-button>`;
   }
 
-  // The items the list currently shows, from the same memoized call as render.
   private get _currentItems(): (SearchResultItem | string)[] {
     return this._getFilteredItems(
       this.addElementType,

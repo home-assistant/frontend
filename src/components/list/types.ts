@@ -18,7 +18,6 @@ export interface HaListActivatedDetail {
 
 export interface HaListItemRegistrationDetail {
   item: HaListItemBase;
-  /** Set by the list that registered the item. */
   list?: HaListBase;
 }
 

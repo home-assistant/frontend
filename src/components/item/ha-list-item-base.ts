@@ -46,8 +46,7 @@ export class HaListItemBase extends HaRowItem {
   /** Host `role` attribute. Subclasses override. */
   protected readonly defaultRole: string = "listitem";
 
-  // The list this row registered with. A row that left the DOM can no longer
-  // bubble an event to it, so it unregisters on the list directly.
+  // The list this row registered with.
   private _list?: HaListBase;
 
   public connectedCallback(): void {

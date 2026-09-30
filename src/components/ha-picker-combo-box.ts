@@ -10,10 +10,10 @@ import {
   query,
   state,
 } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { tinykeys } from "tinykeys";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
 import { consume } from "../common/decorators/consume";
 import {
   fireEvent,
@@ -324,7 +324,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       </div>`;
   }
 
-  // Focus stays in the search field; the list only marks the active row.
   private _renderPlainList() {
     return html`
       <ha-list-selectable
@@ -476,7 +475,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     return items;
   };
 
-  /** Whether the item is a selectable option, not a placeholder row. */
   private _isOption = (
     item: PickerComboBoxItem | string | undefined
   ): item is PickerComboBoxItem =>
@@ -882,8 +880,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           flex: 1;
         }
 
-        /* Rows of the virtualized list render in its shadow root, so they are
-           styled through inherited custom properties. */
         .list {
           flex: 1;
           min-height: 0;
@@ -912,7 +908,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           overflow: auto;
         }
 
-        /* Keep the active row clear of the section title laid over the list. */
         .list.with-sections {
           --ha-list-scroll-padding-block-start: calc(var(--ha-space-8) + 1px);
         }
