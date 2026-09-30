@@ -1,17 +1,16 @@
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-scrubber";
@@ -137,6 +136,7 @@ class HuiLightColorCardFeature
     const single = !(showHue && showSaturation);
 
     const disabled = this._stateObj.state === UNAVAILABLE;
+    const showHandle = hsColor != null;
     const hueLabel = this._localize("ui.card.light.hue");
     const saturationLabel = this._localize("ui.card.light.saturation");
 
@@ -156,6 +156,7 @@ class HuiLightColorCardFeature
                     .value=${hue}
                     round-value
                     wrap
+                    .showHandle=${showHandle}
                     .disabled=${disabled}
                     @value-changed=${this._hueChanged}
                     @slider-moved=${this._hueMoved}
@@ -182,7 +183,7 @@ class HuiLightColorCardFeature
                     .value=${saturation}
                     mode="cursor"
                     round-value
-                    .showHandle=${stateActive(this._stateObj)}
+                    .showHandle=${showHandle}
                     .disabled=${disabled}
                     @value-changed=${this._saturationChanged}
                     .label=${saturationLabel}

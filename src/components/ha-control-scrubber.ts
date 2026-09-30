@@ -1,6 +1,6 @@
 import { DIRECTION_HORIZONTAL, Manager, Pan, Press, Tap } from "@egjs/hammerjs";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -45,6 +45,9 @@ export class HaControlScrubber extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public wrap = false;
+
+  @property({ type: Boolean, attribute: "show-handle" })
+  public showHandle = false;
 
   @property({ attribute: "touch-action" })
   public touchAction?: string;
@@ -323,7 +326,7 @@ export class HaControlScrubber extends LitElement {
         >
           <div class="rail"></div>
           <div class="track" @transitionend=${this._handleTransitionEnd}></div>
-          <div class="window"></div>
+          ${this.showHandle ? html`<div class="window"></div>` : nothing}
         </div>
       </div>
     `;

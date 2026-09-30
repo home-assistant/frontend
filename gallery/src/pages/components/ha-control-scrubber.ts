@@ -43,6 +43,7 @@ export class DemoHaControlScrubber extends LitElement {
           <pre>Config: {"wrap":true,"min":0,"max":360}</pre>
           <ha-control-scrubber
             wrap
+            show-handle
             min="0"
             max="360"
             unit="°"
