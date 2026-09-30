@@ -23,6 +23,8 @@ export interface MapEngineEvents {
   moveStart(): void;
   /** The engine can no longer render; the host switches to the fallback */
   fatal(): void;
+  /** The first complete frame is on screen; until then the container shows */
+  drawn(): void;
 }
 
 export interface MapEngineOptions {

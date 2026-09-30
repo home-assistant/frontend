@@ -646,14 +646,21 @@ export class HaMap extends ReactiveElement {
     // case and keeps the map on the style the build generated.
     this._readThemeColors();
 
-    const map = this._mapElement!;
+    const map = this._mapElement;
+    if (!map) {
+      return;
+    }
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
-    map.classList.toggle("space", this._vectorEngine);
+    // The sky belongs behind a drawn globe; on a blank canvas it is just a
+    // gradient with a glow in it
+    map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
     this._engine?.setMapStyle(this._resolvedMapStyle);
   }
+
+  private _mapDrawn = false;
 
   private _loading = false;
 
@@ -706,10 +713,11 @@ export class HaMap extends ReactiveElement {
     const map = document.createElement("div");
     map.id = "map";
     // Which ground shows in the gap before the first frame; the rest of the
-    // classes wait for the engine (_updateMapStyle)
+    // classes wait for the engine (_updateMapAppearance)
     map.classList.toggle("dark", this._darkMode);
     this.shadowRoot!.append(map);
     this._loading = true;
+    this._mapDrawn = false;
     const attempt = ++this._setupAttempt;
     let engine: MapEngine | undefined;
     try {
@@ -750,6 +758,13 @@ export class HaMap extends ReactiveElement {
             }
           },
           fatal: () => this._handleEngineFatal(),
+          drawn: () => {
+            if (attempt !== this._setupAttempt) {
+              return;
+            }
+            this._mapDrawn = true;
+            this._updateMapAppearance();
+          },
         },
       });
       // Disconnected while the style was loading, or superseded by a newer setup
