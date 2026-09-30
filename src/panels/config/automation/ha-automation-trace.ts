@@ -424,10 +424,13 @@ export class HaAutomationTrace extends LitElement {
       this._traces = undefined;
       this._entityId = undefined;
       this._runId = undefined;
+      this._selected = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
       if (this.automationId) {
-        this._loadTraces();
+        // A link from another trace reuses this page and names the run.
+        const params = new URLSearchParams(location.search);
+        this._loadTraces(params.get("run_id") || undefined);
       }
     }
 
@@ -513,7 +516,13 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(this.hass, "automation", this.automationId);
+    const automationId = this.automationId;
+    const traces = await loadTraces(this.hass, "automation", automationId);
+    // The page switched to another automation while this was loading.
+    if (automationId !== this.automationId) {
+      return;
+    }
+    this._traces = traces;
     // Newest will be on top.
     this._traces.reverse();
 
@@ -541,6 +550,9 @@ export class HaAutomationTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
+      if (automationId !== this.automationId) {
+        return;
+      }
     }
 
     // See if we can set a default runID
@@ -550,13 +562,14 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTrace() {
+    const runId = this._runId!;
     const trace = await loadTrace(
       this.hass,
       "automation",
       this.automationId,
-      this._runId!
+      runId
     );
-    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
+    const logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -564,6 +577,11 @@ export class HaAutomationTrace extends LitElement {
         )
       : [];
 
+    // Another run was picked while this one was loading.
+    if (runId !== this._runId) {
+      return;
+    }
+    this._logbookEntries = logbookEntries;
     this._trace = trace;
   }
 
