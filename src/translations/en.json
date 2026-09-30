@@ -12280,21 +12280,49 @@
           "view_documentation": "View documentation"
         },
         "repository": {
-          "version_available": "Version {version}",
+          "status": {
+            "not_installed": "Not installed",
+            "available": "Version {version} is available to install.",
+            "update_available": "Update available",
+            "pending_restart": "Waiting for a restart"
+          },
+          "community": {
+            "title": "Made by the community",
+            "made_by": "Made by {authors}, {count, plural,\n  one {one of the many people}\n  other {some of the many people}\n} sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
+            "made_by_community": "Made by one of the many people sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
+            "last_change": "Last change on GitHub {time}",
+            "downloads": "Downloaded {count} times",
+            "stars": "{count} stars on GitHub",
+            "open_issues": "{count} open issues on GitHub",
+            "no_open_issues": "No open issues on GitHub"
+          },
+          "details": {
+            "works_with": "Works with Home Assistant {version} or newer",
+            "source_code": "View source code",
+            "issue_tracker": "Issue tracker"
+          },
+          "next_step": {
+            "restart": "Home Assistant needs a restart to start using {name}.",
+            "restart_button": "Restart Home Assistant",
+            "integration_set_up": "{name} is installed and set up.",
+            "open_integration": "Open integration",
+            "integration_to_set_up": "{name} is installed. Set it up to start using it.",
+            "set_up": "Set up",
+            "integration_without_set_up": "{name} is installed. It is not set up from the user interface, its documentation explains how to set it up and use it.",
+            "plugin": "{name} is installed and added to your dashboard resources. Add it to a dashboard from the dashboard editor.",
+            "theme": "{name} is installed. Select it in your profile to use it.",
+            "open_profile": "Open profile",
+            "template": "{name} is installed. Its documentation explains how to use it in your templates."
+          },
           "version_installed": "Version {version} installed",
           "version_update": "Version {installed} installed, {version} available",
-          "open_issues": "Open issues",
-          "stars": "Stars",
-          "downloads": "Downloads",
-          "author": "Author",
           "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
           "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
           "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
         },
         "repository_menu": {
           "dismiss_new": "Dismiss new",
-          "open_issue": "Open issue",
-          "open_source": "Open resource file",
+          "issue_tracker": "Issue tracker",
           "install_other_version": "Install another version",
           "reinstall": "Reinstall",
           "update_information": "Refresh information"

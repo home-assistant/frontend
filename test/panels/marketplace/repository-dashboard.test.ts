@@ -1,3 +1,4 @@
+import { render } from "lit";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/panels/marketplace/dashboards/ha-marketplace-repository-dashboard";
@@ -71,6 +72,8 @@ const repositoryInfo = (id: string, extra: Partial<RepositoryInfo> = {}) =>
     full_name: `owner/repository-${id}`,
     authors: [],
     additional_info: "",
+    local_path: `/config/www/community/repository-${id}`,
+    file_name: `repository-${id}.js`,
     stars: 0,
     issues: 0,
     can_install: true,
@@ -93,17 +96,30 @@ type FetchRepository = (repositoryId: string) => Promise<RepositoryInfo>;
 const openRepositoryPage = async (
   fetchRepository: FetchRepository,
   route: Route,
-  marketplace: MarketplaceData = MARKETPLACE
+  marketplace: MarketplaceData = MARKETPLACE,
+  configEntries: unknown[] = []
 ) => {
   const sendMessagePromise = vi.fn(
     async (message: { type: string; repository_id: string }) =>
-      fetchRepository(message.repository_id)
+      message.type === "config_entries/get"
+        ? configEntries
+        : fetchRepository(message.repository_id)
   );
   const page = document.createElement("ha-marketplace-repository-dashboard");
   page.hass = {
     localize: (key: string) => key,
     connection: { sendMessagePromise },
     callWS: sendMessagePromise,
+    auth: { data: { hassUrl: "http://example.local:8123" } },
+    locale: {
+      language: "en",
+      number_format: "language",
+      time_format: "language",
+      date_format: "language",
+      time_zone: "local",
+      first_weekday: "language",
+    },
+    themes: { darkMode: false },
   } as unknown as HomeAssistant;
   page.marketplace = marketplace;
   page.narrow = false;
@@ -389,11 +405,6 @@ describe("ha-marketplace-repository-dashboard", () => {
       extra: { installed: true, pending_upgrade: true },
       buttons: ["ui.common.update"],
     },
-    {
-      name: "nothing when up to date",
-      extra: { installed: true, pending_upgrade: false },
-      buttons: [],
-    },
   ])("offers $name in the info card", async ({ extra, buttons }) => {
     const { page } = await openRepositoryPage(
       async (repositoryId) =>
@@ -403,11 +414,267 @@ describe("ha-marketplace-repository-dashboard", () => {
     await settle(page);
 
     expect(
-      [...page.shadowRoot!.querySelectorAll(".card-actions ha-button")].map(
+      [...page.shadowRoot!.querySelectorAll(".status ha-button")].map(
         (button) => button.textContent!.trim()
       )
     ).toEqual(buttons);
     expect(page.shadowRoot!.querySelector(".content > ha-alert")).toBeNull();
+  });
+
+  it.each([
+    {
+      name: "an integration that is set up",
+      extra: { category: "integration", domain: "example", config_flow: true },
+      entries: [{ entry_id: "1" }],
+      text: "ui.panel.marketplace.repository.next_step.integration_set_up",
+      button: "ui.panel.marketplace.repository.next_step.open_integration",
+      href: "/config/integrations/integration/example",
+    },
+    {
+      name: "an integration to set up",
+      extra: { category: "integration", domain: "example", config_flow: true },
+      entries: [],
+      text: "ui.panel.marketplace.repository.next_step.integration_to_set_up",
+      button: "ui.panel.marketplace.repository.next_step.set_up",
+      href: null,
+    },
+    {
+      name: "an integration without a setup",
+      extra: { category: "integration", domain: "example", config_flow: false },
+      entries: [],
+      text: "ui.panel.marketplace.repository.next_step.integration_without_set_up",
+      button: undefined,
+      href: undefined,
+    },
+    {
+      name: "an install waiting for a restart",
+      extra: { category: "integration", status: "pending-restart" },
+      entries: [],
+      text: "ui.panel.marketplace.repository.next_step.restart",
+      button: "ui.panel.marketplace.repository.next_step.restart_button",
+      href: null,
+    },
+    {
+      name: "a dashboard resource",
+      extra: { category: "plugin" },
+      entries: [],
+      text: "ui.panel.marketplace.repository.next_step.plugin",
+      button: undefined,
+      href: undefined,
+    },
+    {
+      name: "a theme",
+      extra: { category: "theme" },
+      entries: [],
+      text: "ui.panel.marketplace.repository.next_step.theme",
+      button: "ui.panel.marketplace.repository.next_step.open_profile",
+      href: "/profile",
+    },
+    {
+      name: "a template",
+      extra: { category: "template" },
+      entries: [],
+      text: "ui.panel.marketplace.repository.next_step.template",
+      button: undefined,
+      href: undefined,
+    },
+  ])(
+    "tells what to do next with $name",
+    async ({ extra, entries, text, button, href }) => {
+      const { page } = await openRepositoryPage(
+        async (repositoryId) =>
+          repositoryInfo(repositoryId, {
+            installed: true,
+            pending_upgrade: false,
+            status: "installed",
+            ...extra,
+          } as Partial<RepositoryInfo>),
+        repositoryRoute("1"),
+        {
+          ...MARKETPLACE,
+          info: { lovelace_mode: "storage" },
+        } as MarketplaceData,
+        entries
+      );
+      await settle(page);
+      await settle(page);
+
+      const status = page.shadowRoot!.querySelector(".status")!;
+      expect(status.querySelector(".status-detail")!.textContent!.trim()).toBe(
+        text
+      );
+      const action = status.querySelector("ha-button");
+      expect(action?.textContent!.trim()).toBe(button);
+      expect(action?.getAttribute("href")).toBe(href);
+    }
+  );
+
+  it("shows the resource to add for dashboards in YAML", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) =>
+        repositoryInfo(repositoryId, {
+          installed: true,
+          category: "plugin",
+          status: "installed",
+        } as Partial<RepositoryInfo>),
+      repositoryRoute("1"),
+      { ...MARKETPLACE, info: { lovelace_mode: "yaml" } } as MarketplaceData
+    );
+    await settle(page);
+
+    const status = page.shadowRoot!.querySelector(".status")!;
+    expect(status.querySelector(".status-detail")!.textContent!.trim()).toBe(
+      "ui.panel.marketplace.dialog_install.lovelace_instruction"
+    );
+    expect(status.querySelector("pre")!.textContent).toContain("type: module");
+  });
+
+  it("tells who made it and how it is doing, not Home Assistant", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) =>
+        repositoryInfo(repositoryId, {
+          authors: ["@maker"],
+          downloads: 0,
+          stars: 12,
+          issues: 3,
+        } as Partial<RepositoryInfo>),
+      repositoryRoute("1")
+    );
+    await settle(page);
+
+    const community = page.shadowRoot!.querySelector(".community")!;
+    expect(community.querySelector("p")!.textContent!.trim()).toBe(
+      "ui.panel.marketplace.repository.community.made_by"
+    );
+    // Only what is known is shown, there are no downloads to count
+    const details = page.shadowRoot!.querySelector(".details")!;
+    expect(
+      [...details.querySelectorAll(".signals li")].map((item) =>
+        item.textContent!.trim()
+      )
+    ).toEqual([
+      "ui.panel.marketplace.repository.community.stars",
+      "ui.panel.marketplace.repository.community.open_issues",
+    ]);
+  });
+
+  it.each([
+    { name: "not installed", extra: { installed: false } },
+    {
+      name: "installed",
+      extra: { installed: true, installed_version: "1.0.0" },
+    },
+  ])(
+    "leaves the type and versions to the summary when $name",
+    async ({ extra }) => {
+      const { page } = await openRepositoryPage(
+        async (repositoryId) =>
+          repositoryInfo(repositoryId, extra as Partial<RepositoryInfo>),
+        repositoryRoute("1")
+      );
+      await settle(page);
+
+      // Only what the summary does not show, nothing here without a minimum
+      expect(page.shadowRoot!.querySelector(".details dl")).toBeNull();
+    }
+  );
+
+  it.each([
+    {
+      name: "the more info of its update entity",
+      entityId: "update.example",
+      states: { "update.example": { entity_id: "update.example" } },
+      event: "hass-more-info",
+      detail: { entityId: "update.example" },
+    },
+    {
+      name: "the install dialog without an update entity",
+      entityId: null,
+      states: {},
+      event: "show-dialog",
+      detail: expect.objectContaining({
+        dialogTag: "dialog-marketplace-install",
+      }),
+    },
+    {
+      name: "the install dialog when its update entity is gone",
+      entityId: "update.example",
+      states: {},
+      event: "show-dialog",
+      detail: expect.objectContaining({
+        dialogTag: "dialog-marketplace-install",
+      }),
+    },
+  ])("updates through $name", async ({ entityId, states, event, detail }) => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) =>
+        repositoryInfo(repositoryId, {
+          installed: true,
+          pending_upgrade: true,
+          update_entity_id: entityId,
+        } as Partial<RepositoryInfo>),
+      repositoryRoute("1")
+    );
+    (page.hass as unknown as Record<string, unknown>).states = states;
+    await settle(page);
+    const fired = vi.fn();
+    page.addEventListener(event, (ev) => fired((ev as CustomEvent).detail));
+
+    page
+      .shadowRoot!.querySelector(".status ha-button")!
+      .dispatchEvent(new Event("click"));
+
+    expect(fired).toHaveBeenCalledWith(detail);
+  });
+
+  it("links every author to their GitHub profile", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) => repositoryInfo(repositoryId),
+      repositoryRoute("1")
+    );
+    await settle(page);
+    const container = document.createElement("div");
+
+    render(getInternals(page)._authorLinks(["piitaya", "frenck"]), container);
+
+    expect(
+      [...container.querySelectorAll("a")].map((link) => [
+        link.textContent,
+        link.getAttribute("href"),
+      ])
+    ).toEqual([
+      ["piitaya", "https://github.com/piitaya"],
+      ["frenck", "https://github.com/frenck"],
+    ]);
+    expect(container.textContent).toBe("piitaya and frenck");
+  });
+
+  it("tells what it works with, and links to its source and issues", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) =>
+        repositoryInfo(repositoryId, {
+          homeassistant: "2024.8.0",
+        } as Partial<RepositoryInfo>),
+      repositoryRoute("1")
+    );
+    await settle(page);
+
+    // A signal like the others, before them
+    expect(
+      page
+        .shadowRoot!.querySelector(".details .signals li")!
+        .textContent!.trim()
+    ).toBe("ui.panel.marketplace.repository.details.works_with");
+    const community = page.shadowRoot!.querySelector(".community")!;
+    expect(community.querySelector("dl")).toBeNull();
+    expect(
+      [...community.querySelectorAll(".card-actions ha-button")].map((link) =>
+        link.getAttribute("href")
+      )
+    ).toEqual([
+      "https://github.com/owner/repository-1",
+      "https://github.com/owner/repository-1/issues",
+    ]);
   });
 
   it("leaves the README card out when there is nothing to show", async () => {
@@ -417,7 +684,8 @@ describe("ha-marketplace-repository-dashboard", () => {
     );
     await settle(page);
 
-    expect(page.shadowRoot!.querySelectorAll("ha-card")).toHaveLength(1);
+    // The summary, who made it, and the details
+    expect(page.shadowRoot!.querySelectorAll("ha-card")).toHaveLength(3);
     expect(page.shadowRoot!.querySelector("ha-markdown")).toBeNull();
   });
 
@@ -436,7 +704,7 @@ describe("ha-marketplace-repository-dashboard", () => {
 
       // Still offered, the install dialog has the older versions
       expect(
-        page.shadowRoot!.querySelector(".card-actions ha-button")
+        page.shadowRoot!.querySelector(".status ha-button")
       ).not.toBeNull();
       const alert = page
         .shadowRoot!.querySelector(".content > ha-alert")!

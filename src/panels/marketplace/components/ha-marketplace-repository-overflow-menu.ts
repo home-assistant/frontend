@@ -1,12 +1,11 @@
 import {
-  mdiAlertCircleOutline,
   mdiArrowDownCircle,
+  mdiBug,
   mdiDelete,
   mdiDownload,
   mdiGithub,
   mdiHistory,
   mdiInformationOutline,
-  mdiLanguageJavascript,
   mdiMoonNew,
   mdiReload,
 } from "@mdi/js";
@@ -34,7 +33,6 @@ import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketpl
 import { showMarketplaceInUseDialog } from "../dialogs/show-dialog-marketplace-in-use";
 import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import { handleGitHubRateLimited } from "../tools/connect-github";
-import { generateFrontendResourceURL } from "../tools/frontend-resource";
 
 export interface MarketplaceRepositoryMenuItem {
   value: string;
@@ -234,26 +232,12 @@ export const repositoryMenuItems = (
     });
   }
 
-  if (repository.category === "plugin" && repository.installed_version) {
-    entries.push({
-      value: "open_source",
-      path: mdiLanguageJavascript,
-      label: localize("ui.panel.marketplace.repository_menu.open_source"),
-      action: () =>
-        window.open(
-          `${generateFrontendResourceURL({ repository })}?v=${Date.now()}`,
-          "_blank",
-          "noreferrer=true"
-        ),
-    });
-  }
-
   entries.push(
     { divider: true },
     {
-      value: "open_issue",
-      path: mdiAlertCircleOutline,
-      label: localize("ui.panel.marketplace.repository_menu.open_issue"),
+      value: "issue_tracker",
+      path: mdiBug,
+      label: localize("ui.panel.marketplace.repository_menu.issue_tracker"),
       action: () =>
         window.open(
           `https://github.com/${repository.full_name}/issues`,

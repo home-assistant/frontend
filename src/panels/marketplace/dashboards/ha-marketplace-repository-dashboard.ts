@@ -1,21 +1,26 @@
 import {
-  mdiAccount,
-  mdiArrowDownBold,
+  mdiAccountGroup,
+  mdiAlertCircleOutline,
   mdiArrowUpBoldCircleOutline,
+  mdiBug,
+  mdiCheckCircle,
+  mdiCheckCircleOutline,
   mdiDotsVertical,
   mdiDownload,
-  mdiExclamationThick,
+  mdiGithub,
+  mdiRestart,
   mdiStar,
+  mdiUpdate,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { formatNumber } from "../../../common/number/format_number";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
 import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/chips/ha-chip-set";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
@@ -26,7 +31,10 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import { getConfigEntries } from "../../../data/config_entries";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
@@ -53,6 +61,7 @@ import {
   isWebSocketError,
   marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
+import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import {
   ensureGitHubConnected,
@@ -60,6 +69,7 @@ import {
   handleGitHubRateLimited,
 } from "../tools/connect-github";
 import { brandsUrl } from "../../../util/brands-url";
+import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
 import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
@@ -67,6 +77,18 @@ import { markdownWithRepositoryContext } from "../tools/markdown";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
+
+interface NextStep {
+  detail?: string;
+  action?: TemplateResult;
+  extra?: TemplateResult;
+}
+
+interface RepositoryStatus extends NextStep {
+  kind: "available" | "update" | "restart" | "installed";
+  icon: string;
+  title: string;
+}
 
 // GitHub names are not case sensitive, a My link may spell one differently
 const findRepository = (
@@ -95,6 +117,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // Answers for a repository navigated away from are dropped.
   // A refresh that failed while the repository is shown, told on top of it
   @state() private _refreshError?: string;
+
+  // How many config entries the installed integration has, once known
+  @state() private _configEntryCount?: number;
 
   // Only the newest request counts, also one for the same repository
   private _request = 0;
@@ -277,6 +302,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       this._repository = repository;
       this._error = undefined;
       this._refreshError = undefined;
+      this._loadConfigEntryCount(repository);
     } catch (err: unknown) {
       if (!this._isCurrentRequest(request)) {
         return;
@@ -296,6 +322,28 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       } else {
         this._error = message;
       }
+    }
+  }
+
+  private async _loadConfigEntryCount(repository: RepositoryInfo) {
+    this._configEntryCount = undefined;
+    if (
+      repository.category !== "integration" ||
+      !repository.installed ||
+      !repository.domain
+    ) {
+      return;
+    }
+
+    let count = 0;
+    try {
+      count = (await getConfigEntries(this.hass, { domain: repository.domain }))
+        .length;
+    } catch (_err: unknown) {
+      // Counted as none, the setup flow tells when it is set up already
+    }
+    if (this._repository === repository) {
+      this._configEntryCount = count;
     }
   }
 
@@ -378,24 +426,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                   )}
                 </ha-alert>`
           }
-          <ha-card outlined>
-            <div class="card-content">
-              <div class="header">
-                ${this._renderIcon(repository)}
-                <div class="title">
-                  ${this.narrow ? nothing : html`<h1>${repository.name}</h1>`}
-                  <div class="version">${this._versionText(repository)}</div>
-                </div>
-              </div>
-              ${
-                repository.description
-                  ? html`<p class="description">${repository.description}</p>`
-                  : nothing
-              }
-              ${this._renderChips(repository)}
-            </div>
-            ${this._renderActions(repository)}
-          </ha-card>
+          ${this._renderSummary(repository)}
+          <div class="cards">
+            ${this._renderCommunity(repository)}
+            ${this._renderDetails(repository)}
+          </div>
           ${
             readme
               ? html`<ha-card class="readme" outlined>
@@ -407,51 +442,6 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           }
         </div>
       </hass-subpage>
-    `;
-  }
-
-  private _renderChips(repository: RepositoryInfo) {
-    return html`
-      <ha-chip-set>
-        ${this._getAuthors(repository).map(
-          (author) =>
-            html`<ha-assist-chip
-              href="https://github.com/${author}"
-              target="_blank"
-              .label=${`@${author}`}
-              title=${this.hass.localize("ui.panel.marketplace.repository.author")}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
-            </ha-assist-chip>`
-        )}
-        ${
-          repository.downloads
-            ? html`<ha-assist-chip
-                title=${this.hass.localize("ui.panel.marketplace.repository.downloads")}
-                .label=${String(repository.downloads)}
-              >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiArrowDownBold}
-                ></ha-svg-icon>
-              </ha-assist-chip>`
-            : nothing
-        }
-        <ha-assist-chip
-          .label=${String(repository.stars)}
-          title=${this.hass.localize("ui.panel.marketplace.repository.stars")}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
-        </ha-assist-chip>
-        <ha-assist-chip
-          href="https://github.com/${repository.full_name}/issues"
-          target="_blank"
-          .label=${String(repository.issues)}
-          title=${this.hass.localize("ui.panel.marketplace.repository.open_issues")}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiExclamationThick}></ha-svg-icon>
-        </ha-assist-chip>
-      </ha-chip-set>
     `;
   }
 
@@ -477,44 +467,399 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ></ha-svg-icon>`;
   }
 
-  private _versionText(repository: RepositoryInfo): string {
-    if (!repository.installed) {
-      return this.hass.localize(
-        "ui.panel.marketplace.repository.version_available",
-        { version: repository.available_version }
-      );
-    }
-
-    return repository.pending_upgrade
-      ? this.hass.localize("ui.panel.marketplace.repository.version_update", {
-          installed: repository.installed_version,
-          version: repository.available_version,
-        })
-      : this.hass.localize(
-          "ui.panel.marketplace.repository.version_installed",
-          { version: repository.installed_version }
-        );
+  private _renderSummary(repository: RepositoryInfo) {
+    return html`<ha-card outlined class="summary">
+      <div class="card-content">
+        <div class="header">
+          ${this._renderIcon(repository)}
+          <div class="title">
+            ${this.narrow ? nothing : html`<h1>${repository.name}</h1>`}
+            <div class="type">
+              ${this.hass.localize(
+                `ui.panel.marketplace.common.type.${repository.category}`
+              )}
+            </div>
+          </div>
+        </div>
+        ${
+          repository.description
+            ? html`<p class="description">${repository.description}</p>`
+            : nothing
+        }
+      </div>
+      ${this._renderStatus(repository)}
+    </ha-card>`;
   }
 
-  // Installing and updating are the main actions, a reinstall stays in the menu
-  private _renderActions(repository: RepositoryInfo) {
-    if (repository.installed && !repository.pending_upgrade) {
-      return nothing;
+  // Where it stands, and the one thing to do next
+  private _renderStatus(repository: RepositoryInfo) {
+    const status = this._status(repository);
+
+    return html`<div class="status ${status.kind}">
+      <ha-svg-icon class="status-icon" .path=${status.icon}></ha-svg-icon>
+      <div class="status-text">
+        <span class="status-title">${status.title}</span>
+        ${
+          status.detail
+            ? html`<span class="status-detail">${status.detail}</span>`
+            : nothing
+        }
+        ${status.extra ?? nothing}
+      </div>
+      ${status.action ?? nothing}
+    </div>`;
+  }
+
+  private _status(repository: RepositoryInfo): RepositoryStatus {
+    const localize = this.hass.localize;
+    const name = repository.name;
+
+    if (!repository.installed) {
+      return {
+        kind: "available",
+        icon: mdiDownload,
+        title: localize("ui.panel.marketplace.repository.status.not_installed"),
+        detail: localize("ui.panel.marketplace.repository.status.available", {
+          version: repository.available_version,
+        }),
+        action: this._installButton(
+          mdiDownload,
+          localize("ui.panel.marketplace.common.install")
+        ),
+      };
     }
 
-    return html`<div class="card-actions">
-      <ha-button appearance="filled" @click=${this._installRepositoryDialog}>
-        <ha-svg-icon
-          slot="start"
-          .path=${repository.installed ? mdiArrowUpBoldCircleOutline : mdiDownload}
-        ></ha-svg-icon>
-        ${this.hass.localize(
-          repository.installed
-            ? "ui.common.update"
-            : "ui.panel.marketplace.common.install"
-        )}
-      </ha-button>
-    </div>`;
+    // Installing and updating are the main actions, a reinstall stays in the menu
+    if (repository.pending_upgrade) {
+      return {
+        kind: "update",
+        icon: mdiArrowUpBoldCircleOutline,
+        title: localize(
+          "ui.panel.marketplace.repository.status.update_available"
+        ),
+        detail: localize("ui.panel.marketplace.repository.version_update", {
+          installed: repository.installed_version,
+          version: repository.available_version,
+        }),
+        action: this._installButton(
+          mdiArrowUpBoldCircleOutline,
+          localize("ui.common.update"),
+          this._update
+        ),
+      };
+    }
+
+    if (repository.status === "pending-restart") {
+      return {
+        kind: "restart",
+        icon: mdiRestart,
+        title: localize(
+          "ui.panel.marketplace.repository.status.pending_restart"
+        ),
+        detail: localize("ui.panel.marketplace.repository.next_step.restart", {
+          name,
+        }),
+        action: html`<ha-button appearance="filled" @click=${this._restart}>
+          ${localize("ui.panel.marketplace.repository.next_step.restart_button")}
+        </ha-button>`,
+      };
+    }
+
+    return {
+      kind: "installed",
+      icon: mdiCheckCircle,
+      title: localize("ui.panel.marketplace.repository.version_installed", {
+        version: repository.installed_version,
+      }),
+      ...this._nextStep(repository),
+    };
+  }
+
+  private _installButton(
+    icon: string,
+    label: string,
+    handler: () => void = this._installRepositoryDialog
+  ) {
+    return html`<ha-button appearance="filled" @click=${handler}>
+      <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+      ${label}
+    </ha-button>`;
+  }
+
+  // Once it is installed, what to do with it depends on what it is
+  private _nextStep(repository: RepositoryInfo): NextStep {
+    const localize = this.hass.localize;
+    const name = repository.name;
+
+    switch (repository.category) {
+      case "integration":
+        return this._integrationNextStep(repository);
+      case "plugin":
+        return this.marketplace.info.lovelace_mode === "storage"
+          ? {
+              detail: localize(
+                "ui.panel.marketplace.repository.next_step.plugin",
+                { name }
+              ),
+            }
+          : {
+              detail: localize(
+                "ui.panel.marketplace.dialog_install.lovelace_instruction"
+              ),
+              extra: html`<pre class="frontend-resource">
+url: ${generateFrontendResourceURL({ repository })}
+type: module</pre>`,
+            };
+      case "theme":
+        return {
+          detail: localize("ui.panel.marketplace.repository.next_step.theme", {
+            name,
+          }),
+          action: html`<ha-button appearance="filled" href="/profile">
+            ${localize("ui.panel.marketplace.repository.next_step.open_profile")}
+          </ha-button>`,
+        };
+      default:
+        return {
+          detail: localize(
+            "ui.panel.marketplace.repository.next_step.template",
+            { name }
+          ),
+        };
+    }
+  }
+
+  private _integrationNextStep(repository: RepositoryInfo): NextStep {
+    const localize = this.hass.localize;
+    const name = repository.name;
+
+    if (!repository.config_flow) {
+      return {
+        detail: localize(
+          "ui.panel.marketplace.repository.next_step.integration_without_set_up",
+          { name }
+        ),
+      };
+    }
+
+    // Offering to set it up before the count is known would flip over
+    if (this._configEntryCount === undefined) {
+      return {};
+    }
+
+    if (this._configEntryCount > 0) {
+      return {
+        detail: localize(
+          "ui.panel.marketplace.repository.next_step.integration_set_up",
+          { name }
+        ),
+        action: html`<ha-button
+          appearance="filled"
+          href="/config/integrations/integration/${repository.domain}"
+        >
+          ${localize("ui.panel.marketplace.repository.next_step.open_integration")}
+        </ha-button>`,
+      };
+    }
+
+    return {
+      detail: localize(
+        "ui.panel.marketplace.repository.next_step.integration_to_set_up",
+        { name }
+      ),
+      action: html`<ha-button appearance="filled" @click=${this._setUp}>
+        ${localize("ui.panel.marketplace.repository.next_step.set_up")}
+      </ha-button>`,
+    };
+  }
+
+  // Who made it, not Home Assistant, and where its code and issues are
+  private _renderCommunity(repository: RepositoryInfo) {
+    const localize = this.hass.localize;
+    const authors = this._getAuthors(repository);
+    const github = `https://github.com/${repository.full_name}`;
+
+    return html`<ha-card outlined class="community">
+      <div class="card-content">
+        <div class="card-heading">
+          <div class="badge">
+            <ha-svg-icon .path=${mdiAccountGroup}></ha-svg-icon>
+          </div>
+          <h2>
+            ${localize("ui.panel.marketplace.repository.community.title")}
+          </h2>
+        </div>
+        <p>
+          ${
+            authors.length
+              ? localize("ui.panel.marketplace.repository.community.made_by", {
+                  authors: this._authorLinks(authors),
+                  count: authors.length,
+                })
+              : localize(
+                  "ui.panel.marketplace.repository.community.made_by_community"
+                )
+          }
+        </p>
+      </div>
+      <div class="card-actions">
+        <ha-button
+          appearance="plain"
+          href=${github}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <ha-svg-icon slot="start" .path=${mdiGithub}></ha-svg-icon>
+          ${localize("ui.panel.marketplace.repository.details.source_code")}
+        </ha-button>
+        <ha-button
+          appearance="plain"
+          href=${`${github}/issues`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <ha-svg-icon slot="start" .path=${mdiBug}></ha-svg-icon>
+          ${localize("ui.panel.marketplace.repository.details.issue_tracker")}
+        </ha-button>
+      </div>
+    </ha-card>`;
+  }
+
+  // Authors are GitHub accounts, listed the way the language lists names
+  private _authorLinks(authors: string[]) {
+    return html`${new Intl.ListFormat(this.hass.locale.language, {
+      style: "long",
+      type: "conjunction",
+    })
+      .formatToParts(authors)
+      .map((part) =>
+        part.type === "element"
+          ? html`<a
+              href="https://github.com/${part.value}"
+              target="_blank"
+              rel="noreferrer"
+              >${part.value}</a
+            >`
+          : part.value
+      )}`;
+  }
+
+  // What is known about how it is doing
+  private _renderDetails(repository: RepositoryInfo) {
+    return html`<ha-card outlined class="details">
+      <div class="card-content">
+        <ul class="signals">
+          ${this._signals(repository).map(
+            (signal) =>
+              html`<li>
+                <ha-svg-icon .path=${signal.icon}></ha-svg-icon>
+                ${signal.text}
+              </li>`
+          )}
+        </ul>
+      </div>
+    </ha-card>`;
+  }
+
+  private _signals(
+    repository: RepositoryInfo
+  ): { icon: string; text: string }[] {
+    const localize = this.hass.localize;
+    const locale = this.hass.locale;
+    const signals: { icon: string; text: string }[] = [];
+
+    if (repository.homeassistant) {
+      signals.push({
+        icon: mdiHomeAssistant,
+        text: localize("ui.panel.marketplace.repository.details.works_with", {
+          version: html`<strong>${repository.homeassistant}</strong>`,
+        }),
+      });
+    }
+    const lastChange = this._relativeTime(repository.last_updated);
+    if (lastChange) {
+      signals.push({
+        icon: mdiUpdate,
+        text: localize(
+          "ui.panel.marketplace.repository.community.last_change",
+          {
+            time: html`<strong>${lastChange}</strong>`,
+          }
+        ),
+      });
+    }
+    if (repository.downloads) {
+      signals.push({
+        icon: mdiDownload,
+        text: localize("ui.panel.marketplace.repository.community.downloads", {
+          count: html`<strong
+            >${formatNumber(repository.downloads, locale)}</strong
+          >`,
+        }),
+      });
+    }
+    signals.push({
+      icon: mdiStar,
+      text: localize("ui.panel.marketplace.repository.community.stars", {
+        count: html`<strong>${formatNumber(repository.stars, locale)}</strong>`,
+      }),
+    });
+    signals.push(
+      repository.issues
+        ? {
+            icon: mdiAlertCircleOutline,
+            text: localize(
+              "ui.panel.marketplace.repository.community.open_issues",
+              {
+                count: html`<strong
+                  >${formatNumber(repository.issues, locale)}</strong
+                >`,
+              }
+            ),
+          }
+        : {
+            icon: mdiCheckCircleOutline,
+            text: localize(
+              "ui.panel.marketplace.repository.community.no_open_issues"
+            ),
+          }
+    );
+
+    return signals;
+  }
+
+  private _relativeTime(value: string | number): string | undefined {
+    if (!value) {
+      return undefined;
+    }
+    try {
+      return relativeTime(new Date(value), this.hass.locale);
+    } catch {
+      return undefined;
+    }
+  }
+
+  // Updates are installed from their update entity everywhere else too, the
+  // install dialog is for when there is none
+  private _update() {
+    const entityId = this._repository!.update_entity_id;
+    if (entityId && this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+      return;
+    }
+
+    this._installRepositoryDialog();
+  }
+
+  private _restart() {
+    showRestartDialog(this);
+  }
+
+  private _setUp() {
+    showConfigFlowDialog(this, {
+      startFlowHandler: this._repository!.domain!,
+      navigateToResult: true,
+    });
   }
 
   private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
@@ -568,20 +913,123 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
         }
-        .version {
+        .type {
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-s);
         }
         .description {
           margin-block: var(--ha-space-4) 0;
         }
-        ha-chip-set {
-          margin-block-start: var(--ha-space-4);
-        }
-        .card-actions {
+        .status {
           display: flex;
-          justify-content: flex-end;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: var(--ha-space-3) var(--ha-space-4);
+          padding: var(--ha-space-3) var(--ha-space-4);
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
+        }
+        .status-icon {
+          flex: none;
+          color: var(--primary-color);
+        }
+        .status.installed .status-icon {
+          color: var(--success-color);
+        }
+        .status.restart .status-icon {
+          color: var(--warning-color);
+        }
+        .status-text {
+          display: flex;
+          flex: 1 1 240px;
+          flex-direction: column;
+          gap: var(--ha-space-1);
+          min-width: 0;
+        }
+        .status-title {
+          font-weight: var(--ha-font-weight-medium);
+        }
+        .status-detail {
+          color: var(--secondary-text-color);
+        }
+        .status pre {
+          direction: ltr;
+          margin: var(--ha-space-1) 0 0;
+          padding: var(--ha-space-2) var(--ha-space-3);
+          overflow-x: auto;
+          border-radius: var(--ha-border-radius-md);
+          background-color: var(--secondary-background-color);
+        }
+        .cards {
+          display: grid;
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(min(100%, 320px), 1fr)
+          );
+          gap: var(--ha-space-4);
+        }
+        .card-heading {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-3);
+        }
+        .badge {
+          display: flex;
+          flex: none;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: var(--ha-border-radius-circle);
+          color: var(--warning-color);
+          background-color: rgba(var(--rgb-warning-color), 0.2);
+        }
+        h2 {
+          margin: 0;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+        }
+        .community p {
+          margin-block: var(--ha-space-3) 0;
+        }
+        .signals {
+          display: flex;
+          flex-direction: column;
           gap: var(--ha-space-2);
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+        .signals li {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+        .signals ha-svg-icon {
+          flex: none;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+        }
+        /* Stretched to the height of the card next to it, the actions at the bottom */
+        .community {
+          display: flex;
+          flex-direction: column;
+        }
+        .community .card-content {
+          flex: 1;
+        }
+        /* Centred in the height the card next to it sets, not left hanging */
+        .details {
+          display: flex;
+          flex-direction: column;
+        }
+        .details .card-content {
+          display: flex;
+          flex: 1;
+        }
+        .details .signals {
+          flex: 1;
+          gap: var(--ha-space-3);
+          justify-content: center;
         }
         .readme {
           direction: ltr;

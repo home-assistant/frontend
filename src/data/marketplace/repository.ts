@@ -40,6 +40,7 @@ export interface RepositoryInfo extends RepositoryBase {
   ref: string;
   replaces_built_in: boolean;
   selected_tag: string | null;
+  update_entity_id: string | null;
   version_or_commit: "version" | "commit";
 }
 

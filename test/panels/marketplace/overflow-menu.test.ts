@@ -63,6 +63,23 @@ const repository = (extra: Partial<RepositoryBase>) =>
   }) as RepositoryBase;
 
 describe("repositoryMenuItems", () => {
+  it("links the issue tracker, and not the resource file of a card", () => {
+    const entries = repositoryMenuItems(
+      PAGE,
+      repository({ category: "plugin", installed_version: "1.0.0" }),
+      localize
+    ).filter((entry) => "value" in entry);
+
+    expect(menuValues(entries)).not.toContain("open_source");
+    expect(
+      entries.find(
+        (entry) => "value" in entry && entry.value === "issue_tracker"
+      )
+    ).toMatchObject({
+      label: "ui.panel.marketplace.repository_menu.issue_tracker",
+    });
+  });
+
   it.each([
     ["an install", {}],
     ["a reinstall", { installed_version: "1.0.0" }],
