@@ -7389,6 +7389,13 @@
             "reconfigure": "Reconfigure",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
+            "marketplace_uninstall": {
+              "title": "Also uninstall {name}?",
+              "text": "{name} came from the Marketplace. Its files stay on your system until you uninstall it.",
+              "confirm": "Uninstall",
+              "dismiss": "Keep",
+              "failed": "Uninstalling failed, check the Home Assistant logs for more information."
+            },
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
@@ -12178,7 +12185,6 @@
           "continue": "Continue"
         },
         "common": {
-          "ignore": "Ignore",
           "install": "Install",
           "reload": "Reload",
           "repository": "Repository",
@@ -12318,10 +12324,14 @@
               "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."
             }
           },
-          "configured": {
-            "title": "Integration is configured",
-            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before uninstalling it.",
-            "open_integrations": "Open integrations"
+          "in_use": {
+            "title": "{name} is in use",
+            "message": "{name} is still set up. Delete it before uninstalling, or let the Marketplace delete it and uninstall {name} for you.",
+            "ignored": "Ignored",
+            "view_integration": "View integration",
+            "delete_and_uninstall": "Delete and uninstall",
+            "confirm_title": "Delete and uninstall {name}?",
+            "confirm_message": "This deletes {count, plural, one {its entry} other {its # entries}} with their devices and entities, and uninstalls {name}. This can not be undone."
           }
         }
       },

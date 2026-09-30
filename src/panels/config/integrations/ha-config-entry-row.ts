@@ -76,6 +76,7 @@ import {
   type ConfigEntryData,
 } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import { offerMarketplaceUninstall } from "./offer-marketplace-uninstall";
 
 @customElement("ha-config-entry-row")
 export class HaConfigEntryRow extends LitElement {
@@ -805,6 +806,7 @@ export class HaConfigEntryRow extends LitElement {
       return;
     }
     const result = await deleteConfigEntry(this.hass, entryId);
+    await offerMarketplaceUninstall(this, this.hass, this.data.entry.domain);
 
     if (result.require_restart) {
       showAlertDialog(this, {

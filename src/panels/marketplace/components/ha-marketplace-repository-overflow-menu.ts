@@ -12,7 +12,11 @@ import {
 } from "@mdi/js";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import {
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../data/config_entries";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -26,6 +30,7 @@ import {
 } from "../../../data/marketplace/repository";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
 import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketplace-repository-dashboard";
+import { showMarketplaceInUseDialog } from "../dialogs/show-dialog-marketplace-in-use";
 import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
@@ -71,29 +76,36 @@ const confirmUninstallRepository = async (
   repository: RepositoryBase,
   localize: LocalizeFunc
 ) => {
-  if (repository.category === "integration" && repository.config_flow) {
-    const configured = (await getConfigEntries(element.hass)).some(
-      (entry) => entry.domain === repository.domain
-    );
+  // Its files are what the entries run, core refuses to uninstall it
+  if (repository.category === "integration" && repository.domain) {
+    let entries: ConfigEntry[];
+    try {
+      entries = await getConfigEntries(element.hass, {
+        domain: repository.domain,
+      });
+    } catch (err: unknown) {
+      showError(element, localize, err);
+      return;
+    }
 
-    if (configured) {
-      const navigateToIntegrations = await showConfirmationDialog(element, {
-        title: localize("ui.panel.marketplace.dialog.configured.title"),
-        text: localize("ui.panel.marketplace.dialog.configured.message", {
-          name: repository.name,
-        }),
-        dismissText: localize("ui.panel.marketplace.common.ignore"),
-        confirmText: localize(
-          "ui.panel.marketplace.dialog.configured.open_integrations"
-        ),
-        confirm: () => {
-          navigate("/config/integrations", { replace: true });
+    if (entries.length) {
+      showMarketplaceInUseDialog(element, {
+        repository,
+        entries,
+        deleteAndUninstall: async () => {
+          try {
+            for (const entry of entries) {
+              // eslint-disable-next-line no-await-in-loop
+              await deleteConfigEntry(element.hass, entry.entry_id);
+            }
+            await uninstallRepository(element, repository);
+          } catch (err: unknown) {
+            showError(element, localize, err);
+            throw err;
+          }
         },
       });
-
-      if (navigateToIntegrations) {
-        return;
-      }
+      return;
     }
   }
 

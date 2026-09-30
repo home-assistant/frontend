@@ -1,9 +1,16 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../src/data/config_entries";
+import type { ConfigEntry } from "../../../src/data/config_entries";
 import { uninstallMarketplaceRepository } from "../../../src/data/marketplace/repository";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import { showMarketplaceInUseDialog } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-in-use";
+import type { MarketplaceInUseDialogParams } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-in-use";
 import { showMarketplaceInstallDialog } from "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-install";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
@@ -17,6 +24,16 @@ vi.mock(
     showMarketplaceInstallDialog: vi.fn(),
   })
 );
+vi.mock(
+  "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-in-use",
+  () => ({
+    showMarketplaceInUseDialog: vi.fn(),
+  })
+);
+vi.mock("../../../src/data/config_entries", () => ({
+  deleteConfigEntry: vi.fn(async () => ({ require_restart: false })),
+  getConfigEntries: vi.fn(async () => []),
+}));
 vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
   showAlertDialog: vi.fn(),
   showConfirmationDialog: vi.fn(),
@@ -118,5 +135,70 @@ describe("repositoryMenuItems", () => {
 
     await expect(params.action!()).rejects.toBe(error);
     expect(showAlertDialog).toHaveBeenCalledTimes(1);
+  });
+
+  describe("an integration that is still set up", () => {
+    const ENTRIES = [
+      { entry_id: "a", domain: "example", title: "Home" },
+      { entry_id: "b", domain: "example", title: "", source: "ignore" },
+    ] as ConfigEntry[];
+
+    afterEach(() => {
+      vi.clearAllMocks();
+    });
+
+    const uninstallIntegration = async () => {
+      const entry = repositoryMenuItems(
+        PAGE,
+        repository({ installed_version: "1.0.0", domain: "example" }),
+        localize
+      ).find(
+        (item) => "value" in item && item.value === "uninstall"
+      ) as unknown as { action: () => Promise<void> };
+      await entry.action();
+    };
+
+    it("shows what is set up instead of uninstalling", async () => {
+      vi.mocked(getConfigEntries).mockResolvedValueOnce(ENTRIES);
+
+      await uninstallIntegration();
+
+      expect(getConfigEntries).toHaveBeenCalledWith(PAGE.hass, {
+        domain: "example",
+      });
+      expect(showMarketplaceInUseDialog).toHaveBeenCalledWith(
+        PAGE,
+        expect.objectContaining({ entries: ENTRIES })
+      );
+      expect(showConfirmationDialog).not.toHaveBeenCalled();
+      expect(uninstallMarketplaceRepository).not.toHaveBeenCalled();
+    });
+
+    it("deletes every entry before it uninstalls", async () => {
+      vi.mocked(getConfigEntries).mockResolvedValueOnce(ENTRIES);
+      await uninstallIntegration();
+      const params = vi.mocked(showMarketplaceInUseDialog).mock
+        .lastCall![1] as MarketplaceInUseDialogParams;
+
+      await params.deleteAndUninstall();
+
+      expect(
+        vi.mocked(deleteConfigEntry).mock.calls.map(([, entryId]) => entryId)
+      ).toEqual(["a", "b"]);
+      expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(
+        PAGE.hass,
+        "1"
+      );
+    });
+
+    it("says why when the entries can not be looked up", async () => {
+      vi.mocked(getConfigEntries).mockRejectedValueOnce(new Error("Offline"));
+
+      await uninstallIntegration();
+
+      expect(showAlertDialog).toHaveBeenCalledTimes(1);
+      expect(showMarketplaceInUseDialog).not.toHaveBeenCalled();
+      expect(showConfirmationDialog).not.toHaveBeenCalled();
+    });
   });
 });
