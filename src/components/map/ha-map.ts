@@ -604,7 +604,7 @@ export class HaMap extends ReactiveElement {
   private get _darkMode() {
     return (
       this.themeMode === "dark" ||
-      (this.themeMode === "auto" && Boolean(this._ui?.themes.darkMode))
+      (this.themeMode === "auto" && Boolean(this._ui?.themes?.darkMode))
     );
   }
 
@@ -623,7 +623,7 @@ export class HaMap extends ReactiveElement {
     // mode the page is in. A card forced to the other mode draws the other
     // palette, so those values would be the wrong half of the theme; the
     // style's own colors are the better answer there.
-    const pageDark = Boolean(this._ui?.themes.darkMode);
+    const pageDark = Boolean(this._ui?.themes?.darkMode);
     const colors =
       this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
     if (!deepEqual(colors, this._themeColors)) {
