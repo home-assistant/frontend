@@ -8828,6 +8828,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"echarts@patch:echarts@npm%3A6.1.0#~/.yarn/patches/echarts-npm-6.1.0-517b8ad5ee.patch":
+  version: 6.1.0
+  resolution: "echarts@patch:echarts@npm%3A6.1.0#~/.yarn/patches/echarts-npm-6.1.0-517b8ad5ee.patch::version=6.1.0&hash=054f44"
+  dependencies:
+    tslib: "npm:2.3.0"
+    zrender: "npm:6.1.0"
+  checksum: 10/c4e38cbcebf79ca3e370a6c41d927af49bbe78b2ec03c0494d23f41cbddb241dad4820c748abf2f40eaca47727d21190bdf10a5e8bc20417c8afbb18b1810272
+  languageName: node
+  linkType: hard
+
 "ejs@npm:^3.1.10":
   version: 3.1.10
   resolution: "ejs@npm:3.1.10"
@@ -10426,7 +10436,7 @@ __metadata:
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:8.0.1"
-    echarts: "npm:6.1.0"
+    echarts: "patch:echarts@npm%3A6.1.0#~/.yarn/patches/echarts-npm-6.1.0-517b8ad5ee.patch"
     echarts-extension-chart2music: "npm:0.1.1"
     element-internals-polyfill: "npm:3.0.2"
     eslint: "npm:10.11.0"
