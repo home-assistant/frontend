@@ -1,0 +1,55 @@
+name: Dependency review
+
+on:
+  pull_request:
+    branches:
+      - dev
+    paths:
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  schedule:
+    - cron: "0 6 1 * *" # Monthly report on all direct dependencies
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: Review dependency changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # To compare the dependency graph between base and head
+    steps:
+      - name: Dependency review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          license-check: false # Covered by pnpm lint:licenses
+          fail-on-severity: high
+          show-openssf-scorecard: true
+          warn-on-openssf-scorecard-level: 3
+
+  npm-metadata:
+    name: Check npm metadata
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # To read package.json
+    steps:
+      - name: Check out workflow scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - name: Check npm metadata
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { default: checkNpmMetadata } = await import(
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-npm-metadata.mjs`
+            );
+            await checkNpmMetadata({ github, context, core });
