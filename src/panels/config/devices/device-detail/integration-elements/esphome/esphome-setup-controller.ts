@@ -76,15 +76,15 @@ export class ESPHomeSetupController implements ReactiveController {
   }
 
   public hostDisconnected(): void {
-    this._userDataSubGeneration += 1;
-    this._userDataSubscribed = false;
-    this._unsubUserData?.();
-    this._unsubUserData = undefined;
+    this._unsubscribeUserData();
   }
 
   public clear(): void {
     this._capabilitiesRequest += 1;
     this._deviceId = undefined;
+    this._unsubscribeUserData();
+    this._userData = null;
+    this._userDataReady = false;
     this._clearCapabilities();
   }
 
@@ -224,6 +224,13 @@ export class ESPHomeSetupController implements ReactiveController {
     this._host.requestUpdate();
   }
 
+  private _unsubscribeUserData() {
+    this._userDataSubGeneration += 1;
+    this._userDataSubscribed = false;
+    this._unsubUserData?.();
+    this._unsubUserData = undefined;
+  }
+
   private async _subscribeUserData() {
     if (this._userDataSubscribed || !this._host.isConnected) {
       return;
@@ -291,17 +298,20 @@ export class ESPHomeSetupController implements ReactiveController {
       return;
     }
     const previous = this._userData;
-    this._userData = withDeferredESPHomeDevice(previous, deviceId);
+    const deferred = withDeferredESPHomeDevice(previous, deviceId);
+    this._userData = deferred;
     this._host.requestUpdate();
     try {
       await saveFrontendUserData(
         this._host.hass.connection,
         "esphome",
-        this._userData
+        deferred
       );
     } catch (err: unknown) {
-      this._userData = previous;
-      this._host.requestUpdate();
+      if (this._userData === deferred) {
+        this._userData = previous;
+        this._host.requestUpdate();
+      }
       await showAlertDialog(this._host, {
         text:
           getWsErrorMessage(err) ??
