@@ -345,7 +345,7 @@ describe("ha-marketplace-repository-dashboard", () => {
       repositoryRoute("1"),
       {
         ...MARKETPLACE,
-        repositories: [{ id: 42, full_name: "owner/known" }],
+        repositories: [{ id: "42", full_name: "owner/known" }],
       } as unknown as MarketplaceData
     );
     await settle(page);

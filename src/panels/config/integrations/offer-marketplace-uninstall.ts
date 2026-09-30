@@ -76,7 +76,7 @@ export const offerMarketplaceUninstall = async (
     destructive: true,
     action: async () => {
       try {
-        await uninstallMarketplaceRepository(hass, String(id));
+        await uninstallMarketplaceRepository(hass, id);
       } catch (err: unknown) {
         showAlertDialog(host, {
           text:

@@ -473,7 +473,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     try {
       await installMarketplaceRepository(
         this._api,
-        String(repository.id),
+        repository.id,
         this._selectedVersion || repository.available_version,
         { confirmReplaceBuiltIn: this._replacementAccepted }
       );
@@ -547,10 +547,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
 
     let installed: RepositoryInfo;
     try {
-      installed = await fetchMarketplaceRepository(
-        this._api,
-        String(repository.id)
-      );
+      installed = await fetchMarketplaceRepository(this._api, repository.id);
     } catch (_err: unknown) {
       // Setting it up is still offered on the integrations page
       return;
@@ -583,7 +580,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     try {
       releases = await fetchMarketplaceRepositoryReleases(
         this._api,
-        String(repository.id)
+        repository.id
       );
     } catch (err) {
       if (!this._isShowing(repository)) {

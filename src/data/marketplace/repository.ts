@@ -18,8 +18,7 @@ export interface RepositoryBase {
   full_name: string;
   hide: boolean;
   homeassistant: string | null;
-  // The backend keeps the id it got, a number from GitHub or a string from the catalog
-  id: string | number;
+  id: string;
   installed_version: string;
   installed: boolean;
   last_updated: string | number;

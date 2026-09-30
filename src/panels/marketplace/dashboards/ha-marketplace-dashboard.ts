@@ -434,7 +434,7 @@ export class HaMarketplaceDashboard extends LitElement {
     this._openingOverflowMenu = true;
     this._repositoryOverflowMenu.anchorElement = button;
     this._overflowMenuRepository = this.marketplace.repositories.find(
-      (repository) => String(repository.id) === button.dataset.repositoryId
+      (repository) => repository.id === button.dataset.repositoryId
     );
     this._repositoryOverflowMenu.open = true;
   };

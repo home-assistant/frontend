@@ -197,8 +197,8 @@ it.each([
   }
 );
 
-it("opens the row menu of a repository with a numeric id", async () => {
-  const repository = { id: 1296269, name: "One", category: "integration" };
+it("opens the row menu of a repository", async () => {
+  const repository = { id: "1296269", name: "One", category: "integration" };
   const dashboard = await openDashboard([repository]);
   const table = dashboard.shadowRoot!.querySelector(
     "hass-tabs-subpage-data-table"

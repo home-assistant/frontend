@@ -204,7 +204,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       return;
     }
 
-    this._fetchRepository(String(existing.id));
+    this._fetchRepository(existing.id);
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -263,7 +263,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   }
 
   private async _fetchRepository(repositoryId?: string) {
-    const requestedRepositoryId = repositoryId || String(this._repository!.id);
+    const requestedRepositoryId = repositoryId || this._repository!.id;
     const request = ++this._request;
 
     try {
@@ -291,7 +291,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
         : marketplaceErrorMessage(err, this.hass.localize);
 
-      if (String(this._repository?.id) === requestedRepositoryId) {
+      if (this._repository?.id === requestedRepositoryId) {
         this._refreshError = message;
       } else {
         this._error = message;
@@ -533,7 +533,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   private _installRepositoryDialog() {
     showMarketplaceInstallDialog(this, {
       marketplace: this.marketplace,
-      repositoryId: String(this._repository!.id),
+      repositoryId: this._repository!.id,
       repository: this._repository!,
     });
   }

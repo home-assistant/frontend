@@ -210,7 +210,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     ev.preventDefault();
     const repositoryId = ev.currentTarget.dataset.repositoryId!;
     const repository = this._repositories.find(
-      (item) => String(item.id) === repositoryId
+      (item) => item.id === repositoryId
     );
 
     // Like removing an app repository, and it can be added again later

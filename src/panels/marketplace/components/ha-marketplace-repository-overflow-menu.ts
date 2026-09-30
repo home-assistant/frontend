@@ -79,7 +79,7 @@ const uninstallRepository = async (
   element: MarketplaceDashboardElement,
   repository: RepositoryBase
 ) => {
-  await uninstallMarketplaceRepository(element.hass, String(repository.id));
+  await uninstallMarketplaceRepository(element.hass, repository.id);
   if (element.nodeName === "HA-MARKETPLACE-REPOSITORY-DASHBOARD") {
     navigate("/marketplace", { replace: true });
   }
@@ -178,10 +178,7 @@ export const repositoryMenuItems = (
       ),
       action: async () => {
         try {
-          await refreshMarketplaceRepository(
-            element.hass,
-            String(repository.id)
-          );
+          await refreshMarketplaceRepository(element.hass, repository.id);
         } catch (err: unknown) {
           if (!handleGitHubRateLimited(element, element.hass, localize, err)) {
             showError(element, localize, err);
@@ -203,7 +200,7 @@ export const repositoryMenuItems = (
     action: () =>
       showMarketplaceInstallDialog(element, {
         marketplace: element.marketplace,
-        repositoryId: String(repository.id),
+        repositoryId: repository.id,
         reinstall: Boolean(repository.installed_version),
       }),
   });
@@ -217,7 +214,7 @@ export const repositoryMenuItems = (
     action: () =>
       showMarketplaceInstallDialog(element, {
         marketplace: element.marketplace,
-        repositoryId: String(repository.id),
+        repositoryId: repository.id,
         chooseVersion: true,
       }),
   });
@@ -229,10 +226,7 @@ export const repositoryMenuItems = (
       label: localize("ui.panel.marketplace.repository_menu.dismiss_new"),
       action: async () => {
         try {
-          await dismissNewMarketplaceRepository(
-            element.hass,
-            String(repository.id)
-          );
+          await dismissNewMarketplaceRepository(element.hass, repository.id);
         } catch (err: unknown) {
           showError(element, localize, err);
         }
