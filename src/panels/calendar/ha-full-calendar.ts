@@ -793,7 +793,7 @@ export class HAFullCalendar extends LitElement {
         .tentative .fc-list-event-dot {
           --tentative-dot-stripe: color-mix(
             in srgb,
-            var(--event-text-color, #fff) 50%,
+            var(--event-text-color, #fff) 80%,
             transparent
           );
           border: none;
@@ -842,6 +842,21 @@ export class HAFullCalendar extends LitElement {
 
         .fc-h-event.tentative .fc-event-main {
           color: var(--primary-text-color) !important;
+        }
+
+        /* Forced colors drop the stripes and the fill of a dot, so a tentative
+           event falls back to its outline */
+        @media (forced-colors: active) {
+          .fc-h-event.tentative {
+            border-style: dashed;
+          }
+
+          .tentative .fc-daygrid-event-dot,
+          .tentative .fc-list-event-dot {
+            box-sizing: border-box;
+            border-style: solid;
+            border-width: 2px;
+          }
         }
 
         .fc-day-past .fc-daygrid-day-events {
