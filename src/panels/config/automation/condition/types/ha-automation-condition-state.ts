@@ -80,12 +80,23 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { condition: "state", entity_id: "", state: [] };
   }
 
+  public static checkUiSupport(
+    _hass: HomeAssistant,
+    condition: StateCondition
+  ): Error | undefined {
+    try {
+      assert(condition, stateConditionStruct);
+    } catch (err: any) {
+      return err;
+    }
+    return undefined;
+  }
+
   public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("condition")) {
-      try {
-        assert(this.condition, stateConditionStruct);
-      } catch (e: any) {
-        fireEvent(this, "ui-mode-not-available", e);
+      const err = HaStateCondition.checkUiSupport(this.hass, this.condition);
+      if (err) {
+        fireEvent(this, "ui-mode-not-available", err);
         return false;
       }
     }

@@ -32,6 +32,7 @@ import type { ActionSidebarConfig } from "../../../../data/automation";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import { domainToName } from "../../../../data/integration";
 import type {
+  Action,
   NonConditionAction,
   RepeatAction,
   ServiceAction,
@@ -42,6 +43,7 @@ import type HaAutomationConditionEditor from "../action/ha-automation-action-edi
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
+import { getUiSupportWarnings } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import "../action/ha-automation-action-editor";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
@@ -77,6 +79,7 @@ export default class HaAutomationSidebarAction extends LitElement {
         this.yamlMode = this.config.yamlMode;
         if (this.yamlMode) {
           this.editor?.yamlEditor?.setValue(this.config.config.action);
+          this._warnings = this._checkUiSupport(this.config.config.action);
         }
       }
     }
@@ -420,10 +423,24 @@ export default class HaAutomationSidebarAction extends LitElement {
     ev.stopPropagation();
 
     this.config?.save?.(ev.detail.value);
+    // Re-check on every YAML change, so fixing the YAML re-enables UI mode
+    this._warnings = this._checkUiSupport(ev.detail.value);
+  }
+
+  private _checkUiSupport(action: Action): string[] | undefined {
+    const type = getAutomationActionType(action);
+    if (!this.config.uiSupported || !type) {
+      return undefined;
+    }
+    return getUiSupportWarnings(
+      this.hass,
+      `ha-automation-action-${type}`,
+      action
+    );
   }
 
   private _toggleYamlMode = () => {
-    fireEvent(this, "toggle-yaml-mode");
+    fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
   };
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {

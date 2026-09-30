@@ -72,6 +72,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { getUiSupportWarnings } from "../ui-support";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -230,7 +231,9 @@ export default class HaAutomationConditionRow extends LitElement {
         class="event-chip"
         aria-live="polite"
       >
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
       </ha-automation-row-event-chip>
 
       <ha-automation-row-event-chip
@@ -539,6 +542,19 @@ export default class HaAutomationConditionRow extends LitElement {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
+    }
+    // Re-check on YAML changes, so fixing the YAML re-enables UI mode
+    if (
+      changedProperties.has("condition") &&
+      this._warnings &&
+      this._yamlMode &&
+      typeof this.condition.condition === "string"
+    ) {
+      this._warnings = getUiSupportWarnings(
+        this.hass,
+        `ha-automation-condition-${this.condition.condition}`,
+        this.condition
+      );
     }
   }
 
@@ -906,8 +922,12 @@ export default class HaAutomationConditionRow extends LitElement {
         this._renameCondition();
       },
       editNote: this._editNoteCondition,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        // The sidebar can switch to YAML on its own when the UI editor
+        // rejects the config, so honor the requested mode instead of toggling.
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,

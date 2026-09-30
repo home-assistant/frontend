@@ -31,28 +31,35 @@ export class HaServiceAction extends LitElement implements ActionElement {
     return { action: "", data: {} };
   }
 
+  public static checkUiSupport(
+    hass: HomeAssistant,
+    action: ServiceAction
+  ): Error | undefined {
+    try {
+      assert(action, serviceActionStruct);
+    } catch (err: any) {
+      return err;
+    }
+    if (
+      action &&
+      Object.entries(action).some(
+        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
+      )
+    ) {
+      return Error(
+        hass.localize("ui.errors.config.no_template_editor_support")
+      );
+    }
+    return undefined;
+  }
+
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("action")) {
       return;
     }
-    try {
-      assert(this.action, serviceActionStruct);
-    } catch (err: any) {
+    const err = HaServiceAction.checkUiSupport(this.hass, this.action);
+    if (err) {
       fireEvent(this, "ui-mode-not-available", err);
-      return;
-    }
-
-    if (
-      this.action &&
-      Object.entries(this.action).some(
-        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
-      )
-    ) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
-      );
       return;
     }
     if (this.action.entity_id) {

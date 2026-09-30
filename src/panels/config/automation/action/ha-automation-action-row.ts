@@ -95,6 +95,7 @@ import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
+import { getUiSupportWarnings } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
@@ -238,6 +239,14 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     const type = getAutomationActionType(this.action);
+    // Re-check on YAML changes, so fixing the YAML re-enables UI mode
+    if (this._warnings && this._yamlMode && type) {
+      this._warnings = getUiSupportWarnings(
+        this.hass,
+        `ha-automation-action-${type}`,
+        this.action
+      );
+    }
     this._uiModeAvailable =
       type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
@@ -432,7 +441,9 @@ export default class HaAutomationActionRow extends LitElement {
         class="event-chip"
         aria-live="polite"
       >
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
       </ha-automation-row-event-chip>
 
       <ha-automation-row-event-chip
@@ -1175,8 +1186,12 @@ export default class HaAutomationActionRow extends LitElement {
         this._renameAction();
       },
       editNote: this._editNoteAction,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        // The sidebar can switch to YAML on its own when the UI editor
+        // rejects the config, so honor the requested mode instead of toggling.
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,

@@ -3,6 +3,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-resizable-bottom-sheet";
 import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
@@ -253,8 +254,10 @@ export default class HaAutomationSidebar extends LitElement {
     this.config?.close(true);
   }
 
-  private _toggleYamlMode = () => {
-    (this.config as ActionSidebarConfig)?.toggleYamlMode();
+  private _toggleYamlMode = (
+    ev: HASSDomEvent<HASSDomEvents["toggle-yaml-mode"]>
+  ) => {
+    (this.config as ActionSidebarConfig)?.toggleYamlMode(ev.detail?.yamlMode);
   };
 
   private _handleMouseDown = (ev: MouseEvent | TouchEvent) => {
@@ -446,7 +449,7 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "toggle-yaml-mode": undefined;
+    "toggle-yaml-mode": { yamlMode: boolean } | undefined;
     "yaml-changed": {
       value: unknown;
     };

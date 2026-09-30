@@ -36,6 +36,7 @@ import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
+import { getUiSupportWarnings } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
@@ -68,6 +69,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         this.yamlMode = this.config.yamlMode;
         if (this.yamlMode) {
           this.editor?.yamlEditor?.setValue(this.config.config);
+          this._warnings = this._checkUiSupport(this.config.config);
         }
       }
     }
@@ -346,10 +348,23 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     ev.stopPropagation();
 
     this.config?.save?.(ev.detail.value);
+    // Re-check on every YAML change, so fixing the YAML re-enables UI mode
+    this._warnings = this._checkUiSupport(ev.detail.value);
+  }
+
+  private _checkUiSupport(trigger: Trigger): string[] | undefined {
+    if (!this.config.uiSupported || isTriggerList(trigger)) {
+      return undefined;
+    }
+    return getUiSupportWarnings(
+      this.hass,
+      `ha-automation-trigger-${trigger.trigger}`,
+      trigger
+    );
   }
 
   private _toggleYamlMode = () => {
-    fireEvent(this, "toggle-yaml-mode");
+    fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
   };
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
