@@ -18,19 +18,21 @@ describe("readMapThemeColors", () => {
   });
 
   // One token stands for several of the builder's keys: a theme author sets a
-  // handful, not forty-five.
+  // handful, not forty-five. Shorthand hex included, or the value would reach
+  // the builder unnormalized and skip the opacity below.
   it("spreads one token over the colors it covers", () => {
     const colors = readMapThemeColors(
       withTokens({ "--ha-color-map-green": "#0a0" })
     );
 
     expect(colors).toEqual({
-      naturePark: "#0a0",
-      natureWood: "#0a0",
-      natureGrass: "#0a0",
-      natureLeisure: "#0a0",
-      natureWetland: "#0a0",
-      siteSports: "#0a0",
+      naturePark: "rgba(0,170,0,1)",
+      natureWood: "rgba(0,170,0,1)",
+      natureGrass: "rgba(0,170,0,1)",
+      natureLeisure: "rgba(0,170,0,1)",
+      natureWetland: "rgba(0,170,0,1)",
+      // Sports pitches are an overlay: an opaque token would make them blocks.
+      siteSports: "rgba(0,170,0,0.15)",
     });
   });
 
@@ -43,9 +45,26 @@ describe("readMapThemeColors", () => {
     );
 
     expect(colors).toEqual({
-      background: "#fff",
-      land: "#fff",
-      water: "#00f",
+      background: "rgba(255,255,255,1)",
+      land: "rgba(255,255,255,1)",
+      water: "rgba(0,0,255,1)",
     });
+  });
+
+  // The builder takes hex, rgb() and hsl() but throws on anything else, and a
+  // throw costs the card its vector map. Everything leaves here as rgba().
+  it("normalizes the spellings a theme may use", () => {
+    const colors = readMapThemeColors(
+      withTokens({
+        "--ha-color-map-land": "#ff000080",
+        "--ha-color-map-water": "rgb(1 2 3)",
+        "--ha-color-map-label-halo": "rgba(4, 5, 6, 0.5)",
+      })
+    );
+
+    expect(colors!.land).toBe("rgba(255,0,0,0.502)");
+    expect(colors!.water).toBe("rgba(1,2,3,1)");
+    // 0.5 from the theme, times the 80% the palettes draw a halo with.
+    expect(colors!.labelHalo).toBe("rgba(4,5,6,0.4)");
   });
 });

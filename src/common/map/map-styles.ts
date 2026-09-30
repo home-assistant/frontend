@@ -95,6 +95,12 @@ export interface ResolvedMapStyle {
   options?: Record<string, unknown>;
   /** Fetched rather than built: the default, while nothing was added to it */
   shipped?: "light" | "dark";
+  /**
+   * The style's own colors, without what the theme or the card painted over
+   * them. What to fall back on when the builder rejects an adjustment, so a
+   * bad value costs the adjustments rather than the cartography.
+   */
+  baseColors?: Record<string, string>;
 }
 
 const isStyle = (value: unknown): value is MapStyle =>
@@ -217,9 +223,11 @@ export const resolveMapStyle = (
     return { palette };
   }
 
+  const base = styleColors ? { baseColors: styleColors } : {};
+
   // Anything added on top of the shipped default has to be built here.
   const untouched = !themeColors && !cardAdjusted;
   return mapStyle === DEFAULT_MAP_STYLE && untouched
-    ? { palette, options, shipped: darkMode ? "dark" : "light" }
-    : { palette, options };
+    ? { palette, options, ...base, shipped: darkMode ? "dark" : "light" }
+    : { palette, options, ...base };
 };

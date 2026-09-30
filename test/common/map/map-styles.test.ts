@@ -19,11 +19,13 @@ describe("resolveMapStyle", () => {
     expect(resolveMapStyle(undefined, false)).toEqual({
       palette: "colorful",
       options: { colors: HA_MAP_COLORS },
+      baseColors: HA_MAP_COLORS,
       shipped: "light",
     });
     expect(resolveMapStyle(undefined, true)).toEqual({
       palette: "colorful-dark",
       options: { colors: HA_MAP_COLORS_DARK },
+      baseColors: HA_MAP_COLORS_DARK,
       shipped: "dark",
     });
     expect(resolveMapStyle("default", true)).toEqual(
@@ -111,6 +113,15 @@ describe("resolveMapStyle", () => {
       // Ignored outright, so the style keeps its own dark colors.
       expect(colorsOf(camel, true)).toBeUndefined();
     });
+  });
+
+  // Handed to the builder's caller so a rejected adjustment falls back to the
+  // style as it ships, not to the builder's unpainted cartography.
+  it("carries the style's own colors alongside the adjustments", () => {
+    const style = resolveMapStyle({ colors: { water: "#b3ddf6" } }, false);
+
+    expect(style.baseColors).toEqual(HA_MAP_COLORS);
+    expect(style.options!.colors).toMatchObject({ water: "#b3ddf6" });
   });
 
   // The builder names its options in camelCase, Home Assistant configs are

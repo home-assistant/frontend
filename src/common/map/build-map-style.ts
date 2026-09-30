@@ -34,7 +34,8 @@ const styleUrls = () => {
 
 export const buildMapStyle = async (
   palette: MapPalette,
-  options: Record<string, unknown>
+  options: Record<string, unknown>,
+  baseColors?: Record<string, string>
 ): Promise<StyleSpecification> => {
   const [{ osm }, resolvedUrls] = await Promise.all([
     import("@versatiles/style"),
@@ -46,15 +47,27 @@ export const buildMapStyle = async (
   const build = (opts: Record<string, unknown>) =>
     osm({ ...(opts as OsmOptions), theme: palette, urls: resolvedUrls });
 
-  let style: StyleSpecification;
-  try {
-    style = build(options);
-  } catch {
-    // The builder throws on an option it does not know and on a color it
-    // cannot parse. Those come from a card config or a theme, so one typo
-    // would otherwise drop the whole card to raster tiles; the cartography
-    // without the adjustments is a much smaller loss.
-    style = build({});
+  // The builder throws on an option it does not know and on a color it cannot
+  // parse. Those come from a card config or a theme, so one typo would
+  // otherwise drop the whole card to raster tiles. Step back to the style as it
+  // ships - colors included, or the default would come out as the builder's
+  // unpainted cartography - and only then to the bare palette.
+  const attempts = [
+    options,
+    ...(baseColors ? [{ colors: baseColors }] : []),
+    {},
+  ];
+  let style: StyleSpecification | undefined;
+  for (const attempt of attempts) {
+    try {
+      style = build(attempt);
+      break;
+    } catch {
+      style = undefined;
+    }
+  }
+  if (!style) {
+    throw new Error(`Could not build map style "${palette}"`);
   }
 
   return finalizeMapStyle(palette, style);

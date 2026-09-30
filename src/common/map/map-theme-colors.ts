@@ -71,49 +71,80 @@ const KEY_ALPHA: Record<string, number> = {
   labelHousenumber: 0.3,
 };
 
-// What @versatiles/style parses. Anything else - a named color, color-mix(),
-// color() - makes it throw, which would take the card to raster tiles.
-const PARSEABLE = /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\()/i;
+type Rgba = [number, number, number, number];
 
-/**
- * Resolves a color the builder cannot parse by letting the browser compute it.
- * Custom properties hold whatever CSS accepts, and a theme has no reason to
- * know which spellings the builder happens to take.
- */
-const computeColor = (element: Element, token: string): string | undefined => {
-  const probe = document.createElement("span");
-  probe.style.cssText = `display:none;color:var(${token})`;
-  element.appendChild(probe);
-  const computed = getComputedStyle(probe).color;
-  probe.remove();
-  return PARSEABLE.test(computed) ? computed : undefined;
-};
+const HEX = /^#([0-9a-f]{3,8})$/i;
+const RGB = /^rgba?\(([^)]+)\)$/i;
+// What a browser hands back for a color() or color-mix() in sRGB.
+const SRGB =
+  /^color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)$/i;
 
-const withAlpha = (color: string, alpha: number): string => {
-  // Only a plain hex needs it spelled out; the browser hands back rgb()/rgba()
-  // and the builder takes those as they are.
-  if (/^#[0-9a-f]{6}$/i.test(color)) {
-    return (
-      color +
-      Math.round(alpha * 255)
-        .toString(16)
-        .padStart(2, "0")
-    );
+const parseColor = (value: string): Rgba | undefined => {
+  const hex = value.match(HEX);
+  if (hex) {
+    const d = hex[1];
+    const short = d.length === 3 || d.length === 4;
+    const part = (i: number) =>
+      short
+        ? parseInt(d[i] + d[i], 16)
+        : parseInt(d.slice(i * 2, i * 2 + 2), 16);
+    if (d.length === 3 || d.length === 4 || d.length === 6 || d.length === 8) {
+      const alpha = d.length === 4 || d.length === 8 ? part(3) / 255 : 1;
+      return [part(0), part(1), part(2), alpha];
+    }
+    return undefined;
   }
-  const rgb = color.match(/^rgba?\(([^)]+)\)$/i);
+  const rgb = value.match(RGB);
   if (rgb) {
     const parts = rgb[1]
       .split(/[,\s/]+/)
       .filter(Boolean)
-      .slice(0, 3);
-    return `rgba(${parts.join(",")},${alpha})`;
+      .map(Number);
+    if (parts.length < 3 || parts.slice(0, 3).some(Number.isNaN)) {
+      return undefined;
+    }
+    return [parts[0], parts[1], parts[2], parts[3] ?? 1];
   }
-  return color;
+  const srgb = value.match(SRGB);
+  if (srgb) {
+    const to255 = (n: string) => Math.round(Number(n) * 255);
+    return [
+      to255(srgb[1]),
+      to255(srgb[2]),
+      to255(srgb[3]),
+      Number(srgb[4] ?? 1),
+    ];
+  }
+  return undefined;
+};
+
+// Everything the browser can compute but this module cannot read on its own:
+// named colors, hsl(), color-mix(), and a token built out of other properties.
+// The sentinel catches a value that is not a color at all, which would
+// otherwise quietly inherit the surrounding text color.
+const SENTINEL: Rgba = [1, 2, 3, 1];
+
+const computeColor = (element: Element, token: string): Rgba | undefined => {
+  const probe = document.createElement("span");
+  probe.style.cssText = "display:none;color:rgb(1, 2, 3)";
+  const inner = document.createElement("span");
+  inner.style.color = `var(${token})`;
+  probe.append(inner);
+  element.append(probe);
+  const parsed = parseColor(getComputedStyle(inner).color);
+  probe.remove();
+  return parsed && parsed.every((n, i) => n === SENTINEL[i])
+    ? undefined
+    : parsed;
 };
 
 /**
  * What the active theme says about the map, or undefined when it says nothing -
  * the common case, and the one that keeps the map on the generated style.
+ *
+ * Every value comes out as `rgba()`, which is both what @versatiles/style takes
+ * and what lets a feature's own opacity be put back: the builder throws on a
+ * color it cannot parse, and that would cost the card its vector map.
  */
 export const readMapThemeColors = (
   element: Element
@@ -126,14 +157,16 @@ export const readMapThemeColors = (
     if (!raw) {
       continue;
     }
-    const value = PARSEABLE.test(raw) ? raw : computeColor(element, token);
-    if (!value) {
+    const rgba = parseColor(raw) ?? computeColor(element, token);
+    if (!rgba) {
       continue;
     }
     colors ??= {};
+    const [r, g, b, a] = rgba;
     for (const key of keys) {
-      const alpha = KEY_ALPHA[key];
-      colors[key] = alpha === undefined ? value : withAlpha(value, alpha);
+      // Rounded, or an eight digit hex turns into a sixteen digit fraction.
+      const alpha = Math.round(a * (KEY_ALPHA[key] ?? 1) * 1000) / 1000;
+      colors[key] = `rgba(${r},${g},${b},${alpha})`;
     }
   }
 

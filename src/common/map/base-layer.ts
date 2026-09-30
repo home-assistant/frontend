@@ -117,7 +117,11 @@ export const loadStyle = async (
     ? await (await fetch(shipped)).json()
     : await (
         await import("./build-map-style")
-      ).buildMapStyle(mapStyle.palette, mapStyle.options ?? {});
+      ).buildMapStyle(
+        mapStyle.palette,
+        mapStyle.options ?? {},
+        mapStyle.baseColors
+      );
 
   if (typeof style.sprite === "string") {
     style.sprite = absoluteSprite(style.sprite);
