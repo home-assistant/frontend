@@ -100,13 +100,16 @@ describe("resolveMapStyle", () => {
       expect(colorsOf(style, true)).not.toHaveProperty("land");
     });
 
-    it("accepts the camelCase spelling too", () => {
+    // Ours, not the builder's, so it is spelled the way configs are. The
+    // camelCase tolerance below is for options pasted from the styler.
+    it("takes only the snake_case spelling", () => {
       const camel = {
         base: "toner",
         colorsDark: { water: "#10293b" },
       } as never;
 
-      expect(colorsOf(camel, true)).toEqual({ water: "#10293b" });
+      // Ignored outright, so the style keeps its own dark colors.
+      expect(colorsOf(camel, true)).toBeUndefined();
     });
   });
 

@@ -10672,7 +10672,7 @@
                 "dark": "Dark"
               },
               "map_style": "Map style",
-              "map_style_helper": "The theme mode picks the light or dark version.",
+              "map_style_helper": "Each style has a light and a dark version. Theme mode picks which one is used.",
               "map_styles": {
                 "default": "Default",
                 "colorful": "Colorful",
@@ -10681,15 +10681,6 @@
                 "gray": "Gray",
                 "toner": "Toner"
               },
-              "map_style_recolor": "Style adjustments",
-              "map_style_recolor_helper": "Recolor the selected style. Leave these empty to use it as it comes.",
-              "invert_brightness": "Invert brightness",
-              "saturate": "Saturation",
-              "brightness": "Brightness",
-              "contrast": "Contrast",
-              "rotate_hue": "Hue rotation",
-              "tint_amount": "Tint strength",
-              "tint_color": "Tint color",
               "scale_ruler": "Scale ruler",
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",

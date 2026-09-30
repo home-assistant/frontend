@@ -145,7 +145,9 @@ const builderOptions = (style: CustomMapStyleConfig, darkMode: boolean) => {
 
   // `colors_dark` is not an option of the builder's, so the allowlist above
   // has already dropped it; on the dark palette it stands in for `colors`.
-  const colorsDark = config.colors_dark ?? config.colorsDark;
+  // Ours rather than the builder's, so it is spelled the way configs are and
+  // has no camelCase twin - unlike the options pasted from the styler.
+  const colorsDark = config.colors_dark;
   if (darkMode && colorsDark !== undefined) {
     options.colors = camelCaseKeys(colorsDark);
   }
