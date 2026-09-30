@@ -1,17 +1,25 @@
 // Generates the MapLibre styles for the vector base map.
 //
-// Only the styles. Glyphs, sprites and tiles are served by core's proxy, which
-// is what lets them be requested with an application User-Agent and without a
-// referrer. The styles stay here because they come from @versatiles/style and
-// core has no node toolchain to regenerate them with.
+// Only the styles. Glyphs and tiles are served by core's proxy, which is what
+// lets them be requested with an application User-Agent and without a referrer.
+// The sprite sheet ships with the frontend (see map-sprites.js). The styles
+// stay here because they come from @versatiles/style and core has no node
+// toolchain to regenerate them with.
 
-import { writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { colorful, eclipse } from "@versatiles/style";
+import { osm } from "@versatiles/style";
 import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
 import { addLatinLabels } from "./map-labels.js";
+import {
+  missingSprites,
+  SHEET_FILES,
+  SPRITE_SHEET,
+  spritesDir,
+} from "./map-sprites.js";
 
 const PROXY_PATH = "/api/map_tiles";
 const TILEJSON_URL = `${PROXY_PATH}/tilejson.json`;
@@ -50,26 +58,68 @@ const useTileJson = (name, style) => {
   return style;
 };
 
-const styleOptions = {
-  // Keeps the generated URLs origin relative.
-  baseUrl: "",
-  glyphs: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
-  sprite: [{ id: "basics", url: `${PROXY_PATH}/sprites/basics/sprites` }],
+// Core serves /static with a month of max-age, so a re-vendored sheet would
+// otherwise keep being read from cache next to a style that expects the new one.
+const sheetHash = async () => {
+  const contents = await Promise.all(
+    SHEET_FILES.map((file) => readFile(path.join(spritesDir, file)))
+  );
+  const hash = createHash("sha256");
+  contents.forEach((content) => hash.update(content));
+  return hash.digest("hex").slice(0, 8);
+};
+
+const styleOptions = (spriteVersion) => ({
+  urls: {
+    // Keeps the generated URLs origin relative.
+    base: "",
+    glyphsPattern: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
+    sprite: [
+      {
+        id: SPRITE_SHEET,
+        url: `/static/map/sprites/${SPRITE_SHEET}?v=${spriteVersion}`,
+      },
+    ],
+  },
+});
+
+const checkSprites = (name, style, sheet) => {
+  const missing = missingSprites(style, sheet);
+  if (missing.length) {
+    throw new Error(
+      `Style "${name}" references icons missing from the bundled ${SPRITE_SHEET} ` +
+        `sprite sheet: ${missing.join(", ")}. Run \`yarn gulp update-map-sprites\` ` +
+        `and commit the result.`
+    );
+  }
+  return style;
+};
+
+// Both themes up front: dark is a real cartography, not an inverted raster.
+const THEMES = [
+  ["light", "colorful"],
+  ["dark", "colorful-dark"],
+];
+
+const generateStyles = async () => {
+  const sheet = await fs.readJson(
+    path.join(spritesDir, `${SPRITE_SHEET}.json`)
+  );
+  const options = styleOptions(await sheetHash());
+  return THEMES.map(([name, theme]) => [
+    name,
+    addLatinLabels(
+      checkSprites(name, useTileJson(name, osm({ theme, ...options })), sheet)
+    ),
+  ]);
 };
 
 const buildMapAssets = async () => {
   await fs.emptyDir(outputDir);
-
+  const styles = await generateStyles();
   await Promise.all(
-    // Both themes up front: dark is a real cartography, not an inverted raster.
-    [
-      ["light", colorful],
-      ["dark", eclipse],
-    ].map(([name, builder]) =>
-      writeFile(
-        path.join(outputDir, `${name}.json`),
-        JSON.stringify(addLatinLabels(useTileJson(name, builder(styleOptions))))
-      )
+    styles.map(([name, style]) =>
+      writeFile(path.join(outputDir, `${name}.json`), JSON.stringify(style))
     )
   );
 };
@@ -82,5 +132,9 @@ export const ensureMapAssets = () => {
 };
 
 gulp.task("build-map-assets", ensureMapAssets);
+
+// Runs in the required lint job so a @versatiles/style bump that needs new
+// icons cannot merge before the sheet is re-vendored on that branch.
+gulp.task("check-map-sprites", generateStyles);
 
 export const mapAssetsDir = outputDir;

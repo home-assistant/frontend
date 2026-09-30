@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -25,6 +24,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -72,8 +72,8 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
-import "../ha-automation-row-behavior";
 import "../ha-automation-row-options";
+import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -303,9 +303,17 @@ export default class HaAutomationTriggerRow extends LitElement {
         )}
         ${
           type === "platform"
-            ? html`<ha-automation-row-behavior
-                .config=${this.trigger}
-              ></ha-automation-row-behavior>`
+            ? html`<ha-automation-row-threshold
+                  .config=${this.trigger}
+                  .description=${
+                    this.triggerDescriptions[
+                      (this.trigger as PlatformTrigger).trigger
+                    ]
+                  }
+                ></ha-automation-row-threshold>
+                <ha-automation-row-options
+                  .config=${this.trigger}
+                ></ha-automation-row-options>`
             : nothing
         }
         ${
@@ -316,13 +324,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 triggerTargetSpec,
                 type !== "device"
               )
-            : nothing
-        }
-        ${
-          type === "platform"
-            ? html`<ha-automation-row-options
-                .config=${this.trigger}
-              ></ha-automation-row-options>`
             : nothing
         }
         ${

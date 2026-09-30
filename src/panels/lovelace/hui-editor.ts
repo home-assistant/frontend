@@ -67,8 +67,8 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
           slot="actionItems"
           class="save-button
               ${classMap({
-                saved: this._saving === false || this.isDirtyState,
-              })}"
+            saved: this._saving === false || this.isDirtyState,
+          })}"
         >
           ${
             this.isDirtyState

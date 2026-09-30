@@ -280,7 +280,7 @@ function checkLocationCondition(
   condition: LocationCondition,
   hass: HomeAssistant
 ) {
-  const stateObj = getUserPerson(hass);
+  const stateObj = getUserPerson(hass.user?.id, hass.states);
   if (!stateObj) {
     return false;
   }

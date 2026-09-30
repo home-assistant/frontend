@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -35,12 +36,15 @@ class HaConfigUpdates extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
+  @state()
   @consume({ context: devicesContext, subscribe: true })
   private _devices!: ContextType<typeof devicesContext>;
 
+  @state()
   @consume({ context: areasContext, subscribe: true })
   private _areas!: ContextType<typeof areasContext>;
 
