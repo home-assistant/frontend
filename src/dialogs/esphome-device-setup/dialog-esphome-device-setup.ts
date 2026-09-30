@@ -7,6 +7,7 @@ import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
@@ -64,7 +65,9 @@ import { extractApiErrorMessage } from "../../data/hassio/common";
 import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
 import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
+import type { HomeAssistantUI } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { getWsErrorMessage } from "../../util/ws-error";
 import { showConfigFlowDialog } from "../config-flow/show-dialog-config-flow";
 import { DialogMixin } from "../dialog-mixin";
 import { showAlertDialog } from "../generic/show-dialog-box";
@@ -128,7 +131,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   @state()
   @consume({ context: uiContext, subscribe: true })
-  private _ui?: ContextType<typeof uiContext>;
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
 
   @state()
   @consume({ context: apiContext, subscribe: true })
@@ -180,7 +186,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   /** Bumps when the user leaves the audio flow, so an in-flight step stops. */
   private _audioFlowId = 0;
 
-  private _loaded = false;
+  private _loadStarted = false;
 
   private _musicAssistantDiscovery?: {
     unsub?: UnsubscribeFunc;
@@ -204,17 +210,17 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       }
     }
     if (
-      !this._loaded &&
+      !this._loadStarted &&
       this.params &&
       this._api &&
       this._i18n &&
       this._hassConfig
     ) {
-      this._loaded = true;
+      this._loadStarted = true;
       this._capabilities = this.params.capabilities;
       this._load();
     } else if (
-      this._loaded &&
+      this._loadStarted &&
       changedProps.has("_configEntries") &&
       this._capabilities?.serial_proxies.length
     ) {
@@ -352,7 +358,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       ? html`
                           <img
                             class="sendspin-lockup ${classMap({
-                              dark: Boolean(this._ui?.themes.darkMode),
+                              dark: Boolean(this._darkMode),
                             })}"
                             alt=${localize(
                               "ui.panel.config.devices.esphome.setup_audio_sendspin"
@@ -773,11 +779,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       }
     } catch (err: unknown) {
       this._error =
-        err instanceof Error
-          ? err.message
-          : this._i18n.localize(
-              "ui.panel.config.devices.esphome.setup_error_capabilities"
-            );
+        getWsErrorMessage(err) ??
+        this._i18n.localize(
+          "ui.panel.config.devices.esphome.setup_error_capabilities"
+        );
     } finally {
       this._fetching = false;
     }
@@ -818,24 +823,13 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return;
     }
     if (!result.ok) {
-      this._serialUsageError = this._requestError(
-        result.error,
-        this._i18n!.localize("ui.panel.config.serial.loading_error")
-      );
+      this._serialUsageError =
+        getWsErrorMessage(result.error) ??
+        this._i18n!.localize("ui.panel.config.serial.loading_error");
       return;
     }
     this._serialUsageError = undefined;
     this._serialPorts = result.ports;
-  }
-
-  private _requestError(err: unknown, fallback: string): string {
-    if (typeof err === "object" && err !== null && "message" in err) {
-      const { message } = err as { message: unknown };
-      if (typeof message === "string" && message) {
-        return message;
-      }
-    }
-    return fallback;
   }
 
   private _toggleCapability(ev: HASSDomCurrentTargetEvent<HTMLButtonElement>) {
@@ -1206,6 +1200,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           outline-offset: -2px;
         }
         .icon-chip {
+          position: relative;
           display: flex;
           flex-shrink: 0;
           align-items: center;
@@ -1213,14 +1208,18 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           width: 40px;
           height: 40px;
           border-radius: var(--ha-border-radius-circle);
-          background: color-mix(
-            in srgb,
-            var(--capability-accent) 12%,
-            transparent
-          );
           color: var(--capability-accent);
         }
+        .icon-chip::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background-color: var(--capability-accent);
+          opacity: 0.12;
+        }
         .icon-chip ha-svg-icon {
+          position: relative;
           --mdc-icon-size: 22px;
         }
         .check-text {

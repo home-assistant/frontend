@@ -264,6 +264,47 @@ describe("ha-map", () => {
       expect(build().querySelector("ha-entity-marker")).not.toBe(avatar);
     });
 
+    it("makes the avatars of an expanded bubble buttons that open the entity", async () => {
+      const el = await createMap({ clusterMarkers: true, states: NEARBY });
+      const members = [
+        {
+          clusterData: {
+            entityId: "device_tracker.paulus",
+            title: "Paulus",
+            label: "P",
+          },
+        },
+      ];
+      const build = (expanded: boolean) =>
+        (el as any)._createClusterBubble(
+          members,
+          [52.372, 4.89],
+          undefined,
+          expanded
+        ).element as HTMLElement;
+
+      const expanded = build(true);
+      // On the map, where the avatar's own keyboard handling is live
+      document.body.appendChild(expanded);
+      const avatar = expanded.querySelector<HTMLElement>("ha-entity-marker")!;
+      expect(avatar.getAttribute("role")).toBe("button");
+      expect(avatar.tabIndex).toBe(0);
+      expect(avatar.getAttribute("aria-label")).toBe("Paulus");
+
+      const moreInfo = vi.fn();
+      expanded.addEventListener("hass-more-info", moreInfo);
+      avatar.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      );
+      expect(moreInfo).toHaveBeenCalledOnce();
+      expanded.remove();
+
+      // Back in a closed bubble the same avatar is no longer a button
+      expect(build(false).querySelector("ha-entity-marker")).toBe(avatar);
+      expect(avatar.hasAttribute("role")).toBe(false);
+      expect(avatar.hasAttribute("tabindex")).toBe(false);
+    });
+
     it("keeps avatars in a bubble Leaflet shows again after zooming out", async () => {
       const el = await withSize(() =>
         createMap({ clusterMarkers: true, states: NEARBY })

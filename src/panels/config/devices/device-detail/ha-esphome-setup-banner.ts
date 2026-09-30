@@ -69,7 +69,7 @@ export class HaESPHomeSetupBanner extends LitElement {
                     ${ids.map((id) => this._renderPip(id))}
                   </div>
                 `
-              : ""
+              : nothing
           }
         </div>
       </ha-card>
@@ -99,7 +99,7 @@ export class HaESPHomeSetupBanner extends LitElement {
                     <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
                   </span>
                 `
-              : ""
+              : nothing
           }
         </span>
         <span class="pip-label">
@@ -174,11 +174,21 @@ export class HaESPHomeSetupBanner extends LitElement {
       width: 40px;
       height: 40px;
       border-radius: var(--ha-border-radius-circle);
-      background: color-mix(in srgb, var(--capability-accent) 12%, transparent);
       color: var(--capability-accent);
+    }
+    .pip-chip::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: var(--capability-accent);
+      opacity: 0.12;
     }
     .pip-chip ha-svg-icon {
       --mdc-icon-size: 18px;
+    }
+    .pip-chip > ha-svg-icon {
+      position: relative;
     }
     .pip-check {
       position: absolute;
@@ -212,10 +222,10 @@ export class HaESPHomeSetupBanner extends LitElement {
         gap: var(--ha-space-8);
       }
       .text {
-        flex: 1.05 1 16rem;
+        flex: 1.05 1 256px;
       }
       .pips {
-        flex: 1 1 12rem;
+        flex: 1 1 192px;
       }
     }
   `;

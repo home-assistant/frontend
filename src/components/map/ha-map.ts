@@ -41,6 +41,10 @@ import {
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
 import {
+  clearMarkerAccessibility,
+  setMarkerAccessibility,
+} from "../../common/map/marker-accessibility";
+import {
   createZoneMarkerElement,
   ZONE_CIRCLE_SIZE,
   zoneMarkerStyles,
@@ -236,6 +240,7 @@ export interface HaMapEntity {
 // Data carried by entity markers for rendering cluster bubbles
 interface ClusterData {
   entityId: string;
+  title: string;
   picture?: string;
   label: string;
   showIcon: boolean;
@@ -248,6 +253,8 @@ interface ClusterData {
 const CLUSTER_AVATAR_SIZE = 32;
 const CLUSTER_BUBBLE_PADDING = 6;
 const CLUSTER_BUBBLE_GAP = 4;
+// Space an opened bubble keeps from the map edges
+const CLUSTER_BUBBLE_MARGIN = 12;
 const CLUSTER_MAX_AVATARS = 3;
 const CLUSTER_MORE_WIDTH = 28;
 const CLUSTER_MORE_MAX = 99;
@@ -1354,6 +1361,7 @@ export class HaMap extends ReactiveElement {
 
       const clusterData: ClusterData = {
         entityId,
+        title,
         picture: entityMarker.entityPicture || undefined,
         label: entityName,
         showIcon: entityMarker.showIcon,
@@ -1429,10 +1437,11 @@ export class HaMap extends ReactiveElement {
   private _createClusterBubble = (
     members: MapMarkerHandle[],
     _location: MapLatLng,
-    zoneId?: string
+    zoneId?: string,
+    expanded = false
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
-    const shown = data.slice(0, CLUSTER_MAX_AVATARS);
+    const shown = expanded ? data : data.slice(0, CLUSTER_MAX_AVATARS);
     const hidden = data.length - shown.length;
 
     // With history trails shown, colored borders match avatars to trails
@@ -1467,12 +1476,32 @@ export class HaMap extends ReactiveElement {
         avatar.style.removeProperty("--ha-marker-border-width");
       }
       avatar.selected = member?.selected ?? false;
+      // In an expanded bubble each avatar is reachable on its own
+      clearMarkerAccessibility(avatar);
+      if (expanded) {
+        setMarkerAccessibility(avatar, member?.title, true);
+      }
       bubble.appendChild(avatar);
     }
 
+    // An expanded bubble wraps once a row would not fit the map
+    const perRow = expanded
+      ? Math.max(
+          1,
+          Math.floor(
+            (this.offsetWidth -
+              2 * CLUSTER_BUBBLE_MARGIN -
+              2 * CLUSTER_BUBBLE_PADDING +
+              CLUSTER_BUBBLE_GAP) /
+              (CLUSTER_AVATAR_SIZE + CLUSTER_BUBBLE_GAP)
+          )
+        )
+      : shown.length;
+    const columns = Math.min(shown.length, perRow);
+    const rows = Math.ceil(shown.length / perRow);
     let width =
-      shown.length * CLUSTER_AVATAR_SIZE +
-      (shown.length - 1) * CLUSTER_BUBBLE_GAP +
+      columns * CLUSTER_AVATAR_SIZE +
+      (columns - 1) * CLUSTER_BUBBLE_GAP +
       2 * CLUSTER_BUBBLE_PADDING;
     if (hidden > 0) {
       const more = document.createElement("span");
@@ -1487,7 +1516,10 @@ export class HaMap extends ReactiveElement {
     const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     const atZone = !!zonePosition;
 
-    let height = CLUSTER_AVATAR_SIZE + 2 * CLUSTER_BUBBLE_PADDING;
+    let height =
+      rows * CLUSTER_AVATAR_SIZE +
+      (rows - 1) * CLUSTER_BUBBLE_GAP +
+      2 * CLUSTER_BUBBLE_PADDING;
     let root: HTMLElement = bubble;
     if (atZone) {
       root = document.createElement("div");
@@ -1555,6 +1587,19 @@ export class HaMap extends ReactiveElement {
     #map.clickable {
       cursor: pointer;
     }
+    .maplibregl-marker {
+      transition:
+        opacity var(--ha-animation-duration-fast),
+        visibility var(--ha-animation-duration-fast);
+    }
+    .maplibregl-marker-covered {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    /* A zone fades in once the bubble over it is opaque, not through it */
+    .zone-circle:not(.maplibregl-marker-covered) {
+      transition-delay: var(--ha-animation-duration-fast);
+    }
     #map.dark {
       background: #090909;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
@@ -1574,39 +1619,11 @@ export class HaMap extends ReactiveElement {
     #map:active {
       cursor: grabbing;
     }
-    /* A cluster opened at its spot: the members in a bubble with a tail */
-    .cluster-open {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      isolation: isolate;
-      filter: var(--ha-cluster-shadow);
-    }
-    .cluster-open-members {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px;
-      padding: 6px;
-      /* Six markers per row */
-      max-width: calc(6 * var(--ha-marker-size, 48px) + 5 * 4px + 12px);
-      background: var(--card-background-color, #fff);
-      border-radius: 14px;
-    }
-    /* Both tails are a rotated square whose upper half sits under the bubble;
-       drawn behind it, so it never covers a member's frame or selected ring */
-    .cluster-open-tail,
+    /* The tail is a rotated square whose upper half sits under the bubble;
+       drawn behind it, so it never covers an avatar's frame or selected ring */
     .cluster-bubble-tail {
       position: relative;
       z-index: -1;
-    }
-    .cluster-open-tail {
-      width: 10px;
-      height: 10px;
-      margin-top: -5px;
-      border-radius: 2px;
-      background: var(--card-background-color, #fff);
-      transform: rotate(45deg);
     }
     /* Only the raster fallback is inverted for dark mode, the vector style
        ships its own dark cartography. */
@@ -1708,7 +1725,10 @@ export class HaMap extends ReactiveElement {
     }
     .cluster-bubble {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
+      max-width: 100%;
       gap: ${CLUSTER_BUBBLE_GAP}px;
       padding: ${CLUSTER_BUBBLE_PADDING}px;
       box-sizing: border-box;

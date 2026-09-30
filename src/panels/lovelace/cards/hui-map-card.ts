@@ -49,6 +49,7 @@ import { transform } from "../../../common/decorators/transform";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { OverviewTab } from "./map/hui-map-overview";
 import { PANEL_VIEW_LAYOUT } from "../views/const";
 import { findEntities } from "../common/find-entities";
 import {
@@ -134,6 +135,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @state() private _clusterMarkers = true;
 
   @state() private _overviewSelected?: string;
+
+  @state() private _overviewTab: OverviewTab = "people";
 
   // Height of the overview drawer when it sits over the bottom of the map
   @state() private _overviewSize = { width: 0, height: 0 };
@@ -345,7 +348,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                   .hass=${this.hass}
                   .entities=${this._overviewEntities}
                   .selected=${this._overviewSelected}
+                  .tab=${this._overviewTab}
                   @map-overview-select=${this._handleOverviewSelect}
+                  @map-overview-tab=${this._handleOverviewTab}
                   @map-overview-resize=${this._handleOverviewResize}
                 ></hui-map-overview>`
               : nothing
@@ -443,15 +448,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       const entities = this._config?.show_all
         ? this._withMissingTracked(this._filteredMapEntities)
         : this._filteredMapEntities;
-      this._filteredMapEntities = this._decorateOverviewEntities(
+      this._overviewEntities = this._decorateOverviewEntities(
         entities,
         this._overviewSelected,
         this._overviewSelected
           ? this.hass.states[this._overviewSelected]
           : undefined,
-        this.preview
+        this.preview || this._overviewTab === "zones"
       );
-      this._overviewEntities = this._filteredMapEntities;
+      this._filteredMapEntities = this._filterByOverviewTab(
+        this._overviewEntities,
+        this._overviewTab
+      );
     }
   }
 
@@ -505,14 +513,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return extra.length ? [...entities, ...extra] : entities;
   }
 
-  // In panel layout, only the selected zone shows its radius (all of them
-  // while editing) and only an imprecise selected person its accuracy circle
+  // In panel layout, only the selected zone shows its radius (all of them on
+  // the Zones tab and while editing) and only an imprecise selected person
+  // its accuracy circle
   private _decorateOverviewEntities = memoizeOne(
     (
       entities: HaMapEntity[],
       selectedId: string | undefined,
       selectedStateObj: HassEntity | undefined,
-      preview: boolean
+      showRadii: boolean
     ): HaMapEntity[] => {
       const selectedLocation = selectedStateObj
         ? getEntityLocation(selectedStateObj, this.hass.states)
@@ -524,10 +533,24 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         hide_accuracy: !(
           showSelectedAccuracy && entity.entity_id === selectedId
         ),
-        hide_radius: !preview && entity.entity_id !== selectedId,
+        hide_radius: !showRadii && entity.entity_id !== selectedId,
         selected: entity.entity_id === selectedId,
       }));
     }
+  );
+
+  private _filterByOverviewTab = memoizeOne(
+    (entities: HaMapEntity[], tab: OverviewTab): HaMapEntity[] =>
+      entities.filter((entity) => {
+        const domain = computeDomain(entity.entity_id);
+        if (domain === "person") {
+          return tab === "people";
+        }
+        if (domain === "device_tracker") {
+          return tab === "devices";
+        }
+        return true;
+      })
   );
 
   public connectedCallback() {
@@ -662,6 +685,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (this._overviewSelected) {
       this._focusEntity(this._overviewSelected);
     }
+  }
+
+  private _handleOverviewTab(
+    ev: HASSDomEvent<HASSDomEvents["map-overview-tab"]>
+  ) {
+    this._overviewTab = ev.detail.tab;
   }
 
   private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
