@@ -43,6 +43,7 @@ import {
   websocketErrorMessage,
   subscribeMarketplaceInstallProgress,
 } from "../../../data/marketplace/websocket";
+import { repositoryAuthors } from "../tools/authors";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
@@ -126,12 +127,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     return this.isConnected && this._repository === repository;
   }
 
-  private _getAuthors = memoizeOne((repository: RepositoryInfo): string[] => {
-    const authors = (repository.authors ?? []).map((author) =>
-      author.replace("@", "")
-    );
-    return authors.length > 0 ? authors : [repository.full_name.split("/")[0]];
-  });
+  private _getAuthors = memoizeOne(repositoryAuthors);
 
   private async _fetchRepository(repositoryId: string) {
     let repository: RepositoryInfo;
@@ -224,8 +220,19 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     const version = this._selectedVersion || repository.available_version;
     const reinstalling =
       repository.installed && version === repository.installed_version;
-    // Alerts span the dialog above the content, like the more-info dialog
-    // shows them for a disabled entity
+
+    return html`
+      ${this._renderInstallAlerts(repository, tooNew)}
+      ${this._renderInstallContent(repository, version, reinstalling)}
+      ${this._renderInstallFooter(
+        repository,
+        reinstalling,
+        this._installing || tooNew || needsAcceptance
+      )}
+    `;
+  }
+
+  private _renderInstallAlerts(repository: RepositoryInfo, tooNew: boolean) {
     return html`
       ${
         this._error
@@ -292,9 +299,17 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
               )}
             </ha-alert>`
       }
+    `;
+  }
+
+  private _renderInstallContent(
+    repository: RepositoryInfo,
+    version: string,
+    reinstalling: boolean
+  ) {
+    return html`
       <div class="content">
         ${
-          // Where the update dialog shows an update in progress
           this._installing
             ? html`<ha-progress-bar
                 .value=${this._progress ?? 0}
@@ -350,6 +365,15 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         }
         ${this._choosingVersion(repository) ? this._renderVersions() : nothing}
       </div>
+    `;
+  }
+
+  private _renderInstallFooter(
+    repository: RepositoryInfo,
+    reinstalling: boolean,
+    disabled: boolean
+  ) {
+    return html`
       <ha-dialog-footer slot="footer">
         <ha-button
           slot="secondaryAction"
@@ -365,7 +389,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
           slot="primaryAction"
           appearance="filled"
           .loading=${this._installing}
-          ?disabled=${this._installing || tooNew || needsAcceptance}
+          ?disabled=${disabled}
           @click=${this._installRepository}
         >
           ${this._i18n.localize(

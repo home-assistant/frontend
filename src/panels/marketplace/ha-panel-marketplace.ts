@@ -134,6 +134,25 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     this._integrationLoaded = true;
   }
 
+  // Only the user can fix the entry, the integration page is where they do it
+  private _renderEntryProblem(error: string) {
+    return html`
+      <hass-error-screen
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .error=${error}
+      >
+        <ha-button
+          appearance="filled"
+          size="s"
+          href="/config/integrations/integration/marketplace"
+        >
+          ${this.hass.localize("ui.panel.marketplace.entry.open_integration")}
+        </ha-button>
+      </hass-error-screen>
+    `;
+  }
+
   protected render() {
     if (!this._isLoaded || this._entryRemoved) {
       return html`
@@ -146,45 +165,19 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     }
 
     if (this._entry?.disabled_by) {
-      return html`
-        <hass-error-screen
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .error=${this.hass.localize("ui.panel.marketplace.entry.disabled")}
-        >
-          <ha-button
-            appearance="filled"
-            size="s"
-            href="/config/integrations/integration/marketplace"
-          >
-            ${this.hass.localize("ui.panel.marketplace.entry.open_integration")}
-          </ha-button>
-        </hass-error-screen>
-      `;
+      return this._renderEntryProblem(
+        this.hass.localize("ui.panel.marketplace.entry.disabled")
+      );
     }
 
     if (this._entry && ENTRY_FAILED_STATES.includes(this._entry.state)) {
-      return html`
-        <hass-error-screen
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .error=${
-            this._entry.reason
-              ? this.hass.localize("ui.panel.marketplace.entry.failed_reason", {
-                  reason: this._entry.reason,
-                })
-              : this.hass.localize("ui.panel.marketplace.entry.failed")
-          }
-        >
-          <ha-button
-            appearance="filled"
-            size="s"
-            href="/config/integrations/integration/marketplace"
-          >
-            ${this.hass.localize("ui.panel.marketplace.entry.open_integration")}
-          </ha-button>
-        </hass-error-screen>
-      `;
+      return this._renderEntryProblem(
+        this._entry.reason
+          ? this.hass.localize("ui.panel.marketplace.entry.failed_reason", {
+              reason: this._entry.reason,
+            })
+          : this.hass.localize("ui.panel.marketplace.entry.failed")
+      );
     }
 
     if ((!this._repositories || !this._info) && this._loadError) {

@@ -62,6 +62,7 @@ import {
 import { brandsUrl } from "../../../util/brands-url";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
+import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
 import { markdownWithRepositoryContext } from "../tools/markdown";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
@@ -307,27 +308,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._loadRepositoryFromRoute();
   }
 
-  private _getAuthors = memoizeOne((repository: RepositoryInfo) => {
-    const authors: string[] = [];
-    if (!repository.authors) return authors;
-    repository.authors.forEach((author) =>
-      authors.push(author.replace("@", ""))
-    );
-    if (authors.length === 0) {
-      const author = repository.full_name.split("/")[0];
-      if (
-        [
-          "custom-cards",
-          "custom-components",
-          "home-assistant-community-themes",
-        ].includes(author)
-      ) {
-        return authors;
-      }
-      authors.push(author);
-    }
-    return authors;
-  });
+  private _getAuthors = memoizeOne((repository: RepositoryInfo) =>
+    repositoryAuthors(repository).filter(
+      (author) => !isCommunityOrganization(author)
+    )
+  );
 
   protected render(): TemplateResult {
     if (this._error) {
@@ -350,7 +335,6 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
 
     const repository = this._repository;
-    const authors = this._getAuthors(repository);
     const readme = markdownWithRepositoryContext(
       repository.additional_info,
       repository
@@ -408,52 +392,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                   ? html`<p class="description">${repository.description}</p>`
                   : nothing
               }
-              <ha-chip-set>
-                ${authors.map(
-                  (author) =>
-                    html`<ha-assist-chip
-                      href="https://github.com/${author}"
-                      target="_blank"
-                      .label=${`@${author}`}
-                      title=${this.hass.localize("ui.panel.marketplace.repository.author")}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiAccount}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>`
-                )}
-                ${
-                  repository.downloads
-                    ? html`<ha-assist-chip
-                        title=${this.hass.localize("ui.panel.marketplace.repository.downloads")}
-                        .label=${String(repository.downloads)}
-                      >
-                        <ha-svg-icon
-                          slot="icon"
-                          .path=${mdiArrowDownBold}
-                        ></ha-svg-icon>
-                      </ha-assist-chip>`
-                    : nothing
-                }
-                <ha-assist-chip
-                  .label=${String(repository.stars)}
-                  title=${this.hass.localize("ui.panel.marketplace.repository.stars")}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
-                </ha-assist-chip>
-                <ha-assist-chip
-                  href="https://github.com/${repository.full_name}/issues"
-                  target="_blank"
-                  .label=${String(repository.issues)}
-                  title=${this.hass.localize("ui.panel.marketplace.repository.open_issues")}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiExclamationThick}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              </ha-chip-set>
+              ${this._renderChips(repository)}
             </div>
             ${this._renderActions(repository)}
           </ha-card>
@@ -468,6 +407,51 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           }
         </div>
       </hass-subpage>
+    `;
+  }
+
+  private _renderChips(repository: RepositoryInfo) {
+    return html`
+      <ha-chip-set>
+        ${this._getAuthors(repository).map(
+          (author) =>
+            html`<ha-assist-chip
+              href="https://github.com/${author}"
+              target="_blank"
+              .label=${`@${author}`}
+              title=${this.hass.localize("ui.panel.marketplace.repository.author")}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
+            </ha-assist-chip>`
+        )}
+        ${
+          repository.downloads
+            ? html`<ha-assist-chip
+                title=${this.hass.localize("ui.panel.marketplace.repository.downloads")}
+                .label=${String(repository.downloads)}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiArrowDownBold}
+                ></ha-svg-icon>
+              </ha-assist-chip>`
+            : nothing
+        }
+        <ha-assist-chip
+          .label=${String(repository.stars)}
+          title=${this.hass.localize("ui.panel.marketplace.repository.stars")}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
+        </ha-assist-chip>
+        <ha-assist-chip
+          href="https://github.com/${repository.full_name}/issues"
+          target="_blank"
+          .label=${String(repository.issues)}
+          title=${this.hass.localize("ui.panel.marketplace.repository.open_issues")}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiExclamationThick}></ha-svg-icon>
+        </ha-assist-chip>
+      </ha-chip-set>
     `;
   }
 
@@ -512,7 +496,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         );
   }
 
-  // Like the Install and Update buttons of an app, a reinstall stays in the menu
+  // Installing and updating are the main actions, a reinstall stays in the menu
   private _renderActions(repository: RepositoryInfo) {
     if (repository.installed && !repository.pending_upgrade) {
       return nothing;
