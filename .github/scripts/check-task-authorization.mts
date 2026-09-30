@@ -5,14 +5,16 @@
 // actions/github-script:
 //
 //   const { default: checkTaskAuthorization } =
-//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-task-authorization.mjs`);
+//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-task-authorization.mts`);
 //   await checkTaskAuthorization({ github, context, core });
+
+import type { GitHubScriptArgs, IssuePayload } from "./github-script.d.ts";
 
 export default async function checkTaskAuthorization({
   github,
   context,
   core,
-}) {
+}: GitHubScriptArgs<IssuePayload>) {
   const issueAuthor = context.payload.issue.user.login;
 
   // Check if user is an organization member
