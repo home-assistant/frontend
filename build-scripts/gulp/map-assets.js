@@ -13,6 +13,10 @@ import { osm } from "@versatiles/style";
 import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
+import {
+  HA_MAP_COLORS,
+  HA_MAP_COLORS_DARK,
+} from "../../src/common/map/ha-map-palette.ts";
 import { addLatinLabels } from "./map-labels.js";
 import {
   missingSprites,
@@ -88,7 +92,7 @@ const checkSprites = (name, style, sheet) => {
   if (missing.length) {
     throw new Error(
       `Style "${name}" references icons missing from the bundled ${SPRITE_SHEET} ` +
-        `sprite sheet: ${missing.join(", ")}. Run \`yarn gulp update-map-sprites\` ` +
+        `sprite sheet: ${missing.join(", ")}. Run \`pnpm exec gulp update-map-sprites\` ` +
         `and commit the result.`
     );
   }
@@ -96,9 +100,11 @@ const checkSprites = (name, style, sheet) => {
 };
 
 // Both themes up front: dark is a real cartography, not an inverted raster.
+// The colors are the frontend's own, so the palette is shared with it rather
+// than restated here; Node loads that TypeScript module as it is.
 const THEMES = [
-  ["light", "colorful"],
-  ["dark", "colorful-dark"],
+  ["light", "colorful", HA_MAP_COLORS],
+  ["dark", "colorful-dark", HA_MAP_COLORS_DARK],
 ];
 
 const generateStyles = async () => {
@@ -106,10 +112,14 @@ const generateStyles = async () => {
     path.join(spritesDir, `${SPRITE_SHEET}.json`)
   );
   const options = styleOptions(await sheetHash());
-  return THEMES.map(([name, theme]) => [
+  return THEMES.map(([name, theme, colors]) => [
     name,
     addLatinLabels(
-      checkSprites(name, useTileJson(name, osm({ theme, ...options })), sheet)
+      checkSprites(
+        name,
+        useTileJson(name, osm({ theme, colors, ...options })),
+        sheet
+      )
     ),
   ]);
 };

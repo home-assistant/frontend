@@ -136,7 +136,7 @@ jobs:
 
   release-landing-page:
     name: Release landing-page frontend
-    if: github.event.release.prerelease == false
+    if: github.repository == 'home-assistant/frontend' && github.event.release.prerelease == false
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to upload release assets
