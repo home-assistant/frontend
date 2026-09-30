@@ -658,10 +658,17 @@ export interface UiTimeFormatSelector {
   ui_time_format: {} | null;
 }
 
+// Maps a context key to the name of another field or blueprint input
+export interface UnitOfMeasurementSelectorContext {
+  filter_device_class?: string;
+  filter_state_class?: string;
+}
+
 export interface UnitOfMeasurementSelector {
   unit_of_measurement: {
     device_classes?: string | string[] | null;
     state_classes?: string | string[] | null;
+    context?: UnitOfMeasurementSelectorContext;
   } | null;
 }
 
@@ -671,6 +678,26 @@ export interface EntityNameSelector {
     default_name?: EntityNameItem | EntityNameItem[] | string;
   } | null;
 }
+
+/**
+ * Resolve the context of a selector config, which maps a context key to the
+ * name of another field, to the current values of those fields.
+ */
+export const resolveSelectorContext = (
+  selector: Selector,
+  data: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined => {
+  const config = Object.values(selector)[0] as
+    { context?: Record<string, string> } | null | undefined;
+  if (!config?.context) {
+    return undefined;
+  }
+  const context: Record<string, unknown> = {};
+  for (const [contextKey, fieldName] of Object.entries(config.context)) {
+    context[contextKey] = data?.[fieldName];
+  }
+  return context;
+};
 
 export const expandLabelTarget = (
   hass: HomeAssistant,

@@ -22,6 +22,7 @@ import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
 import { StatisticMeanType } from "../../../../src/data/recorder";
+import { resolveSelectorContext } from "../../../../src/data/selector";
 import type { SerialPort } from "../../../../src/data/usb";
 import {
   showDialog,
@@ -358,9 +359,6 @@ const SCHEMAS: {
     | (BlueprintInput & {
         required?: boolean;
         context?: Record<string, unknown>;
-        // Maps a context key to another input of the same sample, like the
-        // schema context of ha-form, so the context follows its value
-        context_fields?: Record<string, string>;
       })
     | null
   >;
@@ -687,10 +685,13 @@ const SCHEMAS: {
       },
       unit_linked: {
         name: "Unit of the device class and state class above",
-        selector: { unit_of_measurement: {} },
-        context_fields: {
-          filter_device_class: "sensor_device_class",
-          filter_state_class: "sensor_state_class",
+        selector: {
+          unit_of_measurement: {
+            context: {
+              filter_device_class: "sensor_device_class",
+              filter_state_class: "sensor_state_class",
+            },
+          },
         },
       },
       unit: {
@@ -1126,14 +1127,13 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     input: (typeof SCHEMAS)[number]["input"][string],
     data: Record<string, unknown>
   ): Record<string, unknown> | undefined {
-    if (!input?.context_fields) {
+    const selectorContext = input?.selector
+      ? resolveSelectorContext(input.selector, data)
+      : undefined;
+    if (!selectorContext) {
       return input?.context;
     }
-    const context = { ...input.context };
-    for (const [contextKey, dataKey] of Object.entries(input.context_fields)) {
-      context[contextKey] = data[dataKey];
-    }
-    return context;
+    return { ...input?.context, ...selectorContext };
   }
 
   private _handleValueChanged(ev) {

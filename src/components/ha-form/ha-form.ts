@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
+import { resolveSelectorContext } from "../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
@@ -16,6 +17,32 @@ import type {
 
 type HaFormDataChangedEvent = ValueChangedEvent<HaFormData>;
 type HaFormDataContainerChangedEvent = ValueChangedEvent<HaFormDataContainer>;
+
+/**
+ * Merge the form context with the selector config context and the
+ * field-level schema context, where the latter wins.
+ */
+export const generateFormContext = (
+  schema: HaFormSchema,
+  data: HaFormDataContainer | undefined,
+  formContext: Record<string, any> | undefined
+): Record<string, any> | undefined => {
+  const selectorContext =
+    "selector" in schema && schema.selector
+      ? resolveSelectorContext(schema.selector, data)
+      : undefined;
+  if (!schema.context && !selectorContext && !formContext) {
+    return undefined;
+  }
+
+  const context = { ...formContext, ...selectorContext };
+  if (schema.context) {
+    for (const [context_key, data_key] of Object.entries(schema.context)) {
+      context[context_key] = data?.[data_key];
+    }
+  }
+  return context;
+};
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
@@ -249,17 +276,7 @@ export class HaForm extends LitElement implements HaFormElement {
   private _generateContext(
     schema: HaFormSchema
   ): Record<string, any> | undefined {
-    if (!schema.context && !this.context) {
-      return undefined;
-    }
-
-    const context = { ...this.context };
-    if (schema.context) {
-      for (const [context_key, data_key] of Object.entries(schema.context)) {
-        context[context_key] = this.data[data_key];
-      }
-    }
-    return context;
+    return generateFormContext(schema, this.data, this.context);
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
