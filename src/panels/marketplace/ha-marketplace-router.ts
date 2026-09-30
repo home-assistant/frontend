@@ -5,6 +5,7 @@ import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../types";
 
 import type { MarketplaceData } from "../../data/marketplace/marketplace";
+import type { MarketplaceTab } from "./dashboards/ha-marketplace-dashboard";
 
 interface MarketplacePageElement extends HTMLElement {
   hass: HomeAssistant;
@@ -12,7 +13,18 @@ interface MarketplacePageElement extends HTMLElement {
   route: Route;
   narrow: boolean;
   isWide?: boolean;
+  tab?: MarketplaceTab;
 }
+
+// Each tab is the dashboard, showing its own part of the Marketplace. The
+// router keeps a page per tab, not one for all of them.
+const TABS: MarketplaceTab[] = ["discover", "browse", "installed"];
+
+const dashboard = {
+  tag: "ha-marketplace-dashboard",
+  load: () => import("./dashboards/ha-marketplace-dashboard"),
+  cache: true,
+};
 
 @customElement("ha-marketplace-router")
 class HaMarketplaceRouter extends HassRouterPage {
@@ -59,23 +71,26 @@ class HaMarketplaceRouter extends HassRouterPage {
     el.route = this.routeTail;
     el.narrow = this.narrow;
     el.isWide = isWide;
+    if (TABS.includes(this._currentPage as MarketplaceTab)) {
+      el.tab = this._currentPage as MarketplaceTab;
+    }
   }
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "dashboard",
+    defaultPage: "browse",
     showLoading: true,
     beforeRender: (page: string) =>
-      !["_my_redirect", "repository"].includes(page) ? "dashboard" : undefined,
+      !["_my_redirect", "repository", ...TABS].includes(page)
+        ? "browse"
+        : undefined,
     routes: {
       _my_redirect: {
         tag: "ha-marketplace-my-redirect",
         load: () => import("./ha-marketplace-my-redirect"),
       },
-      dashboard: {
-        tag: "ha-marketplace-dashboard",
-        load: () => import("./dashboards/ha-marketplace-dashboard"),
-        cache: true,
-      },
+      discover: dashboard,
+      browse: dashboard,
+      installed: dashboard,
       repository: {
         tag: "ha-marketplace-repository-dashboard",
         load: () => import("./dashboards/ha-marketplace-repository-dashboard"),

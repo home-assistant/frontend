@@ -10,10 +10,10 @@ export const STATUS_ORDER = [
   "default",
 ] as const satisfies readonly RepositoryBase["status"][];
 
-export const DEFAULT_GROUP_COLUMN = "translated_status";
-
 export const STATUS_FILTER = "status";
 export const TYPE_FILTER = "type";
+const SORT_PARAM = "sort";
+const DIRECTION_PARAM = "direction";
 
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
@@ -75,13 +75,52 @@ export const filterRepositories = (
       ),
     }));
 
-// Status groups follow the order of a repository's life, not the alphabet.
-export const repositoryGroupOrder = (
-  localize: LocalizeFunc,
-  groupColumn: string
-): string[] | undefined =>
-  groupColumn === "translated_status"
-    ? STATUS_ORDER.map((status) =>
-        localize(`ui.panel.marketplace.repository_status.${status}`)
-      )
-    : undefined;
+// How to browse, the way a link says it, like
+// /marketplace/browse?sort=stars&direction=desc&status=new
+export interface BrowseSettings {
+  sorting?: { column: string; direction: "asc" | "desc" };
+  filters: RepositoryFilters;
+}
+
+export const browseUrl = ({ sorting, filters }: BrowseSettings): string => {
+  const params = new URLSearchParams();
+  if (sorting) {
+    params.set(SORT_PARAM, sorting.column);
+    params.set(DIRECTION_PARAM, sorting.direction);
+  }
+  for (const filter of [STATUS_FILTER, TYPE_FILTER] as const) {
+    if (filters[filter]?.length) {
+      params.set(filter, filters[filter].join(","));
+    }
+  }
+
+  const query = params.toString();
+  return query ? `/marketplace/browse?${query}` : "/marketplace/browse";
+};
+
+// Nothing about browsing in the link keeps what was picked before
+export const browseSettingsFromUrl = (
+  search: string
+): BrowseSettings | undefined => {
+  const params = new URLSearchParams(search);
+  if (
+    ![SORT_PARAM, STATUS_FILTER, TYPE_FILTER].some((key) => params.has(key))
+  ) {
+    return undefined;
+  }
+
+  const column = params.get(SORT_PARAM);
+  const values = (key: string) => params.get(key)?.split(",").filter(Boolean);
+  return {
+    sorting: column
+      ? {
+          column,
+          direction: params.get(DIRECTION_PARAM) === "asc" ? "asc" : "desc",
+        }
+      : undefined,
+    filters: {
+      [STATUS_FILTER]: values(STATUS_FILTER),
+      [TYPE_FILTER]: values(TYPE_FILTER),
+    },
+  };
+};

@@ -12202,6 +12202,7 @@
           }
         },
         "dashboard": {
+          "search": "Search {number} {number, plural,\n  one {item}\n  other {items}\n}",
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
@@ -12283,6 +12284,20 @@
           "installed_title": "{name} is installed",
           "installed_without_set_up": "{name} is not set up from the user interface. Its documentation explains how to set it up and use it. Home Assistant loads it after a restart.",
           "view_documentation": "View documentation"
+        },
+        "discover": {
+          "title": "Make Home Assistant yours",
+          "intro": "Made by people in the community and shared with everyone. Here are some to start with, or browse everything.",
+          "popular": "Popular",
+          "updated": "Recently updated",
+          "see_all": "See all"
+        },
+        "tabs": {
+          "discover": "Discover",
+          "browse": "Browse",
+          "installed": "Installed",
+          "updates": "{count, plural,\n  one {# update}\n  other {# updates}\n}",
+          "add_from_link": "Add from link"
         },
         "repository": {
           "status": {

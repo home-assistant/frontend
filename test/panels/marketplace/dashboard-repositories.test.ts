@@ -2,11 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { DataTableRowData } from "../../../src/components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
-import {
-  DEFAULT_GROUP_COLUMN,
-  filterRepositories,
-  repositoryGroupOrder,
-} from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
+import { filterRepositories } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
@@ -111,23 +107,5 @@ describe("filterRepositories", () => {
     filterRepositories(unsorted, localize);
 
     expect(names(unsorted)).toEqual(["Beta", "Alpha"]);
-  });
-});
-
-describe("repositoryGroupOrder", () => {
-  it("orders the status groups by where a repository is in its life", () => {
-    expect(repositoryGroupOrder(localize, DEFAULT_GROUP_COLUMN)).toEqual([
-      "ui.panel.marketplace.repository_status.pending-restart",
-      "ui.panel.marketplace.repository_status.pending-upgrade",
-      "ui.panel.marketplace.repository_status.installed",
-      "ui.panel.marketplace.repository_status.new",
-      "ui.panel.marketplace.repository_status.default",
-    ]);
-  });
-
-  it("leaves the order of other groups to the table", () => {
-    expect(
-      repositoryGroupOrder(localize, "translated_category")
-    ).toBeUndefined();
   });
 });
