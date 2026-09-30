@@ -736,10 +736,6 @@ export class HaMap extends ReactiveElement {
     this._mapDrawn = false;
     clearTimeout(this._drawnFallback);
     const attempt = ++this._setupAttempt;
-    this._drawnFallback = window.setTimeout(
-      () => this._markDrawn(attempt),
-      DRAWN_FALLBACK
-    );
     let engine: MapEngine | undefined;
     try {
       // Without a connection or the tile proxy the map sets up without tiles
@@ -756,6 +752,12 @@ export class HaMap extends ReactiveElement {
         return;
       }
       this._startingEngine = engine;
+      // Started here so the budget covers an engine that never reports a
+      // frame, not the token and the chunk it waited for
+      this._drawnFallback = window.setTimeout(
+        () => this._markDrawn(attempt),
+        DRAWN_FALLBACK
+      );
       await engine.init(map, {
         center: [
           this._config?.latitude ?? 52.3731339,
@@ -1672,6 +1674,9 @@ export class HaMap extends ReactiveElement {
       /* The map arrives in one piece: the container carries the cartography's
          own ground, and fades in with the markers once a frame is drawn */
       background-color: #f4efe6;
+      /* Hidden rather than transparent: the controls and markers in here are
+         not to be clicked or tabbed to before they are on screen */
+      visibility: hidden;
       opacity: 0;
       transition: opacity var(--ha-animation-duration-fast, 150ms) ease-in;
       /* A cluster bubble and its tail cast a single shadow around their
@@ -1681,6 +1686,7 @@ export class HaMap extends ReactiveElement {
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
     }
     #map.drawn {
+      visibility: visible;
       opacity: 1;
     }
     #map.clickable {
