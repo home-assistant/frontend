@@ -101,6 +101,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @state() private _dashboards: LovelaceDashboard[] = [];
 
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
+
   @state()
   @storage({
     storage: "sessionStorage",
@@ -409,11 +413,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards,
           this.hass.localize
         )}
-        .data=${this._getItems(
-          this._dashboards,
-          defaultPanel,
-          this.hass.panels
-        )}
+        .loading=${this._loading}
+        .data=${
+          this._loading
+            ? []
+            : this._getItems(this._dashboards, defaultPanel, this.hass.panels)
+        }
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -426,6 +431,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.picker.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryGetDashboards}
         id="url_path"
         has-fab
         clickable
@@ -476,7 +489,19 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private async _getDashboards() {
-    this._dashboards = await fetchDashboards(this.hass);
+    try {
+      this._dashboards = await fetchDashboards(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryGetDashboards() {
+    this._loading = true;
+    this._getDashboards();
   }
 
   private _handleRowClicked(ev: CustomEvent) {

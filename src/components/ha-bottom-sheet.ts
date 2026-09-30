@@ -1,8 +1,9 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";

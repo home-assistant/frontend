@@ -18,6 +18,7 @@ import {
   calcDate,
   calcDateDifferenceProperty,
   calcDateProperty,
+  shiftToServerTimeZone,
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
@@ -27,6 +28,7 @@ import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
+  StatisticPeriod,
   Statistics,
   StatisticsMetaData,
   StatisticsUnitConfiguration,
@@ -242,8 +244,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  affected_entities: [string, unknown][];
-  translation_placeholders: Record<string, string>;
+  affected_entities: [string, string | number | null][];
+  translation_placeholders: Record<string, string> | null;
 }
 
 export interface EnergyPreferencesValidation {
@@ -489,6 +491,21 @@ export const enum CompareMode {
   YOY = "yoy",
 }
 
+// Core groups days and months by the server's calendar. Ask for the picked
+// dates there, or a browser time zone ahead or behind adds a day at one end.
+const getStatisticsRange = (
+  hass: HomeAssistant,
+  period: StatisticPeriod,
+  start: Date,
+  end?: Date
+): [Date, Date | undefined] =>
+  period === "5minute" || period === "hour"
+    ? [start, end]
+    : [
+        shiftToServerTimeZone(start, hass.locale, hass.config),
+        end && shiftToServerTimeZone(end, hass.locale, hass.config),
+      ];
+
 const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
@@ -536,6 +553,13 @@ const getEnergyData = async (
 
   const period = getSuggestedPeriod(start, end);
   const finePeriod = getSuggestedPeriod(start, end, true);
+  const [periodStart, periodEnd] = getStatisticsRange(hass, period, start, end);
+  const [finePeriodStart, finePeriodEnd] = getStatisticsRange(
+    hass,
+    finePeriod,
+    start,
+    end
+  );
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -566,14 +590,26 @@ const getEnergyData = async (
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
-    ? fetchStatistics(hass!, start, end, energyStatIds, period, energyUnits, [
-        "change",
-      ])
+    ? fetchStatistics(
+        hass!,
+        periodStart,
+        periodEnd,
+        energyStatIds,
+        period,
+        energyUnits,
+        ["change"]
+      )
     : {};
   const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
-    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
-        "mean",
-      ])
+    ? fetchStatistics(
+        hass!,
+        finePeriodStart,
+        finePeriodEnd,
+        powerStatIds,
+        finePeriod,
+        powerUnits,
+        ["mean"]
+      )
     : {};
   // If power stats 5 minute data is selected, then also fetch hourly data which
   // will be used to back-fill any missing data points in the 5 minute data when
@@ -586,14 +622,22 @@ const getEnergyData = async (
       : {};
 
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
-    ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
-        "change",
-      ])
+    ? fetchStatistics(
+        hass!,
+        periodStart,
+        periodEnd,
+        waterStatIds,
+        period,
+        waterUnits,
+        ["change"]
+      )
     : {};
 
   let statsCompare;
   let startCompare;
   let endCompare;
+  let periodStartCompare;
+  let periodEndCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
@@ -640,11 +684,17 @@ const getEnergyData = async (
       startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
       endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
+    [periodStartCompare, periodEndCompare] = getStatisticsRange(
+      hass,
+      period,
+      startCompare,
+      endCompare
+    );
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
-        startCompare,
-        endCompare,
+        periodStartCompare,
+        periodEndCompare,
         energyStatIds,
         period,
         energyUnits,
@@ -654,8 +704,8 @@ const getEnergyData = async (
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         hass!,
-        startCompare,
-        endCompare,
+        periodStartCompare,
+        periodEndCompare,
         waterStatIds,
         period,
         waterUnits,
@@ -670,19 +720,19 @@ const getEnergyData = async (
   if (co2SignalEntity !== undefined) {
     _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,
-      start,
+      periodStart,
       consumptionStatIDs,
       co2SignalEntity,
-      end,
+      periodEnd,
       period
     );
     if (compare) {
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
         hass!,
-        startCompare,
+        periodStartCompare,
         consumptionStatIDs,
         co2SignalEntity,
-        endCompare,
+        periodEndCompare,
         period
       );
     }

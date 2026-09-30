@@ -19,7 +19,7 @@ jobs:
   deploy_dev:
     runs-on: ubuntu-latest
     name: Demo Development
-    if: github.event_name != 'push' || github.ref_name != 'master'
+    if: github.repository == 'home-assistant/frontend' && (github.event_name != 'push' || github.ref_name != 'master')
     environment:
       name: Demo Development
       url: ${{ steps.deploy.outputs.unique_deploy_url }}
@@ -50,7 +50,7 @@ jobs:
   deploy_master:
     runs-on: ubuntu-latest
     name: Demo Production
-    if: github.event_name == 'push' && github.ref_name == 'master'
+    if: github.repository == 'home-assistant/frontend' && github.event_name == 'push' && github.ref_name == 'master'
     environment:
       name: Demo Production
       url: ${{ steps.deploy.outputs.netlify_url }}

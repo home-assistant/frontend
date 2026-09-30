@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
@@ -154,7 +154,7 @@ class StepFlowForm extends LitElement {
   }
 
   private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
-    this._previewErrors = ev.detail;
+    this._previewErrors = ev.detail ?? undefined;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {

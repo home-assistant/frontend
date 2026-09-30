@@ -4,8 +4,9 @@ import type { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
+import type { RegistryEntry } from "./registry";
 
-export interface CategoryRegistryEntry {
+export interface CategoryRegistryEntry extends RegistryEntry {
   category_id: string;
   name: string;
   icon: string | null;

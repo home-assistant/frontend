@@ -11,7 +11,10 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import type { ContextType } from "@lit/context";
-import { consume, ContextConsumer } from "@lit/context";
+import {
+  consume,
+  ContextSubscriptionController,
+} from "../../../common/decorators/consume";
 import { resolveThemeColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -84,13 +87,9 @@ interface GeoEntity {
 class HuiMapCard extends LitElement implements LovelaceCard {
   constructor() {
     super();
-    new ContextConsumer(this, {
-      context: fullEntitiesContext,
-      subscribe: true,
-      callback: (entries) => {
-        this._entityReg = entries;
-        this._mapEntities = this._getMapEntities();
-      },
+    new ContextSubscriptionController(this, fullEntitiesContext, (entries) => {
+      this._entityReg = entries;
+      this._mapEntities = this._getMapEntities();
     });
   }
 
@@ -845,8 +844,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         // filter location data from states and remove all invalid locations
         const points: HaMapPathPoint[] = [];
         for (const entityState of entityStates) {
-          const latitude = entityState.a.latitude;
-          const longitude = entityState.a.longitude;
+          const latitude = entityState.a?.latitude;
+          const longitude = entityState.a?.longitude;
           if (!latitude || !longitude) {
             continue;
           }

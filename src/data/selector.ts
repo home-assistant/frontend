@@ -438,6 +438,7 @@ interface ObjectSelectorField {
   label?: string;
   description?: string;
   required?: boolean;
+  default?: unknown;
 }
 
 export interface ObjectSelector {

@@ -1306,6 +1306,81 @@ describe("getEnergyDataCollection live day", () => {
   });
 });
 
+describe("getEnergyDataCollection statistics range", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const requestStatistics = async (key: string, start: Date, end: Date) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
+    const hass = createMockHass();
+    hass.locale = { ...energyPeriodLocale, time_zone: TimeZone.local };
+    hass.config = { ...hass.config, time_zone: "Europe/Sofia" };
+    const callWS = vi.fn(async (msg: Record<string, unknown>) => {
+      switch (msg.type) {
+        case "energy/info":
+          return { cost_sensors: {}, solar_forecast_domains: [] };
+        case "recorder/get_statistics_metadata":
+          return [];
+        case "recorder/statistics_during_period":
+          return {};
+      }
+      throw new Error(`unexpected ${msg.type}`);
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    const collection = getEnergyDataCollection(hass, {
+      key,
+      prefs: {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          {
+            type: "solar",
+            stat_energy_from: "sensor.solar_energy",
+            config_entry_solar_forecast: null,
+          },
+        ],
+      },
+    });
+    collection.setPeriod(start, end);
+    await collection.refresh();
+    return callWS.mock.calls
+      .map(([msg]) => msg)
+      .find((msg) => msg.type === "recorder/statistics_during_period");
+  };
+
+  it("requests the picked days in the server time zone", async () => {
+    const request = await requestStatistics(
+      "energy_range_days",
+      new Date(2026, 8, 18),
+      endOfDay(new Date(2026, 8, 21))
+    );
+    assert.deepInclude(request, {
+      period: "day",
+      start_time: "2026-09-17T21:00:00.000Z",
+      end_time: "2026-09-21T20:59:59.999Z",
+    });
+  });
+
+  it("keeps hourly requests in the browser time zone", async () => {
+    const start = new Date(2026, 8, 18);
+    const end = endOfDay(start);
+    const request = await requestStatistics("energy_range_hours", start, end);
+    assert.deepInclude(request, {
+      period: "hour",
+      start_time: start.toISOString(),
+      end_time: end.toISOString(),
+    });
+  });
+});
+
 describe("getEnergyDefaultPeriodStorageKey", () => {
   it("uses an explicit collection key", () => {
     assert.equal(

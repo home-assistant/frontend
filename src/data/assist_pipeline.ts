@@ -9,7 +9,7 @@ export interface AssistPipeline {
   language: string;
   conversation_engine: string;
   conversation_language: string | null;
-  prefer_local_intents?: boolean;
+  prefer_local_intents: boolean;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;
@@ -21,7 +21,7 @@ export interface AssistPipeline {
 
 export interface AssistDevice {
   device_id: string;
-  pipeline_entity: string;
+  pipeline_entity: string | null;
 }
 
 export interface AssistPipelineMutableParams {
@@ -54,6 +54,7 @@ interface PipelineRunStartEvent extends PipelineEventBase {
     pipeline: string;
     language: string;
     conversation_id: string;
+    satellite_id?: string;
     runner_data: {
       stt_binary_handler_id: number | null;
       timeout: number;
@@ -62,12 +63,13 @@ interface PipelineRunStartEvent extends PipelineEventBase {
       token: string;
       url: string;
       mime_type: string;
+      stream_response: boolean;
     };
   };
 }
 interface PipelineRunEndEvent extends PipelineEventBase {
   type: "run-end";
-  data: Record<string, never>;
+  data: null;
 }
 
 interface PipelineErrorEvent extends PipelineEventBase {
@@ -81,14 +83,21 @@ interface PipelineErrorEvent extends PipelineEventBase {
 interface PipelineWakeWordStartEvent extends PipelineEventBase {
   type: "wake_word-start";
   data: {
-    engine: string;
-    metadata: SpeechMetadata;
+    entity_id: string;
+    metadata: Omit<SpeechMetadata, "language">;
+    timeout: number;
   };
 }
 
 interface PipelineWakeWordEndEvent extends PipelineEventBase {
   type: "wake_word-end";
-  data: { wake_word_output: { ww_id: string; timestamp: number } };
+  data: {
+    wake_word_output: {
+      wake_word_id?: string;
+      wake_word_phrase?: string;
+      timestamp?: number | null;
+    };
+  };
 }
 
 interface PipelineSTTStartEvent extends PipelineEventBase {
@@ -96,7 +105,22 @@ interface PipelineSTTStartEvent extends PipelineEventBase {
   data: {
     engine: string;
     metadata: SpeechMetadata;
+    audio_processing: {
+      requires_external_vad: boolean;
+      prefers_auto_gain_enabled: boolean;
+      prefers_noise_reduction_enabled: boolean;
+    };
   };
+}
+
+interface PipelineSTTVADStartEvent extends PipelineEventBase {
+  type: "stt-vad-start";
+  data: { timestamp: number };
+}
+
+interface PipelineSTTVADEndEvent extends PipelineEventBase {
+  type: "stt-vad-end";
+  data: { timestamp: number };
 }
 interface PipelineSTTEndEvent extends PipelineEventBase {
   type: "stt-end";
@@ -110,8 +134,11 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
   data: {
     engine: string;
     language: string;
-    prefer_local_intents: boolean;
     intent_input: string;
+    conversation_id: string;
+    device_id: string | null;
+    satellite_id: string | null;
+    prefer_local_intents: boolean;
   };
 }
 
@@ -123,6 +150,7 @@ export interface ConversationChatLogAssistantDelta {
     id: string;
     tool_name: string;
     tool_args: Record<string, unknown>;
+    external: boolean;
   }[];
 }
 
@@ -157,9 +185,10 @@ interface PipelineTTSStartEvent extends PipelineEventBase {
   type: "tts-start";
   data: {
     engine: string;
-    language: string;
-    voice: string;
+    language: string | null;
+    voice: string | null;
     tts_input: string;
+    acknowledge_override: boolean;
   };
 }
 interface PipelineTTSEndEvent extends PipelineEventBase {
@@ -181,6 +210,8 @@ export type PipelineRunEvent =
   | PipelineWakeWordStartEvent
   | PipelineWakeWordEndEvent
   | PipelineSTTStartEvent
+  | PipelineSTTVADStartEvent
+  | PipelineSTTVADEndEvent
   | PipelineSTTEndEvent
   | PipelineIntentStartEvent
   | PipelineIntentProgressEvent
@@ -426,7 +457,7 @@ export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
   });
 
 export const fetchAssistPipelineLanguages = (hass: HomeAssistant) =>
-  hass.callWS<{ languages: string[] }>({
+  hass.callWS<{ languages: string[] | null }>({
     type: "assist_pipeline/language/list",
   });
 

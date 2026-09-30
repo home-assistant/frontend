@@ -319,14 +319,13 @@ const fakes = vi.hoisted(() => {
 });
 
 vi.mock("maplibre-gl", () => ({
-  default: {
-    Map: fakes.FakeMap,
-    Marker: fakes.FakeMarker,
-    Popup: fakes.FakePopup,
-    NavigationControl: vi.fn(),
-    ScaleControl: vi.fn(),
-    setRTLTextPlugin: vi.fn(),
-  },
+  Map: fakes.FakeMap,
+  Marker: fakes.FakeMarker,
+  Popup: fakes.FakePopup,
+  NavigationControl: vi.fn(),
+  ScaleControl: vi.fn(),
+  setRTLTextPlugin: vi.fn(),
+  setWorkerUrl: vi.fn(),
 }));
 
 const loadStyle = vi.hoisted(() => vi.fn());
@@ -334,6 +333,7 @@ vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   loadStyle,
   ensureRTLTextPlugin: vi.fn(),
+  ensureWorkerUrl: vi.fn(),
 }));
 
 const tokenListeners = vi.hoisted(() => new Set<(token: string) => void>());
@@ -341,7 +341,7 @@ const refreshMapTilesToken = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/data/map_tiles", () => ({
   MAP_TILES_PATH: "/api/map_tiles",
   mapTilesUrl: (path: string) => path,
-  withMapTilesToken: (url: string) => url,
+  withMapTilesToken: (url: string) => ({ url }),
   refreshMapTilesToken,
   subscribeMapTilesToken: (listener: (token: string) => void) => {
     tokenListeners.add(listener);
@@ -749,12 +749,14 @@ describe("MapLibreMapEngine", () => {
         clusterData,
       });
 
-    const iconBuilder = vi.fn((members: MapMarkerHandle[]) => ({
-      element: Object.assign(document.createElement("div"), {
-        textContent: String(members.length),
-      }),
-      size: [40, 40] as [number, number],
-    }));
+    const iconBuilder = vi.fn(
+      (members: MapMarkerHandle[], _location: MapLatLng, _key?: string) => ({
+        element: Object.assign(document.createElement("div"), {
+          textContent: String(members.length),
+        }),
+        size: [40, 40] as [number, number],
+      })
+    );
 
     beforeEach(() => {
       iconBuilder.mockClear();
@@ -825,6 +827,71 @@ describe("MapLibreMapEngine", () => {
 
       expect(iconBuilder).not.toHaveBeenCalled();
       expect(fakeMarker.all).toHaveLength(2);
+    });
+
+    it("hands the icon builder the key of a zone group only", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.01], { zone: "home" });
+      // Two keyless markers 20px apart cluster by proximity
+      addMarker(engine, [52.01, 4.0]);
+      addMarker(engine, [52.01, 4.002]);
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(iconBuilder).toHaveBeenCalledTimes(2);
+      expect(iconBuilder.mock.calls[0][2]).toBe("home");
+      expect(iconBuilder.mock.calls[1][2]).toBeUndefined();
+    });
+
+    it("merges bubbles that would overlap on screen into one", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      // Two zone groups whose 40px icons sit 30px apart
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.001], { zone: "home" });
+      addMarker(engine, [52, 4.003], { zone: "work" });
+      addMarker(engine, [52, 4.004], { zone: "work" });
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(fakeMarker.all).toHaveLength(1);
+      const [members, , key] = iconBuilder.mock.lastCall!;
+      expect(members).toHaveLength(4);
+      expect(key).toBeUndefined();
+    });
+
+    it("keeps a zone's key when its bubble absorbs an overlapping plain one", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.001], { zone: "home" });
+      addMarker(engine, [52, 4.003]);
+      addMarker(engine, [52, 4.004]);
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(fakeMarker.all).toHaveLength(1);
+      expect(iconBuilder.mock.lastCall![2]).toBe("home");
     });
 
     it("drops removed markers from their cluster on refresh", async () => {

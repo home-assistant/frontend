@@ -1,6 +1,7 @@
-import { ContextConsumer, type Context } from "@lit/context";
+import type { Context } from "@lit/context";
 import type { Connection, HassConfig } from "home-assistant-js-websocket";
 import type { ReactiveController, ReactiveControllerHost } from "lit";
+import { ContextSubscriptionController } from "../common/decorators/consume";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
   computeServiceLabel,
@@ -75,13 +76,10 @@ export class ServiceInfoController implements ReactiveController {
     context: Context<unknown, T>,
     assign: (value: T) => void
   ): void {
-    new ContextConsumer(this._host, {
-      context,
-      subscribe: true,
-      callback: (value) => {
-        assign(value);
-        this._resolve();
-      },
+    // `_resolve` requests a host update only when the resolved info changes.
+    new ContextSubscriptionController(this._host, context, (value) => {
+      assign(value);
+      this._resolve();
     });
   }
 

@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { consume } from "@lit/context";
 import {
   mdiCloseThick,
   mdiCog,
@@ -27,6 +26,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -1278,8 +1278,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1322,8 +1322,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1362,8 +1362,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1392,8 +1392,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   };
@@ -1412,8 +1412,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   };

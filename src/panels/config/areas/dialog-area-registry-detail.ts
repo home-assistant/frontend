@@ -209,7 +209,6 @@ class DialogAreaDetail
       ></ha-labels-picker>
 
       <ha-picture-upload
-        .hass=${this.hass}
         .value=${this._picture}
         crop
         select-media
