@@ -245,6 +245,10 @@ export class HaConfigDevicePage extends LitElement {
 
   private _unsubEsphomeUserData?: UnsubscribeFunc;
 
+  private _esphomeUserDataSubscribed = false;
+
+  private _isESPHomeDevice = false;
+
   private _esphomeUserDataSubGeneration = 0;
 
   private _esphomeCapabilitiesRequest = 0;
@@ -421,7 +425,6 @@ export class HaConfigDevicePage extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
-    this._subscribeESPHomeUserData();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -437,7 +440,7 @@ export class HaConfigDevicePage extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
+    if (this.hasUpdated && this._isESPHomeDevice) {
       this._subscribeESPHomeUserData();
     }
   }
@@ -446,6 +449,7 @@ export class HaConfigDevicePage extends LitElement {
     super.disconnectedCallback();
     clearTimeout(this._deviceAlertsActionsTimeout);
     this._esphomeUserDataSubGeneration += 1;
+    this._esphomeUserDataSubscribed = false;
     this._unsubEsphomeUserData?.();
     this._unsubEsphomeUserData = undefined;
   }
@@ -1259,6 +1263,10 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _subscribeESPHomeUserData() {
+    if (this._esphomeUserDataSubscribed) {
+      return;
+    }
+    this._esphomeUserDataSubscribed = true;
     const generation = this._esphomeUserDataSubGeneration;
     try {
       const unsub = await subscribeFrontendUserData(
@@ -1281,19 +1289,10 @@ export class HaConfigDevicePage extends LitElement {
       if (generation !== this._esphomeUserDataSubGeneration) {
         return;
       }
+      this._esphomeUserDataSubscribed = false;
       this._esphomeUserData = null;
       this._esphomeUserDataReady = true;
     }
-  }
-
-  private _requestError(err: unknown, fallback: string): string {
-    if (typeof err === "object" && err !== null && "message" in err) {
-      const { message } = err as { message: unknown };
-      if (typeof message === "string" && message) {
-        return message;
-      }
-    }
-    return fallback;
   }
 
   private async _fetchESPHomeCapabilities() {
@@ -1303,6 +1302,7 @@ export class HaConfigDevicePage extends LitElement {
       request === this._esphomeCapabilitiesRequest &&
       this.deviceId === deviceId;
     const clearSetup = () => {
+      this._isESPHomeDevice = false;
       this._esphomeCapabilities = undefined;
       this._esphomeSerialConfigured = undefined;
       this._esphomeSerialError = undefined;
@@ -1327,6 +1327,8 @@ export class HaConfigDevicePage extends LitElement {
       clearSetup();
       return;
     }
+    this._isESPHomeDevice = true;
+    this._subscribeESPHomeUserData();
     try {
       const capabilities = await fetchESPHomeDeviceCapabilities(
         this.hass,
@@ -1354,10 +1356,9 @@ export class HaConfigDevicePage extends LitElement {
           if (!stillCurrent()) {
             return;
           }
-          serialError = this._requestError(
-            err,
-            this.hass.localize("ui.panel.config.serial.loading_error")
-          );
+          serialError =
+            getWsErrorMessage(err) ??
+            this.hass.localize("ui.panel.config.serial.loading_error");
         }
       } else if (stillCurrent()) {
         serialConfigured = false;
@@ -1405,11 +1406,10 @@ export class HaConfigDevicePage extends LitElement {
       this._esphomeUserData = previous;
       await showAlertDialog(this, {
         text:
-          err instanceof Error
-            ? err.message
-            : this.hass.localize(
-                "ui.panel.config.devices.esphome.setup_error_defer"
-              ),
+          getWsErrorMessage(err) ??
+          this.hass.localize(
+            "ui.panel.config.devices.esphome.setup_error_defer"
+          ),
       });
     }
   }

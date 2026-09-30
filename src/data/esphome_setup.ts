@@ -5,6 +5,7 @@ import {
   mdiSwapHorizontal,
 } from "@mdi/js";
 import { computeDomain } from "../common/entity/compute_domain";
+import { computeObjectId } from "../common/entity/compute_object_id";
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { ESPHomeDeviceCapabilities, ESPHomeSerialProxy } from "./esphome";
 import type { ESPHomeFrontendUserData } from "./frontend";
@@ -89,11 +90,8 @@ export const ESPHOME_CAPABILITY_TITLE_KEYS: Record<
  */
 const SENDSPIN_ENABLED_OBJECT_ID = "sendspin_enabled";
 
-const entityObjectId = (entityId: string): string =>
-  entityId.split(".")[1] ?? "";
-
 const isSendspinEnabledSwitch = (entityId: string): boolean => {
-  const objectId = entityObjectId(entityId);
+  const objectId = computeObjectId(entityId);
   return (
     objectId === SENDSPIN_ENABLED_OBJECT_ID ||
     objectId.endsWith(`_${SENDSPIN_ENABLED_OBJECT_ID}`)
