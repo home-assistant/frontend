@@ -19,7 +19,10 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { deepEqual } from "../../common/util/deep-equal";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DurationSelector } from "../../data/selector";
-import { getDurationSelectorMode } from "../../data/selector";
+import {
+  getDurationSelectorMode,
+  getDurationSelectorUnits,
+} from "../../data/selector";
 import type { ValueChangedEvent } from "../../types";
 import "../ha-duration-input";
 import type { HaDurationData, HaDurationInput } from "../ha-duration-input";
@@ -188,12 +191,10 @@ export class HaTimeDuration extends LitElement {
   }
 
   private _fireValue(type: OffsetType, data: HaDurationData = {}) {
-    const config = this.selector.duration;
-    const { duration } = normalizeDuration(type === "none" ? {} : data, {
-      enableDay: !!config?.enable_day,
-      enableSecond: config?.enable_second ?? true,
-      enableMillisecond: !!config?.enable_millisecond,
-    });
+    const { duration } = normalizeDuration(
+      type === "none" ? {} : data,
+      getDurationSelectorUnits(this.selector.duration)
+    );
     const value = applyDurationSign(duration, type === "before");
     this._offsetType = type;
     this._emittedValue = value;

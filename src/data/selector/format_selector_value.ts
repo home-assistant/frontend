@@ -7,7 +7,7 @@ import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_dis
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import type { HomeAssistant } from "../../types";
 import type { Selector } from "../selector";
-import { getDurationSelectorMode } from "../selector";
+import { getDurationSelectorMode, getDurationSelectorUnits } from "../selector";
 
 export const formatSelectorValue = (
   hass: HomeAssistant,
@@ -139,7 +139,10 @@ export const formatSelectorValue = (
     if (!data) {
       return "";
     }
-    const { negative, duration } = normalizeDuration(data);
+    const { negative, duration } = normalizeDuration(
+      data,
+      getDurationSelectorUnits(selector.duration)
+    );
     const formatted = formatDurationLong(hass.locale, duration);
     const mode = getDurationSelectorMode(selector.duration);
     if (!formatted || mode === "positive") {

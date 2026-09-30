@@ -6,19 +6,15 @@ export interface NormalizedDuration {
   duration: HaDurationData;
 }
 
-interface DurationUnits {
-  enableDay?: boolean;
-  enableSecond?: boolean;
-  enableMillisecond?: boolean;
+export interface DurationUnits {
+  enableDay: boolean;
+  enableSecond: boolean;
+  enableMillisecond: boolean;
 }
 
 export const normalizeDuration = (
   duration: HaDurationData,
-  {
-    enableDay = true,
-    enableSecond = true,
-    enableMillisecond = true,
-  }: DurationUnits = {}
+  { enableDay, enableSecond, enableMillisecond }: DurationUnits
 ): NormalizedDuration => {
   const total = Math.round(durationDataToSeconds(duration) * 1000);
   let rest = Math.abs(total);

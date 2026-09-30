@@ -3,6 +3,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { DurationUnits } from "../common/datetime/normalize_duration";
 import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -282,6 +283,14 @@ export const getDurationSelectorMode = (
   config: DurationSelector["duration"]
 ): DurationSelectorMode =>
   config?.mode ?? (config?.allow_negative ? "signed" : "positive");
+
+export const getDurationSelectorUnits = (
+  config: DurationSelector["duration"]
+): DurationUnits => ({
+  enableDay: !!config?.enable_day,
+  enableSecond: config?.enable_second ?? true,
+  enableMillisecond: !!config?.enable_millisecond,
+});
 
 interface EntitySelectorFilter {
   integration?: string;

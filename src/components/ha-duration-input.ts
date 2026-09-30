@@ -1,7 +1,8 @@
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { live } from "lit/directives/live";
+import { durationDataToSeconds } from "../common/datetime/duration_to_seconds";
 import {
   applyDurationSign,
   normalizeDuration,
@@ -47,6 +48,8 @@ export class HaDurationInput extends LitElement {
 
   @query("ha-base-time-input", true) private _input?: HaBaseTimeInput;
 
+  @state() private _negative = false;
+
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
@@ -56,11 +59,21 @@ export class HaDurationInput extends LitElement {
     return this._input?.reportValidity() ?? true;
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("data") && this.data) {
+      const total = durationDataToSeconds(this.data);
+      if (total) {
+        this._negative = total < 0;
+      }
+    }
+  }
+
   protected render(): TemplateResult {
     const normalized =
       this.data &&
       normalizeDuration(this.data, {
         enableDay: this.enableDay,
+        enableSecond: this.enableSecond,
         enableMillisecond: this.enableMillisecond,
       });
     return html`
@@ -77,7 +90,7 @@ export class HaDurationInput extends LitElement {
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           .enableSign=${this.allowNegative}
-          .negative=${live(normalized?.negative ?? false)}
+          .negative=${live(this._negative)}
           format="24"
           .days=${live(this._fieldValue(normalized?.duration, "days"))}
           .hours=${live(this._fieldValue(normalized?.duration, "hours"))}
@@ -108,6 +121,7 @@ export class HaDurationInput extends LitElement {
   ) {
     ev.stopPropagation();
     const negative = ev.detail.value?.negative ?? false;
+    this._negative = negative;
     const value = ev.detail.value ? { ...ev.detail.value } : undefined;
 
     if (value) {
@@ -148,7 +162,7 @@ export class HaDurationInput extends LitElement {
         value.minutes %= 60;
       }
 
-      if (this.enableDay && value.hours > 24) {
+      if (this.enableDay && value.hours >= 24) {
         value.days = (value.days ?? 0) + Math.floor(value.hours / 24);
         value.hours %= 24;
       }

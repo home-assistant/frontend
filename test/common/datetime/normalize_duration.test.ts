@@ -4,16 +4,24 @@ import {
   normalizeDuration,
 } from "../../../src/common/datetime/normalize_duration";
 
+const ALL_UNITS = {
+  enableDay: true,
+  enableSecond: true,
+  enableMillisecond: true,
+};
+
 describe("normalizeDuration", () => {
   it("splits the sign from the components", () => {
-    expect(normalizeDuration({ hours: -1, minutes: -30 })).toEqual({
+    expect(normalizeDuration({ hours: -1, minutes: -30 }, ALL_UNITS)).toEqual({
       negative: true,
       duration: { days: 0, hours: 1, minutes: 30, seconds: 0, milliseconds: 0 },
     });
   });
 
   it("uses the total when components have mixed signs", () => {
-    expect(normalizeDuration({ hours: 1, minutes: -30 })).toMatchObject({
+    expect(
+      normalizeDuration({ hours: 1, minutes: -30 }, ALL_UNITS)
+    ).toMatchObject({
       negative: false,
       duration: { hours: 0, minutes: 30 },
     });
@@ -23,7 +31,7 @@ describe("normalizeDuration", () => {
     expect(
       normalizeDuration(
         { days: 1, hours: 2, seconds: 5, milliseconds: 500 },
-        { enableDay: false, enableMillisecond: false }
+        { enableDay: false, enableSecond: true, enableMillisecond: false }
       )
     ).toEqual({
       negative: false,
