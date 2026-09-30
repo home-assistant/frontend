@@ -17,7 +17,10 @@ import {
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import type { DurationSelector } from "../../data/selector";
+import type {
+  DurationSelector,
+  DurationSelectorMode,
+} from "../../data/selector";
 import {
   getDurationSelectorMode,
   getDurationSelectorUnits,
@@ -99,12 +102,7 @@ export class HaTimeDuration extends LitElement {
     const data = this._data(this.value);
 
     if (mode !== "offset") {
-      return this._renderInput(
-        data,
-        this.label,
-        this.helper,
-        mode === "signed"
-      );
+      return this._renderInput(data, mode, this.label, this.helper);
     }
 
     return html`
@@ -142,7 +140,7 @@ export class HaTimeDuration extends LitElement {
                       "ui.components.selectors.duration.duration"
                     )}${this.required ? "*" : ""}</span
                   >
-                  ${this._renderInput(data, undefined)}
+                  ${this._renderInput(data, mode)}
                 </div>`
           }
         </div>
@@ -157,9 +155,9 @@ export class HaTimeDuration extends LitElement {
 
   private _renderInput(
     data: HaDurationData | undefined,
-    label: string | undefined,
-    helper?: string,
-    allowNegative = false
+    mode: DurationSelectorMode,
+    label?: string,
+    helper?: string
   ) {
     return html`
       <ha-duration-input
@@ -167,10 +165,10 @@ export class HaTimeDuration extends LitElement {
         .helper=${helper}
         .data=${data}
         .disabled=${this.disabled}
-        .required=${this.required}
+        .required=${this.required || mode === "offset"}
         .enableDay=${this.selector.duration?.enable_day ?? false}
         .enableMillisecond=${this.selector.duration?.enable_millisecond ?? false}
-        .allowNegative=${allowNegative}
+        .allowNegative=${mode === "signed"}
         .enableSecond=${this.selector.duration?.enable_second ?? true}
       ></ha-duration-input>
     `;
