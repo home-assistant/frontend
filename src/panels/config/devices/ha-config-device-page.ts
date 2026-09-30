@@ -1157,7 +1157,7 @@ export class HaConfigDevicePage extends LitElement {
     if (!this._esphomeSetup) {
       const esphomeSetup =
         await import("./device-detail/integration-elements/esphome/esphome-setup-controller");
-      if (request !== this._esphomeSetupRequest) {
+      if (request !== this._esphomeSetupRequest || this.deviceId !== deviceId) {
         return;
       }
       this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(this, () =>
