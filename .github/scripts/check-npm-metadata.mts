@@ -80,7 +80,7 @@ const fetchJson = async <T,>(url: string): Promise<T | undefined> => {
     );
   }
 
-  return response.json();
+  return JSON.parse(await response.text());
 };
 
 const readPackageJson = async (
