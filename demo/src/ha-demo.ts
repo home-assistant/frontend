@@ -29,6 +29,7 @@ import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
+import { zoneRegistryEntries } from "./stubs/map";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockRecorder } from "./stubs/recorder";
@@ -181,6 +182,7 @@ export class HaDemo extends HomeAssistantAppEl {
         modified_at: 0,
       },
       ...connectivityEntityRegistryEntries,
+      ...zoneRegistryEntries,
     ]);
 
     hass.addEntities(energyEntities());
