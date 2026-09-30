@@ -67,7 +67,7 @@ const fakeEngine = vi.hoisted(() => {
 
     hasUsableSize = () => true;
 
-    setDarkMode = vi.fn();
+    setMapStyle = vi.fn();
 
     setZoomControlPosition = vi.fn();
 
@@ -224,6 +224,20 @@ describe("ha-map engine selection", () => {
     // Entities are drawn through the engine
     expect(engine.addMarker).toHaveBeenCalledTimes(2);
     expect(entityHandles(el)).toHaveLength(2);
+  });
+
+  it("sets up while themes are not loaded yet, as during onboarding", async () => {
+    const el = document.createElement("ha-map");
+    el.themeMode = "auto";
+    (el as any)._ui = { themes: null };
+    (el as any)._states = STATES;
+    (el as any)._config = {
+      config: { latitude: 52.3731339, longitude: 4.8903147 },
+    };
+    document.body.appendChild(el);
+    await vi.waitUntil(() => isLoaded(el));
+
+    expect(fakeEngine.instances).toHaveLength(1);
   });
 
   it("runs on Leaflet when WebGL2 is not available", async () => {
