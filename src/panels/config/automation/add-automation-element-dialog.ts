@@ -926,7 +926,8 @@ class DialogAddAutomationElement
             ? getDeviceArea(device, this.hass.areas, this.hass.devices)
             : undefined;
           const parentDevice =
-            device?.parent_device_id && device.next_name_part !== "area"
+            device?.parent_device_id &&
+            device.next_name_part === "parent_device"
               ? this.hass.devices[device.parent_device_id]
               : undefined;
           if (area) {

@@ -151,9 +151,9 @@ export const reloadHassioAddons = async (hass: HomeAssistant) => {
   });
 };
 
-export const fetchHassioAddonsInfo = async (
-  hass: HomeAssistant
-): Promise<HassioAddonsInfo> => {
+export const fetchHassioAddonsInfo = async (hass: {
+  callWS: CallWS;
+}): Promise<HassioAddonsInfo> => {
   return hass.callWS({
     type: "supervisor/api",
     endpoint: "/addons",

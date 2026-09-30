@@ -506,7 +506,7 @@ describe("computeEntityNameList", () => {
           entity_id: "light.kitchen",
           name: "Light",
           device_id: "dev1",
-          area_id: "kitchen",
+          next_name_part: "device",
         }),
       },
       devices: {
