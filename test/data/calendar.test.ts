@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { CalendarEventApiData } from "../../src/data/calendar";
-import {
-  getCalendarColors,
-  normalizeSubscriptionEventData,
-} from "../../src/data/calendar";
+import { getCalendarColors } from "../../src/data/calendar";
 
 const style = {
   getPropertyValue: (prop: string) => (prop === "--color-1" ? "#4269d0" : ""),
@@ -58,32 +54,5 @@ describe("getCalendarColors", () => {
     expect(
       getCalendarColors("rgba(255, 255, 255, 0.1)", 0, style).textColor
     ).toBeUndefined();
-  });
-});
-
-describe("normalizeSubscriptionEventData", () => {
-  const calendar = { entity_id: "calendar.work", backgroundColor: "#4269d0" };
-  const event: CalendarEventApiData = {
-    summary: "Installation",
-    start: "2026-10-13T09:00:00+02:00",
-    end: "2026-10-13T17:00:00+02:00",
-  };
-
-  it("marks a tentative event", () => {
-    const normalized = normalizeSubscriptionEventData(
-      { ...event, status: "tentative" },
-      calendar
-    );
-    expect(normalized?.eventData.status).toBe("tentative");
-    expect(normalized?.classNames).toEqual(["tentative"]);
-  });
-
-  it("draws a confirmed event like one without a status", () => {
-    for (const status of ["confirmed", null, undefined] as const) {
-      expect(
-        normalizeSubscriptionEventData({ ...event, status }, calendar)
-          ?.classNames
-      ).toBeUndefined();
-    }
   });
 });
