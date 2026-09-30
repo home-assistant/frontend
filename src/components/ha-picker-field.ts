@@ -9,6 +9,7 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { internationalizationContext } from "../data/context";
@@ -30,6 +31,9 @@ export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 @customElement("ha-picker-field")
 export class HaPickerField extends PickerMixin(LitElement) {
   @property({ type: Boolean, reflect: true }) public invalid = false;
+
+  @property({ type: String, attribute: "aria-label" })
+  public ariaLabel: string | null = null;
 
   @query("#trigger", true) private _trigger?: HTMLButtonElement;
 
@@ -57,6 +61,9 @@ export class HaPickerField extends PickerMixin(LitElement) {
           >`
         : nothing;
 
+    const labelShown = !!this.label && (hasValue || !this.placeholder);
+    const hiddenLabel = labelShown ? undefined : this.ariaLabel || this.label;
+
     const headlineContent = hasValue
       ? this.valueRenderer
         ? this.valueRenderer(this.value ?? "")
@@ -70,10 +77,18 @@ export class HaPickerField extends PickerMixin(LitElement) {
     return html`
       <div class="field">
         <ha-ripple .disabled=${this.disabled}></ha-ripple>
+        ${
+          hiddenLabel
+            ? html`<span id="hidden-label" hidden>${hiddenLabel}</span>`
+            : nothing
+        }
         <button
           id="trigger"
           class="trigger"
           type="button"
+          aria-labelledby=${ifDefined(
+            hiddenLabel ? "hidden-label trigger" : undefined
+          )}
           ?disabled=${this.disabled}
         >
           <ha-combo-box-item .disabled=${this.disabled}>
