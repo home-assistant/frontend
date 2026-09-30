@@ -1,9 +1,16 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, queryAssignedElements } from "lit/decorators";
+import { customElement, property, queryAssignedElements } from "lit/decorators";
 import { HaChipBase } from "./ha-chip-base";
 
 @customElement("ha-chip-set")
 export class HaChipSet extends LitElement {
+  @property({ attribute: "aria-label", reflect: true })
+  public override ariaLabel: string | null = null;
+
+  @property({ attribute: "aria-labelledby", reflect: true })
+  public ariaLabelledBy?: string;
+
   @queryAssignedElements({ flatten: true }) private _children!: HTMLElement[];
 
   get chips(): HaChipBase[] {
@@ -14,7 +21,6 @@ export class HaChipSet extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setAttribute("role", "toolbar");
     this.addEventListener("keydown", this._handleKeyDown);
     this.addEventListener("focusin", this._updateTabIndices);
     this.addEventListener("update-focus", this._updateTabIndices);
@@ -25,6 +31,19 @@ export class HaChipSet extends LitElement {
     this.removeEventListener("keydown", this._handleKeyDown);
     this.removeEventListener("focusin", this._updateTabIndices);
     this.removeEventListener("update-focus", this._updateTabIndices);
+  }
+
+  protected override willUpdate(changed: PropertyValues<this>) {
+    super.willUpdate(changed);
+
+    // A toolbar needs a name when a page has several, so only use the role
+    // when the chip set is labelled.
+    if (changed.has("ariaLabel") || changed.has("ariaLabelledBy")) {
+      this.setAttribute(
+        "role",
+        this.ariaLabel || this.ariaLabelledBy ? "toolbar" : "group"
+      );
+    }
   }
 
   protected render() {
