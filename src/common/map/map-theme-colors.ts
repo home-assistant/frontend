@@ -60,6 +60,57 @@ const MAP_THEME_TOKENS: Record<string, readonly string[]> = {
   ],
 };
 
+// Keys the palettes draw translucent. A token is a color, not an opacity, so
+// the alpha has to be put back: an opaque `--ha-color-map-green` would turn
+// sports pitches into solid blocks, and `--ha-color-map-label-secondary` would
+// put house numbers and POI labels at full strength.
+const KEY_ALPHA: Record<string, number> = {
+  siteSports: 0.15,
+  labelHalo: 0.8,
+  labelPoi: 0.4,
+  labelHousenumber: 0.3,
+};
+
+// What @versatiles/style parses. Anything else - a named color, color-mix(),
+// color() - makes it throw, which would take the card to raster tiles.
+const PARSEABLE = /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\()/i;
+
+/**
+ * Resolves a color the builder cannot parse by letting the browser compute it.
+ * Custom properties hold whatever CSS accepts, and a theme has no reason to
+ * know which spellings the builder happens to take.
+ */
+const computeColor = (element: Element, token: string): string | undefined => {
+  const probe = document.createElement("span");
+  probe.style.cssText = `display:none;color:var(${token})`;
+  element.appendChild(probe);
+  const computed = getComputedStyle(probe).color;
+  probe.remove();
+  return PARSEABLE.test(computed) ? computed : undefined;
+};
+
+const withAlpha = (color: string, alpha: number): string => {
+  // Only a plain hex needs it spelled out; the browser hands back rgb()/rgba()
+  // and the builder takes those as they are.
+  if (/^#[0-9a-f]{6}$/i.test(color)) {
+    return (
+      color +
+      Math.round(alpha * 255)
+        .toString(16)
+        .padStart(2, "0")
+    );
+  }
+  const rgb = color.match(/^rgba?\(([^)]+)\)$/i);
+  if (rgb) {
+    const parts = rgb[1]
+      .split(/[,\s/]+/)
+      .filter(Boolean)
+      .slice(0, 3);
+    return `rgba(${parts.join(",")},${alpha})`;
+  }
+  return color;
+};
+
 /**
  * What the active theme says about the map, or undefined when it says nothing -
  * the common case, and the one that keeps the map on the generated style.
@@ -71,13 +122,18 @@ export const readMapThemeColors = (
   let colors: Record<string, string> | undefined;
 
   for (const [token, keys] of Object.entries(MAP_THEME_TOKENS)) {
-    const value = style.getPropertyValue(token).trim();
+    const raw = style.getPropertyValue(token).trim();
+    if (!raw) {
+      continue;
+    }
+    const value = PARSEABLE.test(raw) ? raw : computeColor(element, token);
     if (!value) {
       continue;
     }
     colors ??= {};
     for (const key of keys) {
-      colors[key] = value;
+      const alpha = KEY_ALPHA[key];
+      colors[key] = alpha === undefined ? value : withAlpha(value, alpha);
     }
   }
 

@@ -14,7 +14,9 @@ import { finalizeMapStyle } from "./map-style-transforms";
  * build-scripts/gulp/map-assets.js. Read rather than repeated here because the
  * sprite URL carries a hash of the sheet that ships with this build.
  */
-const STYLE_URLS_PATH = "/static/map/urls.json";
+// Versioned: /static is served with a month of max-age, so a cached manifest
+// could otherwise pair a new build with the sprite sheet of an old one.
+const STYLE_URLS_PATH = `/static/map/urls.json?v=${__VERSION__}`;
 
 let urls: Promise<OsmOptions["urls"]> | undefined;
 
@@ -41,11 +43,19 @@ export const buildMapStyle = async (
 
   // Theme and URLs come last: the palette is ours to pick from the theme mode,
   // and the asset URLs are core's proxy and this build's sprite sheet.
-  const style = osm({
-    ...(options as OsmOptions),
-    theme: palette,
-    urls: resolvedUrls,
-  });
+  const build = (opts: Record<string, unknown>) =>
+    osm({ ...(opts as OsmOptions), theme: palette, urls: resolvedUrls });
+
+  let style: StyleSpecification;
+  try {
+    style = build(options);
+  } catch {
+    // The builder throws on an option it does not know and on a color it
+    // cannot parse. Those come from a card config or a theme, so one typo
+    // would otherwise drop the whole card to raster tiles; the cartography
+    // without the adjustments is a much smaller loss.
+    style = build({});
+  }
 
   return finalizeMapStyle(palette, style);
 };

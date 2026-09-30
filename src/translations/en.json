@@ -10672,7 +10672,7 @@
                 "dark": "Dark"
               },
               "map_style": "Map style",
-              "map_style_helper": "Each style has a light and a dark version. Theme mode picks which one is used.",
+              "map_style_helper": "Each style has a light and a dark version. The theme mode picks which one is shown.",
               "map_styles": {
                 "default": "Default",
                 "colorful": "Colorful",

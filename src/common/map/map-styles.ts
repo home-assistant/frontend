@@ -155,6 +155,35 @@ const builderOptions = (style: CustomMapStyleConfig, darkMode: boolean) => {
   return options;
 };
 
+/**
+ * A picked cartography back into a config value, keeping whatever only YAML can
+ * write. A bare name while there is nothing else, an object once there is.
+ *
+ * The visual editor offers the cartography and nothing else, so without this an
+ * edit would drop a hand-written palette without saying so.
+ */
+export const withMapStyleBase = (
+  current: MapStyleConfig | undefined,
+  base: string | undefined
+): MapStyleConfig | undefined => {
+  // The form always holds a value, so writing the default back would add
+  // `map_style: default` to every card the editor touches.
+  const style = isStyle(base) && base !== DEFAULT_MAP_STYLE ? base : undefined;
+
+  const carried: Record<string, unknown> = isCustomMapStyle(current)
+    ? { ...current }
+    : {};
+  delete carried.base;
+
+  if (!Object.keys(carried).length) {
+    return style;
+  }
+  return {
+    ...(style && { base: style }),
+    ...carried,
+  } as CustomMapStyleConfig;
+};
+
 /** A style that does not exist would leave the map blank, so it falls back */
 export const resolveMapStyle = (
   style: MapStyleConfig | undefined,
@@ -168,6 +197,9 @@ export const resolveMapStyle = (
 
   const palette = paletteFor(mapStyle, darkMode);
   const options = custom ? builderOptions(custom, darkMode) : {};
+  // Before the colors below are merged in, so it answers whether the card
+  // asked for anything of its own.
+  const cardAdjusted = Object.keys(options).length > 0;
 
   // Bottom up: the style's colors, what the theme repaints, then what the card
   // names - so a card that sets one color keeps the rest of the look.
@@ -186,9 +218,7 @@ export const resolveMapStyle = (
   }
 
   // Anything added on top of the shipped default has to be built here.
-  const untouched =
-    !themeColors &&
-    (!custom || !Object.keys(builderOptions(custom, darkMode)).length);
+  const untouched = !themeColors && !cardAdjusted;
   return mapStyle === DEFAULT_MAP_STYLE && untouched
     ? { palette, options, shipped: darkMode ? "dark" : "light" }
     : { palette, options };

@@ -619,7 +619,13 @@ export class HaMap extends ReactiveElement {
   // Kept by identity, not just by value: _resolveMapStyle memoizes on its
   // arguments, and a fresh object per read would defeat it.
   private _readThemeColors(): void {
-    const colors = readMapThemeColors(this);
+    // Only one set of --ha-color-map-* is live on the page, the one for the
+    // mode the page is in. A card forced to the other mode draws the other
+    // palette, so those values would be the wrong half of the theme; the
+    // style's own colors are the better answer there.
+    const pageDark = Boolean(this._ui?.themes.darkMode);
+    const colors =
+      this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
     if (!deepEqual(colors, this._themeColors)) {
       this._themeColors = colors;
     }

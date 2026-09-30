@@ -34,11 +34,8 @@ import "../../../../components/ha-switch";
 import {
   DEFAULT_MAP_STYLE,
   isCustomMapStyle,
+  withMapStyleBase,
   MAP_STYLES,
-} from "../../../../common/map/map-styles";
-import type {
-  CustomMapStyleConfig,
-  MapStyle,
 } from "../../../../common/map/map-styles";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import type { SelectSelector } from "../../../../data/selector";
@@ -287,7 +284,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   // `map_style` is a preset name or an object; the form only picks the
   // cartography, so an object is reduced to its base here and put back
-  // together in _mapStyleConfig.
+  // together by withMapStyleBase.
   private _formData = memoizeOne((config: MapCardConfig) => {
     const style = config.map_style;
     const custom = isCustomMapStyle(style) ? style : undefined;
@@ -546,7 +543,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (config.show_all && config.entities?.length === 0) {
       delete config.entities;
     }
-    config.map_style = this._mapStyleConfig(config.map_style);
+    config.map_style = withMapStyleBase(
+      this._config?.map_style,
+      config.map_style
+    );
     if (config.map_style === undefined) {
       delete config.map_style;
     }
@@ -614,33 +614,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         return undefined;
     }
   };
-
-  /**
-   * The picked cartography back into a config value: a bare preset name while
-   * there is nothing else, an object once the config carries more.
-   */
-  private _mapStyleConfig(
-    base: string | undefined
-  ): MapCardConfig["map_style"] {
-    const style = base ? (base as MapStyle) : undefined;
-
-    // Colors, recolor, text, icon and layers have no field in this form: they
-    // can only be written as YAML. Carry them over, or opening the card in the
-    // editor and touching anything would delete them.
-    const current = this._config?.map_style;
-    const carried: Record<string, unknown> = isCustomMapStyle(current)
-      ? { ...current }
-      : {};
-    delete carried.base;
-
-    if (!Object.keys(carried).length) {
-      return style;
-    }
-    return {
-      ...(style && { base: style }),
-      ...carried,
-    } as CustomMapStyleConfig;
-  }
 
   // remove "label_mode", "attribute" & "unit" options when needed
   private _deleteOptions(config: MapEntityConfig): MapEntityConfig {

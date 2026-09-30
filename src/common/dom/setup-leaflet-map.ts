@@ -2,6 +2,7 @@ import type { Map } from "leaflet";
 import type { MapBaseLayer } from "../map/base-layer";
 import { createBaseLayer, MAP_MAX_ZOOM, MAP_MIN_ZOOM } from "../map/base-layer";
 import type { ResolvedMapStyle } from "../map/map-styles";
+import { resolveMapStyle } from "../map/map-styles";
 
 // Sets up a Leaflet map on the provided DOM element
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -62,7 +63,9 @@ export const setupLeafletMap = async (
   const baseLayer = await createBaseLayer(
     Leaflet,
     map,
-    initialView?.mapStyle ?? { palette: "colorful" },
+    // The shipped default, not the builder's bare cartography - which would
+    // also mean building a style in the browser for no reason.
+    initialView?.mapStyle ?? resolveMapStyle(undefined, false),
     initialView?.token
   );
 
