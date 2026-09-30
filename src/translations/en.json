@@ -12297,7 +12297,7 @@
             "no_open_issues": "No open issues on GitHub"
           },
           "details": {
-            "works_with": "Works with Home Assistant {version} or newer",
+            "requires": "Requires Home Assistant {version} or newer",
             "source_code": "View source code",
             "issue_tracker": "Issue tracker"
           },

@@ -664,7 +664,7 @@ describe("ha-marketplace-repository-dashboard", () => {
       page
         .shadowRoot!.querySelector(".details .signals li")!
         .textContent!.trim()
-    ).toBe("ui.panel.marketplace.repository.details.works_with");
+    ).toBe("ui.panel.marketplace.repository.details.requires");
     const community = page.shadowRoot!.querySelector(".community")!;
     expect(community.querySelector("dl")).toBeNull();
     expect(

@@ -771,7 +771,7 @@ type: module</pre>`,
     if (repository.homeassistant) {
       signals.push({
         icon: mdiHomeAssistant,
-        text: localize("ui.panel.marketplace.repository.details.works_with", {
+        text: localize("ui.panel.marketplace.repository.details.requires", {
           version: html`<strong>${repository.homeassistant}</strong>`,
         }),
       });
