@@ -68,7 +68,7 @@
     "@fullcalendar/luxon3": "6.1.21",
     "@fullcalendar/timegrid": "6.1.21",
     "@home-assistant/webawesome": "3.7.0-ha.1",
-    "@lezer/common": "1.5.2",
+    "@lezer/common": "1.5.3",
     "@lezer/highlight": "1.2.4",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
