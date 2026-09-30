@@ -705,8 +705,9 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.getElementById("map")?.remove();
     const map = document.createElement("div");
     map.id = "map";
-    // Set before the style loads, so a light theme does not flash white first
-    map.classList.toggle("space", this._vectorEngine);
+    // Which ground shows in the gap before the first frame; the rest of the
+    // classes wait for the engine (_updateMapStyle)
+    map.classList.toggle("dark", this._darkMode);
     this.shadowRoot!.append(map);
     this._loading = true;
     const attempt = ++this._setupAttempt;
@@ -1638,6 +1639,9 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
+      /* Until the first frame is drawn the container is what shows; the
+         cartography's own ground makes that gap hard to notice */
+      background-color: #f4efe6;
       /* A cluster bubble and its tail cast a single shadow around their
          combined silhouette (drop-shadow on the wrapper), so no shadow seam
          appears between the bubble and its tail. */
@@ -1661,7 +1665,7 @@ export class HaMap extends ReactiveElement {
       transition-delay: var(--ha-animation-duration-fast);
     }
     #map.dark {
-      background: #090909;
+      background: #191b2c;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
     }
