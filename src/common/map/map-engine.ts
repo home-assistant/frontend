@@ -178,11 +178,15 @@ export interface MapClusterOptions {
    */
   groupKey?(marker: MapMarkerHandle): string | undefined;
   groupRadius?: number;
-  /** Builds a cluster's element; called when its members change and on refreshClusters() */
+  /**
+   * Builds a cluster's element; called when its members change and on
+   * refreshClusters(). An expanded cluster shows every member.
+   */
   iconBuilder(
     members: MapMarkerHandle[],
     location: MapLatLng,
-    key?: string
+    key?: string,
+    expanded?: boolean
   ): MapClusterIcon;
 }
 
