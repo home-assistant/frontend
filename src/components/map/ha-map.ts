@@ -85,6 +85,9 @@ declare global {
 
 const PROGRAMMITIC_FIT_DELAY = 250;
 
+// An engine that never reports a drawn frame must not leave an empty card
+const DRAWN_FALLBACK = 3000;
+
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
@@ -474,6 +477,7 @@ export class HaMap extends ReactiveElement {
     this._startingEngine?.destroy();
     this._startingEngine = undefined;
     this._loading = false;
+    clearTimeout(this._drawnFallback);
     this._entityHandles = [];
     this._entityMarkers.clear();
     this._clusterAvatars.clear();
@@ -652,6 +656,7 @@ export class HaMap extends ReactiveElement {
     }
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("drawn", this._mapDrawn);
     // The sky belongs behind a drawn globe; on a blank canvas it is just a
     // gradient with a glow in it
     map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
@@ -661,6 +666,17 @@ export class HaMap extends ReactiveElement {
   }
 
   private _mapDrawn = false;
+
+  private _drawnFallback?: number;
+
+  private _markDrawn(attempt: number): void {
+    if (attempt !== this._setupAttempt || this._mapDrawn) {
+      return;
+    }
+    clearTimeout(this._drawnFallback);
+    this._mapDrawn = true;
+    this._updateMapAppearance();
+  }
 
   private _loading = false;
 
@@ -718,7 +734,12 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.append(map);
     this._loading = true;
     this._mapDrawn = false;
+    clearTimeout(this._drawnFallback);
     const attempt = ++this._setupAttempt;
+    this._drawnFallback = window.setTimeout(
+      () => this._markDrawn(attempt),
+      DRAWN_FALLBACK
+    );
     let engine: MapEngine | undefined;
     try {
       // Without a connection or the tile proxy the map sets up without tiles
@@ -758,13 +779,7 @@ export class HaMap extends ReactiveElement {
             }
           },
           fatal: () => this._handleEngineFatal(),
-          drawn: () => {
-            if (attempt !== this._setupAttempt) {
-              return;
-            }
-            this._mapDrawn = true;
-            this._updateMapAppearance();
-          },
+          drawn: () => this._markDrawn(attempt),
         },
       });
       // Disconnected while the style was loading, or superseded by a newer setup
@@ -1654,14 +1669,19 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
-      /* Until the first frame is drawn the container is what shows; the
-         cartography's own ground makes that gap hard to notice */
+      /* The map arrives in one piece: the container carries the cartography's
+         own ground, and fades in with the markers once a frame is drawn */
       background-color: #f4efe6;
+      opacity: 0;
+      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-in;
       /* A cluster bubble and its tail cast a single shadow around their
          combined silhouette (drop-shadow on the wrapper), so no shadow seam
          appears between the bubble and its tail. */
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
+    }
+    #map.drawn {
+      opacity: 1;
     }
     #map.clickable {
       cursor: pointer;
