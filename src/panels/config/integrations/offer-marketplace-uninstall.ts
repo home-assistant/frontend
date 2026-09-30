@@ -30,14 +30,14 @@ const installedFromTheMarketplace = async (
 };
 
 // With the last entry of an integration from the Marketplace deleted, its
-// files are all that is left of it.
+// files are all that is left of it. Returns whether it was uninstalled.
 export const offerMarketplaceUninstall = async (
   element: HTMLElement,
   hass: HomeAssistant,
   domain: string
-): Promise<void> => {
+): Promise<boolean> => {
   if (!isComponentLoaded(hass.config, "marketplace")) {
-    return;
+    return false;
   }
 
   let repository: RepositoryBase | undefined;
@@ -45,10 +45,10 @@ export const offerMarketplaceUninstall = async (
     repository = await installedFromTheMarketplace(hass, domain);
   } catch (_err: unknown) {
     // Only an offer, the entry itself is deleted already
-    return;
+    return false;
   }
   if (!repository) {
-    return;
+    return false;
   }
 
   // The row of the deleted entry is likely gone by now, the app can still
@@ -58,7 +58,7 @@ export const offerMarketplaceUninstall = async (
       ? element
       : document.querySelector("home-assistant")) ?? element;
   const { name, id } = repository;
-  await showConfirmationDialog(host, {
+  return showConfirmationDialog(host, {
     title: hass.localize(
       "ui.panel.config.integrations.config_entry.marketplace_uninstall.title",
       { name }

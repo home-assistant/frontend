@@ -57,7 +57,8 @@ describe("offerMarketplaceUninstall", () => {
     vi.mocked(fetchMarketplaceRepositories).mockResolvedValueOnce([INSTALLED]);
     const home = hass();
 
-    await offerMarketplaceUninstall(element(), home, "example");
+    const uninstalled = offerMarketplaceUninstall(element(), home, "example");
+    await vi.waitFor(() => expect(showConfirmationDialog).toHaveBeenCalled());
 
     const params = vi.mocked(showConfirmationDialog).mock.lastCall![1];
     expect(params.destructive).toBe(true);
@@ -65,6 +66,16 @@ describe("offerMarketplaceUninstall", () => {
     expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(
       home,
       "1296269"
+    );
+    expect(await uninstalled).toBe(true);
+  });
+
+  it("tells when the uninstall was declined", async () => {
+    vi.mocked(fetchMarketplaceRepositories).mockResolvedValueOnce([INSTALLED]);
+    vi.mocked(showConfirmationDialog).mockResolvedValueOnce(false);
+
+    expect(await offerMarketplaceUninstall(element(), hass(), "example")).toBe(
+      false
     );
   });
 
@@ -97,8 +108,9 @@ describe("offerMarketplaceUninstall", () => {
     vi.mocked(getConfigEntries).mockResolvedValueOnce(entries);
     vi.mocked(fetchMarketplaceRepositories).mockResolvedValueOnce(repositories);
 
-    await offerMarketplaceUninstall(element(), hass(components), "example");
-
+    expect(
+      await offerMarketplaceUninstall(element(), hass(components), "example")
+    ).toBe(false);
     expect(showConfirmationDialog).not.toHaveBeenCalled();
   });
 

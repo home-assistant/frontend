@@ -24,6 +24,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -806,7 +807,11 @@ export class HaConfigEntryRow extends LitElement {
       return;
     }
     const result = await deleteConfigEntry(this.hass, entryId);
-    await offerMarketplaceUninstall(this, this.hass, this.data.entry.domain);
+    const uninstalled = await offerMarketplaceUninstall(
+      this,
+      this.hass,
+      this.data.entry.domain
+    );
 
     if (result.require_restart) {
       showAlertDialog(this, {
@@ -817,6 +822,11 @@ export class HaConfigEntryRow extends LitElement {
     }
     if (applicationCredentialsId) {
       this._removeApplicationCredential(applicationCredentialsId);
+    }
+
+    // Nothing of the integration is left to show on its page
+    if (uninstalled) {
+      navigate("/config/integrations/dashboard", { replace: true });
     }
   };
 

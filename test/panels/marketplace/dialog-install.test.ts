@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { navigate } from "../../../src/common/navigate";
 import { showConfigFlowDialog } from "../../../src/dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
@@ -27,6 +28,10 @@ const stubElement = vi.hoisted(() => (tag: string) => {
 
 vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
   showConfirmationDialog: vi.fn(async () => false),
+}));
+vi.mock("../../../src/common/navigate", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  navigate: vi.fn(),
 }));
 vi.mock("../../../src/dialogs/config-flow/show-dialog-config-flow", () => ({
   showConfigFlowDialog: vi.fn(),
@@ -145,12 +150,6 @@ describe("dialog-marketplace-install", () => {
       written: { config_flow: true, status: "pending-restart" },
       flows: [],
     },
-    {
-      name: "an integration set up from YAML",
-      installed: false,
-      written: { config_flow: false, status: "installed" },
-      flows: [],
-    },
   ])(
     "starts setting up $name: $flows",
     async ({ installed, written, flows }) => {
@@ -184,6 +183,49 @@ describe("dialog-marketplace-install", () => {
       vi.mocked(showConfigFlowDialog).mockClear();
     }
   );
+
+  it("points at the documentation of an integration without a setup", async () => {
+    const dialog = await openInstallDialog(
+      {
+        repository: repositoryInfo("1", {
+          installed: false,
+          domain: "example",
+        }),
+      },
+      mockConnection(async (message: { type: string }) =>
+        message.type === "marketplace/repository/info"
+          ? repositoryInfo("1", {
+              installed: true,
+              domain: "example",
+              config_flow: false,
+              status: "pending-restart",
+            } as Partial<RepositoryInfo>)
+          : null
+      )
+    );
+    await settle(dialog);
+
+    dialog
+      .shadowRoot!.querySelector("ha-button[slot=primaryAction]")!
+      .dispatchEvent(new Event("click"));
+    await settle(dialog);
+    await settle(dialog);
+
+    expect(showConfigFlowDialog).not.toHaveBeenCalled();
+    const params = vi.mocked(showConfirmationDialog).mock.lastCall![1];
+    expect(params.title).toBe(
+      "ui.panel.marketplace.dialog_install.installed_title"
+    );
+    expect(params.text).toBe(
+      "ui.panel.marketplace.dialog_install.installed_without_set_up"
+    );
+    expect(params.confirmText).toBe(
+      "ui.panel.marketplace.dialog_install.view_documentation"
+    );
+
+    params.confirm!();
+    expect(navigate).toHaveBeenCalledWith("/marketplace/repository/1");
+  });
 
   it.each([
     {

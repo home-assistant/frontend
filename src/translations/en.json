@@ -12273,7 +12273,10 @@
           "new_install_warning": "{repository} is made by {authors}. It is not reviewed or supported by the Home Assistant project.",
           "replaces_built_in_title": "This replaces the built-in {domain} integration",
           "replaces_built_in_warning": "{repository} uses the {domain} domain, which belongs to an integration that comes with Home Assistant. After a restart, Home Assistant loads this one instead of the built-in integration, for everything you set up with it. Devices and services you already set up may stop working. Fixes and improvements to the built-in integration no longer reach you with Home Assistant updates, and the Home Assistant project cannot help with problems it causes. To go back to the built-in integration, uninstall it and restart Home Assistant.",
-          "replaces_built_in_confirm": "I understand this replaces the built-in integration"
+          "replaces_built_in_confirm": "I understand this replaces the built-in integration",
+          "installed_title": "{name} is installed",
+          "installed_without_set_up": "{name} is not set up from the user interface. Its documentation explains how to set it up and use it. Home Assistant loads it after a restart.",
+          "view_documentation": "View documentation"
         },
         "repository": {
           "version_available": "Version {version}",

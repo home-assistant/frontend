@@ -5,6 +5,7 @@ import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
@@ -554,17 +555,47 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     }
 
     const domain = installed.domain;
-    if (
-      !domain ||
-      !installed.config_flow ||
-      installed.status === "pending-restart"
-    ) {
+    if (!domain) {
+      return;
+    }
+
+    if (!installed.config_flow) {
+      await this._showHowToUse(promptHost, installed);
+      return;
+    }
+
+    if (installed.status === "pending-restart") {
       return;
     }
 
     showConfigFlowDialog(promptHost, {
       startFlowHandler: domain,
       navigateToResult: true,
+    });
+  }
+
+  // Without a config flow there is nothing to start here, how it is set up
+  // is in its documentation.
+  private async _showHowToUse(
+    promptHost: HTMLElement,
+    repository: RepositoryInfo
+  ): Promise<void> {
+    await showConfirmationDialog(promptHost, {
+      title: this._i18n.localize(
+        "ui.panel.marketplace.dialog_install.installed_title",
+        { name: repository.name }
+      ),
+      text: this._i18n.localize(
+        "ui.panel.marketplace.dialog_install.installed_without_set_up",
+        { name: repository.name }
+      ),
+      confirmText: this._i18n.localize(
+        "ui.panel.marketplace.dialog_install.view_documentation"
+      ),
+      dismissText: this._i18n.localize("ui.common.close"),
+      confirm: () => {
+        navigate(`/marketplace/repository/${repository.id}`);
+      },
     });
   }
 
