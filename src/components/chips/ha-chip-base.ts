@@ -114,11 +114,17 @@ export class HaChipBase extends HaButton {
                 </span>
                 <span id="accessible-label" hidden>${this.ariaLabel}</span>
                 <button
-                  class="button remove trailing action"
+                  class=${classMap({
+                    button: true,
+                    remove: true,
+                    trailing: true,
+                    action: true,
+                    disabled: this.disabled || this.softDisabled,
+                  })}
                   part="remove-button"
                   type="button"
                   ?disabled=${this.disabled && !this.alwaysFocusable}
-                  aria-disabled=${this.softDisabled ? "true" : nothing}
+                  aria-disabled=${this._ariaDisabled ? "true" : nothing}
                   aria-label=${this.ariaLabelRemove || nothing}
                   aria-labelledby=${
                     this.ariaLabelRemove
@@ -147,8 +153,15 @@ export class HaChipBase extends HaButton {
 
   private _renderPrimaryAction() {
     if (this.href) {
+      const disabled = this.disabled || this.softDisabled;
+
       return html`<a
-        class="button primary action"
+        class=${classMap({
+          button: true,
+          primary: true,
+          action: true,
+          disabled,
+        })}
         part="base"
         title=${this.title || nothing}
         href=${this.href}
@@ -156,7 +169,12 @@ export class HaChipBase extends HaButton {
         download=${this.download || nothing}
         rel=${this.rel || nothing}
         aria-label=${this.ariaLabel || nothing}
-        tabindex=${this._trailingFocused ? -1 : this.tabIndex}
+        aria-disabled=${disabled ? "true" : nothing}
+        tabindex=${
+          this._trailingFocused || (this.disabled && !this.alwaysFocusable)
+            ? -1
+            : this.tabIndex
+        }
         @click=${this.handlePrimaryClick}
         >${this.renderPrimaryContent()}</a
       >`;
@@ -179,11 +197,7 @@ export class HaChipBase extends HaButton {
       type="button"
       title=${this.title || nothing}
       ?disabled=${this.disabled && !this.alwaysFocusable}
-      aria-disabled=${
-        this.softDisabled || (this.disabled && this.alwaysFocusable)
-          ? "true"
-          : nothing
-      }
+      aria-disabled=${this._ariaDisabled ? "true" : nothing}
       aria-label=${this.ariaLabel || nothing}
       aria-pressed=${this.pressed ?? nothing}
       tabindex=${this._trailingFocused ? -1 : this.tabIndex}
@@ -211,6 +225,10 @@ export class HaChipBase extends HaButton {
     </span>`;
   }
 
+  private get _ariaDisabled() {
+    return this.softDisabled || (this.disabled && this.alwaysFocusable);
+  }
+
   protected handlePrimaryClick(event: MouseEvent) {
     this._blockDisabledClick(event);
   }
@@ -230,10 +248,7 @@ export class HaChipBase extends HaButton {
   }
 
   private _blockDisabledClick(event: MouseEvent) {
-    if (
-      this.softDisabled ||
-      (this.disabled && (!this.href || this.alwaysFocusable))
-    ) {
+    if (this.disabled || this.softDisabled) {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
@@ -253,8 +268,24 @@ export class HaChipBase extends HaButton {
         cancelable: true,
       }).defaultPrevented
     ) {
+      const next = this.matches(":focus-within")
+        ? this._adjacentChip()
+        : undefined;
+
       this.remove();
+      next?.focus();
     }
+  }
+
+  private _adjacentChip(): HaChipBase | undefined {
+    const chips = [...(this.parentElement?.children ?? [])].filter(
+      (element): element is HaChipBase =>
+        element instanceof HaChipBase && (element === this || element.focusable)
+    );
+
+    const index = chips.indexOf(this);
+
+    return chips[index + 1] ?? chips[index - 1];
   }
 
   private _handleRemoveFocus() {
@@ -422,6 +453,14 @@ export class HaChipBase extends HaButton {
           flex: none;
           display: flex;
           --mdc-icon-size: var(--ha-chip-icon-size, 18px);
+        }
+        ::slotted([slot]) {
+          width: var(--ha-chip-icon-size, 18px);
+          height: var(--ha-chip-icon-size, 18px);
+          font-size: var(--ha-chip-icon-size, 18px);
+        }
+        .button.disabled {
+          cursor: not-allowed;
         }
         :host([disabled]),
         :host([soft-disabled]) {
