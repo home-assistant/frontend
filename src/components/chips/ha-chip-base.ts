@@ -164,7 +164,8 @@ export class HaChipBase extends HaButton {
         })}
         part="base"
         title=${this.title || nothing}
-        href=${this.href}
+        href=${disabled ? nothing : this.href}
+        role=${disabled ? "link" : nothing}
         target=${this.target || nothing}
         download=${this.download || nothing}
         rel=${this.rel || nothing}
