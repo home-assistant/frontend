@@ -120,6 +120,7 @@ For user-facing changes, establish the existing design context as part of fronte
 - Do not duplicate unresolved findings as new inline comments; reference any that still need action in the review summary. Treat resolved feedback as closed only when the resolution reason or surrounding discussion supports that outcome; otherwise validate it against the current code before suppressing it. Respect **Won't fix** and **Incorrect** reasons.
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests that `ha-frontend-testing` calls for first.
 - Do not ask for new tests on visual components. If the visuals clearly changed and the PR has no screenshots or videos, suggest adding them instead.
+- When the change adds something repository guidance rules out, such as a rendering test, open the comment with the removal ("Remove this test file") and cite the guidance in one sentence. Do not critique how the unwanted code is written, as that reads as a request to fix it.
 - Record the applicable UI/UX evidence for user-facing changes, whether or not further input is needed.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
