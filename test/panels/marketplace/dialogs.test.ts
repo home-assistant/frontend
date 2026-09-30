@@ -111,6 +111,49 @@ describe("dialog-marketplace-custom-repositories", () => {
     expect(getInternals(dialog)._errors).toBeUndefined();
   });
 
+  it("explains adding from a GitHub link, and what each field wants", async () => {
+    const dialog = await openCustomRepositoriesDialog(async () => null);
+    await dialog.updateComplete;
+    const root = dialog.shadowRoot!;
+    const internals = getInternals(dialog);
+
+    expect(
+      (root.querySelector("ha-dialog") as HTMLElement & { headerTitle: string })
+        .headerTitle
+    ).toBe("ui.panel.marketplace.dialog_custom_repositories.title");
+    expect(root.querySelector("p.intro")!.textContent!.trim()).toBe(
+      "ui.panel.marketplace.dialog_custom_repositories.intro"
+    );
+    expect(
+      ["repository", "category"].map((name) => [
+        internals._computeLabel({ name }),
+        internals._computeHelper({ name }),
+      ])
+    ).toEqual([
+      [
+        "ui.panel.marketplace.dialog_custom_repositories.link",
+        "ui.panel.marketplace.dialog_custom_repositories.link_helper",
+      ],
+      [
+        "ui.panel.marketplace.dialog_custom_repositories.type",
+        "ui.panel.marketplace.dialog_custom_repositories.type_helper",
+      ],
+    ]);
+  });
+
+  it("names what was added from links above their list, only when any", async () => {
+    const dialog = await openCustomRepositoriesDialog(async () => null);
+    await dialog.updateComplete;
+
+    expect(dialog.shadowRoot!.querySelector("h3")!.textContent!.trim()).toBe(
+      "ui.panel.marketplace.dialog_custom_repositories.added"
+    );
+
+    getInternals(dialog)._repositories = [];
+    await dialog.updateComplete;
+    expect(dialog.shadowRoot!.querySelector("h3")).toBeNull();
+  });
+
   it("names the category of a repository in the language of the user", async () => {
     const dialog = await openCustomRepositoriesDialog(async () => null);
     await dialog.updateComplete;

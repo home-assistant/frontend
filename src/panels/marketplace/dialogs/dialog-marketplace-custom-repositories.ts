@@ -83,45 +83,12 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         )}
       >
         <div>
-          <ha-list-base>
-            ${this._repositories
-              .filter((repository) => repository.custom)
-              .filter((repository) =>
-                this.params!.marketplace.info.categories.includes(
-                  repository.category
-                )
-              )
-              .map(
-                (repository) =>
-                  html`<ha-list-item-base>
-                    <span slot="headline">${repository.name}</span>
-                    <span slot="supporting-text"
-                      >${repository.full_name}
-                      (${this._i18n.localize(
-                        `ui.panel.marketplace.common.type.${repository.category}`
-                      )})</span
-                    >
-                    <ha-icon-button
-                      slot="end"
-                      id="remove-${repository.id}"
-                      class="delete"
-                      .label=${this._i18n.localize("ui.common.remove")}
-                      .path=${repository.installed ? mdiDeleteOff : mdiDelete}
-                      .disabled=${repository.installed}
-                      data-repository-id=${repository.id}
-                      @click=${this._handleRemoveClick}
-                    ></ha-icon-button>
-                    <ha-tooltip slot="end" .for=${`remove-${repository.id}`}>
-                      ${this._i18n.localize(
-                        // Forgetting an installed repository would leave its files running
-                        repository.installed
-                          ? "ui.panel.marketplace.dialog_custom_repositories.remove_installed"
-                          : "ui.common.remove"
-                      )}
-                    </ha-tooltip>
-                  </ha-list-item-base>`
-              )}
-          </ha-list-base>
+          <p class="intro">
+            ${this._i18n.localize(
+              "ui.panel.marketplace.dialog_custom_repositories.intro"
+            )}
+          </p>
+          ${this._renderAdded()}
           ${
             this._githubConnected
               ? nothing
@@ -139,6 +106,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
             )}
             .error=${this._errors}
             .computeLabel=${this._computeLabel}
+            .computeHelper=${this._computeHelper}
             @value-changed=${this._valueChanged}
             autofocus
           ></ha-form>
@@ -174,6 +142,56 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     `;
   }
 
+  // Only what was added from a link, and only once there is any
+  private _renderAdded() {
+    const added = this._repositories
+      .filter((repository) => repository.custom)
+      .filter((repository) =>
+        this.params!.marketplace.info.categories.includes(repository.category)
+      );
+    if (!added.length) {
+      return nothing;
+    }
+
+    return html`<h3>
+        ${this._i18n.localize(
+          "ui.panel.marketplace.dialog_custom_repositories.added"
+        )}
+      </h3>
+      <ha-list-base>
+        ${added.map(
+          (repository) =>
+            html`<ha-list-item-base>
+              <span slot="headline">${repository.name}</span>
+              <span slot="supporting-text"
+                >${repository.full_name}
+                (${this._i18n.localize(
+                  `ui.panel.marketplace.common.type.${repository.category}`
+                )})</span
+              >
+              <ha-icon-button
+                slot="end"
+                id="remove-${repository.id}"
+                class="delete"
+                .label=${this._i18n.localize("ui.common.remove")}
+                .path=${repository.installed ? mdiDeleteOff : mdiDelete}
+                .disabled=${repository.installed}
+                data-repository-id=${repository.id}
+                @click=${this._handleRemoveClick}
+              ></ha-icon-button>
+              <ha-tooltip slot="end" .for=${`remove-${repository.id}`}>
+                ${this._i18n.localize(
+                  // Forgetting an installed repository would leave its files running
+                  repository.installed
+                    ? "ui.panel.marketplace.dialog_custom_repositories.remove_installed"
+                    : "ui.common.remove"
+                )}
+              </ha-tooltip>
+            </ha-list-item-base>`
+        )}
+      </ha-list-base>`;
+  }
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc, categories: RepositoryType[]): HaFormSchema[] => [
       {
@@ -196,11 +214,18 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   );
 
   private _computeLabel = (schema: HaFormSchema): string =>
-    schema.name === "category"
-      ? this._i18n.localize(
-          "ui.panel.marketplace.dialog_custom_repositories.type"
-        )
-      : this._i18n.localize("ui.panel.marketplace.common.repository");
+    this._i18n.localize(
+      schema.name === "category"
+        ? "ui.panel.marketplace.dialog_custom_repositories.type"
+        : "ui.panel.marketplace.dialog_custom_repositories.link"
+    );
+
+  private _computeHelper = (schema: HaFormSchema): string =>
+    this._i18n.localize(
+      schema.name === "category"
+        ? "ui.panel.marketplace.dialog_custom_repositories.type_helper"
+        : "ui.panel.marketplace.dialog_custom_repositories.link_helper"
+    );
 
   private _valueChanged(ev: CustomEvent) {
     this._data = { ...this._data, ...ev.detail.value };
@@ -321,8 +346,17 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
           margin-block-end: calc(-1 * var(--ha-space-2));
           margin-block-start: var(--ha-space-1);
         }
+        .intro {
+          margin: 0 0 var(--ha-space-4);
+        }
+        h3 {
+          margin: 0;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-medium);
+        }
         ha-list-base {
           padding: 0;
+          margin-block-end: var(--ha-space-4);
         }
         ha-alert {
           display: block;

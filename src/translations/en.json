@@ -12245,8 +12245,13 @@
           "type": "Type"
         },
         "dialog_custom_repositories": {
-          "title": "Custom repositories",
+          "title": "Add from a GitHub link",
+          "intro": "Add something that is not in the Marketplace yet, straight from its page on GitHub. Like everything in the Marketplace, it is made by the community and not tested or reviewed by the Home Assistant project.",
+          "link": "GitHub link",
+          "link_helper": "The address of its page on GitHub, like https://github.com/owner/name",
           "type": "Type",
+          "type_helper": "What it adds to Home Assistant. Its documentation usually says which one it is.",
+          "added": "Added from links",
           "no_repository": "Missing repository",
           "no_type": "Missing type",
           "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first.",
