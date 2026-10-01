@@ -2,7 +2,7 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { ContextType } from "@lit/context";
 import { mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
   customElement,
   eventOptions,
@@ -246,6 +246,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _search = "";
 
+  private _activateTopMatch = false;
+
   protected firstUpdated() {
     this._registerKeyboardShortcuts();
   }
@@ -257,6 +259,22 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._items = this._allItems;
       this._updateListMode();
     }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (this._activateTopMatch) {
+      this._activateTopMatch = false;
+      this._highlightTopMatch();
+    }
+  }
+
+  // Enter picks the top match after a search, so highlight it as soon as the
+  // list has the filtered rows. The list resets its active row when it takes
+  // new rows, so wait for that first.
+  private async _highlightTopMatch() {
+    await this._list?.updateComplete;
+    this._initializeSelectedIndex();
   }
 
   disconnectedCallback() {
@@ -644,6 +662,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     this._resetSelectedItem();
     this._resetListScroll();
+    this._activateTopMatch = !!this._search;
   };
 
   private _preventBlur(ev: Event) {
