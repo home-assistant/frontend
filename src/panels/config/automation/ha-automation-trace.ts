@@ -111,6 +111,12 @@ export class HaAutomationTrace extends LitElement {
   // Only the latest trace list request may update the page.
   private _tracesRequest = 0;
 
+  // The run the latest trace list request was asked for, while it loads.
+  private _requestedRunId?: string;
+
+  // Only the latest trace request may update the page.
+  private _traceRequest = 0;
+
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
    * every label on every state event. The run already happened, so only the
@@ -536,10 +542,16 @@ export class HaAutomationTrace extends LitElement {
     const runId = new URLSearchParams(location.search).get("run_id");
     if (
       !runId ||
-      runId === this._runId ||
+      runId === (this._requestedRunId ?? this._runId) ||
       !this._traces ||
       location.pathname !== this._tracePath
     ) {
+      return;
+    }
+    if (runId === this._runId) {
+      // Back to the shown run before the requested one arrived.
+      this._tracesRequest++;
+      this._requestedRunId = undefined;
       return;
     }
     this._selected = undefined;
@@ -569,11 +581,13 @@ export class HaAutomationTrace extends LitElement {
 
   private async _loadTraces(runId?: string) {
     const request = ++this._tracesRequest;
+    this._requestedRunId = runId;
     const traces = await loadTraces(this.hass, "automation", this.automationId);
     // A later request, for another automation or run, replaced this one.
     if (request !== this._tracesRequest) {
       return;
     }
+    this._requestedRunId = undefined;
     this._traces = traces;
     // Newest will be on top.
     this._traces.reverse();
@@ -614,6 +628,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTrace() {
+    const request = ++this._traceRequest;
     const runId = this._runId!;
     const trace = await loadTrace(
       this.hass,
@@ -629,8 +644,8 @@ export class HaAutomationTrace extends LitElement {
         )
       : [];
 
-    // Another run was picked while this one was loading.
-    if (runId !== this._runId) {
+    // Another run was picked, or the same run loaded again, meanwhile.
+    if (request !== this._traceRequest || runId !== this._runId) {
       return;
     }
     this._logbookEntries = logbookEntries;
