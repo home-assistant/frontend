@@ -524,7 +524,6 @@ export class HaScriptTrace extends LitElement {
     if (
       !runId ||
       runId === (this._requestedRunId ?? this._runId) ||
-      !this._traces ||
       location.pathname !== this._tracePath
     ) {
       return;
