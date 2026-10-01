@@ -173,6 +173,13 @@ export class HuiMapOverview extends LitElement {
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     this._watchPeek();
+    // The host filters the map by the tab it set; tell it when that one is gone
+    const tabs = Object.keys(
+      this._itemsPerTab(this._getPeople(), this._getDevices(), this._getZones())
+    ) as OverviewTab[];
+    if (tabs.length && !tabs.includes(this.tab)) {
+      fireEvent(this, "map-overview-tab", { tab: tabs[0] });
+    }
     if (changedProps.has("selected")) {
       this._moveFocus(changedProps.get("selected"));
     }
@@ -575,21 +582,38 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
+  // Only tabs with something to list; the map card may be limited to a few entities
+  private _itemsPerTab(
+    people: HassEntity[],
+    devices: HassEntity[],
+    zones: HassEntity[]
+  ): Partial<Record<OverviewTab, HassEntity[]>> {
+    return {
+      ...(people.length ? { people } : {}),
+      ...(devices.length ? { devices } : {}),
+      ...(zones.length ? { zones } : {}),
+    };
+  }
+
   private _renderList(
     people: HassEntity[],
     devices: HassEntity[],
     zones: HassEntity[]
   ) {
-    const itemsPerTab: Partial<Record<OverviewTab, HassEntity[]>> = {
-      people,
-      // A devices tab only for devices with a location, or while it is selected
-      ...(devices.length || this.tab === "devices" ? { devices } : {}),
-      zones,
-    };
+    const itemsPerTab = this._itemsPerTab(people, devices, zones);
     const tabs = Object.keys(itemsPerTab) as OverviewTab[];
-    // The selected tab stays selected even when empty; never switch away from it
-    const tab = tabs.includes(this.tab) ? this.tab : "people";
+    const tab = tabs.includes(this.tab) ? this.tab : tabs[0];
     const items = itemsPerTab[tab]!;
+
+    // A lone heading also serves as the phone sheet's peek strip
+    if (tabs.length === 1) {
+      return html`
+        <div class="heading peek" id="tab-${tab}">
+          ${this._i18n.localize(`ui.panel.lovelace.cards.map.overview.${tab}`)}
+        </div>
+        ${this._renderItems(tab, items)}
+      `;
+    }
 
     return html`
       <div class="tabs peek">
@@ -612,7 +636,6 @@ export class HuiMapOverview extends LitElement {
                 aria-selected=${tab === tabId}
                 tabindex=${tab === tabId ? 0 : -1}
                 data-tab=${tabId}
-                .disabled=${!itemsPerTab[tabId]!.length && tabId !== tab}
                 @click=${this._handleTabClick}
               >
                 ${this._i18n.localize(
@@ -623,27 +646,25 @@ export class HuiMapOverview extends LitElement {
           )}
         </div>
       </div>
+      ${this._renderItems(tab, items)}
+    `;
+  }
+
+  private _renderItems(tab: OverviewTab, items: HassEntity[]) {
+    return html`
       <div
         class="list"
         id="tabpanel"
         role="tabpanel"
         aria-labelledby="tab-${tab}"
       >
-        ${
-          items.length
-            ? html`<ha-md-list>
-                ${items.map((stateObj) =>
-                  tab === "zones"
-                    ? this._renderZone(stateObj)
-                    : this._renderEntity(stateObj)
-                )}
-              </ha-md-list>`
-            : html`<div class="empty">
-                ${this._i18n.localize(
-                  `ui.panel.lovelace.cards.map.overview.no_${tab}`
-                )}
-              </div>`
-        }
+        <ha-md-list>
+          ${items.map((stateObj) =>
+            tab === "zones"
+              ? this._renderZone(stateObj)
+              : this._renderEntity(stateObj)
+          )}
+        </ha-md-list>
       </div>
     `;
   }
@@ -817,6 +838,14 @@ export class HuiMapOverview extends LitElement {
       padding-left: max(var(--ha-space-3), var(--safe-area-inset-left));
     }
 
+    .heading {
+      flex: none;
+      padding: var(--ha-space-2) var(--ha-space-3);
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+
     .tabs {
       position: relative;
       flex: none;
@@ -888,16 +917,6 @@ export class HuiMapOverview extends LitElement {
       min-height: 0;
       display: flex;
       flex-direction: column;
-    }
-
-    .empty {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: var(--ha-space-6) var(--ha-space-3);
-      color: var(--secondary-text-color);
-      text-align: center;
     }
 
     ha-md-list {
