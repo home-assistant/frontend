@@ -325,6 +325,46 @@ it("browses the way the link says, also when the tab was open before", async () 
   });
 });
 
+it.each([
+  {
+    name: "following the link again applies it again",
+    leave: () => window.dispatchEvent(new CustomEvent("location-changed")),
+    statuses: ["new"],
+  },
+  {
+    name: "going back keeps what was picked after it",
+    leave: () => window.dispatchEvent(new PopStateEvent("popstate")),
+    statuses: ["installed"],
+  },
+])("$name", async ({ leave, statuses }) => {
+  window.history.replaceState(
+    null,
+    "",
+    "/marketplace/browse?sort=stars&direction=desc&status=new"
+  );
+  const dashboard = await openDashboard();
+  const statusFilter = () =>
+    dashboard.shadowRoot!.querySelector("ha-filter-states") as unknown as {
+      value: string[];
+      dispatchEvent: (event: Event) => boolean;
+    };
+  statusFilter().dispatchEvent(
+    new CustomEvent("data-table-filter-changed", {
+      detail: { value: ["installed"] },
+    })
+  );
+  await dashboard.updateComplete;
+
+  // Away to another page and to the same link again, the router keeps the page
+  dashboard.remove();
+  leave();
+  document.body.append(dashboard);
+  await dashboard.updateComplete;
+  window.history.replaceState(null, "", "/");
+
+  expect(statusFilter().value).toEqual(statuses);
+});
+
 it("adds a repository from a link", async () => {
   const dashboard = await openDashboard();
   const fired = vi.fn();

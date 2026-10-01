@@ -108,6 +108,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
             .error=${this._errors}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
+            .disabled=${this._waiting}
             @value-changed=${this._valueChanged}
             autofocus
           ></ha-form>
@@ -264,15 +265,18 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     this._data = data;
   }
 
-  private _handleRemoveClick(ev: HASSDomCurrentTargetEvent<HaIconButton>) {
+  private async _handleRemoveClick(
+    ev: HASSDomCurrentTargetEvent<HaIconButton>
+  ) {
     ev.preventDefault();
     const repositoryId = ev.currentTarget.dataset.repositoryId!;
     const repository = this._repositories.find(
       (item) => item.id === repositoryId
     );
 
-    // Like removing an app repository, and it can be added again later
-    showConfirmationDialog(this, {
+    // Like removing an app repository, and it can be added again later. Asked
+    // first, a failure then shows here instead of behind a closed question.
+    const confirmed = await showConfirmationDialog(this, {
       title: this._i18n.localize(
         "ui.panel.marketplace.dialog_custom_repositories.remove_title",
         { name: repository?.name ?? repositoryId }
@@ -282,8 +286,10 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       ),
       confirmText: this._i18n.localize("ui.common.remove"),
       destructive: true,
-      action: () => this._removeRepository(repositoryId),
     });
+    if (confirmed) {
+      await this._removeRepository(repositoryId);
+    }
   }
 
   private async _addRepository() {
@@ -310,29 +316,28 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       }
     }
 
+    // What was asked for, the form can change while it is found out
+    const { repository } = this._data;
     this._waiting = true;
     try {
       let category = this._data.category;
       if (!category) {
         const { categories } = await detectMarketplaceRepository(
           this._api,
-          this._data.repository
+          repository
         );
+        if (!this.isConnected || this._data?.repository !== repository) {
+          return;
+        }
         // Asked once it is clear it has to be, otherwise added right away
         if (categories.length !== 1) {
-          if (this.isConnected) {
-            this._detected = categories;
-          }
+          this._detected = categories;
           return;
         }
         category = categories[0];
       }
 
-      await addMarketplaceRepository(
-        this._api,
-        this._data.repository,
-        category
-      );
+      await addMarketplaceRepository(this._api, repository, category);
       this._detected = undefined;
       await this._updateRepositories();
     } catch (err: unknown) {

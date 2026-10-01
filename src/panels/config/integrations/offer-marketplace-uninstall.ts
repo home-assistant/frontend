@@ -58,7 +58,7 @@ export const offerMarketplaceUninstall = async (
       ? element
       : document.querySelector("home-assistant")) ?? element;
   const { name, id } = repository;
-  return showConfirmationDialog(host, {
+  const confirmed = await showConfirmationDialog(host, {
     title: hass.localize(
       "ui.panel.config.integrations.config_entry.marketplace_uninstall.title",
       { name }
@@ -74,19 +74,23 @@ export const offerMarketplaceUninstall = async (
       "ui.panel.config.integrations.config_entry.marketplace_uninstall.dismiss"
     ),
     destructive: true,
-    action: async () => {
-      try {
-        await uninstallMarketplaceRepository(hass, id);
-      } catch (err: unknown) {
-        showAlertDialog(host, {
-          text:
-            websocketErrorMessage(err) ||
-            hass.localize(
-              "ui.panel.config.integrations.config_entry.marketplace_uninstall.failed"
-            ),
-        });
-        throw err;
-      }
-    },
   });
+  if (!confirmed) {
+    return false;
+  }
+
+  // After the question, the alert takes the place of the same dialog
+  try {
+    await uninstallMarketplaceRepository(hass, id);
+  } catch (err: unknown) {
+    showAlertDialog(host, {
+      text:
+        websocketErrorMessage(err) ||
+        hass.localize(
+          "ui.panel.config.integrations.config_entry.marketplace_uninstall.failed"
+        ),
+    });
+    return false;
+  }
+  return true;
 };

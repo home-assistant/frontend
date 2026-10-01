@@ -57,17 +57,16 @@ describe("offerMarketplaceUninstall", () => {
     vi.mocked(fetchMarketplaceRepositories).mockResolvedValueOnce([INSTALLED]);
     const home = hass();
 
-    const uninstalled = offerMarketplaceUninstall(element(), home, "example");
-    await vi.waitFor(() => expect(showConfirmationDialog).toHaveBeenCalled());
+    expect(await offerMarketplaceUninstall(element(), home, "example")).toBe(
+      true
+    );
 
     const params = vi.mocked(showConfirmationDialog).mock.lastCall![1];
     expect(params.destructive).toBe(true);
-    await params.action!();
     expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(
       home,
       "1296269"
     );
-    expect(await uninstalled).toBe(true);
   });
 
   it("tells when the uninstall was declined", async () => {
@@ -125,15 +124,19 @@ describe("offerMarketplaceUninstall", () => {
     expect(showAlertDialog).not.toHaveBeenCalled();
   });
 
-  it("keeps the dialog open with an alert when uninstalling fails", async () => {
+  it("tells why when uninstalling fails, once the question is closed", async () => {
     vi.mocked(fetchMarketplaceRepositories).mockResolvedValueOnce([INSTALLED]);
-    const error = new Error("Busy");
-    vi.mocked(uninstallMarketplaceRepository).mockRejectedValueOnce(error);
+    vi.mocked(uninstallMarketplaceRepository).mockRejectedValueOnce(
+      new Error("Busy")
+    );
 
-    await offerMarketplaceUninstall(element(), hass(), "example");
+    expect(await offerMarketplaceUninstall(element(), hass(), "example")).toBe(
+      false
+    );
 
+    // The alert takes the place of the same dialog, the question must be done
     const params = vi.mocked(showConfirmationDialog).mock.lastCall![1];
-    await expect(params.action!()).rejects.toBe(error);
+    expect(params.action).toBeUndefined();
     expect(showAlertDialog).toHaveBeenCalledTimes(1);
   });
 });

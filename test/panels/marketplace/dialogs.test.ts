@@ -192,25 +192,55 @@ describe("dialog-marketplace-custom-repositories", () => {
     ]);
   });
 
-  it("asks before removing a repository from the list", async () => {
-    const sendMessagePromise = vi.fn(async () => [] as unknown);
-    const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
-    await dialog.updateComplete;
+  it.each([
+    { name: "removes it once confirmed", confirmed: true, removed: true },
+    { name: "keeps it when declined", confirmed: false, removed: false },
+  ])(
+    "asks before removing a repository, $name",
+    async ({ confirmed, removed }) => {
+      vi.mocked(showConfirmationDialog).mockResolvedValueOnce(confirmed);
+      const sendMessagePromise = vi.fn<SendMessage>(async () => []);
+      const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
+      await dialog.updateComplete;
 
-    dialog
-      .shadowRoot!.querySelector("ha-icon-button[data-repository-id]")!
-      .dispatchEvent(new Event("click"));
+      dialog
+        .shadowRoot!.querySelector("ha-icon-button[data-repository-id]")!
+        .dispatchEvent(new Event("click"));
+      await vi.waitFor(() => expect(showConfirmationDialog).toHaveBeenCalled());
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+
+      const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
+      expect(params.destructive).toBe(true);
+      expect(
+        sendMessagePromise.mock.calls.some(
+          ([message]) => message.type === "marketplace/repositories/remove"
+        )
+      ).toBe(removed);
+    }
+  );
+
+  it("tells why a removal failed, once the question is closed", async () => {
+    vi.mocked(showConfirmationDialog).mockResolvedValueOnce(true);
+    const dialog = await openCustomRepositoriesDialog(async (message) => {
+      if (message.type === "marketplace/repositories/remove") {
+        throw { code: "repository_installed", message: "Uninstall it first" };
+      }
+      return [];
+    });
+
+    await getInternals(dialog)._handleRemoveClick({
+      preventDefault: () => undefined,
+      currentTarget: { dataset: { repositoryId: "1" } },
+    });
+
+    // Asked without an action, the error is not lost behind a closed question
     const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
-    expect(params.destructive).toBe(true);
-    expect(sendMessagePromise).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "marketplace/repositories/remove" })
-    );
-
-    await params.action!();
-
-    expect(sendMessagePromise).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "marketplace/repositories/remove" })
-    );
+    expect(params.action).toBeUndefined();
+    expect(getInternals(dialog)._errors).toEqual({
+      base: "Uninstall it first",
+    });
   });
 
   it("asks only for the link, the type is found out", async () => {
@@ -323,6 +353,36 @@ describe("dialog-marketplace-custom-repositories", () => {
     expect(sendMessagePromise).toHaveBeenCalledTimes(
       // The detection, the add and the list it shows afterwards
       3
+    );
+  });
+
+  it("adds nothing when the link changed while it was found out", async () => {
+    const detected = deferred<{ categories: string[] }>();
+    const sendMessagePromise = vi.fn<SendMessage>(async (message) =>
+      message.type === "marketplace/repositories/detect"
+        ? detected.promise
+        : null
+    );
+    const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
+    getInternals(dialog)._data = { repository: "owner/first" };
+
+    const adding = getInternals(dialog)._addRepository();
+    await dialog.updateComplete;
+    const form = dialog.shadowRoot!.querySelector("ha-form") as unknown as {
+      disabled: boolean;
+    };
+    // Nothing to change while it is busy, but a change still has to be safe
+    expect(form.disabled).toBe(true);
+    getInternals(dialog)._valueChanged(
+      new CustomEvent("value-changed", {
+        detail: { value: { repository: "owner/second" } },
+      })
+    );
+    detected.resolve({ categories: ["integration"] });
+    await adding;
+
+    expect(sendMessagePromise).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: "marketplace/repositories/add" })
     );
   });
 

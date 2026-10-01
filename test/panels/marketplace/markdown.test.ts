@@ -142,6 +142,24 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
+  it.each([
+    {
+      name: "fenced",
+      input: ["> ```yaml", "> color: '#123456'", "> ```"].join("\n"),
+    },
+    {
+      name: "tilde fenced",
+      input: ["> ~~~", "> color: '#123456'", "> ~~~"].join("\n"),
+    },
+    {
+      name: "indented",
+      input: ["> Like this:", ">", ">     color: '#123456'"].join("\n"),
+    },
+  ])("keeps $name code in a quote as written", ({ input }) => {
+    // Copied into a configuration, a link would break it
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
   it("keeps a longer fence open past a shorter one", () => {
     const input = ["````", "```", "#12", "```", "````"].join("\n");
 

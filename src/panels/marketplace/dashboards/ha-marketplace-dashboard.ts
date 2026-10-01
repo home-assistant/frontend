@@ -109,6 +109,16 @@ const marketplaceTabs = (
   },
 ];
 
+// Back and forward keep what was picked on a page, following a link applies
+// what it says again. Listened to here, before any page hears the navigation.
+let cameThroughHistory = false;
+window.addEventListener("popstate", () => {
+  cameThroughHistory = true;
+});
+window.addEventListener("location-changed", () => {
+  cameThroughHistory = false;
+});
+
 // The installed tab lists what is installed, the others everything
 const repositoriesOfTab = (
   repositories: RepositoryBase[],
@@ -179,7 +189,10 @@ export class HaMarketplaceDashboard extends LitElement {
   private _openingOverflowMenu = false;
 
   // The search of the last link that said how to browse
-  @state() private _appliedSearch = "";
+  private _appliedSearch = "";
+
+  // The table takes its sorting once, every link applied gets it a new one
+  @state() private _linksApplied = 0;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -207,7 +220,7 @@ export class HaMarketplaceDashboard extends LitElement {
   // keeps the page of a tab, so a link often lands on a page that is open.
   private _applyLink = () => {
     const search = mainWindow.location.search;
-    if (search === this._appliedSearch) {
+    if (search === this._appliedSearch && cameThroughHistory) {
       return;
     }
 
@@ -217,6 +230,7 @@ export class HaMarketplaceDashboard extends LitElement {
     }
 
     this._appliedSearch = search;
+    this._linksApplied++;
     // A search left behind would hide part of what the link promised
     this._activeSearch = "";
     this._filters = settings.filters;
@@ -256,9 +270,8 @@ export class HaMarketplaceDashboard extends LitElement {
       this._filters
     );
 
-    // The table takes its sorting once, a link gets it a new one
     return html`${keyed(
-        this._appliedSearch,
+        this._linksApplied,
         html`<hass-tabs-subpage-data-table
           .tabs=${tabs}
           .columns=${this._columns(

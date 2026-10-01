@@ -128,7 +128,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     changedProperties: PropertyValues<this>
   ): Promise<void> {
     super.firstUpdated(changedProperties);
+    await this._loadRepository();
+  }
 
+  // A My link names the repository in the query, the panel in the path
+  private async _loadRepository(): Promise<void> {
     const params = extractSearchParamsObject();
     if (!params.owner || !params.repository) {
       this._loadRepositoryFromRoute();
@@ -147,6 +151,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     requestedRepository: string,
     category?: RepositoryType
   ): Promise<void> {
+    // Going to another repository meanwhile makes this one old news
+    const request = ++this._request;
     let existing = findRepository(
       this.marketplace.repositories,
       requestedRepository
@@ -168,19 +174,21 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         return;
       }
 
-      if (
-        !(await showConfirmationDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.marketplace.my.add_repository_title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.marketplace.my.add_repository_description",
-            { repository: requestedRepository }
-          ),
-          confirmText: this.hass.localize("ui.common.add"),
-          dismissText: this.hass.localize("ui.common.cancel"),
-        }))
-      ) {
+      const confirmed = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.marketplace.my.add_repository_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.marketplace.my.add_repository_description",
+          { repository: requestedRepository }
+        ),
+        confirmText: this.hass.localize("ui.common.add"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+      });
+      if (!this._isCurrentRequest(request)) {
+        return;
+      }
+      if (!confirmed) {
         this._error = this.hass.localize(
           "ui.panel.marketplace.my.repository_not_found",
           { repository: requestedRepository }
@@ -199,6 +207,10 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           requestedRepository
         );
       } catch (err: unknown) {
+        if (!this._isCurrentRequest(request)) {
+          return;
+        }
+
         // The panel swaps to the warning screen, accepting it brings the
         // user back here to add the repository.
         if (isWebSocketError(err, ERROR_WARNING_NOT_ACCEPTED)) {
@@ -219,6 +231,10 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           : marketplaceErrorMessage(err, this.hass.localize);
         return;
       }
+    }
+
+    if (!this._isCurrentRequest(request)) {
+      return;
     }
 
     if (!existing) {
@@ -353,7 +369,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   private _retry() {
     this._error = undefined;
-    this._loadRepositoryFromRoute();
+    this._loadRepository();
   }
 
   private _getAuthors = memoizeOne((repository: RepositoryInfo) =>

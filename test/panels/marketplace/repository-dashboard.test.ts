@@ -7,6 +7,7 @@ import type { MarketplaceData } from "../../../src/data/marketplace/marketplace"
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import { ERROR_GITHUB_RATE_LIMITED } from "../../../src/data/marketplace/websocket";
 import type { HomeAssistant, Route } from "../../../src/types";
+import { deferred } from "./dialog-host";
 
 // The real components need more browser than jsdom has, the page only hands
 // them properties.
@@ -90,6 +91,9 @@ const repositoryRoute = (repositoryId: string): Route => ({
   prefix: "/marketplace/repository",
   path: `/${repositoryId}`,
 });
+
+// A My link names the repository in the query, not in the path
+const MY_LINK_ROUTE: Route = { prefix: "/marketplace/repository", path: "" };
 
 type FetchRepository = (repositoryId: string) => Promise<RepositoryInfo>;
 
@@ -351,6 +355,66 @@ describe("ha-marketplace-repository-dashboard", () => {
     expect(page.shadowRoot!.querySelector("hass-error-screen")?.error).toBe(
       "ui.panel.marketplace.common.unknown_error"
     );
+  });
+
+  it("tries the My link again with retry", async () => {
+    window.history.replaceState(null, "", "/?owner=owner&repository=later");
+    const { page, sendMessagePromise } = await openRepositoryPage(
+      async (repositoryId) => repositoryInfo(repositoryId),
+      MY_LINK_ROUTE
+    );
+    await settle(page);
+    expect(page.shadowRoot!.querySelector("hass-error-screen")?.error).toBe(
+      "ui.panel.marketplace.my.repository_not_found"
+    );
+
+    // Known by now, like after the Marketplace loaded its catalog
+    page.marketplace = {
+      ...MARKETPLACE,
+      repositories: [{ id: "7", full_name: "owner/later" }],
+    } as unknown as MarketplaceData;
+    getInternals(page)._retry();
+    await settle(page);
+
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({ repository_id: "7" })
+    );
+  });
+
+  it("leaves a repository opened meanwhile alone when a My link finishes", async () => {
+    window.history.replaceState(
+      null,
+      "",
+      "/?owner=owner&repository=new&category=integration"
+    );
+    vi.mocked(showConfirmationDialog).mockResolvedValueOnce(true);
+    const added = deferred<null>();
+    let calls = 0;
+    const { page, sendMessagePromise } = await openRepositoryPage(
+      async (repositoryId) => {
+        if (repositoryId) {
+          return repositoryInfo(repositoryId);
+        }
+        calls++;
+        // First the add, then the list it is looked up in
+        return (calls === 1
+          ? added.promise
+          : [{ id: "9", full_name: "owner/new" }]) as unknown as RepositoryInfo;
+      },
+      MY_LINK_ROUTE,
+      { ...MARKETPLACE, info: { github_connected: true } } as MarketplaceData
+    );
+    await settle(page);
+
+    page.route = repositoryRoute("2");
+    await settle(page);
+    added.resolve(null);
+    await settle(page);
+
+    expect(sendMessagePromise).not.toHaveBeenCalledWith(
+      expect.objectContaining({ repository_id: "9" })
+    );
+    expect(getInternals(page)._repository.id).toBe("2");
   });
 
   it("loads the repository a My link names, in any case", async () => {

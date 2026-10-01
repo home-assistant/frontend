@@ -161,6 +161,9 @@ const isClosingFence = (line: string, fence: string) => {
   );
 };
 
+// A quote holds markdown too, its markers are not part of what it holds
+const QUOTE_MARKERS = /^(?: {0,3}> ?)+/;
+
 // An unclosed fence runs to the end of the document, like CommonMark.
 const splitCodeBlocks = (input: string) => {
   const blocks: MarkdownBlock[] = [];
@@ -173,19 +176,20 @@ const splitCodeBlocks = (input: string) => {
   let listContent = 0;
 
   for (const line of input.split("\n")) {
+    const content = line.replace(QUOTE_MARKERS, "");
     if (current?.code && fence) {
       current.lines.push(line);
-      if (isClosingFence(line, fence)) {
+      if (isClosingFence(content, fence)) {
         fence = undefined;
       }
       continue;
     }
 
-    const blank = line.trim() === "";
-    const width = blank ? 0 : indentationWidth(line);
+    const blank = content.trim() === "";
+    const width = blank ? 0 : indentationWidth(content);
     const indentation = !blank && width >= listContent + 4;
 
-    const item = indentation ? null : LIST_ITEM.exec(line);
+    const item = indentation ? null : LIST_ITEM.exec(content);
     if (item) {
       listContent = listItemContent(item);
     } else if (!blank && width < listContent) {
@@ -210,7 +214,7 @@ const splitCodeBlocks = (input: string) => {
     }
     previousBlank = blank;
 
-    const opening = FENCE_OPENING.exec(line);
+    const opening = FENCE_OPENING.exec(content);
     if (opening) {
       fence = opening[1] ?? opening[2];
       current = { code: true, lines: [line] };
