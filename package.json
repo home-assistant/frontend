@@ -12,7 +12,7 @@
     "format:eslint": "eslint \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
     "lint:prettier": "prettier . --cache --check",
     "format:prettier": "prettier . --cache --write",
-    "lint:types": "node ./node_modules/@typescript/native/bin/tsc",
+    "lint:types": "node ./node_modules/@typescript/native/bin/tsc && node ./node_modules/@typescript/native/bin/tsc -p .github/scripts",
     "lint:lit": "lit-analyzer \"{.,*}/src/**/*.ts\"",
     "lint:licenses": "node --no-deprecation script/check-licenses",
     "lint": "pnpm run lint:eslint && pnpm run lint:prettier && pnpm run lint:types && pnpm run lint:lit",
@@ -69,7 +69,7 @@
     "@fullcalendar/timegrid": "6.1.21",
     "@home-assistant/webawesome": "3.7.0-ha.1",
     "@lezer/common": "1.5.3",
-    "@lezer/highlight": "1.2.4",
+    "@lezer/highlight": "1.2.5",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
     "@lit-labs/virtualizer": "2.1.1",
@@ -87,7 +87,7 @@
     "@swc/helpers": "0.5.23",
     "@tsparticles/engine": "4.4.0",
     "@tsparticles/preset-links": "4.4.0",
-    "@versatiles/style": "6.0.1",
+    "@versatiles/style": "6.0.2",
     "@vibrant/color": "4.0.4",
     "@vvo/tzdb": "6.198.0",
     "@webcomponents/scoped-custom-element-registry": "0.0.10",
@@ -126,10 +126,10 @@
     "qrcode": "1.5.4",
     "roboto-fontface": "0.10.0",
     "rrule": "2.8.1",
-    "sortablejs": "1.15.6",
+    "sortablejs": "1.15.7",
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
-    "tinykeys": "4.0.0",
+    "tinykeys": "4.0.1",
     "weekstart": "2.0.0",
     "workbox-cacheable-response": "7.4.1",
     "workbox-core": "7.4.1",
@@ -227,7 +227,7 @@
     "webpackbar": "7.0.0",
     "workbox-build": "7.4.1"
   },
-  "packageManager": "pnpm@11.28.0",
+  "packageManager": "pnpm@12.8.0",
   "volta": {
     "node": "24.21.0"
   }

@@ -290,7 +290,7 @@ export default tseslint.config(
     },
   },
   {
-    files: [".github/scripts/*.mjs"],
+    files: [".github/scripts/*.mts"],
     languageOptions: {
       globals: globals.node,
     },

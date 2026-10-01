@@ -465,7 +465,7 @@ export class HaStatisticPicker extends LitElement {
   ) => {
     const showEntityId = this.hass.userData?.showEntityIdPicker;
     return html`
-      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+      <ha-combo-box-item .borderTop=${index !== 0}>
         ${
           item.icon_path
             ? html`

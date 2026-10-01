@@ -11,6 +11,7 @@ import { MockLawnMowerEntity } from "./lawn-mower-entity";
 import { MockInputSelectEntity } from "./input-select-entity";
 import { MockInputTextEntity } from "./input-text-entity";
 import { MockLightEntity } from "./light-entity";
+import { MockLocationEntity } from "./location-entity";
 import { MockLockEntity } from "./lock-entity";
 import { MockMediaPlayerEntity } from "./media-player-entity";
 import { MockToggleEntity } from "./toggle-entity";
@@ -25,6 +26,7 @@ const TYPES: Record<string, EntityConstructor> = {
   alarm_control_panel: MockAlarmControlPanelEntity,
   climate: MockClimateEntity,
   cover: MockCoverEntity,
+  device_tracker: MockLocationEntity,
   fan: MockFanEntity,
   group: MockGroupEntity,
   humidifier: MockHumidifierEntity,
@@ -36,10 +38,12 @@ const TYPES: Record<string, EntityConstructor> = {
   light: MockLightEntity,
   lock: MockLockEntity,
   media_player: MockMediaPlayerEntity,
+  person: MockLocationEntity,
   switch: MockToggleEntity,
   vacuum: MockVacuumEntity,
   valve: MockValveEntity,
   water_heater: MockWaterHeaterEntity,
+  zone: MockLocationEntity,
 };
 
 export const getEntity = (input: EntityInput): MockBaseEntity => {

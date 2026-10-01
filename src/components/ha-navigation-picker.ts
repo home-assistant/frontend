@@ -182,7 +182,7 @@ export class HaNavigationPicker extends LitElement {
   };
 
   private _rowRenderer = (item: NavigationItem) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${
         item.domain
           ? html`
