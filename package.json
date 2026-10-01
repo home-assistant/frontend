@@ -88,7 +88,7 @@
     "@swc/helpers": "0.5.23",
     "@tsparticles/engine": "4.4.0",
     "@tsparticles/preset-links": "4.4.0",
-    "@versatiles/style": "6.0.2",
+    "@versatiles/style": "6.0.3",
     "@vibrant/color": "4.0.4",
     "@vvo/tzdb": "6.198.0",
     "@webcomponents/scoped-custom-element-registry": "0.0.10",
