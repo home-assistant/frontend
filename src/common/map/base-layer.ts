@@ -220,6 +220,9 @@ const createVectorLayer = async (
   let latestRequest = 0;
   let vector = true;
   let refused = false;
+  // A fallback hands this to the raster layer, and a rotation that already
+  // happened is not announced again.
+  let currentToken = token;
 
   const glMap = layer.getMaplibreMap();
   let fallbackTimeout: number | undefined;
@@ -240,7 +243,7 @@ const createVectorLayer = async (
     } catch {
       // Nothing left to detach.
     }
-    createRasterLayer(leaflet, map, token);
+    createRasterLayer(leaflet, map, currentToken);
   };
 
   const scheduleSwap = () => {
@@ -307,7 +310,8 @@ const createVectorLayer = async (
 
   // Only a new token clears the refusal. A style change in between applies a
   // style that is refused just as the last one was, so it proves nothing.
-  const unsubscribeToken = subscribeMapTilesToken(() => {
+  const unsubscribeToken = subscribeMapTilesToken((newToken) => {
+    currentToken = newToken;
     if (vector && refused) {
       refused = false;
       applyStyle(requestedStyle);

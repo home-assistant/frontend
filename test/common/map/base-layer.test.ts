@@ -134,6 +134,29 @@ describe("loadStyle", () => {
     ]);
   });
 
+  // A dashboard of maps asks for the same style at once. Each still needs its
+  // own copy, because MapLibre mutates the style it is handed.
+  it("fetches a style once while in flight, but hands out separate copies", async () => {
+    let respond!: (value: unknown) => void;
+    const fetchMock = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          respond = resolve;
+        })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { loadStyle } = await import("../../../src/common/map/base-layer");
+    const first = loadStyle(COLORFUL);
+    const second = loadStyle(COLORFUL);
+    respond({ text: async () => JSON.stringify(STYLE) });
+    const [a, b] = await Promise.all([first, second]);
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(a).toEqual(b);
+    expect(a).not.toBe(b);
+  });
+
   it("keeps the bundled sprites in the demo, with tiles and glyphs upstream", async () => {
     vi.stubGlobal("__DEMO__", true);
     vi.stubGlobal(
@@ -482,6 +505,20 @@ describe("WebGL context loss", () => {
     expect(isRaster()).toBe(true);
   });
 
+  // A rotation is announced once, so a layer created after it would otherwise
+  // start out on the token the vector layer was created with.
+  it("hands the raster fallback the latest token", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+
+    emitToken("fresh-token");
+    glHandlers.webglcontextlost();
+    vi.runAllTimers();
+
+    const [, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
+    expect(options).toMatchObject({ token: "fresh-token" });
+  });
+
   it("stops answering theme changes once it has fallen back", async () => {
     const createBaseLayer = await setWebGL2(true);
     const baseLayer = await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
@@ -578,7 +615,7 @@ describe("recovering from a refused token", () => {
   // Nothing else on the raster path asks for a new token.
   it("asks for a new token when a raster tile is refused", async () => {
     const createBaseLayer = await setWebGL2(false);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     rasterHandlers.tileerror();
 
@@ -600,7 +637,7 @@ describe("recovering from a refused token", () => {
   // tile on screen.
   it("leaves a raster layer that never failed alone on rotation", async () => {
     const createBaseLayer = await setWebGL2(false);
-    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     emitToken("fresh-token");
 
