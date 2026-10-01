@@ -4,10 +4,18 @@
 // .github/workflows/blocking-labels.yaml via actions/github-script:
 //
 //   const { default: checkBlockingLabels } =
-//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-blocking-labels.mjs`);
+//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-blocking-labels.mts`);
 //   await checkBlockingLabels({ github, context, core });
 
-export default async function checkBlockingLabels({ context, core }) {
+import type {
+  GitHubScriptArgs,
+  PullRequestPayload,
+} from "./github-script.d.ts";
+
+export default async function checkBlockingLabels({
+  context,
+  core,
+}: GitHubScriptArgs<PullRequestPayload>) {
   const blockingLabels = [
     "wait for backend",
     "Needs UX",

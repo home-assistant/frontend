@@ -6,14 +6,19 @@
 // via actions/github-script:
 //
 //   const { default: checkStandards } =
-//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pull-request-standards.mjs`);
+//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pull-request-standards.mts`);
 //   await checkStandards({ github, context, core });
+
+import type {
+  GitHubScriptArgs,
+  PullRequestPayload,
+} from "./github-script.d.ts";
 
 export default async function checkPullRequestStandards({
   github,
   context,
   core,
-}) {
+}: GitHubScriptArgs<PullRequestPayload>) {
   const pr = context.payload.pull_request;
 
   // Exempt bots (Copilot agent, dependabot), drafts, and maintainers.
@@ -52,11 +57,16 @@ export default async function checkPullRequestStandards({
   const normalized = body.toLowerCase();
 
   // Ignore 404s from mutations that race manual edits or cancelled runs.
-  const ignoreMissing = async (fn) => {
+  const ignoreMissing = async <T,>(fn: () => Promise<T>) => {
     try {
       await fn();
     } catch (error) {
-      if (error.status === 404) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error &&
+        error.status === 404
+      ) {
         core.info("Target already removed, nothing to do");
         return;
       }
@@ -65,7 +75,7 @@ export default async function checkPullRequestStandards({
   };
 
   // Hide/restore our comment via GraphQL (REST cannot minimize).
-  const setMinimized = async (subjectId, minimized) => {
+  const setMinimized = async (subjectId: string, minimized: boolean) => {
     const mutation = minimized
       ? `mutation($id: ID!) {
            minimizeComment(input: { subjectId: $id, classifier: RESOLVED }) {
@@ -81,13 +91,13 @@ export default async function checkPullRequestStandards({
       await github.graphql(mutation, { id: subjectId });
     } catch (error) {
       core.info(
-        `Could not ${minimized ? "minimize" : "restore"} comment: ${error.message}`
+        `Could not ${minimized ? "minimize" : "restore"} comment: ${error instanceof Error ? error.message : error}`
       );
     }
   };
 
   // Content of a "## <name>" section, or null when the heading is absent.
-  const section = (name) => {
+  const section = (name: string) => {
     const match = body.match(
       new RegExp(`##\\s${name}([\\s\\S]*?)(?=\\n##\\s|$)`, "i")
     );
@@ -128,7 +138,8 @@ export default async function checkPullRequestStandards({
     issue_number,
     per_page: 100,
   });
-  const existing = comments.find((c) => c.body.includes(marker));
+
+  const existing = comments.find((c) => c.body?.includes(marker));
   const hasLabel = pr.labels.some((l) => l.name === label);
 
   if (isValid) {
