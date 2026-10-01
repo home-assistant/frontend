@@ -634,7 +634,7 @@ export class HuiMapOverview extends LitElement {
             entry.personId
               ? html`${this._i18n.localize(
                   entry.arrived
-                    ? "ui.panel.lovelace.cards.map.overview.arrived"
+                    ? "ui.panel.lovelace.cards.map.overview.entered"
                     : "ui.panel.lovelace.cards.map.overview.left"
                 )}
                 · `
