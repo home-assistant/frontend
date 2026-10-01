@@ -100,6 +100,12 @@ describe("keyboard", () => {
     await press("ArrowDown");
     expect(cursorRow()).toBe("list-item-1");
 
+    list.focus();
+    await el.updateComplete;
+    await press("End");
+    await press("ArrowDown");
+    expect(cursorRow()).toBe("list-item-2");
+
     el.remove();
   });
 });

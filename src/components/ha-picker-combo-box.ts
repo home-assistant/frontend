@@ -736,7 +736,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._listElement?.scrollTo({ top: 0 });
       return;
     }
-    this.virtualizerElement?.element(0)?.scrollIntoView();
+    // Until the lazy-loaded virtualizer upgrades, element() does not exist.
+    this.virtualizerElement?.element?.(0)?.scrollIntoView();
   }
 
   private _scrollRowIntoView(index: number) {
@@ -746,7 +747,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         ?.scrollIntoView({ block: "nearest" });
       return;
     }
-    this.virtualizerElement?.element(index)?.scrollIntoView({
+    this.virtualizerElement?.element?.(index)?.scrollIntoView({
       block: "nearest",
     });
   }
@@ -786,12 +787,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
 
     // Focusing the search field blurs the list, which resets the cursor, so
-    // read the starting index first.
-    const from = this._selectedItemIndex + 1;
-
+    // put it back before moving.
+    const current = this._selectedItemIndex;
     this._searchFieldElement?.focus();
+    this._selectedItemIndex = current;
 
-    this._moveCursor(from, 1);
+    this._moveCursor(current + 1, 1);
   };
 
   private _selectPreviousItem = (ev: KeyboardEvent) => {
