@@ -61,6 +61,9 @@ class HaLabel extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-tooltip {
+          --ha-tooltip-text-color: var(--ha-color-text-primary);
+        }
         :host {
           --ha-label-text-color: var(--primary-text-color);
           --ha-label-icon-color: var(--primary-text-color);
