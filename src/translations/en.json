@@ -223,6 +223,9 @@
         "open_door_confirm": "Really open?",
         "open_door_done": "Done"
       },
+      "logbook": {
+        "device_not_found": "{count, plural,\n one {A device used by this card no longer exists.}\n other {# devices used by this card no longer exist.}\n}"
+      },
       "home-summary": {
         "all_lights_off": "All off",
         "count_active_alerts": "{count} {count, plural,\n one {active alert}\n other {active alerts}\n}",
