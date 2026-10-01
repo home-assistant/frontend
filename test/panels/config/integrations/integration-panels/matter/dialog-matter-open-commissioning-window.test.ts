@@ -134,6 +134,23 @@ describe("dialog-matter-open-commissioning-window", () => {
     expect(internals()["_windowOpenedAt"]).toBeTypeOf("number");
   });
 
+  /** A second request would revoke the window the first reply is about to show. */
+  it("waits for the pending window instead of offering Start after a reopen for the same device", async () => {
+    await dialog.showDialog({ device_id: "dev_a" });
+    const settle = pendingWindow();
+    const started = start();
+
+    close();
+    await dialog.showDialog({ device_id: "dev_a" });
+
+    expect(internals()["_status"]).toBe("started");
+    settle.resolve(window_);
+    await started;
+    close();
+    await dialog.showDialog({ device_id: "dev_a" });
+    expect(internals()["_status"]).toBeUndefined();
+  });
+
   it("forgets the previous window when reopened without a close", async () => {
     openMatterCommissioningWindow.mockResolvedValue(window_);
     await dialog.showDialog({ device_id: "dev_a" });

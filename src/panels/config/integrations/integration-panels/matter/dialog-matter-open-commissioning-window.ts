@@ -51,6 +51,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   private _windowOpenedAt?: number;
 
+  // Outlives a close, like the request itself.
+  private _opening = new Set<string>();
+
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
@@ -58,6 +61,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     // the dialog would render the previous device's window under this device's name.
     this._resetWindow();
     this.device_id = params.device_id;
+    // The Matter server revokes a device's open window before opening another, so a second Start would kill
+    // the window the pending reply is about to show.
+    if (this._opening.has(params.device_id)) {
+      this._status = "started";
+    }
     this._open = true;
   }
 
@@ -258,6 +266,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     this._status = "started";
     this._commissionParams = undefined;
     const deviceId = this.device_id!;
+    this._opening.add(deviceId);
     try {
       // Taken before the request, so the remaining time is never overstated. Wall clock, not
       // `performance.now()`: the usual way a window runs out while this dialog is open is the screen
@@ -276,6 +285,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       if (this.device_id === deviceId) {
         this._status = "failed";
       }
+    } finally {
+      this._opening.delete(deviceId);
     }
   }
 
