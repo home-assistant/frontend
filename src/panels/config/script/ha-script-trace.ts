@@ -49,7 +49,8 @@ import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
 import type { ScriptEntity } from "../../../data/script";
 import type { ScriptTrace, ScriptTraceExtended } from "../../../data/trace";
-import { loadTrace, loadTraces } from "../../../data/trace";
+import { getTracePath, loadTrace, loadTraces } from "../../../data/trace";
+import { TraceRunController } from "../../../data/trace-run-controller";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -104,14 +105,14 @@ export class HaScriptTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
-  // Numbers the trace list requests, so only the latest one updates the page.
-  private _traceListRequest = 0;
-
-  // The run the latest trace list request was asked for, while it loads.
-  private _requestedRunId?: string;
-
-  // Only the latest trace request may update the page.
-  private _traceRequest = 0;
+  private _runNavigation = new TraceRunController(this, {
+    tracePath: () => getTracePath("script", this.scriptId),
+    shownRunId: () => this._runId,
+    loadRun: (runId) => {
+      this._selected = undefined;
+      this._loadTraces(runId);
+    },
+  });
 
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
@@ -385,18 +386,6 @@ export class HaScriptTrace extends LitElement {
     `;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("location-changed", this._locationChanged);
-    window.addEventListener("popstate", this._locationChanged);
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChanged);
-    window.removeEventListener("popstate", this._locationChanged);
-  }
-
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -459,26 +448,8 @@ export class HaScriptTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
-      this._showRunIdInUrl();
+      this._runNavigation.writeRunIdToUrl(this._runId);
     }
-  }
-
-  private get _tracePath() {
-    return `/config/script/trace/${this.scriptId}`;
-  }
-
-  // Keep the shown run in the URL, so that browser history, reloads and the
-  // links between traces agree with the page.
-  private _showRunIdInUrl() {
-    const params = new URLSearchParams(location.search);
-    if (
-      location.pathname !== this._tracePath ||
-      params.get("run_id") === this._runId
-    ) {
-      return;
-    }
-    params.set("run_id", this._runId!);
-    replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
   }
 
   private _setRelatedContext() {
@@ -512,38 +483,11 @@ export class HaScriptTrace extends LitElement {
     this._pickRun(ev.detail.value);
   }
 
-  // A run picked on the page wins over a linked run that is still loading.
   private _pickRun(runId: string) {
-    if (this._requestedRunId) {
-      this._traceListRequest++;
-      this._requestedRunId = undefined;
-    }
+    this._runNavigation.cancelLinkRequest();
     this._runId = runId;
     this._selected = undefined;
   }
-
-  // A link to another run of this script, like a script that starts itself,
-  // and browser back and forward between such runs only change the query
-  // string, which does not update the route. An entry without a run_id is
-  // left alone: closing a dialog with back lands on one with the same URL.
-  private _locationChanged = () => {
-    const runId = new URLSearchParams(location.search).get("run_id");
-    if (
-      !runId ||
-      runId === (this._requestedRunId ?? this._runId) ||
-      location.pathname !== this._tracePath
-    ) {
-      return;
-    }
-    if (runId === this._runId) {
-      // Back to the shown run before the requested one arrived.
-      this._traceListRequest++;
-      this._requestedRunId = undefined;
-      return;
-    }
-    this._selected = undefined;
-    this._loadTraces(runId);
-  };
 
   private _pickNode(ev) {
     this._selected = ev.detail;
@@ -564,19 +508,16 @@ export class HaScriptTrace extends LitElement {
 
   private _refreshTraces() {
     // Keep the run of a link that is still loading.
-    this._loadTraces(this._requestedRunId);
+    this._loadTraces(this._runNavigation.requestedRunId);
   }
 
   private async _loadTraces(runId?: string) {
-    const request = ++this._traceListRequest;
-    this._requestedRunId = runId;
+    const request = this._runNavigation.startListRequest(runId);
     const traces = await loadTraces(this.hass, "script", this.scriptId);
-    // A newer request replaced this one, for example after switching to
-    // another script and back.
-    if (request !== this._traceListRequest) {
+    if (!this._runNavigation.isLatestListRequest(request)) {
       return;
     }
-    this._requestedRunId = undefined;
+    this._runNavigation.endListRequest();
     this._traces = traces;
     // Newest will be on top.
     this._traces.reverse();
@@ -605,7 +546,7 @@ export class HaScriptTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
-      if (request !== this._traceListRequest) {
+      if (!this._runNavigation.isLatestListRequest(request)) {
         return;
       }
     }
@@ -617,7 +558,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _loadTrace() {
-    const request = ++this._traceRequest;
+    const request = this._runNavigation.startTraceRequest();
     const runId = this._runId!;
     const trace = await loadTrace(this.hass, "script", this.scriptId, runId);
     const logbookEntries = isComponentLoaded(this.hass.config, "logbook")
@@ -629,7 +570,10 @@ export class HaScriptTrace extends LitElement {
       : [];
 
     // Another run was picked, or the same run loaded again, meanwhile.
-    if (request !== this._traceRequest || runId !== this._runId) {
+    if (
+      !this._runNavigation.isLatestTraceRequest(request) ||
+      runId !== this._runId
+    ) {
       return;
     }
     this._logbookEntries = logbookEntries;
