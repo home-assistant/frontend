@@ -2,7 +2,9 @@ import type { CSSResultGroup } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HaListBase } from "../list/ha-list-base";
 import "../list/types";
+import type { HaListItemRegistrationDetail } from "../list/types";
 import { HaRowItem } from "./ha-row-item";
 
 /**
@@ -18,8 +20,10 @@ import { HaRowItem } from "./ha-row-item";
  * @cssprop --ha-list-item-focus-width-start - Focus outline width at the start of the focus-in animation.
  * @cssprop --ha-list-item-focus-offset - Focus outline offset.
  * @cssprop --ha-list-item-focus-background - Background color applied on keyboard focus.
+ * @cssprop --ha-list-item-active-background - Background color of the active row in a list with `virtual-focus`. Defaults to `--ha-list-item-focus-background`.
  *
  * @attr {boolean} interactive - Opts the row into the parent list's roving tabindex. Interactive subclasses set this automatically.
+ * @attr {boolean} active - Set by a parent list with `virtual-focus` on the row that keyboard navigation points at.
  */
 @customElement("ha-list-item-base")
 export class HaListItemBase extends HaRowItem {
@@ -33,8 +37,17 @@ export class HaListItemBase extends HaRowItem {
    */
   @property({ type: Boolean, reflect: true }) public interactive = false;
 
+  /**
+   * Whether keyboard navigation points at this row while DOM focus stays
+   * outside the list. Set by a parent list with `virtual-focus`.
+   */
+  @property({ type: Boolean, reflect: true }) public active = false;
+
   /** Host `role` attribute. Subclasses override. */
   protected readonly defaultRole: string = "listitem";
+
+  // The list this row registered with.
+  private _list?: HaListBase;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -44,12 +57,17 @@ export class HaListItemBase extends HaRowItem {
     if (!this.hasAttribute("role")) {
       this.setAttribute("role", this.defaultRole);
     }
-    fireEvent(this, "ha-list-item-register", { item: this });
+    const detail: HaListItemRegistrationDetail = { item: this };
+    fireEvent(this, "ha-list-item-register", detail);
+    this._list = detail.list;
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    fireEvent(this, "ha-list-item-unregister", { item: this });
+    if (this._list) {
+      fireEvent(this._list, "ha-list-item-unregister", { item: this });
+      this._list = undefined;
+    }
   }
 
   /**
@@ -100,6 +118,12 @@ export class HaListItemBase extends HaRowItem {
         background-color: var(--ha-list-item-focus-background);
         animation: ha-list-item-focus-in var(--ha-animation-duration-normal)
           ease-in;
+      }
+      :host([active]:not([disabled])) .base {
+        background-color: var(
+          --ha-list-item-active-background,
+          var(--ha-list-item-focus-background)
+        );
       }
     `,
   ];
