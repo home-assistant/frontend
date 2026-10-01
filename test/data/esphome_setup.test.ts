@@ -317,13 +317,13 @@ describe("findESPHomeZWaveFlow", () => {
     discovery_key: { domain: "esphome", key: "20:F8:3B:17:08:A8", version: 1 },
   });
 
-  it("matches the flow by the device MAC, ignoring case and the home ID", () => {
-    expect(findESPHomeZWaveFlow([fromDevice], "20:f8:3b:17:08:a8", 0)).toBe(
+  it("matches the flow by the device MAC, ignoring case", () => {
+    expect(findESPHomeZWaveFlow([fromDevice], "20:f8:3b:17:08:a8")).toBe(
       fromDevice
     );
   });
 
-  it("ignores flows from other devices, sources, and integrations", () => {
+  it("ignores flows from other devices", () => {
     expect(
       findESPHomeZWaveFlow(
         [
@@ -331,16 +331,33 @@ describe("findESPHomeZWaveFlow", () => {
           flow({ ...fromDevice.context, source: "usb" }),
           flow(fromDevice.context, "zha"),
         ],
-        "aa:bb:cc:dd:ee:ff",
-        3551671779
+        "aa:bb:cc:dd:ee:ff"
       )
     ).toBeUndefined();
   });
 
-  it("falls back to the home ID for flows without a discovery key", () => {
+  it("does not match flows without an ESPHome discovery key", () => {
     const legacy = flow({ source: "esphome", unique_id: "3551671779" });
-    expect(findESPHomeZWaveFlow([legacy], undefined, 3551671779)).toBe(legacy);
-    expect(findESPHomeZWaveFlow([legacy], undefined, 0)).toBeUndefined();
+    const otherKey = flow({
+      source: "esphome",
+      discovery_key: { domain: "usb", key: "20:F8:3B:17:08:A8", version: 1 },
+    });
+    expect(
+      findESPHomeZWaveFlow([legacy, otherKey], "20:F8:3B:17:08:A8")
+    ).toBeUndefined();
+    expect(findESPHomeZWaveFlow([fromDevice], undefined)).toBeUndefined();
+  });
+
+  it("ignores same-MAC flows from other sources and integrations", () => {
+    expect(
+      findESPHomeZWaveFlow(
+        [
+          flow({ ...fromDevice.context, source: "usb" }),
+          flow(fromDevice.context, "zha"),
+        ],
+        "20:F8:3B:17:08:A8"
+      )
+    ).toBeUndefined();
   });
 });
 

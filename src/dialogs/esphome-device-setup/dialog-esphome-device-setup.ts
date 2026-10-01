@@ -173,10 +173,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   })
   private _macAddress?: string;
 
-  /** zwave_js flows in progress, kept current while the dialog is open. */
   @state() private _zwaveFlows: DataEntryFlowProgress[] = [];
-
-  private _zwaveFlowsSub?: Promise<UnsubscribeFunc>;
 
   @state() private _capabilities?: ESPHomeDeviceCapabilities;
 
@@ -215,9 +212,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   public disconnectedCallback() {
     this._finishMusicAssistantDiscovery(undefined);
-    const zwaveFlowsSub = this._zwaveFlowsSub;
-    this._zwaveFlowsSub = undefined;
-    zwaveFlowsSub?.then((unsub) => unsub()).catch(() => undefined);
     this.params?.dialogClosedCallback?.();
     super.disconnectedCallback();
   }
@@ -761,11 +755,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
               this._serialPorts
             ),
       zwaveFlowInProgress:
-        findESPHomeZWaveFlow(
-          this._zwaveFlows,
-          this._macAddress,
-          this._capabilities.zwave_proxy.home_id
-        ) !== undefined,
+        findESPHomeZWaveFlow(this._zwaveFlows, this._macAddress) !== undefined,
     });
     // A failed scan left no usage data. Keep the row, but do not show
     // Configured or Set up from that missing result.
@@ -795,7 +785,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       }
       this._capabilities = capabilities;
       if (capabilities.zwave_proxy.supported) {
-        this._subscribeZWaveFlows();
+        await this._refreshZWaveFlows();
+        if (!this.isConnected) {
+          return;
+        }
       }
       await this._refreshSerialPorts();
       if (!this.isConnected) {
@@ -1129,29 +1122,18 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     });
   }
 
-  private _subscribeZWaveFlows() {
-    if (this._zwaveFlowsSub || !this._connection) {
+  private async _refreshZWaveFlows() {
+    if (!this._connection) {
       return;
     }
-    const sub = subscribeConfigFlowInProgress(this._connection, (messages) => {
-      if (this._zwaveFlowsSub !== sub) {
-        return;
-      }
-      let flows = this._zwaveFlows;
-      for (const message of messages) {
-        flows = flows.filter((flow) => flow.flow_id !== message.flow_id);
-        if (message.type !== "removed" && message.flow.handler === "zwave_js") {
-          flows = [...flows, message.flow];
-        }
-      }
-      this._zwaveFlows = flows;
-    });
-    this._zwaveFlowsSub = sub;
-    sub.catch(() => {
-      if (this._zwaveFlowsSub === sub) {
-        this._zwaveFlowsSub = undefined;
-      }
-    });
+    try {
+      const flows = await fetchConfigFlowInProgress(
+        this._connection.connection
+      );
+      this._zwaveFlows = flows.filter((flow) => flow.handler === "zwave_js");
+    } catch {
+      // Keep the last list.
+    }
   }
 
   private async _setupZWave(ev: Event) {
@@ -1173,11 +1155,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (!this.isConnected) {
       return;
     }
-    const flow = findESPHomeZWaveFlow(
-      flows,
-      this._macAddress,
-      this._capabilities.zwave_proxy.home_id
-    );
+    const flow = findESPHomeZWaveFlow(flows, this._macAddress);
     if (!flow) {
       this._error = this._i18n.localize(
         "ui.panel.config.devices.esphome.setup_error_zwave"

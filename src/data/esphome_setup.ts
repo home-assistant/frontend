@@ -222,34 +222,22 @@ export const deriveESPHomeSetupStatus = (
   return status;
 };
 
-/**
- * The zwave_js discovery flow ESPHome started for this device. ESPHome tags it
- * with the device MAC, which still matches when the reported home ID is stale.
- */
+/** The zwave_js discovery flow ESPHome started for this device, keyed by its MAC. */
 export const findESPHomeZWaveFlow = (
-  flows: Iterable<DataEntryFlowProgress>,
-  macAddress: string | undefined,
-  homeId: number
+  flows: readonly DataEntryFlowProgress[],
+  macAddress: string | undefined
 ): DataEntryFlowProgress | undefined => {
   const mac = macAddress?.toLowerCase();
-  for (const flow of flows) {
-    if (flow.handler !== "zwave_js" || flow.context.source !== "esphome") {
-      continue;
-    }
+  return flows.find((flow) => {
     const discoveryKey = flow.context.discovery_key;
-    if (discoveryKey?.domain === "esphome") {
-      if (
-        mac &&
-        typeof discoveryKey.key === "string" &&
-        discoveryKey.key.toLowerCase() === mac
-      ) {
-        return flow;
-      }
-    } else if (homeId !== 0 && flow.context.unique_id === String(homeId)) {
-      return flow;
-    }
-  }
-  return undefined;
+    return (
+      flow.handler === "zwave_js" &&
+      flow.context.source === "esphome" &&
+      discoveryKey?.domain === "esphome" &&
+      typeof discoveryKey.key === "string" &&
+      discoveryKey.key.toLowerCase() === mac
+    );
+  });
 };
 
 export const getESPHomeSetupCapabilityIds = (
