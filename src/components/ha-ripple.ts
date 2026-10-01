@@ -3,7 +3,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
-// Timings and sizing follow the Material Web ripple (Apache-2.0) this replaces.
 const TOUCH_DELAY_MS = 150;
 
 const MINIMUM_PRESS_MS = 225;
