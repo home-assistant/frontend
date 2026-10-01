@@ -317,10 +317,15 @@ describe("findESPHomeZWaveFlow", () => {
     discovery_key: { domain: "esphome", key: "20:F8:3B:17:08:A8", version: 1 },
   });
 
-  it("matches the flow by the device MAC, ignoring case", () => {
+  it("matches the flow by the device MAC, ignoring case and separators", () => {
     expect(findESPHomeZWaveFlow([fromDevice], "20:f8:3b:17:08:a8")).toBe(
       fromDevice
     );
+    const rawKey = flow({
+      ...fromDevice.context,
+      discovery_key: { domain: "esphome", key: "20F83B1708A8", version: 1 },
+    });
+    expect(findESPHomeZWaveFlow([rawKey], "20:f8:3b:17:08:a8")).toBe(rawKey);
   });
 
   it("ignores flows from other devices", () => {

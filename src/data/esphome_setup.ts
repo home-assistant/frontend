@@ -222,12 +222,19 @@ export const deriveESPHomeSetupStatus = (
   return status;
 };
 
+// Core stores the device MAC through format_mac; the discovery key keeps the raw value.
+const normalizeMac = (mac: string): string =>
+  mac.replace(/[^0-9a-f]/gi, "").toLowerCase();
+
 /** The zwave_js discovery flow ESPHome started for this device, keyed by its MAC. */
 export const findESPHomeZWaveFlow = (
   flows: readonly DataEntryFlowProgress[],
   macAddress: string | undefined
 ): DataEntryFlowProgress | undefined => {
-  const mac = macAddress?.toLowerCase();
+  const mac = macAddress ? normalizeMac(macAddress) : undefined;
+  if (!mac) {
+    return undefined;
+  }
   return flows.find((flow) => {
     const discoveryKey = flow.context.discovery_key;
     return (
@@ -235,7 +242,7 @@ export const findESPHomeZWaveFlow = (
       flow.context.source === "esphome" &&
       discoveryKey?.domain === "esphome" &&
       typeof discoveryKey.key === "string" &&
-      discoveryKey.key.toLowerCase() === mac
+      normalizeMac(discoveryKey.key) === mac
     );
   });
 };
