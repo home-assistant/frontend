@@ -19,12 +19,38 @@ export const ERROR_WARNING_NOT_ACCEPTED = "warning_not_accepted";
 export const isWebSocketError = (err: unknown, code: string): boolean =>
   (err as { code?: unknown } | null)?.code === code;
 
-// The backend sends its errors translated, as an object with a message or a string.
-export const websocketErrorMessage = (err: unknown): string | undefined => {
+interface WebSocketError {
+  message?: unknown;
+  translation_domain?: unknown;
+  translation_key?: unknown;
+  translation_placeholders?: Record<string, string> | null;
+}
+
+// The backend sends its errors as an object with a message in the language of
+// Home Assistant, and the key to translate it into the language of the user.
+export const websocketErrorMessage = (
+  err: unknown,
+  localize: LocalizeFunc
+): string | undefined => {
   if (typeof err === "string") {
     return err || undefined;
   }
-  const message = (err as { message?: unknown } | null)?.message;
+
+  const error = err as WebSocketError | null;
+  if (
+    typeof error?.translation_domain === "string" &&
+    typeof error.translation_key === "string"
+  ) {
+    const translated = localize(
+      `component.${error.translation_domain}.exceptions.${error.translation_key}.message`,
+      error.translation_placeholders ?? undefined
+    );
+    if (translated) {
+      return translated;
+    }
+  }
+
+  const message = error?.message;
   return typeof message === "string" && message ? message : undefined;
 };
 
@@ -33,7 +59,7 @@ export const marketplaceErrorMessage = (
   err: unknown,
   localize: LocalizeFunc
 ): string =>
-  websocketErrorMessage(err) ||
+  websocketErrorMessage(err, localize) ||
   localize("ui.panel.marketplace.common.unknown_error");
 
 export const fetchMarketplaceInfo = (hass: Pick<HomeAssistant, "callWS">) =>

@@ -33,10 +33,17 @@ const INSTALLED = {
   installed: true,
 } as RepositoryBase;
 
+// The error translations of the backend, in the language of the user
+const backendLocalize = (key: string) =>
+  key === "component.marketplace.exceptions.uninstall_failed.message"
+    ? "Kon niet verwijderen"
+    : "";
+
 const hass = (components = ["marketplace"]) =>
   ({
     config: { components },
     localize: (key: string) => key,
+    loadBackendTranslation: vi.fn(async () => backendLocalize),
   }) as unknown as HomeAssistant;
 
 const element = () => document.body.appendChild(document.createElement("div"));
@@ -138,5 +145,27 @@ describe("offerMarketplaceUninstall", () => {
     const params = vi.mocked(showConfirmationDialog).mock.lastCall![1];
     expect(params.action).toBeUndefined();
     expect(showAlertDialog).toHaveBeenCalledTimes(1);
+  });
+
+  it("tells why in the language of the user", async () => {
+    vi.mocked(fetchMarketplaceRepositories).mockResolvedValueOnce([INSTALLED]);
+    vi.mocked(uninstallMarketplaceRepository).mockRejectedValueOnce({
+      code: "error",
+      message: "Could not uninstall",
+      translation_domain: "marketplace",
+      translation_key: "uninstall_failed",
+      translation_placeholders: {},
+    });
+    const home = hass();
+
+    await offerMarketplaceUninstall(element(), home, "example");
+
+    expect(home.loadBackendTranslation).toHaveBeenCalledWith(
+      "exceptions",
+      "marketplace"
+    );
+    expect(vi.mocked(showAlertDialog).mock.lastCall![1].text).toBe(
+      "Kon niet verwijderen"
+    );
   });
 });

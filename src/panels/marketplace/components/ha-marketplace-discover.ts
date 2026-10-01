@@ -44,10 +44,15 @@ const discoverSections = (
     },
     {
       name: "updated",
-      repositories: top(
-        repositories,
-        (a, b) => timestamp(b.last_updated) - timestamp(a.last_updated)
-      ),
+      // Parsed once per repository, not twice per comparison of the catalog
+      repositories: repositories
+        .map((repository) => ({
+          repository,
+          updated: timestamp(repository.last_updated),
+        }))
+        .sort((a, b) => b.updated - a.updated)
+        .slice(0, ROWS_PER_SECTION)
+        .map(({ repository }) => repository),
       seeAll: browseUrl({
         sorting: { column: "last_updated", direction: "desc" },
         filters: {},

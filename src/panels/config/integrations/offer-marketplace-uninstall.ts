@@ -83,9 +83,14 @@ export const offerMarketplaceUninstall = async (
   try {
     await uninstallMarketplaceRepository(hass, id);
   } catch (err: unknown) {
+    // Outside the Marketplace panel, nothing loaded its error translations yet
+    const localize = await hass.loadBackendTranslation(
+      "exceptions",
+      "marketplace"
+    );
     showAlertDialog(host, {
       text:
-        websocketErrorMessage(err) ||
+        websocketErrorMessage(err, localize) ||
         hass.localize(
           "ui.panel.config.integrations.config_entry.marketplace_uninstall.failed"
         ),

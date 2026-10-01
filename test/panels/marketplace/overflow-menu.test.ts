@@ -4,7 +4,10 @@ import {
   getConfigEntries,
 } from "../../../src/data/config_entries";
 import type { ConfigEntry } from "../../../src/data/config_entries";
-import { uninstallMarketplaceRepository } from "../../../src/data/marketplace/repository";
+import {
+  refreshMarketplaceRepository,
+  uninstallMarketplaceRepository,
+} from "../../../src/data/marketplace/repository";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -40,6 +43,7 @@ vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
 }));
 vi.mock("../../../src/data/marketplace/repository", async (importOriginal) => ({
   ...(await importOriginal<object>()),
+  refreshMarketplaceRepository: vi.fn(),
   uninstallMarketplaceRepository: vi.fn(),
 }));
 
@@ -136,6 +140,40 @@ describe("repositoryMenuItems", () => {
       PAGE,
       expect.objectContaining({ repositoryId: "1", chooseVersion: true })
     );
+  });
+
+  const updateInformation = async (page: HaMarketplaceRepositoryDashboard) => {
+    const entry = repositoryMenuItems(page, repository({}), localize).find(
+      (item) => "value" in item && item.value === "update_information"
+    ) as unknown as { action: () => Promise<void> };
+    await entry.action();
+  };
+
+  it("reloads the repository page after updating its information", async () => {
+    const page = {
+      ...PAGE,
+      reloadRepository: vi.fn(),
+    } as unknown as HaMarketplaceRepositoryDashboard;
+
+    await updateInformation(page);
+
+    expect(refreshMarketplaceRepository).toHaveBeenCalledWith(page.hass, "1");
+    expect(page.reloadRepository).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the repository page when updating its information fails", async () => {
+    vi.mocked(refreshMarketplaceRepository).mockRejectedValueOnce(
+      new Error("Busy")
+    );
+    const page = {
+      ...PAGE,
+      reloadRepository: vi.fn(),
+    } as unknown as HaMarketplaceRepositoryDashboard;
+
+    await updateInformation(page);
+
+    expect(page.reloadRepository).not.toHaveBeenCalled();
+    expect(showAlertDialog).toHaveBeenCalled();
   });
 
   const confirmUninstall = async () => {

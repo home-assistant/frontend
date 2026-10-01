@@ -489,7 +489,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
       }
 
       this._error =
-        websocketErrorMessage(err) ||
+        websocketErrorMessage(err, this._i18n.localize) ||
         this._i18n.localize(
           "ui.panel.marketplace.dialog_install.install_failed"
         );

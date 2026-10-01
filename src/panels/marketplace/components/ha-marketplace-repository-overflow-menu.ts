@@ -181,6 +181,12 @@ export const repositoryMenuItems = (
           if (!handleGitHubRateLimited(element, element.hass, localize, err)) {
             showError(element, localize, err);
           }
+          return;
+        }
+
+        // The list leaves out what only the page shows, like the open issues
+        if (element.nodeName === "HA-MARKETPLACE-REPOSITORY-DASHBOARD") {
+          (element as HaMarketplaceRepositoryDashboard).reloadRepository();
         }
       },
     }

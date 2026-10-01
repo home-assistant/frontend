@@ -46,6 +46,33 @@ describe("marketplaceErrorMessage", () => {
     expect(marketplaceErrorMessage({ message: "Busy" }, localize)).toBe("Busy");
   });
 
+  const ERROR = {
+    code: "error",
+    message: "Could not install example",
+    translation_domain: "marketplace",
+    translation_key: "install_failed",
+    translation_placeholders: { repository: "example" },
+  };
+
+  it("translates the error into the language of the user", () => {
+    const translations = ((key: string, values?: Record<string, string>) =>
+      key === "component.marketplace.exceptions.install_failed.message"
+        ? `Kon ${values!.repository} niet installeren`
+        : key) as LocalizeFunc;
+
+    expect(marketplaceErrorMessage(ERROR, translations)).toBe(
+      "Kon example niet installeren"
+    );
+  });
+
+  it("tells the message when the translation is not loaded", () => {
+    const missing = (() => "") as unknown as LocalizeFunc;
+
+    expect(marketplaceErrorMessage(ERROR, missing)).toBe(
+      "Could not install example"
+    );
+  });
+
   it.each([{ code: "unknown_error" }, { message: "" }, null, ""])(
     "falls back to a generic error for %s",
     (err) => {

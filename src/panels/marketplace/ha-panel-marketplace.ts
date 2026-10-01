@@ -65,6 +65,10 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
   private _marketplaceUnsubs: Promise<UnsubscribeFunc>[] = [];
 
+  private _repositoriesRequest?: Promise<void>;
+
+  private _repositoriesOutdated = false;
+
   protected hassSubscribeRequiredHostProps = ["_integrationLoaded"];
 
   private _marketplace = memoizeOne(
@@ -263,6 +267,8 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     }
 
     this._loadError = undefined;
+    // The panel translates the errors of the backend itself
+    this.hass.loadBackendTranslation("exceptions", "marketplace");
     this._subscribeMarketplace();
     this._refreshInfo();
     this._refreshRepositories();
@@ -311,7 +317,25 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     this._clearLoadError();
   };
 
-  private _refreshRepositories = async (): Promise<void> => {
+  // A catalog refresh sends a signal per category, one list request at a
+  // time with one more after it when anything changed meanwhile.
+  private _refreshRepositories = (): Promise<void> => {
+    if (this._repositoriesRequest) {
+      this._repositoriesOutdated = true;
+      return this._repositoriesRequest;
+    }
+
+    this._repositoriesRequest = this._fetchRepositories().finally(() => {
+      this._repositoriesRequest = undefined;
+      if (this._repositoriesOutdated) {
+        this._repositoriesOutdated = false;
+        this._refreshRepositories();
+      }
+    });
+    return this._repositoriesRequest;
+  };
+
+  private async _fetchRepositories(): Promise<void> {
     try {
       this._repositories = await fetchMarketplaceRepositories(this.hass);
     } catch (err) {
@@ -324,7 +348,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     }
 
     this._clearLoadError();
-  };
+  }
 
   private _handleFetchError(
     action: string,

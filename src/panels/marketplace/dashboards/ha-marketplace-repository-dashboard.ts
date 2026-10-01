@@ -290,6 +290,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
   }
 
+  // The list does not carry the fields only this page shows, those need a fetch
+  public reloadRepository(): void {
+    this._fetchRepository();
+  }
+
   private _loadRepositoryFromRoute(): void {
     const repositoryId = repositoryIdFromRoute(this.route);
     if (!repositoryId) {

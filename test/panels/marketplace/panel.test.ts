@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ConfigEntryUpdate } from "../../../src/data/config_entries";
+import { MarketplaceDispatchEvent } from "../../../src/data/marketplace/common";
 import "../../../src/panels/marketplace/ha-panel-marketplace";
 import type { HomeAssistant } from "../../../src/types";
 
@@ -48,6 +49,7 @@ type Answers = Record<string, () => Promise<unknown>>;
 
 let configEntriesCallback!: (updates: ConfigEntryUpdate[]) => void;
 const connectionListeners: Record<string, () => void> = {};
+const marketplaceSignals: Record<string, () => void> = {};
 
 const openPanel = async (answers: Answers) => {
   const hass = {
@@ -65,6 +67,9 @@ const openPanel = async (answers: Answers) => {
           if (message.type === "config_entries/subscribe") {
             configEntriesCallback = callback;
           }
+          if (message.type === "marketplace/subscribe") {
+            marketplaceSignals[message.signal] = () => callback([]);
+          }
           return vi.fn();
         }
       ),
@@ -73,6 +78,7 @@ const openPanel = async (answers: Answers) => {
       ),
     },
     callWS: (message: { type: string }) => answers[message.type](),
+    loadBackendTranslation: vi.fn(async () => (key: string) => key),
   } as unknown as HomeAssistant;
 
   const panel = document.createElement("ha-panel-marketplace");
@@ -172,6 +178,48 @@ describe("ha-panel-marketplace", () => {
 
     expect(screen(panel, "ha-marketplace-warning")).not.toBeNull();
     expect(screen(panel, "ha-marketplace-router")).toBeNull();
+  });
+
+  it("loads the translations of the errors of the backend", async () => {
+    const panel = await openPanel({
+      "marketplace/info": async () => INFO,
+      "marketplace/repositories/list": async () => [],
+    });
+
+    expect(panel.hass.loadBackendTranslation).toHaveBeenCalledWith(
+      "exceptions",
+      "marketplace"
+    );
+  });
+
+  it("asks for the list once more while it is fetched, not once per signal", async () => {
+    const repositories = vi.fn(async (): Promise<unknown[]> => []);
+    const panel = await openPanel({
+      "marketplace/info": async () => INFO,
+      "marketplace/repositories/list": repositories,
+    });
+    const pending: ((answer: unknown[]) => void)[] = [];
+    repositories.mockClear();
+    repositories.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          pending.push(resolve);
+        })
+    );
+
+    // A catalog refresh sends one per category
+    for (let category = 0; category < 4; category++) {
+      marketplaceSignals[MarketplaceDispatchEvent.REPOSITORY]();
+    }
+    expect(repositories).toHaveBeenCalledTimes(1);
+
+    pending[0]([]);
+    await settle(panel);
+    expect(repositories).toHaveBeenCalledTimes(2);
+
+    pending[1]([]);
+    await settle(panel);
+    expect(repositories).toHaveBeenCalledTimes(2);
   });
 
   it("fetches again once the connection is back", async () => {
