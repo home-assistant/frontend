@@ -198,8 +198,11 @@ export interface TraceId {
   run_id: string;
 }
 
+export const getTracePath = (domain: string, itemId: string): string =>
+  `/config/${domain}/trace/${encodeURIComponent(itemId)}`;
+
 export const getTraceUrl = ({ domain, item_id, run_id }: TraceId): string =>
-  `/config/${domain}/trace/${encodeURIComponent(item_id)}?run_id=${run_id}`;
+  `${getTracePath(domain, item_id)}?run_id=${run_id}`;
 
 export type TraceContexts = Record<string, TraceId>;
 

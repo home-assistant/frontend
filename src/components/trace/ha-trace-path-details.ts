@@ -361,17 +361,20 @@ export class HaTracePathDetails extends LitElement {
     </div>`;
   }
 
-  private _renderChildTraceLink(childId: TraceId) {
-    // The child is a script or automation; both are registered with their
-    // config id as unique id.
+  // The child is a script or automation; both are registered with their config
+  // id as unique id. A removed script or an automation without an id has no
+  // name to show.
+  private _childTraceName(childId: TraceId): string | undefined {
     const entityId = this._entityReg.find(
       (entry) =>
         entry.platform === childId.domain && entry.unique_id === childId.item_id
     )?.entity_id;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
-    const name = stateObj ? computeStateName(stateObj) : entityId;
+    return stateObj ? computeStateName(stateObj) : entityId;
+  }
 
-    // A removed script or an automation without an id has no name to show.
+  private _renderChildTraceLink(childId: TraceId) {
+    const name = this._childTraceName(childId);
     return html`<a class="trace-link" href=${getTraceUrl(childId)}
         >${
           name
