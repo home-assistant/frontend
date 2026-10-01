@@ -75,6 +75,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       this.hass,
       this._commissionParams
     );
+    // Apple Home only helps Apple Home users, so there the code, which works with any app, stays primary.
+    const copyIsPrimary = shareTarget === "apple_home";
 
     return html`
       <ha-dialog
@@ -199,8 +201,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
               ? shareTarget
                 ? html`
                     <ha-button
-                      slot="secondaryAction"
-                      appearance="plain"
+                      slot=${copyIsPrimary ? "primaryAction" : "secondaryAction"}
+                      appearance=${copyIsPrimary ? "accent" : "plain"}
                       @click=${this._copyCode}
                     >
                       ${this.hass.localize(
@@ -208,7 +210,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       )}
                     </ha-button>
                     <ha-button
-                      slot="primaryAction"
+                      slot=${copyIsPrimary ? "secondaryAction" : "primaryAction"}
+                      appearance=${copyIsPrimary ? "plain" : "accent"}
                       .loading=${this._sharing}
                       @click=${this._shareDevice}
                     >
