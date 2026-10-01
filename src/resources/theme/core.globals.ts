@@ -19,6 +19,7 @@ export const coreStyles = css`
     --ha-border-radius-pill: 9999px;
     --ha-border-radius-circle: 50%;
     --ha-border-radius-square: 0;
+    --ha-avatar-border-radius: var(--ha-border-radius-lg);
 
     /* Spacing */
     --ha-space-1: 4px;
