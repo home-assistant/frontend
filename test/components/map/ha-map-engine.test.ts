@@ -377,6 +377,24 @@ describe("ha-map readiness", () => {
     expect(isRevealed(el)).toBe(true);
   });
 
+  it("does not show the map from the fallback once disconnected", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const el = await createMap();
+    const map = container(el);
+
+    el.remove();
+    await vi.advanceTimersByTimeAsync(3000);
+
+    expect(map.classList.contains("drawn")).toBe(false);
+  });
+
+  it("shows a Leaflet map once its layer is in place", async () => {
+    webgl2.supported = false;
+    const el = await createMap();
+
+    expect(isRevealed(el)).toBe(true);
+  });
+
   it("ignores a frame reported by a superseded setup", async () => {
     let openGate!: () => void;
     fakeEngine.initGate = new Promise<void>((resolve) => {
@@ -394,9 +412,14 @@ describe("ha-map readiness", () => {
 
     el.remove();
     openGate();
-    superseded.options!.events.drawn!();
+    fakeEngine.initGate = undefined;
+    document.body.appendChild(el);
+    await vi.waitUntil(() => isLoaded(el));
 
+    superseded.options!.events.drawn!();
     expect(isRevealed(el)).toBe(false);
+    fakeEngine.instances[1].options!.events.drawn!();
+    expect(isRevealed(el)).toBe(true);
   });
 });
 
