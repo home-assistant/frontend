@@ -246,8 +246,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _search = "";
 
-  private _activateTopMatch = false;
-
   protected firstUpdated() {
     this._registerKeyboardShortcuts();
   }
@@ -263,18 +261,20 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (this._activateTopMatch) {
-      this._activateTopMatch = false;
+    // Enter picks the top match while searching, so highlight it whenever the
+    // rows change: typing, a section chip, or refreshed items.
+    if (changedProps.has("_items") && this._search) {
       this._highlightTopMatch();
     }
   }
 
-  // Enter picks the top match after a search, so highlight it as soon as the
-  // list has the filtered rows. The list resets its active row when it takes
-  // new rows, so wait for that first.
+  // The list resets its active row when it takes new rows, so wait for that
+  // first. Skip if the search was cleared or a key already moved the cursor.
   private async _highlightTopMatch() {
     await this._list?.updateComplete;
-    this._initializeSelectedIndex();
+    if (this._search && this._list?.getActiveItemIndex() === -1) {
+      this._initializeSelectedIndex();
+    }
   }
 
   disconnectedCallback() {
@@ -618,6 +618,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     } else {
       if (!searchString) {
         this._items = this._allItems;
+        this._resetSelectedItem();
         return;
       }
 
@@ -662,7 +663,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     this._resetSelectedItem();
     this._resetListScroll();
-    this._activateTopMatch = !!this._search;
   };
 
   private _preventBlur(ev: Event) {
