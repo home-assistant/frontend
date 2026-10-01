@@ -291,13 +291,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._selectedItemIndex = this._focusOwnsCursor
         ? this._defaultSelectedIndex()
         : -1;
+      // The index may be unchanged while the list under it was replaced.
+      this._cursorScrollPending ||= this._selectedItemIndex !== -1;
     }
   }
 
   protected updated(changedProps: PropertyValues) {
     // ScrollableFadeMixin attaches its scroll observer here.
     super.updated(changedProps);
-    if (!this._cursorScrollPending) {
+    const cursorMoved =
+      changedProps.has("_selectedItemIndex") && this._selectedItemIndex !== -1;
+    if (!this._cursorScrollPending && !cursorMoved) {
       return;
     }
     this._cursorScrollPending = false;
@@ -776,7 +780,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       return;
     }
     this._selectedItemIndex = index;
-    this._scrollRowIntoView(index);
   }
 
   private _selectNextItem = (ev?: KeyboardEvent) => {
