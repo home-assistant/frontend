@@ -16,8 +16,8 @@ The demo is the full Home Assistant frontend running against a mocked backend an
 Run commands from the repository root:
 
 ```bash
-yarn dev:demo               # Development server on http://localhost:8090
-yarn dev:demo --background  # Detached; also supports --status/--stop/--logs
+pnpm dev:demo               # Development server on http://localhost:8090
+pnpm dev:demo --background  # Detached; also supports --status/--stop/--logs
 ```
 
 Use the E2E workflows documented in `ha-frontend-testing` when validating the demo.

@@ -79,7 +79,7 @@ jobs:
           RSPACK_CACHE: readwrite
         run: |
           pip install build
-          yarn install
+          pnpm install --frozen-lockfile
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/build_frontend
           rm -rf dist home_assistant_frontend.egg-info

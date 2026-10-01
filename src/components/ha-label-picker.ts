@@ -136,7 +136,7 @@ export class HaLabelPicker extends LitElement {
   }
 
   private _rowRenderer: RenderItemFunction<LabelComboBoxItem> = (item) =>
-    html`<ha-combo-box-item type="button" compact>
+    html`<ha-combo-box-item>
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
       ${
         item.id !== ADD_NEW_ID

@@ -54,13 +54,17 @@ const STATES = {
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
 
 const createMap = async (
-  options: { clusterMarkers?: boolean; states?: HassEntities } = {}
+  options: {
+    clusterMarkers?: boolean;
+    states?: HassEntities;
+    entities?: string[];
+  } = {}
 ): Promise<HaMap> => {
   const el = document.createElement("ha-map");
-  el.entities = [
+  el.entities = options.entities ?? [
     "device_tracker.paulus",
     "device_tracker.anne_therese",
-  ] as string[];
+  ];
   el.clusterMarkers = options.clusterMarkers ?? false;
   (el as any)._states = options.states ?? STATES;
   (el as any)._config = {
@@ -115,6 +119,35 @@ describe("ha-map", () => {
     expect(map.getZoom()).toBeGreaterThanOrEqual(10);
     expect(map.getCenter().lat).toBeCloseTo(52.3745, 2);
     expect(map.getCenter().lng).toBeCloseTo(4.8925, 2);
+  });
+
+  it("fits to the zones when they are all the map shows", async () => {
+    const el = await createMap({
+      states: {
+        "zone.work": {
+          entity_id: "zone.work",
+          state: "0",
+          attributes: {
+            friendly_name: "Work",
+            latitude: 52.3,
+            longitude: 4.8,
+            radius: 100,
+          },
+          context: { id: "3", user_id: null, parent_id: null },
+          last_changed: "2026-01-01T00:00:00Z",
+          last_updated: "2026-01-01T00:00:00Z",
+        },
+      } as unknown as HassEntities,
+      entities: ["zone.work"],
+    });
+    setMapSize(el, 800, 500);
+    fireResizeObservers();
+    await el.updateComplete;
+
+    const map = leafletMap(el)!;
+    // Centred on the zone, not jumped to the home coordinates
+    expect(map.getCenter().lat).toBeCloseTo(52.3, 2);
+    expect(map.getCenter().lng).toBeCloseTo(4.8, 2);
   });
 
   it("does not defer fitting when the container already has a size", async () => {
@@ -238,6 +271,29 @@ describe("ha-map", () => {
       expect((after as any).entityName).toBe("PM");
     });
 
+    it("shows up to four avatars, and three with a count beyond that", async () => {
+      const el = await createMap({ clusterMarkers: true, states: NEARBY });
+      const build = (count: number) =>
+        (el as any)._createClusterBubble(
+          Array.from({ length: count }, (_, i) => ({
+            clusterData: {
+              entityId: `person.p${i}`,
+              title: `P${i}`,
+              label: "P",
+            },
+          })),
+          [52.372, 4.89]
+        ).element as HTMLElement;
+
+      const four = build(4);
+      expect(four.querySelectorAll("ha-entity-marker")).toHaveLength(4);
+      expect(four.querySelector(".more")).toBeNull();
+
+      const five = build(5);
+      expect(five.querySelectorAll("ha-entity-marker")).toHaveLength(3);
+      expect(five.querySelector(".more")?.textContent).toBe("+2");
+    });
+
     it("reuses a detached avatar and drops its stale trail color", async () => {
       const el = await createMap({ clusterMarkers: true, states: NEARBY });
       const build = () =>
@@ -262,6 +318,47 @@ describe("ha-map", () => {
       // An avatar still on screen stays where it is
       document.body.appendChild(rebuilt);
       expect(build().querySelector("ha-entity-marker")).not.toBe(avatar);
+    });
+
+    it("makes the avatars of an expanded bubble buttons that open the entity", async () => {
+      const el = await createMap({ clusterMarkers: true, states: NEARBY });
+      const members = [
+        {
+          clusterData: {
+            entityId: "device_tracker.paulus",
+            title: "Paulus",
+            label: "P",
+          },
+        },
+      ];
+      const build = (expanded: boolean) =>
+        (el as any)._createClusterBubble(
+          members,
+          [52.372, 4.89],
+          undefined,
+          expanded
+        ).element as HTMLElement;
+
+      const expanded = build(true);
+      // On the map, where the avatar's own keyboard handling is live
+      document.body.appendChild(expanded);
+      const avatar = expanded.querySelector<HTMLElement>("ha-entity-marker")!;
+      expect(avatar.getAttribute("role")).toBe("button");
+      expect(avatar.tabIndex).toBe(0);
+      expect(avatar.getAttribute("aria-label")).toBe("Paulus");
+
+      const moreInfo = vi.fn();
+      expanded.addEventListener("hass-more-info", moreInfo);
+      avatar.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      );
+      expect(moreInfo).toHaveBeenCalledOnce();
+      expanded.remove();
+
+      // Back in a closed bubble the same avatar is no longer a button
+      expect(build(false).querySelector("ha-entity-marker")).toBe(avatar);
+      expect(avatar.hasAttribute("role")).toBe(false);
+      expect(avatar.hasAttribute("tabindex")).toBe(false);
     });
 
     it("keeps avatars in a bubble Leaflet shows again after zooming out", async () => {

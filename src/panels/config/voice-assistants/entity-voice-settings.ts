@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeEntityEntryNameList } from "../../../common/entity/compute_entity_name_display";
 import type {
   EntityDomainFilter,
   EntityDomainFilterFunc,
@@ -322,13 +322,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
             </ha-alert>`
           : html`
               <ha-row-item>
-                <span slot="headline">
-                  ${
-                    this.hass.states[this.entityId]
-                      ? computeStateName(this.hass.states[this.entityId])
-                      : this.entityId
-                  }
-                </span>
+                <span slot="headline">${this._computedName(this.entry)}</span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
                     "ui.dialogs.voice-settings.entity_name_alias_description"
@@ -350,6 +344,23 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
             `
       }
     `;
+  }
+
+  // Same composition as the backend's computed name alias
+  private _computedName(entry: ExtEntityRegistryEntry): string {
+    if (entry.name) {
+      return entry.name;
+    }
+    return computeEntityEntryNameList(
+      entry,
+      [{ type: "parent_device" }, { type: "device" }, { type: "entity" }],
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    )
+      .filter(Boolean)
+      .join(" ");
   }
 
   private async _toggleEntityNameAlias(ev) {
