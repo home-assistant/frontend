@@ -716,6 +716,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (index === 0 && !this._search) {
       return false;
     }
+    const item = this._items[index];
+    if (!this._search && (!this._isOption(item) || item.disabled)) {
+      return false;
+    }
     // Skips section titles and placeholder rows, and scrolls the row into view.
     this._list.setActiveItemIndex(index, true);
     return this._list.getActiveItemIndex() !== -1;
