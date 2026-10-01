@@ -42,8 +42,6 @@ describe("matterShareTargetExternal", () => {
     expect(matterShareTargetExternal(hass, withFields)).toBe("app_chooser");
   });
 
-  // Proven to be needed: with this case missing, deleting the discriminator gate left all other
-  // assertions green, because every fixture without a discriminator also lacked the timeout.
   it("needs the window's discriminator for the app chooser", () => {
     const hass = hassWith({ canShareMatterDeviceToOtherApps: true });
     expect(
@@ -57,7 +55,6 @@ describe("matterShareTargetExternal", () => {
     ).toBe(undefined);
   });
 
-  // The chooser opens a window of its own and needs a length for it, which only the server can report.
   it("needs the window's timeout for the app chooser", () => {
     const hass = hassWith({ canShareMatterDeviceToOtherApps: true });
     expect(
@@ -74,7 +71,6 @@ describe("matterShareTargetExternal", () => {
     ).toBe(undefined);
   });
 
-  // Apple Home reads the setup code, so it is offered for a window the server reported nothing else for.
   it("still offers Apple Home without the window's timeout", () => {
     expect(
       matterShareTargetExternal(
@@ -84,8 +80,7 @@ describe("matterShareTargetExternal", () => {
     ).toBe("apple_home");
   });
 
-  // 0 is a legal 12-bit discriminator, so the gate asks whether the server reported one, not whether
-  // the value is truthy.
+  // 0 is a valid discriminator.
   it("offers the app chooser for a discriminator of zero", () => {
     expect(
       matterShareTargetExternal(
@@ -95,7 +90,7 @@ describe("matterShareTargetExternal", () => {
     ).toBe("app_chooser");
   });
 
-  // At most one capability is meant to be true; Apple Home wins if an app breaks that.
+  // Apps are meant to send at most one.
   it("prefers Apple Home when an app reports both capabilities", () => {
     expect(
       matterShareTargetExternal(
@@ -135,7 +130,7 @@ describe("matterShareRemainingSeconds", () => {
     );
   });
 
-  // A reported timeout of 0 is a closed window, not an unknown one: the only input the null check moved.
+  // 0 is a closed window, not an unknown one.
   it("reports a timeout of zero as no time left", () => {
     expect(matterShareRemainingSeconds(0, requestedAt, requestedAt)).toBe(0);
   });
@@ -149,7 +144,7 @@ describe("matterShareRemainingSeconds", () => {
     ).toBe(239);
   });
 
-  // Zero is a real timestamp, so the guard asks whether a window is open, not whether the value is truthy.
+  // 0 is a valid timestamp.
   it("counts from a requestedAt of zero", () => {
     expect(matterShareRemainingSeconds(300, 0, 10_000)).toBe(290);
   });

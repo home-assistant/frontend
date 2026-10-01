@@ -113,8 +113,7 @@ export interface MatterCommissioningParameters {
   setup_pin_code: number;
   setup_manual_code: string;
   setup_qr_code: string;
-  // Null on a Matter server that does not report the window's structured fields, and absent
-  // only against a Matter client that predates them.
+  // Null when the Matter server does not report them, absent with an older Core.
   discriminator?: number | null;
   vendor_id?: number | null;
   product_id?: number | null;
@@ -127,8 +126,7 @@ export const canCommissionMatterExternal = (hass: HomeAssistant) =>
 export type MatterShareTarget = "apple_home" | "app_chooser";
 
 export interface MatterShareDeviceParams {
-  // Always sent: it carries the whole window. The iOS app falls back to it for a value it cannot
-  // pass on; the Android app does not read it.
+  // Always sent: the iOS app falls back to it, the Android app ignores it.
   setup_qr_code: string;
   setup_pin_code: number;
   discriminator?: number;
@@ -138,11 +136,7 @@ export interface MatterShareDeviceParams {
   remaining_seconds?: number;
 }
 
-/**
- * Where the companion app can share this window to, if anywhere. Apple Home can work from the setup code
- * alone, while the app chooser opens a window of its own from the structured values, so it needs a Matter
- * server that reported the discriminator and the timeout. Apple Home wins if an app reports both.
- */
+/** The app chooser opens a window of its own, so unlike Apple Home it needs the discriminator and timeout. */
 export const matterShareTargetExternal = (
   hass: HomeAssistant,
   params: MatterCommissioningParameters | undefined
@@ -164,11 +158,7 @@ export const matterShareTargetExternal = (
   return undefined;
 };
 
-/**
- * Whole seconds left in a window of `timeout` seconds requested at `requestedAt`, never more than the window
- * itself even if the clock went back. Undefined where there is nothing to count: no reported timeout, or no
- * window of our own open.
- */
+/** Capped at `timeout` in case the clock went back. */
 export const matterShareRemainingSeconds = (
   timeout: number | null | undefined,
   requestedAt: number | undefined,

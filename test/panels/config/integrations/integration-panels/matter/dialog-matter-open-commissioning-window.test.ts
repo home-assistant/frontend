@@ -31,11 +31,7 @@ const window_: MatterCommissioningParameters = {
   commissioning_timeout: 300,
 };
 
-/**
- * The element is cached and reused across opens, so a window that arrives late has to land in the open it
- * belongs to. Getting this wrong has gone both ways: a stale window rendered under another device's name,
- * and a usable window thrown away for the device it was opened for.
- */
+/** The element is reused, so a late window has to land in the open it belongs to. */
 describe("dialog-matter-open-commissioning-window", () => {
   let dialog: HTMLElement & {
     hass: HomeAssistant;
@@ -44,8 +40,7 @@ describe("dialog-matter-open-commissioning-window", () => {
     ) => Promise<void>;
   };
 
-  // Same shape as test/dialogs/form/dialog-form.test.ts: the guard under test is only observable in
-  // state the dialog keeps to itself.
+  // As in test/dialogs/form/dialog-form.test.ts: the guards only show in private state.
   const internals = () => dialog as unknown as Record<string, unknown>;
   const share = () => (internals()["_shareDevice"] as () => Promise<void>)();
   const start = () => (internals()["_start"] as () => Promise<void>)();
@@ -60,8 +55,7 @@ describe("dialog-matter-open-commissioning-window", () => {
     dialog = document.createElement(
       "dialog-matter-open-commissioning-window"
     ) as typeof dialog;
-    // The element is never appended, so `render()` never runs and this stub needs no `auth`.
-    // Appending it would break every test here.
+    // Never appended, so `render()` does not run and the stub needs no `auth`.
     dialog.hass = {
       devices: { dev_a: { name: "Kitchen light" } },
       localize: (key: string) => key,
@@ -95,7 +89,6 @@ describe("dialog-matter-open-commissioning-window", () => {
     expect(internals()["_windowOpenedAt"]).toBeUndefined();
   });
 
-  /** `ha-dialog` reads `_open`, and a dismissal that is not `closeDialog` would leave it true. */
   it("marks itself closed when the dialog reports it was dismissed", async () => {
     openMatterCommissioningWindow.mockResolvedValue(window_);
     await dialog.showDialog({ device_id: "dev_a" });
@@ -119,7 +112,6 @@ describe("dialog-matter-open-commissioning-window", () => {
     expect(internals()["_status"]).toBeUndefined();
   });
 
-  /** The window is open on that device, so throwing it away would orphan it. */
   it("keeps a window that arrives after a reopen for the same device", async () => {
     await dialog.showDialog({ device_id: "dev_a" });
     const settle = pendingWindow();
@@ -134,7 +126,6 @@ describe("dialog-matter-open-commissioning-window", () => {
     expect(internals()["_windowOpenedAt"]).toBeTypeOf("number");
   });
 
-  /** A second request would revoke the window the first reply is about to show. */
   it("waits for the pending window instead of offering Start after a reopen for the same device", async () => {
     await dialog.showDialog({ device_id: "dev_a" });
     const settle = pendingWindow();
@@ -170,10 +161,7 @@ describe("dialog-matter-open-commissioning-window", () => {
       await start();
     };
 
-    /**
-     * The keys are the contract with both companion apps and nothing else checks them: a typo here
-     * leaves every test in all four repositories green and the feature dead on both platforms.
-     */
+    /** The keys are the contract with both apps, and nothing else checks them. */
     it("puts the whole window on the bus under the names the apps read", async () => {
       shareMatterDeviceExternal.mockResolvedValue({});
       await openedWindow();
@@ -202,7 +190,6 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(internals()["_shareFailed"]).toBe(false);
     });
 
-    /** The user backed out of the platform's sheet, which is not an error to report. */
     it("shows nothing when the app reports a cancel", async () => {
       shareMatterDeviceExternal.mockRejectedValue({ code: "canceled" });
       await openedWindow();
@@ -233,7 +220,6 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(internals()["_shareExpired"]).toBe(true);
     });
 
-    /** Copying stays available while a share runs, but must not drop the window under the sheet. */
     it("keeps the dialog open when the code is copied during a share", async () => {
       shareMatterDeviceExternal.mockReturnValue(
         new Promise(() => {
@@ -250,7 +236,6 @@ describe("dialog-matter-open-commissioning-window", () => {
     });
 
     it("sends once while a share is already in flight", async () => {
-      // A share that never settles, so the second tap meets one in flight.
       shareMatterDeviceExternal.mockReturnValue(
         new Promise(() => {
           // never settles

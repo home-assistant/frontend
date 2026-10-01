@@ -51,18 +51,16 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   private _windowOpenedAt?: number;
 
-  // Outlives a close, like the request itself.
+  // Not reset on close: the request outlives it.
   private _opening = new Set<string>();
 
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
-    // The element is reused and the close event is not guaranteed, so an open resets too: without it
-    // the dialog would render the previous device's window under this device's name.
+    // The element is reused and `closed` is not guaranteed, so the last device's window could show.
     this._resetWindow();
     this.device_id = params.device_id;
-    // The Matter server revokes a device's open window before opening another, so a second Start would kill
-    // the window the pending reply is about to show.
+    // The Matter server revokes an open window before opening another, so a second Start would kill it.
     if (this._opening.has(params.device_id)) {
       this._status = "started";
     }
@@ -268,14 +266,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     const deviceId = this.device_id!;
     this._opening.add(deviceId);
     try {
-      // Taken before the request, so the remaining time is never overstated. Wall clock, not
-      // `performance.now()`: the usual way a window runs out while this dialog is open is the screen
-      // being locked, and a monotonic clock does not advance while the device is suspended.
+      // Before the request, so the remaining time is never overstated. Not `performance.now()`: it
+      // stops while the device sleeps, and a locked screen is how a window usually runs out.
       const requestedAt = Date.now();
       const params = await openMatterCommissioningWindow(this.hass, deviceId);
-      // The dialog may have been closed, or reopened for another device, in the meantime. Reopened for
-      // the same device the window still belongs to it, and throwing it away would leave one open on the
-      // device that nobody can see or close.
+      // Closed or switched device meanwhile. Same device keeps it, or the open window is orphaned.
       if (this.device_id !== deviceId) {
         return;
       }
@@ -328,7 +323,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         device_name: device ? computeDeviceName(device) : undefined,
         remaining_seconds: remaining,
       });
-      // The dialog may have been closed, or reopened for another window, in the meantime.
+      // Closed or reopened meanwhile.
       if (this._commissionParams === params) {
         this.closeDialog();
       }
@@ -349,8 +344,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       return;
     }
     await copyToClipboard(this._commissionParams.setup_manual_code);
-    // Not while a share is in flight: closing drops the window the app is still working on, and its
-    // answer would then be discarded with the platform's sheet still on screen.
+    // Closing would drop the window the app is still sharing.
     if (!this._sharing) {
       this.closeDialog();
     }
@@ -368,7 +362,6 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  /** Everything that belongs to one open. */
   private _resetWindow(): void {
     this._status = undefined;
     this._commissionParams = undefined;

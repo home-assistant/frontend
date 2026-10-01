@@ -405,8 +405,8 @@ export interface ExternalConfig {
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
   hasMatterStatusReport?: boolean;
-  canShareMatterDeviceToAppleHome?: boolean; // Shares through Apple Home, which reads the setup code
-  canShareMatterDeviceToOtherApps?: boolean; // Shares through a chooser of installed apps, needs the window's values
+  canShareMatterDeviceToAppleHome?: boolean;
+  canShareMatterDeviceToOtherApps?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
