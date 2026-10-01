@@ -57,6 +57,7 @@ import {
   fetchMarketplaceRepository,
 } from "../../../data/marketplace/repository";
 import {
+  ERROR_GITHUB_RATE_LIMITED,
   ERROR_WARNING_NOT_ACCEPTED,
   isWebSocketError,
   marketplaceErrorMessage,
@@ -286,7 +287,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       ?.repositories.find((repository) => repository.id === repositoryId);
 
     if (previouslyListed && !deepEqual(previouslyListed, listed)) {
-      this._fetchRepository();
+      this._fetchRepository(undefined, { background: true });
     }
   }
 
@@ -308,7 +309,10 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._fetchRepository(repositoryId);
   }
 
-  private async _fetchRepository(repositoryId?: string) {
+  private async _fetchRepository(
+    repositoryId?: string,
+    { background = false }: { background?: boolean } = {}
+  ) {
     const requestedRepositoryId = repositoryId || this._repository!.id;
     const request = ++this._request;
 
@@ -329,12 +333,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         return;
       }
 
-      const message = handleGitHubRateLimited(
-        this,
-        this.hass,
-        this.hass.localize,
-        err
-      )
+      // A refetch on a signal comes without the user doing anything, only
+      // what they asked for may open the dialog to connect GitHub
+      const rateLimited = background
+        ? isWebSocketError(err, ERROR_GITHUB_RATE_LIMITED)
+        : handleGitHubRateLimited(this, this.hass, this.hass.localize, err);
+      const message = rateLimited
         ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
         : marketplaceErrorMessage(err, this.hass.localize);
 
@@ -628,7 +632,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
                 "ui.panel.marketplace.dialog_install.lovelace_instruction"
               ),
               extra: html`<pre class="frontend-resource">
-url: ${generateFrontendResourceURL({ repository })}
+url: ${generateFrontendResourceURL({
+                  repository,
+                  version:
+                    repository.installed_version ||
+                    repository.available_version,
+                })}
 type: module</pre>`,
             };
       case "theme":

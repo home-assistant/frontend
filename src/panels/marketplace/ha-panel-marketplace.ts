@@ -21,6 +21,7 @@ import {
   ERROR_NOT_LOADED,
   fetchMarketplaceInfo,
   isWebSocketError,
+  marketplaceErrorMessage,
   subscribeMarketplaceChanges,
 } from "../../data/marketplace/websocket";
 import { fetchMarketplaceRepositories } from "../../data/marketplace/repository";
@@ -284,7 +285,8 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
     this._marketplaceUnsubs = signals.map(([signal, callback]) => {
       const unsub = subscribeMarketplaceChanges(this.hass, signal, callback);
-      unsub.catch((err) => this._logError("subscribe to", err));
+      // Not loaded yet, the entry loading again subscribes again
+      unsub.catch(() => undefined);
       return unsub;
     });
   }
@@ -310,7 +312,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     try {
       this._info = await fetchMarketplaceInfo(this.hass);
     } catch (err) {
-      this._handleFetchError("fetch information from", err, this._info);
+      this._handleFetchError(err, this._info);
       return;
     }
 
@@ -339,32 +341,20 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     try {
       this._repositories = await fetchMarketplaceRepositories(this.hass);
     } catch (err) {
-      this._handleFetchError(
-        "fetch repositories from",
-        err,
-        this._repositories
-      );
+      this._handleFetchError(err, this._repositories);
       return;
     }
 
     this._clearLoadError();
   }
 
-  private _handleFetchError(
-    action: string,
-    err: unknown,
-    currentData: unknown
-  ): void {
-    this._logError(action, err);
-
+  private _handleFetchError(err: unknown, currentData: unknown): void {
     // Not loaded refetches once it is, and earlier data beats an error screen.
     if (isWebSocketError(err, ERROR_NOT_LOADED) || currentData) {
       return;
     }
 
-    this._loadError =
-      (err as { message?: string } | null)?.message ||
-      this.hass.localize("ui.panel.marketplace.common.unknown_error");
+    this._loadError = marketplaceErrorMessage(err, this.hass.localize);
   }
 
   // Either fetch failing keeps the error up until both have data.
@@ -372,16 +362,6 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     if (this._info && this._repositories) {
       this._loadError = undefined;
     }
-  }
-
-  // Expected while the entry is not loaded, it refetches once it is.
-  private _logError(action: string, err: unknown): void {
-    if (isWebSocketError(err, ERROR_NOT_LOADED)) {
-      return;
-    }
-
-    // eslint-disable-next-line no-console
-    console.error(`Failed to ${action} the Marketplace`, err);
   }
 
   static get styles() {

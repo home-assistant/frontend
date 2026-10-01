@@ -325,23 +325,28 @@ it("browses the way the link says, also when the tab was open before", async () 
   });
 });
 
+const LINK = "/marketplace/browse?sort=stars&direction=desc&status=new";
+
 it.each([
   {
     name: "following the link again applies it again",
-    leave: () => window.dispatchEvent(new CustomEvent("location-changed")),
+    // Following a link makes a new history entry
+    returnToLink: async () => window.history.pushState(null, "", LINK),
     statuses: ["new"],
   },
   {
     name: "going back keeps what was picked after it",
-    leave: () => window.dispatchEvent(new PopStateEvent("popstate")),
+    returnToLink: async () => {
+      const popped = new Promise((resolve) => {
+        window.addEventListener("popstate", resolve, { once: true });
+      });
+      window.history.back();
+      await popped;
+    },
     statuses: ["installed"],
   },
-])("$name", async ({ leave, statuses }) => {
-  window.history.replaceState(
-    null,
-    "",
-    "/marketplace/browse?sort=stars&direction=desc&status=new"
-  );
+])("$name", async ({ returnToLink, statuses }) => {
+  window.history.pushState(null, "", LINK);
   const dashboard = await openDashboard();
   const statusFilter = () =>
     dashboard.shadowRoot!.querySelector("ha-filter-states") as unknown as {
@@ -357,7 +362,8 @@ it.each([
 
   // Away to another page and to the same link again, the router keeps the page
   dashboard.remove();
-  leave();
+  window.history.pushState(null, "", "/marketplace/repository/1");
+  await returnToLink();
   document.body.append(dashboard);
   await dashboard.updateComplete;
   window.history.replaceState(null, "", "/");

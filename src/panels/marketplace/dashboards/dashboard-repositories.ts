@@ -56,6 +56,10 @@ const compareRepositories = (a: RepositoryBase, b: RepositoryBase): number => {
   return a.name.localeCompare(b.name);
 };
 
+// The moment as a number, 0 without one, or for a date that can not be read
+export const timestamp = (value: string | number): number =>
+  value ? new Date(value).getTime() || 0 : 0;
+
 export const filterRepositories = (
   repositories: RepositoryBase[],
   localize: LocalizeFunc,
@@ -73,6 +77,8 @@ export const filterRepositories = (
       translated_category: localize(
         `ui.panel.marketplace.common.type.${repository.category}`
       ),
+      // A date as text or 0 without one, only numbers sort among each other
+      last_updated_timestamp: timestamp(repository.last_updated),
     }));
 
 // How to browse, the way a link says it, like

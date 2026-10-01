@@ -60,10 +60,12 @@ describe("partial-panel-resolver", () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it("opens the Marketplace for links to the custom integration it replaces", () => {
+  it("leaves a link to the custom integration it replaces to beforeRender", () => {
+    // The router resolves a route alias before beforeRender, which would then
+    // never see the link to move it
     expect(
       routes({ marketplace: panel("marketplace") } as unknown as Panels).hacs
-    ).toBe("marketplace");
+    ).toBeUndefined();
   });
 
   it("leaves a panel that is really at /hacs alone", () => {

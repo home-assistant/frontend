@@ -12388,7 +12388,7 @@
             "view_integration": "View integration",
             "delete_and_uninstall": "Delete and uninstall",
             "confirm_title": "Delete and uninstall {name}?",
-            "confirm_message": "This deletes {count, plural, one {its entry} other {its # entries}} with their devices and entities, and uninstalls {name}. This can not be undone."
+            "confirm_message": "This deletes {count, plural, one {its entry} other {its # entries}} with their devices and entities, and uninstalls {name}. This cannot be undone."
           }
         }
       },

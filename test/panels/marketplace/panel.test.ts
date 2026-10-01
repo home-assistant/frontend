@@ -269,7 +269,6 @@ describe("ha-panel-marketplace", () => {
   });
 
   it("shows an error with a retry for a failed first fetch", async () => {
-    vi.spyOn(console, "error").mockImplementation(() => undefined);
     let infoFails = true;
     const panel = await openPanel({
       "marketplace/info": async () => {
@@ -291,5 +290,27 @@ describe("ha-panel-marketplace", () => {
 
     expect(screen(panel, "hass-error-screen")).toBeNull();
     expect(screen(panel, "ha-marketplace-router")).not.toBeNull();
+  });
+
+  it("tells why the first fetch failed in the language of the user", async () => {
+    const consoleError = vi.spyOn(console, "error");
+    const panel = await openPanel({
+      "marketplace/info": async () => {
+        throw {
+          code: "error",
+          message: "The catalog did not answer within 60 seconds.",
+          translation_domain: "marketplace",
+          translation_key: "catalog_timeout",
+          translation_placeholders: {},
+        };
+      },
+      "marketplace/repositories/list": async () => [],
+    });
+
+    expect(screen(panel, "hass-error-screen")?.error).toBe(
+      'ui.panel.marketplace.load_failed {"error":"component.marketplace.exceptions.catalog_timeout.message {}"}'
+    );
+    // Shown to the user already, the console stays quiet
+    expect(consoleError).not.toHaveBeenCalled();
   });
 });

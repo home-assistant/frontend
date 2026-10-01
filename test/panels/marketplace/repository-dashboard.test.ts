@@ -360,6 +360,37 @@ describe("ha-marketplace-repository-dashboard", () => {
     );
   });
 
+  it("does not ask to connect GitHub for a refetch nobody asked for", async () => {
+    let rateLimited = false;
+    const listed = (stars: number) =>
+      ({
+        ...MARKETPLACE,
+        repositories: [{ id: "1", stars }],
+      }) as unknown as MarketplaceData;
+    const { page } = await openRepositoryPage(
+      async (repositoryId) => {
+        if (rateLimited) {
+          throw { code: ERROR_GITHUB_RATE_LIMITED, message: "Rate limited" };
+        }
+        return repositoryInfo(repositoryId);
+      },
+      repositoryRoute("1"),
+      listed(1)
+    );
+    await settle(page);
+
+    // A catalog refresh changed the repository in the list
+    rateLimited = true;
+    page.marketplace = listed(2);
+    await settle(page);
+
+    expect(showConfirmationDialog).not.toHaveBeenCalled();
+    expect(
+      page.shadowRoot!.querySelector('ha-alert[alert-type="error"]')!
+        .textContent
+    ).toContain("ui.panel.marketplace.github.rate_limited");
+  });
+
   it("shows an error for other failures", async () => {
     const { page } = await openRepositoryPage(async () => {
       throw { code: "unknown_error" };

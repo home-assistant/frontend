@@ -807,25 +807,30 @@ export class HaConfigEntryRow extends LitElement {
       return;
     }
     const result = await deleteConfigEntry(this.hass, entryId);
-    const uninstalled = await offerMarketplaceUninstall(
-      this,
-      this.hass,
-      this.data.entry.domain
-    );
 
-    if (result.require_restart) {
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.restart_confirm"
-        ),
-      });
-    }
-    if (applicationCredentialsId) {
-      this._removeApplicationCredential(applicationCredentialsId);
+    const restartAlert = result.require_restart
+      ? showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_entry.restart_confirm"
+          ),
+        })
+      : undefined;
+    const credentialPrompt = applicationCredentialsId
+      ? this._removeApplicationCredential(applicationCredentialsId)
+      : undefined;
+
+    // Only a custom integration can come from the Marketplace
+    if (this.manifest?.is_built_in) {
+      return;
     }
 
-    // Nothing of the integration is left to show on its page
-    if (uninstalled) {
+    // Asked after what deleting the entry asked, uninstalling can take this
+    // row away with the dialogs it opened
+    await Promise.all([restartAlert, credentialPrompt]);
+    if (
+      await offerMarketplaceUninstall(this, this.hass, this.data.entry.domain)
+    ) {
+      // Nothing of the integration is left to show on its page
       navigate("/config/integrations/dashboard", { replace: true });
     }
   };

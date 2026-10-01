@@ -78,6 +78,21 @@ describe("filterRepositories", () => {
     ]);
   });
 
+  it("adds when it was last updated as a number to sort on", () => {
+    const rows = filterRepositories(
+      [
+        repository("Dated", { last_updated: "2026-09-30T12:00:00Z" }),
+        repository("Undated", { last_updated: 0 }),
+      ],
+      localize
+    );
+
+    expect(rows.map((row) => row.last_updated_timestamp)).toEqual([
+      Date.parse("2026-09-30T12:00:00Z"),
+      0,
+    ]);
+  });
+
   it("adds the translated status and category to group by", () => {
     const [row] = filterRepositories(
       [repository("Downloaded", { status: "installed", category: "theme" })],

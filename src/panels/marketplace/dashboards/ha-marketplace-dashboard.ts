@@ -17,7 +17,7 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { storage } from "../../../common/decorators/storage";
 import { mainWindow } from "../../../common/dom/get_main_window";
-import { navigate } from "../../../common/navigate";
+import { navigate, updateHistoryState } from "../../../common/navigate";
 import type {
   DataTableColumnContainer,
   SortingDirection,
@@ -109,15 +109,11 @@ const marketplaceTabs = (
   },
 ];
 
-// Back and forward keep what was picked on a page, following a link applies
-// what it says again. Listened to here, before any page hears the navigation.
-let cameThroughHistory = false;
-window.addEventListener("popstate", () => {
-  cameThroughHistory = true;
-});
-window.addEventListener("location-changed", () => {
-  cameThroughHistory = false;
-});
+// Marks the history entry of a link once it is applied. Back and forward
+// return to that entry and keep what was picked after it, following a link
+// makes a new entry, which applies what it says again. The router keeps the
+// page of a tab, so it is often not around to hear the navigation itself.
+const APPLIED_LINK_STATE = "marketplaceAppliedLink";
 
 // The installed tab lists what is installed, the others everything
 const repositoriesOfTab = (
@@ -188,9 +184,6 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _openingOverflowMenu = false;
 
-  // The search of the last link that said how to browse
-  private _appliedSearch = "";
-
   // The table takes its sorting once, every link applied gets it a new one
   @state() private _linksApplied = 0;
 
@@ -220,7 +213,7 @@ export class HaMarketplaceDashboard extends LitElement {
   // keeps the page of a tab, so a link often lands on a page that is open.
   private _applyLink = () => {
     const search = mainWindow.location.search;
-    if (search === this._appliedSearch && cameThroughHistory) {
+    if (mainWindow.history.state?.[APPLIED_LINK_STATE] === search) {
       return;
     }
 
@@ -229,7 +222,7 @@ export class HaMarketplaceDashboard extends LitElement {
       return;
     }
 
-    this._appliedSearch = search;
+    updateHistoryState({ [APPLIED_LINK_STATE]: search });
     this._linksApplied++;
     // A search left behind would hide part of what the link promised
     this._activeSearch = "";
@@ -487,6 +480,8 @@ export class HaMarketplaceDashboard extends LitElement {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.last_updated"),
         sortable: true,
+        valueColumn: "last_updated_timestamp",
+        type: "numeric",
         hidden: false,
         template: (repository: RepositoryBase) => {
           if (!repository.last_updated) {

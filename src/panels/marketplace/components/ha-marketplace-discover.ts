@@ -10,7 +10,7 @@ import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { browseUrl } from "../dashboards/dashboard-repositories";
+import { browseUrl, timestamp } from "../dashboards/dashboard-repositories";
 import { renderRepositoryIcon } from "../tools/repository-icon";
 
 // Enough to get an idea, the rest is one select away on the browse tab
@@ -22,9 +22,6 @@ interface DiscoverSection {
   // Browsing everything the way the section picked from it
   seeAll: string;
 }
-
-const timestamp = (value: string | number): number =>
-  value ? new Date(value).getTime() || 0 : 0;
 
 const discoverSections = (
   repositories: RepositoryBase[]

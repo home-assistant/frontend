@@ -358,7 +358,11 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
                   ${this._i18n.localize("ui.panel.marketplace.dialog_install.lovelace_instruction")}
                 </p>
                 <pre class="frontend-resource">
-              url: ${generateFrontendResourceURL({ repository })}
+              url: ${generateFrontendResourceURL({
+                    repository,
+                    version:
+                      this._selectedVersion || repository.available_version,
+                  })}
               type: module
               </pre>
               `
@@ -618,10 +622,9 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         return;
       }
 
+      // Told next to the versions, with a retry, not a second time above them
       this._releasesFailed = true;
-      if (!handleGitHubRateLimited(this, this._api, this._i18n.localize, err)) {
-        this._error = marketplaceErrorMessage(err, this._i18n.localize);
-      }
+      handleGitHubRateLimited(this, this._api, this._i18n.localize, err);
       return;
     }
 

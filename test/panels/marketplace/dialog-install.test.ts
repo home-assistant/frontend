@@ -435,6 +435,33 @@ describe("dialog-marketplace-install", () => {
     ).toEqual([expect.objectContaining({ value: "v2" })]);
   });
 
+  it("tells a failed release list once, next to the versions with a retry", async () => {
+    let fails = true;
+    const dialog = await openInstallDialog(
+      { repository: repositoryInfo("1"), chooseVersion: true },
+      mockConnection(async (message) => {
+        if (message.type !== "marketplace/repository/releases") {
+          return null;
+        }
+        if (fails) {
+          throw { code: "unknown_error", message: "Connection lost" };
+        }
+        return [release("v1")];
+      })
+    );
+    await settle(dialog);
+
+    expect(getInternals(dialog)._releasesFailed).toBe(true);
+    expect(getInternals(dialog)._error).toBeUndefined();
+
+    fails = false;
+    await getInternals(dialog)._loadReleases();
+    await settle(dialog);
+
+    expect(getInternals(dialog)._releasesFailed).toBe(false);
+    expect(getInternals(dialog)._error).toBeUndefined();
+  });
+
   it.each([
     [
       "arrive",
