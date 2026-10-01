@@ -9538,10 +9538,9 @@
               "people": "People",
               "devices": "Devices",
               "zones": "Zones",
-              "no_people": "No people",
-              "no_devices": "No devices with a location",
-              "no_zones": "No zones",
+              "me": "Me",
               "activity": "Activity",
+              "show_more": "Show more",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
               "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"

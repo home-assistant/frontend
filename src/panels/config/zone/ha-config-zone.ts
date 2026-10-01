@@ -409,14 +409,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       Boolean(this.hass.user?.is_admin) &&
       ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
-    if (this.route.path === "/new") {
-      navigate("/config/zone", { replace: true });
-      this._createZone();
-    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+    // The page is kept between visits, so routes are handled on every change
+    if (changedProps.has("route") && this.route.path === "/new") {
+      this._openNewZone();
+      return;
+    }
     if (
       !this.route.path.startsWith("/edit/") ||
       !this._stateItems ||
@@ -586,6 +587,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _createZone() {
     this._openDialog();
+  }
+
+  private async _openNewZone() {
+    if (await navigate("/config/zone", { replace: true })) {
+      this._createZone();
+    }
   }
 
   private _itemClicked(ev: CustomEvent) {
