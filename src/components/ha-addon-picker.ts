@@ -25,7 +25,7 @@ interface AddonPickerItem extends PickerComboBoxItem {
 }
 
 const rowRenderer: RenderItemFunction<AddonPickerItem> = (item) => html`
-  <ha-combo-box-item type="button">
+  <ha-combo-box-item>
     <span slot="headline">${item.primary}</span>
     <span slot="supporting-text">${item.secondary}</span>
     ${

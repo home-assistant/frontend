@@ -4,9 +4,9 @@
  * Run with:
  *   pnpm test:e2e:app
  */
-import { test, expect } from "@playwright/test";
-import { readFileSync } from "node:fs";
+import { expect, test } from "@playwright/test";
 import { load } from "js-yaml";
+import { readFileSync } from "node:fs";
 import {
   appSidebar,
   appSidebarConfig,
@@ -20,18 +20,18 @@ import {
   openSystemLogDetail,
 } from "./app/src/helpers";
 import {
+  appRouteSmokeGroups,
+  configLinks,
+  connectivityLinks,
+  moreInfoViewElements,
+} from "./app/src/smoke";
+import {
   expectNoPageErrors,
   PANEL_TIMEOUT,
   QUICK_TIMEOUT,
   SHELL_TIMEOUT,
   trackPageErrors,
 } from "./helpers";
-import {
-  appRouteSmokeGroups,
-  configLinks,
-  connectivityLinks,
-  moreInfoViewElements,
-} from "./app/src/smoke";
 
 // ---------------------------------------------------------------------------
 // App shell
@@ -140,7 +140,7 @@ test.describe("Quick search", () => {
       .fill("Turn on the lights");
 
     const assistItem = quickBar
-      .locator(".combo-box-row")
+      .locator("ha-list-item-option")
       .filter({ hasText: "Ask Assist: Turn on the lights" });
     await expect(assistItem).toBeVisible({ timeout: QUICK_TIMEOUT });
     await assistItem.click();
