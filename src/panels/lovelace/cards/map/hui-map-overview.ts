@@ -611,15 +611,12 @@ export class HuiMapOverview extends LitElement {
     entry: ActivityEntry,
     last: boolean
   ) {
-    const subject = entry.personId ? this._states[entry.personId] : stateObj;
-    const place = subject
-      ? this._formatters.formatEntityState(subject, entry.state)
-      : entry.state;
+    const person = entry.personId ? this._states[entry.personId] : undefined;
     const headline = entry.personId
-      ? subject
-        ? this._personName(subject)
+      ? person
+        ? this._personName(person)
         : entry.personId
-      : place;
+      : this._formatters.formatEntityState(stateObj, entry.state);
     const color =
       entry.personId && !entry.arrived
         ? undefined
@@ -633,7 +630,16 @@ export class HuiMapOverview extends LitElement {
         ></span>
         <span class="entry-headline">${headline}</span>
         <span class="entry-when">
-          ${entry.personId ? html`${place} · ` : nothing}
+          ${
+            entry.personId
+              ? html`${this._i18n.localize(
+                  entry.arrived
+                    ? "ui.panel.lovelace.cards.map.overview.arrived"
+                    : "ui.panel.lovelace.cards.map.overview.left"
+                )}
+                · `
+              : nothing
+          }
           ${formatTime(entry.when, this._i18n.locale, this._config)} ·
           <ha-relative-time .datetime=${entry.when}></ha-relative-time>
         </span>
