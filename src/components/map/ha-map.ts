@@ -259,7 +259,8 @@ const CLUSTER_BUBBLE_PADDING = 6;
 const CLUSTER_BUBBLE_GAP = 4;
 // Space an opened bubble keeps from the map edges
 const CLUSTER_BUBBLE_MARGIN = 12;
-const CLUSTER_MAX_AVATARS = 3;
+// Beyond this the last slot becomes a count
+const CLUSTER_MAX_AVATARS = 4;
 const CLUSTER_MORE_WIDTH = 28;
 const CLUSTER_MORE_MAX = 99;
 const CLUSTER_TAIL_SIZE = 10;
@@ -1493,7 +1494,10 @@ export class HaMap extends ReactiveElement {
     expanded = false
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
-    const shown = expanded ? data : data.slice(0, CLUSTER_MAX_AVATARS);
+    const shown =
+      expanded || data.length <= CLUSTER_MAX_AVATARS
+        ? data
+        : data.slice(0, CLUSTER_MAX_AVATARS - 1);
     const hidden = data.length - shown.length;
 
     // With history trails shown, colored borders match avatars to trails

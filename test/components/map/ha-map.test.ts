@@ -238,6 +238,29 @@ describe("ha-map", () => {
       expect((after as any).entityName).toBe("PM");
     });
 
+    it("shows up to four avatars, and three with a count beyond that", async () => {
+      const el = await createMap({ clusterMarkers: true, states: NEARBY });
+      const build = (count: number) =>
+        (el as any)._createClusterBubble(
+          Array.from({ length: count }, (_, i) => ({
+            clusterData: {
+              entityId: `person.p${i}`,
+              title: `P${i}`,
+              label: "P",
+            },
+          })),
+          [52.372, 4.89]
+        ).element as HTMLElement;
+
+      const four = build(4);
+      expect(four.querySelectorAll("ha-entity-marker")).toHaveLength(4);
+      expect(four.querySelector(".more")).toBeNull();
+
+      const five = build(5);
+      expect(five.querySelectorAll("ha-entity-marker")).toHaveLength(3);
+      expect(five.querySelector(".more")?.textContent).toBe("+2");
+    });
+
     it("reuses a detached avatar and drops its stale trail color", async () => {
       const el = await createMap({ clusterMarkers: true, states: NEARBY });
       const build = () =>
