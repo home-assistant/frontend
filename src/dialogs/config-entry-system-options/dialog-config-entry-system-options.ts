@@ -207,6 +207,12 @@ class DialogConfigEntrySystemOptions extends DirtyStateProviderMixin<SystemOptio
         .error {
           color: var(--error-color);
         }
+        ha-switch {
+          display: flex;
+        }
+        .secondary {
+          color: var(--secondary-text-color);
+        }
       `,
     ];
   }

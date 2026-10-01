@@ -91,7 +91,11 @@ export class HaSwitch extends Switch {
 
         label {
           position: relative;
-          height: max(var(--thumb-size), var(--wa-form-control-toggle-size));
+          /* min-height so a wrapping or multi-line label grows the host */
+          min-height: max(
+            var(--thumb-size),
+            var(--wa-form-control-toggle-size)
+          );
         }
         label::before {
           content: "";
