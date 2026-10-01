@@ -233,9 +233,9 @@ export default tseslint.config(
       ],
 
       "unused-imports/no-unused-imports": "error",
-      // Registered so disable comments resolve. Off here because the
-      // existing backlog would fail lint:eslint's --max-warnings=0; run
-      // lint:element-imports to see it.
+      // Off because the existing backlog would fail lint:eslint's
+      // --max-warnings=0; run lint:element-imports to see it. Disable
+      // comments for it would be reported as unused, so none until it is on.
       "ha/no-unused-element-import": "off",
       "lit/attribute-names": "error",
       "lit/attribute-value-entities": "off",

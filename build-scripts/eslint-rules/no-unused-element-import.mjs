@@ -105,8 +105,12 @@ const withoutRanges = (source, ranges) => {
  * that renders the element imports it itself, which this rule cannot see.
  *
  * Off in eslint.config.mjs while a backlog of those paired cases remains;
- * `yarn lint:element-imports` enables it as a warning to list them. Flip it to
+ * `pnpm lint:element-imports` enables it as a warning to list them. Flip it to
  * "error" there once the list is empty.
+ *
+ * No disable comments while it is off: ESLint reports them as unused
+ * directives, which fails lint:eslint. Imports that must stay get theirs in
+ * the change that turns the rule on.
  */
 export const noUnusedElementImport = {
   meta: {
@@ -118,7 +122,7 @@ export const noUnusedElementImport = {
     schema: [],
     messages: {
       unused:
-        '"{{request}}" only registers <{{tags}}>, which this file never uses. Remove the import, or disable this rule with the reason the element must be registered here.',
+        '"{{request}}" only registers <{{tags}}>, which this file never uses. Remove the import, adding it to whichever file renders the element if that file relies on this registration.',
     },
   },
 
