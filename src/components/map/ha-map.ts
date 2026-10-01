@@ -837,9 +837,12 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
+    // Zones join the fit when asked, or when they are all there is
+    const zonePoints =
+      this.fitZones || !this._focusPoints.length ? this._focusZonePoints : [];
     if (
       !this._focusPoints.length &&
-      !this._focusZonePoints.length &&
+      !zonePoints.length &&
       !this.editableLocations?.length
     ) {
       this._withProgrammaticFit(() => {
@@ -852,7 +855,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    const points = [...this._focusPoints, ...this._focusZonePoints];
+    const points = [...this._focusPoints, ...zonePoints];
 
     // Editable locations contribute their bounds, radius included
     this.editableLocations?.forEach((editable) => {
@@ -1350,10 +1353,7 @@ export class HaMap extends ReactiveElement {
           })
         );
 
-        if (
-          this.fitZones &&
-          (typeof entity === "string" || entity.focus !== false)
-        ) {
+        if (typeof entity === "string" || entity.focus !== false) {
           if (!hideRadius && radius) {
             this._focusZonePoints.push(...circleBoundsPoints(position, radius));
           } else {

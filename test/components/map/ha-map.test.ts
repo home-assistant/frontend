@@ -54,13 +54,17 @@ const STATES = {
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
 
 const createMap = async (
-  options: { clusterMarkers?: boolean; states?: HassEntities } = {}
+  options: {
+    clusterMarkers?: boolean;
+    states?: HassEntities;
+    entities?: string[];
+  } = {}
 ): Promise<HaMap> => {
   const el = document.createElement("ha-map");
-  el.entities = [
+  el.entities = options.entities ?? [
     "device_tracker.paulus",
     "device_tracker.anne_therese",
-  ] as string[];
+  ];
   el.clusterMarkers = options.clusterMarkers ?? false;
   (el as any)._states = options.states ?? STATES;
   (el as any)._config = {
@@ -115,6 +119,35 @@ describe("ha-map", () => {
     expect(map.getZoom()).toBeGreaterThanOrEqual(10);
     expect(map.getCenter().lat).toBeCloseTo(52.3745, 2);
     expect(map.getCenter().lng).toBeCloseTo(4.8925, 2);
+  });
+
+  it("fits to the zones when they are all the map shows", async () => {
+    const el = await createMap({
+      states: {
+        "zone.work": {
+          entity_id: "zone.work",
+          state: "0",
+          attributes: {
+            friendly_name: "Work",
+            latitude: 52.3,
+            longitude: 4.8,
+            radius: 100,
+          },
+          context: { id: "3", user_id: null, parent_id: null },
+          last_changed: "2026-01-01T00:00:00Z",
+          last_updated: "2026-01-01T00:00:00Z",
+        },
+      } as unknown as HassEntities,
+      entities: ["zone.work"],
+    });
+    setMapSize(el, 800, 500);
+    fireResizeObservers();
+    await el.updateComplete;
+
+    const map = leafletMap(el)!;
+    // Centred on the zone, not jumped to the home coordinates
+    expect(map.getCenter().lat).toBeCloseTo(52.3, 2);
+    expect(map.getCenter().lng).toBeCloseTo(4.8, 2);
   });
 
   it("does not defer fitting when the container already has a size", async () => {
