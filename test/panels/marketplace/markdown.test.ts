@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
-import { markdownWithRepositoryContext } from "../../../src/panels/marketplace/tools/markdown";
+import {
+  markdownWithRepositoryContext,
+  repositoryUrl,
+} from "../../../src/panels/marketplace/tools/markdown";
 
 const repository = {
   id: "42",
@@ -9,86 +12,93 @@ const repository = {
   default_branch: "main",
 } as RepositoryInfo;
 
-describe("markdownWithRepositoryContext", () => {
-  it("serves files linked on GitHub from raw", () => {
-    expect(
-      markdownWithRepositoryContext(
-        "![card](https://github.com/owner/repo/blob/main/card.png)"
-      )
-    ).toBe(
-      "![card](https://raw.githubusercontent.com/owner/repo/main/card.png)"
-    );
-  });
+describe("repositoryUrl", () => {
+  const url = repositoryUrl(repository);
 
-  it("keeps GitHub links to markdown documents", () => {
-    const input = "[guide](https://github.com/owner/repo/blob/main/GUIDE.md)";
-
-    expect(markdownWithRepositoryContext(input)).toBe(input);
-  });
-
-  it("points relative documents at GitHub for the available version", () => {
-    expect(
-      markdownWithRepositoryContext("[setup](docs/setup.md)", repository)
-    ).toBe("[setup](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)");
-  });
-
-  it("points relative files at raw for the available version", () => {
-    expect(
-      markdownWithRepositoryContext("![card](/images/card.png)", repository)
-    ).toBe(
-      "![card](https://raw.githubusercontent.com/owner/repo/v1.0.0/images/card.png)"
-    );
+  it.each([
+    {
+      name: "a file shown on GitHub from raw",
+      input: "https://github.com/owner/repo/blob/main/card.png",
+      output: "https://raw.githubusercontent.com/owner/repo/main/card.png",
+    },
+    {
+      name: "a markdown document shown on GitHub as it is",
+      input: "https://github.com/owner/repo/blob/main/GUIDE.md",
+      output: "https://github.com/owner/repo/blob/main/GUIDE.md",
+    },
+    {
+      name: "a relative document at GitHub",
+      input: "docs/setup.md",
+      output: "https://github.com/owner/repo/blob/v1.0.0/docs/setup.md",
+    },
+    {
+      name: "a relative file at raw",
+      input: "images/card.png",
+      output:
+        "https://raw.githubusercontent.com/owner/repo/v1.0.0/images/card.png",
+    },
+    {
+      name: "a file from the root of the repository, not of the host",
+      input: "/images/card.png",
+      output:
+        "https://raw.githubusercontent.com/owner/repo/v1.0.0/images/card.png",
+    },
+    {
+      name: "a file in the same folder",
+      input: "./card.png",
+      output: "https://raw.githubusercontent.com/owner/repo/v1.0.0/card.png",
+    },
+    {
+      name: "an anchor as it is",
+      input: "#installation",
+      output: "#installation",
+    },
+    {
+      name: "an absolute address as it is",
+      input: "https://example.com/page",
+      output: "https://example.com/page",
+    },
+    {
+      name: "an absolute address after a space",
+      input: " https://example.com/setup",
+      output: "https://example.com/setup",
+    },
+    {
+      name: "an address with a scheme of its own as it is",
+      input: "mailto:maintainer@example.com",
+      output: "mailto:maintainer@example.com",
+    },
+  ])("points $name", ({ input, output }) => {
+    expect(url(input)).toBe(output);
   });
 
   it("uses the default branch for a repository without releases", () => {
     expect(
-      markdownWithRepositoryContext("![card](card.png)", {
-        ...repository,
-        available_version: "",
-      })
-    ).toBe(
-      "![card](https://raw.githubusercontent.com/owner/repo/main/card.png)"
-    );
+      repositoryUrl({ ...repository, available_version: "" })("card.png")
+    ).toBe("https://raw.githubusercontent.com/owner/repo/main/card.png");
   });
 
-  it("leaves anchors as they are", () => {
+  it("uses the installed version for an installed repository", () => {
     expect(
-      markdownWithRepositoryContext("[install](#installation)", repository)
-    ).toBe("[install](#installation)");
+      repositoryUrl({
+        ...repository,
+        installed: true,
+        installed_version: "v0.9.0",
+      })("old.png")
+    ).toBe("https://raw.githubusercontent.com/owner/repo/v0.9.0/old.png");
   });
 
-  it.each([
-    {
-      name: "an image",
-      input: '<img src="images/card.png" width="400">',
-      output:
-        '<img src="https://raw.githubusercontent.com/owner/repo/v1.0.0/images/card.png" width="400">',
-    },
-    {
-      name: "a link",
-      input: "<a href='docs/setup.md'>Setup</a>",
-      output:
-        "<a href='https://github.com/owner/repo/blob/v1.0.0/docs/setup.md'>Setup</a>",
-    },
-    {
-      name: "an absolute link after a space",
-      input: '<a href=" https://example.com/setup">Setup</a>',
-      output: '<a href="https://example.com/setup">Setup</a>',
-    },
-    {
-      name: "a link with an entity in it",
-      input: '<a href="https&#58;//example.com/setup">Setup</a>',
-      output: '<a href="https&#58;//example.com/setup">Setup</a>',
-    },
-    {
-      name: "an absolute image",
-      input: '<img alt="Logo" src="https://example.com/logo.png">',
-      output: '<img alt="Logo" src="https://example.com/logo.png">',
-    },
-  ])("points $name in HTML at the repository", ({ input, output }) => {
-    expect(markdownWithRepositoryContext(input, repository)).toBe(output);
-  });
+  it("only serves GitHub files from raw without a repository", () => {
+    const withoutRepository = repositoryUrl();
 
+    expect(withoutRepository("docs/setup.md")).toBe("docs/setup.md");
+    expect(
+      withoutRepository("https://github.com/owner/repo/blob/main/card.png")
+    ).toBe("https://raw.githubusercontent.com/owner/repo/main/card.png");
+  });
+});
+
+describe("markdownWithRepositoryContext", () => {
   it("keeps HTML in code as written", () => {
     const input = '`<img src="images/card.png">`';
 
@@ -207,45 +217,14 @@ describe("markdownWithRepositoryContext", () => {
     ).toBe("Use `` a`#12 `` here.");
   });
 
-  it("rewrites links with inline code in the text", () => {
-    expect(
-      markdownWithRepositoryContext("[`setup`](docs/setup.md)", repository)
-    ).toBe(
-      "[`setup`](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
-    );
-  });
-
   it("rewrites after an unmatched backtick", () => {
     expect(markdownWithRepositoryContext("A ` and #12.", repository)).toBe(
       "A ` and [#12](https://github.com/owner/repo/issues/12)."
     );
   });
 
-  it("resolves an installed README against the installed version", () => {
-    expect(
-      markdownWithRepositoryContext("![old](old.png)", {
-        ...repository,
-        installed: true,
-        installed_version: "v0.9.0",
-      })
-    ).toBe(
-      "![old](https://raw.githubusercontent.com/owner/repo/v0.9.0/old.png)"
-    );
-  });
-
-  it("rewrites a relative link followed by an absolute link", () => {
-    expect(
-      markdownWithRepositoryContext(
-        "[guide](guide.md) [website](https://example.com)",
-        repository
-      )
-    ).toBe(
-      "[guide](https://github.com/owner/repo/blob/v1.0.0/guide.md) [website](https://example.com)"
-    );
-  });
-
-  it("keeps links with a scheme of their own", () => {
-    const input = "[Email](mailto:maintainer@example.com)";
+  it("leaves the addresses of links for the rendered README", () => {
+    const input = "[guide](guide.md) [website](https://example.com)";
 
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
@@ -274,15 +253,10 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
-  it("rewrites both the image and the link of a badge", () => {
-    expect(
-      markdownWithRepositoryContext(
-        "[![badge](badge.svg)](docs/setup.md)",
-        repository
-      )
-    ).toBe(
-      "[![badge](https://raw.githubusercontent.com/owner/repo/v1.0.0/badge.svg)](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
-    );
+  it("does not link an issue reference in a badge", () => {
+    const input = "[![#12](badge.svg)](docs/setup.md#12)";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
   it("rewrites the indented continuation of a list item", () => {
@@ -292,7 +266,7 @@ describe("markdownWithRepositoryContext", () => {
         repository
       )
     ).toBe(
-      "- Changes\n\n    Fixed [#12](https://github.com/owner/repo/issues/12), see [setup](https://github.com/owner/repo/blob/v1.0.0/docs/setup.md)"
+      "- Changes\n\n    Fixed [#12](https://github.com/owner/repo/issues/12), see [setup](docs/setup.md)"
     );
   });
 
@@ -318,6 +292,20 @@ describe("markdownWithRepositoryContext", () => {
     const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
 
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it.each([
+    { name: "one long word", input: "a".repeat(100_000) },
+    { name: "a long word with dots", input: "a.".repeat(50_000) },
+    { name: "many unclosed tags", input: "<a ".repeat(30_000) },
+    { name: "many unclosed links", input: "[a](".repeat(30_000) },
+    { name: "a long scheme", input: `${"a".repeat(100_000)}:` },
+  ])("keeps up with a README of $name", ({ input }) => {
+    const start = performance.now();
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+    // Searching the rest of it again from every position takes seconds
+    expect(performance.now() - start).toBeLessThan(1000);
   });
 
   it("keeps up with a README full of code spans", () => {

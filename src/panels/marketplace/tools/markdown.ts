@@ -6,51 +6,63 @@ const showGitHubWeb = (text: string) =>
 
 // A destination with a scheme of its own, like https: or mailto:, stays as is.
 const HAS_SCHEME = /^[a-z][a-z\d+.-]*:/i;
-// The destination of a link or an image, one at a time, so nested badges work.
-const LINK_DESTINATION = /\]\(\s*([^\s)]+)([^)]*)\)/g;
-// The address of an image or a link written in HTML, which READMEs often use.
-const HTML_DESTINATION =
-  /(<(?:a|img)\b[^>]*?\s(?:href|src)\s*=\s*)(["'])([^"']*)\2/gi;
-const LINK = /!?\[[^[\]]*\]\([^)]*\)/g;
-const BARE_URL = /[a-z][a-z\d+.-]*:\/\/\S+/gi;
+const GITHUB_FILE = /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/;
+// Each starts only where a link, a tag or an address can start, so a README
+// with one long word or many unclosed tags is not searched over and over again
+const LINK = /!?\[[^[\]]*\]\([^()]*\)/g;
+const BARE_URL = /(?<![a-z\d+.-])[a-z][a-z\d+.-]*:\/\/\S+/gi;
 // A tag or a numeric entity, like &#58;, holds no issue reference either
-const HTML_TAG_OR_ENTITY = /<[a-z][^>]*>|&#\d+;/gi;
-const ISSUE_REFERENCE = /(?:\w[\w-.]+\/\w[\w-.]+|\B)#[1-9]\d*\b/g;
+const HTML_TAG_OR_ENTITY = /<[a-z][^<>]*>|&#\d+;/gi;
+const ISSUE_REFERENCE =
+  /(?:(?<![\w.-])\w[\w.-]+\/\w[\w.-]+|(?<!\w))#[1-9]\d*\b/g;
 const LINK_PLACEHOLDER = /\uE000(\d+)\uE000/g;
 
-const rawGitHubFiles = (input: string) =>
-  input.replace(
-    /https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^\s)]+)/g,
-    (url, owner, repo, path) =>
-      showGitHubWeb(url)
-        ? url
-        : `https://raw.githubusercontent.com/${owner}/${repo}/${path}`
-  );
-
-const repositoryDestination = (
-  destination: string,
-  repository: RepositoryInfo
-) => {
-  // Headings get no ids, so an anchor has nothing to point at on this page
-  if (
-    destination.startsWith("#") ||
-    HAS_SCHEME.test(destination) ||
-    destination.startsWith("//")
-  ) {
-    return destination;
+// A file shown on GitHub, the file itself comes from raw
+const rawGitHubFile = (url: string) => {
+  const file = GITHUB_FILE.exec(url);
+  if (!file || showGitHubWeb(url)) {
+    return url;
   }
-
-  // An installed repository shows the README of the installed version
-  const ref =
-    (repository.installed && repository.installed_version) ||
-    repository.available_version ||
-    repository.default_branch;
-  const path = destination.replace(/^\//, "");
-
-  return showGitHubWeb(path)
-    ? `https://github.com/${repository.full_name}/blob/${ref}/${path}`
-    : `https://raw.githubusercontent.com/${repository.full_name}/${ref}/${path}`;
+  const [, owner, repo, path] = file;
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${path}`;
 };
+
+/**
+ * Return what the address of a link or an image in the README of a repository
+ * points at, for ha-markdown to rewrite every address with.
+ *
+ * The README is at the root of the repository, relative addresses are too:
+ * documents open on GitHub, everything else comes from raw.
+ */
+export const repositoryUrl =
+  (repository?: RepositoryInfo) =>
+  (url: string): string => {
+    // A browser trims it, "https:" can follow a space
+    const destination = rawGitHubFile(url.trim());
+
+    // Headings get no ids, so an anchor has nothing to point at on this page
+    if (
+      !repository ||
+      destination.startsWith("#") ||
+      HAS_SCHEME.test(destination) ||
+      destination.startsWith("//")
+    ) {
+      return destination;
+    }
+
+    // An installed repository shows the README of the installed version
+    const ref =
+      (repository.installed && repository.installed_version) ||
+      repository.available_version ||
+      repository.default_branch;
+    // A leading slash is the root of the repository on GitHub, not of the host
+    const path = destination.replace(/^\/+/, "");
+    const base = showGitHubWeb(path)
+      ? `https://github.com/${repository.full_name}/blob/${ref}/`
+      : `https://raw.githubusercontent.com/${repository.full_name}/${ref}/`;
+
+    return new URL(path, base).href;
+  };
 
 // Links and addresses are set aside, a reference inside one is not an issue.
 const linkIssueReferences = (input: string, repository: RepositoryInfo) => {
@@ -87,35 +99,6 @@ const linkIssueReferences = (input: string, repository: RepositoryInfo) => {
   } while (output !== previous);
 
   return output;
-};
-
-const rewriteLinks = (input: string, repository?: RepositoryInfo) => {
-  const output = rawGitHubFiles(input);
-  if (!repository) {
-    return output;
-  }
-
-  return linkIssueReferences(
-    output
-      .replace(
-        LINK_DESTINATION,
-        (_link, destination, title) =>
-          `](${repositoryDestination(destination, repository)}${title})`
-      )
-      .replace(
-        HTML_DESTINATION,
-        (attribute, before, quote, destination: string) =>
-          // A browser decodes entities in it, what it would read is unknown here
-          destination.includes("&")
-            ? attribute
-            : `${before}${quote}${repositoryDestination(
-                // And a browser trims it, "https:" can follow a space
-                destination.trim(),
-                repository
-              )}${quote}`
-      ),
-    repository
-  );
 };
 
 // A backtick fence cannot have a backtick in its info string, a tilde fence can.
@@ -281,12 +264,14 @@ const maskInlineCode = (text: string, mask: (code: string) => string) =>
     .map((paragraph) => maskInlineCodeSpans(paragraph, mask))
     .join("");
 
+// Links issue references, like #12, to the repository. The addresses of links
+// and images are rewritten by repositoryUrl, once the README is rendered.
 export const markdownWithRepositoryContext = (
   input: string,
   repository?: RepositoryInfo
 ) => {
   // The placeholders would be mistaken for content, a README never has them
-  if (input.includes("\0") || input.includes("\uE000")) {
+  if (!repository || input.includes("\0") || input.includes("\uE000")) {
     return input;
   }
 
@@ -304,7 +289,7 @@ export const markdownWithRepositoryContext = (
     })
     .join("\n");
 
-  return rewriteLinks(masked, repository).replace(
+  return linkIssueReferences(masked, repository).replace(
     CODE_PLACEHOLDER,
     (_placeholder, index) => code[Number(index)]
   );

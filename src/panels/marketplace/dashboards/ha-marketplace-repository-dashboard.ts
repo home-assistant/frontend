@@ -74,7 +74,10 @@ import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
 import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
-import { markdownWithRepositoryContext } from "../tools/markdown";
+import {
+  markdownWithRepositoryContext,
+  repositoryUrl,
+} from "../tools/markdown";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
@@ -384,6 +387,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // Every change of an entity renders the page, the README stays the same
   private _readme = memoizeOne(markdownWithRepositoryContext);
 
+  // The same function while the repository stays, a new one renders it again
+  private _readmeUrl = memoizeOne(repositoryUrl);
+
   private _getAuthors = memoizeOne((repository: RepositoryInfo) =>
     repositoryAuthors(repository).filter(
       (author) => !isCommunityOrganization(author)
@@ -460,7 +466,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
             readme
               ? html`<ha-card class="readme" outlined>
                   <div class="card-content">
-                    <ha-markdown .content=${readme} lazy-images></ha-markdown>
+                    <ha-markdown
+                      .content=${readme}
+                      .rewriteUrl=${this._readmeUrl(repository)}
+                      lazy-images
+                    ></ha-markdown>
                   </div>
                 </ha-card>`
               : nothing
