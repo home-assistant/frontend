@@ -30,6 +30,7 @@ import {
   configContext,
   configEntriesContext,
   connectionContext,
+  devicesContext,
   entitiesContext,
   internationalizationContext,
   statesContext,
@@ -46,6 +47,7 @@ import {
   ESPHOME_CAPABILITY_ACCENTS,
   ESPHOME_CAPABILITY_ICONS,
   ESPHOME_CAPABILITY_TITLE_KEYS,
+  findESPHomeZWaveFlow,
   getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
@@ -65,7 +67,7 @@ import { extractApiErrorMessage } from "../../data/hassio/common";
 import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
 import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
-import type { HomeAssistantUI } from "../../types";
+import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { getWsErrorMessage } from "../../util/ws-error";
 import { showConfigFlowDialog } from "../config-flow/show-dialog-config-flow";
@@ -158,6 +160,20 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   @state()
   @consume({ context: configEntriesContext, subscribe: true })
   private _configEntries?: ContextType<typeof configEntriesContext>;
+
+  @state()
+  @consume({ context: devicesContext, subscribe: true })
+  @transform<HomeAssistant["devices"], string | undefined>({
+    transformer: function (this: DialogESPHomeDeviceSetup, devices) {
+      const deviceId = this.params?.deviceId;
+      return deviceId
+        ? devices[deviceId]?.connections.find(([type]) => type === "mac")?.[1]
+        : undefined;
+    },
+  })
+  private _macAddress?: string;
+
+  @state() private _zwaveFlows: DataEntryFlowProgress[] = [];
 
   @state() private _capabilities?: ESPHomeDeviceCapabilities;
 
@@ -738,6 +754,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
               this._capabilities.serial_proxies,
               this._serialPorts
             ),
+      zwaveFlowInProgress:
+        findESPHomeZWaveFlow(this._zwaveFlows, this._macAddress) !== undefined,
     });
     // A failed scan left no usage data. Keep the row, but do not show
     // Configured or Set up from that missing result.
@@ -766,6 +784,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         return;
       }
       this._capabilities = capabilities;
+      if (capabilities.zwave_proxy.supported) {
+        await this._refreshZWaveFlows();
+        if (!this.isConnected) {
+          return;
+        }
+      }
       await this._refreshSerialPorts();
       if (!this.isConnected) {
         return;
@@ -1098,12 +1122,25 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     });
   }
 
+  private async _refreshZWaveFlows() {
+    if (!this._connection) {
+      return;
+    }
+    try {
+      const flows = await fetchConfigFlowInProgress(
+        this._connection.connection
+      );
+      this._zwaveFlows = flows.filter((flow) => flow.handler === "zwave_js");
+    } catch {
+      // Keep the last list.
+    }
+  }
+
   private async _setupZWave(ev: Event) {
     ev.stopPropagation();
     if (!this._connection || !this._capabilities || !this._i18n) {
       return;
     }
-    const homeId = String(this._capabilities.zwave_proxy.home_id);
     let flows: DataEntryFlowProgress[];
     try {
       flows = await fetchConfigFlowInProgress(this._connection.connection);
@@ -1118,12 +1155,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (!this.isConnected) {
       return;
     }
-    const flow = flows.find(
-      (item) =>
-        item.handler === "zwave_js" &&
-        item.context?.source === "esphome" &&
-        item.context?.unique_id === homeId
-    );
+    const flow = findESPHomeZWaveFlow(flows, this._macAddress);
     if (!flow) {
       this._error = this._i18n.localize(
         "ui.panel.config.devices.esphome.setup_error_zwave"
