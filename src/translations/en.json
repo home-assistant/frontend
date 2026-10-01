@@ -7391,10 +7391,10 @@
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {
               "title": "Also uninstall {name}?",
-              "text": "{name} came from the Marketplace. Its files stay on your system and keep getting updates until you uninstall it.",
+              "text": "{name} came from the Marketplace. Its files stay on your system, and the Marketplace keeps checking for updates until you uninstall it.",
               "confirm": "Uninstall",
               "dismiss": "Keep",
-              "failed": "Uninstalling failed, check the Home Assistant logs for more information."
+              "failed": "Uninstall failed. Check the Home Assistant logs for details."
             },
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
@@ -12183,7 +12183,7 @@
           },
           "understand": "I understand the risks",
           "continue": "Continue",
-          "continue_in": "You can continue in {seconds} seconds"
+          "continue_in": "You can continue in {seconds, plural,\n  one {# second}\n  other {# seconds}\n}"
         },
         "common": {
           "install": "Install",
@@ -12202,7 +12202,7 @@
           }
         },
         "dashboard": {
-          "search": "Search {number} {number, plural,\n  one {item}\n  other {items}\n}",
+          "search": "Search {number} {number, plural,\n  one {repository}\n  other {repositories}\n}",
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
@@ -12239,7 +12239,7 @@
           "error": "An unknown error occurred",
           "repository_not_found": "Repository {repository} not found",
           "add_repository_title": "Add custom repository",
-          "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Marketplace. Do you want to add it?"
+          "add_repository_description": "Add the custom repository {repository} to the Marketplace?"
         },
         "filters": {
           "status": "Status",
@@ -12264,7 +12264,7 @@
         "dialog_install": {
           "loading": "Loading repository",
           "already_installing": "This is already being installed, hold on.",
-          "install_failed": "The installation failed, check the Home Assistant logs for more information.",
+          "install_failed": "Installation failed. Check the Home Assistant logs for details.",
           "pre_release": "Pre-release",
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
@@ -12305,16 +12305,16 @@
             "not_installed": "Not installed",
             "available": "Version {version} is available to install.",
             "update_available": "Update available",
-            "pending_restart": "Waiting for a restart"
+            "pending_restart": "Restart required"
           },
           "community": {
             "title": "Made by the community",
             "made_by": "Made by {authors}, {count, plural,\n  one {one of the many people}\n  other {some of the many people}\n} sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
             "made_by_community": "Made by one of the many people sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
             "last_change": "Last change on GitHub {time}",
-            "downloads": "Downloaded {count} times",
-            "stars": "{count} stars on GitHub",
-            "open_issues": "{count} open issues on GitHub",
+            "downloads": "{number, plural,\n  one {Downloaded {count} time}\n  other {Downloaded {count} times}\n}",
+            "stars": "{number, plural,\n  one {{count} star on GitHub}\n  other {{count} stars on GitHub}\n}",
+            "open_issues": "{number, plural,\n  one {{count} open issue on GitHub}\n  other {{count} open issues on GitHub}\n}",
             "no_open_issues": "No open issues on GitHub"
           },
           "details": {
@@ -12349,8 +12349,8 @@
           "update_information": "Refresh information"
         },
         "repository_status": {
-          "pending-restart": "Pending restart",
-          "pending-upgrade": "Pending update",
+          "pending-restart": "Restart required",
+          "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
           "default": "Available"
@@ -12375,7 +12375,7 @@
           "disabled": {
             "title": "The Marketplace is disabled",
             "reason": {
-              "invalid_token": "The GitHub token is not valid. Reconfigure the Marketplace integration to set a working token.",
+              "invalid_token": "The GitHub connection no longer works. Reconfigure the Marketplace integration to connect GitHub again.",
               "rate_limit": "The GitHub API rate limit has been reached. The Marketplace works again once the limit resets.",
               "removed": "The Marketplace integration has been removed.",
               "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."

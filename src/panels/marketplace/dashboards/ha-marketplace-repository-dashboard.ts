@@ -813,6 +813,7 @@ type: module</pre>`,
       signals.push({
         icon: mdiDownload,
         text: localize("ui.panel.marketplace.repository.community.downloads", {
+          number: repository.downloads,
           count: html`<strong
             >${formatNumber(repository.downloads, locale)}</strong
           >`,
@@ -822,6 +823,7 @@ type: module</pre>`,
     signals.push({
       icon: mdiStar,
       text: localize("ui.panel.marketplace.repository.community.stars", {
+        number: repository.stars,
         count: html`<strong>${formatNumber(repository.stars, locale)}</strong>`,
       }),
     });
@@ -832,6 +834,7 @@ type: module</pre>`,
             text: localize(
               "ui.panel.marketplace.repository.community.open_issues",
               {
+                number: repository.issues,
                 count: html`<strong
                   >${formatNumber(repository.issues, locale)}</strong
                 >`,
