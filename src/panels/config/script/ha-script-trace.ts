@@ -500,18 +500,25 @@ export class HaScriptTrace extends LitElement {
 
   private _pickOlderTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex + 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex + 1].run_id);
   }
 
   private _pickNewerTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex - 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex - 1].run_id);
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.detail.value;
+    this._pickRun(ev.detail.value);
+  }
+
+  // A run picked on the page wins over a linked run that is still loading.
+  private _pickRun(runId: string) {
+    if (this._requestedRunId) {
+      this._traceListRequest++;
+      this._requestedRunId = undefined;
+    }
+    this._runId = runId;
     this._selected = undefined;
   }
 
@@ -556,7 +563,8 @@ export class HaScriptTrace extends LitElement {
   );
 
   private _refreshTraces() {
-    this._loadTraces();
+    // Keep the run of a link that is still loading.
+    this._loadTraces(this._requestedRunId);
   }
 
   private async _loadTraces(runId?: string) {
