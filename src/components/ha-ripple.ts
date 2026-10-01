@@ -28,8 +28,6 @@ const EVENTS = [
   "touchend",
 ];
 
-const FORCED_COLORS = window.matchMedia("(forced-colors: active)");
-
 /**
  * On touch: `inactive -> touch-delay -> waiting-for-click -> inactive`, or
  * `inactive -> touch-delay -> holding -> waiting-for-click -> inactive`.
@@ -159,7 +157,10 @@ export class HaRipple extends LitElement {
 
   /** @private */
   public handleEvent(ev: Event) {
-    if (this.disabled || FORCED_COLORS.matches) {
+    if (
+      this.disabled ||
+      window.matchMedia?.("(forced-colors: active)").matches
+    ) {
       return;
     }
 
