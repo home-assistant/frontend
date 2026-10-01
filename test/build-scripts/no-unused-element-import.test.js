@@ -20,6 +20,10 @@ const write = (name, contents) => {
 
 write("ha-thing.js", '@customElement("ha-thing")\nclass HaThing {}');
 write("ha-thing-row.js", 'customElements.define("ha-thing-row", HaThingRow);');
+write(
+  "state-card-water_heater.js",
+  '@customElement("state-card-water_heater")\nclass StateCardWaterHeater {}'
+);
 write("styles.js", "export const styles = css``;");
 write("gallery-page.js", 'import "./ha-thing";');
 write("gallery-page.markdown", "# Thing\n\n<ha-thing></ha-thing>");
@@ -48,6 +52,11 @@ describe("no-unused-element-import", () => {
         name: "element used in a template",
         filename: file("uses-it.js"),
         code: 'import "./ha-thing";\nhtml`<ha-thing></ha-thing>`;',
+      },
+      {
+        name: "tag containing an underscore used in a template",
+        filename: file("uses-underscore.js"),
+        code: 'import "./state-card-water_heater";\nhtml`<state-card-water_heater></state-card-water_heater>`;',
       },
       {
         name: "target registers no element",
@@ -90,6 +99,18 @@ describe("no-unused-element-import", () => {
         name: "element never referenced",
         filename: file("never-uses-it.js"),
         code: 'import "./ha-thing";\nhtml`<div></div>`;',
+        errors: [{ messageId: "unused" }],
+      },
+      {
+        name: "element registered with customElements.define never referenced",
+        filename: file("never-uses-define.js"),
+        code: 'import "./ha-thing-row";\nhtml`<div></div>`;',
+        errors: [{ messageId: "unused" }],
+      },
+      {
+        name: "tag containing an underscore never referenced",
+        filename: file("never-uses-underscore.js"),
+        code: 'import "./state-card-water_heater";\nhtml`<div></div>`;',
         errors: [{ messageId: "unused" }],
       },
       {

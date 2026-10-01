@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const TAG_PATTERN =
-  /@customElement\(\s*["'`]([a-z0-9-]+)["'`]|customElements\.define\(\s*["'`]([a-z0-9-]+)["'`]/g;
+  /@customElement\(\s*["'`]([a-z0-9_-]+)["'`]|customElements\.define\(\s*["'`]([a-z0-9_-]+)["'`]/g;
 
 const EXTENSIONS = /\.(ts|js)$/;
 
