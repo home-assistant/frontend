@@ -12,6 +12,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
 import {
   HOME_ZONE_ENTITY_ID,
@@ -41,6 +42,7 @@ import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
 import {
   apiContext,
+  configContext,
   connectionContext,
   formattersContext,
   fullEntitiesContext,
@@ -52,6 +54,8 @@ import type { HistoryStates } from "../../../../data/history";
 import { fetchDateWS } from "../../../../data/history";
 import { computeUserInitials } from "../../../../data/user";
 import type {
+  CurrentUser,
+  HomeAssistantConfig,
   HomeAssistant,
   HomeAssistantApi,
   HomeAssistantConnection,
@@ -102,6 +106,13 @@ export class HuiMapOverview extends LitElement {
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
 
   // Registry creation order decides the zone colors
   @state()
@@ -251,6 +262,10 @@ export class HuiMapOverview extends LitElement {
           !!stateObj && computeStateDomain(stateObj) === "person"
       )
       .sort((a, b) => {
+        const aMe = this._isMe(a);
+        if (aMe !== this._isMe(b)) {
+          return aMe ? -1 : 1;
+        }
         const aLocated = !!getEntityLocation(a, this._states);
         const bLocated = !!getEntityLocation(b, this._states);
         if (aLocated !== bLocated) {
@@ -261,6 +276,20 @@ export class HuiMapOverview extends LitElement {
           this._i18n.locale.language
         );
       });
+  }
+
+  private _isMe(stateObj: HassEntity): boolean {
+    return (
+      !!this._user &&
+      computeStateDomain(stateObj) === "person" &&
+      stateObj.attributes.user_id === this._user.id
+    );
+  }
+
+  private _personName(stateObj: HassEntity): string {
+    return this._isMe(stateObj)
+      ? this._i18n.localize("ui.panel.lovelace.cards.map.overview.me")
+      : computeStateName(stateObj);
   }
 
   private _getDevices(): HassEntity[] {
@@ -465,7 +494,7 @@ export class HuiMapOverview extends LitElement {
             )}
             @click=${this._handleMoreInfo}
           >
-            ${computeStateName(stateObj)}
+            ${this._personName(stateObj)}
           </button>
           <span class="detail-state">
             ${
@@ -670,7 +699,7 @@ export class HuiMapOverview extends LitElement {
   }
 
   private _renderEntity(stateObj: HassEntity) {
-    const name = computeStateName(stateObj);
+    const name = this._personName(stateObj);
     const location = getEntityLocation(stateObj, this._states);
     const picture = stateObj.attributes.entity_picture;
 
@@ -691,7 +720,7 @@ export class HuiMapOverview extends LitElement {
                 />`
               : computeStateDomain(stateObj) === "person"
                 ? html`<span class="initials"
-                    >${computeUserInitials(name)}</span
+                    >${computeUserInitials(computeStateName(stateObj))}</span
                   >`
                 : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
           }

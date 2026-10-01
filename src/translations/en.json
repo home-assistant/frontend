@@ -9524,6 +9524,7 @@
               "people": "People",
               "devices": "Devices",
               "zones": "Zones",
+              "me": "Me",
               "activity": "Activity",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
