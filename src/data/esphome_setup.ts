@@ -7,6 +7,7 @@ import {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import type { LocalizeKeys } from "../common/translations/localize";
+import type { DataEntryFlowProgress } from "./data_entry_flow";
 import type { ESPHomeDeviceCapabilities, ESPHomeSerialProxy } from "./esphome";
 import type { ESPHomeFrontendUserData } from "./frontend";
 import type { SerialPortUsage } from "./usb";
@@ -178,6 +179,7 @@ export const deriveESPHomeSetupStatus = (
     sendspinSupported?: boolean;
     sendspinEnabled?: boolean;
     serialConfigured?: boolean;
+    zwaveFlowInProgress?: boolean;
   }
 ): ESPHomeSetupStatus => {
   const status: ESPHomeSetupStatus = {};
@@ -199,7 +201,10 @@ export const deriveESPHomeSetupStatus = (
   if (capabilities.zwave_proxy.supported) {
     if (capabilities.zwave_proxy.config_entry_id) {
       status.connectivity = "completed";
-    } else if (capabilities.zwave_proxy.home_id !== 0) {
+    } else if (
+      capabilities.zwave_proxy.home_id !== 0 ||
+      options.zwaveFlowInProgress
+    ) {
       status.connectivity = "detected";
     } else {
       status.connectivity = "not-started";
@@ -215,6 +220,36 @@ export const deriveESPHomeSetupStatus = (
   }
 
   return status;
+};
+
+/**
+ * The zwave_js discovery flow ESPHome started for this device. ESPHome tags it
+ * with the device MAC, which still matches when the reported home ID is stale.
+ */
+export const findESPHomeZWaveFlow = (
+  flows: Iterable<DataEntryFlowProgress>,
+  macAddress: string | undefined,
+  homeId: number
+): DataEntryFlowProgress | undefined => {
+  const mac = macAddress?.toLowerCase();
+  for (const flow of flows) {
+    if (flow.handler !== "zwave_js" || flow.context.source !== "esphome") {
+      continue;
+    }
+    const discoveryKey = flow.context.discovery_key;
+    if (discoveryKey?.domain === "esphome") {
+      if (
+        mac &&
+        typeof discoveryKey.key === "string" &&
+        discoveryKey.key.toLowerCase() === mac
+      ) {
+        return flow;
+      }
+    } else if (homeId !== 0 && flow.context.unique_id === String(homeId)) {
+      return flow;
+    }
+  }
+  return undefined;
 };
 
 export const getESPHomeSetupCapabilityIds = (

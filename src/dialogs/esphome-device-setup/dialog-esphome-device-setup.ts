@@ -30,6 +30,7 @@ import {
   configContext,
   configEntriesContext,
   connectionContext,
+  devicesContext,
   entitiesContext,
   internationalizationContext,
   statesContext,
@@ -46,6 +47,7 @@ import {
   ESPHOME_CAPABILITY_ACCENTS,
   ESPHOME_CAPABILITY_ICONS,
   ESPHOME_CAPABILITY_TITLE_KEYS,
+  findESPHomeZWaveFlow,
   getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
@@ -65,7 +67,7 @@ import { extractApiErrorMessage } from "../../data/hassio/common";
 import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
 import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
-import type { HomeAssistantUI } from "../../types";
+import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { getWsErrorMessage } from "../../util/ws-error";
 import { showConfigFlowDialog } from "../config-flow/show-dialog-config-flow";
@@ -159,6 +161,23 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   @consume({ context: configEntriesContext, subscribe: true })
   private _configEntries?: ContextType<typeof configEntriesContext>;
 
+  @state()
+  @consume({ context: devicesContext, subscribe: true })
+  @transform<HomeAssistant["devices"], string | undefined>({
+    transformer: function (this: DialogESPHomeDeviceSetup, devices) {
+      const deviceId = this.params?.deviceId;
+      return deviceId
+        ? devices[deviceId]?.connections.find(([type]) => type === "mac")?.[1]
+        : undefined;
+    },
+  })
+  private _macAddress?: string;
+
+  /** zwave_js flows in progress, kept current while the dialog is open. */
+  @state() private _zwaveFlows: DataEntryFlowProgress[] = [];
+
+  private _zwaveFlowsSub?: Promise<UnsubscribeFunc>;
+
   @state() private _capabilities?: ESPHomeDeviceCapabilities;
 
   /** Last successful USB usage scan. Undefined until a scan completes. */
@@ -196,6 +215,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   public disconnectedCallback() {
     this._finishMusicAssistantDiscovery(undefined);
+    const zwaveFlowsSub = this._zwaveFlowsSub;
+    this._zwaveFlowsSub = undefined;
+    zwaveFlowsSub?.then((unsub) => unsub()).catch(() => undefined);
     this.params?.dialogClosedCallback?.();
     super.disconnectedCallback();
   }
@@ -738,6 +760,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
               this._capabilities.serial_proxies,
               this._serialPorts
             ),
+      zwaveFlowInProgress:
+        findESPHomeZWaveFlow(
+          this._zwaveFlows,
+          this._macAddress,
+          this._capabilities.zwave_proxy.home_id
+        ) !== undefined,
     });
     // A failed scan left no usage data. Keep the row, but do not show
     // Configured or Set up from that missing result.
@@ -766,6 +794,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         return;
       }
       this._capabilities = capabilities;
+      if (capabilities.zwave_proxy.supported) {
+        this._subscribeZWaveFlows();
+      }
       await this._refreshSerialPorts();
       if (!this.isConnected) {
         return;
@@ -1098,12 +1129,36 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     });
   }
 
+  private _subscribeZWaveFlows() {
+    if (this._zwaveFlowsSub || !this._connection) {
+      return;
+    }
+    const sub = subscribeConfigFlowInProgress(this._connection, (messages) => {
+      if (this._zwaveFlowsSub !== sub) {
+        return;
+      }
+      let flows = this._zwaveFlows;
+      for (const message of messages) {
+        flows = flows.filter((flow) => flow.flow_id !== message.flow_id);
+        if (message.type !== "removed" && message.flow.handler === "zwave_js") {
+          flows = [...flows, message.flow];
+        }
+      }
+      this._zwaveFlows = flows;
+    });
+    this._zwaveFlowsSub = sub;
+    sub.catch(() => {
+      if (this._zwaveFlowsSub === sub) {
+        this._zwaveFlowsSub = undefined;
+      }
+    });
+  }
+
   private async _setupZWave(ev: Event) {
     ev.stopPropagation();
     if (!this._connection || !this._capabilities || !this._i18n) {
       return;
     }
-    const homeId = String(this._capabilities.zwave_proxy.home_id);
     let flows: DataEntryFlowProgress[];
     try {
       flows = await fetchConfigFlowInProgress(this._connection.connection);
@@ -1118,11 +1173,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (!this.isConnected) {
       return;
     }
-    const flow = flows.find(
-      (item) =>
-        item.handler === "zwave_js" &&
-        item.context?.source === "esphome" &&
-        item.context?.unique_id === homeId
+    const flow = findESPHomeZWaveFlow(
+      flows,
+      this._macAddress,
+      this._capabilities.zwave_proxy.home_id
     );
     if (!flow) {
       this._error = this._i18n.localize(
