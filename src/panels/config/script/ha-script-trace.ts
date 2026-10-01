@@ -382,11 +382,13 @@ export class HaScriptTrace extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._locationChanged);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._locationChanged);
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -451,7 +453,26 @@ export class HaScriptTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
+      this._showRunIdInUrl();
     }
+  }
+
+  private get _tracePath() {
+    return `/config/script/trace/${this.scriptId}`;
+  }
+
+  // Keep the shown run in the URL, so that browser history, reloads and the
+  // links between traces agree with the page.
+  private _showRunIdInUrl() {
+    const params = new URLSearchParams(location.search);
+    if (
+      location.pathname !== this._tracePath ||
+      params.get("run_id") === this._runId
+    ) {
+      return;
+    }
+    params.set("run_id", this._runId!);
+    replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
   }
 
   private _setRelatedContext() {
@@ -489,14 +510,16 @@ export class HaScriptTrace extends LitElement {
   }
 
   // A link to another run of this script, like a script that starts itself,
-  // only changes the query string, which does not update the route.
+  // and browser back and forward between such runs only change the query
+  // string, which does not update the route. An entry without a run_id is
+  // left alone: closing a dialog with back lands on one with the same URL.
   private _locationChanged = () => {
     const runId = new URLSearchParams(location.search).get("run_id");
     if (
       !runId ||
       runId === this._runId ||
       !this._traces ||
-      location.pathname !== `/config/script/trace/${this.scriptId}`
+      location.pathname !== this._tracePath
     ) {
       return;
     }
