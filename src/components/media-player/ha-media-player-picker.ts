@@ -189,7 +189,7 @@ export class HaMediaPlayerPicker extends LitElement {
           borderTop: index === 0 ? undefined : "1px solid var(--divider-color)",
         })}
       >
-        <ha-combo-box-item type="button" compact .disabled=${!!item.disabled}>
+        <ha-combo-box-item .disabled=${!!item.disabled}>
           ${
             item.icon_path
               ? html`

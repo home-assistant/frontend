@@ -10,9 +10,14 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
 import { createSearchParam } from "../../../common/url/search-params";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-tooltip";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../data/device/device_registry";
 import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
@@ -71,6 +76,10 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   @state() private _targetPickerValue: HassServiceTarget = {};
 
   @state() private _stateFilter?: string[];
+
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
 
   private _showMoreLinkId = `logbook-${Math.random().toString(36).substring(2, 9)}`;
 
@@ -144,7 +153,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   private _showMoreUrl(): string {
-    const target = this._targetPickerValue;
+    const target = this._getTarget();
     const params: Record<string, string> = {
       start_date: startOfYesterday().toISOString(),
       back: "1",
@@ -167,17 +176,71 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     return `/logbook?${createSearchParam(params)}`;
   }
 
-  private _getEntityIds(): string[] | undefined {
-    const entities = this._getMemoizedEntityIds(
-      this._targetPickerValue,
+  // An empty list must stay empty: ha-logbook treats undefined as "no
+  // filter" and would show all activity when the targets resolve to nothing.
+  private _getEntityIds(): string[] {
+    return this._getMemoizedEntityIds(
+      this._getTarget(),
       this.hass.entities,
       this.hass.devices,
       this.hass.areas
     );
-    if (entities.length === 0) {
-      return undefined;
+  }
+
+  private _getMissingDeviceIds = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      devices: HomeAssistant["devices"]
+    ): string[] =>
+      devices && targetPickerValue.device_id
+        ? ensureArray(targetPickerValue.device_id).filter(
+            (deviceId) => !devices[deviceId]
+          )
+        : []
+  );
+
+  private _getTarget(): HassServiceTarget {
+    return this._getMemoizedTarget(
+      this._targetPickerValue,
+      this.hass.devices,
+      this._compositeSplits
+    );
+  }
+
+  // Swap legacy composite devices for the devices they were split into.
+  private _getMemoizedTarget = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      devices: HomeAssistant["devices"],
+      compositeSplits: DeviceCompositeSplits | undefined
+    ): HassServiceTarget => {
+      if (!devices || !compositeSplits || !targetPickerValue.device_id) {
+        return targetPickerValue;
+      }
+      const deviceIds = new Set<string>();
+      for (const deviceId of ensureArray(targetPickerValue.device_id)) {
+        const splitIds = devices[deviceId]
+          ? undefined
+          : compositeSplits[deviceId]?.split_ids.filter((id) => devices[id]);
+        if (splitIds?.length) {
+          splitIds.forEach((id) => deviceIds.add(id));
+        } else {
+          deviceIds.add(deviceId);
+        }
+      }
+      return { ...targetPickerValue, device_id: [...deviceIds] };
     }
-    return entities;
+  );
+
+  private async _loadCompositeSplits() {
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
   }
 
   private _getMemoizedEntityIds = memoizeOne(
@@ -195,12 +258,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     if (nameDetail !== "auto") {
       return nameDetail;
     }
-    const entityIds = this._getEntityIds();
-    if (!entityIds) {
-      return undefined;
-    }
     return this._getAutoNameDetail(
-      entityIds,
+      this._getEntityIds(),
       this.hass.entities,
       this.hass.devices,
       this.hass.areas,
@@ -249,6 +308,41 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     if (changedProperties.has("layout")) {
       this.toggleAttribute("ispanel", this.layout === "panel");
     }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (
+      this.hass &&
+      this._compositeSplits === undefined &&
+      !this._loadingCompositeSplits &&
+      this._getMissingDeviceIds(this._targetPickerValue, this.hass.devices)
+        .length
+    ) {
+      // A targeted device is missing from the registry; it might be a legacy
+      // composite device that was split.
+      this._loadCompositeSplits();
+    }
+  }
+
+  private _renderMissingDevicesWarning() {
+    if (this._compositeSplits === undefined) {
+      return nothing;
+    }
+    const missing = this._getMissingDeviceIds(
+      this._getTarget(),
+      this.hass.devices
+    );
+    if (!missing.length) {
+      return nothing;
+    }
+    return html`
+      <ha-alert alert-type="warning">
+        ${this.hass.localize("ui.card.logbook.device_not_found", {
+          count: missing.length,
+        })}
+      </ha-alert>
+    `;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -306,21 +400,32 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
               </h1>`
             : nothing
         }
+        ${this._renderMissingDevicesWarning()}
         <div class="content">
-          <ha-logbook
-            class=${classMap({
-              "is-grid": this.layout === "grid",
-              "is-panel": this.layout === "panel",
-            })}
-            .hass=${this.hass}
-            .time=${this._time}
-            .entityIds=${this._getEntityIds()}
-            .stateFilter=${this._stateFilter}
-            .nameDetail=${this._getNameDetail()}
-            narrow
-            no-icon
-            virtualize
-          ></ha-logbook>
+          ${
+            // Wait for the split map so a replaced device doesn't flash as
+            // having no activity.
+            this._compositeSplits === undefined &&
+            this._getMissingDeviceIds(
+              this._targetPickerValue,
+              this.hass.devices
+            ).length
+              ? nothing
+              : html`<ha-logbook
+                  class=${classMap({
+                    "is-grid": this.layout === "grid",
+                    "is-panel": this.layout === "panel",
+                  })}
+                  .hass=${this.hass}
+                  .time=${this._time}
+                  .entityIds=${this._getEntityIds()}
+                  .stateFilter=${this._stateFilter}
+                  .nameDetail=${this._getNameDetail()}
+                  narrow
+                  no-icon
+                  virtualize
+                ></ha-logbook>`
+          }
         </div>
       </ha-card>
     `;
@@ -351,7 +456,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
         .content {
           height: 100%;
+          min-height: 0;
           padding: 0 0 16px;
+        }
+
+        ha-alert {
+          display: block;
+          margin: var(--ha-space-2) var(--ha-space-4) 0;
         }
 
         .no-header .content {

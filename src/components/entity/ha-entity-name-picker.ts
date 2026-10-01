@@ -28,7 +28,7 @@ import "../ha-sortable";
 import "../input/ha-input";
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item type="button" compact>
+  <ha-combo-box-item>
     <span slot="headline">${item.primary}</span>
     ${
       item.secondary

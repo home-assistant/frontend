@@ -7,6 +7,8 @@
  * Positions are [latitude, longitude]; zoom levels use Leaflet semantics.
  */
 
+import type { ResolvedMapStyle } from "./map-styles";
+
 export type MapLatLng = [latitude: number, longitude: number];
 
 export type MapControlPosition =
@@ -21,12 +23,18 @@ export interface MapEngineEvents {
   moveStart(): void;
   /** The engine can no longer render; the host switches to the fallback */
   fatal(): void;
+  /**
+   * The map has something to show: MapLibre's first complete view, or Leaflet's
+   * layer in place. The host keeps the container hidden until then.
+   */
+  drawn(): void;
 }
 
 export interface MapEngineOptions {
   center: MapLatLng;
   zoom: number;
-  darkMode: boolean;
+  /** Cartography to draw; the host resolves the config and theme mode into one */
+  mapStyle: ResolvedMapStyle;
   /** Token for core's tile proxy */
   token?: string;
   zoomControlPosition: MapControlPosition;
@@ -178,11 +186,15 @@ export interface MapClusterOptions {
    */
   groupKey?(marker: MapMarkerHandle): string | undefined;
   groupRadius?: number;
-  /** Builds a cluster's element; called when its members change and on refreshClusters() */
+  /**
+   * Builds a cluster's element; called when its members change and on
+   * refreshClusters(). An expanded cluster shows every member.
+   */
   iconBuilder(
     members: MapMarkerHandle[],
     location: MapLatLng,
-    key?: string
+    key?: string,
+    expanded?: boolean
   ): MapClusterIcon;
 }
 
@@ -199,7 +211,7 @@ export interface MapEngine {
   /** Whether the map has a non-zero size, re-measuring if needed */
   hasUsableSize(): boolean;
 
-  setDarkMode(darkMode: boolean): void;
+  setMapStyle(style: ResolvedMapStyle): void;
 
   setZoomControlPosition(position: MapControlPosition): void;
 

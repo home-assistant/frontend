@@ -1,7 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
+import { MAP_TILES_PATH } from "../common/map/map-style-transforms";
 import { waitForMs } from "../common/util/wait";
 
-export const MAP_TILES_PATH = "/api/map_tiles";
+// Defined next to the style transforms, which the build imports and so has to
+// stay free of runtime imports; re-exported so callers keep using this module
+// and there is one definition.
+export { MAP_TILES_PATH };
 
 // Mirrors TOKEN_HEADER in homeassistant/components/map_tiles/const.py.
 const TOKEN_HEADER = "X-Map-Tiles-Token";

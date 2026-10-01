@@ -111,6 +111,7 @@ import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import type { ESPHomeSetupController } from "./device-detail/integration-elements/esphome/esphome-setup-controller";
 import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
@@ -208,6 +209,10 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
   private _deviceAlertsActionsTimeout?: number;
+
+  private _esphomeSetup?: ESPHomeSetupController;
+
+  private _esphomeSetupRequest = 0;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -368,6 +373,7 @@ export class HaConfigDevicePage extends LitElement {
       this._deviceAlerts = [];
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
+      this._esphomeSetup?.clear();
     }
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -902,6 +908,7 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      ${this._esphomeSetup?.renderReminder() ?? nothing}
       <ha-device-child-devices-card
         .hass=${this.hass}
         .deviceId=${this.deviceId}
@@ -1115,6 +1122,7 @@ export class HaConfigDevicePage extends LitElement {
             }
           </div>
         </div>
+        ${this._esphomeSetup?.renderBanner(deviceName) ?? nothing}
         ${columnContents.map(
           (contents) => html`<div class="column">${contents}</div>`
         )}
@@ -1129,7 +1137,34 @@ export class HaConfigDevicePage extends LitElement {
       clearTimeout(this._deviceAlertsActionsTimeout);
       this._getDeviceActions();
       this._getDeviceAlerts();
+      this._updateESPHomeSetup();
     }
+  }
+
+  private async _updateESPHomeSetup() {
+    const request = ++this._esphomeSetupRequest;
+    const deviceId = this.deviceId;
+    const device = this.hass.devices[deviceId];
+    if (
+      !device ||
+      !this._integrations(device, this.entries, this.manifests).some(
+        (entry) => entry.domain === "esphome"
+      )
+    ) {
+      this._esphomeSetup?.clear();
+      return;
+    }
+    if (!this._esphomeSetup) {
+      const esphomeSetup =
+        await import("./device-detail/integration-elements/esphome/esphome-setup-controller");
+      if (request !== this._esphomeSetupRequest || this.deviceId !== deviceId) {
+        return;
+      }
+      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(this, () =>
+        this._entities(this.deviceId, this._entityReg, this.hass.devices)
+      );
+    }
+    this._esphomeSetup.refresh(deviceId);
   }
 
   private async _getDiagnosticButtons(): Promise<void> {

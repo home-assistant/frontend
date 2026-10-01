@@ -103,7 +103,7 @@ export type ConfigFlowInProgressMessage =
     };
 
 export const subscribeConfigFlowInProgress = (
-  hass: HomeAssistant,
+  hass: { connection: Connection },
   onChange: (update: ConfigFlowInProgressMessage[]) => void
 ) =>
   hass.connection.subscribeMessage<ConfigFlowInProgressMessage[]>(

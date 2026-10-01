@@ -16,10 +16,10 @@ runs:
       with:
         path: |
           node_modules
-          .yarn/install-state.gz
+          ~/.local/share/pnpm/store
         key: >-
           ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
-          hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
+          hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
         lookup-only: true
 
     - name: Setup Node and install
@@ -35,7 +35,7 @@ runs:
       with:
         path: |
           node_modules
-          .yarn/install-state.gz
+          ~/.local/share/pnpm/store
         key: >-
           ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
-          hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
+          hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}

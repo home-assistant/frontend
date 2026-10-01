@@ -72,7 +72,7 @@ class HaUserPicker extends LitElement {
   private _rowRenderer: RenderItemFunction<UserComboBoxItem> = (item) => {
     const user = item.user;
     if (!user) {
-      return html`<ha-combo-box-item type="button" compact>
+      return html`<ha-combo-box-item>
         ${
           item.icon
             ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
@@ -93,7 +93,7 @@ class HaUserPicker extends LitElement {
     }
 
     return html`
-      <ha-combo-box-item type="button" compact>
+      <ha-combo-box-item>
         <ha-user-badge slot="start" .user=${item.user}></ha-user-badge>
         <span slot="headline">${item.primary}</span>
       </ha-combo-box-item>
