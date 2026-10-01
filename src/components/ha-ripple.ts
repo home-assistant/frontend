@@ -96,6 +96,14 @@ export class HaRipple extends LitElement {
     return control instanceof HTMLElement ? control : null;
   }
 
+  public set control(control: HTMLElement | null) {
+    if (control) {
+      this.attach(control);
+    } else {
+      this.detach();
+    }
+  }
+
   public attach(control: HTMLElement) {
     this._control = control;
     this.htmlFor = null;
@@ -283,7 +291,11 @@ export class HaRipple extends LitElement {
 
     this._pressed = true;
 
-    const { left, top, width, height } = this.getBoundingClientRect();
+    // Measured sizes include CSS zoom, but the sizes set below get zoomed again
+    const zoom = "currentCSSZoom" in this ? this.currentCSSZoom : 1;
+    const rect = this.getBoundingClientRect();
+    const width = rect.width / zoom;
+    const height = rect.height / zoom;
     const maxDim = Math.max(width, height);
 
     const softEdgeSize = Math.max(
@@ -296,10 +308,12 @@ export class HaRipple extends LitElement {
     const scale = (maxRadius + softEdgeSize) / initialSize;
 
     const startX =
-      (origin ? origin.clientX - left : width / 2) - initialSize / 2;
+      (origin ? (origin.clientX - rect.left) / zoom : width / 2) -
+      initialSize / 2;
 
     const startY =
-      (origin ? origin.clientY - top : height / 2) - initialSize / 2;
+      (origin ? (origin.clientY - rect.top) / zoom : height / 2) -
+      initialSize / 2;
 
     const endX = (width - initialSize) / 2;
     const endY = (height - initialSize) / 2;
