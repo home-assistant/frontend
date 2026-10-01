@@ -343,7 +343,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             ></ha-icon-button>
           </div>
           ${
-            this.layout === PANEL_VIEW_LAYOUT
+            this.layout === PANEL_VIEW_LAYOUT && !this.preview
               ? html`<hui-map-overview
                   id="overview"
                   .hass=${this.hass}
@@ -403,6 +403,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+    if (changedProps.has("preview") && this.preview) {
+      this._overviewSize = { width: 0, height: 0 };
+    }
     if (
       this._config?.show_all &&
       !this._config?.entities &&
@@ -457,10 +460,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           : undefined,
         this.preview || this._overviewTab === "zones"
       );
-      this._filteredMapEntities = this._filterByOverviewTab(
-        this._overviewEntities,
-        this._overviewTab
-      );
+      // Without the overview, while editing, every marker shows
+      this._filteredMapEntities = this.preview
+        ? this._overviewEntities
+        : this._filterByOverviewTab(this._overviewEntities, this._overviewTab);
     }
   }
 
