@@ -113,7 +113,8 @@ export interface MatterCommissioningParameters {
   setup_pin_code: number;
   setup_manual_code: string;
   setup_qr_code: string;
-  // Only sent by Matter servers that report the window's structured fields.
+  // Null on a Matter server that does not report the window's structured fields, and absent
+  // only against a Matter client that predates them.
   discriminator?: number | null;
   vendor_id?: number | null;
   product_id?: number | null;
@@ -126,7 +127,8 @@ export const canCommissionMatterExternal = (hass: HomeAssistant) =>
 export type MatterShareTarget = "apple_home" | "app_chooser";
 
 export interface MatterShareDeviceParams {
-  // Apple Home reads the QR code; platforms that need the window's values get them in the fields below.
+  // Always sent: it carries the whole window. The iOS app falls back to it for a value it cannot
+  // pass on; the Android app does not read it.
   setup_qr_code: string;
   setup_pin_code: number;
   discriminator?: number;
@@ -136,38 +138,47 @@ export interface MatterShareDeviceParams {
   remaining_seconds?: number;
 }
 
-/** Where the companion app can share a Matter device to, if anywhere. */
-export const matterShareTargetExternal = (
-  hass: HomeAssistant
-): MatterShareTarget | undefined =>
-  hass.auth.external?.config.matterShareTarget;
-
 /**
- * Whether the app can share this window: Apple Home takes the QR code, the Android share sheet needs the
- * structured fields, which only newer Matter servers report.
+ * Where the companion app can share this window to, if anywhere. Apple Home can work from the setup code
+ * alone, while the app chooser opens a window of its own from the structured values, so it needs a Matter
+ * server that reported the discriminator and the timeout. Apple Home wins if an app reports both.
  */
-export const canShareMatterDevice = (
-  target: MatterShareTarget | undefined,
+export const matterShareTargetExternal = (
+  hass: HomeAssistant,
   params: MatterCommissioningParameters | undefined
-): boolean =>
-  params !== undefined &&
-  (target === "apple_home" ||
-    (target === "app_chooser" && typeof params.discriminator === "number"));
+): MatterShareTarget | undefined => {
+  const config = hass.auth.external?.config;
+  if (!config || !params) {
+    return undefined;
+  }
+  if (config.canShareMatterDeviceToAppleHome) {
+    return "apple_home";
+  }
+  if (
+    config.canShareMatterDeviceToOtherApps &&
+    params.discriminator != null &&
+    params.commissioning_timeout != null
+  ) {
+    return "app_chooser";
+  }
+  return undefined;
+};
 
 /**
- * Whole seconds left in a commissioning window of `timeout` seconds requested at `requestedAt`, never more
- * than the window itself even if the clock went back. Undefined when the server does not report the timeout.
+ * Whole seconds left in a window of `timeout` seconds requested at `requestedAt`, never more than the window
+ * itself even if the clock went back. Undefined where there is nothing to count: no reported timeout, or no
+ * window of our own open.
  */
 export const matterShareRemainingSeconds = (
   timeout: number | null | undefined,
   requestedAt: number | undefined,
   now: number
 ): number | undefined =>
-  timeout && requestedAt !== undefined
+  timeout != null && requestedAt !== undefined
     ? Math.min(timeout, Math.floor(timeout - (now - requestedAt) / 1000))
     : undefined;
 
-/** Rejects with `{code, message}`; `code` is `cancelled` when the user backed out. */
+/** Rejects with `{code, message}`; `code` is `canceled` when the user backed out. */
 export const shareMatterDeviceExternal = (
   hass: HomeAssistant,
   params: MatterShareDeviceParams

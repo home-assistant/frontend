@@ -1,7 +1,7 @@
 import { mdiCloseCircle, mdiShareVariant } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
@@ -11,13 +11,13 @@ import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../../data/integration";
 import type {
   MatterCommissioningParameters,
   MatterShareTarget,
 } from "../../../../../data/matter";
 import {
-  canShareMatterDevice,
   matterShareRemainingSeconds,
   matterShareTargetExternal,
   openMatterCommissioningWindow,
@@ -44,11 +44,19 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   @state() private _shareFailed = false;
 
+  // Kept apart from a failure because trying again cannot bring the window back.
+  @state() private _shareExpired = false;
+
+  @query(".share-alert") private _shareAlert?: HTMLElement | null;
+
   private _windowOpenedAt?: number;
 
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
+    // The element is reused and the close event is not guaranteed, so an open resets too: without it
+    // the dialog would render the previous device's window under this device's name.
+    this._resetWindow();
     this.device_id = params.device_id;
     this._open = true;
   }
@@ -57,10 +65,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     if (!this.device_id) {
       return nothing;
     }
-    const target = matterShareTargetExternal(this.hass);
-    const shareTarget = canShareMatterDevice(target, this._commissionParams)
-      ? target
-      : undefined;
+    const shareTarget = matterShareTargetExternal(
+      this.hass,
+      this._commissionParams
+    );
 
     return html`
       <ha-dialog
@@ -83,10 +91,12 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   )}
                 </p>
                 ${
-                  this._shareFailed
-                    ? html`<ha-alert alert-type="error">
+                  this._shareFailed || this._shareExpired
+                    ? html`<ha-alert class="share-alert" alert-type="error">
                         ${this.hass.localize(
-                          "ui.panel.config.matter.open_commissioning_window.share_failed"
+                          this._shareExpired
+                            ? "ui.panel.config.matter.open_commissioning_window.share_expired"
+                            : "ui.panel.config.matter.open_commissioning_window.share_failed"
                         )}
                       </ha-alert>`
                     : nothing
@@ -196,14 +206,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       .loading=${this._sharing}
                       @click=${this._shareDevice}
                     >
-                      ${
-                        shareTarget === "apple_home"
-                          ? nothing
-                          : html`<ha-svg-icon
-                              slot="start"
-                              .path=${mdiShareVariant}
-                            ></ha-svg-icon>`
-                      }
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiShareVariant}
+                      ></ha-svg-icon>
                       ${this._shareLabel(shareTarget)}
                     </ha-button>
                   `
@@ -233,6 +239,18 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     `;
   }
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    // The footer button is pinned while the body scrolls, so on a phone the alert can land off-screen.
+    if (
+      (changedProperties.has("_shareFailed") ||
+        changedProperties.has("_shareExpired")) &&
+      (this._shareFailed || this._shareExpired)
+    ) {
+      this._shareAlert?.scrollIntoView({ block: "nearest" });
+    }
+  }
+
   private async _start(): Promise<void> {
     if (!this.hass) {
       return;
@@ -241,10 +259,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     this._commissionParams = undefined;
     const deviceId = this.device_id!;
     try {
-      // Taken before the request so the remaining time is never overstated.
+      // Taken before the request, so the remaining time is never overstated. Wall clock, not
+      // `performance.now()`: the usual way a window runs out while this dialog is open is the screen
+      // being locked, and a monotonic clock does not advance while the device is suspended.
       const requestedAt = Date.now();
       const params = await openMatterCommissioningWindow(this.hass, deviceId);
-      // The dialog may have been closed, or reopened for another device, in the meantime.
+      // The dialog may have been closed, or reopened for another device, in the meantime. Reopened for
+      // the same device the window still belongs to it, and throwing it away would leave one open on the
+      // device that nobody can see or close.
       if (this.device_id !== deviceId) {
         return;
       }
@@ -272,17 +294,18 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     if (!params || this._sharing) {
       return;
     }
+    this._shareFailed = false;
+    this._shareExpired = false;
     const remaining = matterShareRemainingSeconds(
       params.commissioning_timeout,
       this._windowOpenedAt,
       Date.now()
     );
     if (remaining !== undefined && remaining < 1) {
-      this._shareFailed = true;
+      this._shareExpired = true;
       return;
     }
     this._sharing = true;
-    this._shareFailed = false;
     const device = this.hass.devices[this.device_id!];
     try {
       await shareMatterDeviceExternal(this.hass, {
@@ -301,7 +324,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     } catch (err: unknown) {
       if (this._commissionParams === params) {
         // Backing out of the platform sheet is not an error.
-        this._shareFailed = (err as { code?: string })?.code !== "cancelled";
+        this._shareFailed = (err as { code?: string })?.code !== "canceled";
       }
     } finally {
       if (this._commissionParams === params) {
@@ -315,7 +338,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       return;
     }
     await copyToClipboard(this._commissionParams.setup_manual_code);
-    this.closeDialog();
+    // Not while a share is in flight: closing drops the window the app is still working on, and its
+    // answer would then be discarded with the platform's sheet still on screen.
+    if (!this._sharing) {
+      this.closeDialog();
+    }
   }
 
   public closeDialog(): void {
@@ -323,13 +350,21 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
   }
 
   private _dialogClosed(): void {
+    this._resetWindow();
+    // Every dismissal that is not `closeDialog` leaves this true, and `ha-dialog` reads it.
+    this._open = false;
     this.device_id = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  /** Everything that belongs to one open. */
+  private _resetWindow(): void {
     this._status = undefined;
     this._commissionParams = undefined;
     this._sharing = false;
     this._shareFailed = false;
+    this._shareExpired = false;
     this._windowOpenedAt = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResultGroup {

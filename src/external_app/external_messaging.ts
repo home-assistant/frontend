@@ -1,9 +1,6 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
-import type {
-  MatterShareDeviceParams,
-  MatterShareTarget,
-} from "../data/matter";
+import type { MatterShareDeviceParams } from "../data/matter";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -97,7 +94,8 @@ interface EMOutgoingMessageWithAnswer {
   };
   "matter/share_device": {
     request: EMOutgoingMessageMatterShareDevice;
-    response: unknown;
+    // The app answers with an empty object; the outcome is the resolution itself.
+    response: Record<string, never>;
   };
 }
 
@@ -407,7 +405,8 @@ export interface ExternalConfig {
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
   hasMatterStatusReport?: boolean;
-  matterShareTarget?: MatterShareTarget;
+  canShareMatterDeviceToAppleHome?: boolean; // Shares through Apple Home, which reads the setup code
+  canShareMatterDeviceToOtherApps?: boolean; // Shares through a chooser of installed apps, needs the window's values
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
