@@ -69,7 +69,7 @@
     "@fullcalendar/timegrid": "6.1.21",
     "@home-assistant/webawesome": "3.7.0-ha.1",
     "@lezer/common": "1.5.3",
-    "@lezer/highlight": "1.2.4",
+    "@lezer/highlight": "1.2.5",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
     "@lit-labs/virtualizer": "2.1.1",
