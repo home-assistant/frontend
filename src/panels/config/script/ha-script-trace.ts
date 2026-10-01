@@ -104,6 +104,9 @@ export class HaScriptTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
+  // Only the latest trace list request may update the page.
+  private _tracesRequest = 0;
+
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
    * every label on every state event. The run already happened, so only the
@@ -379,11 +382,13 @@ export class HaScriptTrace extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._locationChanged);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._locationChanged);
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -448,7 +453,26 @@ export class HaScriptTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
+      this._showRunIdInUrl();
     }
+  }
+
+  private get _tracePath() {
+    return `/config/script/trace/${this.scriptId}`;
+  }
+
+  // Keep the shown run in the URL, so that browser history, reloads and the
+  // links between traces agree with the page.
+  private _showRunIdInUrl() {
+    const params = new URLSearchParams(location.search);
+    if (
+      location.pathname !== this._tracePath ||
+      params.get("run_id") === this._runId
+    ) {
+      return;
+    }
+    params.set("run_id", this._runId!);
+    replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
   }
 
   private _setRelatedContext() {
@@ -486,14 +510,16 @@ export class HaScriptTrace extends LitElement {
   }
 
   // A link to another run of this script, like a script that starts itself,
-  // only changes the query string, which does not update the route.
+  // and browser back and forward between such runs only change the query
+  // string, which does not update the route. An entry without a run_id is
+  // left alone: closing a dialog with back lands on one with the same URL.
   private _locationChanged = () => {
     const runId = new URLSearchParams(location.search).get("run_id");
     if (
       !runId ||
       runId === this._runId ||
       !this._traces ||
-      location.pathname !== `/config/script/trace/${this.scriptId}`
+      location.pathname !== this._tracePath
     ) {
       return;
     }
@@ -523,10 +549,10 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    const scriptId = this.scriptId;
-    const traces = await loadTraces(this.hass, "script", scriptId);
-    // The page switched to another script while this was loading.
-    if (scriptId !== this.scriptId) {
+    const request = ++this._tracesRequest;
+    const traces = await loadTraces(this.hass, "script", this.scriptId);
+    // A later request, for another script or run, replaced this one.
+    if (request !== this._tracesRequest) {
       return;
     }
     this._traces = traces;
@@ -557,7 +583,7 @@ export class HaScriptTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
-      if (scriptId !== this.scriptId) {
+      if (request !== this._tracesRequest) {
         return;
       }
     }

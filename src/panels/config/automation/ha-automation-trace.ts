@@ -108,6 +108,9 @@ export class HaAutomationTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
+  // Only the latest trace list request may update the page.
+  private _tracesRequest = 0;
+
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
    * every label on every state event. The run already happened, so only the
@@ -397,11 +400,13 @@ export class HaAutomationTrace extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._locationChanged);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._locationChanged);
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -448,6 +453,7 @@ export class HaAutomationTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
+      this._showRunIdInUrl();
     }
 
     if (
@@ -504,16 +510,35 @@ export class HaAutomationTrace extends LitElement {
     this._selected = undefined;
   }
 
+  private get _tracePath() {
+    return `/config/automation/trace/${encodeURIComponent(this.automationId)}`;
+  }
+
+  // Keep the shown run in the URL, so that browser history, reloads and the
+  // links between traces agree with the page.
+  private _showRunIdInUrl() {
+    const params = new URLSearchParams(location.search);
+    if (
+      location.pathname !== this._tracePath ||
+      params.get("run_id") === this._runId
+    ) {
+      return;
+    }
+    params.set("run_id", this._runId!);
+    replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
+  }
+
   // A link to another run of this automation, like one that triggers itself,
-  // only changes the query string, which does not update the route.
+  // and browser back and forward between such runs only change the query
+  // string, which does not update the route. An entry without a run_id is
+  // left alone: closing a dialog with back lands on one with the same URL.
   private _locationChanged = () => {
     const runId = new URLSearchParams(location.search).get("run_id");
     if (
       !runId ||
       runId === this._runId ||
       !this._traces ||
-      location.pathname !==
-        `/config/automation/trace/${encodeURIComponent(this.automationId)}`
+      location.pathname !== this._tracePath
     ) {
       return;
     }
@@ -543,10 +568,10 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    const automationId = this.automationId;
-    const traces = await loadTraces(this.hass, "automation", automationId);
-    // The page switched to another automation while this was loading.
-    if (automationId !== this.automationId) {
+    const request = ++this._tracesRequest;
+    const traces = await loadTraces(this.hass, "automation", this.automationId);
+    // A later request, for another automation or run, replaced this one.
+    if (request !== this._tracesRequest) {
       return;
     }
     this._traces = traces;
@@ -577,7 +602,7 @@ export class HaAutomationTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
-      if (automationId !== this.automationId) {
+      if (request !== this._tracesRequest) {
         return;
       }
     }
