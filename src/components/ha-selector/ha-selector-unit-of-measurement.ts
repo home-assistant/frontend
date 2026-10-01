@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { deepEqual } from "../../common/util/deep-equal";
 import type { UnitOfMeasurementSelector } from "../../data/selector";
 import { computeSelectorUnits } from "../../data/sensor/unit_of_measurement";
 import "../ha-unit-of-measurement-picker";
@@ -78,8 +79,18 @@ export class HaUnitOfMeasurementSelector extends LitElement {
 
     if (this.value) {
       // Unselect a unit that the changed context no longer allows
+      const oldContext = changedProps.get("context");
       if (
-        changedProps.get("context") !== undefined &&
+        oldContext !== undefined &&
+        // Compare by value, so an equal list counts as unchanged
+        (!deepEqual(
+          oldContext.filter_device_class,
+          this.context?.filter_device_class
+        ) ||
+          !deepEqual(
+            oldContext.filter_state_class,
+            this.context?.filter_state_class
+          )) &&
         !units.includes(this.value)
       ) {
         fireEvent(this, "value-changed", { value: undefined });
