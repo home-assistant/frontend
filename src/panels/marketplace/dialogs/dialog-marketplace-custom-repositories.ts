@@ -31,6 +31,7 @@ import {
 } from "../../../data/marketplace/websocket";
 import {
   addMarketplaceRepository,
+  detectMarketplaceRepository,
   fetchMarketplaceRepositories,
   removeMarketplaceRepository,
 } from "../../../data/marketplace/repository";
@@ -57,7 +58,10 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
   @state() private _errors?: Record<string, string>;
 
-  @state() private _data?: { repository: string; category: RepositoryType };
+  @state() private _data?: { repository: string; category?: RepositoryType };
+
+  // What was found out about the link, set when that did not settle the type
+  @state() private _detected?: RepositoryType[];
 
   @state() private _githubConnected = false;
 
@@ -100,16 +104,24 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
           }
           <ha-form
             .data=${this._data ?? {}}
-            .schema=${this._schema(
-              this._i18n.localize,
-              this.params.marketplace.info.categories
-            )}
+            .schema=${this._schema(this._i18n.localize, this._typeOptions())}
             .error=${this._errors}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
             @value-changed=${this._valueChanged}
             autofocus
           ></ha-form>
+          ${
+            this._detected
+              ? html`<ha-alert alert-type="info" class="type-unknown">
+                  ${this._i18n.localize(
+                    this._detected.length > 1
+                      ? "ui.panel.marketplace.dialog_custom_repositories.type_several"
+                      : "ui.panel.marketplace.dialog_custom_repositories.type_unknown"
+                  )}
+                </ha-alert>`
+              : nothing
+          }
           ${
             this._waiting
               ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
@@ -129,9 +141,8 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
             appearance="filled"
             .disabled=${
               this._waiting ||
-              !this._data ||
-              !this._data.repository ||
-              !this._data.category
+              !this._data?.repository ||
+              (this._detected && !this._data.category)
             }
             @click=${this._addRepository}
           >
@@ -192,24 +203,40 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       </ha-list-base>`;
   }
 
+  // Only when the type could not be found out, from what it might be
+  private _typeOptions(): RepositoryType[] | undefined {
+    if (!this._detected) {
+      return undefined;
+    }
+    return this._detected.length > 1
+      ? this._detected
+      : this.params!.marketplace.info.categories;
+  }
+
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, categories: RepositoryType[]): HaFormSchema[] => [
+    (localize: LocalizeFunc, categories?: RepositoryType[]): HaFormSchema[] => [
       {
         name: "repository",
         selector: { text: {} },
       },
-      {
-        name: "category",
-        selector: {
-          select: {
-            mode: "dropdown",
-            options: categories.map((category) => ({
-              value: category,
-              label: localize(`ui.panel.marketplace.common.type.${category}`),
-            })),
-          },
-        },
-      },
+      ...(categories
+        ? [
+            {
+              name: "category",
+              selector: {
+                select: {
+                  mode: "dropdown" as const,
+                  options: categories.map((category) => ({
+                    value: category,
+                    label: localize(
+                      `ui.panel.marketplace.common.type.${category}`
+                    ),
+                  })),
+                },
+              },
+            },
+          ]
+        : []),
     ]
   );
 
@@ -228,7 +255,13 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     );
 
   private _valueChanged(ev: CustomEvent) {
-    this._data = { ...this._data, ...ev.detail.value };
+    const data = { ...this._data, ...ev.detail.value };
+    // Another link holds something else, it is found out again
+    if (data.repository !== this._data?.repository) {
+      this._detected = undefined;
+      delete data.category;
+    }
+    this._data = data;
   }
 
   private _handleRemoveClick(ev: HASSDomCurrentTargetEvent<HaIconButton>) {
@@ -256,14 +289,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   private async _addRepository() {
     this._errors = {};
 
-    if (!this._data?.category) {
-      this._errors = {
-        base: this._i18n.localize(
-          "ui.panel.marketplace.dialog_custom_repositories.no_type"
-        ),
-      };
-      return;
-    }
     if (!this._data?.repository) {
       this._errors = {
         base: this._i18n.localize(
@@ -287,11 +312,28 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
 
     this._waiting = true;
     try {
+      let category = this._data.category;
+      if (!category) {
+        const { categories } = await detectMarketplaceRepository(
+          this._api,
+          this._data.repository
+        );
+        // Asked once it is clear it has to be, otherwise added right away
+        if (categories.length !== 1) {
+          if (this.isConnected) {
+            this._detected = categories;
+          }
+          return;
+        }
+        category = categories[0];
+      }
+
       await addMarketplaceRepository(
         this._api,
         this._data.repository,
-        this._data.category
+        category
       );
+      this._detected = undefined;
       await this._updateRepositories();
     } catch (err: unknown) {
       // The dialog can be closed while waiting for the backend.

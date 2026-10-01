@@ -119,6 +119,13 @@ export const addMarketplaceRepository = (
     category,
   });
 
+// The types the content of a repository fits, before it is added
+export const detectMarketplaceRepository = (hass: CallWS, repository: string) =>
+  hass.callWS<{ categories: RepositoryType[] }>({
+    type: "marketplace/repositories/detect",
+    repository,
+  });
+
 // Removes a custom repository from the list
 export const removeMarketplaceRepository = (
   hass: CallWS,

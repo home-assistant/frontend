@@ -213,6 +213,138 @@ describe("dialog-marketplace-custom-repositories", () => {
     );
   });
 
+  it("asks only for the link, the type is found out", async () => {
+    const dialog = await openCustomRepositoriesDialog(async () => null);
+    await dialog.updateComplete;
+    const form = dialog.shadowRoot!.querySelector("ha-form") as unknown as {
+      schema: { name: string }[];
+    };
+
+    expect(form.schema.map((field) => field.name)).toEqual(["repository"]);
+  });
+
+  it("adds what it recognises straight away", async () => {
+    const sendMessagePromise = vi.fn<SendMessage>(async (message) => {
+      if (message.type === "marketplace/repositories/detect") {
+        return { categories: ["integration"] };
+      }
+      return message.type === "marketplace/repositories/list" ? [] : null;
+    });
+    const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
+    getInternals(dialog)._data = { repository: "owner/other" };
+
+    await getInternals(dialog)._addRepository();
+
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "marketplace/repositories/add",
+        repository: "owner/other",
+        category: "integration",
+      })
+    );
+    expect(getInternals(dialog)._detected).toBeUndefined();
+  });
+
+  it.each([
+    {
+      name: "nothing",
+      detected: [],
+      options: ["integration", "theme"],
+      note: "ui.panel.marketplace.dialog_custom_repositories.type_unknown",
+    },
+    {
+      name: "more than one thing",
+      detected: ["integration", "theme"],
+      options: ["integration", "theme"],
+      note: "ui.panel.marketplace.dialog_custom_repositories.type_several",
+    },
+  ])(
+    "asks what it is when it holds $name it recognises",
+    async ({ detected, options, note }) => {
+      const sendMessagePromise = vi.fn<SendMessage>(async (message) =>
+        message.type === "marketplace/repositories/detect"
+          ? { categories: detected }
+          : null
+      );
+      const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
+      dialog.params!.marketplace.info.categories = ["integration", "theme"];
+      getInternals(dialog)._data = { repository: "owner/other" };
+
+      await getInternals(dialog)._addRepository();
+      await dialog.updateComplete;
+      const root = dialog.shadowRoot!;
+      const form = root.querySelector("ha-form") as unknown as {
+        schema: {
+          name: string;
+          selector?: { select: { options: { value: string }[] } };
+        }[];
+      };
+
+      // Nothing is added until it is told what it is
+      expect(sendMessagePromise).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: "marketplace/repositories/add" })
+      );
+      expect(root.querySelector(".type-unknown")!.textContent!.trim()).toBe(
+        note
+      );
+      expect(form.schema.map((field) => field.name)).toEqual([
+        "repository",
+        "category",
+      ]);
+      expect(
+        form.schema[1].selector!.select.options.map((option) => option.value)
+      ).toEqual(options);
+    }
+  );
+
+  it("adds with the type picked when it could not tell", async () => {
+    const sendMessagePromise = vi.fn<SendMessage>(async (message) => {
+      if (message.type === "marketplace/repositories/detect") {
+        return { categories: [] };
+      }
+      return message.type === "marketplace/repositories/list" ? [] : null;
+    });
+    const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
+    getInternals(dialog)._data = { repository: "owner/other" };
+    await getInternals(dialog)._addRepository();
+
+    getInternals(dialog)._data = {
+      repository: "owner/other",
+      category: "integration",
+    };
+    await getInternals(dialog)._addRepository();
+
+    expect(sendMessagePromise).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "marketplace/repositories/add",
+        category: "integration",
+      })
+    );
+    expect(sendMessagePromise).toHaveBeenCalledTimes(
+      // The detection, the add and the list it shows afterwards
+      3
+    );
+  });
+
+  it("finds out the type again for another link", async () => {
+    const dialog = await openCustomRepositoriesDialog(async (message) =>
+      message.type === "marketplace/repositories/detect"
+        ? { categories: [] }
+        : null
+    );
+    getInternals(dialog)._data = { repository: "owner/other" };
+    await getInternals(dialog)._addRepository();
+
+    getInternals(dialog)._valueChanged(
+      new CustomEvent("value-changed", {
+        detail: { value: { repository: "owner/another" } },
+      })
+    );
+
+    expect(getInternals(dialog)._detected).toBeUndefined();
+    expect(getInternals(dialog)._data).toEqual({ repository: "owner/another" });
+  });
+
   it("leaves a dialog closed while adding a repository alone", async () => {
     const added = deferred<null>();
     const dialog = await openCustomRepositoriesDialog(async (message) =>
