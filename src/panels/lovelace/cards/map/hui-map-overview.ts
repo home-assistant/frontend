@@ -1,5 +1,9 @@
 import { mdiHistory } from "@mdi/js";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type {
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -36,8 +40,8 @@ import "../../../../components/ha-spinner";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
-import "../../../logbook/ha-logbook-entry";
-import type { LogbookEntry } from "../../../../data/logbook";
+import "../../../../components/ha-button";
+import { formatTime } from "../../../../common/datetime/format_time";
 import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
 import {
@@ -56,7 +60,6 @@ import { computeUserInitials } from "../../../../data/user";
 import type {
   CurrentUser,
   HomeAssistantConfig,
-  HomeAssistant,
   HomeAssistantApi,
   HomeAssistantConnection,
   HomeAssistantFormatters,
@@ -66,6 +69,7 @@ import type {
 export type OverviewTab = "people" | "devices" | "zones";
 
 const ACTIVITY_HOURS = 24;
+const ACTIVITY_INITIAL_ENTRIES = 5;
 
 declare global {
   interface HASSDomEvents {
@@ -79,9 +83,6 @@ declare global {
 @customElement("hui-map-overview")
 export class HuiMapOverview extends LitElement {
   @property({ attribute: false }) public entities: HaMapEntity[] = [];
-
-  // Only handed to ha-logbook-entry, which takes the broad object
-  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public selected?: string;
 
@@ -113,6 +114,13 @@ export class HuiMapOverview extends LitElement {
     transformer: ({ user }) => user,
   })
   private _user?: CurrentUser;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
 
   // Registry creation order decides the zone colors
   @state()
@@ -146,6 +154,8 @@ export class HuiMapOverview extends LitElement {
   @state() private _activity?: ActivityEntry[];
 
   @state() private _activityFailed = false;
+
+  @state() private _activityExpanded = false;
 
   // Counts activity loads so only the newest one may show its result, even
   // when the same entity is selected again while an older load is pending
@@ -355,6 +365,7 @@ export class HuiMapOverview extends LitElement {
     if (changedProps.has("selected")) {
       this._activity = undefined;
       this._activityFailed = false;
+      this._activityExpanded = false;
       const request = ++this._activityRequest;
       if (this.selected) {
         this._loadActivity(this.selected, request);
@@ -537,15 +548,7 @@ export class HuiMapOverview extends LitElement {
                         : "ui.panel.lovelace.cards.map.overview.no_activity"
                     )}
                   </span>`
-                : html`<div class="timeline">
-                    ${this._activity.map((entry, index, all) =>
-                      this._renderActivityEntry(
-                        stateObj,
-                        entry,
-                        index === all.length - 1
-                      )
-                    )}
-                  </div>`
+                : this._renderTimeline(stateObj, this._activity)
           }
         </div>
       </div>
@@ -576,42 +579,72 @@ export class HuiMapOverview extends LitElement {
     );
   }
 
-  // A logbook row: the person, the zone they are in now, and when. On the
-  // zone tab the row belongs to the person who arrived or left.
+  private _renderTimeline(stateObj: HassEntity, activity: ActivityEntry[]) {
+    const shown = this._activityExpanded
+      ? activity
+      : activity.slice(0, ACTIVITY_INITIAL_ENTRIES);
+    return html`
+      <div class="timeline">
+        ${shown.map((entry, index) =>
+          this._renderActivityEntry(stateObj, entry, index === shown.length - 1)
+        )}
+      </div>
+      ${
+        activity.length > shown.length
+          ? html`<ha-button
+              appearance="plain"
+              size="s"
+              class="show-more"
+              @click=${this._showAllActivity}
+            >
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.show_more"
+              )}
+            </ha-button>`
+          : nothing
+      }
+    `;
+  }
+
   private _renderActivityEntry(
     stateObj: HassEntity,
     entry: ActivityEntry,
     last: boolean
   ) {
-    if (!this.hass) {
-      return nothing;
-    }
-    const entityId = entry.personId ?? stateObj.entity_id;
-    const subject = this._states[entityId];
-    const item: LogbookEntry = {
-      when: entry.when.getTime() / 1000,
-      name: subject ? computeStateName(subject) : entityId,
-      entity_id: entityId,
-      state: entry.state,
-    };
-    // Zone changes take the zone's color; arrivals and departures keep the
-    // logbook's own colors
-    const stateColor = entry.personId
-      ? undefined
-      : this._zoneColorForState(entry.state);
+    const subject = entry.personId ? this._states[entry.personId] : stateObj;
+    const place = subject
+      ? this._formatters.formatEntityState(subject, entry.state)
+      : entry.state;
+    const headline = entry.personId
+      ? subject
+        ? this._personName(subject)
+        : entry.personId
+      : place;
+    const color =
+      entry.personId && !entry.arrived
+        ? undefined
+        : this._zoneColorForState(entry.state);
     return html`
-      <ha-logbook-entry
-        .hass=${this.hass}
-        .item=${item}
-        .lastOfDay=${last}
-        .nodeColor=${stateColor}
-        narrow
-        no-detail
-      ></ha-logbook-entry>
+      <div class=${classMap({ entry: true, last })}>
+        <span
+          class="dot"
+          style=${styleMap({ "--dot-color": color })}
+          aria-hidden="true"
+        ></span>
+        <span class="entry-headline">${headline}</span>
+        <span class="entry-when">
+          ${entry.personId ? html`${place} · ` : nothing}
+          ${formatTime(entry.when, this._i18n.locale, this._config)} ·
+          <ha-relative-time .datetime=${entry.when}></ha-relative-time>
+        </span>
+      </div>
     `;
   }
 
-  // Only tabs with something to list; the map card may be limited to a few entities
+  private _showAllActivity() {
+    this._activityExpanded = true;
+  }
+
   private _itemsPerTab(
     people: HassEntity[],
     devices: HassEntity[],
@@ -1089,6 +1122,53 @@ export class HuiMapOverview extends LitElement {
 
     .timeline {
       margin-top: var(--ha-space-2);
+      --rail-size: 10px;
+    }
+
+    .entry {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding-inline-start: calc(var(--rail-size) + var(--ha-space-3));
+      padding-bottom: var(--ha-space-4);
+    }
+    .entry.last {
+      padding-bottom: 0;
+    }
+    .entry::before {
+      content: "";
+      position: absolute;
+      inset-inline-start: calc(var(--rail-size) / 2 - 1px);
+      top: var(--rail-size);
+      bottom: 0;
+      width: 2px;
+      background: var(--divider-color);
+    }
+    .entry.last::before {
+      display: none;
+    }
+    .dot {
+      position: absolute;
+      inset-inline-start: 0;
+      top: 4px;
+      width: var(--rail-size);
+      height: var(--rail-size);
+      border-radius: var(--ha-border-radius-circle);
+      background: var(--dot-color, var(--secondary-text-color));
+    }
+    .entry-headline {
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+    .entry-when {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+    .show-more {
+      display: block;
+      margin-top: var(--ha-space-3);
+      padding-top: var(--ha-space-2);
+      border-top: 1px solid var(--divider-color);
     }
   `;
 }

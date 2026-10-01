@@ -346,7 +346,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             this.layout === PANEL_VIEW_LAYOUT && !this.preview
               ? html`<hui-map-overview
                   id="overview"
-                  .hass=${this.hass}
                   .entities=${this._overviewEntities}
                   .selected=${this._overviewSelected}
                   .tab=${this._overviewTab}
