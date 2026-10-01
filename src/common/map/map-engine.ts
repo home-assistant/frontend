@@ -28,6 +28,11 @@ export interface MapEngineEvents {
   moveStart(): void;
   /** The engine can no longer render; the host switches to the fallback */
   fatal(): void;
+  /**
+   * The map has something to show: MapLibre's first complete view, or Leaflet's
+   * layer in place. The host keeps the container hidden until then.
+   */
+  drawn(): void;
 }
 
 export interface MapEngineOptions {

@@ -720,6 +720,17 @@ describe("MapLibreMapEngine", () => {
       map.fire("movestart");
       expect(moveStart).toHaveBeenCalledOnce();
     });
+
+    it("reports the map drawn on its first load only", async () => {
+      const drawn = vi.fn();
+      const { map, ready } = await createEngine({ drawn });
+      await ready;
+      expect(drawn).not.toHaveBeenCalled();
+
+      map.fire("load");
+      map.fire("load");
+      expect(drawn).toHaveBeenCalledOnce();
+    });
   });
 
   describe("fitting", () => {

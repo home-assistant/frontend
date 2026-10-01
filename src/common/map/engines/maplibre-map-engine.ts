@@ -403,6 +403,9 @@ export class MapLibreMapEngine implements MapEngine {
         this._events.click?.([ev.lngLat.lat, ev.lngLat.lng]);
       }
     });
+    // Everything the first view needs has been drawn; before this the canvas
+    // can still be blank, whatever the style says
+    map.once("load", () => this._events.drawn?.());
     map.on("zoomstart", () => this._events.zoomStart?.());
     map.on("movestart", () => {
       // resize() fires movestart even when nothing changed (see _resize)
