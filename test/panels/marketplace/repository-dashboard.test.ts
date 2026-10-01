@@ -8,6 +8,8 @@ import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import { ERROR_GITHUB_RATE_LIMITED } from "../../../src/data/marketplace/websocket";
 import type { HomeAssistant, Route } from "../../../src/types";
 import { deferred } from "./dialog-host";
+import { markdownWithRepositoryContext } from "../../../src/panels/marketplace/tools/markdown";
+import type * as MarkdownModule from "../../../src/panels/marketplace/tools/markdown";
 
 // The real components need more browser than jsdom has, the page only hands
 // them properties.
@@ -23,6 +25,19 @@ const stubElement = vi.hoisted(() => (tag: string) => {
   return {};
 });
 
+// Spied on, the page should not redo the README for every change of hass
+vi.mock(
+  "../../../src/panels/marketplace/tools/markdown",
+  async (importOriginal) => {
+    const original = await importOriginal<typeof MarkdownModule>();
+    return {
+      ...original,
+      markdownWithRepositoryContext: vi.fn(
+        original.markdownWithRepositoryContext
+      ),
+    };
+  }
+);
 vi.mock("../../../src/components/chips/ha-assist-chip", () =>
   stubElement("ha-assist-chip")
 );
@@ -355,6 +370,23 @@ describe("ha-marketplace-repository-dashboard", () => {
     expect(page.shadowRoot!.querySelector("hass-error-screen")?.error).toBe(
       "ui.panel.marketplace.common.unknown_error"
     );
+  });
+
+  it("prepares the README once while the repository stays the same", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) => repositoryInfo(repositoryId),
+      repositoryRoute("1")
+    );
+    await settle(page);
+    vi.mocked(markdownWithRepositoryContext).mockClear();
+
+    // Any entity changing gives a new hass
+    page.hass = { ...page.hass };
+    await page.updateComplete;
+    page.hass = { ...page.hass };
+    await page.updateComplete;
+
+    expect(markdownWithRepositoryContext).not.toHaveBeenCalled();
   });
 
   it("tries the My link again with retry", async () => {

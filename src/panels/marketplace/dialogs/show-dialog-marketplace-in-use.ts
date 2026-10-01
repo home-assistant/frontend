@@ -9,8 +9,7 @@ export interface MarketplaceInUseDialogParams {
   deleteAndUninstall: () => Promise<void>;
 }
 
-export const loadMarketplaceInUseDialog = () =>
-  import("./dialog-marketplace-in-use");
+const loadMarketplaceInUseDialog = () => import("./dialog-marketplace-in-use");
 
 export const showMarketplaceInUseDialog = (
   element: HTMLElement,

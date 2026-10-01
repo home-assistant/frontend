@@ -15,7 +15,6 @@ declare global {
 
 export interface MarketplaceInfo {
   categories: RepositoryType[];
-  debug: boolean;
   disabled_reason: string | null;
   github_connected: boolean;
   has_pending_tasks: boolean;

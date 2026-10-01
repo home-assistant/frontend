@@ -5,7 +5,7 @@ export interface MarketplaceCustomRepositoriesDialogParams {
   marketplace: MarketplaceData;
 }
 
-export const loadMarketplaceCustomRepositoriesDialog = () =>
+const loadMarketplaceCustomRepositoriesDialog = () =>
   import("./dialog-marketplace-custom-repositories");
 
 export const showMarketplaceCustomRepositoriesDialog = (

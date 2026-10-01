@@ -372,6 +372,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._loadRepository();
   }
 
+  // Every change of an entity renders the page, the README stays the same
+  private _readme = memoizeOne(markdownWithRepositoryContext);
+
   private _getAuthors = memoizeOne((repository: RepositoryInfo) =>
     repositoryAuthors(repository).filter(
       (author) => !isCommunityOrganization(author)
@@ -399,10 +402,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
 
     const repository = this._repository;
-    const readme = markdownWithRepositoryContext(
-      repository.additional_info,
-      repository
-    );
+    const readme = this._readme(repository.additional_info, repository);
 
     return html`
       <hass-subpage

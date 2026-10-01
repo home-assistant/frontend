@@ -20,7 +20,7 @@ const repositoryRedirect: Redirect = {
   },
 };
 
-export const REDIRECTS: Redirects = {
+const REDIRECTS: Redirects = {
   hacs_repository: repositoryRedirect,
   marketplace_repository: repositoryRedirect,
 };

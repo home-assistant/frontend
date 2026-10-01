@@ -12,7 +12,7 @@ export interface MarketplaceInstallDialogParams {
   reinstall?: boolean;
 }
 
-export const loadMarketplaceInstallDialog = () =>
+const loadMarketplaceInstallDialog = () =>
   import("./dialog-marketplace-install");
 
 export const showMarketplaceInstallDialog = (

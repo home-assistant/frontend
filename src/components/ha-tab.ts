@@ -22,11 +22,16 @@ export class HaTab extends LitElement {
         role="tab"
         aria-selected=${this.active}
         aria-label=${ifDefined(this.name)}
+        aria-describedby=${ifDefined(this.badge ? "badge" : undefined)}
         @keydown=${this._handleKeyDown}
       >
         <slot name="icon"></slot>
         <span class="name">${this.name}</span>
-        ${this.badge ? html`<span class="badge">${this.badge}</span>` : nothing}
+        ${
+          this.badge
+            ? html`<span class="badge" id="badge">${this.badge}</span>`
+            : nothing
+        }
         <ha-ripple></ha-ripple>
       </div>
     `;
