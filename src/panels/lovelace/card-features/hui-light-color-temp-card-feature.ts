@@ -165,6 +165,13 @@ class HuiLightColorTempCardFeature
           );
           --control-slider-background-opacity: 1;
         }
+
+        ha-control-slider:dir(rtl) {
+          --control-slider-background: linear-gradient(
+            to left,
+            var(--gradient)
+          );
+        }
       `,
     ];
   }

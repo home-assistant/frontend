@@ -87,6 +87,7 @@ describe("entityDisplay", () => {
         entity_id: "sensor.allee_battery",
         name: "Battery state",
         device_id: "device_1",
+        next_name_part: "device",
       }),
     },
     devices: {
@@ -141,6 +142,7 @@ describe("entityDisplay", () => {
         "sensor.desk": mockEntity({
           entity_id: "sensor.desk",
           device_id: "device_1",
+          next_name_part: "device",
         }),
       },
       devices: {
@@ -171,6 +173,7 @@ describe("entityDisplay", () => {
           entity_id: "sensor.outlet_1_power",
           name: "Power",
           device_id: "outlet_1",
+          next_name_part: "device",
         }),
       },
       devices: {
@@ -178,6 +181,7 @@ describe("entityDisplay", () => {
           id: "outlet_1",
           name: "Outlet 1",
           parent_device_id: "strip",
+          next_name_part: "parent_device",
         }),
         strip: mockDevice({
           id: "strip",
@@ -365,6 +369,7 @@ describe("computeLogbookItem", () => {
           entity_id: "light.salon",
           name: "Spots Salon",
           device_id: "device_1",
+          next_name_part: "device",
         }),
       },
       devices: {

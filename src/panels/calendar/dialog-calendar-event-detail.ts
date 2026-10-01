@@ -83,6 +83,15 @@ class DialogCalendarEventDetail extends LitElement {
                   : ""
               }
               ${
+                this._params.entry.status === "tentative"
+                  ? html`<div class="status">
+                      ${this.hass.localize(
+                        "ui.components.calendar.event.tentative"
+                      )}
+                    </div>`
+                  : nothing
+              }
+              ${
                 this._data.location
                   ? html`${this._data.location} <br />`
                   : nothing

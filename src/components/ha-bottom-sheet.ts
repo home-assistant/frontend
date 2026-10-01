@@ -449,6 +449,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           max-width: var(--ha-bottom-sheet-max-width);
           width: 100%;
           position: relative;
+          display: flex;
+          flex-direction: column;
           border-top-left-radius: var(
             --ha-bottom-sheet-border-radius,
             var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
@@ -473,10 +475,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
             0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
               var(--safe-area-inset-left)
           );
-        }
-        :host([flexcontent]) wa-drawer::part(body) {
-          display: flex;
-          flex-direction: column;
         }
         :host([prevent-scrim-close]) .handle-wrapper {
           display: none;

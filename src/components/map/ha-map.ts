@@ -3,6 +3,7 @@ import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   consume,
   ContextSubscriptionController,
@@ -38,8 +39,15 @@ import {
   circleBoundsPoints,
   distanceMeters,
 } from "../../common/map/map-engine";
+import type { MapStyleConfig } from "../../common/map/map-styles";
+import { resolveMapStyle } from "../../common/map/map-styles";
+import { readMapThemeColors } from "../../common/map/map-theme-colors";
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
+import {
+  clearMarkerAccessibility,
+  setMarkerAccessibility,
+} from "../../common/map/marker-accessibility";
 import {
   createZoneMarkerElement,
   ZONE_CIRCLE_SIZE,
@@ -236,6 +244,7 @@ export interface HaMapEntity {
 // Data carried by entity markers for rendering cluster bubbles
 interface ClusterData {
   entityId: string;
+  title: string;
   picture?: string;
   label: string;
   showIcon: boolean;
@@ -248,6 +257,8 @@ interface ClusterData {
 const CLUSTER_AVATAR_SIZE = 32;
 const CLUSTER_BUBBLE_PADDING = 6;
 const CLUSTER_BUBBLE_GAP = 4;
+// Space an opened bubble keeps from the map edges
+const CLUSTER_BUBBLE_MARGIN = 12;
 const CLUSTER_MAX_AVATARS = 3;
 const CLUSTER_MORE_WIDTH = 28;
 const CLUSTER_MORE_MAX = 99;
@@ -354,6 +365,10 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
+
+  /** Cartography to draw; the theme mode picks its light or dark palette */
+  @property({ attribute: false })
+  public mapStyle?: MapStyleConfig;
 
   @property({ type: Number }) public zoom = 14;
 
@@ -564,6 +579,10 @@ export class HaMap extends ReactiveElement {
       });
     }
 
+    if (changedProps.has("mapStyle")) {
+      this._engine?.setMapStyle(this._resolvedMapStyle);
+    }
+
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
@@ -572,7 +591,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    this._updateMapStyle();
+    this._updateMapAppearance();
     // Marker, trail and circle colors were resolved from the theme when drawn
     this._drawEntities();
     this._drawPaths();
@@ -585,17 +604,54 @@ export class HaMap extends ReactiveElement {
   private get _darkMode() {
     return (
       this.themeMode === "dark" ||
-      (this.themeMode === "auto" && Boolean(this._ui?.themes.darkMode))
+      (this.themeMode === "auto" && Boolean(this._ui?.themes?.darkMode))
     );
   }
 
-  private _updateMapStyle(): void {
+  // Memoized: it is read on every appearance sync, and the engines compare
+  // what they are handed against what they applied.
+  private _resolveMapStyle = memoizeOne(resolveMapStyle);
+
+  // Read from the live stylesheet, so it is only re-read when the theme could
+  // have changed - which is exactly when _updateMapAppearance runs.
+  private _themeColors?: Record<string, string>;
+
+  // Kept by identity, not just by value: _resolveMapStyle memoizes on its
+  // arguments, and a fresh object per read would defeat it.
+  private _readThemeColors(): void {
+    // Only one set of --ha-color-map-* is live on the page, the one for the
+    // mode the page is in. A card forced to the other mode draws the other
+    // palette, so those values would be the wrong half of the theme; the
+    // style's own colors are the better answer there.
+    const pageDark = Boolean(this._ui?.themes?.darkMode);
+    const colors =
+      this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
+    if (!deepEqual(colors, this._themeColors)) {
+      this._themeColors = colors;
+    }
+  }
+
+  private get _resolvedMapStyle() {
+    return this._resolveMapStyle(
+      this.mapStyle,
+      this._darkMode,
+      this._themeColors
+    );
+  }
+
+  private _updateMapAppearance(): void {
+    // A theme repaints the map by setting --ha-color-map-* on this element;
+    // WebGL cannot read those, so they are collected here and rebuilt into
+    // the style. Undefined when the theme says nothing, which is the common
+    // case and keeps the map on the style the build generated.
+    this._readThemeColors();
+
     const map = this._mapElement!;
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
-    this._engine?.setDarkMode(this._darkMode);
+    this._engine?.setMapStyle(this._resolvedMapStyle);
   }
 
   private _loading = false;
@@ -653,6 +709,9 @@ export class HaMap extends ReactiveElement {
         ? await ensureMapTilesToken(this._connection.connection)
         : undefined;
 
+      // Before init, or the first style the engine builds is the unthemed one.
+      this._readThemeColors();
+
       const rasterOnly = this._forceLeaflet;
       engine = await this._createEngine();
       if (attempt !== this._setupAttempt) {
@@ -665,7 +724,7 @@ export class HaMap extends ReactiveElement {
           this._config?.longitude ?? 4.8903147,
         ],
         zoom: this.zoom,
-        darkMode: this._darkMode,
+        mapStyle: this._resolvedMapStyle,
         token,
         rasterOnly: this._forceLeaflet,
         zoomControlPosition: this.zoomPosition,
@@ -693,7 +752,7 @@ export class HaMap extends ReactiveElement {
         throw new Error("Map engine failed during setup");
       }
       this._engine = engine;
-      this._updateMapStyle();
+      this._updateMapAppearance();
       this._loaded = true;
       fireEvent(this, "editing-available-changed", {
         available: !!engine.editing,
@@ -1354,6 +1413,7 @@ export class HaMap extends ReactiveElement {
 
       const clusterData: ClusterData = {
         entityId,
+        title,
         picture: entityMarker.entityPicture || undefined,
         label: entityName,
         showIcon: entityMarker.showIcon,
@@ -1429,10 +1489,11 @@ export class HaMap extends ReactiveElement {
   private _createClusterBubble = (
     members: MapMarkerHandle[],
     _location: MapLatLng,
-    zoneId?: string
+    zoneId?: string,
+    expanded = false
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
-    const shown = data.slice(0, CLUSTER_MAX_AVATARS);
+    const shown = expanded ? data : data.slice(0, CLUSTER_MAX_AVATARS);
     const hidden = data.length - shown.length;
 
     // With history trails shown, colored borders match avatars to trails
@@ -1467,12 +1528,32 @@ export class HaMap extends ReactiveElement {
         avatar.style.removeProperty("--ha-marker-border-width");
       }
       avatar.selected = member?.selected ?? false;
+      // In an expanded bubble each avatar is reachable on its own
+      clearMarkerAccessibility(avatar);
+      if (expanded) {
+        setMarkerAccessibility(avatar, member?.title, true);
+      }
       bubble.appendChild(avatar);
     }
 
+    // An expanded bubble wraps once a row would not fit the map
+    const perRow = expanded
+      ? Math.max(
+          1,
+          Math.floor(
+            (this.offsetWidth -
+              2 * CLUSTER_BUBBLE_MARGIN -
+              2 * CLUSTER_BUBBLE_PADDING +
+              CLUSTER_BUBBLE_GAP) /
+              (CLUSTER_AVATAR_SIZE + CLUSTER_BUBBLE_GAP)
+          )
+        )
+      : shown.length;
+    const columns = Math.min(shown.length, perRow);
+    const rows = Math.ceil(shown.length / perRow);
     let width =
-      shown.length * CLUSTER_AVATAR_SIZE +
-      (shown.length - 1) * CLUSTER_BUBBLE_GAP +
+      columns * CLUSTER_AVATAR_SIZE +
+      (columns - 1) * CLUSTER_BUBBLE_GAP +
       2 * CLUSTER_BUBBLE_PADDING;
     if (hidden > 0) {
       const more = document.createElement("span");
@@ -1487,7 +1568,10 @@ export class HaMap extends ReactiveElement {
     const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     const atZone = !!zonePosition;
 
-    let height = CLUSTER_AVATAR_SIZE + 2 * CLUSTER_BUBBLE_PADDING;
+    let height =
+      rows * CLUSTER_AVATAR_SIZE +
+      (rows - 1) * CLUSTER_BUBBLE_GAP +
+      2 * CLUSTER_BUBBLE_PADDING;
     let root: HTMLElement = bubble;
     if (atZone) {
       root = document.createElement("div");
@@ -1555,6 +1639,19 @@ export class HaMap extends ReactiveElement {
     #map.clickable {
       cursor: pointer;
     }
+    .maplibregl-marker {
+      transition:
+        opacity var(--ha-animation-duration-fast),
+        visibility var(--ha-animation-duration-fast);
+    }
+    .maplibregl-marker-covered {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    /* A zone fades in once the bubble over it is opaque, not through it */
+    .zone-circle:not(.maplibregl-marker-covered) {
+      transition-delay: var(--ha-animation-duration-fast);
+    }
     #map.dark {
       background: #090909;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
@@ -1574,39 +1671,11 @@ export class HaMap extends ReactiveElement {
     #map:active {
       cursor: grabbing;
     }
-    /* A cluster opened at its spot: the members in a bubble with a tail */
-    .cluster-open {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      isolation: isolate;
-      filter: var(--ha-cluster-shadow);
-    }
-    .cluster-open-members {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px;
-      padding: 6px;
-      /* Six markers per row */
-      max-width: calc(6 * var(--ha-marker-size, 48px) + 5 * 4px + 12px);
-      background: var(--card-background-color, #fff);
-      border-radius: 14px;
-    }
-    /* Both tails are a rotated square whose upper half sits under the bubble;
-       drawn behind it, so it never covers a member's frame or selected ring */
-    .cluster-open-tail,
+    /* The tail is a rotated square whose upper half sits under the bubble;
+       drawn behind it, so it never covers an avatar's frame or selected ring */
     .cluster-bubble-tail {
       position: relative;
       z-index: -1;
-    }
-    .cluster-open-tail {
-      width: 10px;
-      height: 10px;
-      margin-top: -5px;
-      border-radius: 2px;
-      background: var(--card-background-color, #fff);
-      transform: rotate(45deg);
     }
     /* Only the raster fallback is inverted for dark mode, the vector style
        ships its own dark cartography. */
@@ -1708,7 +1777,10 @@ export class HaMap extends ReactiveElement {
     }
     .cluster-bubble {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
+      max-width: 100%;
       gap: ${CLUSTER_BUBBLE_GAP}px;
       padding: ${CLUSTER_BUBBLE_PADDING}px;
       box-sizing: border-box;

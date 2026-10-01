@@ -2027,10 +2027,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     ha-assist-chip {
       height: 100%;
-      --_label-text-weight: 500;
-      --_leading-space: 8px;
-      --_trailing-space: 8px;
-      --_icon-label-space: 4px;
+      --ha-button-height: 24px;
+      --ha-chip-label-weight: 500;
+      --md-assist-chip-leading-space: var(--ha-space-2);
+      --md-assist-chip-trailing-space: var(--ha-space-2);
+      --md-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }
