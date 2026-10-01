@@ -175,7 +175,7 @@ patchedDependencies:
   '@material/mwc-list@0.27.0': 9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987
   echarts@6.1.0: b02e30d0fb3e2b865321c17ca1234593db0d05a1365cb6c932cd47c0e673fca0
   sortablejs@1.15.6: f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06
-  tinykeys@4.0.0: cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0
+  tinykeys@4.0.1: cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0
   workbox-build@7.4.1: 75e6346ad8d8af554c167f77ac7d9b9652f010398efdc6b399925a4795133099
 
 importers:
@@ -453,8 +453,8 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
       tinykeys:
-        specifier: 4.0.0
-        version: 4.0.0(patch_hash=cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0)
+        specifier: 4.0.1
+        version: 4.0.1(patch_hash=cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0)
       weekstart:
         specifier: 2.0.0
         version: 2.0.0
@@ -7166,8 +7166,8 @@ packages:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
 
-  tinykeys@4.0.0:
-    resolution: {integrity: sha512-z5bQRQHL1PSx3lGOZEAMM2oKp0EBtn5T5f7HJnaKPOzk6vEH0wUPvdHLeQ7F4tmkek8AgoTQISUFmn/5SNF2xA==}
+  tinykeys@4.0.1:
+    resolution: {integrity: sha512-rClxhLQl+I5UMB5Ny7sfnZqDNa51u7h7h4gJV2UWslwADHEw75IuVPCnWrpO/otM7jHrHpwcZdRHd+//SiI55A==}
     engines: {node: '>=22'}
 
   tinyqueue@3.0.0:
@@ -15040,7 +15040,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.7)
       picomatch: 4.0.7
 
-  tinykeys@4.0.0(patch_hash=cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0): {}
+  tinykeys@4.0.1(patch_hash=cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0): {}
 
   tinyqueue@3.0.0: {}
 
