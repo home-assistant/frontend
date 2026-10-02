@@ -196,6 +196,42 @@ describe("automation trigger IDs", () => {
     });
   });
 
+  it("updates a trigger condition that omits its ID", () => {
+    // Core requires an ID, but the editor can hold one without it before saving.
+    const original = { condition: "trigger" } as TriggerCondition;
+    const config: AutomationConfig = {
+      triggers: [{ trigger: "event", event_type: "test", id: "manual-id" }],
+      conditions: [original],
+      actions: [],
+    };
+
+    const updated = updateTriggerCondition(
+      config,
+      original,
+      { ...original, id: ["manual-id"] },
+      config.triggers
+    );
+
+    expect(updated.conditions).toEqual([
+      { condition: "trigger", id: ["manual-id"] },
+    ]);
+  });
+
+  it("leaves trigger conditions that omit their ID untouched during cleanup", () => {
+    const config: AutomationConfig = {
+      triggers: [],
+      conditions: [{ condition: "trigger" }],
+      actions: [],
+    };
+
+    expect(
+      cleanupRemovedGeneratedTriggerReferences(
+        config,
+        new Set([`${GENERATED_TRIGGER_ID_PREFIX}aB3x`])
+      )
+    ).toBe(config);
+  });
+
   it("removes dangling generated references when no triggers remain", () => {
     const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
     const config: AutomationConfig = {
