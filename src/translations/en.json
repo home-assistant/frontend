@@ -9543,6 +9543,8 @@
               "show_more": "Show more",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
+              "entered": "Entered",
+              "left": "Left",
               "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"
             }
           },
