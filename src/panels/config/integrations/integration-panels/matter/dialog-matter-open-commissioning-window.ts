@@ -1,4 +1,4 @@
-import { mdiCloseCircle, mdiShareVariant } from "@mdi/js";
+import { mdiCloseCircle } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -215,10 +215,6 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       .loading=${this._sharing}
                       @click=${this._shareDevice}
                     >
-                      <ha-svg-icon
-                        slot="start"
-                        .path=${mdiShareVariant}
-                      ></ha-svg-icon>
                       ${this._shareLabel(shareTarget)}
                     </ha-button>
                   `
