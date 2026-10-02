@@ -624,10 +624,11 @@ export class MapLibreMapEngine implements MapEngine {
     const pad = options?.pad ?? 0.5;
     const latPad = (maxLat - minLat) * pad;
     const lngPad = (maxLng - minLng) * pad;
+    // MapLibre rejects a latitude beyond the poles
     return {
       bounds: [
-        [minLng - lngPad, minLat - latPad],
-        [maxLng + lngPad, maxLat + latPad],
+        [minLng - lngPad, Math.max(-90, minLat - latPad)],
+        [maxLng + lngPad, Math.min(90, maxLat + latPad)],
       ] as [[number, number], [number, number]],
       options: { maxZoom, padding },
     };
