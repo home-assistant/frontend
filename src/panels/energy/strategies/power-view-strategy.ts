@@ -105,17 +105,11 @@ export class PowerViewStrategy extends ReactiveElement {
           s.type === "battery" && !!s.stat_soc
       );
       batterySources.forEach((source) => {
-        const entityEntry = hass.entities[source.stat_soc!];
-        const device = entityEntry?.device_id
-          ? hass.devices[entityEntry.device_id]
-          : undefined;
-        const badgeName = device?.name_by_user || device?.name;
-
         badges.push({
           type: "entity",
           entity: source.stat_soc!,
           ...(batterySources.length > 1 && {
-            name: badgeName,
+            name: source.name,
             show_name: true,
           }),
         });
