@@ -1,9 +1,13 @@
-import { consume, ContextConsumer } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import {
+  consume,
+  ContextSubscriptionController,
+} from "../../common/decorators/consume";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -15,7 +19,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
-import { supportsWebGL2 } from "../../common/map/base-layer";
+import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapClusterIcon,
   MapControlPosition,
@@ -35,8 +39,15 @@ import {
   circleBoundsPoints,
   distanceMeters,
 } from "../../common/map/map-engine";
+import type { MapStyleConfig } from "../../common/map/map-styles";
+import { resolveMapStyle } from "../../common/map/map-styles";
+import { readMapThemeColors } from "../../common/map/map-theme-colors";
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
+import {
+  clearMarkerAccessibility,
+  setMarkerAccessibility,
+} from "../../common/map/marker-accessibility";
 import {
   createZoneMarkerElement,
   ZONE_CIRCLE_SIZE,
@@ -73,6 +84,9 @@ declare global {
 }
 
 const PROGRAMMITIC_FIT_DELAY = 250;
+
+// An engine that never reports a drawn frame must not leave an empty card
+const DRAWN_FALLBACK = 3000;
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -233,6 +247,7 @@ export interface HaMapEntity {
 // Data carried by entity markers for rendering cluster bubbles
 interface ClusterData {
   entityId: string;
+  title: string;
   picture?: string;
   label: string;
   showIcon: boolean;
@@ -245,7 +260,10 @@ interface ClusterData {
 const CLUSTER_AVATAR_SIZE = 32;
 const CLUSTER_BUBBLE_PADDING = 6;
 const CLUSTER_BUBBLE_GAP = 4;
-const CLUSTER_MAX_AVATARS = 3;
+// Space an opened bubble keeps from the map edges
+const CLUSTER_BUBBLE_MARGIN = 12;
+// Beyond this the last slot becomes a count
+const CLUSTER_MAX_AVATARS = 4;
 const CLUSTER_MORE_WIDTH = 28;
 const CLUSTER_MORE_MAX = 99;
 const CLUSTER_TAIL_SIZE = 10;
@@ -257,6 +275,39 @@ const CLUSTER_RADIUS = 40;
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
 
+type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
+
+// Exposes each marker's parts on ha-map, generically and per entity
+const exportedMarkerParts = (entityId: string): string => {
+  const suffix = entityId.replace(".", "-");
+  return `marker, picture, marker: marker-${suffix}, picture: picture-${suffix}`;
+};
+
+// The cached element serves again once it left the screen; Leaflet keeps an
+// outgoing bubble on screen during its zoom animation
+const takeEntityMarker = (
+  cache: Map<string, EntityMarkerElement>,
+  entityId: string | undefined,
+  reusable = true
+): EntityMarkerElement => {
+  const cached = entityId && reusable ? cache.get(entityId) : undefined;
+  if (cached && !cached.isConnected) {
+    return cached;
+  }
+  const marker = document.createElement("ha-entity-marker");
+  if (entityId) {
+    marker.setAttribute("exportparts", exportedMarkerParts(entityId));
+    cache.set(entityId, marker);
+  }
+  return marker;
+};
+
+/**
+ * @csspart marker - The frame of an entity marker or cluster avatar.
+ * @csspart picture - The entity picture inside the frame.
+ * @csspart marker-<entity-id> - The frame for one entity, e.g. `marker-person-anne`.
+ * @csspart picture-<entity-id> - The picture for one entity.
+ */
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
   @state()
@@ -319,6 +370,10 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
 
+  /** Cartography to draw; the theme mode picks its light or dark palette */
+  @property({ attribute: false })
+  public mapStyle?: MapStyleConfig;
+
   @property({ type: Number }) public zoom = 14;
 
   @property({ attribute: "cluster-markers", type: Boolean })
@@ -351,9 +406,16 @@ export class HaMap extends ReactiveElement {
   // Registry creation order decides the palette colors
   @state() private _entityReg: EntityRegistryEntry[] = [];
 
-  private _registryConsumer?: ContextConsumer<typeof fullEntitiesContext, this>;
+  private _registryConsumer?: ContextSubscriptionController<
+    EntityRegistryEntry[]
+  >;
 
   private _entityHandles: MapMarkerHandle[] = [];
+
+  // Marker elements survive redraws so unchanged entities keep their DOM
+  private _entityMarkers = new Map<string, EntityMarkerElement>();
+
+  private _clusterAvatars = new Map<string, EntityMarkerElement>();
 
   private _zoneHandles: MapItemHandle[] = [];
 
@@ -386,13 +448,13 @@ export class HaMap extends ReactiveElement {
     if (this._registryConsumer || !this.entities?.length) {
       return;
     }
-    this._registryConsumer = new ContextConsumer(this, {
-      context: fullEntitiesContext,
-      subscribe: true,
-      callback: (entries) => {
+    this._registryConsumer = new ContextSubscriptionController(
+      this,
+      fullEntitiesContext,
+      (entries) => {
         this._entityReg = entries;
-      },
-    });
+      }
+    );
   }
 
   private _handleVisibilityChange = async () => {
@@ -416,7 +478,10 @@ export class HaMap extends ReactiveElement {
     this._startingEngine?.destroy();
     this._startingEngine = undefined;
     this._loading = false;
+    clearTimeout(this._drawnFallback);
     this._entityHandles = [];
+    this._entityMarkers.clear();
+    this._clusterAvatars.clear();
     this._zoneHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
@@ -519,6 +584,10 @@ export class HaMap extends ReactiveElement {
       });
     }
 
+    if (changedProps.has("mapStyle")) {
+      this._engine?.setMapStyle(this._resolvedMapStyle);
+    }
+
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
@@ -527,7 +596,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    this._updateMapStyle();
+    this._updateMapAppearance();
     // Marker, trail and circle colors were resolved from the theme when drawn
     this._drawEntities();
     this._drawPaths();
@@ -540,17 +609,74 @@ export class HaMap extends ReactiveElement {
   private get _darkMode() {
     return (
       this.themeMode === "dark" ||
-      (this.themeMode === "auto" && Boolean(this._ui?.themes.darkMode))
+      (this.themeMode === "auto" && Boolean(this._ui?.themes?.darkMode))
     );
   }
 
-  private _updateMapStyle(): void {
-    const map = this._mapElement!;
+  // Memoized: it is read on every appearance sync, and the engines compare
+  // what they are handed against what they applied.
+  private _resolveMapStyle = memoizeOne(resolveMapStyle);
+
+  // Read from the live stylesheet, so it is only re-read when the theme could
+  // have changed - which is exactly when _updateMapAppearance runs.
+  private _themeColors?: Record<string, string>;
+
+  // Kept by identity, not just by value: _resolveMapStyle memoizes on its
+  // arguments, and a fresh object per read would defeat it.
+  private _readThemeColors(): void {
+    // Only one set of --ha-color-map-* is live on the page, the one for the
+    // mode the page is in. A card forced to the other mode draws the other
+    // palette, so those values would be the wrong half of the theme; the
+    // style's own colors are the better answer there.
+    const pageDark = Boolean(this._ui?.themes?.darkMode);
+    const colors =
+      this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
+    if (!deepEqual(colors, this._themeColors)) {
+      this._themeColors = colors;
+    }
+  }
+
+  private get _resolvedMapStyle() {
+    return this._resolveMapStyle(
+      this.mapStyle,
+      this._darkMode,
+      this._themeColors
+    );
+  }
+
+  private _updateMapAppearance(): void {
+    // A theme repaints the map by setting --ha-color-map-* on this element;
+    // WebGL cannot read those, so they are collected here and rebuilt into
+    // the style. Undefined when the theme says nothing, which is the common
+    // case and keeps the map on the style the build generated.
+    this._readThemeColors();
+
+    const map = this._mapElement;
+    if (!map) {
+      return;
+    }
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("drawn", this._mapDrawn);
+    // The sky belongs behind a drawn globe; on a blank canvas it is just a
+    // gradient with a glow in it
+    map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
-    this._engine?.setDarkMode(this._darkMode);
+    this._engine?.setMapStyle(this._resolvedMapStyle);
+  }
+
+  private _mapDrawn = false;
+
+  private _drawnFallback?: number;
+
+  private _markDrawn(attempt: number): void {
+    if (attempt !== this._setupAttempt || this._mapDrawn) {
+      return;
+    }
+    clearTimeout(this._drawnFallback);
+    this._mapDrawn = true;
+    this._updateMapAppearance();
   }
 
   private _loading = false;
@@ -562,9 +688,14 @@ export class HaMap extends ReactiveElement {
 
   private _setupAttempt = 0;
 
+  /** Whether the next engine is the vector one: only it draws a globe */
+  private get _vectorEngine(): boolean {
+    return !this._forceLeaflet && supportsVectorMaps();
+  }
+
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this._forceLeaflet || !supportsWebGL2()) {
+    if (!this._vectorEngine) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -576,7 +707,7 @@ export class HaMap extends ReactiveElement {
 
   // An engine that cannot start hands over to the Leaflet fallback
   private async _loadMap(): Promise<void> {
-    const onFallback = this._forceLeaflet || !supportsWebGL2();
+    const onFallback = this._forceLeaflet || !supportsVectorMaps();
     try {
       await this._setUpEngine();
     } catch (err) {
@@ -598,8 +729,13 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.getElementById("map")?.remove();
     const map = document.createElement("div");
     map.id = "map";
+    // Which ground shows in the gap before the first frame; the rest of the
+    // classes wait for the engine (_updateMapAppearance)
+    map.classList.toggle("dark", this._darkMode);
     this.shadowRoot!.append(map);
     this._loading = true;
+    this._mapDrawn = false;
+    clearTimeout(this._drawnFallback);
     const attempt = ++this._setupAttempt;
     let engine: MapEngine | undefined;
     try {
@@ -608,19 +744,28 @@ export class HaMap extends ReactiveElement {
         ? await ensureMapTilesToken(this._connection.connection)
         : undefined;
 
+      // Before init, or the first style the engine builds is the unthemed one.
+      this._readThemeColors();
+
       const rasterOnly = this._forceLeaflet;
       engine = await this._createEngine();
       if (attempt !== this._setupAttempt) {
         return;
       }
       this._startingEngine = engine;
+      // Started here so the budget covers an engine that never reports a
+      // frame, not the token and the chunk it waited for
+      this._drawnFallback = window.setTimeout(
+        () => this._markDrawn(attempt),
+        DRAWN_FALLBACK
+      );
       await engine.init(map, {
         center: [
           this._config?.latitude ?? 52.3731339,
           this._config?.longitude ?? 4.8903147,
         ],
         zoom: this.zoom,
-        darkMode: this._darkMode,
+        mapStyle: this._resolvedMapStyle,
         token,
         rasterOnly: this._forceLeaflet,
         zoomControlPosition: this.zoomPosition,
@@ -637,6 +782,7 @@ export class HaMap extends ReactiveElement {
             }
           },
           fatal: () => this._handleEngineFatal(),
+          drawn: () => this._markDrawn(attempt),
         },
       });
       // Disconnected while the style was loading, or superseded by a newer setup
@@ -648,7 +794,7 @@ export class HaMap extends ReactiveElement {
         throw new Error("Map engine failed during setup");
       }
       this._engine = engine;
-      this._updateMapStyle();
+      this._updateMapAppearance();
       this._loaded = true;
       fireEvent(this, "editing-available-changed", {
         available: !!engine.editing,
@@ -732,9 +878,12 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
+    // Zones join the fit when asked, or when they are all there is
+    const zonePoints =
+      this.fitZones || !this._focusPoints.length ? this._focusZonePoints : [];
     if (
       !this._focusPoints.length &&
-      !this._focusZonePoints.length &&
+      !zonePoints.length &&
       !this.editableLocations?.length
     ) {
       this._withProgrammaticFit(() => {
@@ -747,7 +896,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    const points = [...this._focusPoints, ...this._focusZonePoints];
+    const points = [...this._focusPoints, ...zonePoints];
 
     // Editable locations contribute their bounds, radius included
     this.editableLocations?.forEach((editable) => {
@@ -1129,6 +1278,8 @@ export class HaMap extends ReactiveElement {
     this._focusZonePoints = [];
 
     if (!this.entities) {
+      this._entityMarkers.clear();
+      this._clusterAvatars.clear();
       engine.setClustering(null);
       return;
     }
@@ -1167,6 +1318,7 @@ export class HaMap extends ReactiveElement {
       }
     }
 
+    const drawn = new Set<string>();
     for (const entity of this.entities) {
       const stateObj = states[getEntityId(entity)];
       if (!stateObj) {
@@ -1242,10 +1394,7 @@ export class HaMap extends ReactiveElement {
           })
         );
 
-        if (
-          this.fitZones &&
-          (typeof entity === "string" || entity.focus !== false)
-        ) {
+        if (typeof entity === "string" || entity.focus !== false) {
           if (!hideRadius && radius) {
             this._focusZonePoints.push(...circleBoundsPoints(position, radius));
           } else {
@@ -1275,10 +1424,16 @@ export class HaMap extends ReactiveElement {
                 .join("")
                 .substr(0, 3));
 
-      const entityMarker = document.createElement("ha-entity-marker");
+      const entityId = getEntityId(entity);
+      const entityMarker = takeEntityMarker(
+        this._entityMarkers,
+        entityId,
+        !drawn.has(entityId)
+      );
+      drawn.add(entityId);
       entityMarker.showIcon =
         typeof entity !== "string" && entity.label_mode === "icon";
-      entityMarker.entityId = getEntityId(entity);
+      entityMarker.entityId = entityId;
       entityMarker.entityName = entityName;
       entityMarker.entityUnit =
         typeof entity !== "string" &&
@@ -1293,20 +1448,20 @@ export class HaMap extends ReactiveElement {
       // A host may leave the color to the map
       const entityColor =
         (typeof entity !== "string" ? entity.color : undefined) ||
-        entityMapColor(getEntityId(entity), this._entityReg, computedStyles);
+        entityMapColor(entityId, this._entityReg, computedStyles);
       entityMarker.entityColor = entityColor;
-      if (typeof entity !== "string") {
-        entityMarker.selected = entity.selected ?? false;
-      }
+      entityMarker.selected =
+        typeof entity !== "string" && (entity.selected ?? false);
 
       const clusterData: ClusterData = {
-        entityId: getEntityId(entity),
+        entityId,
+        title,
         picture: entityMarker.entityPicture || undefined,
         label: entityName,
         showIcon: entityMarker.showIcon,
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
-        selected: typeof entity !== "string" && (entity.selected ?? false),
+        selected: entityMarker.selected,
         zoneId: ["person", "device_tracker"].includes(
           computeStateDomain(stateObj)
         )
@@ -1332,6 +1487,15 @@ export class HaMap extends ReactiveElement {
 
       if (typeof entity === "string" || entity.focus !== false) {
         this._focusPoints.push(position);
+      }
+    }
+
+    const shownIds = new Set(this.entities.map(getEntityId));
+    for (const cache of [this._entityMarkers, this._clusterAvatars]) {
+      for (const entityId of cache.keys()) {
+        if (!shownIds.has(entityId)) {
+          cache.delete(entityId);
+        }
       }
     }
 
@@ -1367,10 +1531,14 @@ export class HaMap extends ReactiveElement {
   private _createClusterBubble = (
     members: MapMarkerHandle[],
     _location: MapLatLng,
-    zoneId?: string
+    zoneId?: string,
+    expanded = false
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
-    const shown = data.slice(0, CLUSTER_MAX_AVATARS);
+    const shown =
+      expanded || data.length <= CLUSTER_MAX_AVATARS
+        ? data
+        : data.slice(0, CLUSTER_MAX_AVATARS - 1);
     const hidden = data.length - shown.length;
 
     // With history trails shown, colored borders match avatars to trails
@@ -1378,8 +1546,16 @@ export class HaMap extends ReactiveElement {
 
     const bubble = document.createElement("div");
     bubble.className = "cluster-bubble";
+    const seen = new Set<string>();
     for (const member of shown) {
-      const avatar = document.createElement("ha-entity-marker");
+      const avatar = takeEntityMarker(
+        this._clusterAvatars,
+        member?.entityId,
+        !seen.has(member?.entityId ?? "")
+      );
+      if (member?.entityId) {
+        seen.add(member.entityId);
+      }
       avatar.entityId = member?.entityId;
       avatar.entityName = member?.label ?? "";
       avatar.entityUnit = member?.unit ?? "";
@@ -1392,16 +1568,37 @@ export class HaMap extends ReactiveElement {
           member?.color ?? "var(--primary-color)"
         );
         avatar.style.setProperty("--ha-marker-border-width", "2px");
+      } else {
+        avatar.style.removeProperty("--ha-marker-color");
+        avatar.style.removeProperty("--ha-marker-border-width");
       }
-      if (member?.selected) {
-        avatar.selected = true;
+      avatar.selected = member?.selected ?? false;
+      // In an expanded bubble each avatar is reachable on its own
+      clearMarkerAccessibility(avatar);
+      if (expanded) {
+        setMarkerAccessibility(avatar, member?.title, true);
       }
       bubble.appendChild(avatar);
     }
 
+    // An expanded bubble wraps once a row would not fit the map
+    const perRow = expanded
+      ? Math.max(
+          1,
+          Math.floor(
+            (this.offsetWidth -
+              2 * CLUSTER_BUBBLE_MARGIN -
+              2 * CLUSTER_BUBBLE_PADDING +
+              CLUSTER_BUBBLE_GAP) /
+              (CLUSTER_AVATAR_SIZE + CLUSTER_BUBBLE_GAP)
+          )
+        )
+      : shown.length;
+    const columns = Math.min(shown.length, perRow);
+    const rows = Math.ceil(shown.length / perRow);
     let width =
-      shown.length * CLUSTER_AVATAR_SIZE +
-      (shown.length - 1) * CLUSTER_BUBBLE_GAP +
+      columns * CLUSTER_AVATAR_SIZE +
+      (columns - 1) * CLUSTER_BUBBLE_GAP +
       2 * CLUSTER_BUBBLE_PADDING;
     if (hidden > 0) {
       const more = document.createElement("span");
@@ -1416,7 +1613,10 @@ export class HaMap extends ReactiveElement {
     const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     const atZone = !!zonePosition;
 
-    let height = CLUSTER_AVATAR_SIZE + 2 * CLUSTER_BUBBLE_PADDING;
+    let height =
+      rows * CLUSTER_AVATAR_SIZE +
+      (rows - 1) * CLUSTER_BUBBLE_GAP +
+      2 * CLUSTER_BUBBLE_PADDING;
     let root: HTMLElement = bubble;
     if (atZone) {
       root = document.createElement("div");
@@ -1475,17 +1675,42 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
+      /* The map arrives in one piece: the container carries the cartography's
+         own ground, and fades in with the markers once a frame is drawn */
+      background-color: #f4efe6;
+      /* Hidden rather than transparent: the controls and markers in here are
+         not to be clicked or tabbed to before they are on screen */
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-in;
       /* A cluster bubble and its tail cast a single shadow around their
          combined silhouette (drop-shadow on the wrapper), so no shadow seam
          appears between the bubble and its tail. */
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
     }
+    #map.drawn {
+      visibility: visible;
+      opacity: 1;
+    }
     #map.clickable {
       cursor: pointer;
     }
+    .maplibregl-marker {
+      transition:
+        opacity var(--ha-animation-duration-fast),
+        visibility var(--ha-animation-duration-fast);
+    }
+    .maplibregl-marker-covered {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    /* A zone fades in once the bubble over it is opaque, not through it */
+    .zone-circle:not(.maplibregl-marker-covered) {
+      transition-delay: var(--ha-animation-duration-fast);
+    }
     #map.dark {
-      background: #090909;
+      background: #191b2c;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
     }
@@ -1499,43 +1724,48 @@ export class HaMap extends ReactiveElement {
       color: #000000;
       --map-filter: invert(0);
     }
+    /* Zoomed out the sky fades out and the globe is left on a transparent
+       canvas, so what surrounds it is this element. The same sky in both
+       themes, day or night: a glow where the sphere sits at the widest zoom
+       out -- MapLibre's own atmosphere carries the edge from there in -- over
+       a gradient that lightens towards the top. */
+    #map.space {
+      --ha-map-space-glow: rgba(255, 255, 255, 0.95);
+      --ha-map-space-haze: rgba(255, 255, 255, 0.45);
+      --ha-map-space-fade: rgba(255, 255, 255, 0);
+      --ha-map-space-high: #dbe8f8;
+      --ha-map-space-low: #7aa5d3;
+      background-color: var(--ha-map-space-low);
+      background-image:
+        radial-gradient(
+          circle at 50% 50%,
+          var(--ha-map-space-glow) 18%,
+          var(--ha-map-space-haze) 24%,
+          var(--ha-map-space-fade) 34%
+        ),
+        linear-gradient(
+          180deg,
+          var(--ha-map-space-high) 0%,
+          var(--ha-map-space-low) 100%
+        );
+      background-repeat: no-repeat;
+    }
+    #map.space.dark {
+      --ha-map-space-glow: rgba(126, 158, 224, 0.5);
+      --ha-map-space-haze: rgba(86, 110, 170, 0.22);
+      --ha-map-space-fade: rgba(86, 110, 170, 0);
+      --ha-map-space-high: #141a30;
+      --ha-map-space-low: #05060f;
+    }
     #map.clickable:active,
     #map:active {
       cursor: grabbing;
     }
-    /* A cluster opened at its spot: the members in a bubble with a tail */
-    .cluster-open {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      isolation: isolate;
-      filter: var(--ha-cluster-shadow);
-    }
-    .cluster-open-members {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px;
-      padding: 6px;
-      /* Six markers per row */
-      max-width: calc(6 * var(--ha-marker-size, 48px) + 5 * 4px + 12px);
-      background: var(--card-background-color, #fff);
-      border-radius: 14px;
-    }
-    /* Both tails are a rotated square whose upper half sits under the bubble;
-       drawn behind it, so it never covers a member's frame or selected ring */
-    .cluster-open-tail,
+    /* The tail is a rotated square whose upper half sits under the bubble;
+       drawn behind it, so it never covers an avatar's frame or selected ring */
     .cluster-bubble-tail {
       position: relative;
       z-index: -1;
-    }
-    .cluster-open-tail {
-      width: 10px;
-      height: 10px;
-      margin-top: -5px;
-      border-radius: 2px;
-      background: var(--card-background-color, #fff);
-      transform: rotate(45deg);
     }
     /* Only the raster fallback is inverted for dark mode, the vector style
        ships its own dark cartography. */
@@ -1637,7 +1867,10 @@ export class HaMap extends ReactiveElement {
     }
     .cluster-bubble {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
+      max-width: 100%;
       gap: ${CLUSTER_BUBBLE_GAP}px;
       padding: ${CLUSTER_BUBBLE_PADDING}px;
       box-sizing: border-box;

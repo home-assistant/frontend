@@ -28,7 +28,7 @@ import "./ha-backup-formfield-label";
 interface CheckBoxItem {
   label: string;
   id: string;
-  version?: string;
+  version?: string | null;
 }
 
 const ITEM_ICONS = {

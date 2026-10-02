@@ -16,6 +16,7 @@ import type { HaInput } from "../../components/input/ha-input";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
+import { getWsErrorMessage } from "../../util/ws-error";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
@@ -229,7 +230,8 @@ export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string
       this._markDirtyStateClean();
       this._createdCallback();
     } catch (err: unknown) {
-      this._errorMessage = err instanceof Error ? err.message : String(err);
+      this._errorMessage =
+        getWsErrorMessage(err) ?? this.hass.localize("ui.common.unknown_error");
     } finally {
       this._loading = false;
     }

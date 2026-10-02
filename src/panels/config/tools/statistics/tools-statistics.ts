@@ -12,7 +12,7 @@ import {
 
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   css,
   type CSSResultGroup,
@@ -23,6 +23,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,

@@ -1,4 +1,4 @@
-import { ContextConsumer, ContextProvider } from "@lit/context";
+import { ContextProvider } from "@lit/context";
 import type { LitElement, ReactiveController } from "lit";
 import memoizeOne from "memoize-one";
 import type {
@@ -6,6 +6,8 @@ import type {
   SidebarConfig,
   TriggerCondition,
 } from "../../../../data/automation";
+import { ContextSubscriptionController } from "../../../../common/decorators/consume";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { internationalizationContext } from "../../../../data/context";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import {
@@ -41,10 +43,8 @@ interface AutomationTriggerControllerOptions {
  * the corresponding row keys so an open sidebar continues to track the edited row.
  */
 export class AutomationTriggerController implements ReactiveController {
-  private _i18n: ContextConsumer<
-    typeof internationalizationContext,
-    LitElement
-  >;
+  // Only read in event handlers, so it does not need to rerender the host.
+  private _localize?: LocalizeFunc;
 
   private _provider: ContextProvider<typeof automationTriggerContext>;
 
@@ -56,10 +56,13 @@ export class AutomationTriggerController implements ReactiveController {
     private _host: LitElement,
     private _options: AutomationTriggerControllerOptions
   ) {
-    this._i18n = new ContextConsumer(_host, {
-      context: internationalizationContext,
-      subscribe: true,
-    });
+    new ContextSubscriptionController(
+      _host,
+      internationalizationContext,
+      ({ localize }) => {
+        this._localize = localize;
+      }
+    );
     this._provider = new ContextProvider(_host, {
       context: automationTriggerContext,
       initialValue: {
@@ -154,7 +157,7 @@ export class AutomationTriggerController implements ReactiveController {
   };
 
   private _fixDuplicateTriggerIds = async () => {
-    const localize = this._i18n.value?.localize;
+    const localize = this._localize;
     if (!this._options.getConfig() || !this._options.canEdit() || !localize) {
       return;
     }

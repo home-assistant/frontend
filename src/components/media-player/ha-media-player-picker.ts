@@ -1,10 +1,11 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiMonitor } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
@@ -188,7 +189,7 @@ export class HaMediaPlayerPicker extends LitElement {
           borderTop: index === 0 ? undefined : "1px solid var(--divider-color)",
         })}
       >
-        <ha-combo-box-item type="button" compact .disabled=${!!item.disabled}>
+        <ha-combo-box-item .disabled=${!!item.disabled}>
           ${
             item.icon_path
               ? html`

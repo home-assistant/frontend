@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -10,6 +9,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
@@ -44,6 +44,8 @@ export interface PageNavigation {
   iconViewBox?: string;
   description?: string;
   iconColor?: string;
+  // Shown next to the name of the tab
+  badge?: string;
   info?: any;
   filter?: (hass: HomeAssistant) => boolean;
 }
@@ -124,6 +126,7 @@ export class HassTabsSubpage extends LitElement {
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
+              .badge=${page.badge}
               .name=${
                 page.translationKey
                   ? localizeFunc(page.translationKey)

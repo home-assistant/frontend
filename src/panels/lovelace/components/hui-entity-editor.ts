@@ -3,8 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { entityUseDeviceName } from "../../../common/entity/compute_entity_name";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
@@ -41,34 +40,9 @@ export class HuiEntityEditor extends LitElement {
   private _renderItem(item: EntityConfig, index: number) {
     const stateObj = this.hass.states[item.entity];
 
-    const useDeviceName =
-      stateObj &&
-      entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
-
-    const isRTL = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    );
-
-    const primary =
-      (stateObj &&
-        this.hass.formatEntityName(
-          stateObj,
-          useDeviceName ? { type: "device" } : { type: "entity" }
-        )) ||
-      item.entity;
-
-    const secondary =
-      stateObj &&
-      this.hass.formatEntityName(
-        stateObj,
-        useDeviceName
-          ? [{ type: "area" }, { type: "parent_device" }]
-          : [{ type: "area" }, { type: "parent_device" }, { type: "device" }],
-        {
-          separator: isRTL ? " ◂ " : " ▸ ",
-        }
-      );
+    const { primary, secondary } = stateObj
+      ? computeEntityPickerDisplay(this.hass, stateObj)
+      : { primary: item.entity, secondary: undefined };
 
     return html`
       <ha-md-list-item class="item">

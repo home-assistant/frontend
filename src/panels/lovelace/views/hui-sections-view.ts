@@ -17,6 +17,10 @@ import "../../../components/ha-svg-icon";
 import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import {
+  DEFAULT_SECTION_COLUMN_SPAN,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
@@ -123,7 +127,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _computeSectionsCount() {
     this._sectionColumnCount = this.sections
       .filter((section) => !section.hidden)
-      .map((section) => section.config.column_span ?? 1)
+      .map(
+        (section) => section.config.column_span ?? DEFAULT_SECTION_COLUMN_SPAN
+      )
       .reduce((acc, val) => acc + val, 0);
   }
 
@@ -268,7 +274,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 (section) => this._getSectionKey(section),
                 (section, idx) => {
                   const columnSpan = Math.min(
-                    section.config.column_span || 1,
+                    section.config.column_span || DEFAULT_SECTION_COLUMN_SPAN,
                     contentColumnCount
                   );
                   const rowSpan = section.config.row_span || 1;
@@ -289,6 +295,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                                 .lovelace=${this.lovelace}
                                 .index=${idx}
                                 .viewIndex=${this.index}
+                                .isStrategy=${isStrategySection(section.config)}
                               >
                                 ${this._renderSection(
                                   section,

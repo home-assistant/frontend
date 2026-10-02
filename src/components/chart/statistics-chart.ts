@@ -19,7 +19,7 @@ import {
   getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { bidiIsolate } from "../../common/bidi";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -357,7 +357,8 @@ export class StatisticsChart extends LitElement {
             .color=${row.color}
           ></ha-chart-tooltip-marker>
           ${row.seriesName}:
-          ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
+          <span dir="ltr">${row.value}</span
+          >${i < rows.length - 1 ? html`<br />` : nothing}`
     )}`;
   };
 
@@ -450,17 +451,12 @@ export class StatisticsChart extends LitElement {
       ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
-        name: this.unit,
+        name: bidiIsolate(this.unit),
         nameGap: 2,
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(
-          this.hass.language,
-          this.hass.translationMetadata.translations
-        )
-          ? "right"
-          : "left",
+        position: "left",
         scale: yAxisScale,
         ...createYAxisPrecisionBounds({
           min: this._clampYAxis(minYAxis),

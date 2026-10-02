@@ -188,7 +188,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     item,
     index
   ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+    <ha-combo-box-item .borderTop=${index !== 0}>
       ${this._renderItem(item)}
     </ha-combo-box-item>
   `;

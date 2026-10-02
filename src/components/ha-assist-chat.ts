@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiChevronDown,
@@ -11,6 +10,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { transform } from "../common/decorators/transform";
 import { supportsFeature } from "../common/entity/supports-feature";

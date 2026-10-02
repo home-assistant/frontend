@@ -33,6 +33,6 @@ jobs:
         with:
           script: |
             const { default: checkStandards } = await import(
-              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pull-request-standards.mjs`
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pull-request-standards.mts`
             );
             await checkStandards({ github, context, core });

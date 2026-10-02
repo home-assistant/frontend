@@ -9,7 +9,7 @@ export interface CreateCardDialogParams {
   path: LovelaceContainerPath;
   suggestedCards?: string[];
   entities?: string[]; // We can pass entity id's that will be added to the config when a card is picked
-  saveCard?: (cardConfig: LovelaceCardConfig) => void; // Optional: pick a single card and return it via callback, hides entity tab
+  saveCard?: (cardConfig: LovelaceCardConfig) => void; // Optional: pick a single card and return it via callback
 }
 
 export const importCreateCardDialog = () => import("./hui-dialog-create-card");

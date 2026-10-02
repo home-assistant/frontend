@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import {
   DEFAULT_MAX_KELVIN,
   DEFAULT_MIN_KELVIN,
@@ -164,6 +164,13 @@ class HuiLightColorTempCardFeature
             var(--gradient)
           );
           --control-slider-background-opacity: 1;
+        }
+
+        ha-control-slider:dir(rtl) {
+          --control-slider-background: linear-gradient(
+            to left,
+            var(--gradient)
+          );
         }
       `,
     ];
