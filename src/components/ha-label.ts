@@ -36,7 +36,14 @@ class HaLabel extends LitElement {
     if (!changedProps.has("color")) {
       return;
     }
-    this.style.cssText = getLabelColorStyle(this.color);
+    if (!this.color) {
+      this.style.cssText = getLabelColorStyle(this.color);
+      return;
+    }
+    const contrast = getContrastedColorHex(this.color);
+    this.style.cssText = `--ha-label-background-color: ${computeCssColor(this.color)};
+      --ha-label-text-color: ${contrast};
+      --ha-label-icon-color: ${contrast};`;
   }
 
   protected render(): TemplateResult {
@@ -61,9 +68,6 @@ class HaLabel extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-tooltip {
-          --ha-tooltip-text-color: var(--ha-color-text-primary);
-        }
         :host {
           --ha-label-text-color: var(--primary-text-color);
           --ha-label-icon-color: var(--primary-text-color);
