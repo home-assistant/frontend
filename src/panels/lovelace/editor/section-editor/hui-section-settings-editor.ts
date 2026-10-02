@@ -63,6 +63,7 @@ export class HuiDialogEditSection extends LitElement {
               name: "background_color",
               selector: {
                 ui_color: {
+                  default_color: "default",
                   extra_options: [
                     {
                       value: "default",
@@ -106,7 +107,7 @@ export class HuiDialogEditSection extends LitElement {
     const data: SettingsData = {
       column_span: this.config.column_span || 1,
       background_enabled: backgroundEnabled,
-      background_color: background?.color ?? "default",
+      background_color: background?.color,
       background_opacity:
         background?.opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
       theme: this.config.theme,
