@@ -1,17 +1,28 @@
 import { mdiCloseCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../../data/integration";
-import type { MatterCommissioningParameters } from "../../../../../data/matter";
-import { openMatterCommissioningWindow } from "../../../../../data/matter";
+import type {
+  MatterCommissioningParameters,
+  MatterShareTarget,
+} from "../../../../../data/matter";
+import {
+  matterShareRemainingSeconds,
+  matterShareTargetExternal,
+  openMatterCommissioningWindow,
+  shareMatterDeviceExternal,
+} from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
@@ -29,10 +40,30 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   @state() private _open = false;
 
+  @state() private _sharing = false;
+
+  @state() private _shareFailed = false;
+
+  // Kept apart from a failure because trying again cannot bring the window back.
+  @state() private _shareExpired = false;
+
+  @query(".share-alert") private _shareAlert?: HTMLElement | null;
+
+  private _windowOpenedAt?: number;
+
+  // Not reset on close: the request outlives it.
+  private _opening = new Set<string>();
+
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
+    // The element is reused and `closed` is not guaranteed, so the last device's window could show.
+    this._resetWindow();
     this.device_id = params.device_id;
+    // The Matter server revokes an open window before opening another, so a second Start would kill it.
+    if (this._opening.has(params.device_id)) {
+      this._status = "started";
+    }
     this._open = true;
   }
 
@@ -40,6 +71,12 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     if (!this.device_id) {
       return nothing;
     }
+    const shareTarget = matterShareTargetExternal(
+      this.hass,
+      this._commissionParams
+    );
+    // Apple Home only helps Apple Home users, so there the code, which works with any app, stays primary.
+    const copyIsPrimary = shareTarget === "apple_home";
 
     return html`
       <ha-dialog
@@ -61,6 +98,17 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     "ui.panel.config.matter.open_commissioning_window.scan_code"
                   )}
                 </p>
+                ${
+                  this._shareFailed || this._shareExpired
+                    ? html`<ha-alert class="share-alert" alert-type="error">
+                        ${this.hass.localize(
+                          this._shareExpired
+                            ? "ui.panel.config.matter.open_commissioning_window.share_expired"
+                            : "ui.panel.config.matter.open_commissioning_window.share_failed"
+                        )}
+                      </ha-alert>`
+                    : nothing
+                }
                 <div class="sharing-code-container">
                   <div class="sharing-code">
                     <img
@@ -150,13 +198,33 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         <ha-dialog-footer slot="footer">
           ${
             this._commissionParams
-              ? html`
-                  <ha-button slot="primaryAction" @click=${this._copyCode}>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.copy_code"
-                    )}
-                  </ha-button>
-                `
+              ? shareTarget
+                ? html`
+                    <ha-button
+                      slot=${copyIsPrimary ? "primaryAction" : "secondaryAction"}
+                      appearance=${copyIsPrimary ? "accent" : "plain"}
+                      @click=${this._copyCode}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.copy_code"
+                      )}
+                    </ha-button>
+                    <ha-button
+                      slot=${copyIsPrimary ? "secondaryAction" : "primaryAction"}
+                      appearance=${copyIsPrimary ? "plain" : "accent"}
+                      .loading=${this._sharing}
+                      @click=${this._shareDevice}
+                    >
+                      ${this._shareLabel(shareTarget)}
+                    </ha-button>
+                  `
+                : html`
+                    <ha-button slot="primaryAction" @click=${this._copyCode}>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.copy_code"
+                      )}
+                    </ha-button>
+                  `
               : this._status === "started" || this._status === "failed"
                 ? html`
                     <ha-button slot="primaryAction" @click=${this.closeDialog}>
@@ -176,19 +244,97 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     `;
   }
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    // The footer button is pinned while the body scrolls, so on a phone the alert can land off-screen.
+    if (
+      (changedProperties.has("_shareFailed") ||
+        changedProperties.has("_shareExpired")) &&
+      (this._shareFailed || this._shareExpired)
+    ) {
+      this._shareAlert?.scrollIntoView({ block: "nearest" });
+    }
+  }
+
   private async _start(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
     this._commissionParams = undefined;
+    const deviceId = this.device_id!;
+    this._opening.add(deviceId);
     try {
-      this._commissionParams = await openMatterCommissioningWindow(
-        this.hass,
-        this.device_id!
-      );
+      // Before the request, so the remaining time is never overstated. Not `performance.now()`: it
+      // stops while the device sleeps, and a locked screen is how a window usually runs out.
+      const requestedAt = Date.now();
+      const params = await openMatterCommissioningWindow(this.hass, deviceId);
+      // Closed or switched device meanwhile. Same device keeps it, or the open window is orphaned.
+      if (this.device_id !== deviceId) {
+        return;
+      }
+      this._commissionParams = params;
+      this._windowOpenedAt = requestedAt;
     } catch (_e) {
-      this._status = "failed";
+      if (this.device_id === deviceId) {
+        this._status = "failed";
+      }
+    } finally {
+      this._opening.delete(deviceId);
+    }
+  }
+
+  private _shareLabel(target: MatterShareTarget) {
+    return target === "apple_home"
+      ? this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.add_to_apple_home"
+        )
+      : this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.share_with_app"
+        );
+  }
+
+  private async _shareDevice() {
+    const params = this._commissionParams;
+    if (!params || this._sharing) {
+      return;
+    }
+    this._shareFailed = false;
+    this._shareExpired = false;
+    const remaining = matterShareRemainingSeconds(
+      params.commissioning_timeout,
+      this._windowOpenedAt,
+      Date.now()
+    );
+    if (remaining !== undefined && remaining < 1) {
+      this._shareExpired = true;
+      return;
+    }
+    this._sharing = true;
+    const device = this.hass.devices[this.device_id!];
+    try {
+      await shareMatterDeviceExternal(this.hass, {
+        setup_qr_code: params.setup_qr_code,
+        setup_pin_code: params.setup_pin_code,
+        discriminator: params.discriminator ?? undefined,
+        vendor_id: params.vendor_id ?? undefined,
+        product_id: params.product_id ?? undefined,
+        device_name: device ? computeDeviceName(device) : undefined,
+        remaining_seconds: remaining,
+      });
+      // Closed or reopened meanwhile.
+      if (this._commissionParams === params) {
+        this.closeDialog();
+      }
+    } catch (err: unknown) {
+      if (this._commissionParams === params) {
+        // Backing out of the platform sheet is not an error.
+        this._shareFailed = (err as { code?: string })?.code !== "canceled";
+      }
+    } finally {
+      if (this._commissionParams === params) {
+        this._sharing = false;
+      }
     }
   }
 
@@ -197,7 +343,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       return;
     }
     await copyToClipboard(this._commissionParams.setup_manual_code);
-    this.closeDialog();
+    // Closing would drop the window the app is still sharing.
+    if (!this._sharing) {
+      this.closeDialog();
+    }
   }
 
   public closeDialog(): void {
@@ -205,10 +354,20 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
   }
 
   private _dialogClosed(): void {
+    this._resetWindow();
+    // Every dismissal that is not `closeDialog` leaves this true, and `ha-dialog` reads it.
+    this._open = false;
     this.device_id = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _resetWindow(): void {
     this._status = undefined;
     this._commissionParams = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._sharing = false;
+    this._shareFailed = false;
+    this._shareExpired = false;
+    this._windowOpenedAt = undefined;
   }
 
   static get styles(): CSSResultGroup {
@@ -240,7 +399,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           padding: 8px;
         }
 
-        ha-svg-icon {
+        .flex-container ha-svg-icon {
           width: 68px;
           height: 48px;
         }
