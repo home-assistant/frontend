@@ -144,13 +144,12 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
   fireEvent(element, "value-changed", { value: newAction });
 };
 
-export const getWaitTemplateCondition = (
-  template: unknown
-): Condition | undefined =>
-  typeof template === "string" &&
-  template.trim() &&
-  !/\b(trigger|wait)\b/.test(template)
-    ? { condition: "template", value_template: template }
+const getWaitTemplateCondition = (template: unknown): Condition | undefined =>
+  typeof template === "string" && template.trim()
+    ? {
+        condition: "template",
+        value_template: template,
+      }
     : undefined;
 
 @customElement("ha-automation-action-row")
