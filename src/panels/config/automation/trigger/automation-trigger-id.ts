@@ -196,7 +196,7 @@ const mapReferencedTriggerIds = (
   mapper: (id: string) => string | string[] | undefined
 ): TriggerCondition => {
   let changed = false;
-  const ids = ensureArray(condition.id).flatMap((id) => {
+  const ids = ensureArray(condition.id ?? "").flatMap((id) => {
     const mappedId = mapper(id);
     if (mappedId !== id) {
       changed = true;
