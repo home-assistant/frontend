@@ -49,7 +49,7 @@ export class HaTriggerCondition extends LitElement {
   }
 
   protected render() {
-    const selectedIds = ensureArray(this.condition.id).filter(Boolean);
+    const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const triggerIdOptions = this._triggers?.options ?? [];
     const missingIds = this._missingIds(this.condition.id, triggerIdOptions);
 
@@ -174,7 +174,7 @@ export class HaTriggerCondition extends LitElement {
   };
 
   private _selectId(id: string, checked: boolean) {
-    const ids = ensureArray(this.condition.id).filter(Boolean);
+    const ids = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const selectedIds = checked
       ? ids.includes(id)
         ? ids
@@ -202,7 +202,9 @@ export class HaTriggerCondition extends LitElement {
   private _missingIds = memoizeOne(
     (ids: TriggerCondition["id"], triggerIdOptions: TriggerIdOption[]) => {
       const availableIds = new Set(triggerIdOptions.map((option) => option.id));
-      return ensureArray(ids).filter((id) => id && !availableIds.has(id));
+      return (ensureArray(ids) ?? []).filter(
+        (id) => id && !availableIds.has(id)
+      );
     }
   );
 

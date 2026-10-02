@@ -34,7 +34,7 @@ export class HaAutomationTriggerReferences extends LitElement {
   protected render() {
     const options = this._triggers?.options ?? [];
     const showIndices = this._triggers?.showIndices ?? false;
-    const selectedIds = ensureArray(this.condition.id ?? "").filter(Boolean);
+    const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const selectedTriggers = options.filter((option) =>
       selectedIds.includes(option.id)
     );
