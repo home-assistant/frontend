@@ -4047,8 +4047,7 @@
               },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
-                "description": "Select an entity to copy diagnostic details.",
-                "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+                "description": "Select an entity to view diagnostic details."
               },
               "viewport_environment": {
                 "title": "Device and browser environment",
