@@ -14,7 +14,6 @@ import {
   hasPowerSources,
   hasWaterRateSource,
   isEnergyCardVisible,
-  hasBattery,
 } from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -23,10 +22,7 @@ import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyDependency[] = [
-    "entities",
-    "devices",
-  ];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     _config: EnergyViewStrategyConfig,
@@ -60,7 +56,6 @@ export class PowerViewStrategy extends ReactiveElement {
     const hasPowerSrc = !!prefs && hasPowerSources(prefs);
     const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
     const hasGasSrc = !!prefs && hasGasRateSource(prefs);
-    const hasBatterySrc = !!prefs && hasBattery(prefs);
 
     // No live power or flow-rate sources configured
     if (!prefs || !hasNowViewContent(prefs)) {
@@ -99,22 +94,20 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasBatterySrc) {
-      const batterySources = prefs.energy_sources.filter(
-        (s): s is BatterySourceTypeEnergyPreference =>
-          s.type === "battery" && !!s.stat_soc
-      );
-      batterySources.forEach((source) => {
-        badges.push({
-          type: "entity",
-          entity: source.stat_soc!,
-          ...(batterySources.length > 1 && {
-            name: source.name,
-            show_name: true,
-          }),
-        });
+    const batterySources = prefs.energy_sources.filter(
+      (s): s is BatterySourceTypeEnergyPreference =>
+        s.type === "battery" && !!s.stat_soc
+    );
+    batterySources.forEach((source) => {
+      badges.push({
+        type: "entity",
+        entity: source.stat_soc!,
+        ...(batterySources.length > 1 && {
+          name: source.name,
+          show_name: true,
+        }),
       });
-    }
+    });
 
     if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
