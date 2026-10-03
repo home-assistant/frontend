@@ -33,8 +33,6 @@ export class PowerViewStrategy extends ReactiveElement {
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
-      // The "Now" view is real-time; roll its day period over at midnight.
-      midnightRollover: true,
     });
     if (!energyCollection.prefs) {
       await energyCollection.refresh();
