@@ -5,8 +5,9 @@ import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
-const SCHEMA = [
+export const SCHEMA = [
   { name: "value_template", required: true, selector: { template: {} } },
   {
     name: "for",
@@ -22,6 +23,14 @@ const SCHEMA = [
     },
   },
 ] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.triggers.type.template.${fieldName}` as any
+  );
 
 @customElement("ha-automation-trigger-template")
 export class HaTemplateTrigger extends LitElement {
@@ -84,10 +93,7 @@ export class HaTemplateTrigger extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<typeof SCHEMA>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.template.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {
