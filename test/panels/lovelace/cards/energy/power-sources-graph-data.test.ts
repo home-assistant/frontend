@@ -176,7 +176,11 @@ describe("generatePowerSourcesGraphData", () => {
       generatePowerSourcesGraphData({
         ...baseParams,
         states,
-        energyData,
+        energyData: {
+          ...energyData,
+          start: new Date(now),
+          end: new Date(now + 1000),
+        },
         start: new Date(now),
         end: new Date(now + 1000),
         now,
