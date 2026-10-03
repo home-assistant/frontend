@@ -1,18 +1,23 @@
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../../common/config/components_with_service";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/buttons/ha-call-service-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
 import type { CheckConfigResult } from "../../../../data/core";
 import { checkCoreConfig } from "../../../../data/core";
 import { domainToName } from "../../../../data/integration";
 import { showRestartDialog } from "../../../../dialogs/restart/show-dialog-restart";
 import { haStyle } from "../../../../resources/styles";
+import { showToast } from "../../../../util/toast";
 import type { HomeAssistant, Route, TranslationDict } from "../../../../types";
 
 type ReloadableDomain = Exclude<
@@ -129,6 +134,9 @@ export class ToolsYamlConfig extends LitElement {
                               "ui.panel.config.tools.tabs.yaml.section.validation.errors"
                             )}
                           >
+                            ${this._renderCopyLogButton(
+                              this._validateResult.errors
+                            )}
                             <!-- prettier-ignore -->
                             <pre class="validate-log">${
                               this._validateResult.errors
@@ -144,6 +152,9 @@ export class ToolsYamlConfig extends LitElement {
                               "ui.panel.config.tools.tabs.yaml.section.validation.warnings"
                             )}
                           >
+                            ${this._renderCopyLogButton(
+                              this._validateResult.warnings
+                            )}
                             <!-- prettier-ignore -->
                             <pre class="validate-log">${
                               this._validateResult.warnings
@@ -216,6 +227,28 @@ export class ToolsYamlConfig extends LitElement {
     `;
   }
 
+  private _renderCopyLogButton(text: string) {
+    return html`<ha-icon-button
+      slot="action"
+      class="copy-log"
+      .path=${mdiContentCopy}
+      .label=${this.hass.localize(
+        "ui.panel.config.tools.tabs.yaml.section.validation.copy_to_clipboard"
+      )}
+      .copyText=${text}
+      @click=${this._copyLog}
+    ></ha-icon-button>`;
+  }
+
+  private _copyLog = async (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { copyText: string }>
+  ) => {
+    await copyToClipboard(ev.currentTarget.copyText);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  };
+
   private async _validateConfig() {
     this._validating = true;
     this._validateResult = undefined;
@@ -249,6 +282,11 @@ export class ToolsYamlConfig extends LitElement {
 
         .validate-result.invalid {
           color: var(--error-color);
+        }
+
+        .copy-log {
+          --ha-icon-button-size: 32px;
+          --mdc-icon-size: 20px;
         }
 
         .validate-log {
