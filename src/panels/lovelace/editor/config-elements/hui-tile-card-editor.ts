@@ -62,6 +62,7 @@ const cardConfigStruct = assign(
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
+    hide_features_when_off: optional(boolean()),
     time_format: optional(timeFormatConfigStruct),
   })
 );
@@ -267,6 +268,10 @@ export class HuiTileCardEditor
             },
           },
         },
+        {
+          name: "hide_features_when_off",
+          selector: { boolean: {} },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -445,6 +450,7 @@ export class HuiTileCardEditor
       case "hide_state":
       case "state_content":
       case "content_layout":
+      case "hide_features_when_off":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`

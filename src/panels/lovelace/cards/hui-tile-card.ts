@@ -309,6 +309,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._featureLayout(this._config);
+    const showFeatures = !(
+      this._config.hide_features_when_off && stateObj.state === "off"
+    );
 
     const hasImage = Boolean(imageUrl);
 
@@ -367,7 +370,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             }
           </ha-tile-info>
           ${
-            features.inline.length > 0
+            showFeatures && features.inline.length > 0
               ? html`
                   <hui-card-features
                     slot="features-inline"
@@ -380,7 +383,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               : nothing
           }
           ${
-            features.below.length > 0
+            showFeatures && features.below.length > 0
               ? html`
                   <hui-card-features
                     slot="features"
