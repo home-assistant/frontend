@@ -2989,6 +2989,7 @@
         "mcp": {
           "header": "Model Context Protocol",
           "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "description_disabled": "See the {documentation_link} to learn how to connect your AI agent to Home Assistant.",
           "documentation": "documentation",
           "enable": "[%key:ui::common::enable%]",
           "disable": "[%key:ui::common::disable%]",
