@@ -75,6 +75,52 @@ function processData(
 }
 
 /**
+ * Current power per legend item ("solar", "grid", "battery", "usage"),
+ * formatted for the legend. Empty unless the energy data covers today, and
+ * "usage" is only present when at least one power reading is available.
+ */
+export function getPowerLegendValues(
+  energyData: EnergyData,
+  states: HassEntities,
+  formatPower: (powerWatts: number) => string,
+  now: number
+): Record<string, string> {
+  if (
+    !isSameDay(now, energyData.start) ||
+    !isSameDay(now, energyData.end ?? now)
+  ) {
+    return {};
+  }
+  const watts: Record<string, number> = {};
+  for (const source of energyData.prefs.energy_sources) {
+    if (
+      (source.type === "solar" ||
+        source.type === "grid" ||
+        source.type === "battery") &&
+      source.stat_rate
+    ) {
+      const w = getPowerFromState(states[source.stat_rate]);
+      if (w !== undefined) {
+        watts[source.type] = (watts[source.type] ?? 0) + w;
+      }
+    }
+  }
+  const keys = Object.keys(watts);
+  if (!keys.length) {
+    return {};
+  }
+  const values: Record<string, string> = {};
+  let total = 0;
+  for (const key of keys) {
+    values[key] = formatPower(watts[key]);
+    total += watts[key];
+  }
+  // Same as the usage line: consumption can't be negative
+  values.usage = formatPower(Math.max(0, total));
+  return values;
+}
+
+/**
  * Transforms an energy collection update (`EnergyData` + prefs) into the
  * ECharts series, legend, and derived state for the power sources graph card.
  * Pure data processing: all environment inputs (current time, theme style,
@@ -88,6 +134,12 @@ export function generatePowerSourcesGraphData(
 
   const datasets: LineSeriesOption[] = [];
   const legendData: CustomLegendOption["data"] = [];
+  const legendValues = getPowerLegendValues(
+    energyData,
+    states,
+    formatPower,
+    params.now
+  );
 
   const statIds = {
     solar: {
@@ -148,7 +200,6 @@ export function generatePowerSourcesGraphData(
   // it once instead of inside the per-id map below.
   const showingToday =
     isSameDay(now, params.start) && isSameDay(now, params.end);
-  const currentWatts: Record<string, number> = {};
   const seriesData: Record<
     string,
     {
@@ -173,7 +224,6 @@ export function generatePowerSourcesGraphData(
             // Append current state if we are showing today
             const currentStateWatts = getPowerFromState(states[id]);
             if (currentStateWatts !== undefined) {
-              currentWatts[key] = (currentWatts[key] ?? 0) + currentStateWatts;
               // getPowerFromState returns power in W; convert to kW for this graph
               stats.push({
                 start: now,
@@ -253,7 +303,7 @@ export function generatePowerSourcesGraphData(
         id: key,
         secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
         name: statIds[key].name,
-        value: key in currentWatts ? formatPower(currentWatts[key]) : undefined,
+        value: legendValues[key],
         itemStyle: {
           color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
           borderColor: colorHex,
@@ -321,14 +371,7 @@ export function generatePowerSourcesGraphData(
   legendData!.push({
     id: "usage",
     name: localize("ui.panel.lovelace.cards.energy.power_graph.usage"),
-    value: showingToday
-      ? formatPower(
-          Math.max(
-            0,
-            Object.values(currentWatts).reduce((a, b) => a + b, 0)
-          )
-        )
-      : undefined,
+    value: legendValues.usage,
     itemStyle: {
       color: computedStyles.getPropertyValue("--primary-text-color"),
     },

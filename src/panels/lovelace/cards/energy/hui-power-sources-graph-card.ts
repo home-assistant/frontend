@@ -23,7 +23,10 @@ import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
-import { generatePowerSourcesGraphData } from "./power-sources-graph-data";
+import {
+  generatePowerSourcesGraphData,
+  getPowerLegendValues,
+} from "./power-sources-graph-data";
 
 @customElement("hui-power-sources-graph-card")
 export class HuiPowerSourcesGraphCard
@@ -55,6 +58,8 @@ export class HuiPowerSourcesGraphCard
 
   @state() private _legendData?: CustomLegendOption["data"];
 
+  @state() private _energyData?: EnergyData;
+
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -85,12 +90,39 @@ export class HuiPowerSourcesGraphCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
+    if (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
       !changedProps.has("hass")
-    );
+    ) {
+      return true;
+    }
+    // Only hass changed: re-render only if a legend value changed
+    return this._refreshLegendValues();
   }
+
+  private _refreshLegendValues(): boolean {
+    if (!this._energyData || !this._legendData) {
+      return false;
+    }
+    const values = getPowerLegendValues(
+      this._energyData,
+      this.hass.states,
+      this._formatPower,
+      Date.now()
+    );
+    if (this._legendData.every((item) => item.value === values[item.id!])) {
+      return false;
+    }
+    this._legendData = this._legendData.map((item) => ({
+      ...item,
+      value: values[item.id!],
+    }));
+    return true;
+  }
+
+  private _formatPower = (powerWatts: number) =>
+    formatPowerShort(this.hass, powerWatts);
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -182,7 +214,7 @@ export class HuiPowerSourcesGraphCard
 
     const result = generatePowerSourcesGraphData({
       localize: this.hass.localize,
-      formatPower: (powerWatts) => formatPowerShort(this.hass, powerWatts),
+      formatPower: this._formatPower,
       states: this.hass.states,
       energyData,
       computedStyles: getComputedStyle(this),
@@ -191,6 +223,7 @@ export class HuiPowerSourcesGraphCard
       now: Date.now(),
     });
 
+    this._energyData = energyData;
     this._legendData = result.legendData;
     this._start = result.start;
     this._end = result.end;
