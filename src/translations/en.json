@@ -6293,6 +6293,8 @@
               "disabled_step": "This step was disabled and skipped during execution so no further trace information is available.",
               "iteration": "Iteration {number}",
               "executed": "Executed: {time}",
+              "view_child_trace": "View trace of {name}",
+              "view_child_trace_unnamed": "[%key:ui::components::logbook::view_trace%]",
               "error": "Error: {error}",
               "template_errors": "Template errors:",
               "result": "Result:",
