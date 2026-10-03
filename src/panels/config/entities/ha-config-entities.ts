@@ -115,6 +115,7 @@ import {
   getEntityIdTableColumn,
   getLabelsTableColumn,
   getModifiedAtTableColumn,
+  getStateTableColumn,
 } from "../common/data-table-columns";
 import { configSections } from "../config-sections";
 import type { Helper } from "../helpers/const";
@@ -360,6 +361,7 @@ export class HaConfigEntities extends LitElement {
               `
             : nothing,
       },
+      state: getStateTableColumn(localize),
       device: {
         title: localize("ui.panel.config.entities.picker.headers.device"),
         sortable: true,
