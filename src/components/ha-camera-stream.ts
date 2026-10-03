@@ -1,13 +1,16 @@
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import { STATE_RUNNING } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
+import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
-  CAMERA_SUPPORT_STREAM,
-  CAMERA_SUPPORT_TWO_WAY_AUDIO,
+  CameraEntityFeature,
   type CameraCapabilities,
   type CameraEntity,
   computeMJPEGStreamUrl,
@@ -17,7 +20,7 @@ import {
   STREAM_TYPE_WEB_RTC,
   type StreamType,
 } from "../data/camera";
-import type { HomeAssistant } from "../types";
+import { apiContext, configContext, connectionContext } from "../data/context";
 import "./ha-hls-player";
 import "./ha-web-rtc-player";
 
@@ -30,7 +33,17 @@ interface Stream {
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
@@ -58,13 +71,34 @@ export class HaCameraStream extends LitElement {
 
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
+  private _thumbnailApi = memoizeOne(
+    (
+      api: ContextType<typeof apiContext>,
+      connection: ContextType<typeof connectionContext>
+    ) => ({
+      callWS: api.callWS,
+      hassUrl: connection.hassUrl,
+    })
+  );
+
   public willUpdate(changedProps: PropertyValues): void {
-    if (
+    const entityChanged =
       changedProps.has("stateObj") &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
-        this.stateObj.entity_id
-    ) {
+        this.stateObj.entity_id;
+
+    const oldConfig = changedProps.get("_config") as
+      ContextType<typeof configContext> | undefined;
+    const backendStarted =
+      changedProps.has("_config") &&
+      this._config &&
+      this.stateObj &&
+      oldConfig &&
+      this._config.config.state === STATE_RUNNING &&
+      oldConfig.config?.state !== STATE_RUNNING;
+
+    if (entityChanged || backendStarted) {
       this._getCapabilities();
       this._getPosterUrl();
     }
@@ -102,17 +136,22 @@ export class HaCameraStream extends LitElement {
       return nothing;
     }
     if (stream.type === MJPEG_STREAM) {
+      const streamUrl = __DEMO__
+        ? this.stateObj.attributes.entity_picture
+        : this._connected
+          ? computeMJPEGStreamUrl(this.stateObj)
+          : this._posterUrl;
+      if (!streamUrl) {
+        return nothing;
+      }
       return html`<img
-        .src=${__DEMO__
-          ? this.stateObj.attributes.entity_picture!
-          : this._connected
-            ? computeMJPEGStreamUrl(this.stateObj)
-            : this._posterUrl || ""}
+        .src=${streamUrl}
         style=${styleMap({
           aspectRatio: this.aspectRatio,
           objectFit: this.fitMode,
         })}
         alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
+        @load=${this._handleImageLoad}
       />`;
     }
 
@@ -123,7 +162,6 @@ export class HaCameraStream extends LitElement {
         .allowExoPlayer=${this.allowExoPlayer}
         .muted=${this.muted}
         .controls=${this.controls}
-        .hass=${this.hass}
         .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
@@ -140,10 +178,9 @@ export class HaCameraStream extends LitElement {
         .muted=${this.muted}
         .twoWayAudio=${supportsFeature(
           this.stateObj!,
-          CAMERA_SUPPORT_TWO_WAY_AUDIO
+          CameraEntityFeature.TWO_WAY_AUDIO
         )}
         .controls=${this.controls}
-        .hass=${this.hass}
         .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
@@ -160,12 +197,12 @@ export class HaCameraStream extends LitElement {
     this._capabilities = undefined;
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
-    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
+    if (!supportsFeature(this.stateObj!, CameraEntityFeature.STREAM)) {
       this._capabilities = { frontend_stream_types: [] };
       return;
     }
     this._capabilities = await fetchCameraCapabilities(
-      this.hass!,
+      this._api,
       this.stateObj!.entity_id
     );
   }
@@ -173,7 +210,7 @@ export class HaCameraStream extends LitElement {
   private async _getPosterUrl(): Promise<void> {
     try {
       this._posterUrl = await fetchThumbnailUrlWithCache(
-        this.hass!,
+        this._thumbnailApi(this._api, this._connection),
         this.stateObj!.entity_id,
         this.clientWidth,
         this.clientHeight
@@ -182,6 +219,10 @@ export class HaCameraStream extends LitElement {
       // poster url is optional
       this._posterUrl = undefined;
     }
+  }
+
+  private _handleImageLoad() {
+    fireEvent(this, "load");
   }
 
   private _handleHlsStreams(ev: CustomEvent) {

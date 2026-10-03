@@ -1,6 +1,13 @@
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
+import {
+  ScrollFadeController,
+  scrollFadeStyles,
+} from "../../../common/controllers/scroll-fade-controller";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -51,6 +58,13 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: HeadingCardConfig;
 
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".badges",
+    enabled: false,
+  });
+
+  private _badgesScrollFade = new ScrollFadeController(this);
+
   public setConfig(config: HeadingCardConfig): void {
     this._config = {
       tap_action: {
@@ -60,6 +74,14 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     };
   }
 
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    if (!changedProperties.size) {
+      return;
+    }
+
+    this._dragScrollController.enabled = !this.preview;
+  }
+
   public getCardSize(): number {
     return 1;
   }
@@ -67,7 +89,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
   public getGridOptions(): LovelaceGridOptions {
     return {
       columns: "full",
-      rows: this._config?.heading_style === "subtitle" ? "auto" : 1,
+      rows: "auto",
       min_columns: 3,
     };
   }
@@ -86,6 +108,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     const style = this._config.heading_style || "title";
 
     const badges = this._config.badges;
+    const badgeDragging = this._dragScrollController.scrolling;
 
     return html`
       <ha-card>
@@ -97,40 +120,60 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
             role=${ifDefined(actionable ? "button" : undefined)}
             tabindex=${ifDefined(actionable ? "0" : undefined)}
           >
-            ${this._config.icon
-              ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
-              : nothing}
-            ${this._config.heading
-              ? html`<p>${this._config.heading}</p>`
-              : nothing}
+            ${
+              this._config.icon
+                ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
+                : nothing
+            }
+            ${
+              this._config.heading && style === "subtitle"
+                ? html`<h3 class="heading">${this._config.heading}</h3>`
+                : this._config.heading
+                  ? html`<h2 class="heading">${this._config.heading}</h2>`
+                  : nothing
+            }
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
-          ${badges?.length
-            ? html`
-                <div class="badges">
-                  ${badges.map(
-                    (config) => html`
-                      <hui-heading-badge
-                        .config=${config}
-                        .hass=${this.hass}
-                        .preview=${this.preview}
-                      >
-                      </hui-heading-badge>
-                    `
-                  )}
-                </div>
-              `
-            : nothing}
+          ${
+            badges?.length
+              ? html`
+                  <div
+                    class=${classMap({
+                      badges: true,
+                      draggable: !this.preview,
+                      "scroll-fade-start": this._badgesScrollFade.start,
+                      "scroll-fade-end": this._badgesScrollFade.end,
+                      dragging: badgeDragging,
+                    })}
+                    ${this._badgesScrollFade.target()}
+                  >
+                    <div class="badges-row">
+                      ${badges.map(
+                        (config) => html`
+                          <hui-heading-badge
+                            .config=${config}
+                            .hass=${this.hass}
+                            .preview=${this.preview}
+                          >
+                          </hui-heading-badge>
+                        `
+                      )}
+                    </div>
+                  </div>
+                `
+              : nothing
+          }
         </div>
       </ha-card>
     `;
   }
 
   static styles = css`
+    ${scrollFadeStyles}
+
     ha-card {
       background: none;
       backdrop-filter: none;
-      -webkit-backdrop-filter: none;
       border: none;
       box-shadow: none;
       padding: 0;
@@ -148,26 +191,26 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transition: transform 180ms ease-in-out;
     }
     .container {
-      padding: 0 4px;
+      padding: 0 var(--ha-space-1);
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      flex-wrap: nowrap;
       align-items: center;
-      overflow: hidden;
+      overflow: visible;
       gap: var(--ha-space-2);
     }
     .content:hover ha-icon-next {
       transform: translateX(calc(4px * var(--scale-direction)));
     }
     .container .content {
-      flex: 1 0 fill;
-      min-width: 100px;
+      flex: 0 1 max-content;
+      min-width: 0;
     }
-    .container .content:not(:has(p)) {
-      min-width: fit-content;
-    }
-    .container .badges {
-      flex: 0 0;
+    .container .content:not(:only-child) {
+      flex: 1 0 var(--ha-heading-card-title-min-width, 150px);
+      max-width: max-content;
+      min-width: 0;
     }
     .content {
       display: flex;
@@ -192,9 +235,12 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       display: flex;
       flex: none;
     }
-    .content p {
+    .content .heading {
       margin: 0;
       font-style: normal;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -217,11 +263,33 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       );
     }
     .badges {
+      position: relative;
+      display: flex;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: auto;
+      max-width: 100%;
+      scrollbar-color: var(--scrollbar-thumb-color) transparent;
+      scrollbar-width: none;
+    }
+    .badges.draggable:is(.scroll-fade-start, .scroll-fade-end) {
+      cursor: grab;
+    }
+    .badges-row {
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: flex-end;
-      gap: 4px 10px;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: var(--ha-space-2);
+      margin: 0;
+    }
+    .badges-row > * {
+      min-width: fit-content;
+    }
+    .badges.dragging {
+      cursor: grabbing;
+      pointer-events: none;
     }
   `;
 }

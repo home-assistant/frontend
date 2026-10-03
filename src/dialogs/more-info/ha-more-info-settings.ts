@@ -6,7 +6,7 @@ import "../../components/ha-alert";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "../../panels/config/entities/const";
 import "../../panels/config/entities/entity-registry-settings";
 import type { HomeAssistant } from "../../types";
@@ -83,7 +83,8 @@ export class HaMoreInfoSettings extends LitElement {
     return [
       css`
         .content {
-          padding: 8px 24px 24px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
         }
       `,
     ];

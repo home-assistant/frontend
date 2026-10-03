@@ -1,5 +1,6 @@
 import type { HomeAssistant } from "../types";
 import { isSafari } from "./is_safari";
 
-export const isIosApp = (hass: HomeAssistant): boolean =>
-  !!hass.auth.external && isSafari;
+export const isIosApp = (
+  authExternal: HomeAssistant["auth"]["external"]
+): boolean => !!authExternal && isSafari;

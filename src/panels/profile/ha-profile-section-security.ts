@@ -1,8 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../layouts/hass-tabs-subpage";
-import { profileSections } from "./ha-panel-profile";
+import "../../layouts/hass-subpage";
 import type { RefreshToken } from "../../data/refresh_token";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -14,8 +13,6 @@ import "./ha-refresh-tokens-card";
 @customElement("ha-profile-section-security")
 class HaProfileSectionSecurity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean }) public narrow = false;
 
   @state() private _refreshTokens?: RefreshToken[];
 
@@ -34,26 +31,25 @@ class HaProfileSectionSecurity extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
-        main-page
+      <hass-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
-        .tabs=${profileSections}
-        .route=${this.route}
+        back-path="/profile"
+        .header=${this.hass.localize("ui.panel.profile.tabs.security")}
       >
-        <div slot="title">${this.hass.localize("panel.profile")}</div>
-        <div class="content">
-          ${this.hass.user!.credentials.some(
-            (cred) => cred.auth_provider_type === "homeassistant"
-          )
-            ? html`
-                <ha-change-password-card
-                  .refreshTokens=${this._refreshTokens}
-                  @hass-refresh-tokens=${this._refreshRefreshTokens}
-                  .hass=${this.hass}
-                ></ha-change-password-card>
-              `
-            : ""}
+        <div class="container">
+          ${
+            this.hass.user!.credentials.some(
+              (cred) => cred.auth_provider_type === "homeassistant"
+            )
+              ? html`
+                  <ha-change-password-card
+                    .refreshTokens=${this._refreshTokens}
+                    @hass-refresh-tokens=${this._refreshRefreshTokens}
+                    .hass=${this.hass}
+                  ></ha-change-password-card>
+                `
+              : ""
+          }
           <ha-mfa-modules-card
             .hass=${this.hass}
             .mfaModules=${this.hass.user!.mfa_modules}
@@ -71,7 +67,7 @@ class HaProfileSectionSecurity extends LitElement {
             @hass-refresh-tokens=${this._refreshRefreshTokens}
           ></ha-long-lived-access-tokens-card>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -89,26 +85,18 @@ class HaProfileSectionSecurity extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: initial;
         }
 
-        .content {
+        .container {
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
+        }
+
+        .container > * {
           display: block;
+          margin: 0 auto var(--ha-space-4);
           max-width: 600px;
-          margin: 0 auto;
-          padding-bottom: var(--safe-area-inset-bottom);
-        }
-
-        .content > * {
-          display: block;
-          margin: 24px 0;
-        }
-
-        .promo-advanced {
-          text-align: center;
-          color: var(--secondary-text-color);
         }
       `,
     ];

@@ -15,7 +15,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { DEFAULT_CONFIG } from "../editor/heading-badge-editor/hui-entity-heading-badge-editor";
@@ -39,10 +39,26 @@ export class HuiEntityHeadingBadge
   implements LovelaceHeadingBadge
 {
   public static async getConfigElement(): Promise<LovelaceHeadingBadgeEditor> {
-    await import(
-      "../editor/heading-badge-editor/hui-entity-heading-badge-editor"
-    );
+    await import("../editor/heading-badge-editor/hui-entity-heading-badge-editor");
     return document.createElement("hui-heading-entity-editor");
+  }
+
+  public static getStubConfig(hass: HomeAssistant): EntityHeadingBadgeConfig {
+    const includeDomains = ["sensor", "light", "switch"];
+    const maxEntities = 1;
+    const entities = Object.keys(hass.states);
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      [],
+      includeDomains
+    );
+
+    return {
+      type: "entity",
+      entity: foundEntities[0] || "",
+    };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -137,11 +153,7 @@ export class HuiEntityHeadingBadge
       "--icon-color": color,
     };
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     return html`
       <ha-heading-badge
@@ -154,27 +166,30 @@ export class HuiEntityHeadingBadge
         style=${styleMap(style)}
         .title=${name}
       >
-        ${config.show_icon
-          ? html`
-              <ha-state-icon
-                slot="icon"
-                .hass=${this.hass}
-                .icon=${config.icon}
-                .stateObj=${stateObj}
-              ></ha-state-icon>
-            `
-          : nothing}
-        ${config.show_state
-          ? html`
-              <state-display
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .content=${config.state_content}
-                .name=${name}
-                dash-unavailable
-              ></state-display>
-            `
-          : nothing}
+        ${
+          config.show_icon
+            ? html`
+                <ha-state-icon
+                  slot="icon"
+                  .icon=${config.icon}
+                  .stateObj=${stateObj}
+                ></ha-state-icon>
+              `
+            : nothing
+        }
+        ${
+          config.show_state
+            ? html`
+                <state-display
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .content=${config.state_content}
+                  .name=${name}
+                  dash-unavailable
+                ></state-display>
+              `
+            : nothing
+        }
       </ha-heading-badge>
     `;
   }

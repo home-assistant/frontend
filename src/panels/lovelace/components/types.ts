@@ -1,10 +1,11 @@
+import { enums, object, optional, union } from "superstruct";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { Condition } from "../common/validate-condition";
+import type { VisibilityCondition } from "../common/validate-condition";
 import type { LovelaceElementConfig } from "../elements/types";
 
 export interface ConditionalBaseConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig | LovelaceElementConfig;
-  conditions: Condition[];
+  conditions: VisibilityCondition[];
 }
 
 export const TIMESTAMP_RENDERING_FORMATS = [
@@ -16,4 +17,18 @@ export const TIMESTAMP_RENDERING_FORMATS = [
 ] as const;
 
 export type TimestampRenderingFormat =
-  (typeof TIMESTAMP_RENDERING_FORMATS)[number];
+  | (typeof TIMESTAMP_RENDERING_FORMATS)[number]
+  | {
+      type: (typeof TIMESTAMP_RENDERING_FORMATS)[number];
+      style?: "short" | "long";
+    };
+
+export const timeFormatConfigStruct = optional(
+  union([
+    enums(TIMESTAMP_RENDERING_FORMATS),
+    object({
+      type: enums(TIMESTAMP_RENDERING_FORMATS),
+      style: optional(enums(["short", "long"])),
+    }),
+  ])
+);

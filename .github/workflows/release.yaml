@@ -6,7 +6,7 @@ on:
       - published
 
 env:
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.14"
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -19,47 +19,81 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       contents: write # Required to upload release assets
+      id-token: write # For "Trusted Publisher" to PyPi
+    if: github.repository_owner == 'home-assistant'
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@master
+        uses: home-assistant/actions/helpers/verify-version@58bff37c8947f690ace498be413a9b78d6f30f93 # master
 
-      - name: Setup Node
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
         with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-
-      - name: Install dependencies
-        run: yarn install
+          immutable: false
+          cache: false
 
       - name: Download Translations
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The app fetches core (backend) translations live from HA, so the
+          # release build does not need Lokalise's backend project.
+          SKIP_BACKEND_TRANSLATIONS: "1"
+
+      # Restore the content-addressed compression cache. Unchanged chunks and
+      # static assets are then reused instead of re-run through brotli/zopfli.
+      - name: Restore compression cache
+        id: compress-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            compress-cache-${{ runner.os }}-
+
       - name: Build and release package
+        env:
+          COMPRESS_CACHE_DIR: ${{ github.workspace }}/.compress-cache
         run: |
-          python3 -m pip install twine build
-          export TWINE_USERNAME="__token__"
-          export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
+          python3 -m pip install build
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
 
-      - name: Upload release assets
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
+      # The build keeps the cache under its size budget, so saving stays bounded.
+      # A unique key always writes; restore-keys picks the newest on the next
+      # run. Not gated on the restore step: a transient restore failure (it is
+      # continue-on-error) must not stop us persisting a freshly built cache.
+      - name: Save compression cache
+        if: success()
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          files: |
-            dist/*.whl
-            dist/*.tar.gz
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          skip-existing: true
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG_NAME" dist/*.whl dist/*.tar.gz --clobber
 
   wheels-init:
     name: Init wheels build
@@ -67,17 +101,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate requirements.txt
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          # Sleep to give pypi time to populate the new version across mirrors
-          sleep 240
-          version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+          version=$(echo "$GITHUB_REF" | awk -F"/" '{print $NF}' )
+          # Wait for the exact wheel to appear on the simple index (the surface
+          # the wheels build's pip uses). The JSON API can report a version as
+          # available before it propagates here, which fails the wheels build.
+          wheel="home_assistant_frontend-${version}-py3-none-any.whl"
+          echo "Waiting for $wheel to appear on the PyPI simple index..."
+          for i in $(seq 1 30); do
+            if curl -sf "https://pypi.org/simple/home-assistant-frontend/" | grep -qF "$wheel"; then
+              echo "Package is available on the PyPI simple index!"
+              break
+            fi
+            if [ "$i" = "30" ]; then
+              echo "Timed out waiting for package to appear on PyPI"
+              exit 1
+            fi
+            echo "Not available yet, retrying in 30 seconds... ($i/30)"
+            sleep 30
+          done
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       # home-assistant/wheels doesn't support SHA pinning
       - name: Build wheels
-        uses: home-assistant/wheels@2025.10.0
+        uses: home-assistant/wheels@9e17ab1ed5c4c79d8b61e29fa63de25ca2710716 # 2026.07.0
         with:
-          abi: cp313
+          abi: cp314
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}
@@ -85,58 +136,34 @@ jobs:
 
   release-landing-page:
     name: Release landing-page frontend
-    if: github.event.release.prerelease == false
+    if: github.repository == 'home-assistant/frontend' && github.event.release.prerelease == false
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Setup Node
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install
+          persist-credentials: false
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+        with:
+          immutable: false
+          cache: false
       - name: Download Translations
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The landing-page build does not merge backend translations.
+          SKIP_BACKEND_TRANSLATIONS: "1"
       - name: Build landing-page
         run: landing-page/script/build_landing_page
       - name: Tar folder
-        run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
-      - name: Upload release asset
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
-        with:
-          files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
-
-  release-supervisor:
-    name: Release supervisor frontend
-    if: github.event.release.prerelease == false
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # Required to upload release assets
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Setup Node
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install
-      - name: Download Translations
-        run: ./script/translations_download
         env:
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Build supervisor
-        run: hassio/script/build_hassio
-      - name: Tar folder
-        run: tar -czf hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C hassio/build .
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: tar -czf "landing-page/home_assistant_frontend_landingpage-${TAG_NAME}.tar.gz" -C landing-page/dist .
       - name: Upload release asset
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
-        with:
-          files: hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG_NAME" "landing-page/home_assistant_frontend_landingpage-${TAG_NAME}.tar.gz" --clobber

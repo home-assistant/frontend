@@ -1,7 +1,7 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
@@ -32,7 +32,7 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -51,8 +51,15 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const noValue =
+      stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
+
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .catchInteraction=${false}
+      >
         <div
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
@@ -61,19 +68,23 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
           })}
         >
           <div class="when">
-            ${isUnavailableState(stateObj.state)
-              ? this.hass.formatEntityState(stateObj)
-              : html`<hui-timestamp-display
-                  .hass=${this.hass}
-                  .ts=${new Date(stateObj.state)}
-                  .format=${this._config.format}
-                  capitalize
-                ></hui-timestamp-display>`}
+            ${
+              noValue
+                ? this.hass.formatEntityState(stateObj)
+                : html`<hui-timestamp-display
+                    .hass=${this.hass}
+                    .ts=${new Date(stateObj.state)}
+                    .format=${this._config.time_format}
+                    capitalize
+                  ></hui-timestamp-display>`
+            }
           </div>
           <div class="what">
-            ${isUnavailableState(stateObj.state)
-              ? nothing
-              : this.hass.formatEntityAttributeValue(stateObj, "event_type")}
+            ${
+              noValue
+                ? nothing
+                : this.hass.formatEntityAttributeValue(stateObj, "event_type")
+            }
           </div>
         </div>
       </hui-generic-entity-row>
@@ -81,6 +92,8 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 

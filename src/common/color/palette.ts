@@ -44,9 +44,9 @@ export const normalizeLuminance = (color: string): string => {
       return midL;
     }
     if (testLuminance < targetLuminance) {
-      return findLightness(midL, highL, iterations--);
+      return findLightness(midL, highL, iterations - 1);
     }
-    return findLightness(lowL, midL, iterations--);
+    return findLightness(lowL, midL, iterations - 1);
   }
 
   baseOklch.l = findLightness();
@@ -79,7 +79,7 @@ export const generateColorPalette = (
   }
 
   return steps.map((step) => {
-    const name = `color-${label}-${step}`;
+    const name = `ha-color-${label}-${step}`;
 
     // Base color at 50%
     if (step === 50) {

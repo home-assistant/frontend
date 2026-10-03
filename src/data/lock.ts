@@ -2,12 +2,12 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { getExtendedEntityRegistryEntry } from "./entity_registry";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import type { HomeAssistant } from "../types";
-import { UNAVAILABLE } from "./entity";
+import { UNAVAILABLE } from "./entity/entity";
+import { getExtendedEntityRegistryEntry } from "./entity/entity_registry";
 
-export const enum LockEntityFeature {
+export enum LockEntityFeature {
   OPEN = 1,
 }
 
@@ -80,7 +80,7 @@ export function canUnlock(stateObj: LockEntity) {
 
 export const callProtectedLockService = async (
   element: HTMLElement,
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService" | "localize" | "callWS">,
   stateObj: LockEntity,
   service: ProtectedLockService
 ) => {

@@ -465,6 +465,9 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
         on: "mdi:alert-circle",
       },
     },
+    glass_break: {
+      default: "mdi:glass-fragile",
+    },
     heat: {
       default: "mdi:thermometer",
       state: {
@@ -715,6 +718,9 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
     },
     timestamp: {
       default: "mdi:clock",
+    },
+    uptime: {
+      default: "mdi:clock-start",
     },
     volatile_organic_compounds: {
       default: "mdi:molecule",

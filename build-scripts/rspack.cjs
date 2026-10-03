@@ -1,4 +1,6 @@
-const { existsSync } = require("fs");
+const fs = require("fs");
+
+const { existsSync } = fs;
 const path = require("path");
 const rspack = require("@rspack/core");
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -12,9 +14,75 @@ const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const WebpackBar = require("webpackbar/rspack");
+const SafeWebpackBar = require("./safe-webpackbar.cjs");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
+
+// Build-toolchain packages whose version changes the emitted bytes but which
+// are loader/compiler machinery, not modules in the build graph — so rspack's
+// node_modules snapshot cannot see them. Their versions are folded into the
+// persistent cache `version` so a toolchain upgrade invalidates the cache,
+// while ordinary runtime-dependency bumps (handled by the snapshot) do not.
+const TOOLCHAIN_PACKAGES = [
+  "@rspack/core",
+  "@babel/core",
+  "@babel/preset-env",
+  "babel-plugin-polyfill-corejs3",
+  "@babel/plugin-transform-runtime",
+  "@babel/plugin-transform-class-properties",
+  "@babel/plugin-transform-private-methods",
+  "@babel/runtime",
+  "babel-loader",
+  "core-js",
+  "terser",
+  "terser-webpack-plugin",
+  "browserslist",
+  "caniuse-lite",
+];
+
+// Our own build logic — the config, loaders and babel plugins. Their contents
+// (not their paths) go into the cache version, so a change invalidates the
+// cache the same way `buildDependencies` would, but without tying validity to
+// absolute paths — rspack compares buildDependencies by path, which breaks a
+// cache reused on another machine/checkout (a different workspace path).
+const CONFIG_FILES = [
+  __filename,
+  path.join(__dirname, "bundle.cjs"),
+  path.join(__dirname, "minify-template-literals-loader.cjs"),
+  path.join(__dirname, "lit-disable-dev-mode-loader.cjs"),
+  path.join(__dirname, "babel-plugins", "custom-polyfill-plugin.js"),
+  path.join(__dirname, "babel-plugins", "inline-constants-plugin.cjs"),
+];
+
+// Patches change a package's files but not its version, which is all the
+// node_modules snapshot checks, so their contents go into the version too.
+const PATCHES_DIR = path.join(paths.root_dir, "patches");
+
+// Content hash of the toolchain versions and our own build files, used as the
+// persistent cache `version`. Everything here is path-independent so the cache
+// stays valid when reused on a different machine or checkout path.
+const cacheVersion = () => {
+  const parts = [
+    ...TOOLCHAIN_PACKAGES.map(
+      (pkg) => `${pkg}@${require(`${pkg}/package.json`).version}`
+    ),
+    ...CONFIG_FILES.map(
+      (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
+    ),
+    ...(existsSync(PATCHES_DIR) ? fs.readdirSync(PATCHES_DIR) : [])
+      .filter((file) => file.endsWith(".patch"))
+      .sort()
+      .map(
+        (file) =>
+          `${file}:${fs.readFileSync(path.join(PATCHES_DIR, file), "utf8")}`
+      ),
+  ];
+  return require("crypto")
+    .createHash("sha256")
+    .update(parts.join("\n"))
+    .digest("hex")
+    .slice(0, 16);
+};
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -40,7 +108,6 @@ const createRspackConfig = ({
   latestBuild,
   isStatsBuild,
   isTestBuild,
-  isHassioBuild,
   isLandingPageBuild,
   dontHash,
 }) => {
@@ -48,6 +115,12 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
+  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
+  const litDisableDevModeLoader = path.join(
+    __dirname,
+    "lit-disable-dev-mode-loader.cjs"
+  );
   return {
     name,
     mode: isProdBuild ? "production" : "development",
@@ -67,30 +140,73 @@ const createRspackConfig = ({
         {
           test: /\.m?js$|\.ts$/,
           exclude: /node_modules[\\/]core-js/,
-          use: (info) => [
-            {
-              loader: "babel-loader",
-              options: {
-                ...bundle.babelOptions({
-                  latestBuild,
-                  isProdBuild,
-                  isTestBuild,
-                  sw: info.issuerLayer === "sw",
-                }),
-                cacheDirectory: !isProdBuild,
-                cacheCompression: false,
+          use: (info) =>
+            [
+              {
+                loader: "babel-loader",
+                // Options are stored per loader identity, not per call. A
+                // file imported by both the page and a worker gets two
+                // modules but, without distinct idents, one set of options:
+                // whichever layer resolved it first. That handed the worker
+                // the page's transform, polyfills included, and the page the
+                // worker's.
+                ident: `babel-loader-${info.issuerLayer ?? "page"}`,
+                options: {
+                  ...bundle.babelOptions({
+                    latestBuild,
+                    isTestBuild,
+                    sw: info.issuerLayer === "sw",
+                    worker: info.issuerLayer === "worker",
+                  }),
+                  cacheDirectory: !isProdBuild,
+                  cacheCompression: false,
+                },
               },
-            },
-            {
-              loader: "builtin:swc-loader",
-              options: bundle.swcOptions(),
-            },
-          ],
+              // Minify lit html/svg/css tagged template literals for production.
+              // Must run after swc (TS/decorators stripped, but templates kept at
+              // ES2021) and before babel — otherwise the legacy build lowers
+              // html`` to _taggedTemplateLiteral() calls that can no longer be
+              // matched, leaving legacy templates unminified.
+              isProdBuild && {
+                loader: path.join(
+                  __dirname,
+                  "minify-template-literals-loader.cjs"
+                ),
+                options: {
+                  browserslistEnv: latestBuild
+                    ? "modern"
+                    : `legacy${info.issuerLayer === "sw" ? "-sw" : ""}`,
+                },
+              },
+              !latestBuild &&
+                info.resource.startsWith(
+                  `${litHtmlDevelopmentRoot}${path.sep}`
+                ) && {
+                  loader: litDisableDevModeLoader,
+                },
+              {
+                loader: "builtin:swc-loader",
+                options: bundle.swcOptions(),
+              },
+            ].filter(Boolean),
           resolve: {
             fullySpecified: false,
           },
           parser: {
             worker: ["*context.audioWorklet.addModule()", "..."],
+          },
+        },
+        {
+          // MapLibre's worker loads ESM plugins through `import(url)`, and the
+          // page side builds a blob import from `new URL(url, import.meta.url)`
+          // for a cross-origin worker. Neither path is taken here: the RTL
+          // plugin is UMD and the worker is served from the page's origin.
+          // Rspack's stubs for these fully dynamic requests are exactly what
+          // should remain - rejecting, and free of syntax the legacy floor
+          // cannot parse - so the warnings about them are noise.
+          test: /[\\/]maplibre-gl[\\/]dist[\\/]maplibre-gl(?:-worker)?\.mjs$/,
+          parser: {
+            exprContextCritical: false,
           },
         },
         {
@@ -127,13 +243,59 @@ const createRspackConfig = ({
       },
     },
     plugins: [
-      !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
+      !isStatsBuild && new SafeWebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
       }),
+      // Babel can miscompile Lit's pre-minified runtime when downleveling to
+      // ES5. Compile lit-html from its development sources for legacy builds,
+      // then let the normal production minifier handle the final bundle.
+      !latestBuild &&
+        new rspack.NormalModuleReplacementPlugin(
+          /^(?:lit-html(?:\/.*)?|\.{1,2}\/.*\.js)$/,
+          (resource) => {
+            if (resource.request === "lit-html") {
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                "lit-html.js"
+              );
+              return;
+            }
+            if (resource.request.startsWith("lit-html/")) {
+              if (resource.request.startsWith("lit-html/development/")) {
+                return;
+              }
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                resource.request.slice("lit-html/".length)
+              );
+              return;
+            }
+            if (
+              resource.context.startsWith(`${litHtmlRoot}${path.sep}`) &&
+              resource.context !== litHtmlDevelopmentRoot &&
+              !resource.context.startsWith(
+                `${litHtmlDevelopmentRoot}${path.sep}`
+              )
+            ) {
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                path.relative(
+                  litHtmlRoot,
+                  path.resolve(resource.context, resource.request)
+                )
+              );
+            }
+          }
+        ),
       new rspack.DefinePlugin(
-        bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
+        bundle.definedVars({
+          isProdBuild,
+          latestBuild,
+          publicPath,
+          defineOverlay,
+        })
       ),
       new rspack.IgnorePlugin({
         checkResource(resource, context) {
@@ -149,12 +311,20 @@ const createRspackConfig = ({
           ) {
             return false;
           }
+          if (!ignorePackages.length) {
+            return false;
+          }
           let fullPath;
           try {
             fullPath = resource.startsWith(".")
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
+            // ESM-only packages have no CommonJS entry to resolve. The ignore
+            // list holds resolved CommonJS paths, so they can never match.
+            if (err.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+              return false;
+            }
             console.error(
               "Error in Home Assistant ignore plugin",
               resource,
@@ -168,11 +338,21 @@ const createRspackConfig = ({
           );
         },
       }),
+      bundle.emptyPackages({ isLandingPageBuild }).length
+        ? new rspack.NormalModuleReplacementPlugin(
+            new RegExp(bundle.emptyPackages({ isLandingPageBuild }).join("|")),
+            path.resolve(paths.root_dir, "src/util/empty.js")
+          )
+        : false,
+      // core-js ships a Node-only helper that evaluates
+      // `Function('return require("...")')()` when its runtime environment
+      // detection mis-classifies the page as Node. That produces a
+      // ReferenceError on browsers (observed on Safari 14). Since browser
+      // bundles never need to access Node built-in modules, replace it with
+      // a CommonJS no-op stub matching the helper's API (returns undefined).
       new rspack.NormalModuleReplacementPlugin(
-        new RegExp(
-          bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).join("|")
-        ),
-        path.resolve(paths.root_dir, "src/util/empty.js")
+        /core-js[\\/]internals[\\/]get-built-in-node-module(?:\.js)?$/,
+        path.resolve(__dirname, "get-built-in-node-module-shim.cjs")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
@@ -201,6 +381,7 @@ const createRspackConfig = ({
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
         "lit/directives/until$": "lit/directives/until.js",
+        "lit/directives/ref$": "lit/directives/ref.js",
         "lit/directives/class-map$": "lit/directives/class-map.js",
         "lit/directives/style-map$": "lit/directives/style-map.js",
         "lit/directives/if-defined$": "lit/directives/if-defined.js",
@@ -210,21 +391,59 @@ const createRspackConfig = ({
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
         "lit/directives/keyed$": "lit/directives/keyed.js",
-        "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
         "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
           "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
         "@lit-labs/observers/resize-controller":
           "@lit-labs/observers/resize-controller.js",
+        "@formatjs/intl-durationformat/should-polyfill$":
+          "@formatjs/intl-durationformat/should-polyfill.js",
+        "@formatjs/intl-durationformat/polyfill-force$":
+          "@formatjs/intl-durationformat/polyfill-force.js",
+        "@formatjs/intl-datetimeformat/should-polyfill":
+          "@formatjs/intl-datetimeformat/should-polyfill.js",
+        "@formatjs/intl-datetimeformat/polyfill-force":
+          "@formatjs/intl-datetimeformat/polyfill-force.js",
+        "@formatjs/intl-displaynames/should-polyfill":
+          "@formatjs/intl-displaynames/should-polyfill.js",
+        "@formatjs/intl-displaynames/polyfill-force":
+          "@formatjs/intl-displaynames/polyfill-force.js",
+        "@formatjs/intl-getcanonicallocales/should-polyfill":
+          "@formatjs/intl-getcanonicallocales/should-polyfill.js",
+        "@formatjs/intl-getcanonicallocales/polyfill-force":
+          "@formatjs/intl-getcanonicallocales/polyfill-force.js",
+        "@formatjs/intl-listformat/should-polyfill":
+          "@formatjs/intl-listformat/should-polyfill.js",
+        "@formatjs/intl-listformat/polyfill-force":
+          "@formatjs/intl-listformat/polyfill-force.js",
+        "@formatjs/intl-locale/should-polyfill":
+          "@formatjs/intl-locale/should-polyfill.js",
+        "@formatjs/intl-locale/polyfill-force":
+          "@formatjs/intl-locale/polyfill-force.js",
+        "@formatjs/intl-numberformat/should-polyfill":
+          "@formatjs/intl-numberformat/should-polyfill.js",
+        "@formatjs/intl-numberformat/polyfill-force":
+          "@formatjs/intl-numberformat/polyfill-force.js",
+        "@formatjs/intl-pluralrules/should-polyfill":
+          "@formatjs/intl-pluralrules/should-polyfill.js",
+        "@formatjs/intl-pluralrules/polyfill-force":
+          "@formatjs/intl-pluralrules/polyfill-force.js",
+        "@formatjs/intl-relativetimeformat/should-polyfill":
+          "@formatjs/intl-relativetimeformat/should-polyfill.js",
+        "@formatjs/intl-relativetimeformat/polyfill-force":
+          "@formatjs/intl-relativetimeformat/polyfill-force.js",
       },
     },
     output: {
       module: latestBuild,
       filename: ({ chunk }) =>
-        !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
-          ? "[name].js"
-          : "[name].[contenthash].js",
+        // Versioned instead of hashed; MapLibre gets the URL at build time
+        chunk.name === bundle.mapWorkerName
+          ? bundle.mapWorkerFilename()
+          : !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
+            ? "[name].js"
+            : "[name].[contenthash].js",
       chunkFilename:
         isProdBuild && !isStatsBuild ? "[name].[contenthash].js" : "[name].js",
       assetModuleFilename:
@@ -259,8 +478,35 @@ const createRspackConfig = ({
         ])
       ),
     },
+    // Persistent filesystem cache for production builds, opt-in per environment
+    // via RSPACK_CACHE ("readwrite" writes it, "readonly" only reads a warm
+    // cache — e.g. CI reusing the nightly-written one). Unset (releases, local,
+    // tests) = no cache.
+    ...(isProdBuild && process.env.RSPACK_CACHE
+      ? {
+          cache: {
+            type: "persistent",
+            // `name` is already unique per variant (frontend-modern/-legacy).
+            name,
+            // Content-based version (node major + toolchain versions + our own
+            // build files + patches). Everything is path-independent, so
+            // the cache stays valid when reused on another machine/checkout.
+            // Runtime deps are deliberately absent — rspack's node_modules
+            // snapshot invalidates their modules per-package, so a single
+            // unrelated bump keeps the rest warm. buildDependencies is
+            // intentionally not used: rspack compares it by absolute path,
+            // which breaks cross-machine reuse.
+            version: `node${process.versions.node.split(".")[0]}-${cacheVersion()}`,
+            storage: {
+              type: "filesystem",
+              directory: path.resolve(paths.root_dir, ".rspack-cache"),
+            },
+            // CI reads the nightly-written cache but must not modify it.
+            readonly: process.env.RSPACK_CACHE === "readonly",
+          },
+        }
+      : {}),
     experiments: {
-      layers: true,
       outputModule: true,
     },
   };
@@ -276,22 +522,35 @@ const createAppConfig = ({
     bundle.config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
-const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
-  createRspackConfig(
-    bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild })
-  );
-
-const createCastConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
-
-const createHassioConfig = ({
+const createDemoConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
   isTestBuild,
 }) =>
   createRspackConfig(
-    bundle.config.hassio({
+    bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
+  );
+
+const createCastConfig = ({ isProdBuild, latestBuild }) =>
+  createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
+
+const createGalleryConfig = ({ isProdBuild, latestBuild, isTestBuild }) =>
+  createRspackConfig(
+    bundle.config.gallery({ isProdBuild, latestBuild, isTestBuild })
+  );
+
+const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
+  createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
+
+const createE2eTestAppConfig = ({
+  isProdBuild,
+  latestBuild,
+  isStatsBuild,
+  isTestBuild,
+}) =>
+  createRspackConfig(
+    bundle.config.e2eTestApp({
       isProdBuild,
       latestBuild,
       isStatsBuild,
@@ -299,18 +558,12 @@ const createHassioConfig = ({
     })
   );
 
-const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
-
-const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
-
 module.exports = {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
-  createHassioConfig,
   createGalleryConfig,
   createRspackConfig,
   createLandingPageConfig,
+  createE2eTestAppConfig,
 };

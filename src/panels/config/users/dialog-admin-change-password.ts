@@ -3,12 +3,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import "../../../components/ha-textfield";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import { adminChangePassword } from "../../../data/auth";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -43,10 +44,14 @@ interface FormData {
 }
 
 @customElement("dialog-admin-change-password")
-class DialogAdminChangePassword extends LitElement {
+class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: AdminChangePasswordDialogParams;
+
+  @state() private _open = false;
 
   @state() private _userId?: string;
 
@@ -61,11 +66,23 @@ class DialogAdminChangePassword extends LitElement {
   public showDialog(params: AdminChangePasswordDialogParams): void {
     this._params = params;
     this._userId = params.userId;
+    this._data = undefined;
+    this._error = undefined;
+    this._submitting = false;
+    this._success = false;
+    this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, {});
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
+    this._userId = undefined;
     this._data = undefined;
+    this._error = undefined;
     this._submitting = false;
     this._success = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -105,60 +122,66 @@ class DialogAdminChangePassword extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.users.change_password.caption")
+        .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
+        header-title=${this.hass.localize(
+          "ui.panel.config.users.change_password.caption"
         )}
+        @closed=${this._dialogClosed}
       >
-        ${this._success
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.users.change_password.password_changed"
-                )}
-              </p>
-              <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.ok")}
-              </ha-button>
-            `
-          : html`
-              <ha-form
-                .hass=${this.hass}
-                .data=${this._data}
-                .error=${this._error}
-                .schema=${SCHEMA}
-                .computeLabel=${this._computeLabel}
-                .computeError=${this._computeError}
-                @value-changed=${this._valueChanged}
-                .disabled=${this._submitting}
-              ></ha-form>
-              <ha-button
-                appearance="plain"
-                slot="primaryAction"
-                @click=${this.closeDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>
-              <ha-button
-                slot="primaryAction"
-                @click=${this._changePassword}
-                .disabled=${this._submitting || !canSubmit}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.users.change_password.change"
-                )}
-              </ha-button>
-            `}
+        ${
+          this._success
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.users.change_password.password_changed"
+                  )}
+                </p>
+                <ha-dialog-footer slot="footer">
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.ok")}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+            : html`
+                <ha-form
+                  autofocus
+                  .hass=${this.hass}
+                  .data=${this._data}
+                  .error=${this._error}
+                  .schema=${SCHEMA}
+                  .computeLabel=${this._computeLabel}
+                  .computeError=${this._computeError}
+                  @value-changed=${this._valueChanged}
+                  .disabled=${this._submitting}
+                ></ha-form>
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass.localize("ui.common.cancel")}
+                  </ha-button>
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._changePassword}
+                    .disabled=${this._submitting || !canSubmit}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.users.change_password.change"
+                    )}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+        }
       </ha-dialog>
     `;
   }
 
   private _valueChanged(ev) {
     this._data = ev.detail.value;
+    this._updateDirtyState(this._data ?? {});
     this._validate();
   }
 
@@ -171,6 +194,7 @@ class DialogAdminChangePassword extends LitElement {
         this._userId!,
         this._data.new_password
       );
+      this._markDirtyStateClean();
       this._success = true;
     } catch (err: any) {
       showToast(this, {

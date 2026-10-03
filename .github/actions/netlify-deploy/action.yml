@@ -1,0 +1,52 @@
+name: Deploy to Netlify
+description: Deploy a directory to Netlify (production when alias is empty, otherwise to the alias)
+
+inputs:
+  dir:
+    description: Directory to deploy
+    required: true
+  alias:
+    description: Deploy alias; leave empty to deploy to production
+    default: ""
+  auth-token:
+    description: NETLIFY_AUTH_TOKEN
+    required: true
+  site-id:
+    description: NETLIFY_SITE_ID
+    required: true
+
+outputs:
+  netlify_url:
+    description: The deployed URL
+    value: ${{ steps.deploy.outputs.netlify_url }}
+  unique_deploy_url:
+    description: The unique hash-based deployment URL for this specific build
+    value: ${{ steps.deploy.outputs.unique_deploy_url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Deploy to Netlify
+      id: deploy
+      shell: bash
+      env:
+        DIR: ${{ inputs.dir }}
+        ALIAS: ${{ inputs.alias }}
+        NETLIFY_AUTH_TOKEN: ${{ inputs.auth-token }}
+        NETLIFY_SITE_ID: ${{ inputs.site-id }}
+      run: |
+        # Execute the deployment
+        if [ -n "$ALIAS" ]; then
+          npx -y netlify-cli deploy --dir="$DIR" --alias "$ALIAS" --json > deploy_output.json
+        else
+          npx -y netlify-cli deploy --dir="$DIR" --prod --json > deploy_output.json
+        fi
+
+        # Collect the urls from the deployment output
+        NETLIFY_URL=$(jq -r '.url // .deploy_url' deploy_output.json)
+        SITE_NAME=$(jq -r '.site_name' deploy_output.json)
+        DEPLOY_ID=$(jq -r '.deploy_id' deploy_output.json)
+        UNIQUE_URL="https://${DEPLOY_ID}--${SITE_NAME}.netlify.app"
+
+        echo "netlify_url=$NETLIFY_URL" >> "$GITHUB_OUTPUT"
+        echo "unique_deploy_url=$UNIQUE_URL" >> "$GITHUB_OUTPUT"

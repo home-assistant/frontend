@@ -9,14 +9,15 @@ import type { DataTableRowData } from "../components/data-table/ha-data-table";
 export interface BluetoothDeviceData extends DataTableRowData {
   address: string;
   connectable: boolean;
-  manufacturer_data: Record<number, string>;
+  manufacturer_data: Record<string, string>;
   name: string;
   rssi: number;
   service_data: Record<string, string>;
   service_uuids: string[];
   source: string;
   time: number;
-  tx_power: number;
+  tx_power: number | null;
+  raw: string | null;
 }
 
 export interface BluetoothConnectionData extends DataTableRowData {
@@ -58,12 +59,20 @@ export interface BluetoothAllocationsData {
   allocated: string[];
 }
 
+export type BluetoothScannerMode = "active" | "passive";
+
+export type BluetoothScannerRequestedMode = BluetoothScannerMode | "auto";
+
 export interface BluetoothScannerState {
   source: string;
   adapter: string;
-  current_mode: "active" | "passive" | null;
-  requested_mode: "active" | "passive" | null;
+  current_mode: BluetoothScannerMode | null;
+  requested_mode: BluetoothScannerRequestedMode | null;
 }
+
+export const isScannerStateMismatch = (state: BluetoothScannerState): boolean =>
+  state.requested_mode !== "auto" &&
+  state.current_mode !== state.requested_mode;
 
 export const subscribeBluetoothScannersDetailsUpdates = (
   conn: Connection,

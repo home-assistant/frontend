@@ -1,6 +1,7 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRoomService } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { html, LitElement, nothing, type TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -20,6 +21,13 @@ interface ServiceComboBoxItem extends PickerComboBoxItem {
   domain_name?: string;
   service_id?: string;
 }
+
+const SEARCH_KEYS = [
+  { name: "search_labels.name", weight: 10 },
+  { name: "search_labels.description", weight: 8 },
+  { name: "search_labels.domainName", weight: 6 },
+  { name: "search_labels.serviceId", weight: 3 },
+];
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
@@ -43,17 +51,17 @@ class HaServicePicker extends LitElement {
     await this._picker?.open();
   }
 
-  protected firstUpdated(props) {
+  protected firstUpdated(props: PropertyValues<this>) {
     super.firstUpdated(props);
     this.hass.loadBackendTranslation("services");
-    getServiceIcons(this.hass);
+    getServiceIcons(this.hass.connection, this.hass.config);
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<ServiceComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (
     item,
-    { index }
+    index
   ) => html`
-    <ha-combo-box-item type="button" .borderTop=${index !== 0}>
+    <ha-combo-box-item .borderTop=${index !== 0}>
       <ha-service-icon
         slot="start"
         .hass=${this.hass}
@@ -61,18 +69,22 @@ class HaServicePicker extends LitElement {
       ></ha-service-icon>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
-      ${item.service_id && this.showServiceId
-        ? html`<span slot="supporting-text" class="code">
-            ${item.service_id}
-          </span>`
-        : nothing}
-      ${item.domain_name
-        ? html`
-            <div slot="trailing-supporting-text" class="domain">
-              ${item.domain_name}
-            </div>
-          `
-        : nothing}
+      ${
+        item.service_id && this.showServiceId
+          ? html`<span slot="supporting-text" class="code">
+              ${item.service_id}
+            </span>`
+          : nothing
+      }
+      ${
+        item.domain_name
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${item.domain_name}
+              </div>
+            `
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 
@@ -92,8 +104,14 @@ class HaServicePicker extends LitElement {
           `;
         }
 
+        const descriptionPlaceholders =
+          this.hass.services[domain][service].description_placeholders;
+
         const serviceName =
-          localize(`component.${domain}.services.${service}.name`) ||
+          localize(
+            `component.${domain}.services.${service}.name`,
+            descriptionPlaceholders
+          ) ||
           services[domain][service].name ||
           service;
 
@@ -104,11 +122,13 @@ class HaServicePicker extends LitElement {
             .service=${serviceId}
           ></ha-service-icon>
           <span slot="headline">${serviceName}</span>
-          ${this.showServiceId
-            ? html`<span slot="supporting-text" class="code"
-                >${serviceId}</span
-              >`
-            : nothing}
+          ${
+            this.showServiceId
+              ? html`<span slot="supporting-text" class="code"
+                  >${serviceId}</span
+                >`
+              : nothing
+          }
         `;
       }
   );
@@ -122,7 +142,6 @@ class HaServicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        allow-custom-value
         .notFoundLabel=${this.hass.localize(
           "ui.components.service-picker.no_match"
         )}
@@ -134,6 +153,10 @@ class HaServicePicker extends LitElement {
         .valueRenderer=${this._valueRenderer(
           this.hass.localize,
           this.hass.services
+        )}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.service-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
       >
@@ -163,16 +186,21 @@ class HaServicePicker extends LitElement {
             const serviceId = `${domain}.${service}`;
             const domainName = domainToName(localize, domain);
 
+            const descriptionPlaceholders =
+              this.hass.services[domain][service].description_placeholders;
+
             const name =
               this.hass.localize(
-                `component.${domain}.services.${service}.name`
+                `component.${domain}.services.${service}.name`,
+                descriptionPlaceholders
               ) ||
               services[domain][service].name ||
               service;
 
             const description =
               this.hass.localize(
-                `component.${domain}.services.${service}.description`
+                `component.${domain}.services.${service}.description`,
+                descriptionPlaceholders
               ) ||
               services[domain][service].description ||
               "";
@@ -183,9 +211,7 @@ class HaServicePicker extends LitElement {
               secondary: description,
               domain_name: domainName,
               service_id: serviceId,
-              search_labels: [serviceId, domainName, name, description].filter(
-                Boolean
-              ),
+              search_labels: { serviceId, domainName, name, description },
               sorting_label: serviceId,
             });
           }

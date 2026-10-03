@@ -1,9 +1,10 @@
 #!/bin/sh
-# Develop the demo
+# Develop the demo. Pass --background/--status/--stop/--logs to manage a
+# detached instance (see build-scripts/dev-server.mjs).
 
 # Stop on errors
 set -e
 
 cd "$(dirname "$0")/../.."
 
-./node_modules/.bin/gulp develop-demo
+exec node build-scripts/dev-server.mjs --suite demo "$@"

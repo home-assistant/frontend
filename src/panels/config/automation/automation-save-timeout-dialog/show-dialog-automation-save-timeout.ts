@@ -6,7 +6,7 @@ export const loadAutomationSaveTimeoutDialog = () =>
 export interface AutomationSaveTimeoutDialogParams {
   onClose?: () => void;
   savedPromise: Promise<any>;
-  type: "automation" | "script";
+  type: "automation" | "script" | "scene";
 }
 
 export const showAutomationSaveTimeoutDialog = (

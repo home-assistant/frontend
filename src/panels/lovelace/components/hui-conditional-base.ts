@@ -2,17 +2,10 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HuiCard } from "../cards/hui-card";
 import type { ConditionalCardConfig } from "../cards/types";
-import type { Condition } from "../common/validate-condition";
-import {
-  checkConditionsMet,
-  validateConditionalConfig,
-} from "../common/validate-condition";
+import { validateConditionalConfig } from "../common/validate-condition";
 import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 
 declare global {
@@ -22,12 +15,16 @@ declare global {
 }
 
 @customElement("hui-conditional-base")
-export class HuiConditionalBase extends ConditionalListenerMixin(
-  ReactiveElement
-) {
+export class HuiConditionalBase extends ConditionalListenerMixin<
+  ConditionalCardConfig | ConditionalRowConfig
+>(ReactiveElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public preview = false;
+
+  // Stay mounted while hidden so a server condition can flip back to visible.
+  // If hui-card unmounts us, only client conditions can recover from the seed.
+  public connectedWhileHidden = true;
 
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
@@ -69,22 +66,11 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
   }
 
   protected setupConditionalListeners() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return;
     }
 
-    const supportedConditions = this._config.conditions.filter(
-      (c) => "condition" in c
-    ) as Condition[];
-
-    setupMediaQueryListeners(
-      supportedConditions,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this.setVisibility(conditionsMet);
-      }
-    );
+    super.setupConditionalListeners(this._config.conditions);
   }
 
   protected update(changed: PropertyValues): void {
@@ -96,23 +82,19 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
       changed.has("hass") ||
       changed.has("preview")
     ) {
-      this.clearConditionalListeners();
       this.setupConditionalListeners();
       this._updateVisibility();
     }
   }
 
-  private _updateVisibility() {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass || !this._config) {
       return;
     }
 
     this._element.preview = this.preview;
 
-    const conditionMet = checkConditionsMet(
-      this._config!.conditions,
-      this.hass!
-    );
+    const conditionMet = conditionsMet ?? this._conditionsVisible();
 
     this.setVisibility(conditionMet);
   }

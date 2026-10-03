@@ -2,10 +2,9 @@ import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { NumberFormat } from "../../data/translation";
-import { round } from "./round";
 
 /**
  * Returns true if the entity is considered numeric based on the attributes it has
@@ -15,12 +14,8 @@ export const isNumericState = (stateObj: HassEntity): boolean =>
   isNumericFromAttributes(stateObj.attributes);
 
 export const isNumericFromAttributes = (
-  attributes: HassEntityAttributeBase,
-  numericDeviceClasses?: string[]
-): boolean =>
-  !!attributes.unit_of_measurement ||
-  !!attributes.state_class ||
-  (numericDeviceClasses || []).includes(attributes.device_class || "");
+  attributes: HassEntityAttributeBase
+): boolean => !!attributes.unit_of_measurement || !!attributes.state_class;
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData
@@ -41,6 +36,25 @@ export const numberFormatToLocale = (
   }
 };
 
+// Constructing an Intl.NumberFormat is comparatively expensive, and these
+// formatters are created on every numeric state render. The number of distinct
+// (locale, options) combinations is small and bounded in practice, so cache the
+// instances instead of rebuilding them on every call.
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
+
+const getNumberFormatter = (
+  locale: string | string[] | undefined,
+  options: Intl.NumberFormatOptions
+): Intl.NumberFormat => {
+  const key = JSON.stringify([locale, options]);
+  let formatter = numberFormatCache.get(key);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, options);
+    numberFormatCache.set(key, formatter);
+  }
+  return formatter;
+};
+
 /**
  * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
  *
@@ -52,26 +66,34 @@ export const formatNumber = (
   num: string | number,
   localeOptions?: FrontendLocaleData,
   options?: Intl.NumberFormatOptions
-): string => {
+): string =>
+  formatNumberToParts(num, localeOptions, options)
+    .map((part) => part.value)
+    .join("");
+
+/**
+ * Returns an array of objects containing the formatted number in parts
+ * Similar to Intl.NumberFormat.prototype.formatToParts()
+ *
+ * Input params - same as for formatNumber()
+ */
+export const formatNumberToParts = (
+  num: string | number,
+  localeOptions?: FrontendLocaleData,
+  options?: Intl.NumberFormatOptions
+): any[] => {
   const locale = localeOptions
     ? numberFormatToLocale(localeOptions)
     : undefined;
-
-  // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
-  Number.isNaN =
-    Number.isNaN ||
-    function isNaN(input) {
-      return typeof input === "number" && isNaN(input);
-    };
 
   if (
     localeOptions?.number_format !== NumberFormat.none &&
     !Number.isNaN(Number(num))
   ) {
-    return new Intl.NumberFormat(
+    return getNumberFormatter(
       locale,
       getDefaultFormatOptions(num, options)
-    ).format(Number(num));
+    ).formatToParts(Number(num));
   }
 
   if (
@@ -80,21 +102,16 @@ export const formatNumber = (
     localeOptions?.number_format === NumberFormat.none
   ) {
     // If NumberFormat is none, use en-US format without grouping.
-    return new Intl.NumberFormat(
+    return getNumberFormatter(
       "en-US",
       getDefaultFormatOptions(num, {
         ...options,
         useGrouping: false,
       })
-    ).format(Number(num));
+    ).formatToParts(Number(num));
   }
 
-  if (typeof num === "string") {
-    return num;
-  }
-  return `${round(num, options?.maximumFractionDigits).toString()}${
-    options?.style === "currency" ? ` ${options.currency}` : ""
-  }`;
+  return [{ type: "literal", value: num }];
 };
 
 /**

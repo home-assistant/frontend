@@ -1,33 +1,35 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeEntityUnitDisplay } from "../../../common/entity/compute_entity_unit_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import {
+  unitPosition,
+  valueFromParts,
+} from "../../../common/entity/value_parts";
 import {
   stateColorBrightness,
   stateColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-  isNumericState,
-} from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { isUnavailableState } from "../../../data/entity";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
+import { handleAction } from "../common/handle-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -90,7 +92,19 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     this._config = config;
 
     if (this._config.footer) {
-      this._footerElement = createHeaderFooterElement(this._config.footer);
+      const footerElement = createHeaderFooterElement(this._config.footer);
+      // A lazy loaded footer has no `hass` accessor before it is upgraded,
+      // so the forwarding in `shouldUpdate` skips it until then
+      footerElement.addEventListener(
+        "ll-upgrade",
+        () => {
+          if ("hass" in footerElement) {
+            footerElement.hass = this.hass;
+          }
+        },
+        { once: true }
+      );
+      this._footerElement = footerElement;
     } else if (this._footerElement) {
       this._footerElement = undefined;
     }
@@ -121,15 +135,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
-    const showUnit = this._config.attribute
-      ? this._config.attribute in stateObj.attributes
-      : !isUnavailableState(stateObj.state);
+    const customUnit = this._config.unit;
+    const unit = computeEntityUnitDisplay(this.hass, stateObj, this._config);
+    const stateParts = this.hass.formatEntityStateToParts(stateObj);
+    // The unit is styled separately, so place it before or after the value
+    // following the locale's native order. A custom unit always trails.
+    const unitFirst = !customUnit && unitPosition(stateParts) === "before";
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
 
@@ -138,9 +151,20 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @click=${this._handleClick}
-        tabindex="0"
-        class=${classMap({ "with-fixed-footer": fixedFooter })}
+        tabindex=${ifDefined(
+          !this._config.tap_action || hasAction(this._config.tap_action)
+            ? "0"
+            : undefined
+        )}
+        class=${classMap({
+          "with-fixed-footer": fixedFooter,
+          action: hasAnyAction(this._config),
+        })}
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config.hold_action),
+          hasDoubleClick: hasAction(this._config.double_tap_action),
+        })}
       >
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
@@ -148,7 +172,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             <ha-state-icon
               .icon=${this._config.icon}
               .stateObj=${stateObj}
-              .hass=${this.hass}
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
@@ -162,45 +185,56 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          <span class="value"
-            >${"attribute" in this._config
-              ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? html`
-                    <ha-attribute-value
-                      hide-unit
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      .attribute=${this._config.attribute!}
-                    >
-                    </ha-attribute-value>
-                  `
-                : this.hass.localize("state.default.unknown")
-              : (isNumericState(stateObj) || this._config.unit) &&
-                  stateObj.attributes.device_class !== "duration"
-                ? formatNumber(
-                    stateObj.state,
-                    this.hass.locale,
-                    getNumberFormatOptions(
-                      stateObj,
-                      this.hass.entities[this._config.entity]
-                    )
-                  )
-                : this.hass.formatEntityState(stateObj)}</span
-          >${showUnit
-            ? html`
-                <span class="measurement"
-                  >${this._config.unit ||
-                  (this._config.attribute ||
-                  stateObj.attributes.device_class === "duration"
-                    ? ""
-                    : stateObj.attributes.unit_of_measurement)}</span
-                >
-              `
-            : ""}
+          ${
+            "attribute" in this._config
+              ? this._renderValueWithUnit(
+                  stateObj.attributes[this._config.attribute!] !== undefined
+                    ? html`<ha-attribute-value
+                        hide-unit
+                        .stateObj=${stateObj}
+                        .attribute=${this._config.attribute!}
+                      ></ha-attribute-value>`
+                    : this.hass.localize("state.default.unknown"),
+                  unit,
+                  false
+                )
+              : this._renderValueWithUnit(
+                  valueFromParts(stateParts),
+                  unit,
+                  unitFirst
+                )
+          }
         </div>
-        <div class="footer">${this._footerElement}</div>
+        <div
+          class="footer"
+          @touchcancel=${stopPropagation}
+          @touchend=${stopPropagation}
+          @keydown=${stopPropagation}
+          @click=${stopPropagation}
+          @action=${stopPropagation}
+        >
+          ${this._footerElement}
+        </div>
       </ha-card>
     `;
+  }
+
+  private _renderValueWithUnit(
+    value: TemplateResult | string,
+    unit: string,
+    unitFirst: boolean
+  ) {
+    return html`<span
+        class=${classMap({ value: true, "first-part": !unitFirst })}
+        >${value}</span
+      >${
+        unit
+          ? html`<span
+              class=${classMap({ measurement: true, "first-part": unitFirst })}
+              >${unit}</span
+            >`
+          : nothing
+      }`;
   }
 
   private _computeColor(stateObj: HassEntity): string | undefined {
@@ -221,9 +255,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     // Side Effect used to update footer hass while keeping optimizations
-    if (this._footerElement) {
+    if (this._footerElement && "hass" in this._footerElement) {
       this._footerElement.hass = this.hass;
     }
 
@@ -238,8 +272,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntityCardConfig
-      | undefined;
+      EntityCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -251,8 +284,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleClick(): void {
-    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -273,8 +306,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          cursor: pointer;
           outline: none;
+        }
+
+        ha-card.action {
+          cursor: pointer;
+        }
+        .footer {
+          cursor: initial;
         }
 
         .header {
@@ -300,24 +339,33 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .info {
+          display: flex;
+          align-items: baseline;
           padding: 0px 16px 16px;
           margin-top: -4px;
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .info > * {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: var(--ha-line-height-condensed);
         }
 
         .value {
           font-size: var(--ha-font-size-3xl);
-          margin-right: 4px;
-          margin-inline-end: 4px;
-          margin-inline-start: initial;
         }
 
         .measurement {
           font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
+        }
+
+        .first-part {
+          order: -1; /* ? */
+          margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
 
         .with-fixed-footer {

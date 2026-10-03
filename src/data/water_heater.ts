@@ -1,21 +1,13 @@
-import {
-  mdiFinance,
-  mdiFireCircle,
-  mdiHeatWave,
-  mdiLeaf,
-  mdiLightningBolt,
-  mdiPower,
-  mdiRocketLaunch,
-} from "@mdi/js";
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export const enum WaterHeaterEntityFeature {
+export enum WaterHeaterEntityFeature {
   TARGET_TEMPERATURE = 1,
   OPERATION_MODE = 2,
   AWAY_MODE = 4,
+  ON_OFF = 8,
 }
 
 export const OPERATION_MODES = [
@@ -37,8 +29,10 @@ export type WaterHeaterEntity = HassEntityBase & {
     max_temp: number;
     current_temperature?: number;
     temperature?: number;
-    operation_mode: OperationMode;
-    operation_list: OperationMode[];
+    target_temp_high?: number;
+    target_temp_low?: number;
+    operation_mode?: OperationMode;
+    operation_list?: OperationMode[];
     away_mode?: "on" | "off";
   };
 };
@@ -57,17 +51,3 @@ export const compareWaterHeaterOperationMode = (
 ) =>
   waterHeaterOperationModeOrdering[mode1] -
   waterHeaterOperationModeOrdering[mode2];
-
-export const WATER_HEATER_OPERATION_MODE_ICONS: Record<OperationMode, string> =
-  {
-    eco: mdiLeaf,
-    electric: mdiLightningBolt,
-    performance: mdiRocketLaunch,
-    high_demand: mdiFinance,
-    heat_pump: mdiHeatWave,
-    gas: mdiFireCircle,
-    off: mdiPower,
-  };
-
-export const computeOperationModeIcon = (mode: OperationMode) =>
-  WATER_HEATER_OPERATION_MODE_ICONS[mode];

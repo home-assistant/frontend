@@ -53,23 +53,9 @@ logger:
   default: info
   logs:
     homeassistant.components.frontend: debug
-" >> "${WD}/config/configuration.yaml"
 
-  if [ -n "${HASSIO}" ]; then
-  echo "
-# frontend:
-#   development_repo: ${WD}
-
-hassio:
-  development_repo: ${WD}" >> "${WD}/config/configuration.yaml"
-  else
-  echo "
 frontend:
-  development_repo: ${WD}
-
-# hassio:
-#   development_repo: ${WD}" >> "${WD}/config/configuration.yaml"
-  fi
+  development_repo: ${WD}" >> "${WD}/config/configuration.yaml" >> "${WD}/config/configuration.yaml"
 
   if [ -n "${CODESPACES}" ]; then
   echo "

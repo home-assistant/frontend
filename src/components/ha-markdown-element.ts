@@ -1,10 +1,14 @@
 import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
+import { ReactiveElement, render, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import hash from "object-hash";
 import { fireEvent } from "../common/dom/fire_event";
+import { rewriteHtmlUrls } from "../common/dom/rewrite-html-urls";
 import { renderMarkdown } from "../resources/render-markdown";
 import { CacheManager } from "../util/cache-manager";
+
+const h = (template: ReturnType<typeof unsafeHTML>) => html`${template}`;
 
 const markdownCache = new CacheManager<string>(1000);
 
@@ -36,6 +40,9 @@ class HaMarkdownElement extends ReactiveElement {
 
   @property({ type: Boolean }) public cache = false;
 
+  // For content whose relative addresses belong elsewhere, like a README
+  @property({ attribute: false }) public rewriteUrl?: (url: string) => string;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this.cache) {
@@ -48,18 +55,26 @@ class HaMarkdownElement extends ReactiveElement {
     return this;
   }
 
-  protected update(changedProps) {
+  private _renderPromise: ReturnType<typeof this._render> = Promise.resolve();
+
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (this.content !== undefined) {
-      this._render();
+      this._renderPromise = this._render();
     }
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected async getUpdateComplete(): Promise<boolean> {
+    await super.getUpdateComplete();
+    await this._renderPromise;
+    return true;
+  }
+
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (!this.innerHTML && this.cache) {
       const key = this._computeCacheKey();
       if (markdownCache.has(key)) {
-        this.innerHTML = markdownCache.get(key)!;
+        render(h(unsafeHTML(markdownCache.get(key))), this.renderRoot);
         this._resize();
       }
     }
@@ -75,7 +90,7 @@ class HaMarkdownElement extends ReactiveElement {
   }
 
   private async _render() {
-    this.innerHTML = await renderMarkdown(
+    const elements = await renderMarkdown(
       String(this.content),
       {
         breaks: this.breaks,
@@ -85,6 +100,16 @@ class HaMarkdownElement extends ReactiveElement {
         allowSvg: this.allowSvg,
         allowDataUrl: this.allowDataUrl,
       }
+    );
+
+    const output = elements.join("");
+    render(
+      h(
+        unsafeHTML(
+          this.rewriteUrl ? rewriteHtmlUrls(output, this.rewriteUrl) : output
+        )
+      ),
+      this.renderRoot
     );
 
     this._resize();

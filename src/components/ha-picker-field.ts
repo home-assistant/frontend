@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import {
   css,
@@ -7,11 +8,18 @@ import {
   type CSSResultGroup,
   type TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import { internationalizationContext } from "../data/context";
+import { PickerMixin } from "../mixins/picker-mixin";
 import "./ha-combo-box-item";
-import type { HaComboBoxItem } from "./ha-combo-box-item";
+import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-ripple";
+import "./ha-svg-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -22,65 +30,115 @@ declare global {
 export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 
 @customElement("ha-picker-field")
-export class HaPickerField extends LitElement {
-  @property({ type: Boolean }) public disabled = false;
+export class HaPickerField extends PickerMixin(LitElement) {
+  @property({ type: Boolean, reflect: true }) public invalid = false;
 
-  @property({ type: Boolean }) public required = false;
+  @property({ type: String, attribute: "aria-label" })
+  public ariaLabel: string | null = null;
 
-  @property() public value?: string;
+  @query("#trigger", true) private _trigger?: HTMLButtonElement;
 
-  @property() public helper?: string;
-
-  @property() public placeholder?: string;
-
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
-
-  @property({ attribute: false })
-  public valueRenderer?: PickerValueRenderer;
-
-  @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   public async focus() {
     await this.updateComplete;
-    await this.item?.focus();
+    this._trigger?.focus();
   }
 
   protected render() {
+    const hasValue = !!this.value;
+
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
+    const placeholderText = this.placeholder ?? this.label;
+
+    const overlineLabel =
+      this.label && hasValue
+        ? html`<span slot="overline"
+            >${this.label}${this.required ? " *" : ""}</span
+          >`
+        : nothing;
+
+    const labelShown = !!this.label && (hasValue || !this.placeholder);
+    const hiddenLabel = labelShown ? undefined : this.ariaLabel || this.label;
+
+    const headlineContent = hasValue
+      ? this.valueRenderer
+        ? this.valueRenderer(this.value ?? "")
+        : html`<span slot="headline">${this.value}</span>`
+      : placeholderText
+        ? html`<span slot="headline" class="placeholder">
+            ${placeholderText}${this.required ? " *" : ""}
+          </span>`
+        : nothing;
+
     return html`
-      <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
-        ${this.value
-          ? this.valueRenderer
-            ? this.valueRenderer(this.value)
-            : html`<slot name="headline">${this.value}</slot>`
-          : html`
-              <span slot="headline" class="placeholder">
-                ${this.placeholder}
-              </span>
-            `}
-        ${showClearIcon
-          ? html`
-              <ha-icon-button
-                class="clear"
-                slot="end"
-                @click=${this._clear}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            `
-          : nothing}
-        <ha-svg-icon
-          class="arrow"
-          slot="end"
-          .path=${mdiMenuDown}
-        ></ha-svg-icon>
-      </ha-combo-box-item>
+      <div class=${classMap({ field: true, disabled: this.disabled })}>
+        <ha-ripple .disabled=${this.disabled}></ha-ripple>
+        ${
+          hiddenLabel
+            ? html`<span id="hidden-label" hidden>${hiddenLabel}</span>`
+            : nothing
+        }
+        <button
+          id="trigger"
+          class="trigger"
+          type="button"
+          aria-labelledby=${ifDefined(
+            hiddenLabel ? "hidden-label trigger" : undefined
+          )}
+          ?disabled=${this.disabled}
+        >
+          <ha-combo-box-item .disabled=${this.disabled}>
+            ${
+              this.image
+                ? html`<img
+                    alt=${this.label ?? ""}
+                    slot="start"
+                    .src=${this.image}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                  />`
+                : this.icon
+                  ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
+                  : html`<slot name="start" slot="start"></slot>`
+            }
+            ${overlineLabel}${headlineContent}
+            ${
+              this.unknown
+                ? html`<div slot="supporting-text" class="unknown">
+                    ${
+                      this.unknownItemText ||
+                      this._i18n?.localize(
+                        "ui.components.combo-box.unknown_item"
+                      )
+                    }
+                  </div>`
+                : nothing
+            }
+          </ha-combo-box-item>
+        </button>
+        ${
+          showClearIcon
+            ? html`
+                <ha-icon-button
+                  class="clear"
+                  .label=${this._i18n?.localize("ui.common.clear")}
+                  @click=${this._clear}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
+        <ha-svg-icon class="arrow" .path=${mdiMenuDown}></ha-svg-icon>
+      </div>
     `;
   }
 
-  private _clear(e) {
+  private _clear(e: CustomEvent) {
     e.stopPropagation();
     fireEvent(this, "clear");
   }
@@ -88,37 +146,61 @@ export class HaPickerField extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-combo-box-item[disabled] {
-          background-color: var(
-            --mdc-text-field-disabled-fill-color,
-            whitesmoke
-          );
-        }
-        ha-combo-box-item {
-          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+        .field {
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          padding-inline-end: var(--ha-space-2);
+          box-sizing: border-box;
+          background-color: var(--ha-color-form-background);
           border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
           border-end-start-radius: 0;
-          --md-list-item-one-line-container-height: 56px;
-          --md-list-item-two-line-container-height: 56px;
-          --md-list-item-top-space: 0px;
-          --md-list-item-bottom-space: 0px;
-          --md-list-item-leading-space: 8px;
-          --md-list-item-trailing-space: 8px;
-          --ha-md-list-item-gap: var(--ha-space-2);
-          /* Remove the default focus ring */
-          --md-focus-ring-width: 0px;
-          --md-focus-ring-duration: 0s;
+          cursor: pointer;
+          --ha-ripple-color: var(--primary-text-color);
         }
 
-        /* Add Similar focus style as the text field */
-        ha-combo-box-item[disabled]:after {
-          background-color: var(
-            --mdc-text-field-disabled-line-color,
-            rgba(0, 0, 0, 0.42)
-          );
+        .field.disabled {
+          background-color: var(--ha-color-form-background-disabled);
+          opacity: 0.5;
+          cursor: not-allowed;
         }
-        ha-combo-box-item:after {
+
+        .trigger {
+          display: flex;
+          flex: 1;
+          min-width: 0;
+          align-self: stretch;
+          margin: 0;
+          padding: 0;
+          border: none;
+          background: none;
+          color: inherit;
+          font: inherit;
+          text-align: start;
+          cursor: inherit;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        /* The bottom line shows focus instead */
+        .trigger:focus-visible {
+          outline: none;
+        }
+
+        ha-combo-box-item {
+          flex: 1;
+          min-width: 0;
+          --ha-combo-box-item-min-height: 56px;
+          --ha-combo-box-item-two-line-min-height: 56px;
+          --ha-combo-box-item-padding-block: 0px;
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-4);
+          --ha-combo-box-item-padding-inline-end: 0px;
+          --ha-combo-box-item-gap: var(--ha-space-2);
+          --ha-combo-box-item-disabled-opacity: 0.5;
+        }
+
+        .field:after {
           display: block;
           content: "";
           position: absolute;
@@ -128,33 +210,49 @@ export class HaPickerField extends LitElement {
           right: 0;
           height: 1px;
           width: 100%;
-          background-color: var(
-            --mdc-text-field-idle-line-color,
-            rgba(0, 0, 0, 0.42)
-          );
+          background-color: var(--ha-color-border-neutral-loud);
           transform:
             height 180ms ease-in-out,
             background-color 180ms ease-in-out;
         }
 
-        ha-combo-box-item:focus:after {
+        .field:focus-within:after {
           height: 2px;
           background-color: var(--mdc-theme-primary);
         }
 
+        :host([unknown]) .field {
+          background-color: var(--ha-color-fill-warning-quiet-resting);
+        }
+
+        :host([invalid]) .field:after {
+          height: 2px;
+          background-color: var(--mdc-theme-error, var(--error-color, #b00020));
+        }
+
         .clear {
           margin: 0 -8px;
-          --mdc-icon-button-size: 32px;
-          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+          --ha-icon-button-size: 32px;
+          --ha-icon-button-padding-inline: var(--ha-space-1);
         }
         .arrow {
           --mdc-icon-size: 20px;
           width: 32px;
+          flex: none;
+          color: var(--secondary-text-color);
         }
 
         .placeholder {
           color: var(--secondary-text-color);
-          padding: 0 8px;
+        }
+
+        :host([invalid]) .placeholder {
+          color: var(--mdc-theme-error, var(--error-color, #b00020));
+        }
+
+        .unknown {
+          color: var(--ha-color-on-warning-normal);
         }
       `,
     ];

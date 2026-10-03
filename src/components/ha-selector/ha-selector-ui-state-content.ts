@@ -29,14 +29,17 @@ export class HaSelectorUiStateContent extends SubscribeMixin(LitElement) {
     return html`
       <ha-entity-state-content-picker
         .hass=${this.hass}
-        .entityId=${this.selector.ui_state_content?.entity_id ||
-        this.context?.filter_entity}
+        .entityId=${
+          this.selector.ui_state_content?.entity_id ||
+          this.context?.filter_entity
+        }
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
         .allowName=${this.selector.ui_state_content?.allow_name || false}
+        .allowContext=${this.selector.ui_state_content?.allow_context || false}
       ></ha-entity-state-content-picker>
     `;
   }

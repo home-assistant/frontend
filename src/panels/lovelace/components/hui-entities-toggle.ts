@@ -16,7 +16,7 @@ class HuiEntitiesToggle extends LitElement {
 
   @state() private _toggleEntities?: string[];
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("entities")) {
       this._toggleEntities = this.entities!.filter(
@@ -48,12 +48,13 @@ class HuiEntitiesToggle extends LitElement {
 
   static styles = css`
     :host {
-      width: 38px;
-      display: block;
+      display: flex;
+      align-items: center;
     }
     ha-switch {
-      padding: 13px 5px;
-      margin: -4px -8px;
+      --ha-switch-width: 38px;
+      --ha-switch-size: 20px;
+      --ha-switch-thumb-size: 14px;
     }
   `;
 

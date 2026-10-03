@@ -2,9 +2,9 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-progress-ring";
 import "../../components/ha-spinner";
-import { ON, UNAVAILABLE } from "../../data/entity";
+import "../../components/progress/ha-progress-ring";
+import { ON, UNAVAILABLE } from "../../data/entity/entity";
 import {
   updateCanInstall,
   type UpdateEntity,
@@ -24,7 +24,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
 
   private _refreshTimeout?: number;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (!this.updateEntityId) {
@@ -60,8 +60,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
     }
 
     const stateObj = this.hass.states[this.updateEntityId] as
-      | UpdateEntity
-      | undefined;
+      UpdateEntity | undefined;
 
     const progressIsNumeric = stateObj && updateUsesProgress(stateObj);
 
@@ -71,33 +70,39 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
         alt="Casita Home Assistant loading logo"
       />
       <h1>
-        ${stateObj &&
-        (stateObj.state === "unavailable" || updateIsInstalling(stateObj))
-          ? this.hass.localize(
-              "ui.panel.config.voice_assistants.satellite_wizard.update.title"
-            )
-          : this.hass.localize(
-              "ui.panel.config.voice_assistants.satellite_wizard.update.checking"
-            )}
+        ${
+          stateObj &&
+          (stateObj.state === "unavailable" || updateIsInstalling(stateObj))
+            ? this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.update.title"
+              )
+            : this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.update.checking"
+              )
+        }
       </h1>
       <p class="secondary">
         ${this.hass.localize(
           "ui.panel.config.voice_assistants.satellite_wizard.update.secondary"
         )}
       </p>
-      ${progressIsNumeric
-        ? html`
-            <ha-progress-ring
-              .value=${stateObj.attributes.update_percentage as number}
-            ></ha-progress-ring>
-          `
-        : html`<ha-spinner></ha-spinner>`}
+      ${
+        progressIsNumeric
+          ? html`
+              <ha-progress-ring
+                .value=${stateObj.attributes.update_percentage as number}
+              ></ha-progress-ring>
+            `
+          : html`<ha-spinner></ha-spinner>`
+      }
       <p>
-        ${stateObj?.state === UNAVAILABLE
-          ? "Restarting voice assistant"
-          : progressIsNumeric
-            ? `Installing ${stateObj.attributes.update_percentage}%`
-            : ""}
+        ${
+          stateObj?.state === UNAVAILABLE
+            ? "Restarting voice assistant"
+            : progressIsNumeric
+              ? `Installing ${stateObj.attributes.update_percentage}%`
+              : ""
+        }
       </p>
     </div>`;
   }
@@ -108,8 +113,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       return;
     }
     const updateEntity = this.hass.states[this.updateEntityId] as
-      | UpdateEntity
-      | undefined;
+      UpdateEntity | undefined;
     if (
       updateEntity &&
       this.hass.states[updateEntity.entity_id].state === ON &&

@@ -37,10 +37,6 @@ export class HaFormfield extends FormfieldBase {
         input.checked = !input.checked;
         fireEvent(input, "change");
         break;
-      case "HA-RADIO":
-        input.checked = true;
-        fireEvent(input, "change");
-        break;
       default:
         input.click();
         break;
@@ -53,7 +49,7 @@ export class HaFormfield extends FormfieldBase {
       :host(:not([alignEnd])) ::slotted(ha-switch) {
         margin-right: 10px;
         margin-inline-end: 10px;
-        margin-inline-start: inline;
+        margin-inline-start: initial;
       }
       .mdc-form-field {
         align-items: var(--ha-formfield-align-items, center);

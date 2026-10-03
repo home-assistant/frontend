@@ -1,8 +1,11 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { navigate } from "../common/navigate";
 import type { HomeAssistant } from "../types";
-import { subscribeDeviceRegistry } from "./device_registry";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
+import {
+  subscribeDeviceRegistry,
+  type DeviceRegistryEntry,
+} from "./device/device_registry";
 import { getThreadDataSetTLV, listThreadDataSets } from "./thread";
 
 export enum NetworkType {
@@ -24,23 +27,87 @@ export interface MatterFabricData {
   fabric_id: number;
   vendor_id: number;
   fabric_index: number;
-  fabric_label?: string;
-  vendor_name?: string;
+  fabric_label: string | null;
+  vendor_name: string | null;
 }
 
 export interface MatterNodeDiagnostics {
   node_id: number;
   network_type: NetworkType;
   node_type: NodeType;
-  network_name?: string;
+  network_name: string | null;
   ip_adresses: string[];
-  mac_address?: string;
+  mac_address: string | null;
   available: boolean;
   active_fabrics: MatterFabricData[];
   active_fabric_index: number;
 }
 
 export type MatterPingResult = Record<string, boolean>;
+
+export type MatterTopologyStrength =
+  "strong" | "medium" | "weak" | "none" | "unknown";
+
+export interface MatterTopologyDirectionInfo {
+  strength: MatterTopologyStrength;
+  lqi?: number | null;
+  rssi?: number | null;
+}
+
+export interface MatterNetworkTopologyNode {
+  id: string;
+  kind: string;
+  network_type: string;
+  node_id?: number | null;
+  ha_device_id?: string | null;
+  role?: string | null;
+  available?: boolean | null;
+  is_bridge?: boolean | null;
+  ext_address?: string | null;
+  rloc16?: number | null;
+  ext_pan_id?: string | null;
+  network_name?: string | null;
+  ssid?: string | null;
+  bssid?: string | null;
+  host_name?: string | null;
+  vendor_name?: string | null;
+  model_name?: string | null;
+  last_seen?: number | null;
+}
+
+export interface MatterNetworkTopologyConnection {
+  source: string;
+  target: string;
+  network: string;
+  strength: MatterTopologyStrength;
+  source_to_target?: MatterTopologyDirectionInfo | null;
+  target_to_source?: MatterTopologyDirectionInfo | null;
+  via_route_table?: boolean | null;
+  path_cost?: number | null;
+}
+
+export interface MatterNetworkTopology {
+  collected_at: number;
+  nodes: MatterNetworkTopologyNode[];
+  connections: MatterNetworkTopologyConnection[];
+}
+
+export const fetchMatterNetworkTopology = (
+  hass: HomeAssistant,
+  refresh = false
+): Promise<MatterNetworkTopology> =>
+  hass.callWS({
+    type: "matter/network_topology",
+    refresh,
+  });
+
+export const subscribeMatterNetworkTopology = (
+  hass: HomeAssistant,
+  callback: (topology: MatterNetworkTopology) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage<MatterNetworkTopology>(callback, {
+    type: "matter/subscribe_network_topology",
+  });
 
 export interface MatterCommissioningParameters {
   setup_pin_code: number;
@@ -52,7 +119,7 @@ export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
 
 export const startExternalCommissioning = async (hass: HomeAssistant) => {
-  if (isComponentLoaded(hass, "thread")) {
+  if (isComponentLoaded(hass.config, "thread")) {
     const datasets = await listThreadDataSets(hass);
     const preferredDataset = datasets.datasets.find(
       (dataset) => dataset.preferred
@@ -77,9 +144,9 @@ export const startExternalCommissioning = async (hass: HomeAssistant) => {
   });
 };
 
-export const redirectOnNewMatterDevice = (
+export const watchForNewMatterDevice = (
   hass: HomeAssistant,
-  callback?: () => void
+  callback: (device: DeviceRegistryEntry) => void
 ): UnsubscribeFunc => {
   let curMatterDevices: Set<string> | undefined;
   const unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
@@ -101,8 +168,7 @@ export const redirectOnNewMatterDevice = (
     if (newMatterDevices.length) {
       unsubDeviceReg();
       curMatterDevices = undefined;
-      callback?.();
-      navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+      callback(newMatterDevices[0]);
     }
   });
   return () => {
@@ -111,17 +177,28 @@ export const redirectOnNewMatterDevice = (
   };
 };
 
+export const redirectOnNewMatterDevice = (
+  hass: HomeAssistant,
+  callback?: () => void
+): UnsubscribeFunc =>
+  watchForNewMatterDevice(hass, (device) => {
+    callback?.();
+    navigate(`/config/devices/device/${device.id}`);
+  });
+
 export const addMatterDevice = (hass: HomeAssistant) => {
   startExternalCommissioning(hass);
 };
 
 export const commissionMatterDevice = (
   hass: HomeAssistant,
-  code: string
+  code: string,
+  networkOnly: boolean
 ): Promise<void> =>
   hass.callWS({
     type: "matter/commission",
     code,
+    network_only: networkOnly,
   });
 
 export const acceptSharedMatterDevice = (

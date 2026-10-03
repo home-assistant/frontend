@@ -1,7 +1,7 @@
-import { mdiTag, mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiTag } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { LitElement, html } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -20,7 +20,6 @@ import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { showCategoryRegistryDetailDialog } from "./show-dialog-category-registry-detail";
 
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_CATEGORIES_ID = "___NO_CATEGORIES___";
 
 @customElement("ha-category-picker")
 export class HaCategoryPicker extends SubscribeMixin(LitElement) {
@@ -46,6 +45,19 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   @state() private _categories?: CategoryRegistryEntry[];
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingCategoryId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      this._pendingCategoryId &&
+      changedProperties.has("_categories") &&
+      this._categories?.some((c) => c.category_id === this._pendingCategoryId)
+    ) {
+      this._setValue(this._pendingCategoryId);
+      this._pendingCategoryId = undefined;
+    }
+  }
 
   protected hassSubscribeRequiredHostProps = ["scope"];
 
@@ -92,26 +104,22 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         }
 
         return html`
-          ${category.icon
-            ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
-            : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
+          ${
+            category.icon
+              ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
+              : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`
+          }
           <span slot="headline">${category.name}</span>
         `;
       }
   );
 
   private _getCategories = memoizeOne(
-    (categories: CategoryRegistryEntry[] | undefined): PickerComboBoxItem[] => {
-      if (!categories || categories.length === 0) {
-        return [
-          {
-            id: NO_CATEGORIES_ID,
-            primary: this.hass.localize(
-              "ui.components.category-picker.no_categories"
-            ),
-            icon_path: mdiTag,
-          },
-        ];
+    (
+      categories: CategoryRegistryEntry[] | undefined
+    ): PickerComboBoxItem[] | undefined => {
+      if (!categories) {
+        return undefined;
       }
 
       const items = categories.map<PickerComboBoxItem>((category) => ({
@@ -120,9 +128,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         icon: category.icon || undefined,
         icon_path: category.icon ? undefined : mdiTag,
         sorting_label: category.name,
-        search_labels: [category.name, category.category_id].filter(
-          (v): v is string => Boolean(v)
-        ),
       }));
 
       return items;
@@ -163,7 +168,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.category-picker.add_new_sugestion",
+            "ui.components.category-picker.add_new_suggestion",
             {
               name: searchString,
             }
@@ -183,10 +188,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   };
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ??
-      this.hass.localize("ui.components.category-picker.category");
-
     const valueRenderer = this._computeValueRenderer(this._categories);
 
     return html`
@@ -194,14 +195,18 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.category-picker.no_match"
-        )}
-        .placeholder=${placeholder}
+        .placeholder=${this.placeholder}
         .value=${this.value}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.category-picker.no_categories"
+        )}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.category-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -212,10 +217,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
 
     const value = ev.detail.value;
-
-    if (value === NO_CATEGORIES_ID) {
-      return;
-    }
 
     if (!value) {
       this._setValue(undefined);
@@ -236,7 +237,15 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
             this.scope!,
             values
           );
-          this._setValue(category.category_id);
+          if (
+            this._categories?.some(
+              (c) => c.category_id === category.category_id
+            )
+          ) {
+            this._setValue(category.category_id);
+          } else {
+            this._pendingCategoryId = category.category_id;
+          }
           return category;
         },
       });
@@ -254,6 +263,11 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       fireEvent(this, "change");
     }, 0);
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.category-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

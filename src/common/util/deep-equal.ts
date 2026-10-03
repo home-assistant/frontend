@@ -1,6 +1,16 @@
 // From https://github.com/epoberezkin/fast-deep-equal
 // MIT License - Copyright (c) 2017 Evgeny Poberezkin
-export const deepEqual = (a: any, b: any): boolean => {
+
+interface DeepEqualOptions {
+  /** Compare Symbol properties in addition to string keys */
+  compareSymbols?: boolean;
+}
+
+export const deepEqual = (
+  a: any,
+  b: any,
+  options?: DeepEqualOptions
+): boolean => {
   if (a === b) {
     return true;
   }
@@ -17,8 +27,8 @@ export const deepEqual = (a: any, b: any): boolean => {
       if (length !== b.length) {
         return false;
       }
-      for (i = length; i-- !== 0; ) {
-        if (!deepEqual(a[i], b[i])) {
+      for (i = length; i-- !== 0;) {
+        if (!deepEqual(a[i], b[i], options)) {
           return false;
         }
       }
@@ -35,7 +45,7 @@ export const deepEqual = (a: any, b: any): boolean => {
         }
       }
       for (i of a.entries()) {
-        if (!deepEqual(i[1], b.get(i[0]))) {
+        if (!deepEqual(i[1], b.get(i[0]), options)) {
           return false;
         }
       }
@@ -61,7 +71,7 @@ export const deepEqual = (a: any, b: any): boolean => {
       if (length !== b.length) {
         return false;
       }
-      for (i = length; i-- !== 0; ) {
+      for (i = length; i-- !== 0;) {
         if (a[i] !== b[i]) {
           return false;
         }
@@ -84,17 +94,34 @@ export const deepEqual = (a: any, b: any): boolean => {
     if (length !== Object.keys(b).length) {
       return false;
     }
-    for (i = length; i-- !== 0; ) {
+    for (i = length; i-- !== 0;) {
       if (!Object.prototype.hasOwnProperty.call(b, keys[i])) {
         return false;
       }
     }
 
-    for (i = length; i-- !== 0; ) {
+    for (i = length; i-- !== 0;) {
       const key = keys[i];
 
-      if (!deepEqual(a[key], b[key])) {
+      if (!deepEqual(a[key], b[key], options)) {
         return false;
+      }
+    }
+
+    // Compare Symbol properties if requested
+    if (options?.compareSymbols) {
+      const symbolsA = Object.getOwnPropertySymbols(a);
+      const symbolsB = Object.getOwnPropertySymbols(b);
+      if (symbolsA.length !== symbolsB.length) {
+        return false;
+      }
+      for (const sym of symbolsA) {
+        if (!Object.prototype.hasOwnProperty.call(b, sym)) {
+          return false;
+        }
+        if (!deepEqual(a[sym], b[sym], options)) {
+          return false;
+        }
       }
     }
 

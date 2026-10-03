@@ -25,6 +25,7 @@ const SAFARI_TO_MACOS = {
   16: [11, 0, 0],
   17: [12, 0, 0],
   18: [13, 0, 0],
+  26: [14, 6, 0],
 };
 
 const getCommonTemplateVars = () => {
@@ -57,6 +58,12 @@ const getCommonTemplateVars = () => {
   return {
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
     hassUrl: process.env.HASS_URL || "",
+    // Single source for the stale-build recovery patterns, shared with the
+    // bundled src/util/recover-stale-build.ts and injected into the inline
+    // boot guard (_bootstrap_recovery.html.template).
+    staleBuildPatterns: fs.readJsonSync(
+      resolve(paths.root_dir, "src/util/stale-build-patterns.json")
+    ),
   };
 };
 
@@ -82,7 +89,7 @@ const minifyHtml = (content, ext) => {
     ...htmlMinifierOptions,
     conservativeCollapse: false,
     minifyJS: terserOptions({
-      latestBuild: false, // Shared scripts should be ES5
+      latestBuild: false, // Shared scripts must satisfy the legacy targets
       isTestBuild: true, // Don't need source maps
     }),
   }).then((wrapped) =>
@@ -106,6 +113,9 @@ const genPagesDevTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
+          // Dev entries are unhashed, so the stale-index recovery guard has
+          // nothing to key off and rebuild churn could cause spurious reloads.
+          useCacheRecovery: false,
           latestEntryJS: entries.map(
             (entry) => `${publicRoot}/frontend_latest/${entry}.js`
           ),
@@ -145,10 +155,15 @@ const genPagesProdTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
+          // Recover from a stale index.html that pins deleted hashed entry
+          // bundles (see _bootstrap_recovery.html.template).
+          useCacheRecovery: true,
           latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
+          es5EntryJS: outputES5
+            ? entries.map((entry) => es5Manifest[`${entry}.js`])
+            : [],
           latestCustomPanelJS: latestManifest["custom-panel.js"],
-          es5CustomPanelJS: es5Manifest["custom-panel.js"],
+          es5CustomPanelJS: outputES5 ? es5Manifest["custom-panel.js"] : "",
         }
       );
       minifiedHTML.push(
@@ -180,6 +195,17 @@ gulp.task(
     paths.app_output_root,
     paths.app_output_latest,
     paths.app_output_es5
+  )
+);
+
+gulp.task(
+  "gen-pages-app-prod-modern",
+  genPagesProdTask(
+    APP_PAGE_ENTRIES,
+    paths.root_dir,
+    paths.app_output_root,
+    paths.app_output_latest,
+    undefined
   )
 );
 
@@ -221,6 +247,16 @@ gulp.task(
     paths.demo_output_root,
     paths.demo_output_latest,
     paths.demo_output_es5
+  )
+);
+
+gulp.task(
+  "gen-pages-demo-prod-e2e",
+  genPagesProdTask(
+    DEMO_PAGE_ENTRIES,
+    paths.demo_dir,
+    paths.demo_output_root,
+    paths.demo_output_latest
   )
 );
 
@@ -267,27 +303,27 @@ gulp.task(
   )
 );
 
-const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
+const E2E_TEST_APP_PAGE_ENTRIES = {
+  "index.html": ["main"],
+  "dashboard.html": ["dashboard"],
+  "onboarding.html": ["onboarding"],
+};
 
 gulp.task(
-  "gen-pages-hassio-dev",
+  "gen-pages-e2e-test-app-dev",
   genPagesDevTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    "src",
-    paths.hassio_publicPath
+    E2E_TEST_APP_PAGE_ENTRIES,
+    paths.e2eTestApp_dir,
+    paths.e2eTestApp_output_root
   )
 );
 
 gulp.task(
-  "gen-pages-hassio-prod",
+  "gen-pages-e2e-test-app-prod",
   genPagesProdTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    paths.hassio_output_es5,
-    "src"
+    E2E_TEST_APP_PAGE_ENTRIES,
+    paths.e2eTestApp_dir,
+    paths.e2eTestApp_output_root,
+    paths.e2eTestApp_output_latest
   )
 );

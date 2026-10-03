@@ -1,21 +1,25 @@
-import type { SelectedDetail } from "@material/mwc-list";
 import { TZDate } from "@date-fns/tz";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import type { Options, WeekdayStr, ByWeekday } from "rrule";
+import { customElement, property, state } from "lit/decorators";
+import type { ByWeekday, Options, WeekdayStr } from "rrule";
 import { RRule, Weekday } from "rrule";
+import { formatDate, formatTime } from "../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/chips/ha-chip-set";
 import "../../components/chips/ha-filter-chip";
+import type { HaFilterChip } from "../../components/chips/ha-filter-chip";
 import "../../components/ha-date-input";
-import "../../components/ha-list-item";
 import "../../components/ha-select";
-import type { HaSelect } from "../../components/ha-select";
-import "../../components/ha-textfield";
-import type { HomeAssistant } from "../../types";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type {
   MonthlyRepeatItem,
   RepeatEnd,
@@ -33,7 +37,6 @@ import {
   ruleByWeekDay,
   untilValue,
 } from "./recurrence";
-import { formatDate, formatTime } from "../../common/datetime/calc_date";
 
 @customElement("ha-recurrence-rule-editor")
 export class RecurrenceRuleEditor extends LitElement {
@@ -71,8 +74,6 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @state() private _untilDay?: Date;
 
-  @query("#monthly") private _monthlyRepeatSelect!: HaSelect;
-
   private _allWeekdays?: WeekdayStr[];
 
   private _monthlyRepeatItems: MonthlyRepeatItem[] = [];
@@ -91,14 +92,6 @@ export class RecurrenceRuleEditor extends LitElement {
         ? getMonthlyRepeatItems(this.hass, this._interval, this.dtstart)
         : [];
       this._computeWeekday();
-      const selectElement = this._monthlyRepeatSelect;
-      if (selectElement) {
-        const oldSelected = selectElement.index;
-        selectElement.select(-1);
-        this.updateComplete.then(() => {
-          selectElement.select(changedProps.has("dtstart") ? 0 : oldSelected);
-        });
-      }
     }
 
     if (
@@ -184,62 +177,35 @@ export class RecurrenceRuleEditor extends LitElement {
         id="freq"
         label=${this.hass.localize("ui.components.calendar.event.repeat.label")}
         @selected=${this._onRepeatSelected}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
         .value=${this._freq}
-      >
-        <ha-list-item value="none">
-          ${this.hass.localize("ui.components.calendar.event.repeat.freq.none")}
-        </ha-list-item>
-        <ha-list-item value="yearly">
-          ${this.hass.localize(
-            "ui.components.calendar.event.repeat.freq.yearly"
-          )}
-        </ha-list-item>
-        <ha-list-item value="monthly">
-          ${this.hass.localize(
-            "ui.components.calendar.event.repeat.freq.monthly"
-          )}
-        </ha-list-item>
-        <ha-list-item value="weekly">
-          ${this.hass.localize(
-            "ui.components.calendar.event.repeat.freq.weekly"
-          )}
-        </ha-list-item>
-        <ha-list-item value="daily">
-          ${this.hass.localize(
-            "ui.components.calendar.event.repeat.freq.daily"
-          )}
-        </ha-list-item>
-      </ha-select>
+        .options=${["none", "yearly", "monthly", "weekly", "daily"].map(
+          (freq) => ({
+            value: freq,
+            label: this.hass.localize(
+              `ui.components.calendar.event.repeat.freq.${freq}` as LocalizeKeys
+            ),
+          })
+        )}
+      ></ha-select>
     `;
   }
 
   renderMonthly() {
     return html`
       ${this.renderInterval()}
-      ${this._monthlyRepeatItems.length > 0
-        ? html`<ha-select
-            id="monthly"
-            label=${this.hass.localize(
-              "ui.components.calendar.event.repeat.monthly.label"
-            )}
-            @selected=${this._onMonthlyDetailSelected}
-            .value=${this._monthlyRepeat || this._monthlyRepeatItems[0]?.value}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
-          >
-            ${this._monthlyRepeatItems!.map(
-              (item) => html`
-                <ha-list-item .value=${item.value} .item=${item}>
-                  ${item.label}
-                </ha-list-item>
-              `
-            )}
-          </ha-select>`
-        : nothing}
+      ${
+        this._monthlyRepeatItems.length > 0
+          ? html`<ha-select
+              id="monthly"
+              label=${this.hass.localize(
+                "ui.components.calendar.event.repeat.monthly.label"
+              )}
+              @selected=${this._onMonthlyDetailSelected}
+              .value=${this._monthlyRepeat || this._monthlyRepeatItems[0]?.value}
+              .options=${this._monthlyRepeatItems}
+            ></ha-select>`
+          : nothing
+      }
     `;
   }
 
@@ -273,7 +239,7 @@ export class RecurrenceRuleEditor extends LitElement {
 
   renderInterval() {
     return html`
-      <ha-textfield
+      <ha-input
         id="interval"
         label=${this.hass.localize(
           "ui.components.calendar.event.repeat.interval.label"
@@ -281,12 +247,16 @@ export class RecurrenceRuleEditor extends LitElement {
         type="number"
         min="1"
         .value=${this._interval}
-        .suffix=${this.hass.localize(
-          `ui.components.calendar.event.repeat.interval.${this
-            ._freq!}` as LocalizeKeys
-        )}
         @change=${this._onIntervalChange}
-      ></ha-textfield>
+      >
+        <span slot="end">
+          ${this.hass.localize(
+            `ui.components.calendar.event.repeat.interval.${
+              this._freq!
+            }` as LocalizeKeys
+          )}
+        </span>
+      </ha-input>
     `;
   }
 
@@ -299,50 +269,51 @@ export class RecurrenceRuleEditor extends LitElement {
         )}
         .value=${this._end}
         @selected=${this._onEndSelected}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
+        .options=${["never", "after", "on"].map((end) => ({
+          value: end,
+          label: this.hass.localize(
+            `ui.components.calendar.event.repeat.end.${end as RepeatEnd}`
+          ),
+        }))}
       >
-        <ha-list-item value="never">
-          ${this.hass.localize("ui.components.calendar.event.repeat.end.never")}
-        </ha-list-item>
-        <ha-list-item value="after">
-          ${this.hass.localize("ui.components.calendar.event.repeat.end.after")}
-        </ha-list-item>
-        <ha-list-item value="on">
-          ${this.hass.localize("ui.components.calendar.event.repeat.end.on")}
-        </ha-list-item>
       </ha-select>
-      ${this._end === "after"
-        ? html`
-            <ha-textfield
-              id="after"
-              label=${this.hass.localize(
-                "ui.components.calendar.event.repeat.end_after.label"
-              )}
-              type="number"
-              min="1"
-              .value=${this._count!}
-              suffix=${this.hass.localize(
-                "ui.components.calendar.event.repeat.end_after.ocurrences"
-              )}
-              @change=${this._onCountChange}
-            ></ha-textfield>
-          `
-        : nothing}
-      ${this._end === "on"
-        ? html`
-            <ha-date-input
-              id="on"
-              label=${this.hass.localize(
-                "ui.components.calendar.event.repeat.end_on.label"
-              )}
-              .locale=${this.locale}
-              .value=${formatDate(this._untilDay!, this.timezone!)}
-              @value-changed=${this._onUntilChange}
-            ></ha-date-input>
-          `
-        : nothing}
+      ${
+        this._end === "after"
+          ? html`
+              <ha-input
+                id="after"
+                label=${this.hass.localize(
+                  "ui.components.calendar.event.repeat.end_after.label"
+                )}
+                type="number"
+                min="1"
+                .value=${this._count!}
+                @change=${this._onCountChange}
+              >
+                <span slot="end">
+                  ${this.hass.localize(
+                    "ui.components.calendar.event.repeat.end_after.ocurrences"
+                  )}
+                </span>
+              </ha-input>
+            `
+          : nothing
+      }
+      ${
+        this._end === "on"
+          ? html`
+              <ha-date-input
+                id="on"
+                label=${this.hass.localize(
+                  "ui.components.calendar.event.repeat.end_on.label"
+                )}
+                .locale=${this.locale}
+                .value=${formatDate(this._untilDay!, this.timezone!)}
+                @value-changed=${this._onUntilChange}
+              ></ha-date-input>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -356,12 +327,12 @@ export class RecurrenceRuleEditor extends LitElement {
     `;
   }
 
-  private _onIntervalChange(e: Event) {
-    this._interval = (e.target! as any).value;
+  private _onIntervalChange(e: HASSDomTargetEvent<HaInput>) {
+    this._interval = Number(e.target.value);
   }
 
-  private _onRepeatSelected(e: CustomEvent<SelectedDetail<number>>) {
-    this._freq = (e.target as HaSelect).value as RepeatFrequency;
+  private _onRepeatSelected(e: HaSelectSelectEvent<RepeatFrequency>) {
+    this._freq = e.detail.value;
 
     if (this._freq === "yearly") {
       this._interval = 1;
@@ -370,12 +341,14 @@ export class RecurrenceRuleEditor extends LitElement {
       this._weekday.clear();
       this._computeWeekday();
     }
-    e.stopPropagation();
   }
 
-  private _onMonthlyDetailSelected(e: CustomEvent<SelectedDetail<number>>) {
-    e.stopPropagation();
-    const selectedItem = this._monthlyRepeatItems[e.detail.index];
+  private _onMonthlyDetailSelected(
+    e: HaSelectSelectEvent<MonthlyRepeatItem["value"]>
+  ) {
+    const selectedItem = this._monthlyRepeatItems.find(
+      (item) => item.value === e.detail.value
+    );
     if (!selectedItem) {
       return;
     }
@@ -384,9 +357,12 @@ export class RecurrenceRuleEditor extends LitElement {
     this._monthday = selectedItem.bymonthday;
   }
 
-  private _onWeekdayToggle(e: MouseEvent) {
-    const target = e.currentTarget as any;
-    const value = target.value as WeekdayStr;
+  private _onWeekdayToggle(
+    e: MouseEvent &
+      HASSDomCurrentTargetEvent<HaFilterChip & { value: WeekdayStr }>
+  ) {
+    const target = e.currentTarget;
+    const value = target.value;
     if (this._weekday.has(value)) {
       this._weekday.delete(value);
     } else {
@@ -395,8 +371,8 @@ export class RecurrenceRuleEditor extends LitElement {
     this.requestUpdate("_weekday");
   }
 
-  private _onEndSelected(e: CustomEvent<SelectedDetail<number>>) {
-    const end = (e.target as HaSelect).value as RepeatEnd;
+  private _onEndSelected(e: HaSelectSelectEvent<RepeatEnd>) {
+    const end = e.detail.value;
     if (end === this._end) {
       return;
     }
@@ -418,11 +394,11 @@ export class RecurrenceRuleEditor extends LitElement {
     e.stopPropagation();
   }
 
-  private _onCountChange(e: Event) {
-    this._count = (e.target! as any).value;
+  private _onCountChange(e: HASSDomTargetEvent<HaInput>) {
+    this._count = Number(e.target.value);
   }
 
-  private _onUntilChange(e: CustomEvent) {
+  private _onUntilChange(e: ValueChangedEvent<string>) {
     e.stopPropagation();
     this._untilDay = new Date(
       new TZDate(e.detail.value + "T00:00:00", this.timezone).getTime()
@@ -469,7 +445,7 @@ export class RecurrenceRuleEditor extends LitElement {
       );
       // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
       // in the same format as dtstart.
-      let newUntilValue;
+      let newUntilValue: string;
       if (this.allDay) {
         // For all-day events, only use the date part
         newUntilValue = until.toISOString().split("T")[0].replace(/-/g, "");
@@ -498,15 +474,16 @@ export class RecurrenceRuleEditor extends LitElement {
   }
 
   static styles = css`
-    ha-textfield,
+    ha-input,
     ha-select {
       display: block;
       margin-bottom: 16px;
+      --ha-input-padding-bottom: 0;
     }
     .weekdays {
       margin-bottom: 16px;
     }
-    ha-textfield:last-child,
+    ha-input:last-child,
     ha-select:last-child,
     .weekdays:last-child {
       margin-bottom: 0;

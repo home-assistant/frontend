@@ -24,7 +24,7 @@ class StateCardScene extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <ha-button appearance="plain" size="small" @click=${this._activateScene}
+        <ha-button appearance="plain" size="s" @click=${this._activateScene}
           >${this.hass.localize("ui.card.scene.activate")}</ha-button
         >
       </div>

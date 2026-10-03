@@ -1,4 +1,5 @@
 import gulp from "gulp";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -13,6 +14,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    createWorkflowLockTask("develop-demo"),
     "clean-demo",
     "translations-enable-merge-backend",
     gulp.parallel(
@@ -32,6 +34,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-demo"),
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",
@@ -39,6 +42,22 @@ gulp.task(
     "copy-static-demo",
     "rspack-prod-demo",
     "gen-pages-demo-prod"
+  )
+);
+
+gulp.task(
+  "build-demo-e2e",
+  gulp.series(
+    async function setEnv() {
+      process.env.NODE_ENV = "production";
+    },
+    "clean-demo",
+    // Cast needs to be backwards compatible and older HA has no translations
+    "translations-enable-merge-backend",
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    "copy-static-demo",
+    "rspack-prod-demo-e2e",
+    "gen-pages-demo-prod-e2e"
   )
 );
 

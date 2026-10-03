@@ -1,16 +1,20 @@
 import type { LitElement } from "lit";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, Translation } from "../../types";
 
-export function computeRTL(hass: HomeAssistant) {
-  const lang = hass.language || "en";
-  if (hass.translationMetadata.translations[lang]) {
-    return hass.translationMetadata.translations[lang].isRTL || false;
+export function computeRTL(
+  language = "en",
+  translations: Record<string, Translation>
+) {
+  if (translations[language]) {
+    return translations[language].isRTL || false;
   }
   return false;
 }
 
 export function computeRTLDirection(hass: HomeAssistant) {
-  return emitRTLDirection(computeRTL(hass));
+  return emitRTLDirection(
+    computeRTL(hass.language, hass.translationMetadata.translations)
+  );
 }
 
 export function emitRTLDirection(rtl: boolean) {
@@ -33,10 +37,6 @@ export function setDirectionStyles(direction: string, element: LitElement) {
   element.style.setProperty(
     "--float-end",
     direction === "ltr" ? "right" : "left"
-  );
-  element.style.setProperty(
-    "--margin-title",
-    direction === "ltr" ? "var(--margin-title-ltr)" : "var(--margin-title-rtl)"
   );
   element.style.setProperty(
     "--scale-direction",

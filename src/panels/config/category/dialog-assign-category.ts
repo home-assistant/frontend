@@ -3,19 +3,24 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-textfield";
 import "../../../components/ha-button";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./ha-category-picker";
 import type { AssignCategoryDialogParams } from "./show-dialog-assign-category";
 
+interface AssignCategoryFormState {
+  category: string | undefined;
+}
+
 @customElement("dialog-assign-category")
-class DialogAssignCategory extends LitElement {
+class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _scope?: string;
@@ -28,14 +33,26 @@ class DialogAssignCategory extends LitElement {
 
   @state() private _submitting?: boolean;
 
+  @state() private _open = false;
+
   public showDialog(params: AssignCategoryDialogParams): void {
     this._params = params;
     this._scope = params.scope;
     this._category = params.entityReg.categories[params.scope];
     this._error = undefined;
+    this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): AssignCategoryFormState {
+    return { category: this._category };
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -48,42 +65,48 @@ class DialogAssignCategory extends LitElement {
     const entry = this._params.entityReg.categories[this._params.scope];
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
+        .open=${this._open}
+        header-title=${
           entry
             ? this.hass.localize("ui.panel.config.category.assign.edit")
             : this.hass.localize("ui.panel.config.category.assign.assign")
-        )}
+        }
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
       >
-        <div>
-          ${this._error
+        ${
+          this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          <div class="form">
-            <ha-category-picker
-              .hass=${this.hass}
-              .scope=${this._scope}
-              .value=${this._category}
-              @value-changed=${this._categoryChanged}
-            ></ha-category-picker>
-          </div>
+            : ""
+        }
+        <div class="form">
+          <ha-category-picker
+            .hass=${this.hass}
+            .scope=${this._scope}
+            .label=${this.hass.localize(
+              "ui.components.category-picker.category"
+            )}
+            .value=${this._category}
+            @value-changed=${this._categoryChanged}
+            autofocus
+          ></ha-category-picker>
         </div>
-        <ha-button
-          appearance="plain"
-          slot="primaryAction"
-          @click=${this.closeDialog}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!!this._submitting}
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!!this._submitting || !this.isDirtyState}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -93,6 +116,7 @@ class DialogAssignCategory extends LitElement {
       this._category = undefined;
     }
     this._category = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry() {
@@ -106,6 +130,7 @@ class DialogAssignCategory extends LitElement {
           categories: { [this._scope!]: this._category || null },
         }
       );
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =
@@ -120,7 +145,6 @@ class DialogAssignCategory extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield,
         ha-icon-picker {
           display: block;
           margin-bottom: 16px;

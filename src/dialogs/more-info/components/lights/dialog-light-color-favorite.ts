@@ -1,24 +1,20 @@
-import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import {
-  getMobileOpenFromBottomAnimation,
-  getMobileCloseToBottomAnimation,
-} from "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button-toggle";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import "../../../../components/ha-dialog";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   LightColorMode,
   lightSupportsColor,
   lightSupportsColorMode,
 } from "../../../../data/light";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./light-color-rgb-picker";
@@ -27,8 +23,14 @@ import type { LightColorFavoriteDialogParams } from "./show-dialog-light-color-f
 
 export type LightPickerMode = "color_temp" | "color";
 
+interface LightColorFavoriteState {
+  color?: LightColor;
+}
+
 @customElement("dialog-light-color-favorite")
-class DialogLightColorFavorite extends LitElement {
+class DialogLightColorFavorite extends DirtyStateProviderMixin<LightColorFavoriteState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() _dialogParams?: LightColorFavoriteDialogParams;
@@ -41,7 +43,7 @@ class DialogLightColorFavorite extends LitElement {
 
   @state() private _modes: LightPickerMode[] = [];
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public async showDialog(
     dialogParams: LightColorFavoriteDialogParams
@@ -50,10 +52,12 @@ class DialogLightColorFavorite extends LitElement {
     this._dialogParams = dialogParams;
     this._color = dialogParams.initialColor ?? this._computeCurrentColor();
     this._updateModes();
+    this._open = true;
+    this._initDirtyTracking({ type: "deep" }, { color: this._color });
   }
 
   public closeDialog(): void {
-    this._dialog?.close();
+    this._open = false;
   }
 
   private _updateModes() {
@@ -111,6 +115,7 @@ class DialogLightColorFavorite extends LitElement {
 
   private _colorChanged(ev: CustomEvent) {
     this._color = ev.detail;
+    this._updateDirtyState({ color: this._color });
   }
 
   get stateObj() {
@@ -120,16 +125,8 @@ class DialogLightColorFavorite extends LitElement {
     );
   }
 
-  private async _cancel() {
-    this._dialogParams?.cancel?.();
-  }
-
-  private _cancelDialog() {
-    this._cancel();
-    this.closeDialog();
-  }
-
   private _dialogClosed(): void {
+    this._open = false;
     this._dialogParams = undefined;
     this._entry = undefined;
     this._color = undefined;
@@ -138,10 +135,11 @@ class DialogLightColorFavorite extends LitElement {
 
   private async _save() {
     if (!this._color) {
-      this._cancel();
+      this.closeDialog();
       return;
     }
     this._dialogParams?.submit?.(this._color);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
@@ -159,28 +157,15 @@ class DialogLightColorFavorite extends LitElement {
     }
 
     return html`
-      <ha-md-dialog
-        open
-        @cancel=${this._cancel}
+      <ha-dialog
+        .open=${this._open}
+        .headerTitle=${this._dialogParams?.title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
-        aria-labelledby="dialog-light-color-favorite-title"
-        .getOpenAnimation=${getMobileOpenFromBottomAnimation}
-        .getCloseAnimation=${getMobileCloseToBottomAnimation}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title" id="dialog-light-color-favorite-title"
-            >${this._dialogParams?.title}</span
-          >
-        </ha-dialog-header>
-        <div slot="content">
-          <div class="header">
-            ${this._modes.length > 1
+        <div class="header">
+          ${
+            this._modes.length > 1
               ? html`
                   <div class="modes">
                     ${this._modes.map(
@@ -202,40 +187,50 @@ class DialogLightColorFavorite extends LitElement {
                     )}
                   </div>
                 `
-              : nothing}
-          </div>
-          <div class="content">
-            ${this._mode === "color_temp"
+              : nothing
+          }
+        </div>
+        <div class="content">
+          ${
+            this._mode === "color_temp"
               ? html`
                   <light-color-temp-picker
-                    .hass=${this.hass}
                     .stateObj=${this.stateObj}
                     @color-changed=${this._colorChanged}
                   >
                   </light-color-temp-picker>
                 `
-              : nothing}
-            ${this._mode === "color"
+              : nothing
+          }
+          ${
+            this._mode === "color"
               ? html`
                   <light-color-rgb-picker
-                    .hass=${this.hass}
                     .stateObj=${this.stateObj}
                     @color-changed=${this._colorChanged}
                   >
                   </light-color-rgb-picker>
                 `
-              : nothing}
-          </div>
+              : nothing
+          }
         </div>
-        <div slot="actions">
-          <ha-button appearance="plain" @click=${this._cancelDialog}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._save} .disabled=${!this._color}
-            >${this.hass.localize("ui.common.save")}</ha-button
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!this._color}
           >
-        </div>
-      </ha-md-dialog>
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
     `;
   }
 
@@ -243,23 +238,18 @@ class DialogLightColorFavorite extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-md-dialog {
-          min-width: 420px; /* prevent width jumps when switching modes */
-          max-height: min(
+        ha-dialog {
+          --ha-dialog-width-md: 420px; /* prevent width jumps when switching modes */
+          --ha-dialog-max-height: min(
             600px,
             100% - 48px
           ); /* prevent scrolling on desktop */
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-md-dialog {
-            min-width: 100%;
-            min-height: auto;
-            max-height: calc(100% - 100px);
-            margin-bottom: 0;
-
-            --md-dialog-container-shape-start-start: 28px;
-            --md-dialog-container-shape-start-end: 28px;
+          ha-dialog {
+            --ha-dialog-width-md: 100vw;
+            --ha-dialog-max-height: calc(100% - 100px);
           }
         }
 
@@ -268,14 +258,14 @@ class DialogLightColorFavorite extends LitElement {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: var(--ha-space-6);
           flex: 1;
         }
         .modes {
           display: flex;
           flex-direction: row;
           justify-content: flex-end;
-          padding: 0 24px;
+          padding: 0 var(--ha-space-6);
         }
         .wheel {
           width: 30px;

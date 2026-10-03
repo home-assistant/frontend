@@ -3,7 +3,7 @@ import { TZDate } from "@date-fns/tz";
 import { addDays, isSameDay } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
@@ -12,24 +12,25 @@ import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-alert";
 import "../../components/ha-button";
-import "../../components/ha-date-input";
-import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-time-input";
+import "../../components/ha-dialog-footer";
+import "../../components/ha-dialog";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import { deleteCalendarEvent } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
 import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 
+@customElement("dialog-calendar-event-detail")
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: CalendarEventDetailDialogParams;
+
+  @state() private _open = false;
 
   @state() private _calendarId?: string;
 
@@ -43,6 +44,7 @@ class DialogCalendarEventDetail extends LitElement {
     params: CalendarEventDetailDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
     if (params.entry) {
       const entry = params.entry!;
       this._data = entry;
@@ -51,9 +53,7 @@ class DialogCalendarEventDetail extends LitElement {
   }
 
   public closeDialog(): void {
-    this._calendarId = undefined;
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._open = false;
   }
 
   protected render() {
@@ -63,28 +63,45 @@ class DialogCalendarEventDetail extends LitElement {
     const stateObj = this.hass.states[this._calendarId!];
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(this.hass, this._data!.summary)}
+        .open=${this._open}
+        header-title=${this._data!.summary}
+        @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="field">
             <ha-svg-icon .path=${mdiCalendarClock}></ha-svg-icon>
             <div class="value">
               ${this._formatDateRange()}<br />
-              ${this._data!.rrule
-                ? this._renderRRuleAsText(this._data.rrule)
-                : ""}
-              ${this._data.description
-                ? html`<br />
-                    <div class="description">${this._data.description}</div>
-                    <br />`
-                : nothing}
+              ${
+                this._data!.rrule
+                  ? this._renderRRuleAsText(this._data.rrule)
+                  : ""
+              }
+              ${
+                this._params.entry.status === "tentative"
+                  ? html`<div class="status">
+                      ${this.hass.localize(
+                        "ui.components.calendar.event.tentative"
+                      )}
+                    </div>`
+                  : nothing
+              }
+              ${
+                this._data.location
+                  ? html`${this._data.location} <br />`
+                  : nothing
+              }
+              ${
+                this._data.description
+                  ? html`<br />
+                      <div class="description">${this._data.description}</div>`
+                  : nothing
+              }
             </div>
           </div>
 
@@ -97,30 +114,43 @@ class DialogCalendarEventDetail extends LitElement {
             ></state-info>
           </div>
         </div>
-        ${this._params.canDelete
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                variant="danger"
-                appearance="plain"
-                @click=${this._deleteEvent}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.components.calendar.event.delete")}
-              </ha-button>
-            `
-          : ""}
-        ${this._params.canEdit
-          ? html`<ha-button
-              slot="primaryAction"
-              @click=${this._editEvent}
-              .disabled=${this._submitting}
-            >
-              ${this.hass.localize("ui.components.calendar.event.edit")}
-            </ha-button>`
-          : ""}
+        <ha-dialog-footer slot="footer">
+          ${
+            this._params.canDelete
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEvent}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.hass.localize("ui.components.calendar.event.delete")}
+                  </ha-button>
+                `
+              : ""
+          }
+          ${
+            this._params.canEdit
+              ? html`<ha-button
+                  slot="primaryAction"
+                  @click=${this._editEvent}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize("ui.components.calendar.event.edit")}
+                </ha-button>`
+              : ""
+          }
+        </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _dialogClosed(): void {
+    this._calendarId = undefined;
+    this._params = undefined;
+    this._open = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _renderRRuleAsText(value: string) {
@@ -200,18 +230,9 @@ class DialogCalendarEventDetail extends LitElement {
         : this.hass.localize(
             "ui.components.calendar.event.confirm_delete.prompt"
           ),
-      confirmText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_this"
-          )
-        : this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete"
-          ),
-      confirmFutureText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_future"
-          )
-        : undefined,
+      confirmText: this.hass.localize("ui.common.delete"),
+      recurring: !!entry.recurrence_id,
+      destructive: true,
     });
     if (range === undefined) {
       // Cancel
@@ -241,7 +262,7 @@ class DialogCalendarEventDetail extends LitElement {
       haStyleDialog,
       css`
         state-info {
-          line-height: 40px;
+          margin-top: 24px;
         }
         ha-svg-icon {
           width: 40px;
@@ -258,6 +279,7 @@ class DialogCalendarEventDetail extends LitElement {
           color: var(--secondary-text-color);
           max-width: 300px;
           overflow-wrap: break-word;
+          white-space: pre-line;
         }
       `,
     ];
@@ -269,8 +291,3 @@ declare global {
     "dialog-calendar-event-detail": DialogCalendarEventDetail;
   }
 }
-
-customElements.define(
-  "dialog-calendar-event-detail",
-  DialogCalendarEventDetail
-);

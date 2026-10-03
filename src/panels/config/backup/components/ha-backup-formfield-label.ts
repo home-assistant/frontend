@@ -15,18 +15,32 @@ class SupervisorFormfieldLabel extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.imageUrl
-        ? html`<img loading="lazy" alt="" src=${this.imageUrl} class="icon" />`
-        : this.iconPath
-          ? html`
-              <ha-svg-icon .path=${this.iconPath} class="icon"></ha-svg-icon>
-            `
-          : nothing}
+      <slot name="icon">
+        ${
+          this.imageUrl
+            ? html`<img
+                loading="lazy"
+                alt=""
+                src=${this.imageUrl}
+                class="icon"
+              />`
+            : this.iconPath
+              ? html`
+                  <ha-svg-icon
+                    .path=${this.iconPath}
+                    class="icon"
+                  ></ha-svg-icon>
+                `
+              : nothing
+        }
+      </slot>
       <span class="label">
         ${this.label}
-        ${this.version
-          ? html`<span class="version">(${this.version})</span>`
-          : nothing}
+        ${
+          this.version
+            ? html`<span class="version">(${this.version})</span>`
+            : nothing
+        }
       </span>
     `;
   }
@@ -35,14 +49,13 @@ class SupervisorFormfieldLabel extends LitElement {
     :host {
       display: flex;
       flex-direction: row;
-      gap: var(--ha-space-4);
+      gap: var(--ha-space-1);
       align-items: center;
     }
     .label {
       margin-right: 4px;
       margin-inline-end: 4px;
       margin-inline-start: initial;
-      font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-normal);
       line-height: var(--ha-line-height-normal);
       letter-spacing: 0.5px;

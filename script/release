@@ -1,5 +1,4 @@
 #!/bin/sh
-# Pushes a new version to PyPi.
 
 # Stop on errors
 set -e
@@ -7,10 +6,9 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Install node modules
-yarn install
+pnpm install --frozen-lockfile
 
 script/build_frontend
 
 rm -rf dist home_assistant_frontend.egg-info
-python3 -m build
-python3 -m twine upload dist/*.whl --skip-existing
+python3 -m build -q

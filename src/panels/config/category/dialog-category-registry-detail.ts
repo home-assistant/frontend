@@ -1,24 +1,38 @@
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-settings-row";
 import "../../../components/ha-button";
-import "../../../components/ha-textfield";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-icon-picker";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
+import { internationalizationContext } from "../../../data/context";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { ValueChangedEvent } from "../../../types";
 import type { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
 
+interface CategoryFormState {
+  name: string;
+  icon: string | null;
+}
+
 @customElement("dialog-category-registry-detail")
-class DialogCategoryDetail extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+class DialogCategoryDetail extends DirtyStateProviderMixin<CategoryFormState>()(
+  DialogMixin<CategoryRegistryDetailDialogParams>(LitElement)
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _name!: string;
 
@@ -26,92 +40,91 @@ class DialogCategoryDetail extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _params?: CategoryRegistryDetailDialogParams;
-
   @state() private _submitting?: boolean;
 
-  public async showDialog(
-    params: CategoryRegistryDetailDialogParams
-  ): Promise<void> {
-    this._params = params;
-    this._error = undefined;
-    if (this._params.entry) {
-      this._name = this._params.entry.name || "";
-      this._icon = this._params.entry.icon || null;
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.params?.entry) {
+      this._name = this.params.entry.name || "";
+      this._icon = this.params.entry.icon || null;
     } else {
-      this._name = this._params.suggestedName || "";
+      this._name = this.params?.suggestedName || "";
       this._icon = null;
     }
-    await this.updateComplete;
-  }
-
-  public closeDialog(): void {
-    this._error = "";
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { name: this._name, icon: this._icon }
+    );
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
-    const entry = this._params.entry;
+    const entry = this.params.entry;
     const nameInvalid = !this._isNameValid();
+    const isCreate = !entry;
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
+        header-title=${
           entry
-            ? this.hass.localize("ui.panel.config.category.editor.edit")
-            : this.hass.localize("ui.panel.config.category.editor.create")
-        )}
+            ? this._i18n.localize("ui.panel.config.category.editor.edit")
+            : this._i18n.localize("ui.panel.config.category.editor.create")
+        }
+        .preventScrimClose=${this.isDirtyState}
       >
-        <div>
-          ${this._error
+        ${
+          this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          <div class="form">
-            <ha-textfield
-              .value=${this._name}
-              @input=${this._nameChanged}
-              .label=${this.hass.localize(
-                "ui.panel.config.category.editor.name"
-              )}
-              .validationMessage=${this.hass.localize(
-                "ui.panel.config.category.editor.required_error_msg"
-              )}
-              required
-              dialogInitialFocus
-            ></ha-textfield>
+            : ""
+        }
+        <div class="form">
+          <ha-input
+            .value=${this._name}
+            @input=${this._nameChanged}
+            .label=${this._i18n.localize(
+              "ui.panel.config.category.editor.name"
+            )}
+            .validationMessage=${this._i18n.localize(
+              "ui.panel.config.category.editor.required_error_msg"
+            )}
+            required
+            autofocus
+          ></ha-input>
 
-            <ha-icon-picker
-              .hass=${this.hass}
-              .value=${this._icon}
-              @value-changed=${this._iconChanged}
-              .label=${this.hass.localize(
-                "ui.panel.config.category.editor.icon"
-              )}
-            ></ha-icon-picker>
-          </div>
+          <ha-icon-picker
+            .value=${this._icon ?? undefined}
+            @value-changed=${this._iconChanged}
+            .label=${this._i18n.localize(
+              "ui.panel.config.category.editor.icon"
+            )}
+          ></ha-icon-picker>
         </div>
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${nameInvalid || !!this._submitting}
-        >
-          ${entry
-            ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.add")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this._i18n.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${
+              nameInvalid ||
+              !!this._submitting ||
+              (!isCreate && !this.isDirtyState)
+            }
+          >
+            ${
+              entry
+                ? this._i18n.localize("ui.common.save")
+                : this._i18n.localize("ui.common.add")
+            }
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -120,18 +133,20 @@ class DialogCategoryDetail extends LitElement {
     return this._name.trim() !== "";
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState({ name: this._name, icon: this._icon });
   }
 
-  private _iconChanged(ev) {
+  private _iconChanged(ev: ValueChangedEvent<string>) {
     this._error = undefined;
     this._icon = ev.detail.value;
+    this._updateDirtyState({ name: this._name, icon: this._icon });
   }
 
   private async _updateEntry() {
-    const create = !this._params!.entry;
+    const create = !this.params?.entry;
     this._submitting = true;
     let newValue: CategoryRegistryEntry | undefined;
     try {
@@ -140,15 +155,16 @@ class DialogCategoryDetail extends LitElement {
         icon: this._icon || (create ? undefined : null),
       };
       if (create) {
-        newValue = await this._params!.createEntry!(values);
+        newValue = await this.params?.createEntry?.(values);
       } else {
-        newValue = await this._params!.updateEntry!(values);
+        newValue = await this.params?.updateEntry?.(values);
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =
         err.message ||
-        this.hass.localize("ui.panel.config.category.editor.unknown_error");
+        this._i18n.localize("ui.panel.config.category.editor.unknown_error");
     } finally {
       this._submitting = false;
     }
@@ -159,10 +175,8 @@ class DialogCategoryDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield,
         ha-icon-picker {
-          display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-3);
         }
       `,
     ];

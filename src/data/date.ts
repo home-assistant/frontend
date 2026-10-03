@@ -1,14 +1,14 @@
 import type { HassEntityBase } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantApi } from "../types";
 
 export const stateToIsoDateString = (entityState: HassEntityBase) =>
   `${entityState}T00:00:00`;
 
 export const setDateValue = (
-  hass: HomeAssistant,
+  callService: HomeAssistantApi["callService"],
   entityId: string,
   date: string | undefined = undefined
 ) => {
   const param = { entity_id: entityId, date };
-  hass.callService("date", "set_value", param);
+  callService("date", "set_value", param);
 };

@@ -1,13 +1,15 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import "../../components/ha-button";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
+import { getHiddenFields } from "../../components/ha-form/conditions";
 import "../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -16,10 +18,14 @@ import type {
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../data/context/dirty-state";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
@@ -29,9 +35,15 @@ class StepFlowForm extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "autofocus" }) public autoFocus = false;
+
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // The integration domain this flow belongs to. Unlike `step.handler`, this is
+  // the domain even for options flows (where the handler is the config entry id).
+  @property({ attribute: false }) public domain?: string;
 
   @state() private _loading = false;
 
@@ -43,21 +55,45 @@ class StepFlowForm extends LitElement {
 
   @state() private _errorMsg?: string;
 
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<Record<string, unknown>, "form">;
+
   private _errors?: Record<string, string>;
+
+  private _formRef = createRef<HTMLElementTagNameMap["ha-form"]>();
+
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this._handleKeyDown);
   }
 
-  private handleReadOnlyFields = memoizeOne((schema) =>
-    schema?.map((field) => ({
-      ...field,
-      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]?.read_only
-        ? { disabled: true }
-        : {}),
-    }))
-  );
+  private handleReadOnlyFields = memoizeOne((schema) => {
+    function handleReadOnlyField(field: HaFormSchema) {
+      return {
+        ...field,
+        ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]
+          ?.read_only
+          ? { disabled: true }
+          : {}),
+      };
+    }
+    return schema?.map((field: HaFormSchema) =>
+      field.type === "expandable" && field.schema
+        ? {
+            ...field,
+            schema: field.schema.map((sectionField) =>
+              handleReadOnlyField(sectionField)
+            ),
+          }
+        : handleReadOnlyField(field)
+    );
+  });
 
   protected render(): TemplateResult {
     const step = this.step;
@@ -66,62 +102,78 @@ class StepFlowForm extends LitElement {
     return html`
       <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
-        ${this._errorMsg
-          ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
-          : ""}
-        <ha-form
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .data=${stepData}
-          .disabled=${this._loading}
-          @value-changed=${this._stepDataChanged}
-          .schema=${autocompleteLoginFields(
-            this.handleReadOnlyFields(step.data_schema)
-          )}
-          .error=${this._errors}
-          .computeLabel=${this._labelCallback}
-          .computeHelper=${this._helperCallback}
-          .computeError=${this._errorCallback}
-          .localizeValue=${this._localizeValueCallback}
-        ></ha-form>
+        ${
+          this._errorMsg
+            ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
+            : nothing
+        }
+        ${
+          step.data_schema.length || this._errors
+            ? html`<ha-form
+                ${ref(this._formRef)}
+                ?autofocus=${this.autoFocus}
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .data=${stepData}
+                .disabled=${this._loading}
+                @value-changed=${this._stepDataChanged}
+                .schema=${autocompleteLoginFields(
+                  this.handleReadOnlyFields(step.data_schema)
+                )}
+                .error=${this._errors}
+                .computeLabel=${this._labelCallback}
+                .computeHelper=${this._helperCallback}
+                .computeError=${this._errorCallback}
+                .localizeValue=${this._localizeValueCallback}
+                .context=${{ handler: step.handler, domain: this.domain }}
+              ></ha-form>`
+            : nothing
+        }
       </div>
-      ${step.preview
-        ? html`<div class="preview" @set-flow-errors=${this._setError}>
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_flow.preview"
-              )}:
-            </h3>
-            ${dynamicElement(`flow-preview-${previewModule(step.preview)}`, {
-              hass: this.hass,
-              domain: step.preview,
-              flowType: this.flowConfig.flowType,
-              handler: step.handler,
-              stepId: step.step_id,
-              flowId: step.flow_id,
-              stepData,
-            })}
-          </div>`
-        : nothing}
-      <div class="buttons">
-        <ha-button @click=${this._submitStep} .loading=${this._loading}>
-          ${this.flowConfig.renderShowFormStepSubmitButton(
-            this.hass,
-            this.step
-          )}
-        </ha-button>
-      </div>
+      ${
+        step.preview
+          ? html`<div class="preview" @set-flow-errors=${this._setError}>
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.preview"
+                )}:
+              </h3>
+              ${dynamicElement(`flow-preview-${previewModule(step.preview)}`, {
+                hass: this.hass,
+                domain: step.preview,
+                flowType: this.flowConfig.flowType,
+                handler: step.handler,
+                stepId: step.step_id,
+                flowId: step.flow_id,
+                stepData,
+              })}
+            </div>`
+          : nothing
+      }
     `;
   }
 
-  private _setError(ev: CustomEvent) {
-    this._previewErrors = ev.detail;
+  private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
+    this._previewErrors = ev.detail ?? undefined;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keydown", this._handleKeyDown);
+    this._dirtyState?.setState(this._stepDataProcessed, "form");
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_loading")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        loading: this._loading,
+      });
+    }
+  }
+
+  public override focus(_options?: FocusOptions): void {
+    this._formRef.value?.focus();
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
@@ -175,14 +227,17 @@ class StepFlowForm extends LitElement {
     const checkAllRequiredFields = (
       schema: readonly HaFormSchema[],
       data: Record<string, any>
-    ) =>
-      schema.every(
+    ) => {
+      const hidden = getHiddenFields(schema, data);
+      return schema.every(
         (field) =>
-          (!field.required || !["", undefined].includes(data[field.name])) &&
-          (field.type !== "expandable" ||
-            (!field.required && data[field.name] === undefined) ||
-            checkAllRequiredFields(field.schema, data[field.name]))
+          hidden.has(field.name) ||
+          ((!field.required || !["", undefined].includes(data[field.name])) &&
+            (field.type !== "expandable" ||
+              (!field.required && data[field.name] === undefined) ||
+              checkAllRequiredFields(field.schema, data[field.name])))
       );
+    };
 
     const allRequiredInfoFilledIn =
       stepData === undefined
@@ -204,13 +259,21 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
-    const toSendData = {};
+    const hiddenFields = getHiddenFields(this.step.data_schema, stepData);
+
+    const toSendData: Record<string, unknown> = {};
     Object.keys(stepData).forEach((key) => {
+      if (hiddenFields.has(key)) {
+        // Hidden fields are not part of the submitted config
+        return;
+      }
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);
       const selector = (field as HaFormSelector)?.selector ?? {};
-      const read_only = (Object.values(selector)[0] as any)?.read_only;
+      const read_only = (
+        Object.values(selector)[0] as { read_only?: boolean } | null | undefined
+      )?.read_only;
       if (!isEmpty && !read_only) {
         toSendData[key] = value;
       }
@@ -252,8 +315,15 @@ class StepFlowForm extends LitElement {
     }
   }
 
-  private _stepDataChanged(ev: CustomEvent): void {
+  public submit(): Promise<void> {
+    return this._submitStep();
+  }
+
+  private _stepDataChanged(
+    ev: ValueChangedEvent<Record<string, unknown>>
+  ): void {
     this._stepData = ev.detail.value;
+    this._dirtyState?.setState(this._stepData, "form");
   }
 
   private _labelCallback = (field: HaFormSchema, _data, options): string =>
@@ -296,12 +366,8 @@ class StepFlowForm extends LitElement {
 
         ha-alert,
         ha-form {
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
           display: block;
-        }
-
-        .buttons {
-          padding: 16px;
         }
       `,
     ];

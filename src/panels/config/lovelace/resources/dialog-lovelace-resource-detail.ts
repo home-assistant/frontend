@@ -1,16 +1,15 @@
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { mdiClose } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-icon-button";
 import "../../../../components/ha-button";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
@@ -32,7 +31,9 @@ const detectResourceType = (url?: string) => {
 };
 
 @customElement("dialog-lovelace-resource-detail")
-export class DialogLovelaceResourceDetail extends LitElement {
+export class DialogLovelaceResourceDetail extends DirtyStateProviderMixin<
+  Partial<LovelaceResourcesMutableParams>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceResourceDetailsDialogParams;
@@ -43,7 +44,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   @state() private _submitting = false;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public showDialog(params: LovelaceResourceDetailsDialogParams): void {
     this._params = params;
@@ -58,15 +59,17 @@ export class DialogLovelaceResourceDetail extends LitElement {
         url: "",
       };
     }
+    this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
+  }
+
+  public closeDialog(): void {
+    this._open = false;
   }
 
   private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  public closeDialog(): void {
-    this._dialog?.close();
   }
 
   protected render() {
@@ -81,69 +84,64 @@ export class DialogLovelaceResourceDetail extends LitElement {
         "ui.panel.config.lovelace.resources.detail.new_resource"
       );
 
-    const ariaLabel = this._params.resource?.url
-      ? this.hass!.localize(
-          "ui.panel.config.lovelace.resources.detail.edit_resource"
-        )
-      : this.hass!.localize(
-          "ui.panel.config.lovelace.resources.detail.new_resource"
-        );
-
     return html`
-      <ha-md-dialog
-        open
-        disable-cancel-action
+      <ha-dialog
+        .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
+        header-title=${dialogTitle}
         @closed=${this._dialogClosed}
-        .ariaLabel=${ariaLabel}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close") ?? "Close"}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
-        </ha-dialog-header>
-        <div slot="content">
-          <ha-alert
-            alert-type="warning"
-            .title=${this.hass!.localize(
-              "ui.panel.config.lovelace.resources.detail.warning_header"
-            )}
-          >
-            ${this.hass!.localize(
-              "ui.panel.config.lovelace.resources.detail.warning_text"
-            )}
-          </ha-alert>
+        <ha-alert
+          alert-type="warning"
+          .title=${this.hass!.localize(
+            "ui.panel.config.lovelace.resources.detail.warning_header"
+          )}
+        >
+          ${this.hass!.localize(
+            "ui.panel.config.lovelace.resources.detail.warning_text"
+          )}
+        </ha-alert>
 
-          <ha-form
-            .schema=${this._schema(this._data)}
-            .data=${this._data}
-            .hass=${this.hass}
-            .error=${this._error}
-            .computeLabel=${this._computeLabel}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
-        </div>
-        <div slot="actions">
-          <ha-button appearance="plain" @click=${this.closeDialog}>
+        <ha-form
+          autofocus
+          .schema=${this._schema(this._data)}
+          .data=${this._data}
+          .hass=${this.hass}
+          .error=${this._error}
+          .computeLabel=${this._computeLabel}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+          >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
+            slot="primaryAction"
             @click=${this._updateResource}
-            .disabled=${urlInvalid || !this._data?.res_type || this._submitting}
+            .disabled=${
+              urlInvalid ||
+              !this._data?.res_type ||
+              this._submitting ||
+              !this.isDirtyState
+            }
           >
-            ${this._params.resource
-              ? this.hass!.localize(
-                  "ui.panel.config.lovelace.resources.detail.update"
-                )
-              : this.hass!.localize(
-                  "ui.panel.config.lovelace.resources.detail.create"
-                )}
+            ${
+              this._params.resource
+                ? this.hass!.localize(
+                    "ui.panel.config.lovelace.resources.detail.update"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.config.lovelace.resources.detail.create"
+                  )
+            }
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-dialog>
     `;
   }
 
@@ -216,6 +214,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     if (!this._data!.res_type) {
       const type = detectResourceType(this._data!.url);
       if (!type) {
+        this._updateDirtyState(this._data!);
         return;
       }
       this._data = {
@@ -223,6 +222,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         res_type: type,
       };
     }
+    this._updateDirtyState(this._data!);
   }
 
   private async _updateResource() {
@@ -239,7 +239,8 @@ export class DialogLovelaceResourceDetail extends LitElement {
           this._data! as LovelaceResourcesMutableParams
         );
       }
-      this._params = undefined;
+      this._markDirtyStateClean();
+      this.closeDialog();
     } catch (err: any) {
       this._error = { base: err?.message || "Unknown error" };
     } finally {

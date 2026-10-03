@@ -1,3 +1,4 @@
+import "../skeleton/ha-skeleton-text";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -12,9 +13,16 @@ import { customElement, property } from "lit/decorators";
  * @slot primary - The primary text container.
  * @slot secondary - The secondary text container.
  *
+ * @property {boolean} secondaryLoading - Whether the secondary text is loading. Shows a skeleton placeholder.
+ *
+ * @csspart primary - The primary text. Style it to opt into another truncation, such as a multi line clamp.
+ *
+ * @cssprop --ha-tile-info-gap - The vertical gap between the primary and secondary text. defaults to `0`, or to `2px` in a fixed-height grid cell. Set it to override either.
+ * @cssprop --ha-tile-info-min-height - Minimum height of the primary/secondary block. Set this to reserve space for a missing secondary so it doesn't shift surrounding content. defaults to `auto`, or to `var(--ha-space-12)` in a fixed-height grid cell. Set it to override either.
+ * @cssprop --ha-tile-info-primary-min-height - Minimum height of the primary text block, independent of the number of rendered lines. Lets tiles that never wrap still match the height of tiles that do. defaults to `auto` (sizes to the actual rendered lines), or to `var(--ha-space-8)` in a fixed-height grid cell. Set it to override either.
  * @cssprop --ha-tile-info-primary-font-size - The font size of the primary text. defaults to `var(--ha-font-size-m)`.
  * @cssprop --ha-tile-info-primary-font-weight - The font weight of the primary text. defaults to `var(--ha-font-weight-medium)`.
- * @cssprop --ha-tile-info-primary-line-height - The line height of the primary text. defaults to `var(--ha-line-height-normal)`.
+ * @cssprop --ha-tile-info-primary-line-height - The line height of the primary text. defaults to `var(--ha-line-height-normal)`, or to `var(--ha-space-4)` where a card pins two wrapped lines to a fixed reservation. Set it to override either.
  * @cssprop --ha-tile-info-primary-letter-spacing - The letter spacing of the primary text. defaults to `0.1px`.
  * @cssprop --ha-tile-info-primary-color - The color of the primary text. defaults to `var(--primary-text-color)`.
  * @cssprop --ha-tile-info-secondary-font-size - The font size of the secondary text. defaults to `var(--ha-font-size-s)`.
@@ -29,21 +37,39 @@ export class HaTileInfo extends LitElement {
 
   @property() public secondary?: string;
 
+  @property({ type: Boolean, attribute: "secondary-loading" })
+  public secondaryLoading = false;
+
   protected render() {
     return html`
       <div class="info">
         <slot name="primary" class="primary">
-          <span>${this.primary}</span>
+          <span part="primary">${this.primary}</span>
         </slot>
-        <slot name="secondary" class="secondary">
-          <span>${this.secondary}</span>
-        </slot>
+        ${
+          this.secondaryLoading
+            ? html`<div class="secondary">
+                <ha-skeleton-text></ha-skeleton-text>
+              </div>`
+            : html`<slot name="secondary" class="secondary">
+                <span>${this.secondary}</span>
+              </slot>`
+        }
       </div>
     `;
   }
 
   static styles = css`
     :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      /* public name first, then what a fixed-height cell pins, then the default */
+      --tile-info-gap: var(--ha-tile-info-gap, var(--_tile-info-fixed-gap, 0));
+      --tile-info-min-height: var(
+        --ha-tile-info-min-height,
+        var(--_tile-info-fixed-min-height, auto)
+      );
       --tile-info-primary-font-size: var(
         --ha-tile-info-primary-font-size,
         var(--ha-font-size-m)
@@ -54,7 +80,14 @@ export class HaTileInfo extends LitElement {
       );
       --tile-info-primary-line-height: var(
         --ha-tile-info-primary-line-height,
-        var(--ha-line-height-normal)
+        var(
+          --_tile-info-fixed-primary-line-height,
+          var(--ha-line-height-normal)
+        )
+      );
+      --tile-info-primary-min-height: var(
+        --ha-tile-info-primary-min-height,
+        var(--_tile-info-fixed-primary-min-height, auto)
       );
       --tile-info-primary-letter-spacing: var(
         --ha-tile-info-primary-letter-spacing,
@@ -91,22 +124,33 @@ export class HaTileInfo extends LitElement {
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
+      gap: var(--tile-info-gap);
+      min-height: var(--tile-info-min-height);
     }
-    span,
-    ::slotted(*) {
+    .primary span,
+    ::slotted([slot="primary"]),
+    .secondary span,
+    ::slotted([slot="secondary"]) {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
     }
     .primary {
+      display: flex;
+      align-items: center;
+      width: 100%;
       font-size: var(--tile-info-primary-font-size);
       font-weight: var(--tile-info-primary-font-weight);
       line-height: var(--tile-info-primary-line-height);
       letter-spacing: var(--tile-info-primary-letter-spacing);
       color: var(--tile-info-primary-color);
+      min-height: var(--tile-info-primary-min-height);
     }
     .secondary {
+      display: flex;
+      align-items: center;
+      width: 100%;
       font-size: var(--tile-info-secondary-font-size);
       font-weight: var(--tile-info-secondary-font-weight);
       line-height: var(--tile-info-secondary-line-height);

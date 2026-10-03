@@ -2,16 +2,22 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "./entity";
 import { stateActive } from "../common/entity/state_active";
-import type { HomeAssistant } from "../types";
+import { supportsFeature } from "../common/entity/supports-feature";
+import type { HomeAssistantFormatters } from "../types";
+import { UNAVAILABLE } from "./entity/entity";
 
-export const enum ValveEntityFeature {
+export enum ValveEntityFeature {
   OPEN = 1,
   CLOSE = 2,
   SET_POSITION = 4,
   STOP = 8,
 }
+
+export const DEFAULT_VALVE_FAVORITE_POSITIONS = [0, 25, 75, 100];
+
+export const valveSupportsPosition = (stateObj: ValveEntity) =>
+  supportsFeature(stateObj, ValveEntityFeature.SET_POSITION);
 
 export function isFullyOpen(stateObj: ValveEntity) {
   if (
@@ -62,8 +68,7 @@ export function canStop(stateObj: ValveEntity): boolean {
 }
 
 interface ValveEntityAttributes extends HassEntityAttributeBase {
-  current_position?: number;
-  position?: number;
+  current_position?: number | null;
 }
 
 export interface ValveEntity extends HassEntityBase {
@@ -72,7 +77,7 @@ export interface ValveEntity extends HassEntityBase {
 
 export function computeValvePositionStateDisplay(
   stateObj: ValveEntity,
-  hass: HomeAssistant,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   position?: number
 ) {
   const statePosition = stateActive(stateObj)
@@ -82,7 +87,7 @@ export function computeValvePositionStateDisplay(
   const currentPosition = position ?? statePosition;
 
   return currentPosition && currentPosition !== 100
-    ? hass.formatEntityAttributeValue(
+    ? formatEntityAttributeValue(
         stateObj,
         "current_position",
         Math.round(currentPosition)

@@ -1,11 +1,11 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantApi } from "../types";
 
 export const setDateTimeValue = (
-  hass: HomeAssistant,
+  callService: HomeAssistantApi["callService"],
   entityId: string,
   datetime: Date
 ) => {
-  hass.callService("datetime", "set_value", {
+  callService("datetime", "set_value", {
     entity_id: entityId,
     datetime: datetime.toISOString(),
   });

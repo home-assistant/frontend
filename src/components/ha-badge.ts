@@ -27,12 +27,14 @@ export class HaBadge extends LitElement {
       >
         <ha-ripple .disabled=${this.type !== "button"}></ha-ripple>
         <slot name="icon"></slot>
-        ${this.iconOnly
-          ? nothing
-          : html`<span class="info">
-              ${label ? html`<span class="label">${label}</span>` : nothing}
-              <span class="content"><slot></slot></span>
-            </span>`}
+        ${
+          this.iconOnly
+            ? nothing
+            : html`<span class="info">
+                ${label ? html`<span class="label">${label}</span>` : nothing}
+                <span class="content"><slot></slot></span>
+              </span>`
+        }
       </div>
     `;
   }
@@ -68,7 +70,6 @@ export class HaBadge extends LitElement {
         --ha-card-background,
         var(--card-background-color, white)
       );
-      -webkit-backdrop-filter: var(--ha-card-backdrop-filter, none);
       backdrop-filter: var(--ha-card-backdrop-filter, none);
       border-width: var(--ha-card-border-width, 1px);
       box-shadow: var(--ha-card-box-shadow, none);

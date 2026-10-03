@@ -1,18 +1,18 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-background";
 import "../lovelace/views/hui-view-container";
+import "../../components/ha-top-app-bar-fixed";
 
 const CLIMATE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -30,14 +30,15 @@ class PanelClimate extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
+  @state() private _searchParams = new URLSearchParams(window.location.search);
 
-  public willUpdate(changedProps: PropertyValues) {
+  private _childPanelReady?: ChildPanelReady;
+
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
-      this._setLovelace();
+      this._setup();
       return;
     }
 
@@ -57,7 +58,8 @@ class PanelClimate extends LitElement {
         oldHass.entities !== this.hass.entities ||
         oldHass.devices !== this.hass.devices ||
         oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors
+        oldHass.floors !== this.hass.floors ||
+        oldHass.panels !== this.hass.panels
       ) {
         if (this.hass.config.state === "RUNNING") {
           this._debounceRegistriesChanged();
@@ -74,6 +76,11 @@ class PanelClimate extends LitElement {
     }
   }
 
+  private async _setup() {
+    await this.hass.loadFragmentTranslation("lovelace");
+    this._setLovelace();
+  }
+
   private _debounceRegistriesChanged = debounce(
     () => this._registriesChanged(),
     200
@@ -83,49 +90,30 @@ class PanelClimate extends LitElement {
     this._setLovelace();
   };
 
-  private _back(ev) {
-    ev.stopPropagation();
-    goBack();
-  }
-
   protected render() {
     return html`
-      <div class="header">
-        <div class="toolbar">
-          ${
-            this._searchParms.has("historyBack")
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._back}
-                    slot="navigationIcon"
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    slot="navigationIcon"
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${this._searchParams.has("historyBack")}
+      >
+        <div slot="title">${this.hass.localize("panel.climate")}</div>
+        ${
+          this._lovelace
+            ? html`
+                <hui-view-container .hass=${this.hass}>
+                  <hui-view-background .hass=${this.hass}>
+                  </hui-view-background>
+                  <hui-view
                     .hass=${this.hass}
                     .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
-          }
-          <div class="main-title">${this.hass.localize("panel.climate")}</div>
-        </div>
-      </div>
-      ${
-        this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view
-              ></hui-view-container>
-            `
-          : nothing
-      }
-      </hui-view-container>
+                    .lovelace=${this._lovelace}
+                    .index=${this._viewIndex}
+                  ></hui-view
+                ></hui-view-container>
+              `
+            : nothing
+        }
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -142,6 +130,7 @@ class PanelClimate extends LitElement {
       return;
     }
 
+    this._childPanelReady ??= new ChildPanelReady(this);
     this._lovelace = {
       config: config,
       rawConfig: rawConfig,
@@ -162,80 +151,13 @@ class PanelClimate extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-        }
-        .header {
-          background-color: var(--app-header-background-color);
-          color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
-          position: fixed;
-          top: 0;
-          width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
-                --safe-area-inset-right,
-                0px
-              )
-          );
-          padding-top: var(--safe-area-inset-top);
-          z-index: 4;
-          transition: box-shadow 200ms linear;
-          display: flex;
-          flex-direction: row;
-          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
-          backdrop-filter: var(--app-header-backdrop-filter, none);
-          padding-top: var(--safe-area-inset-top);
-          padding-right: var(--safe-area-inset-right);
-        }
-        :host([narrow]) .header {
-          width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
-                --safe-area-inset-left,
-                0px
-              ) - var(--safe-area-inset-right, 0px)
-          );
-          padding-left: var(--safe-area-inset-left);
-        }
-        :host([scrolled]) .header {
-          box-shadow: var(
-            --mdc-top-app-bar-fixed-box-shadow,
-            0px 2px 4px -1px rgba(0, 0, 0, 0.2),
-            0px 4px 5px 0px rgba(0, 0, 0, 0.14),
-            0px 1px 10px 0px rgba(0, 0, 0, 0.12)
-          );
-        }
-        .toolbar {
-          height: var(--header-height);
-          display: flex;
-          flex: 1;
-          align-items: center;
-          font-size: var(--ha-font-size-xl);
-          padding: 0px 12px;
-          font-weight: var(--ha-font-weight-normal);
-          box-sizing: border-box;
-        }
-        :host([narrow]) .toolbar {
-          padding: 0 4px;
-        }
-        .main-title {
-          margin: var(--margin-title);
-          line-height: var(--ha-line-height-normal);
-          flex-grow: 1;
+          user-select: none;
         }
         hui-view-container {
           position: relative;
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-right: var(--safe-area-inset-right);
-          padding-inline-end: var(--safe-area-inset-right);
-          padding-bottom: var(--safe-area-inset-bottom);
-        }
-        :host([narrow]) hui-view-container {
-          padding-left: var(--safe-area-inset-left);
-          padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view {
           flex: 1 1 100%;

@@ -7,7 +7,6 @@ import { any, array, assert, assign, object, optional } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tab-group";
@@ -21,6 +20,7 @@ import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../conditions/ha-card-conditions-editor";
+import "../conditions/ha-visibility-status";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -96,69 +96,72 @@ export class HuiConditionalCardEditor
           )}
         </ha-tab-group-tab>
       </ha-tab-group>
-      ${this._cardTab
-        ? html`
-            <div class="card">
-              ${this._config.card.type !== undefined
-                ? html`
-                    <div class="card-options">
-                      <ha-icon-button
-                        class="gui-mode-button"
-                        @click=${this._toggleMode}
-                        .disabled=${!this._guiModeAvailable}
-                        .label=${this.hass!.localize(
-                          isGuiMode
-                            ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                            : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                        )}
-                        .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .label=${this.hass!.localize(
-                          "ui.panel.lovelace.editor.edit_card.copy"
-                        )}
-                        .path=${mdiContentCopy}
-                        @click=${this._handleCopyCard}
-                      ></ha-icon-button>
-                      <ha-button
-                        appearance="plain"
-                        size="small"
-                        @click=${this._handleReplaceCard}
-                        >${this.hass!.localize(
-                          "ui.panel.lovelace.editor.card.conditional.change_type"
-                        )}</ha-button
-                      >
-                    </div>
-                    <hui-card-element-editor
-                      .hass=${this.hass}
-                      .value=${this._config.card}
-                      .lovelace=${this.lovelace}
-                      @config-changed=${this._handleCardChanged}
-                      @GUImode-changed=${this._handleGUIModeChanged}
-                    ></hui-card-element-editor>
-                  `
-                : html`
-                    <hui-card-picker
-                      .hass=${this.hass}
-                      .lovelace=${this.lovelace}
-                      @config-changed=${this._handleCardPicked}
-                    ></hui-card-picker>
-                  `}
-            </div>
-          `
-        : html`
-            <ha-alert alert-type="info">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.condition-editor.explanation"
-              )}
-            </ha-alert>
-            <ha-card-conditions-editor
-              .hass=${this.hass}
-              .conditions=${this._config.conditions}
-              @value-changed=${this._conditionChanged}
-            >
-            </ha-card-conditions-editor>
-          `}
+      ${
+        this._cardTab
+          ? html`
+              <div class="card">
+                ${
+                  this._config.card.type !== undefined
+                    ? html`
+                        <div class="card-options">
+                          <ha-icon-button
+                            class="gui-mode-button"
+                            @click=${this._toggleMode}
+                            .disabled=${!this._guiModeAvailable}
+                            .label=${this.hass!.localize(
+                              isGuiMode
+                                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                            )}
+                            .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
+                          ></ha-icon-button>
+                          <ha-icon-button
+                            .label=${this.hass!.localize(
+                              "ui.panel.lovelace.editor.edit_card.copy"
+                            )}
+                            .path=${mdiContentCopy}
+                            @click=${this._handleCopyCard}
+                          ></ha-icon-button>
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            @click=${this._handleReplaceCard}
+                            >${this.hass!.localize(
+                              "ui.panel.lovelace.editor.card.conditional.change_type"
+                            )}</ha-button
+                          >
+                        </div>
+                        <hui-card-element-editor
+                          .hass=${this.hass}
+                          .value=${this._config.card}
+                          .lovelace=${this.lovelace}
+                          @config-changed=${this._handleCardChanged}
+                          @GUImode-changed=${this._handleGUIModeChanged}
+                        ></hui-card-element-editor>
+                      `
+                    : html`
+                        <hui-card-picker
+                          .hass=${this.hass}
+                          .lovelace=${this.lovelace}
+                          @config-changed=${this._handleCardPicked}
+                        ></hui-card-picker>
+                      `
+                }
+              </div>
+            `
+          : html`
+              <ha-visibility-status
+                .hass=${this.hass}
+                .conditions=${this._config.conditions ?? []}
+              ></ha-visibility-status>
+              <ha-card-conditions-editor
+                .hass=${this.hass}
+                .conditions=${this._config.conditions}
+                @value-changed=${this._conditionChanged}
+              >
+              </ha-card-conditions-editor>
+            `
+      }
     `;
   }
 
@@ -246,9 +249,9 @@ export class HuiConditionalCardEditor
           width: 100%;
           justify-content: center;
         }
-        ha-alert {
-          display: block;
-          margin-top: 12px;
+        ha-visibility-status {
+          margin-top: var(--ha-space-3);
+          margin-bottom: var(--ha-space-3);
         }
         .card {
           margin-top: 8px;

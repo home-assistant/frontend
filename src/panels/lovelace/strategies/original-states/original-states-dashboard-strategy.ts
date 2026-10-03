@@ -1,7 +1,10 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { LovelaceStrategyEditor } from "../types";
+import type {
+  LovelaceStrategyEditor,
+  LovelaceStrategyDependency,
+} from "../types";
 import type { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
 
 export type OriginalStatesDashboardStrategyConfig =
@@ -9,6 +12,8 @@ export type OriginalStatesDashboardStrategyConfig =
 
 @customElement("original-states-dashboard-strategy")
 export class OriginalStatesDashboardStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     config: OriginalStatesDashboardStrategyConfig
   ): Promise<LovelaceConfig> {
@@ -22,9 +27,7 @@ export class OriginalStatesDashboardStrategy extends ReactiveElement {
   }
 
   public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
-    await import(
-      "../../editor/dashboard-strategy-editor/hui-original-states-dashboard-strategy-editor"
-    );
+    await import("../../editor/dashboard-strategy-editor/hui-original-states-dashboard-strategy-editor");
     return document.createElement(
       "hui-original-states-dashboard-strategy-editor"
     );

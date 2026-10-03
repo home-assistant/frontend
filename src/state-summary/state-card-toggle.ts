@@ -24,10 +24,7 @@ class StateCardToggle extends LitElement {
           .inDialog=${this.inDialog}
         >
         </state-info>
-        <ha-entity-toggle
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-entity-toggle>
+        <ha-entity-toggle .stateObj=${this.stateObj}></ha-entity-toggle>
       </div>
     `;
   }

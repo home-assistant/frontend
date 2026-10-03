@@ -12,7 +12,7 @@ const SMALL_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 export class DemoHaFaded extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <ha-card header="ha-faded demo">
+      <ha-card>
         <div class="card-content">
           <h3>Long text directly as slotted content</h3>
           <ha-faded>${LONG_TEXT}</ha-faded>

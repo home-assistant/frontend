@@ -3,9 +3,11 @@ import {
   mdiRayEndArrow,
   mdiRayStartArrow,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import type {
   PipelineRunEvent,
@@ -20,6 +22,8 @@ import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../types";
 import "./assist-render-pipeline-events";
+import type { ChatLog } from "../../../../data/chat_log";
+import { subscribeChatLog } from "../../../../data/chat_log";
 
 @customElement("assist-pipeline-debug")
 export class AssistPipelineDebug extends LitElement {
@@ -37,82 +41,94 @@ export class AssistPipelineDebug extends LitElement {
 
   @state() private _events?: PipelineRunEvent[];
 
+  @state() private _chatLog?: ChatLog;
+
   private _unsubRefreshEventsID?: number;
+
+  private _unsubChatLogUpdates?: Promise<UnsubscribeFunc>;
 
   protected render() {
     return html`<hass-subpage
       .narrow=${this.narrow}
       .hass=${this.hass}
+      back-path="/config/voice-assistants/debug"
       .header=${this.hass.localize(
         "ui.panel.config.voice_assistants.debug.header"
       )}
     >
-      <a
+      <ha-icon-button
+        .path=${mdiMicrophoneMessage}
+        .label=${this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.start_debug_run"
+        )}
         href="/config/voice-assistants/debug?pipeline=${this.pipelineId}"
         slot="toolbar-icon"
-        ><ha-icon-button
-          .path=${mdiMicrophoneMessage}
-          .label=${this.hass.localize(
-            "ui.panel.config.voice_assistants.debug.start_debug_run"
-          )}
-        ></ha-icon-button
-      ></a>
+      ></ha-icon-button>
       <div class="toolbar">
-        ${this._runs?.length
-          ? html`
-              <ha-icon-button
-                .disabled=${this._runs[this._runs.length - 1]
-                  .pipeline_run_id === this._runId}
-                .label=${this.hass.localize(
-                  "ui.panel.config.voice_assistants.debug.older_run"
-                )}
-                @click=${this._pickOlderRun}
-                .path=${mdiRayEndArrow}
-              ></ha-icon-button>
-              <select .value=${this._runId} @change=${this._pickRun}>
-                ${repeat(
-                  this._runs,
-                  (run) => run.pipeline_run_id,
-                  (run) =>
-                    html`<option value=${run.pipeline_run_id}>
-                      ${formatDateTimeWithSeconds(
-                        new Date(run.timestamp),
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                    </option>`
-                )}
-              </select>
-              <ha-icon-button
-                .disabled=${this._runs[0].pipeline_run_id === this._runId}
-                .label=${this.hass.localize(
-                  "ui.panel.config.voice_assistants.debug.newer_run"
-                )}
-                @click=${this._pickNewerRun}
-                .path=${mdiRayStartArrow}
-              ></ha-icon-button>
-            `
-          : ""}
+        ${
+          this._runs?.length
+            ? html`
+                <ha-icon-button
+                  .disabled=${
+                    this._runs[this._runs.length - 1].pipeline_run_id ===
+                    this._runId
+                  }
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.debug.older_run"
+                  )}
+                  @click=${this._pickOlderRun}
+                  .path=${mdiRayEndArrow}
+                ></ha-icon-button>
+                <select .value=${this._runId} @change=${this._pickRun}>
+                  ${repeat(
+                    this._runs,
+                    (run) => run.pipeline_run_id,
+                    (run) =>
+                      html`<option value=${run.pipeline_run_id}>
+                        ${formatDateTimeWithSeconds(
+                          new Date(run.timestamp),
+                          this.hass.locale,
+                          this.hass.config
+                        )}
+                      </option>`
+                  )}
+                </select>
+                <ha-icon-button
+                  .disabled=${this._runs[0].pipeline_run_id === this._runId}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.debug.newer_run"
+                  )}
+                  @click=${this._pickNewerRun}
+                  .path=${mdiRayStartArrow}
+                ></ha-icon-button>
+              `
+            : ""
+        }
       </div>
-      ${this._runs?.length === 0
-        ? html`<div class="container">
-            ${this.hass.localize(
-              "ui.panel.config.voice_assistants.debug.no_runs_found"
-            )}
-          </div>`
-        : ""}
+      ${
+        this._runs?.length === 0
+          ? html`<div class="container">
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.debug.no_runs_found"
+              )}
+            </div>`
+          : ""
+      }
       <div class="content">
-        ${this._events
-          ? html`<assist-render-pipeline-events
-              .hass=${this.hass}
-              .events=${this._events}
-            ></assist-render-pipeline-events>`
-          : ""}
+        ${
+          this._events
+            ? html`<assist-render-pipeline-events
+                .hass=${this.hass}
+                .events=${this._events}
+                .chatLog=${this._chatLog}
+              ></assist-render-pipeline-events>`
+            : ""
+        }
       </div>
     </hass-subpage>`;
   }
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues) {
     let clearRefresh = false;
 
     if (changedProperties.has("pipelineId")) {
@@ -120,6 +136,10 @@ export class AssistPipelineDebug extends LitElement {
       clearRefresh = true;
     }
     if (changedProperties.has("_runId")) {
+      if (this._unsubChatLogUpdates) {
+        this._unsubChatLogUpdates.then((unsub) => unsub());
+        this._unsubChatLogUpdates = undefined;
+      }
       this._fetchEvents();
       clearRefresh = true;
     }
@@ -134,6 +154,10 @@ export class AssistPipelineDebug extends LitElement {
     if (this._unsubRefreshEventsID) {
       clearTimeout(this._unsubRefreshEventsID);
       this._unsubRefreshEventsID = undefined;
+    }
+    if (this._unsubChatLogUpdates) {
+      this._unsubChatLogUpdates.then((unsub) => unsub());
+      this._unsubChatLogUpdates = undefined;
     }
   }
 
@@ -185,8 +209,27 @@ export class AssistPipelineDebug extends LitElement {
       });
       return;
     }
+    if (!this._events!.length) {
+      return;
+    }
+    if (!this._unsubChatLogUpdates && this._events[0].type === "run-start") {
+      this._unsubChatLogUpdates = subscribeChatLog(
+        this.hass,
+        this._events[0].data.conversation_id,
+        (chatLog) => {
+          if (chatLog) {
+            this._chatLog = chatLog;
+          } else {
+            this._unsubChatLogUpdates?.then((unsub) => unsub());
+            this._unsubChatLogUpdates = undefined;
+          }
+        }
+      );
+      this._unsubChatLogUpdates.catch(() => {
+        this._unsubChatLogUpdates = undefined;
+      });
+    }
     if (
-      this._events?.length &&
       // If the last event is not a finish run event, the run is still ongoing.
       // Refresh events automatically.
       !["run-end", "error"].includes(this._events[this._events.length - 1].type)

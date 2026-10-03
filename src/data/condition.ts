@@ -1,50 +1,42 @@
-import {
-  mdiAmpersand,
-  mdiClockOutline,
-  mdiCodeBraces,
-  mdiDevices,
-  mdiGateOr,
-  mdiIdentifier,
-  mdiMapClock,
-  mdiMapMarkerRadius,
-  mdiNotEqualVariant,
-  mdiNumeric,
-  mdiShape,
-  mdiStateMachine,
-  mdiWeatherSunny,
-} from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
+import { computeDomain } from "../common/entity/compute_domain";
+import { computeObjectId } from "../common/entity/compute_object_id";
 import type { AutomationElementGroupCollection } from "./automation";
-
-export const CONDITION_ICONS = {
-  device: mdiDevices,
-  and: mdiAmpersand,
-  or: mdiGateOr,
-  not: mdiNotEqualVariant,
-  state: mdiStateMachine,
-  numeric_state: mdiNumeric,
-  sun: mdiWeatherSunny,
-  template: mdiCodeBraces,
-  time: mdiClockOutline,
-  trigger: mdiIdentifier,
-  zone: mdiMapMarkerRadius,
-};
+import type { Selector, TargetSelector } from "./selector";
 
 export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
-      device: {},
-      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
-      time_location: {
-        icon: mdiMapClock,
-        members: { sun: {}, time: {}, zone: {} },
+      dynamicGroups: {},
+      time: {
+        icon: mdiClockOutline,
+        members: { time: {} },
+        domains: ["calendar", "schedule"],
       },
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
+      },
+      helpers: {},
+      template: {},
+      trigger: {},
     },
   },
   {
-    titleKey: "ui.panel.config.automation.editor.conditions.groups.other.label",
+    titleKey:
+      "ui.panel.config.automation.editor.conditions.groups.generic.label",
+    generic: true,
     groups: {
-      template: {},
-      trigger: {},
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+    },
+  },
+  {
+    titleKey:
+      "ui.panel.config.automation.editor.conditions.groups.integrations.label",
+    groups: {
+      integrationGroups: {},
     },
   },
 ] as const;
@@ -62,3 +54,33 @@ export const COLLAPSIBLE_CONDITION_ELEMENTS = [
   "ha-automation-condition-not",
   "ha-automation-condition-or",
 ];
+
+export interface ConditionDescription {
+  target?: TargetSelector["target"];
+  fields: Record<
+    string,
+    {
+      example?: string | boolean | number;
+      default?: unknown;
+      required?: boolean;
+      selector?: Selector;
+      context?: Record<string, string>;
+    }
+  >;
+}
+
+export type ConditionDescriptions = Record<string, ConditionDescription>;
+
+export const subscribeConditions = (
+  connection: Connection,
+  callback: (conditions: ConditionDescriptions) => void
+) =>
+  connection.subscribeMessage<ConditionDescriptions>(callback, {
+    type: "condition_platforms/subscribe",
+  });
+
+export const getConditionDomain = (condition: string) =>
+  condition.includes(".") ? computeDomain(condition) : condition;
+
+export const getConditionObjectId = (condition: string) =>
+  condition.includes(".") ? computeObjectId(condition) : "_";

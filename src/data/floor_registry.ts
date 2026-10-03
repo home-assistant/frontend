@@ -1,6 +1,5 @@
-import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
-import type { AreaRegistryEntry } from "./area_registry";
+import type { AreaRegistryEntry } from "./area/area_registry";
 import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
@@ -36,7 +35,7 @@ export const updateFloorRegistryEntry = (
   floorId: string,
   updates: Partial<FloorRegistryEntryMutableParams>
 ) =>
-  hass.callWS<AreaRegistryEntry>({
+  hass.callWS<FloorRegistryEntry>({
     type: "config/floor_registry/update",
     floor_id: floorId,
     ...updates,
@@ -49,6 +48,15 @@ export const deleteFloorRegistryEntry = (
   hass.callWS({
     type: "config/floor_registry/delete",
     floor_id: floorId,
+  });
+
+export const reorderFloorRegistryEntries = (
+  hass: HomeAssistant,
+  floorIds: string[]
+) =>
+  hass.callWS({
+    type: "config/floor_registry/reorder",
+    floor_ids: floorIds,
   });
 
 export const getFloorAreaLookup = (
@@ -66,27 +74,3 @@ export const getFloorAreaLookup = (
   }
   return floorAreaLookup;
 };
-
-export const floorCompare =
-  (entries?: HomeAssistant["floors"], order?: string[]) =>
-  (a: string, b: string) => {
-    const indexA = order ? order.indexOf(a) : -1;
-    const indexB = order ? order.indexOf(b) : -1;
-    if (indexA === -1 && indexB === -1) {
-      const floorA = entries?.[a];
-      const floorB = entries?.[b];
-      if (floorA && floorB && floorA.level !== floorB.level) {
-        return (floorB.level ?? -9999) - (floorA.level ?? -9999);
-      }
-      const nameA = floorA?.name ?? a;
-      const nameB = floorB?.name ?? b;
-      return stringCompare(nameA, nameB);
-    }
-    if (indexA === -1) {
-      return 1;
-    }
-    if (indexB === -1) {
-      return -1;
-    }
-    return indexA - indexB;
-  };

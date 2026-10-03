@@ -1,24 +1,30 @@
+import type { ContextType } from "@lit/context";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import type { TemplateResult, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeAreaName } from "../common/entity/compute_area_name";
-import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
-import { createAreaRegistryEntry } from "../data/area_registry";
-import type {
-  DeviceEntityDisplayLookup,
-  DeviceRegistryEntry,
-} from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import { areaComboBoxKeys, getAreas } from "../data/area/area_picker";
+import { createAreaRegistryEntry } from "../data/area/area_registry";
+import {
+  apiContext,
+  areasContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
+  internationalizationContext,
+  statesContext,
+} from "../data/context";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
+import type { ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
@@ -32,8 +38,6 @@ const ADD_NEW_ID = "___ADD_NEW___";
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public value?: string;
@@ -89,18 +93,80 @@ export class HaAreaPicker extends LitElement {
 
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  private _floors!: ContextType<typeof floorsContext>;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @state() private _pendingAreaId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      this._pendingAreaId &&
+      changedProperties.has("_areas") &&
+      this._areas[this._pendingAreaId]
+    ) {
+      this._setValue(this._pendingAreaId);
+      this._pendingAreaId = undefined;
+    }
+  }
 
   public async open() {
     await this.updateComplete;
     await this._picker?.open();
   }
 
+  private _getAreasMemoized = memoizeOne(
+    (
+      haAreas: ContextType<typeof areasContext>,
+      haFloors: ContextType<typeof floorsContext>,
+      haDevices: ContextType<typeof devicesContext>,
+      haEntities: ContextType<typeof entitiesContext>,
+      haStates: ContextType<typeof statesContext>,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeAreas?: string[]
+    ) =>
+      getAreas(haAreas, haFloors, haDevices, haEntities, haStates, {
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeAreas,
+      })
+  );
+
   // Recompute value renderer when the areas change
   private _computeValueRenderer = memoizeOne(
-    (_haAreas: HomeAssistant["areas"]): PickerValueRenderer =>
+    (haAreas: ContextType<typeof areasContext>): PickerValueRenderer =>
       (value) => {
-        const area = this.hass.areas[value];
+        const area = haAreas[value];
 
         if (!area) {
           return html`
@@ -109,7 +175,7 @@ export class HaAreaPicker extends LitElement {
           `;
         }
 
-        const { floor } = getAreaContext(area, this.hass.floors);
+        const { floor } = getAreaContext(area, this._floors);
 
         const areaName = area ? computeAreaName(area) : undefined;
         const floorName = floor ? computeFloorName(floor) : undefined;
@@ -117,198 +183,31 @@ export class HaAreaPicker extends LitElement {
         const icon = area.icon;
 
         return html`
-          ${icon
-            ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
-            : html`<ha-svg-icon
-                slot="start"
-                .path=${mdiTextureBox}
-              ></ha-svg-icon>`}
+          ${
+            icon
+              ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
+              : html`<ha-svg-icon
+                  slot="start"
+                  .path=${mdiTextureBox}
+                ></ha-svg-icon>`
+          }
           <span slot="headline">${areaName}</span>
-          ${floorName
-            ? html`<span slot="supporting-text">${floorName}</span>`
-            : nothing}
+          ${
+            floorName
+              ? html`<span slot="supporting-text">${floorName}</span>`
+              : nothing
+          }
         `;
       }
   );
 
-  private _getAreas = memoizeOne(
-    (
-      haAreas: HomeAssistant["areas"],
-      haDevices: HomeAssistant["devices"],
-      haEntities: HomeAssistant["entities"],
-      includeDomains: this["includeDomains"],
-      excludeDomains: this["excludeDomains"],
-      includeDeviceClasses: this["includeDeviceClasses"],
-      deviceFilter: this["deviceFilter"],
-      entityFilter: this["entityFilter"],
-      excludeAreas: this["excludeAreas"]
-    ): PickerComboBoxItem[] => {
-      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
-      let inputDevices: DeviceRegistryEntry[] | undefined;
-      let inputEntities: EntityRegistryDisplayEntry[] | undefined;
-
-      const areas = Object.values(haAreas);
-      const devices = Object.values(haDevices);
-      const entities = Object.values(haEntities);
-
-      if (
-        includeDomains ||
-        excludeDomains ||
-        includeDeviceClasses ||
-        deviceFilter ||
-        entityFilter
-      ) {
-        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
-        inputDevices = devices;
-        inputEntities = entities.filter((entity) => entity.area_id);
-
-        if (includeDomains) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return false;
-            }
-            return deviceEntityLookup[device.id].some((entity) =>
-              includeDomains.includes(computeDomain(entity.entity_id))
-            );
-          });
-          inputEntities = inputEntities!.filter((entity) =>
-            includeDomains.includes(computeDomain(entity.entity_id))
-          );
-        }
-
-        if (excludeDomains) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return true;
-            }
-            return entities.every(
-              (entity) =>
-                !excludeDomains.includes(computeDomain(entity.entity_id))
-            );
-          });
-          inputEntities = inputEntities!.filter(
-            (entity) =>
-              !excludeDomains.includes(computeDomain(entity.entity_id))
-          );
-        }
-
-        if (includeDeviceClasses) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return false;
-            }
-            return deviceEntityLookup[device.id].some((entity) => {
-              const stateObj = this.hass.states[entity.entity_id];
-              if (!stateObj) {
-                return false;
-              }
-              return (
-                stateObj.attributes.device_class &&
-                includeDeviceClasses.includes(stateObj.attributes.device_class)
-              );
-            });
-          });
-          inputEntities = inputEntities!.filter((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            return (
-              stateObj.attributes.device_class &&
-              includeDeviceClasses.includes(stateObj.attributes.device_class)
-            );
-          });
-        }
-
-        if (deviceFilter) {
-          inputDevices = inputDevices!.filter((device) =>
-            deviceFilter!(device)
-          );
-        }
-
-        if (entityFilter) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return false;
-            }
-            return deviceEntityLookup[device.id].some((entity) => {
-              const stateObj = this.hass.states[entity.entity_id];
-              if (!stateObj) {
-                return false;
-              }
-              return entityFilter(stateObj);
-            });
-          });
-          inputEntities = inputEntities!.filter((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return entityFilter!(stateObj);
-          });
-        }
-      }
-
-      let outputAreas = areas;
-
-      let areaIds: string[] | undefined;
-
-      if (inputDevices) {
-        areaIds = inputDevices
-          .filter((device) => device.area_id)
-          .map((device) => device.area_id!);
-      }
-
-      if (inputEntities) {
-        areaIds = (areaIds ?? []).concat(
-          inputEntities
-            .filter((entity) => entity.area_id)
-            .map((entity) => entity.area_id!)
-        );
-      }
-
-      if (areaIds) {
-        outputAreas = outputAreas.filter((area) =>
-          areaIds!.includes(area.area_id)
-        );
-      }
-
-      if (excludeAreas) {
-        outputAreas = outputAreas.filter(
-          (area) => !excludeAreas!.includes(area.area_id)
-        );
-      }
-
-      const items = outputAreas.map<PickerComboBoxItem>((area) => {
-        const { floor } = getAreaContext(area, this.hass.floors);
-        const floorName = floor ? computeFloorName(floor) : undefined;
-        const areaName = computeAreaName(area);
-        return {
-          id: area.area_id,
-          primary: areaName || area.area_id,
-          secondary: floorName,
-          icon: area.icon || undefined,
-          icon_path: area.icon ? undefined : mdiTextureBox,
-          sorting_label: areaName,
-          search_labels: [
-            areaName,
-            floorName,
-            area.area_id,
-            ...area.aliases,
-          ].filter((v): v is string => Boolean(v)),
-        };
-      });
-
-      return items;
-    }
-  );
-
   private _getItems = () =>
-    this._getAreas(
-      this.hass.areas,
-      this.hass.devices,
-      this.hass.entities,
+    this._getAreasMemoized(
+      this._areas,
+      this._floors,
+      this._devices,
+      this._entities,
+      this._states,
       this.includeDomains,
       this.excludeDomains,
       this.includeDeviceClasses,
@@ -318,7 +217,7 @@ export class HaAreaPicker extends LitElement {
     );
 
   private _allAreaNames = memoizeOne(
-    (areas: HomeAssistant["areas"]) =>
+    (areas: ContextType<typeof areasContext>) =>
       Object.values(areas)
         .map((area) => computeAreaName(area)?.toLowerCase())
         .filter(Boolean) as string[]
@@ -331,14 +230,14 @@ export class HaAreaPicker extends LitElement {
       return [];
     }
 
-    const allAreas = this._allAreaNames(this.hass.areas);
+    const allAreas = this._allAreaNames(this._areas);
 
     if (searchString && !allAreas.includes(searchString.toLowerCase())) {
       return [
         {
           id: ADD_NEW_ID + searchString,
-          primary: this.hass.localize(
-            "ui.components.area-picker.add_new_sugestion",
+          primary: this._i18n.localize(
+            "ui.components.area-picker.add_new_suggestion",
             {
               name: searchString,
             }
@@ -351,33 +250,49 @@ export class HaAreaPicker extends LitElement {
     return [
       {
         id: ADD_NEW_ID,
-        primary: this.hass.localize("ui.components.area-picker.add_new"),
+        primary: this._i18n.localize("ui.components.area-picker.add_new"),
         icon_path: mdiPlus,
       },
     ];
   };
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
+    const baseLabel =
+      this.label ?? this._i18n.localize("ui.components.area-picker.area");
+    const areas = this._areas;
+    const floors = this._floors;
+    const valueRenderer = this._computeValueRenderer(areas);
 
-    const valueRenderer = this._computeValueRenderer(this.hass.areas);
+    // Only show label if there's no floor
+    let label: string | undefined = baseLabel;
+    if (this.value && baseLabel) {
+      const area = areas[this.value];
+      if (area) {
+        const { floor } = getAreaContext(area, floors);
+        if (floor) {
+          label = undefined;
+        }
+      }
+    }
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
-        .label=${this.label}
+        .label=${label}
         .helper=${this.helper}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.area-picker.no_match"
-        )}
-        .placeholder=${placeholder}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this._i18n.localize("ui.components.area-picker.no_areas")}
+        .disabled=${this.disabled}
+        .required=${this.required}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
         .addButtonLabel=${this.addButtonLabel}
+        .searchKeys=${areaComboBoxKeys}
+        .unknownItemText=${this._i18n.localize(
+          "ui.components.area-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -394,7 +309,7 @@ export class HaAreaPicker extends LitElement {
     }
 
     if (value.startsWith(ADD_NEW_ID)) {
-      this.hass.loadFragmentTranslation("config");
+      this._i18n.loadFragmentTranslation("config");
 
       const suggestedName = value.substring(ADD_NEW_ID.length);
 
@@ -402,11 +317,15 @@ export class HaAreaPicker extends LitElement {
         suggestedName: suggestedName,
         createEntry: async (values) => {
           try {
-            const area = await createAreaRegistryEntry(this.hass, values);
-            this._setValue(area.area_id);
+            const area = await createAreaRegistryEntry(this._api, values);
+            if (this._areas[area.area_id]) {
+              this._setValue(area.area_id);
+            } else {
+              this._pendingAreaId = area.area_id;
+            }
           } catch (err: any) {
             showAlertDialog(this, {
-              title: this.hass.localize(
+              title: this._i18n.localize(
                 "ui.components.area-picker.failed_create_area"
               ),
               text: err.message,
@@ -425,6 +344,11 @@ export class HaAreaPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this._i18n.localize("ui.components.area-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

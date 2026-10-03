@@ -1,11 +1,12 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -15,6 +16,7 @@ import type { Lovelace } from "../types";
 
 let editCodeLoaded = false;
 
+@customElement("hui-panel-view")
 export class PanelView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -31,7 +33,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
@@ -48,8 +50,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
-      | Lovelace
-      | undefined;
+      Lovelace | undefined;
 
     if (
       (!changedProperties.has("cards") &&
@@ -62,30 +63,35 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.cards!.length > 1
-        ? html`<ha-alert alert-type="warning"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
-            )}</ha-alert
-          >`
-        : ""}
+      ${
+        this.cards!.length > 1
+          ? html`<ha-alert alert-type="warning"
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
+              )}</ha-alert
+            >`
+          : ""
+      }
       ${this._card}
-      ${this.lovelace?.editMode && this.cards.length === 0
-        ? html`
-            <ha-fab
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              extended
-              @click=${this._addCard}
-              class=${classMap({
-                rtl: computeRTL(this.hass!),
-              })}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>
-          `
-        : ""}
+      ${
+        this.lovelace?.editMode && this.cards.length === 0
+          ? html`
+              <ha-button
+                size="l"
+                @click=${this._addCard}
+                class=${classMap({
+                  rtl: computeRTL(
+                    this.hass!.language,
+                    this.hass!.translationMetadata.translations
+                  ),
+                })}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+              </ha-button>
+            `
+          : ""
+      }
     `;
   }
 
@@ -136,7 +142,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       --ha-card-box-shadow: none;
     }
 
-    ha-fab {
+    ha-button {
       position: fixed;
       right: calc(16px + var(--safe-area-inset-right));
       bottom: calc(16px + var(--safe-area-inset-bottom));
@@ -144,6 +150,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       float: var(--float-end);
       inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }
@@ -153,5 +160,3 @@ declare global {
     "hui-panel-view": PanelView;
   }
 }
-
-customElements.define("hui-panel-view", PanelView);

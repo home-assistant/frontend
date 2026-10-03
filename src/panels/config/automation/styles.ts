@@ -3,45 +3,126 @@ import { css } from "lit";
 export const SIDEBAR_MIN_WIDTH = 375;
 export const CONTENT_MIN_WIDTH = 350;
 
+export const rowSummaryStyles = css`
+  :host {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+    vertical-align: middle;
+    color: var(--ha-color-text-secondary);
+  }
+  :host([hidden]) {
+    display: none;
+  }
+  .dot-separator {
+    width: 2px;
+    height: 2px;
+    border-radius: var(--ha-border-radius-circle);
+    background-color: currentColor;
+  }
+`;
+
 export const rowStyles = css`
   ha-icon-button {
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
   }
   ha-expansion-panel {
+    position: relative;
     --expansion-panel-summary-padding: 0 0 0 8px;
     --expansion-panel-content-padding: 0;
   }
   h3 {
     font-size: inherit;
     font-weight: inherit;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ha-space-2);
+    padding: var(--ha-space-2) 0;
+    min-height: 32px;
+    max-width: 100%;
   }
 
   ha-card {
     transition: outline 0.2s;
   }
-  .disabled-bar {
-    background: var(--divider-color, #e0e0e0);
-    text-align: center;
-    border-top-right-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-    border-top-left-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-  }
   .warning ul {
     margin: 4px 0;
-  }
-  ha-md-menu-item > ha-svg-icon {
-    --mdc-icon-size: 24px;
   }
   ha-tooltip {
     cursor: default;
   }
   .hidden {
     display: none;
+  }
+
+  ha-automation-row-event-chip.event-chip {
+    position: absolute;
+  }
+
+  .icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .trigger-leading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+  }
+
+  .trigger-leading {
+    color: var(--ha-color-on-neutral-quiet);
+  }
+
+  .trigger-leading ha-trigger-icon,
+  .trigger-leading ha-svg-icon {
+    --mdc-icon-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .trigger-index-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px dotted var(--ha-color-border-neutral-normal);
+    border-radius: var(--ha-border-radius-circle);
+    box-sizing: border-box;
+    color: var(--ha-color-text-secondary);
+    font-size: var(--ha-font-size-s);
+    line-height: 1;
+    text-box-trim: both;
+    text-box-edge: cap alphabetic;
+    overflow: hidden;
+    transition:
+      opacity var(--ha-animation-duration-fast) ease-out,
+      transform var(--ha-animation-duration-fast) ease-out,
+      width var(--ha-animation-duration-fast) ease-out,
+      margin-inline-end var(--ha-animation-duration-fast) ease-out,
+      border-width var(--ha-animation-duration-fast) ease-out;
+  }
+
+  .trigger-index-badge.hidden {
+    opacity: 0;
+    transform: translateX(calc(-8px * var(--scale-direction)));
+    width: 0;
+    margin-inline-end: 0;
+    border-width: 0;
+    pointer-events: none;
+  }
+
+  .note-indicator {
+    color: var(--ha-color-on-neutral-normal);
+  }
+  .note-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .note-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
   }
 `;
 
@@ -93,13 +174,14 @@ export const saveFabStyles = css`
   :host {
     overflow: hidden;
   }
-  ha-fab {
+  ha-button[slot="fab"] {
     position: absolute;
     right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
-  ha-fab.dirty {
+  ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 `;
@@ -114,9 +196,9 @@ export const manualEditorStyles = css`
   .has-sidebar {
     --sidebar-width: min(
       max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-      100vw - ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
       var(--ha-automation-editor-max-width) -
-        ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
+        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
     );
     --sidebar-gap: var(--ha-space-4);
   }
@@ -126,14 +208,14 @@ export const manualEditorStyles = css`
     justify-content: flex-end;
   }
 
-  .fab-positioner ha-fab {
+  .fab-positioner ha-button[slot="fab"] {
     position: fixed;
     right: unset;
     left: unset;
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
   }
-  .fab-positioner ha-fab.dirty {
+  .fab-positioner ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 
@@ -144,7 +226,7 @@ export const manualEditorStyles = css`
   }
 
   .content {
-    padding-top: 24px;
+    padding-top: var(--ha-space-3);
     padding-bottom: max(var(--safe-area-inset-bottom), 32px);
     transition: padding-bottom 180ms ease-in-out;
   }
@@ -228,7 +310,6 @@ export const automationRowsStyles = css`
 export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
-    padding-top: 8px;
   }
   .description {
     padding-top: 16px;
@@ -243,6 +324,7 @@ export const overflowStyles = css`
     white-space: nowrap;
   }
   .overflow-label .shortcut {
+    direction: ltr;
     --mdc-icon-size: 12px;
     display: inline-flex;
     flex-direction: row;
@@ -266,7 +348,21 @@ export const overflowStyles = css`
       display: none;
     }
   }
-  ha-md-menu-item {
-    --mdc-icon-size: 24px;
+`;
+
+export const shortcutStyles = css`
+  .shortcut {
+    direction: ltr;
+    --mdc-icon-size: var(--ha-space-3);
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    margin-right: var(--ha-space-4);
+  }
+  .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
   }
 `;

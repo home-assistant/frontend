@@ -1,1128 +1,927 @@
-import type { ListItem } from "@material/mwc-list/mwc-list-item";
-import {
-  mdiClose,
-  mdiConsoleLine,
-  mdiDevices,
-  mdiEarth,
-  mdiKeyboard,
-  mdiMagnify,
-  mdiReload,
-  mdiServerNetwork,
-} from "@mdi/js";
+import { mdiCommentProcessingOutline, mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { canShowPage } from "../../common/config/can_show_page";
-import { componentsWithService } from "../../common/config/components_with_service";
+import { consume } from "../../common/decorators/consume";
+import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { entityUseDeviceName } from "../../common/entity/compute_entity_name";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { getDeviceContext } from "../../common/entity/context/get_device_context";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
-import { computeRTL } from "../../common/util/compute_rtl";
-import { debounce } from "../../common/util/debounce";
-import "../../components/ha-button";
-import "../../components/ha-icon-button";
-import "../../components/ha-label";
-import "../../components/ha-list";
-import "../../components/ha-md-list-item";
+import "../../components/entity/state-badge";
+import "../../components/ha-adaptive-dialog";
+import "../../components/ha-app-icon";
+import "../../components/ha-combo-box-item";
+import "../../components/ha-domain-icon";
+import "../../components/ha-icon";
+import "../../components/ha-picker-combo-box";
+import type {
+  HaPickerComboBox,
+  PickerComboBoxIndexSelectedDetail,
+  PickerComboBoxItem,
+} from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
-import "../../components/ha-textfield";
+import "../../components/ha-svg-icon";
 import "../../components/ha-tip";
-import { getConfigEntries } from "../../data/config_entries";
-import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
-import { domainToName } from "../../data/integration";
-import { getPanelNameTranslationKey } from "../../data/panel";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import { configSections } from "../../panels/config/ha-panel-config";
-import { HaFuse } from "../../resources/fuse";
-import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
-import { loadVirtualizer } from "../../resources/virtualizer";
+import { areaComboBoxKeys, getAreas } from "../../data/area/area_picker";
+import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
+import {
+  deviceComboBoxKeys,
+  getDevices,
+  type DevicePickerItem,
+} from "../../data/device/device_picker";
+import {
+  entityComboBoxKeys,
+  getEntities,
+  type EntityComboBoxItem,
+} from "../../data/entity/entity_picker";
+import {
+  fetchHassioAddonsInfo,
+  type HassioAddonInfo,
+} from "../../data/hassio/addon";
+import {
+  commandComboBoxKeys,
+  generateActionCommands,
+  generateNavigationCommands,
+  navigateComboBoxKeys,
+  type ActionCommandComboBoxItem,
+  type NavigationComboBoxItem,
+} from "../../data/quick_bar";
+import type { RelatedIdSets } from "../../common/search/related-context";
+import { sortRelatedFirst } from "../../common/search/related-context";
+import { relatedContext } from "../../data/context";
+import {
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../../resources/fuseMultiTerm";
+import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { brandsUrl } from "../../util/brands-url";
+import { isIosApp } from "../../util/is_ios";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "../restart/automation-restart-status";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
-import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
+import { showVoiceCommandDialog } from "../voice-command-dialog/show-ha-voice-command-dialog";
+import {
+  effectiveQuickBarMode,
+  type QuickBarParams,
+  type QuickBarSection,
+} from "./show-dialog-quick-bar";
 
-interface QuickBarItem extends ScorableTextItem {
-  primaryText: string;
-  iconPath?: string;
-  action(data?: any): void;
+const SEPARATOR = "________";
+
+interface AssistComboBoxItem extends PickerComboBoxItem {
+  action: "assist";
+  assistPrompt: string;
 }
 
-interface CommandItem extends QuickBarItem {
-  categoryKey: "reload" | "navigation" | "server_control";
-  categoryText: string;
-}
-
-interface EntityItem extends QuickBarItem {
-  altText: string;
-  icon?: TemplateResult;
-  translatedDomain: string;
-  entityId: string;
-  friendlyName: string;
-}
-
-interface DeviceItem extends QuickBarItem {
-  deviceId: string;
-  domain?: string;
-  translatedDomain?: string;
-  area?: string;
-}
-
-const isCommandItem = (item: QuickBarItem): item is CommandItem =>
-  (item as CommandItem).categoryKey !== undefined;
-
-const isDeviceItem = (item: QuickBarItem): item is DeviceItem =>
-  (item as DeviceItem).deviceId !== undefined;
-
-interface QuickBarNavigationItem extends CommandItem {
-  path: string;
-}
-
-type NavigationInfo = PageNavigation & Pick<QuickBarItem, "primaryText">;
-
-type BaseNavigationCommand = Pick<
-  QuickBarNavigationItem,
-  "primaryText" | "path"
->;
+type QuickBarComboBoxItem =
+  | NavigationComboBoxItem
+  | ActionCommandComboBoxItem
+  | EntityComboBoxItem
+  | DevicePickerItem
+  | AssistComboBoxItem;
 
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _commandItems?: CommandItem[];
-
-  @state() private _entityItems?: EntityItem[];
-
-  @state() private _deviceItems?: DeviceItem[];
-
-  @state() private _filter = "";
-
-  @state() private _search = "";
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
 
   @state() private _open = false;
 
+  @state() private _loading = true;
+
+  @state() private _showHint = false;
+
+  @state() private _selectedSection?: QuickBarSection;
+
   @state() private _opened = false;
 
-  @state() private _narrow = false;
+  @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
-  @state() private _hint?: string;
+  private get _showEntityId() {
+    return this.hass.userData?.showEntityIdPicker;
+  }
 
-  @state() private _mode = QuickBarMode.Entity;
+  private _configEntryLookup: Record<string, ConfigEntry> = {};
 
-  @query("ha-textfield", false) private _filterInputField?: HTMLElement;
+  private _addons?: HassioAddonInfo[];
 
-  private _focusSet = false;
+  private _navigationFilterOptions: NavigationFilterOptions = {};
 
-  private _focusListElement?: ListItem | null;
+  private _translationsLoaded = false;
 
+  private _itemSelected = false;
+
+  // Command that is being run after it was picked, shown with a spinner.
+  @state() private _runningCommandId?: string;
+
+  // #region lifecycle
   public async showDialog(params: QuickBarParams) {
-    this._mode = params.mode || QuickBarMode.Entity;
-    this._hint = params.hint;
-    this._narrow = matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
-    this._initializeItemsIfNeeded();
+    if (!this._translationsLoaded) {
+      this._fetchTranslations();
+      this._translationsLoaded = true;
+    }
+    this._initialize();
+    this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
+    this._showHint = params.showHint ?? false;
+
     this._open = true;
   }
 
+  private async _fetchTranslations() {
+    await this.hass.loadBackendTranslation("title");
+  }
+
+  private async _initialize() {
+    try {
+      const configEntries = await getConfigEntries(this.hass);
+      this._configEntryLookup = Object.fromEntries(
+        configEntries.map((entry) => [entry.entry_id, entry])
+      );
+      // Derive Bluetooth config entries status for navigation filtering
+      this._navigationFilterOptions = {
+        hasBluetoothConfigEntries: configEntries.some(
+          (entry) => entry.domain === "bluetooth"
+        ),
+      };
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching config entries for quick bar", err);
+    }
+
+    if (
+      this.hass.user?.is_admin &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
+      try {
+        const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
+        this._addons = hassioAddonsInfo.addons;
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching hassio addons for quick bar", err);
+      }
+    }
+
+    this._loading = false;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
+      requestAnimationFrame(() => {
+        this._comboBox?.focus();
+      });
+    }
+  }
+
+  private _dialogOpened = async () => {
+    this._opened = true;
+    requestAnimationFrame(() => {
+      if (this.hass && isIosApp(this.hass.auth.external)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
+      this._comboBox?.focus();
+    });
+  };
+
+  // be sure to reload ha-picker-combo-box when adaptive-dialog mode changes
+  private _showTriggered = () => {
+    this._opened = false;
+  };
+
   public closeDialog() {
     this._open = false;
+    return true;
+  }
+
+  private _dialogClosed = () => {
+    this._selectedSection = undefined;
     this._opened = false;
-    this._focusSet = false;
-    this._filter = "";
-    this._search = "";
-    this._entityItems = undefined;
-    this._commandItems = undefined;
+    this._open = false;
+    this._itemSelected = false;
+    this._runningCommandId = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
+  };
 
-  protected willUpdate() {
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
-  }
+  // #endregion lifecycle
 
-  private _getItems = memoizeOne(
-    (
-      mode: QuickBarMode,
-      commandItems,
-      entityItems,
-      deviceItems,
-      filter: string
-    ) => {
-      let items = entityItems;
-
-      if (mode === QuickBarMode.Command) {
-        items = commandItems;
-      } else if (mode === QuickBarMode.Device) {
-        items = deviceItems;
-      }
-
-      if (items && filter && filter !== " ") {
-        return this._filterItems(items, filter);
-      }
-      return items;
-    }
-  );
+  // #region render
 
   protected render() {
-    if (!this._open) {
+    if (!this._open && !this._opened) {
       return nothing;
     }
 
-    const items: QuickBarItem[] | undefined = this._getItems(
-      this._mode,
-      this._commandItems,
-      this._entityItems,
-      this._deviceItems,
-      this._filter
-    );
-
-    const translationKey =
-      this._mode === QuickBarMode.Device
-        ? "filter_placeholder_devices"
-        : "filter_placeholder";
-    const placeholder = this.hass.localize(
-      `ui.dialogs.quick-bar.${translationKey}`
-    );
-
-    const commandMode = this._mode === QuickBarMode.Command;
-    const deviceMode = this._mode === QuickBarMode.Device;
-    const icon = commandMode
-      ? mdiConsoleLine
-      : deviceMode
-        ? mdiDevices
-        : mdiMagnify;
-    const searchPrefix = commandMode ? ">" : deviceMode ? "#" : "";
+    const sections = [
+      {
+        id: "navigate",
+        label: this.hass.localize("ui.dialogs.quick-bar.navigate_title"),
+      },
+      ...(this.hass.user?.is_admin
+        ? [
+            "separator" as const,
+            {
+              id: "command",
+              label: this.hass.localize("ui.dialogs.quick-bar.commands_title"),
+            },
+          ]
+        : []),
+      "separator" as const,
+      {
+        id: "entity",
+        label: this.hass.localize("ui.components.target-picker.type.entities"),
+      },
+      ...(this.hass.user?.is_admin
+        ? [
+            {
+              id: "device",
+              label: this.hass.localize(
+                "ui.components.target-picker.type.devices"
+              ),
+            },
+            {
+              id: "area",
+              label: this.hass.localize(
+                "ui.components.target-picker.type.areas"
+              ),
+            },
+          ]
+        : []),
+    ];
 
     return html`
-      <ha-dialog
-        .heading=${this.hass.localize("ui.dialogs.quick-bar.title")}
-        open
-        @opened=${this._handleOpened}
-        @closed=${this.closeDialog}
+      <ha-adaptive-dialog
+        without-header
+        flexcontent
+        aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+        .open=${this._open}
         hideActions
+        @wa-show=${this._showTriggered}
+        @wa-after-show=${this._dialogOpened}
+        @closed=${this._dialogClosed}
       >
-        <div slot="heading" class="heading">
-          <ha-textfield
-            dialogInitialFocus
-            .placeholder=${placeholder}
-            aria-label=${placeholder}
-            .value="${searchPrefix}${this._search}"
-            icon
-            .iconTrailing=${this._search !== undefined || this._narrow}
-            @input=${this._handleSearchChange}
-            @keydown=${this._handleInputKeyDown}
-            @focus=${this._setFocusFirstListItem}
-          >
-            <ha-svg-icon
-              slot="leadingIcon"
-              class="prefix"
-              .path=${icon}
-            ></ha-svg-icon>
-            ${this._search || this._narrow
-              ? html`
-                  <div slot="trailingIcon">
-                    ${this._search &&
-                    html`<ha-icon-button
-                      @click=${this._clearSearch}
-                      .label=${this.hass!.localize("ui.common.clear")}
-                      .path=${mdiClose}
-                    ></ha-icon-button>`}
-                    ${this._narrow
-                      ? html`
-                          <ha-button
-                            appearance="plain"
-                            size="small"
-                            @click=${this.closeDialog}
-                          >
-                            ${this.hass!.localize("ui.common.close")}
-                          </ha-button>
-                        `
-                      : ""}
-                  </div>
-                `
-              : ""}
-          </ha-textfield>
-        </div>
-        ${!items
-          ? html`<ha-spinner size="small"></ha-spinner>`
-          : items.length === 0
-            ? html`
-                <div class="nothing-found">
-                  ${this.hass.localize("ui.dialogs.quick-bar.nothing_found")}
-                </div>
-              `
-            : html`
-                <ha-list>
-                  ${this._opened
-                    ? html`<lit-virtualizer
-                        tabindex="-1"
-                        scroller
-                        @keydown=${this._handleListItemKeyDown}
-                        @rangechange=${this._handleRangeChanged}
-                        @click=${this._handleItemClick}
-                        class="ha-scrollbar"
-                        style=${styleMap({
-                          height: this._narrow
-                            ? "calc(100vh - 56px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
-                            : `calc(${Math.min(
-                                items.length * (commandMode ? 56 : 72) + 26,
-                                500
-                              )}px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))`,
-                        })}
-                        .items=${items}
-                        .renderItem=${this._renderItem}
-                      >
-                      </lit-virtualizer>`
-                    : ""}
-                </ha-list>
-              `}
-        ${this._hint
-          ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
-          : ""}
-      </ha-dialog>
+        ${
+          !this._loading && this._opened
+            ? html`<ha-picker-combo-box
+                id="combo-box"
+                @index-selected=${this._handleItemSelected}
+                .notFoundLabel=${this.hass.localize(
+                  "ui.dialogs.quick-bar.nothing_found"
+                )}
+                .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+                .getItems=${this._getItems}
+                .rowRenderer=${this._getRowRenderer(this._runningCommandId)}
+                mode="dialog"
+                .sections=${sections}
+                .selectedSection=${this._selectedSection}
+                .sectionTitleFunction=${this._sectionTitleFunction}
+                clearable
+              ></ha-picker-combo-box>`
+            : nothing
+        }
+        ${
+          this._showHint
+            ? html`<ha-tip slot="footer"
+                >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
+                  keyboard_shortcut: html`<button
+                    class="link"
+                    @click=${this._openShortcutDialog}
+                  >
+                    ${this.hass.localize("ui.tips.keyboard_shortcut")}
+                  </button>`,
+                  modifier: ctrlOrCmdLabel(this.hass.localize),
+                })}</ha-tip
+              >`
+            : nothing
+        }
+      </ha-adaptive-dialog>
     `;
   }
 
-  private async _initializeItemsIfNeeded() {
-    if (this._mode === QuickBarMode.Command) {
-      this._commandItems =
-        this._commandItems || (await this._generateCommandItems());
-    } else if (this._mode === QuickBarMode.Device) {
-      this._deviceItems =
-        this._deviceItems || (await this._generateDeviceItems());
-    } else {
-      this._entityItems =
-        this._entityItems || (await this._generateEntityItems());
-    }
-  }
+  private _getRowRenderer = memoizeOne(
+    (runningCommandId?: string) => (item: QuickBarComboBoxItem) =>
+      this._renderRow(item, item?.id === runningCommandId)
+  );
 
-  private _handleOpened() {
-    this._opened = true;
-  }
-
-  private async _handleRangeChanged(e) {
-    if (this._focusSet) {
-      return;
-    }
-    if (e.firstVisible > -1) {
-      this._focusSet = true;
-      await this.updateComplete;
-      this._setFocusFirstListItem();
-    }
-  }
-
-  private _renderItem = (item: QuickBarItem, index: number) => {
+  private _renderRow(item: QuickBarComboBoxItem, running: boolean) {
     if (!item) {
       return nothing;
     }
 
-    if (isDeviceItem(item)) {
-      return this._renderDeviceItem(item, index);
+    const iconPath = item.icon_path || mdiDevices;
+    const iconColor = "iconColor" in item ? item.iconColor : undefined;
+
+    return html`
+      <ha-combo-box-item
+        style=${styleMap({
+          "--mdc-icon-size": "24px",
+          backgroundColor: running
+            ? "var(--ha-color-fill-primary-normal-resting)"
+            : undefined,
+        })}
+      >
+        ${
+          "stateObj" in item && item.stateObj
+            ? html`
+                <state-badge
+                  slot="start"
+                  .stateObj=${(item as EntityComboBoxItem).stateObj}
+                ></state-badge>
+              `
+            : "domain" in item && item.domain
+              ? html`
+                  <ha-domain-icon
+                    slot="start"
+                    style="margin: var(--ha-space-1);"
+                    .domain=${item.domain}
+                    brand-fallback
+                  ></ha-domain-icon>
+                `
+              : "app" in item && item.app
+                ? html`
+                    <ha-app-icon
+                      slot="start"
+                      .slug=${item.app.slug}
+                      .hasIcon=${item.app.icon}
+                      .alt=${item.primary ?? "Unknown"}
+                      class=${iconColor ? "colored" : nothing}
+                      style=${
+                        iconColor
+                          ? `--app-icon-background-color: ${iconColor}`
+                          : nothing
+                      }
+                    >
+                      ${
+                        item.icon
+                          ? html`<ha-icon .icon=${item.icon}></ha-icon>`
+                          : html`<ha-svg-icon .path=${iconPath}></ha-svg-icon>`
+                      }
+                    </ha-app-icon>
+                  `
+                : "image" in item && item.image
+                  ? html`
+                      <img
+                        slot="start"
+                        alt=${item.primary ?? "Unknown"}
+                        .src=${item.image}
+                        style=${
+                          "iconColor" in item && item.iconColor
+                            ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                            : ""
+                        }
+                      />
+                    `
+                  : item.icon
+                    ? html`<ha-icon
+                        style="margin: var(--ha-space-1);"
+                        slot="start"
+                        .icon=${item.icon}
+                      ></ha-icon>`
+                    : "iconColor" in item && item.iconColor
+                      ? html`
+                          <div
+                            slot="start"
+                            style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
+                          >
+                            <ha-svg-icon
+                              style="color: var(--white-color); --mdc-icon-size: 24px;"
+                              .path=${iconPath}
+                            ></ha-svg-icon>
+                          </div>
+                        `
+                      : html`
+                          <ha-svg-icon
+                            style="margin: var(--ha-space-1);"
+                            slot="start"
+                            .path=${iconPath}
+                          ></ha-svg-icon>
+                        `
+        }
+        <span slot="headline">${item.primary}</span>
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          "stateObj" in item && !!this._showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${item.stateObj?.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          "domain_name" in item &&
+          (!("stateObj" in item) || !this._showEntityId)
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${(item as EntityComboBoxItem).domain_name}
+                </div>
+              `
+            : nothing
+        }
+        ${
+          running
+            ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
+            : nothing
+        }
+      </ha-combo-box-item>
+    `;
+  }
+
+  private _sectionTitleFunction = ({
+    firstIndex,
+    lastIndex,
+    firstItem,
+    secondItem,
+    itemsCount,
+  }: {
+    firstIndex: number;
+    lastIndex: number;
+    firstItem: QuickBarComboBoxItem | string;
+    secondItem: QuickBarComboBoxItem | string;
+    itemsCount: number;
+  }) => {
+    if (
+      firstItem === undefined ||
+      secondItem === undefined ||
+      typeof firstItem === "string" ||
+      (typeof secondItem === "string" && secondItem !== "padding") ||
+      (firstIndex === 0 && lastIndex === itemsCount - 1)
+    ) {
+      return undefined;
     }
 
-    if (isCommandItem(item)) {
-      return this._renderCommandItem(item, index);
-    }
+    const type =
+      "action" in firstItem
+        ? this.hass.localize("ui.dialogs.quick-bar.commands_title")
+        : "path" in firstItem
+          ? this.hass.localize("ui.dialogs.quick-bar.navigate_title")
+          : "stateObj" in firstItem
+            ? this.hass.localize("ui.components.target-picker.type.entities")
+            : "domain" in firstItem
+              ? this.hass.localize("ui.components.target-picker.type.devices")
+              : this.hass.localize("ui.components.target-picker.type.areas");
 
-    return this._renderEntityItem(item as EntityItem, index);
+    return type;
   };
 
-  private _renderDeviceItem(item: DeviceItem, index?: number) {
-    return html`
-      <ha-md-list-item
-        class="two-line"
-        .item=${item}
-        index=${ifDefined(index)}
-        tabindex="0"
-        type="button"
-      >
-        ${item.domain
-          ? html`<img
-              slot="start"
-              alt=""
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-              src=${brandsUrl({
-                domain: item.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
-            />`
-          : nothing}
-        <span slot="headline">${item.primaryText}</span>
-        ${item.area
-          ? html` <span slot="supporting-text">${item.area}</span> `
-          : nothing}
-        ${item.translatedDomain
-          ? html`<div slot="trailing-supporting-text" class="domain">
-              ${item.translatedDomain}
-            </div>`
-          : nothing}
-      </ha-md-list-item>
-    `;
+  // #endregion render
+
+  // #region data
+
+  private _getItems = (searchString: string, section: string) => {
+    this._selectedSection = section as QuickBarSection | undefined;
+    return this._getItemsMemoized(
+      this._configEntryLookup,
+      this._relatedIdSets,
+      searchString,
+      this._selectedSection
+    );
+  };
+
+  private _getItemsMemoized = memoizeOne(
+    (
+      configEntryLookup: Record<string, ConfigEntry>,
+      relatedIdSets: RelatedIdSets | undefined,
+      filter?: string,
+      section?: QuickBarSection
+    ) => {
+      const items: (string | QuickBarComboBoxItem)[] = [];
+      const prompt = filter?.trim();
+      const assistItem =
+        prompt &&
+        (!section || section === "command") &&
+        isComponentLoaded(this.hass.config, "conversation") &&
+        !this.hass.auth.external?.config.hasAssist
+          ? ({
+              id: "ask-assist",
+              action: "assist",
+              primary: this.hass.localize("ui.dialogs.quick-bar.ask_assist", {
+                query: prompt,
+              }),
+              icon_path: mdiCommentProcessingOutline,
+              assistPrompt: prompt,
+            } satisfies AssistComboBoxItem)
+          : undefined;
+
+      if (!section || section === "navigate") {
+        let navigateItems = this._generateNavigationCommandsMemoized(
+          this.hass,
+          this._addons,
+          this._navigationFilterOptions
+        ).sort(this._sortBySortingLabel);
+
+        if (filter) {
+          navigateItems = this._filterGroup(
+            "navigate",
+            navigateItems,
+            filter
+          ) as NavigationComboBoxItem[];
+        }
+
+        if (!section && navigateItems.length) {
+          // show group title
+          items.push(this.hass.localize("ui.dialogs.quick-bar.navigate_title"));
+        }
+
+        items.push(...navigateItems);
+      }
+
+      if (!section || section === "command") {
+        let commandItems = this.hass.user?.is_admin
+          ? this._generateActionCommandsMemoized(this.hass).sort(
+              this._sortBySortingLabel
+            )
+          : [];
+
+        if (filter) {
+          commandItems = this._filterGroup(
+            "command",
+            commandItems,
+            filter
+          ) as ActionCommandComboBoxItem[];
+        }
+
+        if (!section && (commandItems.length || assistItem)) {
+          // show group title
+          items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
+        }
+
+        items.push(...commandItems);
+        if (assistItem) {
+          items.push(assistItem);
+        }
+      }
+
+      if (!section || section === "entity") {
+        let entityItems = this._getEntitiesMemoized(this.hass);
+
+        // Mark related items
+        if (relatedIdSets?.entities.size) {
+          entityItems = entityItems.map((item) => ({
+            ...item,
+            isRelated: relatedIdSets.entities.has(
+              (item as EntityComboBoxItem).stateObj?.entity_id || ""
+            ),
+          }));
+        }
+
+        if (filter) {
+          entityItems = sortRelatedFirst(
+            this._filterGroup(
+              "entity",
+              entityItems,
+              filter
+            ) as EntityComboBoxItem[]
+          );
+        } else {
+          entityItems = this._sortRelatedByLabel(entityItems);
+        }
+
+        if (!section && entityItems.length) {
+          // show group title
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.entities")
+          );
+        }
+
+        items.push(...entityItems);
+      }
+
+      if (this.hass.user?.is_admin && (!section || section === "device")) {
+        let deviceItems = this._getDevicesMemoized(
+          this.hass,
+          configEntryLookup
+        );
+
+        // Mark related items
+        if (relatedIdSets?.devices.size) {
+          deviceItems = deviceItems.map((item) => {
+            const deviceId = item.id.split(SEPARATOR)[1];
+            return {
+              ...item,
+              isRelated: relatedIdSets.devices.has(deviceId || ""),
+            };
+          });
+        }
+
+        if (filter) {
+          deviceItems = sortRelatedFirst(
+            this._filterGroup("device", deviceItems, filter)
+          );
+        } else {
+          deviceItems = this._sortRelatedByLabel(deviceItems);
+        }
+
+        if (!section && deviceItems.length) {
+          // show group title
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.devices")
+          );
+        }
+
+        items.push(...deviceItems);
+      }
+
+      if (this.hass.user?.is_admin && (!section || section === "area")) {
+        let areaItems = this._getAreasMemoized(this.hass);
+
+        // Mark related items
+        if (relatedIdSets?.areas.size) {
+          areaItems = areaItems.map((item) => {
+            const areaId = item.id.split(SEPARATOR)[1];
+            return {
+              ...item,
+              isRelated: relatedIdSets.areas.has(areaId || ""),
+            };
+          });
+        }
+
+        if (filter) {
+          areaItems = sortRelatedFirst(
+            this._filterGroup("area", areaItems, filter)
+          );
+        } else {
+          areaItems = this._sortRelatedByLabel(areaItems);
+        }
+
+        if (!section && areaItems.length) {
+          // show group title
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.areas")
+          );
+        }
+
+        items.push(...areaItems);
+      }
+
+      return items;
+    }
+  );
+
+  private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
+    getEntities(hass, { idPrefix: `entity${SEPARATOR}` })
+  );
+
+  private _getDevicesMemoized = memoizeOne(
+    (hass: HomeAssistant, configEntryLookup: Record<string, ConfigEntry>) =>
+      getDevices(hass, configEntryLookup, { idPrefix: `device${SEPARATOR}` })
+  );
+
+  private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>
+    getAreas(
+      hass.areas,
+      hass.floors,
+      hass.devices,
+      hass.entities,
+      hass.states,
+      {
+        idPrefix: `area${SEPARATOR}`,
+      }
+    )
+  );
+
+  private _generateNavigationCommandsMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      apps: HassioAddonInfo[] | undefined,
+      filterOptions: NavigationFilterOptions
+    ) => generateNavigationCommands(hass, apps, filterOptions)
+  );
+
+  private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
+
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
+
+  private _fuseIndexes = {
+    entity: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states, entityComboBoxKeys)
+    ),
+    device: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states, deviceComboBoxKeys)
+    ),
+    area: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states, areaComboBoxKeys)
+    ),
+    command: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states, commandComboBoxKeys)
+    ),
+    navigate: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states, navigateComboBoxKeys)
+    ),
+  };
+
+  private _filterGroup(
+    type: QuickBarSection,
+    items: PickerComboBoxItem[],
+    searchTerm: string
+  ) {
+    const fuseIndex = this._fuseIndexes[type](items);
+
+    return multiTermSortedSearch(
+      items,
+      searchTerm,
+      (item: PickerComboBoxItem) => item.id,
+      fuseIndex
+    );
   }
 
-  private _renderEntityItem(item: EntityItem, index?: number) {
-    const showEntityId = this.hass.userData?.showEntityIdPicker;
+  private _sortBySortingLabel = (
+    entityA: PickerComboBoxItem,
+    entityB: PickerComboBoxItem
+  ) =>
+    caseInsensitiveStringCompare(
+      entityA.sorting_label!,
+      entityB.sorting_label!,
+      this.hass.locale.language
+    );
 
-    return html`
-      <ha-md-list-item
-        class=${showEntityId ? "three-line" : "two-line"}
-        .item=${item}
-        index=${ifDefined(index)}
-        tabindex="0"
-        type="button"
-      >
-        ${item.iconPath
-          ? html`
-              <ha-svg-icon
-                .path=${item.iconPath}
-                class="entity"
-                slot="start"
-              ></ha-svg-icon>
-            `
-          : html`<span slot="start">${item.icon}</span>`}
-        <span slot="headline">${item.primaryText}</span>
-        ${item.altText
-          ? html` <span slot="supporting-text">${item.altText}</span> `
-          : nothing}
-        ${item.entityId && showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">${item.entityId}</span>
-            `
-          : nothing}
-        ${item.translatedDomain && !showEntityId
-          ? html`<div slot="trailing-supporting-text" class="domain">
-              ${item.translatedDomain}
-            </div>`
-          : nothing}
-      </ha-md-list-item>
-    `;
+  private _sortRelatedByLabel = (items: PickerComboBoxItem[]) =>
+    [...items].sort((a, b) => {
+      if (a.isRelated && !b.isRelated) return -1;
+      if (!a.isRelated && b.isRelated) return 1;
+      return this._sortBySortingLabel(a, b);
+    });
+
+  // #endregion data
+
+  // #region interaction
+
+  private _navigate(path: string, newTab = false) {
+    if (newTab) {
+      window.open(path, "_blank", "noreferrer");
+    } else {
+      navigate(path);
+    }
   }
 
-  private _renderCommandItem(item: CommandItem, index?: number) {
-    return html`
-      <ha-md-list-item
-        .item=${item}
-        index=${ifDefined(index)}
-        hasMeta
-        tabindex="0"
-        type="button"
-      >
-        <span>
-          <ha-label
-            .label=${item.categoryText}
-            class="command-category ${item.categoryKey}"
-          >
-            ${item.iconPath
-              ? html`
-                  <ha-svg-icon
-                    .path=${item.iconPath}
-                    slot="start"
-                  ></ha-svg-icon>
-                `
-              : nothing}
-            ${item.categoryText}
-          </ha-label>
-        </span>
+  private async _handleItemSelected(
+    ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
+  ) {
+    if (!this._itemSelected) {
+      const { newTab } = ev.detail;
+      const item = ev.detail.item as QuickBarComboBoxItem;
 
-        <span class="command-text">${item.primaryText}</span>
-      </ha-md-list-item>
-    `;
-  }
+      this._itemSelected = true;
 
-  private async _processItemAndCloseDialog(item: QuickBarItem, index: number) {
-    this._addSpinnerToCommandItem(index);
-
-    await item.action();
-    this.closeDialog();
-  }
-
-  private _handleInputKeyDown(ev: KeyboardEvent) {
-    if (ev.code === "Enter") {
-      const firstItem = this._getItemAtIndex(0);
-      if (!firstItem || firstItem.style.display === "none") {
+      if (item && "assistPrompt" in item) {
+        this.closeDialog();
+        showVoiceCommandDialog(this, this.hass, {
+          pipeline_id: "last_used",
+          start_listening: false,
+          prompt: item.assistPrompt,
+          submit: true,
+        });
         return;
       }
-      this._processItemAndCloseDialog((firstItem as any).item, 0);
-    } else if (ev.code === "ArrowDown") {
-      ev.preventDefault();
-      this._getItemAtIndex(0)?.focus();
-      this._focusSet = true;
-      this._focusListElement = this._getItemAtIndex(0);
-    }
-  }
 
-  private _getItemAtIndex(index: number): ListItem | null {
-    return this.renderRoot.querySelector(`ha-md-list-item[index="${index}"]`);
-  }
-
-  private _addSpinnerToCommandItem(index: number): void {
-    const div = document.createElement("div");
-    div.slot = "meta";
-    const spinner = document.createElement("ha-spinner");
-    spinner.size = "small";
-    div.appendChild(spinner);
-    this._getItemAtIndex(index)?.appendChild(div);
-  }
-
-  private _handleSearchChange(ev: CustomEvent): void {
-    const newFilter = (ev.currentTarget as any).value;
-    const oldMode = this._mode;
-    const oldSearch = this._search;
-    let newMode: QuickBarMode;
-    let newSearch: string;
-
-    if (newFilter.startsWith(">")) {
-      newMode = QuickBarMode.Command;
-      newSearch = newFilter.substring(1);
-    } else if (newFilter.startsWith("#")) {
-      newMode = QuickBarMode.Device;
-      newSearch = newFilter.substring(1);
-    } else {
-      newMode = QuickBarMode.Entity;
-      newSearch = newFilter;
-    }
-
-    if (oldMode === newMode && oldSearch === newSearch) {
-      return;
-    }
-
-    this._mode = newMode;
-    this._search = newSearch;
-
-    if (this._hint) {
-      this._hint = undefined;
-    }
-
-    if (oldMode !== this._mode) {
-      this._focusSet = false;
-      this._initializeItemsIfNeeded();
-      this._filter = this._search;
-    } else {
-      if (this._focusSet && this._focusListElement) {
-        this._focusSet = false;
-        // @ts-ignore
-        this._focusListElement.rippleHandlers.endFocus();
+      // entity selected
+      if (item && "stateObj" in item) {
+        this.closeDialog();
+        fireEvent(this, "hass-more-info", {
+          entityId: item.search_labels!.entityId,
+        });
+        return;
       }
-      this._debouncedSetFilter(this._search);
-    }
-  }
 
-  private _clearSearch() {
-    this._search = "";
-    this._filter = "";
-  }
-
-  private _debouncedSetFilter = debounce((filter: string) => {
-    this._filter = filter;
-  }, 100);
-
-  private _setFocusFirstListItem() {
-    // @ts-ignore
-    this._getItemAtIndex(0)?.rippleHandlers.startFocus();
-    this._focusListElement = this._getItemAtIndex(0);
-  }
-
-  private _handleListItemKeyDown(ev: KeyboardEvent) {
-    const isSingleCharacter = ev.key.length === 1;
-    const index = (ev.target as HTMLElement).getAttribute("index");
-    const isFirstListItem = index === "0";
-    this._focusListElement = ev.target as ListItem;
-    if (ev.key === "ArrowDown") {
-      this._getItemAtIndex(Number(index) + 1)?.focus();
-    }
-    if (ev.key === "ArrowUp") {
-      if (isFirstListItem) {
-        this._filterInputField?.focus();
-      } else {
-        this._getItemAtIndex(Number(index) - 1)?.focus();
+      // device selected
+      if (item && item.id.startsWith(`device${SEPARATOR}`)) {
+        const path = `/config/devices/device/${item.id.split(SEPARATOR)[1]}`;
+        this.closeDialog();
+        this._navigate(path, newTab);
+        return;
       }
-    }
-    if (ev.key === "Enter" || ev.key === " ") {
-      this._processItemAndCloseDialog(
-        (ev.target as any).item,
-        Number((ev.target as HTMLElement).getAttribute("index"))
-      );
-    }
-    if (ev.key === "Backspace" || isSingleCharacter) {
-      (ev.currentTarget as HTMLElement).scrollTop = 0;
-      this._filterInputField?.focus();
-    }
-  }
 
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-md-list-item");
-    this._processItemAndCloseDialog(
-      listItem.item,
-      Number(listItem.getAttribute("index"))
-    );
-  }
+      // area selected
+      if (item && item.id.startsWith(`area${SEPARATOR}`)) {
+        const path = `/config/areas/area/${item.id.split(SEPARATOR)[1]}`;
+        this.closeDialog();
+        this._navigate(path, newTab);
+        return;
+      }
 
-  private async _generateDeviceItems(): Promise<DeviceItem[]> {
-    const configEntries = await getConfigEntries(this.hass);
-    const configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
-
-    return Object.values(this.hass.devices)
-      .filter((device) => !device.disabled_by)
-      .map((device) => {
-        const deviceName = computeDeviceNameDisplay(device, this.hass);
-
-        const { area } = getDeviceContext(device, this.hass);
-
-        const areaName = area ? computeAreaName(area) : undefined;
-
-        const deviceItem = {
-          primaryText: deviceName,
-          deviceId: device.id,
-          area: areaName,
-          action: () => navigate(`/config/devices/device/${device.id}`),
-        };
-
-        const configEntry = device.primary_config_entry
-          ? configEntryLookup[device.primary_config_entry]
-          : undefined;
-
-        const domain = configEntry?.domain;
-        const translatedDomain = domain
-          ? domainToName(this.hass.localize, domain)
-          : undefined;
-
-        return {
-          ...deviceItem,
-          domain,
-          translatedDomain,
-          strings: [deviceName, areaName, domain, domainToName].filter(
-            Boolean
-          ) as string[],
-        };
-      })
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.primaryText,
-          b.primaryText,
-          this.hass.locale.language
-        )
-      );
-  }
-
-  private async _generateEntityItems(): Promise<EntityItem[]> {
-    const isRTL = computeRTL(this.hass);
-
-    await this.hass.loadBackendTranslation("title");
-
-    return Object.keys(this.hass.states)
-      .map((entityId) => {
-        const stateObj = this.hass.states[entityId];
-
-        const friendlyName = computeStateName(stateObj); // Keep this for search
-
-        const useDeviceName = entityUseDeviceName(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices
-        );
-
-        const name = this.hass.formatEntityName(
-          stateObj,
-          useDeviceName ? { type: "device" } : { type: "entity" }
-        );
-
-        const primary = name || entityId;
-
-        const secondary = this.hass.formatEntityName(
-          stateObj,
-          useDeviceName
-            ? [{ type: "area" }]
-            : [{ type: "area" }, { type: "device" }],
-          {
-            separator: isRTL ? " ◂ " : " ▸ ",
-          }
-        );
-
-        const translatedDomain = domainToName(
-          this.hass.localize,
-          computeDomain(entityId)
-        );
-
-        const entityItem = {
-          primaryText: primary,
-          altText: secondary,
-          icon: html`
-            <ha-state-icon
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></ha-state-icon>
-          `,
-          translatedDomain: translatedDomain,
-          entityId: entityId,
-          friendlyName: friendlyName,
-          action: () => fireEvent(this, "hass-more-info", { entityId }),
-        };
-
-        return {
-          ...entityItem,
-          strings: [entityItem.primaryText, entityItem.altText],
-        };
-      })
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.primaryText,
-          b.primaryText,
-          this.hass.locale.language
-        )
-      );
-  }
-
-  private async _generateCommandItems(): Promise<CommandItem[]> {
-    return [
-      ...(await this._generateReloadCommands()),
-      ...this._generateServerControlCommands(),
-      ...(await this._generateNavigationCommands()),
-    ].sort((a, b) =>
-      caseInsensitiveStringCompare(
-        a.strings.join(" "),
-        b.strings.join(" "),
-        this.hass.locale.language
-      )
-    );
-  }
-
-  private async _generateReloadCommands(): Promise<CommandItem[]> {
-    // Get all domains that have a direct "reload" service
-    const reloadableDomains = componentsWithService(this.hass, "reload");
-
-    const localize = await this.hass.loadBackendTranslation(
-      "title",
-      reloadableDomains
-    );
-
-    const commands = reloadableDomains.map((domain) => ({
-      primaryText:
-        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
-        this.hass.localize("ui.dialogs.quick-bar.commands.reload.reload", {
-          domain: domainToName(localize, domain),
-        }),
-      action: () => this.hass.callService(domain, "reload"),
-      iconPath: mdiReload,
-      categoryText: this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.reload`
-      ),
-    }));
-
-    // Add "frontend.reload_themes"
-    commands.push({
-      primaryText: this.hass.localize(
-        "ui.dialogs.quick-bar.commands.reload.themes"
-      ),
-      action: () => this.hass.callService("frontend", "reload_themes"),
-      iconPath: mdiReload,
-      categoryText: this.hass.localize(
-        "ui.dialogs.quick-bar.commands.types.reload"
-      ),
-    });
-
-    // Add "homeassistant.reload_core_config"
-    commands.push({
-      primaryText: this.hass.localize(
-        "ui.dialogs.quick-bar.commands.reload.core"
-      ),
-      action: () =>
-        this.hass.callService("homeassistant", "reload_core_config"),
-      iconPath: mdiReload,
-      categoryText: this.hass.localize(
-        "ui.dialogs.quick-bar.commands.types.reload"
-      ),
-    });
-
-    // Add "homeassistant.reload_all"
-    commands.push({
-      primaryText: this.hass.localize(
-        "ui.dialogs.quick-bar.commands.reload.all"
-      ),
-      action: () => this.hass.callService("homeassistant", "reload_all"),
-      iconPath: mdiReload,
-      categoryText: this.hass.localize(
-        "ui.dialogs.quick-bar.commands.types.reload"
-      ),
-    });
-
-    return commands.map((command) => ({
-      ...command,
-      categoryKey: "reload",
-      strings: [`${command.categoryText} ${command.primaryText}`],
-    }));
-  }
-
-  private _generateServerControlCommands(): CommandItem[] {
-    const serverActions = ["restart", "stop"] as const;
-
-    return serverActions.map((action) => {
-      const categoryKey: CommandItem["categoryKey"] = "server_control";
-
-      const item = {
-        primaryText: this.hass.localize(
-          "ui.dialogs.quick-bar.commands.server_control.perform_action",
-          {
-            action: this.hass.localize(
-              `ui.dialogs.quick-bar.commands.server_control.${action}`
-            ),
-          }
-        ),
-        iconPath: mdiServerNetwork,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-        ),
-        categoryKey,
-        action: async () => {
+      // command selected
+      if (item && "action" in item) {
+        const actionItem = item as ActionCommandComboBoxItem;
+        if (actionItem.action === "restart" || actionItem.action === "stop") {
           const confirmed = await showConfirmationDialog(this, {
             title: this.hass.localize(
-              `ui.dialogs.restart.${action}.confirm_title`
+              `ui.dialogs.restart.${actionItem.action}.confirm_title`
             ),
-            text: this.hass.localize(
-              `ui.dialogs.restart.${action}.confirm_description`
-            ),
+            text: html`${this.hass.localize(
+                `ui.dialogs.restart.${actionItem.action}.confirm_description`
+              )}<br /><br /><automation-restart-status></automation-restart-status>`,
             confirmText: this.hass.localize(
-              `ui.dialogs.restart.${action}.confirm_action`
+              `ui.dialogs.restart.${actionItem.action}.confirm_action`
             ),
             destructive: true,
           });
           if (!confirmed) {
             return;
           }
-          this.hass.callService("homeassistant", action);
-        },
-      };
 
-      return {
-        ...item,
-        strings: [`${item.categoryText} ${item.primaryText}`],
-      };
-    });
-  }
-
-  private async _generateNavigationCommands(): Promise<CommandItem[]> {
-    const panelItems = this._generateNavigationPanelCommands();
-    const sectionItems = this._generateNavigationConfigSectionCommands();
-    const supervisorItems: BaseNavigationCommand[] = [];
-    if (isComponentLoaded(this.hass, "hassio")) {
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      supervisorItems.push({
-        path: "/hassio/store",
-        primaryText: this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.addon_store"
-        ),
-      });
-      supervisorItems.push({
-        path: "/hassio/dashboard",
-        primaryText: this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.addon_dashboard"
-        ),
-      });
-      for (const addon of addonsInfo.addons.filter((a) => a.version)) {
-        supervisorItems.push({
-          path: `/hassio/addon/${addon.slug}`,
-          primaryText: this.hass.localize(
-            "ui.dialogs.quick-bar.commands.navigation.addon_info",
-            { addon: addon.name }
-          ),
-        });
-      }
-    }
-
-    const additionalItems = [
-      {
-        path: "",
-        primaryText: this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.shortcuts"
-        ),
-        action: () => showShortcutsDialog(this),
-        iconPath: mdiKeyboard,
-      },
-    ];
-
-    return this._finalizeNavigationCommands([
-      ...panelItems,
-      ...sectionItems,
-      ...supervisorItems,
-      ...additionalItems,
-    ]);
-  }
-
-  private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
-    return Object.keys(this.hass.panels)
-      .filter(
-        (panelKey) => panelKey !== "_my_redirect" && panelKey !== "hassio"
-      )
-      .map((panelKey) => {
-        const panel = this.hass.panels[panelKey];
-        const translationKey = getPanelNameTranslationKey(panel);
-
-        const primaryText =
-          this.hass.localize(translationKey) || panel.title || panel.url_path;
-
-        return {
-          primaryText,
-          path: `/${panel.url_path}`,
-        };
-      });
-  }
-
-  private _generateNavigationConfigSectionCommands(): BaseNavigationCommand[] {
-    const items: NavigationInfo[] = [];
-
-    for (const sectionKey of Object.keys(configSections)) {
-      for (const page of configSections[sectionKey]) {
-        if (!canShowPage(this.hass, page)) {
-          continue;
+          this.hass.callService(actionItem.domain!, actionItem.action);
+          this.closeDialog();
+          return;
         }
 
-        const info = this._getNavigationInfoFromConfig(page);
+        this._runningCommandId = actionItem.id;
 
-        if (!info) {
-          continue;
-        }
-        // Add to list, but only if we do not already have an entry for the same path and component
-        if (items.some((e) => e.path === info.path)) {
-          continue;
+        await this.hass.callService(actionItem.domain!, actionItem.action);
+
+        this.closeDialog();
+        return;
+      }
+
+      // navigation selected
+      if (item && "path" in item) {
+        this.closeDialog();
+
+        if (!item.path) {
+          showShortcutsDialog(this);
+          return;
         }
 
-        items.push(info);
+        const path = (item as NavigationComboBoxItem).path;
+        this._navigate(path, newTab);
       }
     }
-
-    return items;
   }
 
-  private _getNavigationInfoFromConfig(
-    page: PageNavigation
-  ): NavigationInfo | undefined {
-    const path = page.path.substring(1);
-
-    let name = path.substring(path.indexOf("/") + 1);
-    name = name.indexOf("/") > -1 ? name.substring(0, name.indexOf("/")) : name;
-
-    const caption =
-      (name &&
-        this.hass.localize(
-          `ui.dialogs.quick-bar.commands.navigation.${name}`
-        )) ||
-      // @ts-expect-error
-      (page.translationKey && this.hass.localize(page.translationKey));
-
-    if (caption) {
-      return { ...page, primaryText: caption };
-    }
-
-    return undefined;
+  private _openShortcutDialog(ev: Event): void {
+    ev.preventDefault();
+    showShortcutsDialog(this);
+    this.closeDialog();
   }
 
-  private _finalizeNavigationCommands(
-    items: BaseNavigationCommand[]
-  ): CommandItem[] {
-    return items.map((item) => {
-      const categoryKey: CommandItem["categoryKey"] = "navigation";
+  // #endregion interaction
 
-      const navItem = {
-        iconPath: mdiEarth,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-        ),
-        action: () => navigate(item.path),
-        ...item,
-      };
+  // #region styles
 
-      return {
-        ...navItem,
-        strings: [`${navItem.categoryText} ${navItem.primaryText}`],
-        categoryKey,
-      };
-    });
-  }
-
-  private _fuseIndex = memoizeOne((items: QuickBarItem[]) =>
-    Fuse.createIndex(
-      [
-        "primaryText",
-        "altText",
-        "friendlyName",
-        "translatedDomain",
-        "entityId", // for technical search
-      ],
-      items
-    )
-  );
-
-  private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
-      const index = this._fuseIndex(items);
-      const fuse = new HaFuse(items, {}, index);
-
-      const results = fuse.multiTermsSearch(filter.trim());
-      if (!results || !results.length) {
-        return items;
-      }
-      return results.map((result) => result.item);
-    }
-  );
-
-  static get styles() {
+  static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
-      haStyleDialog,
+      buttonLinkStyle,
       css`
-        ha-list {
-          position: relative;
-          --mdc-list-vertical-padding: 0;
-        }
-        .heading {
-          display: flex;
-          align-items: center;
-          --mdc-theme-primary: var(--primary-text-color);
-        }
-
-        .heading ha-textfield {
-          flex-grow: 1;
-        }
-
-        ha-dialog {
-          --dialog-z-index: 9;
+        :host {
+          --dialog-surface-margin-top: var(--ha-space-10);
+          --ha-dialog-min-height: 620px;
+          --ha-bottom-sheet-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
           --dialog-content-padding: 0;
-        }
-
-        @media (min-width: 800px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 800px;
-            --mdc-dialog-min-width: 500px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: var(--ha-space-10);
-            --mdc-dialog-max-height: calc(100% - var(--ha-space-18));
-          }
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-textfield {
-            --mdc-shape-small: 0;
-          }
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 690px) {
-          .hint {
-            display: none;
-          }
-        }
-
-        ha-svg-icon.prefix {
-          color: var(--primary-text-color);
-        }
-
-        ha-textfield ha-icon-button {
-          --mdc-icon-button-size: 24px;
-          color: var(--primary-text-color);
-        }
-
-        .command-category {
-          --ha-label-icon-color: #585858;
-          --ha-label-text-color: #212121;
-        }
-
-        .command-category.reload {
-          --ha-label-background-color: #cddc39;
-        }
-
-        .command-category.navigation {
-          --ha-label-background-color: var(--light-primary-color);
-        }
-
-        .command-category.server_control {
-          --ha-label-background-color: var(--warning-color);
-        }
-
-        span.command-text {
-          margin-left: var(--ha-space-2);
-          margin-inline-start: var(--ha-space-2);
-          margin-inline-end: initial;
-          direction: var(--direction);
-        }
-
-        ha-md-list-item {
-          width: 100%;
-        }
-
-        /* Fixed height for items because we are use virtualizer */
-        ha-md-list-item.two-line {
-          --md-list-item-one-line-container-height: 64px;
-          --md-list-item-two-line-container-height: 64px;
-          --md-list-item-top-space: var(--ha-space-2);
-          --md-list-item-bottom-space: var(--ha-space-2);
-        }
-
-        ha-md-list-item.three-line {
-          width: 100%;
-          --md-list-item-one-line-container-height: 72px;
-          --md-list-item-two-line-container-height: 72px;
-          --md-list-item-three-line-container-height: 72px;
-          --md-list-item-top-space: var(--ha-space-2);
-          --md-list-item-bottom-space: var(--ha-space-2);
-        }
-
-        ha-md-list-item .code {
-          font-family: var(--ha-font-family-code);
-          font-size: var(--ha-font-size-xs);
-        }
-
-        ha-md-list-item .domain {
-          font-size: var(--ha-font-size-s);
-          font-weight: var(--ha-font-weight-normal);
-          line-height: var(--ha-line-height-normal);
-          align-self: flex-end;
-          max-width: 30%;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-        }
-
-        ha-md-list-item img {
-          width: 32px;
-          height: 32px;
+          --safe-area-inset-bottom: 0px;
+          --ha-dialog-show-duration: var(--ha-animation-duration-instant);
         }
 
         ha-tip {
-          padding: var(--ha-space-5);
-        }
-
-        .nothing-found {
-          padding: var(--ha-space-4) var(--ha-space-0);
-          text-align: center;
-        }
-
-        div[slot="trailingIcon"] {
           display: flex;
+          justify-content: center;
           align-items: center;
+          color: var(--secondary-text-color);
+          gap: var(--ha-space-1);
         }
 
-        lit-virtualizer {
-          contain: size layout !important;
+        ha-tip a {
+          color: var(--primary-color);
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 690px) {
+          ha-tip {
+            display: none;
+          }
         }
       `,
     ];
   }
+
+  // #endregion styles
 }
 
 declare global {

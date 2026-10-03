@@ -123,6 +123,10 @@ interface EMOutgoingMessageConnectionStatus extends EMMessage {
   payload: { event: string };
 }
 
+interface EMOutgoingMessageFrontendLoaded extends EMMessage {
+  type: "frontend/loaded"; // Fired once the launch screen is removed; with hasSplashscreen this is after the first panel has rendered
+}
+
 interface EMOutgoingMessageAppConfiguration extends EMMessage {
   type: "config_screen/show";
 }
@@ -145,6 +149,10 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
     pipeline_id: "preferred" | "last_used" | string;
     start_listening: boolean;
   };
+}
+
+interface EMOutgoingMessageAssistSettings extends EMMessage {
+  type: "assist/settings";
 }
 
 interface EMOutgoingMessageImprovScan extends EMMessage {
@@ -176,6 +184,45 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageEntityControlled extends EMMessage {
+  type: "entity/controlled";
+  payload: {
+    entity_ids: string[];
+    domain: string;
+    service: string;
+  };
+}
+
+interface EMOutgoingMessageMoreInfoOpened extends EMMessage {
+  type: "more_info/opened";
+  payload: {
+    entity_id: string;
+  };
+}
+
+interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
+  type: "more_info/closed";
+  payload: {
+    entity_id: string;
+  };
+}
+
+interface EMOutgoingMessageFocusElement extends EMMessage {
+  type: "focus_element";
+  payload: {
+    element_id: string;
+  };
+}
+
+interface EMOutgoingMessageReloadAndClearCache extends EMMessage {
+  type: "frontend/reload_and_clear_cache";
+}
+
+// These types are handled internally by the Android app via postMessage.
+// They are not sent by the frontend and should not be used directly.
+// They are intentionally listed here to prevent anyone from using them unintentionally.
+type RejectedEMMessageType = "onHomeAssistantSetTheme" | "handleBlob";
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -185,19 +232,26 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageBarCodeNotify
   | EMOutgoingMessageBarCodeScan
   | EMOutgoingMessageConnectionStatus
+  | EMOutgoingMessageFrontendLoaded
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageMoreInfoOpened
+  | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
   | EMOutgoingMessageThreadStoreInPlatformKeychain
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
-  | EMOutgoingMessageAddEntityTo;
+  | EMOutgoingMessageAddEntityTo
+  | EMOutgoingMessageEntityControlled
+  | EMOutgoingMessageFocusElement
+  | EMOutgoingMessageReloadAndClearCache
+  | EMOutgoingMessageAssistSettings;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -293,6 +347,27 @@ export interface EMIncomingMessageImprovDeviceSetupDone extends EMMessage {
   command: "improv/device_setup_done";
 }
 
+export interface EMIncomingMessageKioskModeSet {
+  id: number;
+  type: "command";
+  command: "kiosk_mode/set";
+  payload: {
+    enable: boolean;
+  };
+}
+
+export interface MatterCommissionFinish {
+  name: string | null;
+  success: boolean;
+}
+
+export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
+  id: number;
+  type: "command";
+  command: "matter/commission/finish";
+  payload: MatterCommissionFinish;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -303,12 +378,12 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanResult
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
-  | EMIncomingMessageImprovDeviceSetupDone;
+  | EMIncomingMessageImprovDeviceSetupDone
+  | EMIncomingMessageMatterCommissionFinish
+  | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
-  | EMMessageResultSuccess
-  | EMMessageResultError
-  | EMIncomingMessageCommands;
+  EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
 
 type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
 
@@ -318,14 +393,16 @@ export interface ExternalConfig {
   canWriteTag?: boolean;
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
+  hasMatterStatusReport?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
   hasBarCodeScanner?: number;
   canSetupImprov?: boolean;
-  downloadFileSupported?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+  hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
+  hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }
 
 export interface ExternalEntityAddToAction {
@@ -370,8 +447,16 @@ export class ExternalMessaging {
    * Send message to external app that expects a response.
    * @param msg message to send
    */
-  public sendMessage<T extends keyof EMOutgoingMessageWithAnswer>(
-    msg: EMOutgoingMessageWithAnswer[T]["request"]
+  public sendMessage<
+    T extends keyof EMOutgoingMessageWithAnswer,
+    TType extends string = EMOutgoingMessageWithAnswer[T]["request"]["type"],
+  >(
+    msg: EMOutgoingMessageWithAnswer[T]["request"] & {
+      type: TType &
+        (TType extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
   ): Promise<EMOutgoingMessageWithAnswer[T]["response"]> {
     const msgId = ++this.msgId;
     msg.id = msgId;
@@ -389,7 +474,14 @@ export class ExternalMessaging {
    * Send message to external app without expecting a response.
    * @param msg message to send
    */
-  public fireMessage(msg: EMOutgoingMessageWithoutAnswer) {
+  public fireMessage<T extends string>(
+    msg: EMOutgoingMessageWithoutAnswer & {
+      type: T &
+        (T extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
+  ) {
     if (!msg.id) {
       msg.id = ++this.msgId;
     }
@@ -450,10 +542,26 @@ export class ExternalMessaging {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
     }
-    if (window.externalApp) {
-      window.externalApp.externalBus(JSON.stringify(msg));
-    } else {
-      window.webkit!.messageHandlers.externalBus.postMessage(msg);
-    }
+    fireExternalBusMessage(msg);
   }
 }
+
+/**
+ * Post a message to the companion app's external bus without needing an
+ * `ExternalMessaging` instance (i.e. without `hass`). Returns `false` when no
+ * external bridge is present, so callers can fall back to browser behavior.
+ */
+export const fireExternalBusMessage = (msg: EMMessage): boolean => {
+  if (window.externalAppV2) {
+    window.externalAppV2.postMessage(
+      JSON.stringify({ type: CALLBACK_EXTERNAL_BUS, payload: msg })
+    );
+  } else if (window.externalApp) {
+    window.externalApp.externalBus(JSON.stringify(msg));
+  } else if (window.webkit?.messageHandlers?.externalBus) {
+    window.webkit.messageHandlers.externalBus.postMessage(msg);
+  } else {
+    return false;
+  }
+  return true;
+};

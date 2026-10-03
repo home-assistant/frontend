@@ -1,7 +1,7 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { CastManager } from "../../../../src/cast/cast_manager";
@@ -15,7 +15,6 @@ import {
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
 import { atLeastVersion } from "../../../../src/common/config/version";
-import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-icon";
 import "../../../../src/components/ha-list";
@@ -56,88 +55,100 @@ class HcCast extends LitElement {
 
     return html`
       <hc-layout .auth=${this.auth} .connection=${this.connection}>
-        ${this.askWrite
-          ? html`
-              <p class="question action-item">
-                Stay logged in?
-                <span>
-                  <ha-button
-                    appearance="plain"
-                    size="small"
-                    @click=${this._handleSaveTokens}
-                  >
-                    YES
-                  </ha-button>
-                  <ha-button
-                    appearance="plain"
-                    size="small"
-                    @click=${this._handleSkipSaveTokens}
-                  >
-                    NO
-                  </ha-button>
-                </span>
-              </p>
-            `
-          : ""}
-        ${error
-          ? html` <div class="card-content">${error}</div> `
-          : !this.castManager.status
+        ${
+          this.askWrite
             ? html`
-                <p class="center-item">
-                  <ha-button @click=${this._handleLaunch}>
-                    <ha-svg-icon slot="start" .path=${mdiCast}></ha-svg-icon>
-                    Start Casting
-                  </ha-button>
+                <p class="question action-item">
+                  Stay logged in?
+                  <span>
+                    <ha-button
+                      appearance="plain"
+                      size="small"
+                      @click=${this._handleSaveTokens}
+                    >
+                      YES
+                    </ha-button>
+                    <ha-button
+                      appearance="plain"
+                      size="small"
+                      @click=${this._handleSkipSaveTokens}
+                    >
+                      NO
+                    </ha-button>
+                  </span>
                 </p>
               `
-            : html`
-                <div class="section-header">PICK A VIEW</div>
-                <ha-list @action=${this._handlePickView} activatable>
-                  ${(
-                    this.lovelaceViews ?? [
-                      {
-                        title: "Home",
-                      },
-                    ]
-                  ).map(
-                    (view, idx) => html`
-                      <ha-list-item
-                        graphic="avatar"
-                        .activated=${this.castManager.status?.lovelacePath ===
-                        (view.path ?? idx)}
-                        .selected=${this.castManager.status?.lovelacePath ===
-                        (view.path ?? idx)}
-                      >
-                        ${view.title || view.path || "Unnamed view"}
-                        ${view.icon
-                          ? html`
-                              <ha-icon
-                                .icon=${view.icon}
-                                slot="graphic"
-                              ></ha-icon>
-                            `
-                          : html`<ha-svg-icon
-                              slot="item-icon"
-                              .path=${mdiViewDashboard}
-                            ></ha-svg-icon>`}
-                      </ha-list-item>
-                    `
-                  )}</ha-list
-                >
-              `}
+            : ""
+        }
+        ${
+          error
+            ? html` <div class="card-content">${error}</div> `
+            : !this.castManager.status
+              ? html`
+                  <p class="center-item">
+                    <ha-button @click=${this._handleLaunch}>
+                      <ha-svg-icon slot="start" .path=${mdiCast}></ha-svg-icon>
+                      Start Casting
+                    </ha-button>
+                  </p>
+                `
+              : html`
+                  <div class="section-header">PICK A VIEW</div>
+                  <ha-list @action=${this._handlePickView} activatable>
+                    ${(
+                      this.lovelaceViews ?? [
+                        {
+                          title: "Home",
+                        },
+                      ]
+                    ).map(
+                      (view, idx) => html`
+                        <ha-list-item
+                          graphic="avatar"
+                          .activated=${
+                            this.castManager.status?.lovelacePath ===
+                            (view.path ?? idx)
+                          }
+                          .selected=${
+                            this.castManager.status?.lovelacePath ===
+                            (view.path ?? idx)
+                          }
+                        >
+                          ${view.title || view.path || "Unnamed view"}
+                          ${
+                            view.icon
+                              ? html`
+                                  <ha-icon
+                                    .icon=${view.icon}
+                                    slot="graphic"
+                                  ></ha-icon>
+                                `
+                              : html`<ha-svg-icon
+                                  slot="item-icon"
+                                  .path=${mdiViewDashboard}
+                                ></ha-svg-icon>`
+                          }
+                        </ha-list-item>
+                      `
+                    )}</ha-list
+                  >
+                `
+        }
 
         <div class="card-actions">
-          ${this.castManager.status
-            ? html`
-                <ha-button appearance="plain" @click=${this._handleLaunch}>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiCastConnected}
-                  ></ha-svg-icon>
-                  Manage
-                </ha-button>
-              `
-            : ""}
+          ${
+            this.castManager.status
+              ? html`
+                  <ha-button appearance="plain" @click=${this._handleLaunch}>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiCastConnected}
+                    ></ha-svg-icon>
+                    Manage
+                  </ha-button>
+                `
+              : ""
+          }
           <div class="spacer"></div>
           <ha-button
             variant="danger"
@@ -150,7 +161,7 @@ class HcCast extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     const llColl = atLeastVersion(this.connection.haVersion, 0, 107)
@@ -183,10 +194,9 @@ class HcCast extends LitElement {
     });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
-    toggleAttribute(
-      this,
+    this.toggleAttribute(
       "hide-icons",
       this.lovelaceViews ? !this.lovelaceViews.some((view) => view.icon) : true
     );
@@ -206,7 +216,7 @@ class HcCast extends LitElement {
   }
 
   private async _handlePickView(ev: CustomEvent<ActionDetail>) {
-    const path = this.lovelaceViews![ev.detail.index].path ?? ev.detail.index;
+    const path = this.lovelaceViews?.[ev.detail.index]?.path ?? ev.detail.index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }

@@ -1,15 +1,15 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity";
+import "../../../components/ha-button";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import { callProtectedLockService } from "../../../data/lock";
 import type { HomeAssistant } from "../../../types";
+import { confirmAction } from "../common/confirm-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../../../components/ha-button";
 import type { ConfirmableRowConfig, LovelaceRow } from "./types";
-import { callProtectedLockService } from "../../../data/lock";
-import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {
@@ -24,7 +24,7 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -47,14 +47,16 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           @click=${this._callService}
-          .disabled=${isUnavailableState(stateObj.state)}
+          .disabled=${stateObj.state === UNAVAILABLE}
           class="text-content"
         >
-          ${stateObj.state === "locked"
-            ? this.hass!.localize("ui.card.lock.unlock")
-            : this.hass!.localize("ui.card.lock.lock")}
+          ${
+            stateObj.state === "locked"
+              ? this.hass!.localize("ui.card.lock.unlock")
+              : this.hass!.localize("ui.card.lock.lock")
+          }
         </ha-button>
       </hui-generic-entity-row>
     `;

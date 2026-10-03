@@ -1,3 +1,4 @@
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
@@ -67,7 +68,10 @@ export const handleAction = async (
         await hass.loadBackendTranslation("title");
         const localize = await hass.loadBackendTranslation("services");
         serviceName = `${domainToName(localize, domain)}: ${
-          localize(`component.${domain}.services.${service}.name`) ||
+          localize(
+            `component.${domain}.services.${service}.name`,
+            hass.services[domain][service].description_placeholders
+          ) ||
           serviceDomains[domain][service].name ||
           service
         }`;
@@ -86,6 +90,9 @@ export const handleAction = async (
               ) ||
               actionConfig.action,
           }),
+        title: actionConfig.confirmation.title,
+        dismissText: actionConfig.confirmation.dismiss_text,
+        confirmText: actionConfig.confirmation.confirm_text,
       }))
     ) {
       return;
@@ -127,7 +134,7 @@ export const handleAction = async (
       break;
     case "url": {
       if (actionConfig.url_path) {
-        window.open(actionConfig.url_path);
+        window.open(sanitizeUrl(actionConfig.url_path));
       } else {
         showToast(node, {
           message: hass.localize("ui.panel.lovelace.cards.actions.no_url"),

@@ -26,27 +26,31 @@ const chips: {
 export class DemoHaChips extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <ha-card header="ha-chip demo">
+      <ha-card>
         <div class="card-content">
           <p>Action chip</p>
           <ha-chip-set>
             ${chips.map(
               (chip) => html`
                 <ha-assist-chip .label=${chip.content}>
-                  ${chip.icon
-                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
-                      </ha-svg-icon>`
-                    : nothing}
+                  ${
+                    chip.icon
+                      ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                        </ha-svg-icon>`
+                      : nothing
+                  }
                 </ha-assist-chip>
               `
             )}
             ${chips.map(
               (chip) => html`
                 <ha-assist-chip .label=${chip.content} selected>
-                  ${chip.icon
-                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
-                      </ha-svg-icon>`
-                    : nothing}
+                  ${
+                    chip.icon
+                      ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                        </ha-svg-icon>`
+                      : nothing
+                  }
                 </ha-assist-chip>
               `
             )}
@@ -56,20 +60,24 @@ export class DemoHaChips extends LitElement {
             ${chips.map(
               (chip) => html`
                 <ha-filter-chip .label=${chip.content}>
-                  ${chip.icon
-                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
-                      </ha-svg-icon>`
-                    : nothing}
+                  ${
+                    chip.icon
+                      ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                        </ha-svg-icon>`
+                      : nothing
+                  }
                 </ha-filter-chip>
               `
             )}
             ${chips.map(
               (chip) => html`
                 <ha-filter-chip .label=${chip.content} selected>
-                  ${chip.icon
-                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
-                      </ha-svg-icon>`
-                    : nothing}
+                  ${
+                    chip.icon
+                      ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                        </ha-svg-icon>`
+                      : nothing
+                  }
                 </ha-filter-chip>
               `
             )}
@@ -79,10 +87,12 @@ export class DemoHaChips extends LitElement {
             ${chips.map(
               (chip) => html`
                 <ha-input-chip .label=${chip.content}>
-                  ${chip.icon
-                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
-                      </ha-svg-icon>`
-                    : ""}
+                  ${
+                    chip.icon
+                      ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                        </ha-svg-icon>`
+                      : nothing
+                  }
                   ${chip.content}
                 </ha-input-chip>
               `
@@ -90,10 +100,12 @@ export class DemoHaChips extends LitElement {
             ${chips.map(
               (chip) => html`
                 <ha-input-chip .label=${chip.content} selected>
-                  ${chip.icon
-                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
-                      </ha-svg-icon>`
-                    : nothing}
+                  ${
+                    chip.icon
+                      ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                        </ha-svg-icon>`
+                      : nothing
+                  }
                 </ha-input-chip>
               `
             )}

@@ -1,14 +1,11 @@
 import { customElement } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
-import "../../../../components/ha-form/ha-form";
 import type {
   EntityBadgeConfig,
   StateLabelBadgeConfig,
 } from "../../badges/types";
-import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
-import "./hui-card-features-editor";
 import { HuiEntityBadgeEditor } from "./hui-entity-badge-editor";
 
 const badgeConfigStruct = assign(
@@ -17,6 +14,7 @@ const badgeConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
+    color: optional(string()),
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     show_name: optional(boolean()),
@@ -33,6 +31,7 @@ export class HuiStateLabelBadgeEditor extends HuiEntityBadgeEditor {
     const entityBadgeConfig: EntityBadgeConfig = {
       type: "entity",
       entity: config.entity,
+      color: config.color,
       show_name: config.show_name ?? true,
     };
 

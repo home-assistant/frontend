@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   boolean,
@@ -11,17 +12,17 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateCondition } from "../../../../../data/automation";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
-import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity_attributes";
 
 const numericStateConditionStruct = object({
   alias: optional(string()),
+  note: optional(string()),
   condition: literal("numeric_state"),
   entity_id: optional(string()),
   attribute: optional(string()),
@@ -50,7 +51,7 @@ export default class HaNumericStateCondition extends LitElement {
     };
   }
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("condition")) {
       try {
         assert(this.condition, numericStateConditionStruct);
@@ -255,6 +256,13 @@ export default class HaNumericStateCondition extends LitElement {
         );
     }
   };
+
+  static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
+  `;
 }
 
 declare global {

@@ -1,4 +1,5 @@
 import "./ha-spinner";
+import type { ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, nothing, LitElement } from "lit";
@@ -13,6 +14,7 @@ import {
   mdiPlay,
   mdiPause,
 } from "@mdi/js";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
@@ -23,9 +25,11 @@ import {
   webRtcReOffer,
   type WebRtcOfferEvent,
 } from "../data/camera";
-import type { HomeAssistant } from "../types";
+import { apiContext, connectionContext } from "../data/context";
 import "./ha-alert";
 import "./ha-button";
+
+const HIDDEN_CLEANUP_DELAY = 60000;
 
 /**
  * A WebRTC stream is established by first sending an offer through a signal
@@ -34,7 +38,13 @@ import "./ha-button";
  */
 @customElement("ha-web-rtc-player")
 class HaWebRtcPlayer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property() public entityid?: string;
 
@@ -169,9 +179,22 @@ class HaWebRtcPlayer extends LitElement {
 
   private _candidatesList: RTCIceCandidate[] = [];
 
+  private _hiddenCleanupTimeout?: number;
+
   private _handleVisibilityChange = () => {
+    if (document.pictureInPictureElement) {
+      // video is playing in picture-in-picture mode, don't do anything
+      return;
+    }
     if (document.hidden) {
-      this._cleanUp();
+      this._hiddenCleanupTimeout = window.setTimeout(() => {
+        this._hiddenCleanupTimeout = undefined;
+        this._cleanUp();
+      }, HIDDEN_CLEANUP_DELAY);
+    } else if (this._hiddenCleanupTimeout) {
+      // stream was not cleaned up yet, just cancel the cleanup
+      clearTimeout(this._hiddenCleanupTimeout);
+      this._hiddenCleanupTimeout = undefined;
     } else {
       this._startWebRtc();
     }
@@ -265,6 +288,8 @@ class HaWebRtcPlayer extends LitElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
+    clearTimeout(this._hiddenCleanupTimeout);
+    this._hiddenCleanupTimeout = undefined;
     this._cleanUp();
   }
 
@@ -286,7 +311,7 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    if (!this.hass || !this.entityid) {
+    if (!this._api || !this._connection || !this.entityid) {
       return;
     }
 
@@ -297,7 +322,7 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start clientConfig");
 
     this._clientConfig = await fetchWebRtcClientConfiguration(
-      this.hass,
+      this._api,
       this.entityid
     );
 
@@ -393,14 +418,14 @@ class HaWebRtcPlayer extends LitElement {
     try {
       if (!this._sessionId) {
         this._unsub = webRtcOffer(
-          this.hass,
+          this._connection,
           this.entityid,
           offer_sdp,
-          (event) => this._handleOfferEvent(event),
+          (event) => this._handleOfferEvent(event)
         );
       } else {
         this._unsub = webRtcReOffer(
-          this.hass,
+          this._connection,
           this.entityid,
           offer_sdp,
           (event) => this._handleOfferEvent(event),
@@ -442,7 +467,7 @@ class HaWebRtcPlayer extends LitElement {
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
         addWebRtcCandidate(
-          this.hass,
+          this._api,
           this.entityid!,
           event.session_id,
           // toJSON returns RTCIceCandidateInit
@@ -495,7 +520,7 @@ class HaWebRtcPlayer extends LitElement {
 
     if (this._sessionId) {
       addWebRtcCandidate(
-        this.hass,
+        this._api,
         this.entityid,
         this._sessionId,
         // toJSON returns RTCIceCandidateInit

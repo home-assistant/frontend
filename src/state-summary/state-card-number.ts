@@ -1,14 +1,18 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/entity/state-info";
-import "../components/ha-slider";
-import "../components/ha-textfield";
-import type { HomeAssistant } from "../types";
-import { haStyle } from "../resources/styles";
-import { isUnavailableState } from "../data/entity";
 import { debounce } from "../common/util/debounce";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
+import "../components/entity/state-info";
+import type { HaSlider } from "../components/ha-slider";
+import "../components/ha-slider";
+import type { HaInput } from "../components/input/ha-input";
+import "../components/input/ha-input";
+import { UNAVAILABLE } from "../data/entity/entity";
+import { showNumberSlider } from "../data/number";
+import { haStyle } from "../resources/styles";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-number")
 class StateCardNumber extends LitElement {
@@ -46,47 +50,52 @@ class StateCardNumber extends LitElement {
   }
 
   protected render() {
-    const range = this.stateObj.attributes.max - this.stateObj.attributes.min;
-
     return html`
       <state-info
         .hass=${this.hass}
         .stateObj=${this.stateObj}
         .inDialog=${this.inDialog}
       ></state-info>
-      ${this.stateObj.attributes.mode === "slider" ||
-      (this.stateObj.attributes.mode === "auto" && range <= 256)
-        ? html`
-            <div class="flex">
-              <ha-slider
-                labeled
-                .disabled=${isUnavailableState(this.stateObj.state)}
+      ${
+        showNumberSlider(this.stateObj)
+          ? html`
+              <div class="flex">
+                <ha-slider
+                  labeled
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  .step=${Number(this.stateObj.attributes.step)}
+                  .min=${Number(this.stateObj.attributes.min)}
+                  .max=${Number(this.stateObj.attributes.max)}
+                  .value=${this.stateObj.state}
+                  @change=${this._selectedValueChanged}
+                >
+                </ha-slider>
+                <span class="state">
+                  ${this.hass.formatEntityState(this.stateObj)}
+                </span>
+              </div>
+            `
+          : html` <div class="flex state">
+              <ha-input
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                pattern="[0-9]+([\\.][0-9]+)?"
                 .step=${Number(this.stateObj.attributes.step)}
                 .min=${Number(this.stateObj.attributes.min)}
                 .max=${Number(this.stateObj.attributes.max)}
-                .value=${this.stateObj.state}
+                .value=${Number(this.stateObj.state).toString()}
+                type="number"
                 @change=${this._selectedValueChanged}
               >
-              </ha-slider>
-              <span class="state">
-                ${this.hass.formatEntityState(this.stateObj)}
-              </span>
-            </div>
-          `
-        : html` <div class="flex state">
-            <ha-textfield
-              .disabled=${isUnavailableState(this.stateObj.state)}
-              pattern="[0-9]+([\\.][0-9]+)?"
-              .step=${Number(this.stateObj.attributes.step)}
-              .min=${Number(this.stateObj.attributes.min)}
-              .max=${Number(this.stateObj.attributes.max)}
-              .value=${Number(this.stateObj.state).toString()}
-              .suffix=${this.stateObj.attributes.unit_of_measurement || ""}
-              type="number"
-              @change=${this._selectedValueChanged}
-            >
-            </ha-textfield>
-          </div>`}
+                ${
+                  this.stateObj.attributes.unit_of_measurement
+                    ? html`<span slot="end"
+                        >${this.stateObj.attributes.unit_of_measurement}</span
+                      >`
+                    : nothing
+                }
+              </ha-input>
+            </div>`
+      }
     `;
   }
 
@@ -118,8 +127,10 @@ class StateCardNumber extends LitElement {
     }
   }
 
-  private async _selectedValueChanged(ev: Event) {
-    const value = (ev.target as HTMLInputElement).value;
+  private async _selectedValueChanged(
+    ev: HASSDomTargetEvent<HaSlider | HaInput>
+  ) {
+    const value = String(ev.target.value);
     if (value === this.stateObj.state) {
       return;
     }
@@ -146,7 +157,7 @@ class StateCardNumber extends LitElement {
           min-width: 45px;
           text-align: end;
         }
-        ha-textfield {
+        ha-input::part(wa-input) {
           text-align: end;
         }
         ha-slider {

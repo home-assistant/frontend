@@ -83,7 +83,7 @@ export class HaGridLayoutSlider extends LitElement {
     return Math.min(Math.max(value, this.min), this.max);
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
     this.setAttribute("role", "slider");
@@ -92,7 +92,7 @@ export class HaGridLayoutSlider extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("value")) {
       const valuenow = this._steppedValue(this.value ?? 0);
@@ -328,9 +328,11 @@ export class HaGridLayoutSlider extends LitElement {
                 ></div>
               `;
             })}
-          ${this.value !== undefined
-            ? html`<div class="handle"></div>`
-            : nothing}
+          ${
+            this.value !== undefined
+              ? html`<div class="handle"></div>`
+              : nothing
+          }
           ${this._renderTooltip()}
         </div>
       </div>
@@ -457,13 +459,16 @@ export class HaGridLayoutSlider extends LitElement {
       height: 4px;
       width: 100%;
     }
-    :host(:disabled) .slider {
+    :host([disabled]) .slider {
       cursor: not-allowed;
     }
-    :host(:disabled) .handle:after {
+    :host([disabled]) .track {
+      opacity: 0.5;
+    }
+    :host([disabled]) .handle::after {
       background: var(--disabled-color);
     }
-    :host(:disabled) .active {
+    :host([disabled]) .active {
       background: var(--disabled-color);
     }
 

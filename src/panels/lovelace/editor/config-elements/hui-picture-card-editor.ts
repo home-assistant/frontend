@@ -5,11 +5,10 @@ import { assert, assign, object, optional, string, union } from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-theme-picker";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -44,7 +43,6 @@ export class HuiPictureCardEditor
           selector: {
             media: {
               accept: ["image/*"] as string[],
-              clearable: true,
               image_upload: true,
               hide_content_type: true,
               content_id_helper: localize(
@@ -68,10 +66,9 @@ export class HuiPictureCardEditor
             {
               name: "tap_action",
               selector: {
-                ui_action: {
-                  default_action: "more-info",
-                },
+                ui_action: {},
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -85,6 +82,7 @@ export class HuiPictureCardEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },

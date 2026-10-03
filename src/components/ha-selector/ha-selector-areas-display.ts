@@ -23,7 +23,6 @@ export class HaAreasDisplaySelector extends LitElement {
   protected render() {
     return html`
       <ha-areas-display-editor
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

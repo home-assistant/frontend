@@ -1,12 +1,10 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { ConfigEntry } from "./config_entries";
+import type { RepairsIssue } from "./repairs";
 
 export type FlowType =
-  | "config_flow"
-  | "config_subentries_flow"
-  | "options_flow"
-  | "repair_flow";
+  "config_flow" | "config_subentries_flow" | "options_flow" | "repair_flow";
 
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";
@@ -31,7 +29,7 @@ export interface DataEntryFlowProgress {
   handler: string;
   step_id: string;
   context: {
-    title_placeholders: Record<string, string>;
+    title_placeholders?: Record<string, string>;
     [key: string]: any;
   };
 }
@@ -42,7 +40,7 @@ export interface DataEntryFlowStepForm {
   handler: string;
   step_id: string;
   data_schema: HaFormSchema[];
-  errors: Record<string, string>;
+  errors: Record<string, string> | null;
   description_placeholders?: Record<string, string>;
   last_step: boolean | null;
   preview?: string;
@@ -59,26 +57,31 @@ export interface DataEntryFlowStepExternal {
   translation_domain?: string;
 }
 
-export interface DataEntryFlowStepCreateEntry {
+export interface DataEntryFlowStepCreateEntry<
+  TResult extends ConfigEntry | RepairsIssue = ConfigEntry,
+> {
   type: "create_entry";
-  version: number;
+  version?: number;
   flow_id: string;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
-  title: string;
-  result?: ConfigEntry;
-  description: string;
+  title?: string;
+  result?: TResult | null;
+  description: string | null;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }
 
-export interface DataEntryFlowStepAbort {
+export interface DataEntryFlowStepAbort<
+  TResult extends ConfigEntry | RepairsIssue = ConfigEntry,
+> {
   type: "abort";
   flow_id: string;
   handler: string;
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
+  result?: TResult | null;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
 }
 

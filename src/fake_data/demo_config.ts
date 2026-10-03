@@ -18,6 +18,7 @@ export const demoConfig: HassConfig = {
   },
   components: [
     "notify.html5",
+    "cloud",
     "history",
     "forecast_solar",
     "energy",

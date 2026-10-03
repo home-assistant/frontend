@@ -3,17 +3,21 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  ACTION_ROW_CONFIG_KEYS,
+  pickRowConfig,
+} from "../../../../data/automation";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
+import {
+  COLLAPSIBLE_ACTION_ELEMENTS,
+  getAutomationActionType,
+} from "../../../../data/action";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
-import {
-  getAutomationActionType,
-  type ActionElement,
-} from "./ha-automation-action-row";
+import type { ActionElement } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action-editor")
 export default class HaAutomationActionEditor extends LitElement {
@@ -49,47 +53,47 @@ export default class HaAutomationActionEditor extends LitElement {
       <div
         class=${classMap({
           "card-content": true,
-          disabled:
-            !this.indent &&
-            (this.disabled ||
-              (this.action.enabled === false && !this.yamlMode)),
+          disabled: !this.indent && this.disabled,
           yaml: yamlMode,
           indent: this.indent,
           card: !this.inSidebar,
         })}
       >
-        ${yamlMode
-          ? html`
-              ${!this.uiSupported
-                ? html`
-                    <ha-automation-editor-warning
-                      .alertTitle=${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.unsupported_action"
-                      )}
-                      .localize=${this.hass.localize}
-                    ></ha-automation-editor-warning>
-                  `
-                : nothing}
-              <ha-yaml-editor
-                .hass=${this.hass}
-                .defaultValue=${this.action}
-                @value-changed=${this._onYamlChange}
-                .readOnly=${this.disabled}
-              ></ha-yaml-editor>
-            `
-          : html`
-              <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(`ha-automation-action-${type}`, {
-                  hass: this.hass,
-                  action: this.action,
-                  disabled: this.disabled,
-                  narrow: this.narrow,
-                  optionsInSidebar: this.indent,
-                  indent: this.indent,
-                  inSidebar: this.inSidebar,
-                })}
-              </div>
-            `}
+        ${
+          yamlMode
+            ? html`
+                ${
+                  !this.uiSupported
+                    ? html`
+                        <ha-automation-editor-warning
+                          .alertTitle=${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.unsupported_action"
+                          )}
+                          .localize=${this.hass.localize}
+                        ></ha-automation-editor-warning>
+                      `
+                    : nothing
+                }
+                <ha-yaml-editor
+                  .defaultValue=${this.action}
+                  @value-changed=${this._onYamlChange}
+                  .readOnly=${this.disabled}
+                ></ha-yaml-editor>
+              `
+            : html`
+                <div @value-changed=${this._onUiChanged}>
+                  ${dynamicElement(`ha-automation-action-${type}`, {
+                    hass: this.hass,
+                    action: this.action,
+                    disabled: this.disabled,
+                    narrow: this.narrow,
+                    optionsInSidebar: this.indent,
+                    indent: this.indent,
+                    inSidebar: this.inSidebar,
+                  })}
+                </div>
+              `
+        }
       </div>
     `;
   }
@@ -107,8 +111,8 @@ export default class HaAutomationActionEditor extends LitElement {
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...(this.action.alias ? { alias: this.action.alias } : {}),
       ...ev.detail.value,
+      ...pickRowConfig(this.action, ACTION_ROW_CONFIG_KEYS),
     };
     fireEvent(this, "value-changed", { value });
   }

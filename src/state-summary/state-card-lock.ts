@@ -28,33 +28,39 @@ class StateCardLock extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        ${!supportsOpen
-          ? html`<ha-button
-              appearance="plain"
-              size="small"
-              @click=${this._callService}
-              data-service="open"
-              >${this.hass.localize("ui.card.lock.open")}</ha-button
-            >`
-          : nothing}
-        ${isLocked
-          ? html` <ha-button
-              appearance="plain"
-              size="small"
-              @click=${this._callService}
-              data-service="unlock"
-              >${this.hass.localize("ui.card.lock.unlock")}</ha-button
-            >`
-          : nothing}
-        ${!isLocked
-          ? html`<ha-button
-              appearance="plain"
-              size="small"
-              @click=${this._callService}
-              data-service="lock"
-              >${this.hass.localize("ui.card.lock.lock")}</ha-button
-            >`
-          : nothing}
+        ${
+          supportsOpen
+            ? html`<ha-button
+                appearance="plain"
+                size="s"
+                @click=${this._callService}
+                data-service="open"
+                >${this.hass.localize("ui.card.lock.open")}</ha-button
+              >`
+            : nothing
+        }
+        ${
+          isLocked
+            ? html` <ha-button
+                appearance="plain"
+                size="s"
+                @click=${this._callService}
+                data-service="unlock"
+                >${this.hass.localize("ui.card.lock.unlock")}</ha-button
+              >`
+            : nothing
+        }
+        ${
+          !isLocked
+            ? html`<ha-button
+                appearance="plain"
+                size="s"
+                @click=${this._callService}
+                data-service="lock"
+                >${this.hass.localize("ui.card.lock.lock")}</ha-button
+              >`
+            : nothing
+        }
       </div>
     `;
   }

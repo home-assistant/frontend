@@ -8,7 +8,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import type { LovelaceHeaderFooter } from "../types";
 import type { PictureHeaderFooterConfig } from "./types";
 
@@ -44,7 +44,7 @@ export class HuiPictureHeaderFooter
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size === 1 && changedProps.has("hass")) {
       return !changedProps.get("hass");
     }
@@ -56,9 +56,7 @@ export class HuiPictureHeaderFooter
       return nothing;
     }
 
-    const clickable = Boolean(
-      this._config.tap_action || this._config.hold_action
-    );
+    const clickable = hasAnyAction(this._config);
 
     return html`
       <img
@@ -85,6 +83,7 @@ export class HuiPictureHeaderFooter
     img {
       display: block;
       width: 100%;
+      -webkit-touch-callout: none;
     }
   `;
 

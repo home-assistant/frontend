@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
+import type { CloudStatus } from "../../../data/cloud";
 import type { SceneEntity } from "../../../data/scene";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
@@ -26,6 +27,8 @@ class HaConfigScene extends HassRouterPage {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
+
   @property({ attribute: false }) public scenes: SceneEntity[] = [];
 
   protected routerOptions: RouterOptions = {
@@ -37,6 +40,7 @@ class HaConfigScene extends HassRouterPage {
       },
       edit: {
         tag: "ha-scene-editor",
+        itemId: true,
       },
     },
   };
@@ -60,6 +64,7 @@ class HaConfigScene extends HassRouterPage {
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
+    pageEl.cloudStatus = this.cloudStatus;
 
     if (this.hass) {
       if (!pageEl.scenes || !changedProps) {

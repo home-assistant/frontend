@@ -2,7 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../../data/zha";
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
@@ -17,7 +17,7 @@ export class HaDeviceInfoZha extends LitElement {
 
   @state() private _zhaDevice?: ZHADevice;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has("device")) {
       const zigbeeConnection = this.device.connections.find(
@@ -42,32 +42,42 @@ export class HaDeviceInfoZha extends LitElement {
         <div>Device Type: ${this._zhaDevice.device_type}</div>
         <div>
           LQI:
-          ${this._zhaDevice.lqi ||
-          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+          ${
+            this._zhaDevice.lqi ||
+            this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+          }
         </div>
         <div>
           RSSI:
-          ${this._zhaDevice.rssi ||
-          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+          ${
+            this._zhaDevice.rssi ||
+            this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+          }
         </div>
         <div>
           ${this.hass!.localize("ui.dialogs.zha_device_info.last_seen")}:
-          ${this._zhaDevice.last_seen ||
-          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+          ${
+            this._zhaDevice.last_seen ||
+            this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+          }
         </div>
         <div>
           ${this.hass!.localize("ui.dialogs.zha_device_info.power_source")}:
-          ${this._zhaDevice.power_source ||
-          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+          ${
+            this._zhaDevice.power_source ||
+            this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+          }
         </div>
-        ${this._zhaDevice.quirk_applied
-          ? html`
-              <div>
-                ${this.hass!.localize("ui.dialogs.zha_device_info.quirk")}:
-                ${this._zhaDevice.quirk_class}
-              </div>
-            `
-          : ""}
+        ${
+          this._zhaDevice.quirk_applied
+            ? html`
+                <div>
+                  ${this.hass!.localize("ui.dialogs.zha_device_info.quirk")}:
+                  ${this._zhaDevice.quirk_class}
+                </div>
+              `
+            : ""
+        }
       </ha-expansion-panel>
     `;
   }

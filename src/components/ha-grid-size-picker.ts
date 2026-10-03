@@ -1,19 +1,19 @@
+import { mdiRestore } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
-import "./ha-icon-button";
-import { mdiRestore } from "@mdi/js";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import type { CardGridSize } from "../panels/lovelace/common/compute-card-grid-size";
 import { DEFAULT_GRID_SIZE } from "../panels/lovelace/common/compute-card-grid-size";
-import type { HomeAssistant } from "../types";
+import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
+import "./ha-icon-button";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public value?: CardGridSize;
 
   @property({ attribute: false }) public rows = 8;
@@ -34,20 +34,25 @@ export class HaGridSizeEditor extends LitElement {
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
-  protected willUpdate(changedProperties) {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("value")) {
       this._localValue = this.value;
     }
   }
 
   protected render() {
-    const disabledColumns =
-      this.columnMin !== undefined && this.columnMin === this.columnMax;
-    const disabledRows =
-      this.rowMin !== undefined && this.rowMin === this.rowMax;
-
     const autoHeight = this._localValue?.rows === "auto";
     const fullWidth = this._localValue?.columns === "full";
+
+    const disabledColumns =
+      fullWidth ||
+      (this.columnMin !== undefined && this.columnMin === this.columnMax);
+    const disabledRows =
+      autoHeight || (this.rowMin !== undefined && this.rowMin === this.rowMax);
 
     const rowMin = this.rowMin ?? 1;
     const rowMax = this.rowMax ?? this.rows;
@@ -60,9 +65,7 @@ export class HaGridSizeEditor extends LitElement {
     return html`
       <div class="grid">
         <ha-grid-layout-slider
-          aria-label=${this.hass.localize(
-            "ui.components.grid-size-picker.columns"
-          )}
+          aria-label=${this._localize("ui.components.grid-size-picker.columns")}
           id="columns"
           .min=${columnMin}
           .max=${columnMax}
@@ -72,13 +75,11 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
-          tooltip-mode="always"
+          tooltip-mode=${disabledColumns ? "never" : "always"}
         ></ha-grid-layout-slider>
 
         <ha-grid-layout-slider
-          aria-label=${this.hass.localize(
-            "ui.components.grid-size-picker.rows"
-          )}
+          aria-label=${this._localize("ui.components.grid-size-picker.rows")}
           id="rows"
           .min=${rowMin}
           .max=${rowMax}
@@ -88,24 +89,26 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
-          tooltip-mode="always"
+          tooltip-mode=${disabledRows ? "never" : "always"}
         ></ha-grid-layout-slider>
-        ${!this.isDefault
-          ? html`
-              <ha-icon-button
-                @click=${this._reset}
-                class="reset"
-                .path=${mdiRestore}
-                label=${this.hass.localize(
-                  "ui.components.grid-size-picker.reset_default"
-                )}
-                title=${this.hass.localize(
-                  "ui.components.grid-size-picker.reset_default"
-                )}
-              >
-              </ha-icon-button>
-            `
-          : nothing}
+        ${
+          !this.isDefault
+            ? html`
+                <ha-icon-button
+                  @click=${this._reset}
+                  class="reset"
+                  .path=${mdiRestore}
+                  label=${this._localize(
+                    "ui.components.grid-size-picker.reset_default"
+                  )}
+                  title=${this._localize(
+                    "ui.components.grid-size-picker.reset_default"
+                  )}
+                >
+                </ha-icon-button>
+              `
+            : nothing
+        }
         <div class="preview">
           <table>
             ${Array(this.rows)
@@ -237,7 +240,7 @@ export class HaGridSizeEditor extends LitElement {
       }
       .reset {
         grid-area: reset;
-        --mdc-icon-button-size: 36px;
+        --ha-icon-button-size: 36px;
       }
       .preview {
         position: relative;

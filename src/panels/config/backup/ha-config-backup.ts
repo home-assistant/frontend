@@ -1,6 +1,7 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { debounce } from "../../../common/util/debounce";
 import type {
   BackupAgent,
   BackupConfig,
@@ -18,9 +19,9 @@ import {
   subscribeBackupEvents,
 } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
+import { subscribeConfigEntries } from "../../../data/config_entries";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -31,6 +32,7 @@ declare global {
   interface HASSDomEvents {
     "ha-refresh-backup-info": undefined;
     "ha-refresh-backup-config": undefined;
+    "ha-refresh-backup-agents": undefined;
   }
 }
 
@@ -52,7 +54,18 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   @state() private _config?: BackupConfig;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  @state() private _uploadProgress: Record<
+    string,
+    { uploaded_bytes: number; total_bytes: number }
+  > = {};
+
+  private _debouncedFetchBackupAgents = debounce(
+    () => this._fetchBackupAgents(),
+    500,
+    false
+  );
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchAll();
     this.addEventListener("ha-refresh-backup-info", () => {
@@ -84,6 +97,11 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
       this._fetchBackupConfig();
       this._fetchBackupAgents();
     }
+  }
+
+  public disconnectedCallback() {
+    this._debouncedFetchBackupAgents.cancel();
+    super.disconnectedCallback();
   }
 
   private async _fetchBackupInfo() {
@@ -120,6 +138,11 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
         load: () => import("./ha-config-backup-settings"),
         cache: true,
       },
+      "app-update-backups": {
+        tag: "ha-config-backup-app-update-backups",
+        load: () => import("./ha-config-backup-app-update-backups"),
+        cache: true,
+      },
       location: {
         tag: "ha-config-backup-location",
         load: () => import("./ha-config-backup-location"),
@@ -138,6 +161,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     pageEl.config = this._config;
     pageEl.agents = this._agents;
     pageEl.fetching = this._fetching;
+    pageEl.uploadProgress = this._uploadProgress;
 
     if (!changedProps || changedProps.has("route")) {
       switch (this._currentPage) {
@@ -153,7 +177,27 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
+      subscribeConfigEntries(
+        this.hass,
+        (messages) => {
+          if (messages.some((message) => message.type !== null)) {
+            this._debouncedFetchBackupAgents();
+          }
+        },
+        { type: ["service"] }
+      ),
       subscribeBackupEvents(this.hass!, (event) => {
+        if ("agent_id" in event) {
+          this._uploadProgress = {
+            ...this._uploadProgress,
+            [event.agent_id]: {
+              uploaded_bytes: event.uploaded_bytes,
+              total_bytes: event.total_bytes,
+            },
+          };
+          return;
+        }
+
         const curState = this._manager.manager_state;
 
         this._manager = event;
@@ -161,6 +205,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
           event.manager_state === "idle" &&
           event.manager_state !== curState
         ) {
+          this._uploadProgress = {};
           this._fetchAll();
         }
         if ("state" in event) {

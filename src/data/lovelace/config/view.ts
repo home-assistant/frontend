@@ -1,7 +1,12 @@
+import { titleCase } from "../../../common/string/title-case";
+import type { VisibilityCondition } from "../../../panels/lovelace/common/validate-condition";
 import type { MediaSelectorValue } from "../../selector";
 import type { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
-import type { LovelaceSectionRawConfig } from "./section";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+} from "./section";
 import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface ShowViewConfig {
@@ -26,6 +31,9 @@ export interface LovelaceViewBackgroundConfig {
   attachment?: "scroll" | "fixed";
 }
 
+export type LovelaceDashboardBackgroundConfig =
+  string | LovelaceViewBackgroundConfig;
+
 export interface LovelaceViewHeaderConfig {
   card?: LovelaceCardConfig;
   layout?: "start" | "center" | "responsive";
@@ -33,14 +41,29 @@ export interface LovelaceViewHeaderConfig {
   badges_wrap?: "wrap" | "scroll";
 }
 
+export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;
+
+export interface LovelaceViewFooterConfig {
+  card?: LovelaceCardConfig;
+  max_width?: number;
+}
+
+export interface LovelaceViewSidebarConfig {
+  sections?: LovelaceSectionConfig[];
+  content_label?: string;
+  sidebar_label?: string;
+  visibility?: VisibilityCondition[];
+}
+
 export interface LovelaceBaseViewConfig {
   index?: number;
   title?: string;
   path?: string;
   icon?: string;
+  show_icon_and_title?: boolean;
   theme?: string;
   panel?: boolean;
-  background?: string | LovelaceViewBackgroundConfig;
+  background?: LovelaceDashboardBackgroundConfig;
   visible?: boolean | ShowViewConfig[];
   subview?: boolean;
   back_path?: string;
@@ -56,6 +79,9 @@ export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   cards?: LovelaceCardConfig[];
   sections?: LovelaceSectionRawConfig[];
   header?: LovelaceViewHeaderConfig;
+  footer?: LovelaceViewFooterConfig;
+  // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
+  sidebar?: LovelaceViewSidebarConfig;
 }
 
 export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {
@@ -63,11 +89,18 @@ export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {
 }
 
 export type LovelaceViewRawConfig =
-  | LovelaceViewConfig
-  | LovelaceStrategyViewConfig;
+  LovelaceViewConfig | LovelaceStrategyViewConfig;
 
 export function isStrategyView(
   view: LovelaceViewRawConfig
 ): view is LovelaceStrategyViewConfig {
   return "strategy" in view;
 }
+
+export const computeViewTitle = (
+  view: LovelaceBaseViewConfig,
+  index: number
+): string => view.title ?? (view.path ? titleCase(view.path) : String(index));
+
+export const computeViewIcon = (view: LovelaceBaseViewConfig): string =>
+  view.icon ?? "mdi:view-compact";

@@ -1,41 +1,57 @@
 import { format } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
+import { apiContext, internationalizationContext } from "../../../data/context";
 import { setDateTimeValue } from "../../../data/datetime";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../../types";
 
 @customElement("more-info-datetime")
 class MoreInfoDatetime extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   protected render() {
     if (!this.stateObj || this.stateObj.state === UNAVAILABLE) {
       return nothing;
     }
 
-    const dateObj = isUnavailableState(this.stateObj.state)
-      ? undefined
-      : new Date(this.stateObj.state);
+    const dateObj =
+      this.stateObj.state === UNKNOWN
+        ? undefined
+        : new Date(this.stateObj.state);
     const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
     const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
 
     return html`<ha-date-input
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
         .value=${date}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
         @value-changed=${this._dateChanged}
       >
       </ha-date-input>
       <ha-time-input
         .value=${time}
-        .locale=${this.hass.locale}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .locale=${this._locale}
         @value-changed=${this._timeChanged}
         @click=${this._stopEventPropagation}
       ></ha-time-input>`;
@@ -45,23 +61,31 @@ class MoreInfoDatetime extends LitElement {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
+  private _timeChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const dateObj = new Date(this.stateObj!.state);
       const newTime = ev.detail.value.split(":").map(Number);
       dateObj.setHours(newTime[0], newTime[1], newTime[2]);
 
-      setDateTimeValue(this.hass!, this.stateObj!.entity_id, dateObj);
+      setDateTimeValue(
+        this._api.callService,
+        this.stateObj!.entity_id,
+        dateObj
+      );
     }
   }
 
-  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
+  private _dateChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const dateObj = new Date(this.stateObj!.state);
       const newDate = ev.detail.value.split("-").map(Number);
       dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
 
-      setDateTimeValue(this.hass!, this.stateObj!.entity_id, dateObj);
+      setDateTimeValue(
+        this._api.callService,
+        this.stateObj!.entity_id,
+        dateObj
+      );
     }
   }
 
@@ -72,8 +96,8 @@ class MoreInfoDatetime extends LitElement {
       justify-content: flex-end;
     }
     ha-date-input + ha-time-input {
-      margin-left: 4px;
-      margin-inline-start: 4px;
+      margin-left: var(--ha-space-1);
+      margin-inline-start: var(--ha-space-1);
       margin-inline-end: initial;
     }
   `;

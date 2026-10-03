@@ -4,18 +4,25 @@ export interface MQTTMessage {
   topic: string;
   payload: string;
   qos: number;
-  retain: number;
+  retain: boolean;
+}
+
+// Debug info replays stored messages, so it also carries when each was logged.
+export interface MQTTLoggedMessage extends MQTTMessage {
   time: string;
 }
 
 export interface MQTTTopicDebugInfo {
   topic: string;
-  messages: MQTTMessage[];
+  messages: MQTTLoggedMessage[];
 }
 
 export interface MQTTDiscoveryDebugInfo {
   topic: string;
-  payload: string;
+  // The discovery config, which `mqtt-discovery-payload` renders as YAML/JSON.
+  // An entity with debug traffic but nothing discovered has no config, and the
+  // backend sends an empty string for it.
+  payload: Record<string, unknown> | string;
 }
 
 export interface MQTTEntityDebugInfo {
@@ -26,7 +33,7 @@ export interface MQTTEntityDebugInfo {
 }
 
 export interface MQTTTriggerDebugInfo {
-  discovery_data: MQTTDiscoveryDebugInfo;
+  discovery_data: MQTTDiscoveryDebugInfo | null;
 }
 
 export interface MQTTDeviceDebugInfo {

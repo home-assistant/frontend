@@ -10,6 +10,10 @@ import { extractVars } from "../../../common/style/derived-css-vars";
  */
 export const coreColorStyles = css`
   html {
+    /* pure */
+    --ha-color-black: #000000;
+    --ha-color-white: #ffffff;
+
     /* primary */
     --ha-color-primary-05: #001721;
     --ha-color-primary-10: #002e3e;

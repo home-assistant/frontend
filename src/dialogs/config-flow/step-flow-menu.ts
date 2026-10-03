@@ -18,7 +18,7 @@ class StepFlowMenu extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepMenu;
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       changedProps.size > 1 ||
       !changedProps.has("hass") ||
@@ -78,27 +78,28 @@ class StepFlowMenu extends LitElement {
     );
 
     return html`
-      ${description ? html`<div class="content">${description}</div>` : ""}
+      ${description ? html`<div class="content">${description}</div>` : nothing}
       <div class="options">
-        ${options.map(
-          (option) => html`
+        ${options.map((option) => {
+          const optionDescription = optionDescriptions[option];
+          return html`
             <ha-list-item
               hasMeta
               .step=${option}
               @click=${this._handleStep}
-              ?twoline=${optionDescriptions[option]}
-              ?multiline-secondary=${optionDescriptions[option]}
+              ?twoline=${optionDescription}
+              ?multiline-secondary=${optionDescription}
             >
               <span>${translations[option]}</span>
-              ${optionDescriptions[option]
-                ? html`<span slot="secondary">
-                    ${optionDescriptions[option]}
-                  </span>`
-                : nothing}
+              ${
+                optionDescription
+                  ? html`<span slot="secondary"> ${optionDescription} </span>`
+                  : nothing
+              }
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
-          `
-        )}
+          `;
+        })}
       </div>
     `;
   }
@@ -119,17 +120,17 @@ class StepFlowMenu extends LitElement {
     configFlowContentStyles,
     css`
       .options {
-        margin-top: 20px;
-        margin-bottom: 16px;
+        margin-top: var(--ha-space-5);
+        margin-bottom: var(--ha-space-4);
       }
       .content {
-        padding-bottom: 16px;
+        padding-bottom: var(--ha-space-4);
       }
       .content + .options {
-        margin-top: 8px;
+        margin-top: var(--ha-space-2);
       }
       ha-list-item {
-        --mdc-list-side-padding: 24px;
+        --mdc-list-side-padding: var(--ha-space-6);
       }
     `,
   ];

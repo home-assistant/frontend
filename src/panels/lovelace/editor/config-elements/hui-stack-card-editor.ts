@@ -143,81 +143,83 @@ export class HuiStackCardEditor
         </div>
 
         <div id="editor">
-          ${selected < numcards
-            ? html`
-                <div id="card-options">
-                  <ha-icon-button
-                    class="gui-mode-button"
-                    @click=${this._toggleMode}
-                    .disabled=${!this._guiModeAvailable}
-                    .label=${this.hass!.localize(
-                      isGuiMode
-                        ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                        : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                    )}
-                    .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
-                  ></ha-icon-button>
+          ${
+            selected < numcards
+              ? html`
+                  <div id="card-options">
+                    <ha-icon-button
+                      class="gui-mode-button"
+                      @click=${this._toggleMode}
+                      .disabled=${!this._guiModeAvailable}
+                      .label=${this.hass!.localize(
+                        isGuiMode
+                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                      )}
+                      .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
+                    ></ha-icon-button>
 
-                  <ha-icon-button-arrow-prev
-                    .disabled=${selected === 0}
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_before"
-                    )}
-                    @click=${this._handleMove}
-                    .move=${-1}
-                  ></ha-icon-button-arrow-prev>
+                    <ha-icon-button-arrow-prev
+                      .disabled=${selected === 0}
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.move_before"
+                      )}
+                      @click=${this._handleMove}
+                      .move=${-1}
+                    ></ha-icon-button-arrow-prev>
 
-                  <ha-icon-button-arrow-next
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_after"
-                    )}
-                    .disabled=${selected === numcards - 1}
-                    @click=${this._handleMove}
-                    .move=${1}
-                  ></ha-icon-button-arrow-next>
+                    <ha-icon-button-arrow-next
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.move_after"
+                      )}
+                      .disabled=${selected === numcards - 1}
+                      @click=${this._handleMove}
+                      .move=${1}
+                    ></ha-icon-button-arrow-next>
 
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.copy"
-                    )}
-                    .path=${mdiContentCopy}
-                    @click=${this._handleCopyCard}
-                  ></ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.copy"
+                      )}
+                      .path=${mdiContentCopy}
+                      @click=${this._handleCopyCard}
+                    ></ha-icon-button>
 
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.cut"
-                    )}
-                    .path=${mdiContentCut}
-                    @click=${this._handleCutCard}
-                  ></ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.cut"
+                      )}
+                      .path=${mdiContentCut}
+                      @click=${this._handleCutCard}
+                    ></ha-icon-button>
 
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.delete"
-                    )}
-                    .path=${mdiDelete}
-                    @click=${this._handleDeleteCard}
-                  ></ha-icon-button>
-                </div>
-                ${keyed(
-                  this._getKey(this._config.cards, selected),
-                  html`<hui-card-element-editor
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.delete"
+                      )}
+                      .path=${mdiDelete}
+                      @click=${this._handleDeleteCard}
+                    ></ha-icon-button>
+                  </div>
+                  ${keyed(
+                    this._getKey(this._config.cards, selected),
+                    html`<hui-card-element-editor
+                      .hass=${this.hass}
+                      .value=${this._config.cards[selected]}
+                      .lovelace=${this.lovelace}
+                      @config-changed=${this._handleConfigChanged}
+                      @GUImode-changed=${this._handleGUIModeChanged}
+                    ></hui-card-element-editor>`
+                  )}
+                `
+              : html`
+                  <hui-card-picker
                     .hass=${this.hass}
-                    .value=${this._config.cards[selected]}
                     .lovelace=${this.lovelace}
-                    @config-changed=${this._handleConfigChanged}
-                    @GUImode-changed=${this._handleGUIModeChanged}
-                  ></hui-card-element-editor>`
-                )}
-              `
-            : html`
-                <hui-card-picker
-                  .hass=${this.hass}
-                  .lovelace=${this.lovelace}
-                  @config-changed=${this._handleCardPicked}
-                ></hui-card-picker>
-              `}
+                    @config-changed=${this._handleCardPicked}
+                  ></hui-card-picker>
+                `
+          }
         </div>
       </div>
     `;

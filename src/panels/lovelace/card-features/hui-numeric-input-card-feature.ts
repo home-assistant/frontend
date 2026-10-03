@@ -2,20 +2,33 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
-import { isUnavailableState } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
+import { apiContext, internationalizationContext } from "../../../data/context";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   NumericInputCardFeatureConfig,
 } from "./types";
+
+const supportsNumericInputCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "input_number" || domain === "number";
+};
 
 export const supportsNumericInputCardFeature = (
   hass: HomeAssistant,
@@ -25,8 +38,7 @@ export const supportsNumericInputCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "input_number" || domain === "number";
+  return supportsNumericInputCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-numeric-input-card-feature")
@@ -34,9 +46,22 @@ class HuiNumericInputCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
 
   @state() private _config?: NumericInputCardFeatureConfig;
 
@@ -49,17 +74,8 @@ class HuiNumericInputCardFeature
     };
   }
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
-  }
-
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-numeric-input-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
     return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
@@ -72,15 +88,8 @@ class HuiNumericInputCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (
-      (changedProp.has("hass") || changedProp.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._currentState = this._stateObj.state;
-      }
+    if (changedProp.has("_stateObj") && this._stateObj) {
+      this._currentState = this._stateObj.state;
     }
   }
 
@@ -89,7 +98,7 @@ class HuiNumericInputCardFeature
 
     const domain = computeDomain(stateObj.entity_id);
 
-    await this.hass!.callService(domain, "set_value", {
+    await this._api.callService(domain, "set_value", {
       entity_id: stateObj.entity_id,
       value: ev.detail.value,
     });
@@ -98,10 +107,9 @@ class HuiNumericInputCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsNumericInputCardFeature(this.hass, this.context)
+      !supportsNumericInputCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -119,9 +127,9 @@ class HuiNumericInputCardFeature
           .max=${stateObj.attributes.max}
           .step=${stateObj.attributes.step}
           @value-changed=${this._setValue}
-          .disabled=${isUnavailableState(stateObj.state)}
+          .disabled=${stateObj.state === UNAVAILABLE}
           .unit=${stateObj.attributes.unit_of_measurement}
-          .locale=${this.hass.locale}
+          .locale=${this._locale}
         ></ha-control-number-buttons>
       `;
     }
@@ -132,9 +140,9 @@ class HuiNumericInputCardFeature
         .max=${stateObj.attributes.max}
         .step=${stateObj.attributes.step}
         @value-changed=${this._setValue}
-        .disabled=${isUnavailableState(stateObj.state)}
+        .disabled=${stateObj.state === UNAVAILABLE}
         .unit=${stateObj.attributes.unit_of_measurement}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
       ></ha-control-slider>
     `;
   }

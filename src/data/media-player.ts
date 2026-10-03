@@ -15,7 +15,9 @@ import {
   mdiPlaylistMusic,
   mdiPlayPause,
   mdiPodcast,
-  mdiPower,
+  mdiPowerStandby,
+  mdiPowerOff,
+  mdiPowerOn,
   mdiRepeat,
   mdiRepeatOff,
   mdiRepeatOnce,
@@ -32,21 +34,28 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { supportsFeature } from "../common/entity/supports-feature";
 import { stateActive } from "../common/entity/state_active";
+import { supportsFeature } from "../common/entity/supports-feature";
 import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { isUnavailableState } from "./entity";
+import { UNAVAILABLE } from "./entity/entity";
 import { isTTSMediaSource } from "./tts";
+import { MediaPlayerEntityFeature } from "./feature/media-player_entity_feature";
+
+export { MediaPlayerEntityFeature };
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_id?: string;
   media_content_type?: string;
   media_artist?: string;
+  media_album_name?: string;
+  media_album_artist?: string;
+  media_track?: number;
   media_playlist?: string;
   media_series_title?: string;
   media_season?: any;
   media_episode?: any;
+  app_id?: string;
   app_name?: string;
   media_position_updated_at?: string | number | Date;
   media_duration?: number;
@@ -78,29 +87,6 @@ export interface MediaPlayerEntity extends HassEntityBase {
     | "unknown"
     | "standby"
     | "buffering";
-}
-
-export const enum MediaPlayerEntityFeature {
-  PAUSE = 1,
-  SEEK = 2,
-  VOLUME_SET = 4,
-  VOLUME_MUTE = 8,
-  PREVIOUS_TRACK = 16,
-  NEXT_TRACK = 32,
-
-  TURN_ON = 128,
-  TURN_OFF = 256,
-  PLAY_MEDIA = 512,
-  VOLUME_STEP = 1024,
-  SELECT_SOURCE = 2048,
-  STOP = 4096,
-  CLEAR_PLAYLIST = 8192,
-  PLAY = 16384,
-  SHUFFLE_SET = 32768,
-  SELECT_SOUND_MODE = 65536,
-  BROWSE_MEDIA = 131072,
-  REPEAT_SET = 262144,
-  GROUPING = 524288,
 }
 
 export type MediaPlayerBrowseAction = "pick" | "play";
@@ -192,6 +178,7 @@ export interface ControlButton {
   icon: string;
   // Used as key for action as well as tooltip and aria-label translation key
   action: keyof TranslationDict["ui"]["card"]["media_player"];
+  disabled?: boolean;
 }
 
 export interface MediaPlayerItem {
@@ -203,6 +190,9 @@ export interface MediaPlayerItem {
   can_play: boolean;
   can_expand: boolean;
   can_search: boolean;
+  search_media_classes?:
+    | (keyof TranslationDict["ui"]["components"]["media-browser"]["class"])[]
+    | null;
   thumbnail?: string;
   iconPath?: string;
   children?: MediaPlayerItem[];
@@ -220,6 +210,29 @@ export const browseMediaPlayer = (
     entity_id: entityId,
     media_content_id: mediaContentId,
     media_content_type: mediaContentType,
+  });
+
+export interface SearchMediaResult {
+  result: MediaPlayerItem[];
+}
+
+export const searchMediaPlayer = (
+  hass: HomeAssistant,
+  entityId: string,
+  searchQuery: string,
+  mediaContentId?: string,
+  mediaContentType?: string,
+  mediaFilterClasses?: string[]
+): Promise<SearchMediaResult> =>
+  hass.callWS<SearchMediaResult>({
+    type: "media_player/search_media",
+    entity_id: entityId,
+    search_query: searchQuery,
+    // the backend requires these two to be passed together, and JSON
+    // serialization drops them both when the current item is the root
+    media_content_id: mediaContentId,
+    media_content_type: mediaContentType,
+    media_filter_classes: mediaFilterClasses,
   });
 
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
@@ -282,15 +295,18 @@ export const computeMediaControls = (
 
   const state = stateObj.state;
 
-  if (isUnavailableState(state)) {
+  // We only filter out `unavailable`, not `unknown`
+  if (state === UNAVAILABLE) {
     return undefined;
   }
 
-  if (!stateActive(stateObj)) {
+  const assumedState = stateObj.attributes.assumed_state === true;
+
+  if (!stateActive(stateObj) && !assumedState) {
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
-            icon: mdiPower,
+            icon: mdiPowerStandby,
             action: "turn_on",
           },
         ]
@@ -299,14 +315,23 @@ export const computeMediaControls = (
 
   const buttons: ControlButton[] = [];
 
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
+  ) {
+    buttons.push({
+      icon: mdiPowerOn,
+      action: "turn_on",
+    });
+  }
+
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPowerStandby,
       action: "turn_off",
     });
   }
 
-  const assumedState = stateObj.attributes.assumed_state === true;
   const stateAttr = stateObj.attributes;
 
   if (
@@ -423,12 +448,17 @@ export const formatMediaTime = (seconds: number | undefined): string => {
     return "";
   }
 
-  let secondsString = new Date(seconds * 1000).toISOString();
-  secondsString =
-    seconds > 3600
-      ? secondsString.substring(11, 16)
-      : secondsString.substring(14, 19);
-  return secondsString.replace(/^0+/, "").padStart(4, "0");
+  const totalSeconds = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+  const pad = (value: number) => value.toString().padStart(2, "0");
+
+  if (hours > 0) {
+    return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+  }
+
+  return `${pad(minutes)}:${pad(secs)}`;
 };
 
 export const cleanupMediaTitle = (title?: string): string | undefined => {
@@ -461,7 +491,7 @@ export const setMediaPlayerVolume = (
   hass.callService("media_player", "volume_set", { entity_id, volume_level });
 
 export const handleMediaControlClick = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   stateObj: MediaPlayerEntity,
   action: string
 ) =>
@@ -489,7 +519,7 @@ export const handleMediaControlClick = (
   );
 
 export const mediaPlayerPlayMedia = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entity_id: string,
   media_content_id: string,
   media_content_type: string,

@@ -2,9 +2,10 @@ import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-settings-row";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
+import "../../components/item/ha-row-item";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
 
@@ -12,27 +13,26 @@ import type { HomeAssistant } from "../../types";
 class HaSetVibrateRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   protected render(): TemplateResult {
     return html`
-      <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading">
-          ${this.hass.localize("ui.panel.profile.vibrate.header")}
-        </span>
-        <span slot="description">
-          ${this.hass.localize("ui.panel.profile.vibrate.description")}
-        </span>
+      <ha-row-item>
+        <span slot="headline"
+          >${this.hass.localize("ui.panel.profile.vibrate.header")}</span
+        >
+        <span slot="supporting-text"
+          >${this.hass.localize("ui.panel.profile.vibrate.description")}</span
+        >
         <ha-switch
+          slot="end"
           .checked=${this.hass.vibrate}
           @change=${this._checkedChanged}
         ></ha-switch>
-      </ha-settings-row>
+      </ha-row-item>
     `;
   }
 
-  private async _checkedChanged(ev: Event) {
-    const vibrate = (ev.target as HaSwitch).checked;
+  private async _checkedChanged(ev: HASSDomTargetEvent<HaSwitch>) {
+    const vibrate = ev.target.checked;
     if (vibrate === this.hass.vibrate) {
       return;
     }

@@ -1,3 +1,4 @@
+import { mdiStore } from "@mdi/js";
 import { customIconsets } from "./custom_iconsets";
 
 export interface CustomIcon {
@@ -26,6 +27,12 @@ if (!("customIcons" in customIconsWindow)) {
   customIconsWindow.customIcons = {};
 }
 
+// HACS registered hacs:hacs for dashboards, the Marketplace took its place. A
+// HACS that is still around registers its own, which is used instead.
+const LEGACY_HACS_ICONS: CustomIconHelpers = {
+  getIcon: async () => ({ path: mdiStore }),
+};
+
 // Proxy for backward compatibility with icon sets
 export const customIcons = new Proxy(customIconsWindow.customIcons!, {
   get: (obj, prop: string) =>
@@ -34,5 +41,6 @@ export const customIcons = new Proxy(customIconsWindow.customIcons!, {
       ? {
           getIcon: customIconsets[prop],
         }
-      : undefined),
+      : undefined) ??
+    (prop === "hacs" ? LEGACY_HACS_ICONS : undefined),
 });

@@ -1,24 +1,36 @@
 import { dump } from "js-yaml";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
 import type { Condition } from "../../../../src/data/automation";
 import { describeCondition } from "../../../../src/data/automation_i18n";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 
 const ENTITIES = [
-  getEntity("light", "kitchen", "on", {
-    friendly_name: "Kitchen Light",
-  }),
-  getEntity("device_tracker", "person", "home", {
-    friendly_name: "Person",
-  }),
-  getEntity("zone", "home", "", {
-    friendly_name: "Home",
-  }),
+  {
+    entity_id: "light.kitchen",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen Light",
+    },
+  },
+  {
+    entity_id: "device_tracker.person",
+    state: "home",
+    attributes: {
+      friendly_name: "Person",
+    },
+  },
+  {
+    entity_id: "zone.home",
+    state: "",
+    attributes: {
+      friendly_name: "Home",
+    },
+  },
 ];
 
 const conditions: Condition[] = [
@@ -62,9 +74,11 @@ export class DemoAutomationDescribeCondition extends LitElement {
       <ha-card header="Conditions">
         <div class="condition">
           <span>
-            ${this._condition
-              ? describeCondition(this._condition, this.hass, [])
-              : "<invalid YAML>"}
+            ${
+              this._condition
+                ? describeCondition(this._condition, this.hass, [])
+                : "<invalid YAML>"
+            }
           </span>
           <ha-yaml-editor
             label="Condition Config"
@@ -85,7 +99,7 @@ export class DemoAutomationDescribeCondition extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");

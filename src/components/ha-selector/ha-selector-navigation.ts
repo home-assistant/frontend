@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { NavigationSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { ActionRelatedContext } from "../../panels/lovelace/components/hui-action-editor";
 import "../ha-navigation-picker";
 
 @customElement("ha-selector-navigation")
@@ -21,6 +22,8 @@ export class HaNavigationSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property({ attribute: false }) public context?: ActionRelatedContext;
+
   protected render() {
     return html`
       <ha-navigation-picker
@@ -30,6 +33,7 @@ export class HaNavigationSelector extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         .helper=${this.helper}
+        .context=${this.selector.navigation ?? this.context}
         @value-changed=${this._valueChanged}
       ></ha-navigation-picker>
     `;

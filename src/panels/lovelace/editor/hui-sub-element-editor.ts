@@ -15,6 +15,7 @@ import type { HuiElementEditor } from "./hui-element-editor";
 import "./hui-form-element-editor";
 import "./picture-element-editor/hui-picture-element-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
+import type { LovelaceConfigForm } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -28,7 +29,7 @@ export class HuiSubElementEditor extends LitElement {
 
   @property({ attribute: false }) public config!: SubElementEditorConfig;
 
-  @property({ attribute: false }) public schema?;
+  @property({ attribute: false }) public form?: LovelaceConfigForm;
 
   @state() private _guiModeAvailable = true;
 
@@ -50,19 +51,21 @@ export class HuiSubElementEditor extends LitElement {
             @click=${this._goBack}
           ></ha-icon-button-prev>
           <span slot="title">
-            ${this.config?.type === "element"
-              ? this.hass.localize(
-                  `ui.panel.lovelace.editor.sub-element-editor.types.element_type`,
-                  {
-                    type:
-                      this.hass.localize(
-                        `ui.panel.lovelace.editor.card.picture-elements.element_types.${elementType}`
-                      ) || elementType,
-                  }
-                )
-              : this.hass.localize(
-                  `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
-                )}
+            ${
+              this.config?.type === "element"
+                ? this.hass.localize(
+                    `ui.panel.lovelace.editor.sub-element-editor.types.element_type`,
+                    {
+                      type:
+                        this.hass.localize(
+                          `ui.panel.lovelace.editor.card.picture-elements.element_types.${elementType}`
+                        ) || elementType,
+                    }
+                  )
+                : this.hass.localize(
+                    `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
+                  )
+            }
           </span>
         </div>
         <ha-icon-button
@@ -84,13 +87,13 @@ export class HuiSubElementEditor extends LitElement {
   private _renderEditor() {
     const type = this.config.type;
 
-    if (this.schema) {
+    if (this.form) {
       return html`
         <hui-form-element-editor
           class="editor"
           .hass=${this.hass}
           .value=${this.config.elementConfig}
-          .schema=${this.schema}
+          .form=${this.form}
           .context=${this.config.context}
           @config-changed=${this._handleConfigChanged}
         ></hui-form-element-editor>

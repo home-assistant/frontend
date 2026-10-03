@@ -1,23 +1,23 @@
 import { mdiDotsVertical } from "@mdi/js";
-import "@thomasloven/round-slider";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stateColorBrightness } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
+import "../../../components/ha-control-circular-slider";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { LightEntity } from "../../../data/light";
 import { lightSupportsBrightness } from "../../../data/light";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -92,11 +92,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       ((stateObj.attributes.brightness || 0) / 255) * 100
     );
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     return html`
       <ha-card>
@@ -113,12 +109,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         <div class="content">
           <div id="controls">
             <div id="slider">
-              <!-- @ts-ignore Round-slider has no tag definition or exported type -->
-              <round-slider
-                min="1"
-                max="100"
+              <ha-control-circular-slider
+                mode="start"
+                .min=${1}
+                .max=${100}
+                .step=${1}
                 .value=${brightness}
-                .disabled=${isUnavailableState(stateObj.state)}
+                .disabled=${stateObj.state === UNAVAILABLE}
+                prevent-interaction-on-scroll
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
@@ -126,14 +124,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     ? "visible"
                     : "hidden",
                 })}
-              ></round-slider>
+              ></ha-control-circular-slider>
               <ha-icon-button
                 class="light-button ${classMap({
                   "slider-center": lightSupportsBrightness(stateObj),
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
-                .disabled=${isUnavailableState(stateObj.state)}
+                .disabled=${stateObj.state === UNAVAILABLE}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
                   color: this._computeColor(stateObj),
@@ -148,16 +146,17 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 <ha-state-icon
                   .icon=${this._config.icon}
                   .stateObj=${stateObj}
-                  .hass=${this.hass}
                 ></ha-state-icon>
               </ha-icon-button>
             </div>
           </div>
 
           <div id="info" .title=${name}>
-            ${isUnavailableState(stateObj.state)
-              ? html` <div>${this.hass.formatEntityState(stateObj)}</div> `
-              : html` <div class="brightness">%</div> `}
+            ${
+              stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
+                ? html` <div>${this.hass.formatEntityState(stateObj)}</div> `
+                : html` <div class="brightness">%</div> `
+            }
             ${name}
           </div>
         </div>
@@ -165,7 +164,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -183,8 +182,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | LightCardConfig
-      | undefined;
+      LightCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -196,9 +194,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML =
-      `${e.detail.value} %`;
+  private _dragEvent(ev: HASSDomEvent<HASSDomEvents["value-changing"]>): void {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${value} %`;
     this._showBrightness();
     this._hideBrightness();
   }
@@ -218,10 +217,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }, 500);
   }
 
-  private _setBrightness(e: any): void {
+  private _setBrightness(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ): void {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this.hass!.callService("light", "turn_on", {
       entity_id: this._config!.entity,
-      brightness_pct: e.detail.value,
+      brightness_pct: value,
     });
   }
 
@@ -297,10 +300,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       min-width: 100px;
     }
 
-    round-slider {
-      --round-slider-path-color: var(--slider-track-color);
-      --round-slider-bar-color: var(--primary-color);
-      padding-bottom: 10%;
+    ha-control-circular-slider {
+      width: 100%;
+      --control-circular-slider-color: var(--primary-color);
+      --control-circular-slider-background: var(--slider-track-color);
+      --control-circular-slider-background-opacity: 1;
     }
 
     .light-button {
@@ -314,7 +318,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      --mdc-icon-button-size: 100%;
+      --ha-icon-button-size: 100%;
       --mdc-icon-size: 100%;
     }
 
@@ -337,8 +341,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       font-size: var(--brightness-font-size);
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
-      -moz-transition: opacity 0.5s ease-in-out;
-      -webkit-transition: opacity 0.5s ease-in-out;
     }
 
     .show_brightness {

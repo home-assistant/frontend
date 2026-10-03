@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -56,8 +56,7 @@ class DialogAutomationSaveTimeout extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
+      <ha-dialog
         .open=${this._opened}
         header-title=${title}
         @closed=${this._dialogClosed}
@@ -83,16 +82,18 @@ class DialogAutomationSaveTimeout extends LitElement {
               ),
             }
           )}
-          ${this._saveComplete
-            ? html`<p></p>
-                <ha-alert alert-type="success"
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.new_automation_setup_timedout_success"
-                  )}</ha-alert
-                >`
-            : html`<div class="loading">
-                <ha-spinner size="medium"> </ha-spinner>
-              </div>`}
+          ${
+            this._saveComplete
+              ? html`<p></p>
+                  <ha-alert alert-type="success"
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.new_automation_setup_timedout_success"
+                    )}</ha-alert
+                  >`
+              : html`<div class="loading">
+                  <ha-spinner size="medium"> </ha-spinner>
+                </div>`
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -105,7 +106,7 @@ class DialogAutomationSaveTimeout extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

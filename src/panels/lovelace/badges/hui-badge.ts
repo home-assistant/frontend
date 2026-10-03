@@ -5,11 +5,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
-import { checkConditionsMet } from "../common/validate-condition";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
+import { getConfigEntityId } from "../common/get-config-entity-id";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
 import type { LovelaceBadge } from "../types";
@@ -22,7 +19,9 @@ declare global {
 }
 
 @customElement("hui-badge")
-export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
+export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceBadgeConfig;
@@ -53,7 +52,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceBadgeConfig) {
+  protected _updateElement(config: LovelaceBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -68,6 +67,12 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     if (this.hass) {
       this._element.hass = this.hass;
     }
+    this._element.preview = this.preview;
+    // Update element when the visibility of the badge changes, e.g. custom badge
+    this._element.addEventListener("badge-visibility-changed", (ev: Event) => {
+      ev.stopPropagation();
+      this._updateVisibility();
+    });
     this._element.addEventListener(
       "ll-upgrade",
       (ev: Event) => {
@@ -94,15 +99,22 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     this._updateVisibility();
   }
 
-  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+
+    if (changedProps.has("config")) {
+      this._conditionContext = {
+        ...this._conditionContext,
+        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+      };
+    }
 
     if (!this._element) {
       this.load();
     }
   }
 
-  protected update(changedProps: PropertyValues<typeof this>) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
 
     if (this._element) {
@@ -117,11 +129,12 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
           }
         }
       }
-      if (changedProps.has("hass")) {
+      if (changedProps.has("hass") || changedProps.has("preview")) {
         try {
           if (this.hass) {
             this._element.hass = this.hass;
           }
+          this._element.preview = this.preview;
         } catch (e: any) {
           this._loadElement(createErrorBadgeConfig(e.message, null));
         }
@@ -133,22 +146,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     }
   }
 
-  protected setupConditionalListeners() {
-    if (!this.config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this.config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateVisibility(conditionsMet);
-      }
-    );
-  }
-
-  private _updateVisibility(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -168,10 +166,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
       return;
     }
 
-    const visible =
-      ignoreConditions ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+    const visible = conditionsMet ?? this._conditionsVisible();
     this._setElementVisibility(visible);
   }
 
@@ -184,7 +179,11 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
       fireEvent(this, "badge-visibility-changed", { value: visible });
     }
 
-    if (!visible && this._element.parentElement) {
+    if (this._element.connectedWhileHidden === true) {
+      if (!this._element.parentElement) {
+        this.appendChild(this._element);
+      }
+    } else if (!visible && this._element.parentElement) {
       this.removeChild(this._element);
     } else if (visible && !this._element.parentElement) {
       this.appendChild(this._element);

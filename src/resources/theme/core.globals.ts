@@ -21,7 +21,6 @@ export const coreStyles = css`
     --ha-border-radius-square: 0;
 
     /* Spacing */
-    --ha-space-0: 0px;
     --ha-space-1: 4px;
     --ha-space-2: 8px;
     --ha-space-3: 12px;
@@ -42,6 +41,22 @@ export const coreStyles = css`
     --ha-space-18: 72px;
     --ha-space-19: 76px;
     --ha-space-20: 80px;
+
+    --ha-animation-duration-none: 1ms;
+    --ha-animation-duration-instant: 75ms;
+    --ha-animation-duration-fast: 150ms;
+    --ha-animation-duration-normal: 250ms;
+    --ha-animation-duration-slow: 350ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      --ha-animation-duration-none: 1ms;
+      --ha-animation-duration-instant: 1ms;
+      --ha-animation-duration-fast: 1ms;
+      --ha-animation-duration-normal: 1ms;
+      --ha-animation-duration-slow: 1ms;
+    }
   }
 `;
 

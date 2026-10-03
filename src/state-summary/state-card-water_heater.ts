@@ -25,7 +25,6 @@ class StateCardWaterHeater extends LitElement {
         >
         </state-info>
         <ha-water_heater-state
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
         ></ha-water_heater-state>
       </div>

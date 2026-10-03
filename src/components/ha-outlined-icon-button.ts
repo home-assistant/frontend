@@ -1,6 +1,6 @@
 import { IconButton } from "@material/web/iconbutton/internal/icon-button";
-import { styles } from "@material/web/iconbutton/internal/outlined-styles";
-import { styles as sharedStyles } from "@material/web/iconbutton/internal/shared-styles";
+import { styles } from "@material/web/iconbutton/internal/outlined-styles.cssresult.js";
+import { styles as sharedStyles } from "@material/web/iconbutton/internal/shared-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

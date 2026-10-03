@@ -4,7 +4,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
 import type { Fields } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
@@ -30,27 +29,29 @@ export default class HaScriptFields extends LitElement {
 
   protected render() {
     return html`
-      ${this.fields
-        ? html`<div class="fields">
-            ${Object.entries(this.fields).map(
-              ([key, field]) => html`
-                <ha-script-field-row
-                  .key=${key}
-                  .excludeKeys=${Object.keys(this.fields).filter(
-                    (k) => k !== key
-                  )}
-                  .field=${field}
-                  .disabled=${this.disabled}
-                  @value-changed=${this._fieldChanged}
-                  .hass=${this.hass}
-                  .highlight=${this.highlightedFields?.[key] !== undefined}
-                  .narrow=${this.narrow}
-                >
-                </ha-script-field-row>
-              `
-            )}
-          </div> `
-        : nothing}
+      ${
+        this.fields
+          ? html`<div class="fields">
+              ${Object.entries(this.fields).map(
+                ([key, field]) => html`
+                  <ha-script-field-row
+                    .key=${key}
+                    .excludeKeys=${Object.keys(this.fields).filter(
+                      (k) => k !== key
+                    )}
+                    .field=${field}
+                    .disabled=${this.disabled}
+                    @value-changed=${this._fieldChanged}
+                    .hass=${this.hass}
+                    .highlight=${this.highlightedFields?.[key] !== undefined}
+                    .narrow=${this.narrow}
+                  >
+                  </ha-script-field-row>
+                `
+              )}
+            </div> `
+          : nothing
+      }
       <ha-button @click=${this._addField} .disabled=${this.disabled}>
         <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
         ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}
@@ -58,7 +59,7 @@ export default class HaScriptFields extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("fields") && this._focusLastActionOnChange) {

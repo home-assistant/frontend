@@ -1,6 +1,6 @@
 import {
   mdiDelete,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiMemoryArrowDown,
   mdiPlus,
   mdiRobot,
@@ -15,7 +15,7 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
@@ -37,7 +37,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
 
@@ -57,6 +57,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _tags: Tag[] = [];
+
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
 
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
@@ -88,18 +92,25 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         filterable: true,
         flex: 2,
       },
+      id: {
+        title: localize("ui.panel.config.tag.headers.tag_id"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+      },
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
         sortable: true,
         direction: "desc",
         template: (tag) => html`
-          ${tag.last_scanned_datetime
-            ? html`<ha-relative-time
-                .hass=${this.hass}
-                .datetime=${tag.last_scanned_datetime}
-                capitalize
-              ></ha-relative-time>`
-            : this.hass.localize("ui.panel.config.tag.never_scanned")}
+          ${
+            tag.last_scanned_datetime
+              ? html`<ha-relative-time
+                  .datetime=${tag.last_scanned_datetime}
+                  capitalize
+                ></ha-relative-time>`
+              : this.hass.localize("ui.panel.config.tag.never_scanned")
+          }
         `,
       },
     };
@@ -127,7 +138,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       type: "overflow-menu",
       template: (tag) => html`
         <ha-icon-overflow-menu
-          .hass=${this.hass}
           narrow
           .items=${[
             {
@@ -161,7 +171,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     }))
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchTags();
   }
@@ -185,12 +195,19 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/connectivity"
         .route=${this.route}
         .tabs=${configSections.tags}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.tag.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchTags}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
@@ -202,16 +219,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.tag.add_tag")}
-          extended
-          @click=${this._addTag}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._addTag}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.tag.add_tag")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -264,7 +277,19 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchTags() {
-    this._tags = await fetchTags(this.hass);
+    try {
+      this._tags = await fetchTags(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryFetchTags() {
+    this._loading = true;
+    this._fetchTags();
   }
 
   private _openWrite(tag: Tag) {

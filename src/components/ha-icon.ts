@@ -30,6 +30,23 @@ const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
 const cachedIcons: Record<string, string> = {};
 
+const CUSTOM_ICONS: Record<string, () => Promise<string>> = {
+  "home-assistant": () =>
+    import("../resources/home-assistant-logo-svg").then(
+      (mod) => mod.mdiHomeAssistant
+    ),
+  "music-assistant": () =>
+    import("../resources/music-assistant-logo-svg").then(
+      (mod) => mod.mdiMusicAssistant
+    ),
+  esphome: () =>
+    import("../resources/esphome-logo-svg").then((mod) => mod.mdiEsphomeLogo),
+  matter: () =>
+    import("../resources/matter-logo-svg").then((mod) => mod.mdiMatterLogo),
+  mqtt: () =>
+    import("../resources/mqtt-logo-svg").then((mod) => mod.mdiMqttLogo),
+};
+
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
   @property() public icon?: string;
@@ -42,7 +59,7 @@ export class HaIcon extends LitElement {
 
   @state() private _legacy = false;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;
@@ -117,10 +134,8 @@ export class HaIcon extends LitElement {
       return;
     }
 
-    if (iconName === "home-assistant") {
-      const icon = (await import("../resources/home-assistant-logo-svg"))
-        .mdiHomeAssistant;
-
+    if (iconName in CUSTOM_ICONS) {
+      const icon = await CUSTOM_ICONS[iconName]();
       if (this.icon === requestedIcon) {
         this._path = icon;
       }
@@ -151,11 +166,15 @@ export class HaIcon extends LitElement {
       return;
     }
 
-    const iconPromise = fetch(`/static/mdi/${chunk}.json`).then((response) =>
-      response.json()
+    const iconPromise = fetch(`${__STATIC_PATH__}mdi/${chunk}.json`).then(
+      (response) => response.json()
     );
     chunks[chunk] = iconPromise;
     this._setPath(iconPromise, iconName, requestedIcon);
+    // Remove chunk from cache on failure so next attempt retries
+    iconPromise.catch(() => {
+      delete chunks[chunk];
+    });
     debouncedWriteCache();
   }
 
@@ -177,11 +196,15 @@ export class HaIcon extends LitElement {
     iconName: string,
     requestedIcon: string
   ) {
-    const iconPack = await promise;
-    if (this.icon === requestedIcon) {
-      this._path = iconPack[iconName];
+    try {
+      const iconPack = await promise;
+      if (this.icon === requestedIcon) {
+        this._path = iconPack[iconName];
+      }
+      cachedIcons[iconName] = iconPack[iconName];
+    } catch (_err) {
+      // Chunk failed to load, already evicted from cache for retry
     }
-    cachedIcons[iconName] = iconPack[iconName];
   }
 
   static styles = css`

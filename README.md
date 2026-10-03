@@ -12,9 +12,8 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 
 - Initial setup: `script/setup`
 - Development: [Instructions](https://developers.home-assistant.io/docs/frontend/development/)
-- Production build: `script/build_frontend`
+- Production build: `pnpm build`
 - Gallery: `cd gallery && script/develop_gallery`
-- Supervisor: [Instructions](https://developers.home-assistant.io/docs/supervisor/developing)
 
 ## Frontend development
 

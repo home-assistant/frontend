@@ -1,15 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 
 type FilterOperator =
-  | "=="
-  | "<="
-  | "<"
-  | ">="
-  | ">"
-  | "!="
-  | "in"
-  | "not in"
-  | "regex";
+  "==" | "<=" | "<" | ">=" | ">" | "!=" | "in" | "not in" | "regex";
 
 // Legacy entity-filter badge & card condition
 export type LegacyStateFilter =

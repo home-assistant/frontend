@@ -13,12 +13,12 @@ import type {
 import { supportsFeature } from "../common/entity/supports-feature";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import type { HomeAssistant } from "../types";
-import { getExtendedEntityRegistryEntry } from "./entity_registry";
+import { getExtendedEntityRegistryEntry } from "./entity/entity_registry";
 
 export const FORMAT_TEXT = "text";
 export const FORMAT_NUMBER = "number";
 
-export const enum AlarmControlPanelEntityFeature {
+export enum AlarmControlPanelEntityFeature {
   ARM_HOME = 1,
   ARM_AWAY = 2,
   ARM_NIGHT = 4,
@@ -108,7 +108,7 @@ export const supportedAlarmModes = (stateObj: AlarmControlPanelEntity) =>
 
 export const setProtectedAlarmControlPanelMode = async (
   element: HTMLElement,
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService" | "localize" | "callWS">,
   stateObj: AlarmControlPanelEntity,
   mode: AlarmMode
 ) => {

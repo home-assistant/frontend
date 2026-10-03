@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-switch";
@@ -6,8 +7,8 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { IntegrationManifest } from "../../../../src/data/integration";
 
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
-import type { EntityRegistryEntry } from "../../../../src/data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../../src/data/entity/entity_registry";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../../../src/panels/config/integrations/ha-config-flow-card";
 import type {
@@ -38,6 +39,7 @@ const createConfigEntry = (
   pref_disable_new_entities: false,
   pref_disable_polling: false,
   reason: null,
+  error_reason_translation_domain: null,
   error_reason_translation_key: null,
   error_reason_translation_placeholders: null,
   ...override,
@@ -237,6 +239,7 @@ const createDeviceRegistryEntries = (
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
 ];
 
@@ -330,7 +333,7 @@ export class DemoIntegrationCard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");

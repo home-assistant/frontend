@@ -1,44 +1,84 @@
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
+import {
+  apiContext,
+  devicesContext,
+  internationalizationContext,
+  statesContext,
+} from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
-import { loadVirtualizer } from "../resources/virtualizer";
-import type { HomeAssistant } from "../types";
-import "./ha-check-list-item";
 import "./ha-expansion-panel";
-import "./ha-list";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
+import "./item/ha-list-item-option";
+import "./list/ha-list-selectable-virtualized";
+import type { HaListSelectableVirtualized } from "./list/ha-list-selectable-virtualized";
+import type { HaListVirtualizedItem } from "./list/ha-list-virtualized";
+
+interface HaFilterDevicesItem extends HaListVirtualizedItem {
+  name: string;
+}
 
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  @state()
+  private _devicesReg!: ContextType<typeof devicesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public value?: string[];
 
   @property() public type?: keyof RelatedResult;
 
+  @property({ type: Boolean, attribute: "include-disabled-entities" })
+  public includeDisabledEntities = false;
+
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _shouldRender = false;
-
   @state() private _filter?: string;
 
-  public willUpdate(properties: PropertyValues) {
-    super.willUpdate(properties);
+  @query("ha-list-selectable-virtualized")
+  private _listElement?: HaListSelectableVirtualized;
 
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
+  private _content = createRef<HTMLElement>();
+
+  private _panel = new FilterPanelController(this, this._content);
+
+  public willUpdate(properties: PropertyValues<this>) {
+    super.willUpdate(properties);
 
     if (
       properties.has("value") &&
@@ -53,110 +93,124 @@ export class HaFilterDevices extends LitElement {
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.devices.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${this._localize("ui.panel.config.devices.caption")}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                    @keydown=${this._handleClearFilterKeydown}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
-              >
-              </search-input-outlined>
-              <ha-list class="ha-scrollbar" multi>
-                <lit-virtualizer
-                  .items=${this._devices(
-                    this.hass.devices,
-                    this._filter || "",
-                    this.value
-                  )}
-                  .keyFunction=${this._keyFunction}
-                  .renderItem=${this._renderItem}
-                  @click=${this._handleItemClick}
-                >
-                </lit-virtualizer>
-              </ha-list>`
-          : nothing}
       </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`<div class="content" ${ref(this._content)}>
+              <ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
+                @keydown=${this._handleSearchKeydown}
+              >
+              </ha-input-search>
+              <ha-list-selectable-virtualized
+                multi
+                .rows=${this._devices(
+                  this._devicesReg,
+                  this._filter || "",
+                  this._localize,
+                  this._states,
+                  this._i18n.locale.language
+                )}
+                .rowRenderer=${this._renderItem}
+                @ha-list-item-selected=${this._handleAdded}
+                @ha-list-item-deselected=${this._handleRemoved}
+              ></ha-list-selectable-virtualized>
+            </div>`
+          : nothing
+      }
     `;
   }
 
-  private _keyFunction = (device) => device?.id;
-
-  private _renderItem = (device) =>
-    !device
+  private _renderItem = (item?: HaFilterDevicesItem) =>
+    !item
       ? nothing
-      : html`<ha-check-list-item
-          .value=${device.id}
-          .selected=${this.value?.includes(device.id) ?? false}
+      : html`<ha-list-item-option
+          style="width: 100%;"
+          appearance="checkbox"
+          selection-position="end"
+          .value=${item.id}
+          .selected=${this.value?.includes(item.id) ?? false}
         >
-          ${computeDeviceNameDisplay(device, this.hass)}
-        </ha-check-list-item>`;
+          <span slot="headline">${item.name}</span>
+        </ha-list-item-option>`;
 
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    const value = listItem?.value;
-    if (!value) {
-      return;
-    }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
-    } else {
-      this.value = [...(this.value || []), value];
-    }
-    listItem.selected = this.value?.includes(value);
+  private _handleAdded(ev: CustomEvent<number>) {
+    this.value = [
+      ...(this.value ?? []),
+      this._devices(
+        this._devicesReg,
+        this._filter || "",
+        this._localize,
+        this._states,
+        this._i18n.locale.language
+      )[ev.detail].id,
+    ];
   }
 
-  protected updated(changed) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
-      }, 300);
-    }
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
+  private _handleRemoved(ev: CustomEvent<number>) {
+    const id = this._devices(
+      this._devicesReg,
+      this._filter || "",
+      this._localize,
+      this._states,
+      this._i18n.locale.language
+    )[ev.detail].id;
+    this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
   }
 
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = target.value ?? "";
+  }
+
+  private _handleSearchKeydown(ev: KeyboardEvent) {
+    if (ev.key === "ArrowDown" && this._listElement) {
+      ev.preventDefault();
+      this._listElement.focus();
+    }
   }
 
   private _devices = memoizeOne(
-    (devices: HomeAssistant["devices"], filter: string, _value) => {
+    (
+      devices: ContextType<typeof devicesContext>,
+      filter: string,
+      localize: LocalizeFunc,
+      states: ContextType<typeof statesContext>,
+      language: string | undefined
+    ): HaFilterDevicesItem[] => {
       const values = Object.values(devices);
       return values
+        .map((device) => ({
+          id: device.id,
+          interactive: true,
+          name: computeDeviceNameDisplay(device, localize, states),
+        }))
         .filter(
-          (device) =>
-            !filter ||
-            computeDeviceNameDisplay(device, this.hass)
-              .toLowerCase()
-              .includes(filter)
+          ({ name }) =>
+            !filter || name.toLowerCase().includes(filter.toLowerCase())
         )
-        .sort((a, b) =>
-          stringCompare(
-            computeDeviceNameDisplay(a, this.hass),
-            computeDeviceNameDisplay(b, this.hass),
-            this.hass.locale.language
-          )
-        );
+        .sort((a, b) => stringCompare(a.name, b.name, language));
     }
   );
 
@@ -177,7 +231,14 @@ export class HaFilterDevices extends LitElement {
     for (const deviceId of this.value) {
       value.push(deviceId);
       if (this.type) {
-        relatedPromises.push(findRelated(this.hass, "device", deviceId));
+        relatedPromises.push(
+          findRelated(
+            this._api,
+            "device",
+            deviceId,
+            this.includeDisabledEntities
+          )
+        );
       }
     }
     const results = await Promise.all(relatedPromises);
@@ -194,6 +255,13 @@ export class HaFilterDevices extends LitElement {
     });
   }
 
+  private _handleClearFilterKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
+      this._clearFilter(ev);
+    }
+  }
+
   private _clearFilter(ev) {
     ev.preventDefault();
     this.value = undefined;
@@ -201,58 +269,46 @@ export class HaFilterDevices extends LitElement {
       value: undefined,
       items: undefined,
     });
+    this._listElement?.clearSelection();
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyleScrollbar,
-      css`
-        :host {
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
-          flex: 1;
-          height: 0;
-        }
-
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
-        }
-        .header {
-          display: flex;
-          align-items: center;
-        }
-        .header ha-icon-button {
-          margin-inline-start: auto;
-          margin-inline-end: 8px;
-        }
-        .badge {
-          display: inline-block;
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: 0;
-          min-width: 16px;
-          box-sizing: border-box;
-          border-radius: var(--ha-border-radius-circle);
-          font-size: var(--ha-font-size-xs);
-          font-weight: var(--ha-font-weight-normal);
-          background-color: var(--primary-color);
-          line-height: var(--ha-line-height-normal);
-          text-align: center;
-          padding: 0px 2px;
-          color: var(--text-primary-color);
-        }
-        ha-check-list-item {
-          width: 100%;
-        }
-        search-input-outlined {
-          display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) 0;
-        }
-      `,
-    ];
-  }
+  static styles = [
+    filterPanelStyles,
+    css`
+      ha-list-selectable-virtualized {
+        flex: 1;
+        min-height: 0;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+      }
+      .header ha-icon-button {
+        margin-inline-start: auto;
+        margin-inline-end: 8px;
+      }
+      .badge {
+        display: inline-block;
+        margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: 0;
+        min-width: 16px;
+        box-sizing: border-box;
+        border-radius: var(--ha-border-radius-circle);
+        font-size: var(--ha-font-size-xs);
+        font-weight: var(--ha-font-weight-normal);
+        background-color: var(--primary-color);
+        line-height: var(--ha-line-height-normal);
+        text-align: center;
+        padding: 0px 2px;
+        color: var(--text-primary-color);
+      }
+      ha-input-search {
+        display: block;
+        padding: var(--ha-space-1) var(--ha-space-2) 0;
+      }
+    `,
+  ];
 }
 
 declare global {

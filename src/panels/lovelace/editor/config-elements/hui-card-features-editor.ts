@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
   mdiDragHorizontalVariant,
@@ -8,10 +9,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { CustomCardFeatureEntry } from "../../../../data/lovelace_custom_cards";
@@ -24,6 +26,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
@@ -32,11 +35,15 @@ import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-featu
 import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
+import { supportsCoverPositionFavoriteCardFeature } from "../../card-features/hui-cover-position-favorite-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
+import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-cover-tilt-favorite-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsPrecipitationForecastCardFeature } from "../../card-features/hui-precipitation-forecast-card-feature";
+import { supportsTemperatureForecastCardFeature } from "../../card-features/hui-temperature-forecast-card-feature";
 import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
@@ -45,28 +52,35 @@ import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-hum
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
+import { supportsLightEffectCardFeature } from "../../card-features/hui-light-effect-card-feature";
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerSoundModeCardFeature } from "../../card-features/hui-media-player-sound-mode-card-feature";
+import { supportsMediaPlayerSourceCardFeature } from "../../card-features/hui-media-player-source-card-feature";
 import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
-import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsTimerActionsCardFeature } from "../../card-features/hui-timer-actions-card-feature";
+import { supportsTimerPresetsCardFeature } from "../../card-features/hui-timer-presets-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
+import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
+import { supportsVacuumFanSpeedCardFeature } from "../../card-features/hui-vacuum-fan-speed-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
+import { supportsValvePositionFavoriteCardFeature } from "../../card-features/hui-valve-position-favorite-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
-import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
+import { supportsLightColorFavoritesCardFeature } from "../../card-features/hui-light-color-favorites-card-feature";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
 
@@ -87,7 +101,9 @@ const UI_FEATURE_TYPES = [
   "climate-swing-horizontal-modes",
   "counter-actions",
   "cover-open-close",
+  "cover-position-favorite",
   "cover-position",
+  "cover-tilt-favorite",
   "cover-tilt-position",
   "cover-tilt",
   "date-set",
@@ -100,20 +116,30 @@ const UI_FEATURE_TYPES = [
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "light-color-favorites",
+  "light-effect",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
+  "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
+  "precipitation-forecast",
   "select-options",
   "trend-graph",
   "target-humidity",
   "target-temperature",
+  "temperature-forecast",
+  "timer-actions",
+  "timer-presets",
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "vacuum-fan-speed",
   "valve-open-close",
+  "valve-position-favorite",
   "valve-position",
   "water-heater-operation-modes",
 ] as const satisfies readonly FeatureType[];
@@ -123,6 +149,7 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "area-controls",
+  "bar-gauge",
   "button",
   "climate-fan-modes",
   "climate-hvac-modes",
@@ -130,15 +157,30 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
   "counter-actions",
+  "cover-position-favorite",
+  "cover-tilt-favorite",
   "fan-preset-modes",
   "humidifier-modes",
+  "precipitation-forecast",
+  "temperature-forecast",
   "lawn-mower-commands",
+  "media-player-playback",
+  "light-color-favorites",
+  "light-effect",
+  "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
+  "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "target-humidity",
+  "timer-actions",
+  "timer-presets",
   "trend-graph",
   "update-actions",
   "vacuum-commands",
+  "vacuum-fan-speed",
+  "valve-position-favorite",
   "water-heater-operation-modes",
 ]);
 
@@ -158,7 +200,9 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
   "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
+  "cover-position-favorite": supportsCoverPositionFavoriteCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
+  "cover-tilt-favorite": supportsCoverTiltFavoriteCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
   "date-set": supportsDateSetCardFeature,
@@ -171,20 +215,30 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
+  "light-color-favorites": supportsLightColorFavoritesCardFeature,
+  "light-effect": supportsLightEffectCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-sound-mode": supportsMediaPlayerSoundModeCardFeature,
+  "media-player-source": supportsMediaPlayerSourceCardFeature,
   "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "precipitation-forecast": supportsPrecipitationForecastCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  "temperature-forecast": supportsTemperatureForecastCardFeature,
+  "timer-actions": supportsTimerActionsCardFeature,
+  "timer-presets": supportsTimerPresetsCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "vacuum-fan-speed": supportsVacuumFanSpeedCardFeature,
   "valve-open-close": supportsValveOpenCloseCardFeature,
+  "valve-position-favorite": supportsValvePositionFavoriteCardFeature,
   "valve-position": supportsValvePositionCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
 };
@@ -333,15 +387,17 @@ export class HuiCardFeaturesEditor extends LitElement {
     );
 
     return html`
-      ${supportedFeaturesType.length === 0 && this.features.length === 0
-        ? html`
-            <ha-alert type="info">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.features.no_compatible_available"
-              )}
-            </ha-alert>
-          `
-        : nothing}
+      ${
+        supportedFeaturesType.length === 0 && this.features.length === 0
+          ? html`
+              <ha-alert type="info">
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.features.no_compatible_available"
+                )}
+              </ha-alert>
+            `
+          : nothing
+      }
       <ha-sortable handle-selector=".handle" @item-moved=${this._featureMoved}>
         <div class="features">
           ${repeat(
@@ -361,31 +417,35 @@ export class HuiCardFeaturesEditor extends LitElement {
                   <div class="feature-content">
                     <div>
                       <span> ${this._getFeatureTypeLabel(type)} </span>
-                      ${this.context && !supported
-                        ? html`
-                            <span class="secondary">
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.editor.features.not_compatible"
-                              )}
-                            </span>
-                          `
-                        : nothing}
+                      ${
+                        this.context && !supported
+                          ? html`
+                              <span class="secondary">
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.features.not_compatible"
+                                )}
+                              </span>
+                            `
+                          : nothing
+                      }
                     </div>
                   </div>
-                  ${editable
-                    ? html`
-                        <ha-icon-button
-                          .label=${this.hass!.localize(
-                            `ui.panel.lovelace.editor.features.edit`
-                          )}
-                          .path=${mdiPencil}
-                          class="edit-icon"
-                          .index=${index}
-                          @click=${this._editFeature}
-                          .disabled=${!supported}
-                        ></ha-icon-button>
-                      `
-                    : nothing}
+                  ${
+                    editable
+                      ? html`
+                          <ha-icon-button
+                            .label=${this.hass!.localize(
+                              `ui.panel.lovelace.editor.features.edit`
+                            )}
+                            .path=${mdiPencil}
+                            class="edit-icon"
+                            .index=${index}
+                            @click=${this._editFeature}
+                            .disabled=${!supported}
+                          ></ha-icon-button>
+                        `
+                      : nothing
+                  }
                   <ha-icon-button
                     .label=${this.hass!.localize(
                       `ui.panel.lovelace.editor.features.remove`
@@ -401,47 +461,45 @@ export class HuiCardFeaturesEditor extends LitElement {
           )}
         </div>
       </ha-sortable>
-      ${supportedFeaturesType.length > 0
-        ? html`
-            <ha-button-menu
-              fixed
-              @action=${this._addFeature}
-              @closed=${stopPropagation}
-            >
-              <ha-button slot="trigger" appearance="filled" size="small">
-                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-                ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
-              </ha-button>
-              ${types.map(
-                (type) => html`
-                  <ha-list-item .value=${type}>
-                    ${this._getFeatureTypeLabel(type)}
-                  </ha-list-item>
-                `
-              )}
-              ${types.length > 0 && customTypes.length > 0
-                ? html`<li divider role="separator"></li>`
-                : nothing}
-              ${customTypes.map(
-                (type) => html`
-                  <ha-list-item .value=${type}>
-                    ${this._getFeatureTypeLabel(type)}
-                  </ha-list-item>
-                `
-              )}
-            </ha-button-menu>
-          `
-        : nothing}
+      ${
+        supportedFeaturesType.length > 0
+          ? html`
+              <ha-dropdown @wa-select=${this._addFeature}>
+                <ha-button slot="trigger" appearance="filled" size="s">
+                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                  ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
+                </ha-button>
+                ${types.map(
+                  (type) => html`
+                    <ha-dropdown-item .value=${type}>
+                      ${this._getFeatureTypeLabel(type)}
+                    </ha-dropdown-item>
+                  `
+                )}
+                ${
+                  types.length > 0 && customTypes.length > 0
+                    ? html`<wa-divider></wa-divider>`
+                    : nothing
+                }
+                ${customTypes.map(
+                  (type) => html`
+                    <ha-dropdown-item .value=${type}>
+                      ${this._getFeatureTypeLabel(type)}
+                    </ha-dropdown-item>
+                  `
+                )}
+              </ha-dropdown>
+            `
+          : nothing
+      }
     `;
   }
 
-  private async _addFeature(ev: CustomEvent): Promise<void> {
-    const index = ev.detail.index as number;
-
-    if (index == null) return;
-
-    const value = this._getSupportedFeaturesType()[index];
-    if (!value) return;
+  private async _addFeature(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value as FeatureType;
+    if (!value) {
+      return;
+    }
 
     const elClass = await getCardFeatureElementClass(value);
 
@@ -498,7 +556,9 @@ export class HuiCardFeaturesEditor extends LitElement {
       display: flex !important;
       flex-direction: column;
     }
-    ha-button-menu {
+    ha-dropdown {
+      display: inline-block;
+      align-self: flex-start;
       margin-top: var(--ha-space-2);
     }
     .feature {
@@ -533,7 +593,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: var(--ha-space-9);
+      --ha-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

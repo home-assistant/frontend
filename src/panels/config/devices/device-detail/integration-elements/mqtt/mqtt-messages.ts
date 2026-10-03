@@ -4,14 +4,14 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
-import type { MQTTMessage } from "../../../../../../data/mqtt";
+import type { MQTTLoggedMessage } from "../../../../../../data/mqtt";
 import type { HomeAssistant } from "../../../../../../types";
 
 @customElement("mqtt-messages")
 class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public messages!: MQTTMessage[];
+  @property({ attribute: false }) public messages!: MQTTLoggedMessage[];
 
   @property() public direction!: string;
 
@@ -48,27 +48,29 @@ class MQTTMessages extends LitElement {
       >
         ${this.summary}
       </div>
-      ${this._open
-        ? html`
-            <ul class="message-list">
-              ${this.messages.map(
-                (message) => html`
-                  <li class="message">
-                    <div class="time">
-                      ${this.direction}
-                      ${formatTimeWithSeconds(
-                        new Date(message.time),
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                    </div>
-                    ${this._renderSingleMessage(message)}
-                  </li>
-                `
-              )}
-            </ul>
-          `
-        : ""}
+      ${
+        this._open
+          ? html`
+              <ul class="message-list">
+                ${this.messages.map(
+                  (message) => html`
+                    <li class="message">
+                      <div class="time">
+                        ${this.direction}
+                        ${formatTimeWithSeconds(
+                          new Date(message.time),
+                          this.hass.locale,
+                          this.hass.config
+                        )}
+                      </div>
+                      ${this._renderSingleMessage(message)}
+                    </li>
+                  `
+                )}
+              </ul>
+            `
+          : ""
+      }
     `;
   }
 
@@ -97,9 +99,11 @@ class MQTTMessages extends LitElement {
 
     return json
       ? html`
-          ${this.showAsYaml
-            ? html` <pre>${dump(json)}</pre> `
-            : html` <pre>${JSON.stringify(json, null, 2)}</pre> `}
+          ${
+            this.showAsYaml
+              ? html` <pre>${dump(json)}</pre> `
+              : html` <pre>${JSON.stringify(json, null, 2)}</pre> `
+          }
         `
       : html` <code>${message.payload}</code> `;
   }

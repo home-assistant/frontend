@@ -37,6 +37,7 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: null,
+      parentDevice: null,
       area: null,
       floor: null,
     });
@@ -88,6 +89,64 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device,
+      parentDevice: null,
+      area,
+      floor,
+    });
+  });
+
+  it("should inherit the parent device's area for an entity on a child device", () => {
+    const entity = mockEntity({
+      entity_id: "switch.outlet_1",
+      device_id: "child_1",
+    });
+    const childDevice = mockDevice({
+      id: "child_1",
+      parent_device_id: "parent_1",
+    });
+    const parentDevice = mockDevice({
+      id: "parent_1",
+      area_id: "area_1",
+    });
+    const area = mockArea({
+      area_id: "area_1",
+      floor_id: "floor_1",
+    });
+    const floor = mockFloor({
+      floor_id: "floor_1",
+    });
+    const stateObj = mockStateObj({
+      entity_id: "switch.outlet_1",
+    });
+
+    const hass = {
+      entities: {
+        "switch.outlet_1": entity,
+      },
+      devices: {
+        child_1: childDevice,
+        parent_1: parentDevice,
+      },
+      areas: {
+        area_1: area,
+      },
+      floors: {
+        floor_1: floor,
+      },
+    } as unknown as HomeAssistant;
+
+    const result = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+
+    expect(result).toEqual({
+      entity,
+      device: childDevice,
+      parentDevice,
       area,
       floor,
     });
@@ -128,6 +187,7 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: null,
+      parentDevice: null,
       area,
       floor,
     });
@@ -167,7 +227,37 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: null,
+      parentDevice: null,
       area,
+      floor: null,
+    });
+  });
+
+  it("should not resolve a parent device for an entity on a main device", () => {
+    const entity = mockEntity({
+      entity_id: "switch.strip",
+      device_id: "parent_1",
+    });
+    const parentDevice = mockDevice({
+      id: "parent_1",
+    });
+    const stateObj = mockStateObj({
+      entity_id: "switch.strip",
+    });
+
+    const result = getEntityContext(
+      stateObj,
+      { "switch.strip": entity },
+      { parent_1: parentDevice },
+      {},
+      {}
+    );
+
+    expect(result).toEqual({
+      entity,
+      device: parentDevice,
+      parentDevice: null,
+      area: null,
       floor: null,
     });
   });

@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   STATE_NOT_RUNNING,
@@ -12,19 +13,22 @@ import { showToast } from "../util/toast";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { navigate } from "../common/navigate";
 
+const CONNECTION_LOST_TOAST_ID = "connection-lost";
+const SERVER_STARTUP_TOAST_ID = "server-startup";
+
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _subscribedBootstrapIntegrations?: Promise<UnsubscribeFunc>;
 
     private _disconnectedTimeout?: number;
 
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
       setTimeout(() => import("../managers/notification-manager"), 5000);
     }
 
-    updated(changedProperties) {
+    updated(changedProperties: PropertyValues<this>) {
       super.updated(changedProperties);
       const oldHass = changedProperties.get("hass");
       if (!changedProperties.has("hass") || !this.hass!.config) {
@@ -33,6 +37,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (oldHass?.config?.state !== this.hass!.config.state) {
         if (this.hass!.config.state === STATE_NOT_RUNNING) {
           showToast(this, {
+            id: SERVER_STARTUP_TOAST_ID,
             message:
               this.hass!.localize("ui.notification_toast.starting") ||
               "Home Assistant is starting. Not everything will be available until it is finished.",
@@ -56,6 +61,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           this._unsubscribeBootstrapIntegrations();
           showToast(this, {
+            id: SERVER_STARTUP_TOAST_ID,
             message: this.hass!.localize("ui.notification_toast.started"),
             duration: 5000,
           });
@@ -73,7 +79,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
                 "Safe mode",
               text:
                 this.hass!.localize("ui.dialogs.safe_mode.text") ||
-                "Home Assistant is running in safe mode, custom integrations and modules are not available. Restart Home Assistant to exit safe mode.",
+                "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode.",
             });
           }
         );
@@ -94,6 +100,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return;
       }
       showToast(this, {
+        id: CONNECTION_LOST_TOAST_ID,
         message: "",
         duration: 0,
       });
@@ -105,6 +112,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._disconnectedTimeout = window.setTimeout(() => {
         this._disconnectedTimeout = undefined;
         showToast(this, {
+          id: CONNECTION_LOST_TOAST_ID,
           message: this.hass!.localize("ui.notification_toast.connection_lost"),
           duration: -1,
           dismissable: false,
@@ -119,6 +127,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       if (Object.keys(message).length === 0) {
         showToast(this, {
+          id: SERVER_STARTUP_TOAST_ID,
           message:
             this.hass!.localize("ui.notification_toast.wrapping_up_startup") ||
             `Wrapping up startup. Not everything will be available until it is finished.`,
@@ -141,7 +150,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       )[0][0];
 
       showToast(this, {
-        id: "integration_starting",
+        id: SERVER_STARTUP_TOAST_ID,
         message:
           this.hass!.localize("ui.notification_toast.integration_starting", {
             integration: domainToName(this.hass!.localize, integration),

@@ -1,17 +1,26 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { computeStateDomain } from "./compute_state_domain";
-import { isUnavailableState, UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
+import { computeStateDomain } from "./compute_state_domain";
+import { getToggleAction } from "./get_toggle_action";
 
 export const computeGroupEntitiesState = (states: HassEntity[]): string => {
   if (!states.length) {
     return UNAVAILABLE;
   }
 
-  const validState = states.filter((stateObj) => isUnavailableState(stateObj));
-
-  if (!validState) {
+  const allUnavailable = states.every(
+    (stateObj) => stateObj.state === UNAVAILABLE
+  );
+  if (allUnavailable) {
     return UNAVAILABLE;
+  }
+
+  const hasValidState = states.some(
+    (stateObj) => stateObj.state !== UNAVAILABLE && stateObj.state !== UNKNOWN
+  );
+  if (!hasValidState) {
+    return UNKNOWN;
   }
 
   // Use the first state to determine the domain
@@ -49,14 +58,11 @@ export const toggleGroupEntities = (
 
   const isOn = state === "on" || state === "open";
 
-  let service = isOn ? "turn_off" : "turn_on";
+  let service = getToggleAction(domain, !isOn);
   if (domain === "cover") {
     if (state === "opening" || state === "closing") {
       // If the cover is opening or closing, we toggle it to stop it
       service = "stop_cover";
-    } else {
-      // For covers, we use the open/close service
-      service = isOn ? "close_cover" : "open_cover";
     }
   }
 

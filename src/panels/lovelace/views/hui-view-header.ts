@@ -4,6 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
+import {
+  ScrollFadeController,
+  scrollFadeStyles,
+} from "../../../common/controllers/scroll-fade-controller";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -16,7 +20,6 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
-import "../components/hui-badge-edit-mode";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
@@ -57,6 +60,8 @@ export class HuiViewHeader extends LitElement {
     enabled: false,
   });
 
+  private _badgesScrollFade = new ScrollFadeController(this);
+
   connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
@@ -73,7 +78,7 @@ export class HuiViewHeader extends LitElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("badges") ||
       changedProperties.has("lovelace") ||
@@ -202,27 +207,27 @@ export class HuiViewHeader extends LitElement {
       this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
     const badgesWrap =
       this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
-    const badgeDragging = this._dragScrollController.scrolling
-      ? "dragging"
-      : "";
+    const badgesScrollable = !editMode && badgesWrap === "scroll";
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
 
     return html`
-      ${editMode
-        ? html`
-            <div class="actions-container">
-              <div class="actions">
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.common.edit")}
-                  @click=${this._configure}
-                  .path=${mdiPencil}
-                ></ha-icon-button>
+      ${
+        editMode
+          ? html`
+              <div class="actions-container">
+                <div class="actions">
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.edit")}
+                    @click=${this._configure}
+                    .path=${mdiPencil}
+                  ></ha-icon-button>
+                </div>
               </div>
-            </div>
-          `
-        : nothing}
+            `
+          : nothing
+      }
       <div class="container ${editMode ? "edit-mode" : ""}">
         <div
           class="layout ${classMap({
@@ -233,58 +238,74 @@ export class HuiViewHeader extends LitElement {
             "has-badges": hasBadges,
           })}"
         >
-          ${card || editMode
-            ? html`
-                <div class="heading">
-                  ${editMode
-                    ? card
-                      ? html`
-                          <hui-card-edit-mode
-                            @ll-edit-card=${this._editCard}
-                            @ll-delete-card=${this._deleteCard}
-                            .hass=${this.hass}
-                            .lovelace=${this.lovelace!}
-                            .path=${[0]}
-                            no-duplicate
-                            no-move
-                          >
-                            ${card}
-                          </hui-card-edit-mode>
-                        `
-                      : html`
-                          <button class="add" @click=${this._addCard}>
-                            <ha-ripple></ha-ripple>
-                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                            ${this.hass.localize(
-                              "ui.panel.lovelace.editor.edit_view_header.add_title"
-                            )}
-                          </button>
-                        `
-                    : card}
-                </div>
-              `
-            : nothing}
-          ${this.lovelace && (editMode || this.badges.length > 0)
-            ? html`
-                <div
-                  class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
-                >
-                  <hui-view-badges
-                    .badges=${this.badges}
-                    .hass=${this.hass}
-                    .lovelace=${this.lovelace!}
-                    .viewIndex=${this.viewIndex!}
-                    .showAddLabel=${this.badges.length === 0}
-                  ></hui-view-badges>
-                </div>
-              `
-            : nothing}
+          ${
+            card || editMode
+              ? html`
+                  <div class="heading">
+                    ${
+                      editMode
+                        ? card
+                          ? html`
+                              <hui-card-edit-mode
+                                @ll-edit-card=${this._editCard}
+                                @ll-delete-card=${this._deleteCard}
+                                .lovelace=${this.lovelace!}
+                                .path=${[0]}
+                                no-duplicate
+                                no-move
+                              >
+                                ${card}
+                              </hui-card-edit-mode>
+                            `
+                          : html`
+                              <button class="add" @click=${this._addCard}>
+                                <ha-ripple></ha-ripple>
+                                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                                ${this.hass.localize(
+                                  "ui.panel.lovelace.editor.edit_view_header.add_title"
+                                )}
+                              </button>
+                            `
+                        : card
+                    }
+                  </div>
+                `
+              : nothing
+          }
+          ${
+            this.lovelace && (editMode || this.badges.length > 0)
+              ? html`
+                  <div
+                    class=${classMap({
+                      badges: true,
+                      [badgesPosition]: true,
+                      [badgesWrap]: true,
+                      dragging: this._dragScrollController.scrolling,
+                      "scroll-fade-start":
+                        badgesScrollable && this._badgesScrollFade.start,
+                      "scroll-fade-end":
+                        badgesScrollable && this._badgesScrollFade.end,
+                    })}
+                    ${this._badgesScrollFade.target()}
+                  >
+                    <hui-view-badges
+                      .badges=${this.badges}
+                      .lovelace=${this.lovelace!}
+                      .viewIndex=${this.viewIndex!}
+                      .showAddLabel=${this.badges.length === 0}
+                    ></hui-view-badges>
+                  </div>
+                `
+              : nothing
+          }
         </div>
       </div>
     `;
   }
 
   static styles = css`
+    ${scrollFadeStyles}
+
     :host([hidden]) {
       display: none !important;
     }
@@ -314,11 +335,14 @@ export class HuiViewHeader extends LitElement {
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--primary-text-color);
     }
@@ -327,12 +351,8 @@ export class HuiViewHeader extends LitElement {
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 24px 8px;
-      --spacing: 24px;
-    }
-
-    .layout.has-heading {
-      margin-top: var(--spacing);
+      gap: 16px 8px;
+      --spacing: 8px;
     }
 
     .heading {
@@ -341,11 +361,18 @@ export class HuiViewHeader extends LitElement {
       width: 100%;
       max-width: 700px;
       display: flex;
+      min-height: calc(
+        var(--ha-font-size-xl) * var(--ha-line-height-condensed) + 4px
+      );
     }
 
     .heading > * {
       width: 100%;
       height: 100%;
+    }
+
+    .container:not(.edit-mode) .heading:has(> *[hidden]) {
+      display: none;
     }
 
     .badges {
@@ -359,13 +386,6 @@ export class HuiViewHeader extends LitElement {
       max-width: 100%;
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
       scrollbar-width: none;
-      mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        black 16px,
-        black calc(100% - 16px),
-        transparent 100%
-      );
     }
 
     hui-view-badges {
@@ -402,12 +422,7 @@ export class HuiViewHeader extends LitElement {
 
     .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {
       --badges-wrap: nowrap;
-      --badges-aligmnent: flex-start;
-      --badge-padding: 16px;
-    }
-
-    .container:not(.edit-mode) .layout.center.badges-scroll hui-view-badges {
-      --badges-aligmnent: space-around;
+      width: max-content;
     }
 
     @media (min-width: 768px) {
@@ -424,7 +439,7 @@ export class HuiViewHeader extends LitElement {
         hui-view-badges {
         --badges-wrap: wrap;
         --badges-aligmnent: flex-end;
-        --badge-padding: 0;
+        width: 100%;
       }
       .layout.responsive.has-heading hui-view-badges {
         --badges-aligmnent: flex-end;
@@ -435,21 +450,19 @@ export class HuiViewHeader extends LitElement {
       flex-direction: column-reverse;
     }
 
-    .layout.badges-top.has-badges {
-      margin-top: 0;
-    }
-
     @media (min-width: 768px) {
       .layout.responsive.badges-top.has-heading {
         flex-direction: row;
         align-items: flex-start;
-        margin-top: var(--spacing);
       }
     }
 
     .container.edit-mode {
       padding: 8px;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
     }
@@ -469,7 +482,10 @@ export class HuiViewHeader extends LitElement {
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
       width: auto;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;

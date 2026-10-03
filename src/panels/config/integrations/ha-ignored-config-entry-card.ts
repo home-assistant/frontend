@@ -28,11 +28,13 @@ export class HaIgnoredConfigEntryCard extends LitElement {
         )}
         .domain=${this.entry.domain}
         .localizedDomainName=${this.entry.localized_domain_name}
-        .label=${this.entry.title === "Ignored"
-          ? // In 2020.2 we added support for entry.title. All ignored entries before
-            // that have title "Ignored" so we fallback to localized domain name.
-            this.entry.localized_domain_name
-          : this.entry.title}
+        .label=${
+          this.entry.title === "Ignored"
+            ? // In 2020.2 we added support for entry.title. All ignored entries before
+              // that have title "Ignored" so we fallback to localized domain name.
+              this.entry.localized_domain_name
+            : this.entry.title
+        }
       >
         <ha-button appearance="plain" @click=${this._removeIgnoredIntegration}>
           ${this.hass.localize(

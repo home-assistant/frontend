@@ -4,12 +4,16 @@ import { FallbackStorage } from "../../../test_helper/local-storage-fallback";
 
 let saveTokens;
 
+const HASS_URL = `${location.protocol}//${location.host}`;
+
 describe("token_storage.saveTokens", () => {
   beforeEach(() => {
-    window.localStorage = new FallbackStorage();
+    vi.stubGlobal("localStorage", new FallbackStorage());
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.resetModules();
     vi.resetAllMocks();
   });
@@ -32,9 +36,8 @@ describe("token_storage.saveTokens", () => {
       })
     );
 
-    ({ saveTokens } = await import(
-      "../../../../src/common/auth/token_storage"
-    ));
+    ({ saveTokens } =
+      await import("../../../../src/common/auth/token_storage"));
     saveTokens(tokens);
     expect(window.__tokenCache.tokens).toEqual(tokens);
   });
@@ -65,9 +68,8 @@ describe("token_storage.saveTokens", () => {
     const setItemSpy = vi.fn();
     window.localStorage.setItem = setItemSpy;
 
-    ({ saveTokens } = await import(
-      "../../../../src/common/auth/token_storage"
-    ));
+    ({ saveTokens } =
+      await import("../../../../src/common/auth/token_storage"));
     saveTokens(tokens);
     expect(window.__tokenCache.tokens).toEqual(tokens);
     expect(window.__tokenCache.writeEnabled).toBe(true);
@@ -116,9 +118,8 @@ describe("token_storage.saveTokens", () => {
       error: vi.fn(),
     } as unknown as Console;
 
-    ({ saveTokens } = await import(
-      "../../../../src/common/auth/token_storage"
-    ));
+    ({ saveTokens } =
+      await import("../../../../src/common/auth/token_storage"));
     saveTokens(tokens);
     expect(window.__tokenCache.tokens).toEqual(tokens);
     expect(window.__tokenCache.writeEnabled).toBe(true);

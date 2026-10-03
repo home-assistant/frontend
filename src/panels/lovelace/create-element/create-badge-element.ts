@@ -1,5 +1,6 @@
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import "../badges/hui-entity-badge";
+import "../badges/hui-error-badge";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
@@ -9,7 +10,11 @@ import {
 const ALWAYS_LOADED_TYPES = new Set(["error", "entity"]);
 const LAZY_LOAD_TYPES = {
   "entity-filter": () => import("../badges/hui-entity-filter-badge"),
+  shortcut: () => import("../badges/hui-shortcut-badge"),
   "state-label": () => import("../badges/hui-state-label-badge"),
+  "power-total": () => import("../badges/energy/hui-power-total-badge"),
+  "gas-total": () => import("../badges/energy/hui-gas-total-badge"),
+  "water-total": () => import("../badges/energy/hui-water-total-badge"),
 };
 
 // This will not return an error card but will throw the error

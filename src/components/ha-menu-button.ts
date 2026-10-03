@@ -1,19 +1,42 @@
+import type { ContextType } from "@lit/context";
 import { mdiMenu } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  configContext,
+  connectionContext,
+  narrowViewportContext,
+  uiContext,
+} from "../data/context";
 import { subscribeNotifications } from "../data/persistent_notification";
-import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
-  @property({ type: Boolean }) public hassio = false;
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
 
-  @property({ type: Boolean }) public narrow = false;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow = false;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui?: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
 
   @state() private _hasNotifications = false;
 
@@ -27,7 +50,7 @@ class HaMenuButton extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._attachNotifOnConnect) {
+    if (this._attachNotifOnConnect && this._connection) {
       this._attachNotifOnConnect = false;
       this._subscribeNotifications();
     }
@@ -43,15 +66,15 @@ class HaMenuButton extends LitElement {
   }
 
   protected render() {
-    if (!this._show) {
+    if (!this._show || !this._ui) {
       return nothing;
     }
     const hasNotifications =
       this._hasNotifications &&
-      (this.narrow || this.hass.dockedSidebar === "always_hidden");
+      (this._narrow || this._ui.dockedSidebar === "always_hidden");
     return html`
       <ha-icon-button
-        .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+        .label=${this._localize("ui.sidebar.sidebar_toggle")}
         .path=${mdiMenu}
         @click=${this._toggleMenu}
       ></ha-icon-button>
@@ -59,40 +82,27 @@ class HaMenuButton extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    if (!this.hassio) {
-      return;
-    }
-    // This component is used on Hass.io too, but Hass.io might run the UI
-    // on older frontends too, that don't have an always visible menu button
-    // in the sidebar.
-    this._alwaysVisible =
-      (Number((window.parent as any).frontendVersion) || 0) < 20190710;
-  }
-
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("narrow") && !changedProps.has("hass")) {
+    if (
+      !changedProps.has("_narrow") &&
+      !changedProps.has("_ui") &&
+      !changedProps.has("_connection") &&
+      !changedProps.has("_config")
+    ) {
       return;
     }
 
-    const oldHass = changedProps.has("hass")
-      ? (changedProps.get("hass") as HomeAssistant | undefined)
-      : this.hass;
-    const oldNarrow = changedProps.has("narrow")
-      ? (changedProps.get("narrow") as boolean | undefined)
-      : this.narrow;
+    if (changedProps.has("_connection") && this._unsubNotifications) {
+      this._unsubNotifications();
+      this._unsubNotifications = undefined;
+    }
 
-    const oldShowButton =
-      oldNarrow || oldHass?.dockedSidebar === "always_hidden";
     const showButton =
-      this.narrow || this.hass.dockedSidebar === "always_hidden";
-
-    if (this.hasUpdated && oldShowButton === showButton) {
-      return;
-    }
+      this._ui?.kioskMode === false &&
+      this._config?.auth.external?.config.hasSidebar !== true &&
+      (this._narrow || this._ui.dockedSidebar === "always_hidden");
 
     this._show = showButton || this._alwaysVisible;
 
@@ -104,7 +114,10 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    this._subscribeNotifications();
+    if (!this._unsubNotifications && this._connection) {
+      this._attachNotifOnConnect = false;
+      this._subscribeNotifications();
+    }
   }
 
   private _subscribeNotifications() {
@@ -112,7 +125,7 @@ class HaMenuButton extends LitElement {
       throw new Error("Already subscribed");
     }
     this._unsubNotifications = subscribeNotifications(
-      this.hass.connection,
+      this._connection!.connection,
       (notifications) => {
         this._hasNotifications = notifications.length > 0;
       }

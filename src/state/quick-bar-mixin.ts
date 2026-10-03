@@ -1,26 +1,25 @@
 import type { PropertyValues } from "lit";
-import { tinykeys } from "tinykeys";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
-import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { ShortcutManager } from "../common/keyboard/shortcuts";
+import { extractSearchParamsObject } from "../common/url/search-params";
+import type { QuickBarSection } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import {
-  QuickBarMode,
+  closeQuickBar,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
+import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
-import { extractSearchParamsObject } from "../common/url/search-params";
-import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
-import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
-import type { Redirects } from "../panels/my/ha-panel-my";
 
 declare global {
   interface HASSDomEvents {
-    "hass-quick-bar": QuickBarParams;
     "hass-quick-bar-trigger": KeyboardEvent;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
   }
@@ -28,7 +27,9 @@ declare global {
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    private _quickBarOpen = false;
+
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
 
       this.addEventListener("hass-enable-shortcuts", (ev) => {
@@ -36,16 +37,44 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         storeState(this.hass!);
       });
 
+      this.addEventListener(
+        "show-dialog",
+        (ev) => {
+          if (
+            (ev as HASSDomEvent<HASSDomEvents["show-dialog"]>).detail
+              .dialogTag === "ha-quick-bar"
+          ) {
+            // If quick bar is already open, prevent opening it again
+            if (this._quickBarOpen) {
+              ev.stopPropagation();
+              ev.preventDefault();
+              return;
+            }
+            this._quickBarOpen = true;
+          }
+        },
+        { capture: true }
+      );
+
+      this.addEventListener("dialog-closed", (ev) => {
+        if (
+          (ev as HASSDomEvent<HASSDomEvents["dialog-closed"]>).detail.dialog ===
+          "ha-quick-bar"
+        ) {
+          this._quickBarOpen = false;
+        }
+      });
+
       mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
         switch (ev.detail.key) {
           case "e":
-            this._showQuickBar(ev.detail);
+            this._showQuickBar(ev.detail, "entity");
             break;
           case "c":
-            this._showQuickBar(ev.detail, QuickBarMode.Command);
+            this._showQuickBar(ev.detail, "command");
             break;
           case "d":
-            this._showQuickBar(ev.detail, QuickBarMode.Device);
+            this._showQuickBar(ev.detail, "device");
             break;
           case "m":
             this._createMyLink(ev.detail);
@@ -61,27 +90,56 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       this._registerShortcut();
     }
 
+    protected updated(changedProperties: PropertyValues<this>): void {
+      super.updated(changedProperties);
+
+      if (
+        changedProperties.has("hass") &&
+        changedProperties.get("hass")?.user !== this.hass?.user
+      ) {
+        this._registerShortcut();
+      }
+    }
+
     private _registerShortcut() {
-      tinykeys(window, {
-        // Those are for latin keyboards that have e, c, m keys
-        e: (ev) => this._showQuickBar(ev),
-        c: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
-        m: (ev) => this._createMyLink(ev),
-        a: (ev) => this._showVoiceCommandDialog(ev),
-        d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+      const shortcutManager = new ShortcutManager();
+      shortcutManager.add({
+        // These are for latin keyboards that have e, c, m keys
+        e: { handler: (ev) => this._showQuickBar(ev, "entity") },
+        m: { handler: (ev) => this._createMyLink(ev) },
+        a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
+        "$mod+k": {
+          handler: (ev) => this._toggleQuickBar(ev),
+          allowWhenTextSelected: true,
+          allowInInput: true,
+        },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
-        "Shift+?": (ev) => this._showShortcutDialog(ev),
-        // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
-        KeyE: (ev) => this._showQuickBar(ev),
-        KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
-        KeyM: (ev) => this._createMyLink(ev),
-        KeyA: (ev) => this._showVoiceCommandDialog(ev),
-        KeyD: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
+        // These are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
+        KeyE: { handler: (ev) => this._showQuickBar(ev, "entity") },
+        KeyM: { handler: (ev) => this._createMyLink(ev) },
+        KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
+        "$mod+KeyK": {
+          handler: (ev) => this._toggleQuickBar(ev),
+          allowWhenTextSelected: true,
+          allowInInput: true,
+        },
       });
+
+      if (this.hass?.user?.is_admin) {
+        shortcutManager.add({
+          // Latin keyboards
+          c: { handler: (ev) => this._showQuickBar(ev, "command") },
+          d: { handler: (ev) => this._showQuickBar(ev, "device") },
+          // Non-latin keyboards
+          KeyC: { handler: (ev) => this._showQuickBar(ev, "command") },
+          KeyD: { handler: (ev) => this._showQuickBar(ev, "device") },
+        });
+      }
     }
 
     private _conversation = memoizeOne((_components) =>
-      isComponentLoaded(this.hass!, "conversation")
+      isComponentLoaded(this.hass!.config, "conversation")
     );
 
     private _showVoiceCommandDialog(e: KeyboardEvent) {
@@ -101,10 +159,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showVoiceCommandDialog(this, this.hass!, { pipeline_id: "last_used" });
     }
 
-    private _showQuickBar(
-      e: KeyboardEvent,
-      mode: QuickBarMode = QuickBarMode.Entity
-    ) {
+    private _showQuickBar(e: KeyboardEvent, mode?: QuickBarSection) {
       if (!this._canShowQuickBar(e)) {
         return;
       }
@@ -115,6 +170,23 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e.preventDefault();
 
       showQuickBar(this, { mode });
+    }
+
+    private _toggleQuickBar(e: KeyboardEvent, mode?: QuickBarSection) {
+      if (!this.hass?.enableShortcuts) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      if (!this._quickBarOpen) {
+        showQuickBar(this, { mode });
+        return;
+      }
+      closeQuickBar();
     }
 
     private _showShortcutDialog(e: KeyboardEvent) {
@@ -146,57 +218,98 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       const targetPath = mainWindow.location.pathname;
       const myParams = new URLSearchParams();
 
-      let redirects: Redirects;
+      const myPanel = await import("../panels/my/ha-panel-my");
+      const redirects = myPanel.getMyRedirects();
 
-      if (targetPath.startsWith("/hassio")) {
-        const myPanelSupervisor = await import(
-          "../../hassio/src/hassio-my-redirect"
-        );
-        redirects = myPanelSupervisor.REDIRECTS;
-      } else {
-        const myPanel = await import("../panels/my/ha-panel-my");
-        redirects = myPanel.getMyRedirects();
-      }
+      const redirectEntry = Object.entries(redirects).find(([_, redirect]) =>
+        targetPath.startsWith(redirect.redirect)
+      );
 
-      for (const [slug, redirect] of Object.entries(redirects)) {
-        if (!targetPath.startsWith(redirect.redirect)) {
-          continue;
-        }
-        myParams.append("redirect", slug);
-
-        if (redirect.params) {
-          const params = extractSearchParamsObject();
-          for (const key of Object.keys(redirect.params)) {
-            if (key in params) {
-              myParams.append(key, params[key]);
-            }
-          }
-        }
-        if (redirect.redirect === "/config/integrations/integration") {
-          myParams.append("domain", targetPath.split("/")[4]);
-        } else if (redirect.redirect === "/hassio/addon") {
-          myParams.append("addon", targetPath.split("/")[3]);
-        }
+      const openCreateLink = () =>
         window.open(
           `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
           "_blank"
         );
+
+      if (!redirectEntry && targetPath.startsWith("/marketplace/repository/")) {
+        // Marketplace repository pages are addressed by id, the My link by name.
+        // Looked up in the list, asking for one repository refreshes it from GitHub
+        const { fetchMarketplaceRepositories } =
+          await import("../data/marketplace/repository");
+        try {
+          const repositoryId = targetPath.split("/")[3];
+          const repository = (
+            await fetchMarketplaceRepositories(this.hass)
+          ).find((item) => String(item.id) === repositoryId);
+          if (repository) {
+            const [owner, name] = repository.full_name.split("/");
+            myParams.append("redirect", "marketplace_repository");
+            myParams.append("owner", owner);
+            myParams.append("repository", name);
+            myParams.append("category", repository.category);
+            openCreateLink();
+            return;
+          }
+        } catch (err: unknown) {
+          // The Marketplace says why, for example when it is not loaded
+          const message = (err as { message?: string } | null)?.message;
+          if (message) {
+            showToast(this, { message });
+            return;
+          }
+        }
+      }
+
+      if (!redirectEntry) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.notification_toast.no_matching_link_found",
+            {
+              path: targetPath,
+            }
+          ),
+        });
         return;
       }
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.notification_toast.no_matching_link_found",
-          {
-            path: targetPath,
+
+      const [slug, redirect] = redirectEntry;
+
+      myParams.append("redirect", slug);
+
+      if (redirect.params) {
+        const params = extractSearchParamsObject();
+        for (const key of Object.keys(redirect.params)) {
+          if (key in params) {
+            myParams.append(key, params[key]);
           }
-        ),
-      });
+        }
+      }
+      if (redirect.redirect === "/config/integrations/integration") {
+        myParams.append("domain", targetPath.split("/")[4]);
+      } else if (redirect.redirect === "/config/app") {
+        myParams.append("app", targetPath.split("/")[3]);
+        const [{ fetchHassioAddonInfo }, { fetchStoreRepositories }] =
+          await Promise.all([
+            import("../data/hassio/addon"),
+            import("../data/supervisor/store"),
+          ]);
+        const [info, repos] = await Promise.all([
+          fetchHassioAddonInfo(this.hass!.callWS, myParams.get("app")!),
+          fetchStoreRepositories(this.hass!),
+        ]);
+        const repo = repos.find((r) => r.slug === info.repository);
+
+        if (repo && repo.source !== "local") {
+          myParams.append("repository_url", repo.source);
+        }
+      }
+      openCreateLink();
     }
 
     private _canShowQuickBar(e: KeyboardEvent) {
       return (
-        this.hass?.user?.is_admin &&
-        this.hass.enableShortcuts &&
+        !this._quickBarOpen &&
+        !!this.hass?.enableShortcuts &&
         canOverrideAlphanumericInput(e.composedPath())
       );
     }

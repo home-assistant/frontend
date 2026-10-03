@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiFolderMultipleOutline, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,15 +10,23 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-fab";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
 import type { ZHAGroup } from "../../../../../data/zha";
 import { fetchGroups } from "../../../../../data/zha";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
-import { zhaTabs } from "./zha-config-dashboard";
+
+const groupsTab: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.zha.groups.caption",
+    path: "/config/zha/groups",
+    iconPath: mdiFolderMultipleOutline,
+  },
+];
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
@@ -37,6 +45,10 @@ export class ZHAGroupsDashboard extends LitElement {
 
   @state() private _groups: ZHAGroup[] = [];
 
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
+
   private _firstUpdatedCalled = false;
 
   public connectedCallback(): void {
@@ -46,7 +58,7 @@ export class ZHAGroupsDashboard extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchGroups();
@@ -100,32 +112,46 @@ export class ZHAGroupsDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage-data-table
-        .tabs=${zhaTabs}
+        .tabs=${groupsTab}
+        back-path="/config/zha/dashboard"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._formattedGroups(this._groups)}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.zha.groups.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchGroups}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
       >
-        <a href="/config/zha/group-add" slot="fab">
-          <ha-fab
-            .label=${this.hass!.localize(
-              "ui.panel.config.zha.groups.add_group"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button href="/config/zha/group-add" slot="fab" size="l">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
 
   private async _fetchGroups() {
-    this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+    try {
+      this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryFetchGroups() {
+    this._loading = true;
+    this._fetchGroups();
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

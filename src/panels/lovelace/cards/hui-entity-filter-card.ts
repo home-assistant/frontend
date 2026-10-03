@@ -154,7 +154,7 @@ export class HuiEntityFilterCard
     return false;
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     if (
       !this.hass ||
@@ -174,7 +174,7 @@ export class HuiEntityFilterCard
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entityConf.entity)
         );
-        return checkConditionsMet(conditionWithEntity, this.hass!);
+        return checkConditionsMet(conditionWithEntity, this.hass!, {});
       }
 
       const filters = entityConf.state_filter ?? this._config!.state_filter;

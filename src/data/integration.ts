@@ -1,12 +1,19 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
+import { GITHUB_CORE_ISSUES_URL } from "../common/url/github";
+import {
+  createQueryString,
+  type QueryParamConfig,
+} from "../common/url/query-params";
+import { sanitizeHttpUrl } from "../common/url/sanitize-http-url";
 import { debounce } from "../common/util/debounce";
+import type { HomeAssistant } from "../types";
 
 export const integrationsWithPanel = {
   bluetooth: "config/bluetooth",
   dhcp: "config/dhcp",
+  infrared: "config/infrared",
   matter: "config/matter",
   mqtt: "config/mqtt",
   ssdp: "config/ssdp",
@@ -16,6 +23,19 @@ export const integrationsWithPanel = {
   zwave_js: "config/zwave_js/dashboard",
 };
 
+/**
+ * The panel an integration is configured in, if it has one of its own.
+ *
+ * An integration can register a panel at runtime; the built-in ones above are
+ * the fallback for those that do not.
+ */
+export const getConfigPanelPath = (
+  domain: string,
+  panels: HomeAssistant["panels"]
+): string | undefined =>
+  Object.values(panels).find((panel) => panel.config_panel_domain === domain)
+    ?.url_path || integrationsWithPanel[domain];
+
 export type IntegrationType =
   | "device"
   | "helper"
@@ -23,23 +43,36 @@ export type IntegrationType =
   | "service"
   | "hardware"
   | "entity"
-  | "system";
+  | "system"
+  | "virtual";
+
+export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 export interface IntegrationManifest {
   is_built_in: boolean;
   overwrites_built_in?: boolean;
   domain: string;
   name: string;
-  config_flow: boolean;
-  documentation: string;
+  config_flow?: boolean;
+  documentation?: string;
   issue_tracker?: string;
   dependencies?: string[];
   after_dependencies?: string[];
   codeowners?: string[];
   requirements?: string[];
   ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
-  zeroconf?: string[];
-  homekit?: { models: string[] };
+  zeroconf?: (
+    | string
+    | {
+        type: string;
+        macaddress?: string;
+        manufacturer?: string;
+        model?: string;
+        name?: string;
+        properties?: Record<string, string>;
+      }
+  )[];
+  homekit?: { models?: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
   quality_scale?:
@@ -51,8 +84,9 @@ export interface IntegrationManifest {
     | "internal"
     | "legacy"
     | "custom";
-  iot_class:
+  iot_class?:
     | "assumed_state"
+    | "calculated"
     | "cloud_polling"
     | "cloud_push"
     | "local_polling"
@@ -81,12 +115,35 @@ export enum LogSeverity {
 
 export type IntegrationLogPersistance = "none" | "once" | "permanent";
 
+/**
+ * A custom integration supplies its own manifest, so its URLs are untrusted
+ * input. Strip them here, where manifests enter the frontend, so no consumer can
+ * turn one into a link that runs script.
+ */
+const sanitizeManifest = <T extends IntegrationManifest | undefined>(
+  manifest: T
+): T =>
+  manifest
+    ? ({
+        ...manifest,
+        documentation: sanitizeHttpUrl(manifest.documentation),
+        issue_tracker: sanitizeHttpUrl(manifest.issue_tracker),
+      } as T)
+    : manifest;
+
+const integrationIssuesQueryParams = {
+  string: ["q"],
+} as const satisfies QueryParamConfig;
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
 ) =>
-  manifest.issue_tracker ||
-  `https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
+  sanitizeHttpUrl(manifest.issue_tracker) ||
+  `${GITHUB_CORE_ISSUES_URL}?${createQueryString(
+    { q: `is:issue is:open label:"integration: ${domain}"` },
+    integrationIssuesQueryParams
+  )}`;
 
 export const domainToName = (
   localize: LocalizeFunc,
@@ -104,13 +161,36 @@ export const fetchIntegrationManifests = (
   if (integrations) {
     params.integrations = integrations;
   }
-  return hass.callWS<IntegrationManifest[]>(params);
+  return hass
+    .callWS<IntegrationManifest[]>(params)
+    .then((manifests) => manifests.map(sanitizeManifest));
+};
+
+export const fetchIntegrationManifestsCollection = async (
+  connection: Connection,
+  setValue: (value: DomainManifestLookup) => void
+): Promise<() => void> => {
+  const fetched = await connection.sendMessagePromise<IntegrationManifest[]>({
+    type: "manifest/list",
+  });
+  const manifests: DomainManifestLookup = {};
+  for (const manifest of fetched) {
+    manifests[manifest.domain] = sanitizeManifest(manifest);
+  }
+  setValue(manifests);
+  // One-time fetch — nothing to unsubscribe from
+  return () => {
+    // noop
+  };
 };
 
 export const fetchIntegrationManifest = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   integration: string
-) => hass.callWS<IntegrationManifest>({ type: "manifest/get", integration });
+) =>
+  hass
+    .callWS<IntegrationManifest>({ type: "manifest/get", integration })
+    .then(sanitizeManifest);
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });

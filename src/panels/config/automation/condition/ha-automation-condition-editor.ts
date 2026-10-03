@@ -7,12 +7,18 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
-import { expandConditionWithShorthand } from "../../../../data/automation";
+import {
+  CONDITION_ROW_CONFIG_KEYS,
+  expandConditionWithShorthand,
+  pickRowConfig,
+} from "../../../../data/automation";
+import type { ConditionDescription } from "../../../../data/condition";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
+import "./types/ha-automation-condition-platform";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -35,6 +41,8 @@ export default class HaAutomationConditionEditor extends LitElement {
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
+  @property({ attribute: false }) public description?: ConditionDescription;
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
@@ -52,49 +60,58 @@ export default class HaAutomationConditionEditor extends LitElement {
       <div
         class=${classMap({
           "card-content": true,
-          disabled:
-            !this.indent &&
-            (this.disabled ||
-              (this.condition.enabled === false && !this.yamlMode)),
+          disabled: !this.indent && this.disabled,
           yaml: yamlMode,
           indent: this.indent,
           card: !this.inSidebar,
         })}
       >
-        ${yamlMode
-          ? html`
-              ${!this.uiSupported
-                ? html`
-                    <ha-automation-editor-warning
-                      .alertTitle=${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                        { condition: condition.condition }
-                      )}
-                      .localize=${this.hass.localize}
-                    ></ha-automation-editor-warning>
-                  `
-                : nothing}
-              <ha-yaml-editor
-                .hass=${this.hass}
-                .defaultValue=${this.condition}
-                @value-changed=${this._onYamlChange}
-                .readOnly=${this.disabled}
-              ></ha-yaml-editor>
-            `
-          : html`
-              <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(
-                  `ha-automation-condition-${condition.condition}`,
-                  {
-                    hass: this.hass,
-                    condition: condition,
-                    disabled: this.disabled,
-                    optionsInSidebar: this.indent,
-                    narrow: this.narrow,
+        ${
+          yamlMode
+            ? html`
+                ${
+                  !this.uiSupported
+                    ? html`
+                        <ha-automation-editor-warning
+                          .alertTitle=${this.hass.localize(
+                            "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                            { condition: condition.condition }
+                          )}
+                          .localize=${this.hass.localize}
+                        ></ha-automation-editor-warning>
+                      `
+                    : nothing
+                }
+                <ha-yaml-editor
+                  .defaultValue=${this.condition}
+                  @value-changed=${this._onYamlChange}
+                  .readOnly=${this.disabled}
+                ></ha-yaml-editor>
+              `
+            : html`
+                <div @value-changed=${this._onUiChanged}>
+                  ${
+                    this.description
+                      ? html`<ha-automation-condition-platform
+                          .hass=${this.hass}
+                          .condition=${this.condition}
+                          .description=${this.description}
+                          .disabled=${this.disabled}
+                        ></ha-automation-condition-platform>`
+                      : dynamicElement(
+                          `ha-automation-condition-${condition.condition}`,
+                          {
+                            hass: this.hass,
+                            condition: condition,
+                            disabled: this.disabled,
+                            optionsInSidebar: this.indent,
+                            narrow: this.narrow,
+                          }
+                        )
                   }
-                )}
-              </div>
-            `}
+                </div>
+              `
+        }
       </div>
     `;
   }
@@ -112,8 +129,8 @@ export default class HaAutomationConditionEditor extends LitElement {
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...(this.condition.alias ? { alias: this.condition.alias } : {}),
       ...ev.detail.value,
+      ...pickRowConfig(this.condition, CONDITION_ROW_CONFIG_KEYS),
     };
     fireEvent(this, "value-changed", { value });
   }

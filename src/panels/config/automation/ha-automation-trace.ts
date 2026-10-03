@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -7,19 +8,26 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
+import "../../../components/ha-tab-group";
+import "../../../components/ha-tab-group-tab";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
@@ -30,8 +38,15 @@ import type {
   HatScriptGraph,
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
-import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
 import type { AutomationEntity } from "../../../data/automation";
+import {
+  fireRelatedContext,
+  fullEntitiesContext,
+  manifestsContext,
+} from "../../../data/context";
+import type { DomainManifestLookup } from "../../../data/integration";
+import { buildTraceLabels } from "../../../data/trace-labels";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
 import type {
@@ -43,8 +58,15 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
+import "../../../components/ha-trace-picker";
+import "../../../components/ha-split-panel";
+import type { HaSplitPanel } from "../../../components/ha-split-panel";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
+
+const STORAGE_KEY_SPLIT_POSITION = "automation-trace-split-position";
+const DEFAULT_SPLIT_POSITION = 20;
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -60,6 +82,14 @@ export class HaAutomationTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  _manifests?: DomainManifestLookup;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry?: EntityRegistryEntry[];
+
   @state() private _entityId?: string;
 
   @state() private _traces?: AutomationTrace[];
@@ -74,16 +104,25 @@ export class HaAutomationTrace extends LitElement {
 
   @state() private _view: (typeof TABS)[number] | "blueprint" = "details";
 
+  @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
+
   @query("hat-script-graph") private _graph?: HatScriptGraph;
+
+  /**
+   * `hass` is replaced on every state update, so comparing it would rebuild
+   * every label on every state event. The run already happened, so only the
+   * trace and the registries the descriptions read can change the result.
+   */
+  private _traceLabels = memoizeOne(
+    buildTraceLabels,
+    ([trace, , entities, manifests], [pTrace, , pEntities, pManifests]) =>
+      trace === pTrace && entities === pEntities && manifests === pManifests
+  );
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
       : undefined;
-
-    const graph = this._graph;
-    const trackedNodes = graph?.trackedNodes;
-    const renderedNodes = graph?.renderedNodes;
 
     const title = stateObj?.attributes.friendly_name || this._entityId;
 
@@ -97,240 +136,277 @@ export class HaAutomationTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
-        ${!this.narrow && stateObj?.attributes.id
-          ? html`
-              <ha-button
-                appearance="plain"
-                size="small"
-                class="trace-link"
-                href="/config/automation/edit/${encodeURIComponent(
-                  stateObj.attributes.id
-                )}"
-                slot="toolbar-icon"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.trace.edit_automation"
-                )}
-              </ha-button>
-            `
-          : ""}
-        <ha-button-menu slot="toolbar-icon">
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config/automation/dashboard"
+        .header=${title}
+        .scrollable=${this.narrow}
+      >
+        ${
+          !this.narrow && stateObj?.attributes.id
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  class="trace-link"
+                  @click=${this._navigateToAutomation}
+                  slot="toolbar-icon"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.trace.edit_automation"
+                  )}
+                </ha-button>
+              `
+            : nothing
+        }
+        <ha-dropdown
+          slot="toolbar-icon"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._showInfo}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="show_info">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
-          ${stateObj?.attributes.id && this.narrow
-            ? html`
-                <a
-                  class="trace-link"
-                  href="/config/automation/edit/${encodeURIComponent(
-                    stateObj.attributes.id
-                  )}"
-                >
-                  <ha-list-item graphic="icon">
+          ${
+            stateObj?.attributes.id && this.narrow
+              ? html`
+                  <ha-dropdown-item value="edit_automation">
                     ${this.hass.localize(
                       "ui.panel.config.automation.trace.edit_automation"
                     )}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiPencil}
-                    ></ha-svg-icon>
-                  </ha-list-item>
-                </a>
-              `
-            : ""}
+                    <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+                  </ha-dropdown-item>
+                `
+              : nothing
+          }
 
-          <li divider role="separator"></li>
+          <wa-divider></wa-divider>
 
-          <ha-list-item graphic="icon" @click=${this._refreshTraces}>
+          <ha-dropdown-item value="refresh">
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
-            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this._trace}
-            @click=${this._downloadTrace}
-          >
+          <ha-dropdown-item .disabled=${!this._trace} value="download_trace">
             ${this.hass.localize(
               "ui.panel.config.automation.trace.download_trace"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="toolbar">
-          ${this._traces && this._traces.length > 0
-            ? html`
-                <ha-icon-button
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.automation.trace.older_trace"
-                  )}
-                  .path=${computeRTL(this.hass!)
-                    ? mdiRayStartArrow
-                    : mdiRayEndArrow}
-                  .disabled=${this._traces[this._traces.length - 1].run_id ===
-                  this._runId}
-                  @click=${this._pickOlderTrace}
-                ></ha-icon-button>
-                <select .value=${this._runId} @change=${this._pickTrace}>
-                  ${repeat(
-                    this._traces,
-                    (trace) => trace.run_id,
-                    (trace) =>
-                      html`<option value=${trace.run_id}>
-                        ${formatDateTimeWithSeconds(
-                          new Date(trace.timestamp.start),
-                          this.hass.locale,
-                          this.hass.config
-                        )}
-                      </option>`
-                  )}
-                </select>
-                <ha-icon-button
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.automation.trace.newer_trace"
-                  )}
-                  .path=${computeRTL(this.hass!)
-                    ? mdiRayEndArrow
-                    : mdiRayStartArrow}
-                  .disabled=${this._traces[0].run_id === this._runId}
-                  @click=${this._pickNewerTrace}
-                ></ha-icon-button>
-              `
-            : ""}
+          ${
+            this._traces && this._traces.length > 0
+              ? html`
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.older_trace"
+                    )}
+                    .path=${
+                      computeRTL(
+                        this.hass!.language,
+                        this.hass!.translationMetadata.translations
+                      )
+                        ? mdiRayStartArrow
+                        : mdiRayEndArrow
+                    }
+                    .disabled=${
+                      this._traces[this._traces.length - 1].run_id ===
+                      this._runId
+                    }
+                    @click=${this._pickOlderTrace}
+                  ></ha-icon-button>
+                  <ha-trace-picker
+                    .hass=${this.hass}
+                    .traces=${this._traces}
+                    .value=${this._runId}
+                    @value-changed=${this._pickTrace}
+                  ></ha-trace-picker>
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.newer_trace"
+                    )}
+                    .path=${
+                      computeRTL(
+                        this.hass!.language,
+                        this.hass!.translationMetadata.translations
+                      )
+                        ? mdiRayEndArrow
+                        : mdiRayStartArrow
+                    }
+                    .disabled=${this._traces[0].run_id === this._runId}
+                    @click=${this._pickNewerTrace}
+                  ></ha-icon-button>
+                `
+              : ""
+          }
         </div>
 
-        ${this._traces === undefined
-          ? html`<div class="container">
-              ${this.hass!.localize("ui.common.loading")}
-            </div>`
-          : this._traces.length === 0
+        ${
+          this._traces === undefined
             ? html`<div class="container">
-                ${this.hass!.localize(
-                  "ui.panel.config.automation.trace.no_traces_found"
-                )}
+                ${this.hass!.localize("ui.common.loading")}
               </div>`
-            : this._trace === undefined
-              ? ""
-              : html`
-                  <div class="main">
-                    <div class="graph">
-                      <hat-script-graph
-                        .hass=${this.hass}
-                        .trace=${this._trace}
-                        .selected=${this._selected?.path}
-                        @graph-node-selected=${this._pickNode}
-                      ></hat-script-graph>
-                    </div>
-
-                    <div class="info">
-                      <div class="tabs top">
-                        ${TABS.map(
-                          (view) => html`
-                            <button
-                              tabindex="0"
-                              .view=${view}
-                              class=${classMap({
-                                active: this._view === view,
-                              })}
-                              @click=${this._showTab}
-                            >
-                              ${this.hass!.localize(
-                                `ui.panel.config.automation.trace.tabs.${view}`
-                              )}
-                            </button>
-                          `
-                        )}
-                        ${this._trace.blueprint_inputs
-                          ? html`
-                              <button
-                                tabindex="0"
-                                .view=${"blueprint"}
-                                class=${classMap({
-                                  active: this._view === "blueprint",
-                                })}
-                                @click=${this._showTab}
+            : this._traces.length === 0
+              ? html`<div class="container">
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.no_traces_found"
+                  )}
+                </div>`
+              : this._trace === undefined
+                ? ""
+                : html`
+                    <div class="main">
+                      ${
+                        this.narrow
+                          ? this._renderPanes()
+                          : html`
+                              <ha-split-panel
+                                class="split"
+                                .position=${this._splitPosition}
+                                @wa-reposition=${this._splitRepositioned}
                               >
-                                ${this.hass!.localize(
-                                  `ui.panel.config.automation.trace.tabs.blueprint_config`
-                                )}
-                              </button>
+                                ${this._renderPanes()}
+                              </ha-split-panel>
                             `
-                          : ""}
-                      </div>
-                      ${this._selected === undefined ||
-                      this._logbookEntries === undefined ||
-                      trackedNodes === undefined
-                        ? nothing
-                        : this._view === "details"
-                          ? html`
-                              <ha-trace-path-details
-                                .hass=${this.hass}
-                                .narrow=${this.narrow}
-                                .trace=${this._trace}
-                                .selected=${this._selected}
-                                .logbookEntries=${this._logbookEntries}
-                                .trackedNodes=${trackedNodes}
-                                .renderedNodes=${renderedNodes!}
-                              ></ha-trace-path-details>
-                            `
-                          : this._view === "automation_config"
-                            ? html`
-                                <ha-trace-config
-                                  .hass=${this.hass}
-                                  .trace=${this._trace}
-                                ></ha-trace-config>
-                              `
-                            : this._view === "logbook"
-                              ? html`
-                                  <ha-trace-logbook
-                                    .hass=${this.hass}
-                                    .narrow=${this.narrow}
-                                    .trace=${this._trace}
-                                    .logbookEntries=${this._logbookEntries}
-                                  ></ha-trace-logbook>
-                                `
-                              : this._view === "blueprint"
-                                ? html`
-                                    <ha-trace-blueprint-config
-                                      .hass=${this.hass}
-                                      .trace=${this._trace}
-                                    ></ha-trace-blueprint-config>
-                                  `
-                                : html`
-                                    <ha-trace-timeline
-                                      .hass=${this.hass}
-                                      .trace=${this._trace}
-                                      .logbookEntries=${this._logbookEntries}
-                                      .selected=${this._selected}
-                                      @value-changed=${this._timelinePathPicked}
-                                    ></ha-trace-timeline>
-                                  `}
+                      }
                     </div>
-                  </div>
-                `}
+                  `
+        }
       </hass-subpage>
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  private _renderPanes(): TemplateResult {
+    const graph = this._graph;
+    const trackedNodes = graph?.trackedNodes;
+    const renderedNodes = graph?.renderedNodes;
+
+    return html`
+      <div class="graph" slot="start">
+        <hat-script-graph
+          .trace=${this._trace}
+          .selected=${this._selected?.path}
+          .labels=${
+            this._trace
+              ? this._traceLabels(
+                  this._trace,
+                  this.hass,
+                  this._entityRegistry,
+                  this._manifests
+                )
+              : undefined
+          }
+          @graph-node-selected=${this._pickNode}
+        ></hat-script-graph>
+      </div>
+
+      <div class="info" slot="end">
+        <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+          ${TABS.map(
+            (view) => html`
+              <ha-tab-group-tab
+                slot="nav"
+                .active=${this._view === view}
+                .panel=${view}
+              >
+                ${this.hass!.localize(
+                  `ui.panel.config.automation.trace.tabs.${view}`
+                )}
+              </ha-tab-group-tab>
+            `
+          )}
+          ${
+            this._trace!.blueprint_inputs
+              ? html`
+                  <ha-tab-group-tab
+                    slot="nav"
+                    .active=${this._view === "blueprint"}
+                    panel="blueprint"
+                  >
+                    ${this.hass!.localize(
+                      `ui.panel.config.automation.trace.tabs.blueprint_config`
+                    )}
+                  </ha-tab-group-tab>
+                `
+              : ""
+          }
+        </ha-tab-group>
+        ${
+          this._selected === undefined ||
+          this._logbookEntries === undefined ||
+          trackedNodes === undefined
+            ? nothing
+            : this._view === "details"
+              ? html`
+                  <ha-trace-path-details
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .trace=${this._trace}
+                    .selected=${this._selected}
+                    .logbookEntries=${this._logbookEntries}
+                    .trackedNodes=${trackedNodes}
+                    .renderedNodes=${renderedNodes!}
+                  ></ha-trace-path-details>
+                `
+              : this._view === "automation_config"
+                ? html`
+                    <ha-trace-config .trace=${this._trace}></ha-trace-config>
+                  `
+                : this._view === "logbook"
+                  ? html`
+                      <ha-trace-logbook
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .trace=${this._trace}
+                        .logbookEntries=${this._logbookEntries}
+                      ></ha-trace-logbook>
+                    `
+                  : this._view === "blueprint"
+                    ? html`
+                        <ha-trace-blueprint-config
+                          .trace=${this._trace}
+                        ></ha-trace-blueprint-config>
+                      `
+                    : html`
+                        <ha-trace-timeline
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .logbookEntries=${this._logbookEntries}
+                          .selected=${this._selected}
+                          @value-changed=${this._timelinePathPicked}
+                        ></ha-trace-timeline>
+                      `
+        }
+      </div>
+    `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+
+    this.hass.loadBackendTranslation("triggers");
+    this.hass.loadBackendTranslation("conditions");
+
+    const storedPosition = localStorage?.[STORAGE_KEY_SPLIT_POSITION];
+    if (storedPosition) {
+      const parsed = parseFloat(storedPosition);
+      if (!isNaN(parsed) && parsed > 0 && parsed < 100) {
+        this._splitPosition = parsed;
+      }
+    }
 
     if (!this.automationId) {
       return;
@@ -340,7 +416,7 @@ export class HaAutomationTrace extends LitElement {
     this._loadTraces(params.get("run_id") || undefined);
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
     // Only reset if automationId has changed and we had one before.
@@ -362,7 +438,7 @@ export class HaAutomationTrace extends LitElement {
     }
 
     if (
-      changedProps.has("automations") &&
+      (changedProps.has("automationId") || changedProps.has("automations")) &&
       this.automationId &&
       !this._entityId
     ) {
@@ -371,6 +447,31 @@ export class HaAutomationTrace extends LitElement {
       );
       this._entityId = automation?.entity_id;
     }
+
+    if (
+      changedProps.has("automationId") ||
+      changedProps.has("_entityId") ||
+      changedProps.has("_entityRegistry")
+    ) {
+      this._setRelatedContext();
+    }
+  }
+
+  private _setRelatedContext() {
+    const areaId = this._entityId
+      ? this._entityRegistry?.find(
+          (entry) => entry.entity_id === this._entityId
+        )?.area_id
+      : undefined;
+    fireRelatedContext(
+      this,
+      areaId
+        ? {
+            itemType: "area",
+            itemId: areaId,
+          }
+        : undefined
+    );
   }
 
   private _pickOlderTrace() {
@@ -386,13 +487,26 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.target.value;
+    this._runId = ev.detail.value;
     this._selected = undefined;
   }
 
   private _pickNode(ev) {
     this._selected = ev.detail;
   }
+
+  private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
+    this._splitPosition = ev.target.position;
+    this._storeSplitPosition();
+  }
+
+  private _storeSplitPosition = debounce(
+    () => {
+      localStorage[STORAGE_KEY_SPLIT_POSITION] = String(this._splitPosition);
+    },
+    500,
+    false
+  );
 
   private _refreshTraces() {
     this._loadTraces();
@@ -419,11 +533,7 @@ export class HaAutomationTrace extends LitElement {
       if (runId) {
         const params = new URLSearchParams(location.search);
         params.delete("run_id");
-        history.replaceState(
-          null,
-          "",
-          `${location.pathname}?${params.toString()}`
-        );
+        replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
       }
 
       await showAlertDialog(this, {
@@ -446,7 +556,7 @@ export class HaAutomationTrace extends LitElement {
       this.automationId,
       this._runId!
     );
-    this._logbookEntries = isComponentLoaded(this.hass, "logbook")
+    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -458,21 +568,20 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _downloadTrace() {
-    const aEl = document.createElement("a");
-    aEl.download = `trace ${this._entityId} ${
-      this._trace!.timestamp.start
-    }.json`;
-    aEl.href = `data:application/json;charset=utf-8,${encodeURI(
-      JSON.stringify(
-        {
-          trace: this._trace,
-          logbookEntries: this._logbookEntries,
-        },
-        undefined,
-        2
-      )
-    )}`;
-    aEl.click();
+    const json = JSON.stringify(
+      {
+        trace: this._trace,
+        logbookEntries: this._logbookEntries,
+      },
+      undefined,
+      2
+    );
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    fileDownload(
+      url,
+      `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
+    );
   }
 
   private _importTrace() {
@@ -501,8 +610,8 @@ export class HaAutomationTrace extends LitElement {
     this._logbookEntries = traceInfo.logbookEntries;
   }
 
-  private _showTab(ev: Event) {
-    this._view = (ev.target as any).view;
+  private _handleTabChanged(ev: CustomEvent) {
+    this._view = ev.detail.name as typeof this._view;
   }
 
   private _timelinePathPicked(ev: CustomEvent) {
@@ -520,10 +629,40 @@ export class HaAutomationTrace extends LitElement {
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
   }
 
+  private _navigateToAutomation() {
+    if (this._entityId && this.hass.states[this._entityId]) {
+      navigate(
+        `/config/automation/edit/${encodeURIComponent(this.hass.states[this._entityId].attributes.id)}`
+      );
+    }
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "show_info":
+        this._showInfo();
+        break;
+      case "refresh":
+        this._refreshTraces();
+        break;
+      case "download_trace":
+        this._downloadTrace();
+        break;
+      case "edit_automation":
+        this._navigateToAutomation();
+        break;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      traceTabStyles,
       css`
         .toolbar {
           display: flex;
@@ -540,35 +679,74 @@ export class HaAutomationTrace extends LitElement {
         }
 
         .main {
-          min-height: calc(100% - var(--header-height));
+          flex: 1;
+          min-height: 0;
           display: flex;
+          overflow: hidden;
           background-color: var(--card-background-color);
           direction: ltr;
         }
 
         :host([narrow]) .main {
+          flex: none;
           height: auto;
           flex-direction: column;
+          overflow: visible;
         }
 
         .container {
           padding: 16px;
         }
 
+        ha-split-panel.split {
+          flex: 1;
+          min-height: 0;
+          min-width: 0;
+          --ha-split-panel-min: 10%;
+          --ha-split-panel-max: 80%;
+          --ha-split-panel-divider-hit-area: var(--ha-space-4);
+        }
+
         .graph {
-          border-right: 1px solid var(--divider-color);
-          overflow-x: auto;
-          max-width: 50%;
-          padding-bottom: 16px;
+          background-color: var(--primary-background-color);
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          min-width: 0;
+          min-height: 0;
+        }
+        hat-script-graph {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
-          justify-content: center;
-          display: flex;
+          overflow: visible;
+          height: auto;
+        }
+        :host([narrow]) hat-script-graph {
+          overflow: visible;
+          flex: none;
         }
         .info {
           flex: 1;
+          min-width: 0;
+          min-height: 0;
+          overflow-y: auto;
           background-color: var(--card-background-color);
+        }
+        ha-tab-group {
+          background-color: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+          direction: var(--direction);
+        }
+        ha-tab-group-tab::part(base) {
+          padding: 2px 16px;
+        }
+        :host([narrow]) .info {
+          overflow: visible;
         }
         .trace-link {
           text-decoration: none;
@@ -576,6 +754,10 @@ export class HaAutomationTrace extends LitElement {
 
         ha-trace-logbook {
           direction: var(--direction);
+        }
+        ha-trace-picker {
+          flex-grow: 1;
+          max-width: 500px;
         }
       `,
     ];

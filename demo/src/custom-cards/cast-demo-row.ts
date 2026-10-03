@@ -1,4 +1,6 @@
+/// <reference types="chromecast-caf-sender" />
 import { mdiTelevision } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { CastManager } from "../../../src/cast/cast_manager";
@@ -36,32 +38,37 @@ class CastDemoRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     import("../../../src/cast/cast_manager").then(({ getCastManager }) =>
-      getCastManager().then((mgr) => {
-        this._castManager = mgr;
-        mgr.addEventListener("state-changed", () => {
-          this.requestUpdate();
-        });
-        mgr.castContext.addEventListener(
-          cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
-          (ev) => {
-            // On Android, opening a new session always results in SESSION_RESUMED.
-            // So treat both as the same.
-            if (
-              ev.sessionState === "SESSION_STARTED" ||
-              ev.sessionState === "SESSION_RESUMED"
-            ) {
-              castSendShowDemo(mgr);
+      getCastManager().then(
+        (mgr) => {
+          this._castManager = mgr;
+          mgr.addEventListener("state-changed", () => {
+            this.requestUpdate();
+          });
+          mgr.castContext.addEventListener(
+            cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+            (ev) => {
+              // On Android, opening a new session always results in SESSION_RESUMED.
+              // So treat both as the same.
+              if (
+                ev.sessionState === "SESSION_STARTED" ||
+                ev.sessionState === "SESSION_RESUMED"
+              ) {
+                castSendShowDemo(mgr);
+              }
             }
-          }
-        );
-      })
+          );
+        },
+        () => {
+          this._castManager = null;
+        }
+      )
     );
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     this.style.display = this._castManager ? "" : "none";
   }

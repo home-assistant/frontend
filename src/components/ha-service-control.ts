@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type {
   HassService,
   HassServices,
@@ -9,7 +9,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
-import { fireEvent } from "../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+  type HASSDomEvent,
+} from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -31,9 +35,13 @@ import {
 } from "../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
+import { getSelectorFallbackValue } from "./ha-form/get-selector-fallback-value";
 import "./ha-checkbox";
+import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-icon-button";
+import "./ha-markdown";
 import "./ha-selector/ha-selector";
+import type { HaSelector } from "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-service-section-icon";
 import "./ha-settings-row";
@@ -54,6 +62,22 @@ const showOptionalToggle = (field) =>
   field.selector &&
   !field.required &&
   !("boolean" in field.selector && field.default);
+
+const FULL_WIDTH_SELECTOR_TYPES = new Set([
+  "action",
+  "area",
+  "device",
+  "entity",
+  "floor",
+  "label",
+  "target",
+]);
+
+const isFullWidthSelector = (selector?: Selector): boolean =>
+  !!selector &&
+  Object.keys(selector).some((selectorType) =>
+    FULL_WIDTH_SELECTOR_TYPES.has(selectorType)
+  );
 
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
@@ -85,9 +109,6 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "show-advanced", type: Boolean })
-  public showAdvanced = false;
-
   @property({ attribute: "show-service-id", type: Boolean })
   public showServiceId = false;
 
@@ -116,8 +137,7 @@ export class HaServiceControl extends LitElement {
       return;
     }
     const oldValue = changedProperties.get("value") as
-      | undefined
-      | this["value"];
+      undefined | this["value"];
 
     if (oldValue?.action !== this.value?.action) {
       this._checkedKeys = new Set();
@@ -286,6 +306,10 @@ export class HaServiceControl extends LitElement {
     ) {
       return null;
     }
+    const isPrimaryEntity = (entityId: string) => {
+      const entity = this.hass.entities[entityId];
+      return !entity?.entity_category && !entity?.hidden;
+    };
     const targetEntities =
       ensureArray(
         value?.target?.entity_id || value?.data?.entity_id
@@ -314,11 +338,7 @@ export class HaServiceControl extends LitElement {
           targetSelector
         );
         targetDevices.push(...expanded.devices);
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(primaryEntities);
         targetAreas.push(...expanded.areas);
       });
@@ -343,11 +363,7 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
         targetDevices.push(...expanded.devices);
       });
@@ -360,11 +376,7 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
       });
     }
@@ -449,7 +461,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.flatFields.some((field) => showOptionalToggle(field))
+      serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
     const targetEntities = this._getTargetedEntities(
@@ -464,144 +476,158 @@ export class HaServiceControl extends LitElement {
       ? computeObjectId(this._value.action)
       : undefined;
 
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        : undefined;
+
     const description =
       (serviceName &&
         this.hass.localize(
-          `component.${domain}.services.${serviceName}.description`
+          `component.${domain}.services.${serviceName}.description`,
+          descriptionPlaceholders
         )) ||
       serviceData?.description;
 
-    return html`${this.hidePicker
-      ? nothing
-      : html`<ha-service-picker
-          .hass=${this.hass}
-          .value=${this._value?.action}
-          .disabled=${this.disabled}
-          @value-changed=${this._serviceChanged}
-          .showServiceId=${this.showServiceId}
-        ></ha-service-picker>`}
-    ${this.hideDescription
-      ? nothing
-      : html`
-          <div class="description">
-            ${description ? html`<p>${description}</p>` : ""}
-            ${this._manifest
-              ? html` <a
-                  href=${this._manifest.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/integrations/${this._manifest.domain}`
-                      )
-                    : this._manifest.documentation}
-                  title=${this.hass.localize(
-                    "ui.components.service-control.integration_doc"
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ha-icon-button
-                    .path=${mdiHelpCircle}
-                    class="help-icon"
-                  ></ha-icon-button>
-                </a>`
-              : nothing}
-          </div>
-        `}
-    ${serviceData && "target" in serviceData
-      ? html`<ha-settings-row .narrow=${this.narrow}>
-          ${hasOptional
-            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-            : ""}
-          <span slot="heading"
-            >${this.hass.localize("ui.components.service-control.target")}</span
-          >
-          <span slot="description"
-            >${this.hass.localize(
-              "ui.components.service-control.target_secondary"
-            )}</span
-          ><ha-selector
+    const documentationLink =
+      this._manifest?.is_built_in && this._value?.action
+        ? documentationUrl(this.hass, `/actions/${this._value.action}`)
+        : this._manifest?.documentation;
+
+    const targetSelector =
+      serviceData && "target" in serviceData
+        ? this._targetSelector(
+            serviceData.target as TargetSelector,
+            this._value?.target
+          )
+        : undefined;
+
+    return html`${
+      this.hidePicker
+        ? nothing
+        : html`<ha-service-picker
             .hass=${this.hass}
-            .selector=${this._targetSelector(
-              serviceData.target as TargetSelector,
-              this._value?.target
-            )}
+            .value=${this._value?.action}
+            .disabled=${this.disabled}
+            @value-changed=${this._serviceChanged}
+            .showServiceId=${this.showServiceId}
+          ></ha-service-picker>`
+    }
+    ${
+      this.hideDescription
+        ? nothing
+        : html`
+            <div class="description">
+              ${description ? html`<p>${description}</p>` : ""}
+              ${
+                documentationLink
+                  ? html` <a
+                      href=${documentationLink}
+                      title=${this.hass.localize(
+                        "ui.components.service-control.integration_doc"
+                      )}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ha-icon-button
+                        .path=${mdiHelpCircleOutline}
+                        class="help-icon"
+                      ></ha-icon-button>
+                    </a>`
+                  : nothing
+              }
+            </div>
+          `
+    }
+    ${
+      serviceData && "target" in serviceData
+        ? html`<ha-selector
+            class="target-selector"
+            .hass=${this.hass}
+            .selector=${targetSelector}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}
             .value=${this._value?.target}
-          ></ha-selector
-        ></ha-settings-row>`
-      : entityId
-        ? html`<ha-entity-picker
-            .hass=${this.hass}
-            .disabled=${this.disabled}
-            .value=${this._value?.data?.entity_id}
+          ></ha-selector>`
+        : entityId
+          ? html`<ha-entity-picker
+              .disabled=${this.disabled}
+              .value=${this._value?.data?.entity_id}
+              .label=${
+                this.hass.localize(
+                  `component.${domain}.services.${serviceName}.fields.entity_id.description`,
+                  descriptionPlaceholders
+                ) || entityId.description
+              }
+              @value-changed=${this._entityPicked}
+              allow-custom-entity
+            ></ha-entity-picker>`
+          : ""
+    }
+    ${
+      shouldRenderServiceDataYaml
+        ? html`<ha-yaml-editor
             .label=${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.entity_id.description`
-            ) || entityId.description}
-            @value-changed=${this._entityPicked}
-            allow-custom-entity
-          ></ha-entity-picker>`
-        : ""}
-    ${shouldRenderServiceDataYaml
-      ? html`<ha-yaml-editor
-          .hass=${this.hass}
-          .label=${this.hass.localize(
-            "ui.components.service-control.action_data"
-          )}
-          .name=${"data"}
-          .readOnly=${this.disabled}
-          .defaultValue=${this._value?.data}
-          @value-changed=${this._dataChanged}
-        ></ha-yaml-editor>`
-      : serviceData?.fields.map((dataField) => {
-          if (!dataField.fields) {
-            return this._renderField(
-              dataField,
-              hasOptional,
-              domain,
-              serviceName,
-              targetEntities
+              "ui.components.service-control.action_data"
+            )}
+            .name=${"data"}
+            .readOnly=${this.disabled}
+            .defaultValue=${this._value?.data}
+            @value-changed=${this._dataChanged}
+          ></ha-yaml-editor>`
+        : serviceData?.fields.map((dataField) => {
+            if (!dataField.fields) {
+              return this._renderField(
+                dataField,
+                hasOptional,
+                domain,
+                serviceName,
+                targetEntities
+              );
+            }
+
+            const fields = Object.entries(dataField.fields).map(
+              ([key, field]) => ({ key, ...field })
             );
-          }
 
-          const fields = Object.entries(dataField.fields).map(
-            ([key, field]) => ({ key, ...field })
-          );
-
-          return fields.length &&
-            this._hasFilteredFields(fields, targetEntities)
-            ? html`<ha-expansion-panel
-                left-chevron
-                .expanded=${!dataField.collapsed}
-                .header=${this.hass.localize(
-                  `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
-                ) ||
-                dataField.name ||
-                dataField.key}
-                .secondary=${this._getSectionDescription(
-                  dataField,
-                  domain,
-                  serviceName
-                )}
-              >
-                <ha-service-section-icon
-                  slot="icons"
-                  .hass=${this.hass}
-                  .service=${this._value!.action}
-                  .section=${dataField.key}
-                ></ha-service-section-icon>
-                ${Object.entries(dataField.fields).map(([key, field]) =>
-                  this._renderField(
-                    { key, ...field },
-                    hasOptional,
+            return fields.length &&
+              this._hasFilteredFields(fields, targetEntities)
+              ? html`<ha-expansion-panel
+                  left-chevron
+                  .expanded=${!dataField.collapsed}
+                  .header=${
+                    this.hass.localize(
+                      `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`,
+                      descriptionPlaceholders
+                    ) ||
+                    dataField.name ||
+                    dataField.key
+                  }
+                  .secondary=${this._getSectionDescription(
+                    dataField,
                     domain,
-                    serviceName,
-                    targetEntities
-                  )
-                )}
-              </ha-expansion-panel>`
-            : nothing;
-        })} `;
+                    serviceName
+                  )}
+                >
+                  <ha-service-section-icon
+                    slot="icons"
+                    .hass=${this.hass}
+                    .service=${this._value!.action}
+                    .section=${dataField.key}
+                  ></ha-service-section-icon>
+                  ${Object.entries(dataField.fields).map(([key, field]) =>
+                    this._renderField(
+                      { key, ...field },
+                      hasOptional,
+                      domain,
+                      serviceName,
+                      targetEntities
+                    )
+                  )}
+                </ha-expansion-panel>`
+              : nothing;
+          })
+    } `;
   }
 
   private _getSectionDescription(
@@ -610,7 +636,10 @@ export class HaServiceControl extends LitElement {
     serviceName: string | undefined
   ) {
     return this.hass!.localize(
-      `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`
+      `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`,
+      domain && serviceName
+        ? this.hass.services[domain][serviceName].description_placeholders
+        : undefined
     );
   }
 
@@ -657,53 +686,79 @@ export class HaServiceControl extends LitElement {
     }
 
     const showOptional = showOptionalToggle(dataField);
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain][serviceName].description_placeholders
+        : undefined;
 
-    return dataField.selector &&
-      (!dataField.advanced ||
-        this.showAdvanced ||
-        (this._value?.data && this._value.data[dataField.key] !== undefined))
-      ? html`<ha-settings-row .narrow=${this.narrow}>
-          ${!showOptional
-            ? hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : ""
-            : html`<ha-checkbox
-                .key=${dataField.key}
-                .checked=${this._checkedKeys.has(dataField.key) ||
-                (this._value?.data &&
-                  this._value.data[dataField.key] !== undefined)}
-                .disabled=${this.disabled}
-                @change=${this._checkboxChanged}
-                slot="prefix"
-              ></ha-checkbox>`}
-          <span slot="heading"
-            >${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
-            ) ||
-            dataField.name ||
-            dataField.key}</span
+    return dataField.selector
+      ? html`<ha-settings-row
+          .narrow=${this.narrow || isFullWidthSelector(selector)}
+        >
+          ${
+            !showOptional
+              ? hasOptional
+                ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+                : ""
+              : html`<ha-checkbox
+                  .key=${dataField.key}
+                  .checked=${
+                    this._checkedKeys.has(dataField.key) ||
+                    (!!this._value?.data &&
+                      this._value.data[dataField.key] !== undefined)
+                  }
+                  .disabled=${this.disabled}
+                  @change=${this._checkboxChanged}
+                  slot="prefix"
+                ></ha-checkbox>`
+          }
+          <span
+            slot="heading"
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
+            >${
+              this.hass.localize(
+                `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
+                descriptionPlaceholders
+              ) ||
+              dataField.name ||
+              dataField.key
+            }</span
           >
-          <span slot="description"
-            >${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
-            ) || dataField?.description}</span
-          >
+          <span
+            slot="description"
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
+            ><ha-markdown
+              breaks
+              allow-svg
+              .content=${
+                this.hass.localize(
+                  `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`,
+                  descriptionPlaceholders
+                ) || dataField?.description
+              }
+            ></ha-markdown>
+          </span>
           <ha-selector
             .context=${this._selectorContext(targetEntities)}
-            .disabled=${this.disabled ||
-            (showOptional &&
-              !this._checkedKeys.has(dataField.key) &&
-              (!this._value?.data ||
-                this._value.data[dataField.key] === undefined))}
+            .disabled=${
+              this.disabled ||
+              (showOptional &&
+                !this._checkedKeys.has(dataField.key) &&
+                (!this._value?.data ||
+                  this._value.data[dataField.key] === undefined))
+            }
             .hass=${this.hass}
             .selector=${selector}
             .key=${dataField.key}
             @value-changed=${this._serviceDataChanged}
-            .value=${this._value?.data
-              ? this._value.data[dataField.key]
-              : undefined}
+            .value=${
+              this._value?.data ? this._value.data[dataField.key] : undefined
+            }
             .placeholder=${dataField.default}
             .localizeValue=${this._localizeValueCallback}
+            .required=${dataField.required}
           ></ha-selector>
         </ha-settings-row>`
       : "";
@@ -722,7 +777,16 @@ export class HaServiceControl extends LitElement {
     );
   };
 
-  private _checkboxChanged(ev) {
+  private _toggleCheckbox(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
+  }
+
+  private _checkboxChanged(
+    ev: HASSDomCurrentTargetEvent<HaCheckbox & { key: string }>
+  ) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
     let data;
@@ -736,20 +800,8 @@ export class HaServiceControl extends LitElement {
 
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
@@ -815,7 +867,7 @@ export class HaServiceControl extends LitElement {
         if (targetDevices.length) {
           targetDevices = targetDevices.filter((device) =>
             deviceMeetsTargetSelector(
-              this.hass,
+              this.hass.states,
               Object.values(this.hass.entities),
               this.hass.devices[device],
               targetSelector
@@ -824,7 +876,13 @@ export class HaServiceControl extends LitElement {
         }
         if (targetEntities.length) {
           targetEntities = targetEntities.filter((entity) =>
-            entityMeetsTargetSelector(this.hass.states[entity], targetSelector)
+            entityMeetsTargetSelector(
+              this.hass.states[entity],
+              targetSelector,
+              undefined,
+              this.hass.entities,
+              this.hass.devices
+            )
           );
         }
         target = {
@@ -845,7 +903,7 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _entityPicked(ev: CustomEvent) {
+  private _entityPicked(ev: HASSDomEvent<{ value: string | undefined }>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (this._value?.data?.entity_id === newValue) {
@@ -866,7 +924,12 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _targetChanged(ev: CustomEvent) {
+  private _targetChanged(
+    ev: HASSDomEvent<{
+      value: HassServiceTarget | undefined;
+      isValid?: boolean;
+    }>
+  ) {
     ev.stopPropagation();
     if (ev.detail.isValid === false) {
       // Don't clear an object selector that returns invalid YAML
@@ -888,13 +951,16 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _serviceDataChanged(ev: CustomEvent) {
+  private _serviceDataChanged(
+    ev: HASSDomEvent<{ value: unknown; isValid?: boolean }> &
+      HASSDomCurrentTargetEvent<HaSelector & { key: string }>
+  ) {
     ev.stopPropagation();
     if (ev.detail.isValid === false) {
       // Don't clear an object selector that returns invalid YAML
       return;
     }
-    const key = (ev.currentTarget as any).key;
+    const key = ev.currentTarget.key;
     const value = ev.detail.value;
     if (
       this._value?.data?.[key] === value ||
@@ -909,7 +975,9 @@ export class HaServiceControl extends LitElement {
     if (
       value === "" ||
       value === undefined ||
-      (typeof value === "object" && !Object.keys(value).length)
+      (value !== null &&
+        typeof value === "object" &&
+        !Object.keys(value).length)
     ) {
       delete data[key];
       delete this._stickySelector[key];
@@ -923,7 +991,12 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _dataChanged(ev: CustomEvent) {
+  private _dataChanged(
+    ev: HASSDomEvent<{
+      value: NonNullable<HaServiceControl["value"]>["data"];
+      isValid?: boolean;
+    }>
+  ) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
       return;
@@ -947,14 +1020,15 @@ export class HaServiceControl extends LitElement {
 
   static styles = css`
     ha-settings-row {
-      padding: var(--service-control-padding, 0 16px);
+      padding: var(--service-control-padding, 0 var(--ha-space-4));
     }
     ha-settings-row[narrow] {
-      padding-bottom: 8px;
+      padding-bottom: var(--ha-space-2);
     }
     ha-settings-row {
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
+      --ha-entities-picker-entity-min-width: 0;
       border-top: var(
         --service-control-items-border-top,
         1px solid var(--divider-color)
@@ -964,25 +1038,31 @@ export class HaServiceControl extends LitElement {
     ha-entity-picker,
     ha-yaml-editor {
       display: block;
-      margin: var(--service-control-padding, 0 16px);
+      margin: var(--service-control-padding, 0 var(--ha-space-4));
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
-      padding: 16px 0;
+      padding: var(--ha-space-4) 0;
     }
     p {
-      margin: var(--service-control-padding, 0 16px);
-      padding: 16px 0;
+      margin: var(--service-control-padding, 0 var(--ha-space-4));
+      padding: var(--ha-space-4) 0;
     }
     :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {
-      width: 32px;
+      width: var(--ha-space-8);
     }
-    ha-checkbox {
-      margin-left: -16px;
-      margin-inline-start: -16px;
-      margin-inline-end: initial;
+    .clickable {
+      cursor: pointer;
     }
     .help-icon {
       color: var(--secondary-text-color);
@@ -1000,7 +1080,7 @@ export class HaServiceControl extends LitElement {
     }
     ha-expansion-panel {
       --ha-card-border-radius: var(--ha-border-radius-square);
-      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-summary-padding: 0 var(--ha-space-4);
       --expansion-panel-content-padding: 0;
     }
   `;

@@ -4,7 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -12,6 +13,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import { extractApiErrorMessage } from "../../../../data/hassio/common";
 import { changeMountOptions } from "../../../../data/supervisor/mounts";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalBackupLocationDialogParams } from "./show-dialog-local-backup-location";
@@ -24,8 +26,14 @@ const SCHEMA = [
   },
 ] as const satisfies HaFormSchema[];
 
+interface LocalBackupLocationFormState {
+  default_backup_mount: string | null | undefined;
+}
+
 @customElement("dialog-local-backup-location")
-class LocalBackupLocationDialog extends LitElement {
+class LocalBackupLocationDialog extends DirtyStateProviderMixin<LocalBackupLocationFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _dialogParams?: LocalBackupLocationDialogParams;
@@ -36,13 +44,24 @@ class LocalBackupLocationDialog extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _open = false;
+
   public async showDialog(
     dialogParams: LocalBackupLocationDialogParams
   ): Promise<void> {
     this._dialogParams = dialogParams;
+    this._open = true;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { default_backup_mount: undefined }
+    );
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._data = undefined;
     this._error = undefined;
     this._waiting = undefined;
@@ -56,20 +75,18 @@ class LocalBackupLocationDialog extends LitElement {
     }
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.panel.config.backup.dialogs.local_backup_location.title`
-          )
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          `ui.panel.config.backup.dialogs.local_backup_location.title`
         )}
-        @closed=${this.closeDialog}
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
       >
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
 
         <p>
           ${this.hass.localize(
@@ -77,33 +94,34 @@ class LocalBackupLocationDialog extends LitElement {
           )}
         </p>
         <ha-form
+          autofocus
           .hass=${this.hass}
           .data=${this._data}
           .schema=${SCHEMA}
           .computeLabel=${this._computeLabelCallback}
           @value-changed=${this._valueChanged}
-          dialogInitialFocus
         ></ha-form>
         <ha-alert alert-type="info">
           ${this.hass.localize(
             `ui.panel.config.backup.dialogs.local_backup_location.note`
           )}
         </ha-alert>
-        <ha-button
-          slot="secondaryAction"
-          appearance="plain"
-          @click=${this.closeDialog}
-          dialogInitialFocus
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          .disabled=${this._waiting || !this._data}
-          slot="primaryAction"
-          @click=${this._changeMount}
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            .disabled=${this._waiting || !this.isDirtyState}
+            slot="primaryAction"
+            @click=${this._changeMount}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -120,6 +138,9 @@ class LocalBackupLocationDialog extends LitElement {
     this._data = {
       default_backup_mount: newLocation === "/backup" ? null : newLocation,
     };
+    this._updateDirtyState({
+      default_backup_mount: this._data.default_backup_mount,
+    });
   }
 
   private async _changeMount() {
@@ -135,6 +156,7 @@ class LocalBackupLocationDialog extends LitElement {
       this._waiting = false;
       return;
     }
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
@@ -143,9 +165,6 @@ class LocalBackupLocationDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 500px;
-        }
         ha-form {
           display: block;
           margin-bottom: 16px;

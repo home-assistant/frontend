@@ -4,9 +4,14 @@ import {
   STATE_STARTING,
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { mainWindow } from "../common/dom/get_main_window";
+import { navigate } from "../common/navigate";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
+import { promiseTimeout } from "../common/util/promise-timeout";
+import { narrowViewportContext } from "../data/context";
 import { getDefaultPanel } from "../data/panel";
 import type { CustomPanelInfo } from "../data/panel_custom";
 import type { HomeAssistant, Panels } from "../types";
@@ -14,34 +19,79 @@ import { removeLaunchScreen } from "../util/launch-screen";
 import type { RouteOptions, RouterOptions } from "./hass-router-page";
 import { HassRouterPage } from "./hass-router-page";
 
-const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
+const CACHE_URL_PATHS = ["lovelace", "home", "config"];
+const PANEL_READY_TIMEOUT = 2000;
+const DASHBOARD_READY_TIMEOUT = 5000;
 const COMPONENTS = {
-  energy: () => import("../panels/energy/ha-panel-energy"),
-  calendar: () => import("../panels/calendar/ha-panel-calendar"),
-  config: () => import("../panels/config/ha-panel-config"),
-  custom: () => import("../panels/custom/ha-panel-custom"),
-  "developer-tools": () =>
-    import("../panels/developer-tools/ha-panel-developer-tools"),
-  lovelace: () => import("../panels/lovelace/ha-panel-lovelace"),
-  history: () => import("../panels/history/ha-panel-history"),
-  iframe: () => import("../panels/iframe/ha-panel-iframe"),
-  logbook: () => import("../panels/logbook/ha-panel-logbook"),
-  map: () => import("../panels/map/ha-panel-map"),
-  my: () => import("../panels/my/ha-panel-my"),
-  profile: () => import("../panels/profile/ha-panel-profile"),
-  todo: () => import("../panels/todo/ha-panel-todo"),
-  "media-browser": () =>
-    import("../panels/media-browser/ha-panel-media-browser"),
-  light: () => import("../panels/light/ha-panel-light"),
-  security: () => import("../panels/security/ha-panel-security"),
-  climate: () => import("../panels/climate/ha-panel-climate"),
-};
+  app: { load: () => import("../panels/app/ha-panel-app") },
+  energy: {
+    load: () => import("../panels/energy/ha-panel-energy"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  calendar: {
+    load: () => import("../panels/calendar/ha-panel-calendar"),
+    waitForReady: true,
+  },
+  config: { load: () => import("../panels/config/ha-panel-config") },
+  custom: { load: () => import("../panels/custom/ha-panel-custom") },
+  lovelace: {
+    load: () => import("../panels/lovelace/ha-panel-lovelace"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  history: { load: () => import("../panels/history/ha-panel-history") },
+  iframe: { load: () => import("../panels/iframe/ha-panel-iframe") },
+  logbook: { load: () => import("../panels/logbook/ha-panel-logbook") },
+  map: { load: () => import("../panels/map/ha-panel-map") },
+  my: { load: () => import("../panels/my/ha-panel-my") },
+  profile: { load: () => import("../panels/profile/ha-panel-profile") },
+  marketplace: {
+    load: () => import("../panels/marketplace/ha-panel-marketplace"),
+  },
+  todo: { load: () => import("../panels/todo/ha-panel-todo") },
+  "media-browser": {
+    load: () => import("../panels/media-browser/ha-panel-media-browser"),
+    waitForReady: true,
+  },
+  light: {
+    load: () => import("../panels/light/ha-panel-light"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  security: {
+    load: () => import("../panels/security/ha-panel-security"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  climate: {
+    load: () => import("../panels/climate/ha-panel-climate"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  maintenance: {
+    load: () => import("../panels/maintenance/ha-panel-maintenance"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  home: {
+    load: () => import("../panels/home/ha-panel-home"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  notfound: { load: () => import("../panels/notfound/ha-panel-notfound") },
+} satisfies Record<
+  string,
+  Pick<RouteOptions, "load" | "waitForReady"> & { readyTimeout?: number }
+>;
 
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @state()
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow = false;
 
   private _waitForStart = false;
 
@@ -51,7 +101,7 @@ class PartialPanelResolver extends HassRouterPage {
 
   private _hiddenTimeout?: number;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     // Attach listeners for visibility
@@ -63,7 +113,7 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {
@@ -90,7 +140,7 @@ class PartialPanelResolver extends HassRouterPage {
     const el = super.createLoadingScreen();
     el.rootnav = true;
     el.hass = this.hass;
-    el.narrow = this.narrow;
+    el.narrow = this._narrow;
     return el;
   }
 
@@ -98,7 +148,7 @@ class PartialPanelResolver extends HassRouterPage {
     const hass = this.hass;
 
     el.hass = hass;
-    el.narrow = this.narrow;
+    el.narrow = this._narrow;
     el.route = this.routeTail;
     el.panel = hass.panels[this._currentPage];
   }
@@ -118,18 +168,31 @@ class PartialPanelResolver extends HassRouterPage {
   private _getRoutes(panels: Panels): RouterOptions {
     const routes: RouterOptions["routes"] = {};
     Object.values(panels).forEach((panel) => {
+      const component = COMPONENTS[panel.component_name];
       const data: RouteOptions = {
         tag: `ha-panel-${panel.component_name}`,
         cache: CACHE_URL_PATHS.includes(panel.url_path),
+        ...(component ?? {}),
       };
-      if (panel.component_name in COMPONENTS) {
-        data.load = COMPONENTS[panel.component_name];
-      }
       routes[panel.url_path] = data;
     });
 
+    // The Marketplace replaced HACS, links in dashboards still point at /hacs.
+    // No route alias for it: the router resolves those before beforeRender.
+    const replacesHacs = Boolean(routes.marketplace && !routes.hacs);
+
     return {
       beforeRender: (page) => {
+        // Rendered right away, and moved to where the Marketplace loads its
+        // translations for. The rest of the path and the query go along.
+        if (page === "hacs" && replacesHacs) {
+          const { pathname, search, hash } = mainWindow.location;
+          navigate(
+            `${pathname.replace(/^\/hacs/, "/marketplace")}${search}${hash}`,
+            { replace: true }
+          );
+          return undefined;
+        }
         if (!page || !routes[page]) {
           return getDefaultPanel(this.hass).url_path;
         }
@@ -154,6 +217,7 @@ class PartialPanelResolver extends HassRouterPage {
         // iFrames will lose their state when disconnected
         // Do not disconnect any iframe panel
         curPanel.component_name !== "iframe" &&
+        curPanel.component_name !== "app" &&
         // Do not disconnect any custom panel that embeds into iframe (ie hassio)
         (curPanel.component_name !== "custom" ||
           !(curPanel as CustomPanelInfo).config._panel_custom.embed_iframe)
@@ -212,8 +276,27 @@ class PartialPanelResolver extends HassRouterPage {
       )
     ) {
       await this.rebuild();
-      await this.pageRendered;
-      removeLaunchScreen();
+      // hass.panels can change again while rebuild() is in flight (e.g.
+      // multiple integrations/resources updating panels around startup), so
+      // the panel we were about to show may no longer exist. willUpdate will
+      // re-run _updateRoutes for the newer panels, so just bail out here.
+      if (!this.hass.panels[this._currentPage]) {
+        return;
+      }
+      const component =
+        COMPONENTS[this.hass.panels[this._currentPage].component_name];
+      await promiseTimeout(
+        component?.readyTimeout ?? PANEL_READY_TIMEOUT,
+        this.pageRendered
+      ).catch(() => undefined);
+      // Only fire frontend/loaded when this call actually removed the launch
+      // screen, so later panel updates do not fire it again. Native apps remove
+      // it instantly because their own splash screen is still visible.
+      if (
+        removeLaunchScreen(!!this.hass.auth?.external?.config.hasSplashscreen)
+      ) {
+        this.hass.auth?.external?.fireMessage({ type: "frontend/loaded" });
+      }
     }
   }
 }

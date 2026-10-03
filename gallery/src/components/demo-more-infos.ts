@@ -1,6 +1,5 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import type { HomeAssistant } from "../../../src/types";
@@ -20,9 +19,6 @@ class DemoMoreInfos extends LitElement {
       <ha-demo-options>
         <ha-formfield label="Show config">
           <ha-switch @change=${this._showConfigToggled}> </ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Dark theme">
-          <ha-switch @change=${this._darkThemeToggled}> </ha-switch>
         </ha-formfield>
       </ha-demo-options>
       <div id="container">
@@ -51,32 +47,15 @@ class DemoMoreInfos extends LitElement {
       justify-content: center;
     }
     demo-more-info {
-      margin: 16px 16px 32px;
+      margin: var(--ha-space-4) var(--ha-space-4) var(--ha-space-8);
     }
     ha-formfield {
-      margin-right: 16px;
+      margin-right: var(--ha-space-4);
     }
   `;
 
   private _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
-  }
-
-  private _darkThemeToggled(ev) {
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector("#container"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: false,
-        theme: "default",
-      },
-      "default",
-      {
-        dark: ev.target.checked,
-      }
-    );
   }
 }
 

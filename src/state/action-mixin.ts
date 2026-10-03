@@ -14,13 +14,13 @@ declare global {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-action", (ev) => this._handleAction(ev));
     }
 
     private async _handleAction(
-      ev: HASSDomEvent<{ config: ActionConfigParams; action: string }>
+      ev: HASSDomEvent<HASSDomEvents["hass-action"]>
     ) {
       if (!this.hass) return;
       handleAction(this, this.hass, ev.detail.config, ev.detail.action);

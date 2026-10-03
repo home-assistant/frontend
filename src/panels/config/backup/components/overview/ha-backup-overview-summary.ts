@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiCalendar, mdiInformation } from "@mdi/js";
+import { mdiBackupRestore, mdiCalendar, mdiInformationOutline } from "@mdi/js";
 import { addHours, differenceInDays, isToday, isTomorrow } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -13,11 +13,12 @@ import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { BackupConfig, BackupContent } from "../../../../../data/backup";
 import {
+  BACKUP_OVERDUE_MARGIN_HOURS,
   BackupScheduleRecurrence,
   getFormattedBackupTime,
 } from "../../../../../data/backup";
@@ -25,8 +26,6 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showAlertDialog } from "../../../../lovelace/custom-card-helpers";
 import "../ha-backup-summary-card";
-
-const OVERDUE_MARGIN_HOURS = 3;
 
 @customElement("ha-backup-overview-summary")
 class HaBackupOverviewBackups extends LitElement {
@@ -58,41 +57,52 @@ class HaBackupOverviewBackups extends LitElement {
 
   private _renderSummaryCard(
     heading: string,
-    status: "error" | "info" | "warning" | "loading" | "success",
+    status: "error" | "info" | "warning" | "loading" | "success" | "none",
     headline: string | null,
     description?: string | null,
     lastCompletedDate?: Date
   ) {
     return html`
       <ha-backup-summary-card .heading=${heading} .status=${status}>
-        <ha-md-list>
-          <ha-md-list-item>
+        <ha-list-base>
+          <ha-list-item-base>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
             <span slot="headline" class=${headline === null ? "skeleton" : ""}
               >${headline}</span
             >
-          </ha-md-list-item>
-          ${description || description === null
-            ? html`<ha-md-list-item>
-                <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-                <span
-                  slot="headline"
-                  class=${description === null ? "skeleton" : ""}
-                  >${description}</span
-                >
+          </ha-list-item-base>
+          ${
+            description || description === null
+              ? html`
+                  <ha-list-item-base>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiCalendar}
+                    ></ha-svg-icon>
+                    <span
+                      slot="headline"
+                      class=${description === null ? "skeleton" : ""}
+                      >${description}</span
+                    >
 
-                ${lastCompletedDate
-                  ? html` <ha-icon-button
-                      slot="end"
-                      @click=${this._createAdditionalBackupDescription(
-                        lastCompletedDate
-                      )}
-                      .path=${mdiInformation}
-                    ></ha-icon-button>`
-                  : nothing}
-              </ha-md-list-item>`
-            : nothing}
-        </ha-md-list>
+                    ${
+                      lastCompletedDate
+                        ? html`
+                            <ha-icon-button
+                              slot="end"
+                              @click=${this._createAdditionalBackupDescription(
+                                lastCompletedDate
+                              )}
+                              .path=${mdiInformationOutline}
+                            ></ha-icon-button>
+                          `
+                        : nothing
+                    }
+                  </ha-list-item-base>
+                `
+              : nothing
+          }
+        </ha-list-base>
       </ha-backup-summary-card>
     `;
   }
@@ -103,7 +113,7 @@ class HaBackupOverviewBackups extends LitElement {
     if (this.fetching) {
       return this._renderSummaryCard(
         this.hass.localize("ui.panel.config.backup.overview.summary.loading"),
-        "loading",
+        "none",
         null,
         null
       );
@@ -289,7 +299,7 @@ class HaBackupOverviewBackups extends LitElement {
 
     const numberOfDays = differenceInDays(
       // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
-      addHours(now, -OVERDUE_MARGIN_HOURS),
+      addHours(now, -BACKUP_OVERDUE_MARGIN_HOURS),
       lastBackupDate
     );
 
@@ -347,13 +357,12 @@ class HaBackupOverviewBackups extends LitElement {
           justify-content: flex-end;
           border-top: none;
         }
-        ha-md-list {
-          background: none;
+        ha-list-item-base {
+          --ha-row-item-padding-block: var(--ha-space-2);
+          --ha-row-item-min-height: 40x;
         }
-        ha-md-list-item {
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
-          --md-list-item-one-line-container-height: 40x;
+        ha-list-item-base::part(start) {
+          color: var(--ha-color-text-secondary);
         }
         span.skeleton {
           position: relative;

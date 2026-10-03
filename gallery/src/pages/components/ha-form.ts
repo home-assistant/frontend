@@ -2,7 +2,10 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import {
+  mockAreaRegistry,
+  type DemoArea,
+} from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
@@ -10,36 +13,54 @@ import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervis
 import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
-import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
-import { getEntity } from "../../../../src/fake_data/entity";
+import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 const ENTITIES = [
-  getEntity("alarm_control_panel", "alarm", "disarmed", {
-    friendly_name: "Alarm",
-  }),
-  getEntity("media_player", "livingroom", "playing", {
-    friendly_name: "Livingroom",
-    media_content_type: "music",
-    device_class: "tv",
-  }),
-  getEntity("media_player", "lounge", "idle", {
-    friendly_name: "Lounge",
-    supported_features: 444983,
-    device_class: "speaker",
-  }),
-  getEntity("light", "bedroom", "on", {
-    friendly_name: "Bedroom",
-    effect: "colorloop",
-    effect_list: ["colorloop", "random"],
-  }),
-  getEntity("switch", "coffee", "off", {
-    friendly_name: "Coffee",
-    device_class: "switch",
-  }),
+  {
+    entity_id: "alarm_control_panel.alarm",
+    state: "disarmed",
+    attributes: {
+      friendly_name: "Alarm",
+    },
+  },
+  {
+    entity_id: "media_player.livingroom",
+    state: "playing",
+    attributes: {
+      friendly_name: "Livingroom",
+      media_content_type: "music",
+      device_class: "tv",
+    },
+  },
+  {
+    entity_id: "media_player.lounge",
+    state: "idle",
+    attributes: {
+      friendly_name: "Lounge",
+      supported_features: 444983,
+      device_class: "speaker",
+    },
+  },
+  {
+    entity_id: "light.bedroom",
+    state: "on",
+    attributes: {
+      friendly_name: "Bedroom",
+      effect: "colorloop",
+      effect_list: ["colorloop", "random"],
+    },
+  },
+  {
+    entity_id: "switch.coffee",
+    state: "off",
+    attributes: {
+      friendly_name: "Coffee",
+      device_class: "switch",
+    },
+  },
 ];
 
 const DEVICES: DeviceRegistryEntry[] = [
@@ -66,6 +87,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: "backyard",
@@ -90,6 +112,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: null,
@@ -114,48 +137,24 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
 ];
 
-const AREAS: AreaRegistryEntry[] = [
+const AREAS: DemoArea[] = [
   {
     area_id: "backyard",
-    floor_id: null,
     name: "Backyard",
-    icon: null,
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "bedroom",
-    floor_id: null,
     name: "Bedroom",
     icon: "mdi:bed",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "livingroom",
-    floor_id: null,
     name: "Livingroom",
     icon: "mdi:sofa",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
 ];
 
@@ -169,7 +168,7 @@ const SCHEMAS: {
   {
     title: "Selectors",
     translations: {
-      addon: "Addon",
+      app: "App",
       entity: "Entity",
       device: "Device",
       area: "Area",
@@ -188,7 +187,7 @@ const SCHEMAS: {
       entities: "Entities",
     },
     schema: [
-      { name: "addon", selector: { addon: {} } },
+      { name: "app", selector: { app: {} } },
       { name: "entity", selector: { entity: {} } },
       {
         name: "Attribute",
@@ -461,6 +460,12 @@ const SCHEMAS: {
       },
       { type: "string", name: "path", default: "/" },
       { type: "boolean", name: "ssl", default: false },
+      {
+        type: "string",
+        name: "comments",
+        default: "disabled field",
+        disabled: true,
+      },
     ],
   },
 ];

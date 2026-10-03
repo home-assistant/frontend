@@ -6,8 +6,11 @@ import {
   mdiInformationOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { estimateDirection } from "../common/util/estimate-direction";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 import "./ha-svg-icon";
@@ -31,12 +34,13 @@ class HaAlert extends LitElement {
   @property() public title = "";
 
   @property({ attribute: "alert-type" }) public alertType:
-    | "info"
-    | "warning"
-    | "error"
-    | "success" = "info";
+    "info" | "warning" | "error" | "success" = "info";
 
   @property({ type: Boolean }) public dismissable = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize?: LocalizeFunc;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -45,6 +49,7 @@ class HaAlert extends LitElement {
       <div
         class="issue-type ${classMap({
           [this.alertType]: true,
+          ltr: estimateDirection(this.title) !== "rtl",
         })}"
         role="alert"
       >
@@ -55,20 +60,24 @@ class HaAlert extends LitElement {
         </div>
         <div class=${classMap({ content: true, narrow: this.narrow })}>
           <div class="main-content">
-            ${this.title
-              ? html`<div class="title">${this.title}</div>`
-              : nothing}
+            ${
+              this.title
+                ? html`<div class="title">${this.title}</div>`
+                : nothing
+            }
             <slot></slot>
           </div>
           <div class="action">
             <slot name="action">
-              ${this.dismissable
-                ? html`<ha-icon-button
-                    @click=${this._dismissClicked}
-                    label="Dismiss alert"
-                    .path=${mdiClose}
-                  ></ha-icon-button>`
-                : nothing}
+              ${
+                this.dismissable
+                  ? html`<ha-icon-button
+                      @click=${this._dismissClicked}
+                      .label=${this._localize?.("ui.common.dismiss_alert")}
+                      .path=${mdiClose}
+                    ></ha-icon-button>`
+                  : nothing
+              }
             </slot>
           </div>
         </div>
@@ -83,7 +92,7 @@ class HaAlert extends LitElement {
   static styles = css`
     .issue-type {
       position: relative;
-      padding: 8px;
+      padding: var(--ha-alert-padding, 8px);
       display: flex;
     }
     .icon {
@@ -135,7 +144,7 @@ class HaAlert extends LitElement {
     }
     .action ha-icon-button {
       --mdc-theme-primary: var(--primary-text-color);
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
     }
     .issue-type.info > .icon {
       color: var(--info-color);
@@ -167,6 +176,9 @@ class HaAlert extends LitElement {
     :host ::slotted(ul) {
       margin: 0;
       padding-inline-start: 20px;
+    }
+    .ltr {
+      direction: ltr;
     }
   `;
 }

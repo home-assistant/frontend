@@ -6,7 +6,8 @@ import { classMap } from "lit/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
-  @property({ attribute: false }) public payload!: Record<string, unknown>;
+  @property({ attribute: false }) public payload!:
+    Record<string, unknown> | string;
 
   @property({ attribute: "show-as-yaml", type: Boolean })
   public showAsYaml = false;
@@ -23,18 +24,22 @@ class MQTTDiscoveryPayload extends LitElement {
       >
         ${this.summary}
       </div>
-      ${this._open
-        ? html` <div class="payload">${this._renderPayload()}</div>`
-        : ""}
+      ${
+        this._open
+          ? html` <div class="payload">${this._renderPayload()}</div>`
+          : ""
+      }
     `;
   }
 
   private _renderPayload(): TemplateResult {
     const payload = this.payload;
     return html`
-      ${this.showAsYaml
-        ? html` <pre>${dump(payload)}</pre> `
-        : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `}
+      ${
+        this.showAsYaml
+          ? html` <pre>${dump(payload)}</pre> `
+          : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `
+      }
     `;
   }
 

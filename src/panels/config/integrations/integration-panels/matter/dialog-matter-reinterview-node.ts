@@ -5,7 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import { interviewMatterNode } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -19,10 +20,13 @@ class DialogMatterReinterviewNode extends LitElement {
 
   @state() private _status?: string;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: MatterReinterviewNodeDialogParams
   ): Promise<void> {
     this.device_id = params.device_id;
+    this._open = true;
   }
 
   protected render() {
@@ -32,95 +36,102 @@ class DialogMatterReinterviewNode extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.matter.reinterview_node.title")
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.matter.reinterview_node.title"
         )}
+        @closed=${this._dialogClosed}
       >
-        ${!this._status
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.reinterview_node.introduction"
-                )}
-              </p>
-              <p>
-                <em>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.reinterview_node.battery_device_warning"
-                  )}
-                </em>
-              </p>
-              <ha-button slot="primaryAction" @click=${this._startReinterview}>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.reinterview_node.start_reinterview"
-                )}
-              </ha-button>
-            `
-          : this._status === "started"
+        ${
+          !this._status
             ? html`
-                <div class="flex-container">
-                  <ha-spinner></ha-spinner>
-                  <div class="status">
-                    <p>
-                      <b>
-                        ${this.hass.localize(
-                          "ui.panel.config.matter.reinterview_node.in_progress"
-                        )}
-                      </b>
-                    </p>
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.reinterview_node.run_in_background"
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.reinterview_node.introduction"
+                  )}
+                </p>
+                <p>
+                  <em>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.reinterview_node.battery_device_warning"
+                    )}
+                  </em>
+                </p>
               `
-            : this._status === "failed"
+            : this._status === "started"
               ? html`
                   <div class="flex-container">
-                    <ha-svg-icon
-                      .path=${mdiCloseCircle}
-                      class="failed"
-                    ></ha-svg-icon>
+                    <ha-spinner></ha-spinner>
                     <div class="status">
                       <p>
+                        <b>
+                          ${this.hass.localize(
+                            "ui.panel.config.matter.reinterview_node.in_progress"
+                          )}
+                        </b>
+                      </p>
+                      <p>
                         ${this.hass.localize(
-                          "ui.panel.config.matter.reinterview_node.interview_failed"
+                          "ui.panel.config.matter.reinterview_node.run_in_background"
                         )}
                       </p>
                     </div>
                   </div>
-                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this.hass.localize("ui.common.close")}
-                  </ha-button>
                 `
-              : this._status === "finished"
+              : this._status === "failed"
                 ? html`
                     <div class="flex-container">
                       <ha-svg-icon
-                        .path=${mdiCheckCircle}
-                        class="success"
+                        .path=${mdiCloseCircle}
+                        class="failed"
                       ></ha-svg-icon>
                       <div class="status">
                         <p>
                           ${this.hass.localize(
-                            "ui.panel.config.matter.reinterview_node.interview_complete"
+                            "ui.panel.config.matter.reinterview_node.interview_failed"
                           )}
                         </p>
                       </div>
                     </div>
-                    <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                      ${this.hass.localize("ui.common.close")}
-                    </ha-button>
                   `
-                : nothing}
+                : this._status === "finished"
+                  ? html`
+                      <div class="flex-container">
+                        <ha-svg-icon
+                          .path=${mdiCheckCircle}
+                          class="success"
+                        ></ha-svg-icon>
+                        <div class="status">
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.matter.reinterview_node.interview_complete"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    `
+                  : nothing
+        }
+        <ha-dialog-footer slot="footer">
+          ${
+            !this._status
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._startReinterview}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.reinterview_node.start_reinterview"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
+                `
+          }
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -139,6 +150,10 @@ class DialogMatterReinterviewNode extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this.device_id = undefined;
     this._status = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });

@@ -13,6 +13,7 @@ export const weekdays = [
 export interface ScheduleDay {
   from: string;
   to: string;
+  data?: Record<string, boolean | string | number>;
 }
 
 type ScheduleDays = Partial<Record<(typeof weekdays)[number], ScheduleDay[]>>;

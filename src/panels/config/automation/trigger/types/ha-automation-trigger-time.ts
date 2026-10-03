@@ -1,9 +1,10 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -11,7 +12,6 @@ import type { TimeTrigger } from "../../../../../data/automation";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import { computeDomain } from "../../../../../common/entity/compute_domain";
 
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";
@@ -27,9 +27,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _inputMode:
-    | undefined
-    | typeof MODE_TIME
-    | typeof MODE_ENTITY;
+    undefined | typeof MODE_TIME | typeof MODE_ENTITY;
 
   public static get defaultConfig(): TimeTrigger {
     return { trigger: "time", at: "" };
@@ -98,7 +96,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
   );
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
       return;
     }
@@ -116,8 +114,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     (
       inputMode: undefined | typeof MODE_ENTITY | typeof MODE_TIME,
       at:
-        | string
-        | { entity_id: string | undefined; offset?: string | undefined },
+        string | { entity_id: string | undefined; offset?: string | undefined },
       weekday: string | string[] | undefined
     ): {
       mode: typeof MODE_TIME | typeof MODE_ENTITY;
@@ -225,6 +222,13 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
     );
   };
+
+  static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
+  `;
 }
 
 declare global {

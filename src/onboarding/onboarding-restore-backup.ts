@@ -1,7 +1,9 @@
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { storage } from "../common/decorators/storage";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { removeSearchParam } from "../common/url/search-params";
@@ -11,11 +13,11 @@ import {
   type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
-import type { CloudStatus } from "../data/cloud";
 import {
   fetchHaCloudStatus,
   signOutHaCloud,
   waitForIntegration,
+  type OnboardingCloudStatus,
 } from "../data/onboarding";
 import { showToast } from "../util/toast";
 import "./onboarding-loading";
@@ -27,11 +29,13 @@ const STATUS_INTERVAL_IN_MS = 5000;
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ type: Boolean }) public supervisor = false;
 
   @property() public mode!: "upload" | "cloud";
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _view:
     | "loading"
@@ -49,7 +53,7 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _failed?: boolean;
 
-  @state() private _cloudStatus?: CloudStatus;
+  @state() private _cloudStatus?: OnboardingCloudStatus;
 
   @storage({
     key: "onboarding-restore-backup-backup-id",
@@ -65,60 +69,63 @@ class OnboardingRestoreBackup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._error && this._view !== "restore"
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
-      ${this._view === "loading"
-        ? html`<onboarding-loading></onboarding-loading>`
-        : this._view === "upload"
-          ? html`
-              <onboarding-restore-backup-upload
-                .supervisor=${this.supervisor}
-                .localize=${this.localize}
-                @backup-uploaded=${this._backupUploaded}
-              ></onboarding-restore-backup-upload>
-            `
-          : this._view === "cloud_login"
+      ${
+        this._error && this._view !== "restore"
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+      ${
+        this._view === "loading"
+          ? html`<onboarding-loading></onboarding-loading>`
+          : this._view === "upload"
             ? html`
-                <onboarding-restore-backup-cloud-login
-                  .localize=${this.localize}
-                  @ha-refresh-cloud-status=${this._showCloudBackup}
-                ></onboarding-restore-backup-cloud-login>
+                <onboarding-restore-backup-upload
+                  .supervisor=${this.supervisor}
+                  @backup-uploaded=${this._backupUploaded}
+                ></onboarding-restore-backup-upload>
               `
-            : this._view === "empty_cloud"
+            : this._view === "cloud_login"
               ? html`
-                  <onboarding-restore-backup-no-cloud-backup
-                    .localize=${this.localize}
-                    @sign-out=${this._signOut}
-                  ></onboarding-restore-backup-no-cloud-backup>
+                  <onboarding-restore-backup-cloud-login
+                    @ha-refresh-cloud-status=${this._showCloudBackup}
+                  ></onboarding-restore-backup-cloud-login>
                 `
-              : this._view === "restore"
-                ? html`<onboarding-restore-backup-restore
-                    .mode=${this.mode}
-                    .localize=${this.localize}
-                    .backup=${this._backup!}
-                    .supervisor=${this.supervisor}
-                    .error=${this._failed
-                      ? this.localize(
-                          `ui.panel.page-onboarding.restore.${this._backupInfo?.last_action_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
-                        )
-                      : this._error}
-                    @restore-started=${this._restoreStarted}
-                    @restore-backup-back=${this._back}
-                    @sign-out=${this._signOut}
-                  ></onboarding-restore-backup-restore>`
-                : nothing}
-      ${this._view === "status" && this._backupInfo
-        ? html`<onboarding-restore-backup-status
-            .localize=${this.localize}
-            .backupInfo=${this._backupInfo}
-            @restore-backup-back=${this._back}
-          ></onboarding-restore-backup-status>`
-        : nothing}
+              : this._view === "empty_cloud"
+                ? html`
+                    <onboarding-restore-backup-no-cloud-backup
+                      @sign-out=${this._signOut}
+                    ></onboarding-restore-backup-no-cloud-backup>
+                  `
+                : this._view === "restore"
+                  ? html`<onboarding-restore-backup-restore
+                      .mode=${this.mode}
+                      .backup=${this._backup!}
+                      .supervisor=${this.supervisor}
+                      .error=${
+                        this._failed
+                          ? this._localize(
+                              `ui.panel.page-onboarding.restore.${this._backupInfo?.last_action_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
+                            )
+                          : this._error
+                      }
+                      @restore-started=${this._restoreStarted}
+                      @restore-backup-back=${this._back}
+                      @sign-out=${this._signOut}
+                    ></onboarding-restore-backup-restore>`
+                  : nothing
+      }
+      ${
+        this._view === "status" && this._backupInfo
+          ? html`<onboarding-restore-backup-status
+              .backupInfo=${this._backupInfo}
+              @restore-backup-back=${this._back}
+            ></onboarding-restore-backup-status>`
+          : nothing
+      }
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (this.mode === "cloud") {
@@ -272,7 +279,9 @@ class OnboardingRestoreBackup extends LitElement {
     setTimeout(() => this._loadBackupInfo(), delay);
   }
 
-  private async _backupUploaded(ev: CustomEvent) {
+  private async _backupUploaded(
+    ev: HASSDomEvent<HASSDomEvents["backup-uploaded"]>
+  ) {
     this._backupId = ev.detail.backupId;
     await this._loadBackupInfo();
   }
@@ -291,7 +300,7 @@ class OnboardingRestoreBackup extends LitElement {
 
     showToast(this, {
       id: "sign-out-ha-cloud",
-      message: this.localize(
+      message: this._localize(
         "ui.panel.page-onboarding.restore.ha-cloud.sign_out_progress"
       ),
     });
@@ -301,7 +310,7 @@ class OnboardingRestoreBackup extends LitElement {
       await signOutHaCloud();
       showToast(this, {
         id: "sign-out-ha-cloud",
-        message: this.localize(
+        message: this._localize(
           "ui.panel.page-onboarding.restore.ha-cloud.sign_out_success"
         ),
       });
@@ -310,7 +319,7 @@ class OnboardingRestoreBackup extends LitElement {
       console.error(err);
       showToast(this, {
         id: "sign-out-ha-cloud",
-        message: this.localize(
+        message: this._localize(
           "ui.panel.page-onboarding.restore.ha-cloud.sign_out_error"
         ),
       });

@@ -1,11 +1,11 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { sanitizeHttpUrl } from "../../common/url/sanitize-http-url";
 import type { DataEntryFlowStepExternal } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import "../../components/ha-button";
 
 @customElement("step-flow-external")
 class StepFlowExternal extends LitElement {
@@ -16,40 +16,24 @@ class StepFlowExternal extends LitElement {
   @property({ attribute: false }) public step!: DataEntryFlowStepExternal;
 
   protected render(): TemplateResult {
-    const localize = this.hass.localize;
-
     return html`
       <div class="content">
         ${this.flowConfig.renderExternalStepDescription(this.hass, this.step)}
-        <div class="open-button">
-          <ha-button href=${this.step.url} target="_blank" rel="noreferrer">
-            ${localize(
-              "ui.panel.config.integrations.config_flow.external_step.open_site"
-            )}
-          </ha-button>
-        </div>
       </div>
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    window.open(this.step.url);
+    // Opened without user interaction, so only ever follow an http(s) URL
+    const url = sanitizeHttpUrl(this.step.url);
+    if (url) {
+      window.open(url);
+    }
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      configFlowContentStyles,
-      css`
-        .open-button {
-          text-align: center;
-          padding: 24px 0;
-        }
-        .open-button a {
-          text-decoration: none;
-        }
-      `,
-    ];
+    return [configFlowContentStyles];
   }
 }
 

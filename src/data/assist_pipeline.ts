@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../types";
+import type { ChatLogToolResult } from "./chat_log";
 import type { ConversationResult } from "./conversation";
 import type { SpeechMetadata } from "./stt";
 
@@ -8,7 +9,7 @@ export interface AssistPipeline {
   language: string;
   conversation_engine: string;
   conversation_language: string | null;
-  prefer_local_intents?: boolean;
+  prefer_local_intents: boolean;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;
@@ -20,7 +21,7 @@ export interface AssistPipeline {
 
 export interface AssistDevice {
   device_id: string;
-  pipeline_entity: string;
+  pipeline_entity: string | null;
 }
 
 export interface AssistPipelineMutableParams {
@@ -53,6 +54,7 @@ interface PipelineRunStartEvent extends PipelineEventBase {
     pipeline: string;
     language: string;
     conversation_id: string;
+    satellite_id?: string;
     runner_data: {
       stt_binary_handler_id: number | null;
       timeout: number;
@@ -61,12 +63,13 @@ interface PipelineRunStartEvent extends PipelineEventBase {
       token: string;
       url: string;
       mime_type: string;
+      stream_response: boolean;
     };
   };
 }
 interface PipelineRunEndEvent extends PipelineEventBase {
   type: "run-end";
-  data: Record<string, never>;
+  data: null;
 }
 
 interface PipelineErrorEvent extends PipelineEventBase {
@@ -80,14 +83,21 @@ interface PipelineErrorEvent extends PipelineEventBase {
 interface PipelineWakeWordStartEvent extends PipelineEventBase {
   type: "wake_word-start";
   data: {
-    engine: string;
-    metadata: SpeechMetadata;
+    entity_id: string;
+    metadata: Omit<SpeechMetadata, "language">;
+    timeout: number;
   };
 }
 
 interface PipelineWakeWordEndEvent extends PipelineEventBase {
   type: "wake_word-end";
-  data: { wake_word_output: { ww_id: string; timestamp: number } };
+  data: {
+    wake_word_output: {
+      wake_word_id?: string;
+      wake_word_phrase?: string;
+      timestamp?: number | null;
+    };
+  };
 }
 
 interface PipelineSTTStartEvent extends PipelineEventBase {
@@ -95,7 +105,22 @@ interface PipelineSTTStartEvent extends PipelineEventBase {
   data: {
     engine: string;
     metadata: SpeechMetadata;
+    audio_processing: {
+      requires_external_vad: boolean;
+      prefers_auto_gain_enabled: boolean;
+      prefers_noise_reduction_enabled: boolean;
+    };
   };
+}
+
+interface PipelineSTTVADStartEvent extends PipelineEventBase {
+  type: "stt-vad-start";
+  data: { timestamp: number };
+}
+
+interface PipelineSTTVADEndEvent extends PipelineEventBase {
+  type: "stt-vad-end";
+  data: { timestamp: number };
 }
 interface PipelineSTTEndEvent extends PipelineEventBase {
   type: "stt-end";
@@ -109,18 +134,23 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
   data: {
     engine: string;
     language: string;
-    prefer_local_intents: boolean;
     intent_input: string;
+    conversation_id: string;
+    device_id: string | null;
+    satellite_id: string | null;
+    prefer_local_intents: boolean;
   };
 }
 
 export interface ConversationChatLogAssistantDelta {
   role: "assistant";
   content: string;
+  thinking_content?: string;
   tool_calls: {
     id: string;
     tool_name: string;
     tool_args: Record<string, unknown>;
+    external: boolean;
   }[];
 }
 
@@ -129,7 +159,8 @@ export interface ConversationChatLogToolResultDelta {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
-  tool_result: unknown;
+  result: ChatLogToolResult;
+  created: string;
 }
 interface PipelineIntentProgressEvent extends PipelineEventBase {
   type: "intent-progress";
@@ -154,9 +185,10 @@ interface PipelineTTSStartEvent extends PipelineEventBase {
   type: "tts-start";
   data: {
     engine: string;
-    language: string;
-    voice: string;
+    language: string | null;
+    voice: string | null;
     tts_input: string;
+    acknowledge_override: boolean;
   };
 }
 interface PipelineTTSEndEvent extends PipelineEventBase {
@@ -178,6 +210,8 @@ export type PipelineRunEvent =
   | PipelineWakeWordStartEvent
   | PipelineWakeWordEndEvent
   | PipelineSTTStartEvent
+  | PipelineSTTVADStartEvent
+  | PipelineSTTVADEndEvent
   | PipelineSTTEndEvent
   | PipelineIntentStartEvent
   | PipelineIntentProgressEvent
@@ -214,6 +248,8 @@ export interface PipelineRun {
   stage: "ready" | "wake_word" | "stt" | "intent" | "tts" | "done" | "error";
   run: PipelineRunStartEvent["data"];
   error?: PipelineErrorEvent["data"];
+  started: Date;
+  finished?: Date;
   wake_word?: PipelineWakeWordStartEvent["data"] &
     Partial<PipelineWakeWordEndEvent["data"]> & { done: boolean };
   stt?: PipelineSTTStartEvent["data"] &
@@ -235,6 +271,7 @@ export const processEvent = (
       stage: "ready",
       run: event.data,
       events: [event],
+      started: new Date(event.timestamp),
     };
     return run;
   }
@@ -290,9 +327,14 @@ export const processEvent = (
       tts: { ...run.tts!, ...event.data, done: true },
     };
   } else if (event.type === "run-end") {
-    run = { ...run, stage: "done" };
+    run = { ...run, finished: new Date(event.timestamp), stage: "done" };
   } else if (event.type === "error") {
-    run = { ...run, stage: "error", error: event.data };
+    run = {
+      ...run,
+      finished: new Date(event.timestamp),
+      stage: "error",
+      error: event.data,
+    };
   } else {
     run = { ...run };
   }
@@ -329,7 +371,7 @@ export const runDebugAssistPipeline = (
 };
 
 export const runAssistPipeline = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callback: (event: PipelineRunEvent) => void,
   options: PipelineRunOptions
 ) =>
@@ -370,7 +412,10 @@ export const listAssistPipelines = (hass: HomeAssistant) =>
     type: "assist_pipeline/pipeline/list",
   });
 
-export const getAssistPipeline = (hass: HomeAssistant, pipeline_id?: string) =>
+export const getAssistPipeline = (
+  hass: Pick<HomeAssistant, "callWS">,
+  pipeline_id?: string
+) =>
   hass.callWS<AssistPipeline>({
     type: "assist_pipeline/pipeline/get",
     pipeline_id,
@@ -412,7 +457,7 @@ export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
   });
 
 export const fetchAssistPipelineLanguages = (hass: HomeAssistant) =>
-  hass.callWS<{ languages: string[] }>({
+  hass.callWS<{ languages: string[] | null }>({
     type: "assist_pipeline/language/list",
   });
 

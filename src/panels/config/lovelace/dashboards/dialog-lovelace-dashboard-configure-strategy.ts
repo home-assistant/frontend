@@ -3,19 +3,24 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-dialog";
 import type { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../../lovelace/editor/dashboard-strategy-editor/hui-dashboard-strategy-element-editor";
 import type { LovelaceDashboardConfigureStrategyDialogParams } from "./show-dialog-lovelace-dashboard-configure-strategy";
 
 @customElement("dialog-lovelace-dashboard-configure-strategy")
-export class DialogLovelaceDashboardDetail extends LitElement {
+export class DialogLovelaceDashboardConfigureStrategy extends DirtyStateProviderMixin<LovelaceStrategyConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceDashboardConfigureStrategyDialogParams;
+
+  @state() private _open = false;
 
   @state() private _submitting = false;
 
@@ -26,9 +31,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   ): void {
     this._params = params;
     this._data = params.config.strategy;
+    this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -41,16 +52,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
-          )
+        .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
+        header-title=${this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
         )}
+        @closed=${this._dialogClosed}
       >
         <div>
           <hui-dashboard-strategy-element-editor
@@ -58,23 +65,26 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             .lovelace=${this._params.config}
             .value=${this._data}
             @config-changed=${this._handleConfigChanged}
-            dialogInitialFocus
+            autofocus
           ></hui-dashboard-strategy-element-editor>
         </div>
 
-        <ha-button
-          slot="primaryAction"
-          @click=${this._save}
-          .disabled=${this._submitting}
-        >
-          ${this.hass.localize("ui.common.next")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._submitting}
+          >
+            ${this.hass.localize("ui.common.next")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
   private _handleConfigChanged(ev: CustomEvent): void {
     this._data = ev.detail.config;
+    this._updateDirtyState(this._data!);
   }
 
   private async _save() {
@@ -87,6 +97,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       strategy: this._data,
     });
     this._submitting = false;
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
@@ -97,6 +108,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-lovelace-dashboard-configure-strategy": DialogLovelaceDashboardDetail;
+    "dialog-lovelace-dashboard-configure-strategy": DialogLovelaceDashboardConfigureStrategy;
   }
 }

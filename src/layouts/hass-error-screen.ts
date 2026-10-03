@@ -1,11 +1,11 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { goBack } from "../common/navigate";
-import "../components/ha-icon-button-arrow-prev";
+import { getHistoryState, goBack } from "../common/navigate";
 import "../components/ha-button";
-import "../components/ha-menu-button";
+import "../components/ha-top-app-bar-fixed";
 import type { HomeAssistant } from "../types";
+import { reloadForUpdate } from "../util/recover-stale-build";
 import "../components/ha-alert";
 
 @customElement("hass-error-screen")
@@ -20,29 +20,43 @@ class HassErrorScreen extends LitElement {
 
   @property() public error?: string;
 
+  @property({ type: Boolean, attribute: "show-reload" }) public showReload =
+    false;
+
   protected render(): TemplateResult {
+    if (!this.toolbar) {
+      return this._renderContent();
+    }
+
     return html`
-      ${this.toolbar
-        ? html`<div class="toolbar">
-            ${this.rootnav || history.state?.root
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
-              : html`
-                  <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
-                    @click=${this._handleBack}
-                  ></ha-icon-button-arrow-prev>
-                `}
-          </div>`
-        : ""}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${!(this.rootnav || getHistoryState()?.root)}
+      >
+        ${this._renderContent()}
+      </ha-top-app-bar-fixed>
+    `;
+  }
+
+  private _renderContent(): TemplateResult {
+    return html`
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
-          <ha-button appearance="plain" size="small" @click=${this._handleBack}>
+          ${
+            this.showReload
+              ? html`
+                  <ha-button
+                    appearance="filled"
+                    size="s"
+                    @click=${this._handleReload}
+                  >
+                    ${this.hass?.localize("ui.common.refresh")}
+                  </ha-button>
+                `
+              : nothing
+          }
+          <ha-button appearance="plain" size="s" @click=${this._handleBack}>
             ${this.hass?.localize("ui.common.back")}
           </ha-button>
         </slot>
@@ -54,6 +68,12 @@ class HassErrorScreen extends LitElement {
     goBack();
   }
 
+  private _handleReload(): void {
+    // Dirty-aware: reloads when clean, or defers with a toast when an editor
+    // has unsaved changes.
+    reloadForUpdate();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       css`
@@ -62,30 +82,9 @@ class HassErrorScreen extends LitElement {
           height: 100%;
           background-color: var(--primary-background-color);
         }
-        .toolbar {
-          display: flex;
-          align-items: center;
-          font-size: var(--ha-font-size-xl);
-          height: var(--header-height);
-          padding: 8px 12px;
-          pointer-events: none;
-          background-color: var(--app-header-background-color);
-          font-weight: var(--ha-font-weight-normal);
-          color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
-          box-sizing: border-box;
-        }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 4px;
-          }
-        }
-        ha-icon-button-arrow-prev {
-          pointer-events: auto;
-        }
         .content {
           color: var(--primary-text-color);
-          height: calc(100% - var(--header-height));
+          height: 100%;
           display: flex;
           padding: 16px;
           align-items: center;

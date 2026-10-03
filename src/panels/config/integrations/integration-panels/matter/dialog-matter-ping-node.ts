@@ -4,11 +4,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-dialog";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -28,8 +29,11 @@ class DialogMatterPingNode extends LitElement {
     success: boolean,
   ][];
 
+  @state() private _open = false;
+
   public async showDialog(params: MatterPingNodeDialogParams): Promise<void> {
     this.device_id = params.device_id;
+    this._open = true;
   }
 
   private async _copyIpToClipboard(ev) {
@@ -47,98 +51,104 @@ class DialogMatterPingNode extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.matter.ping_node.title")
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.matter.ping_node.title"
         )}
+        @closed=${this._dialogClosed}
       >
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      this._pingResultEntries
-                        ? "ui.panel.config.matter.ping_node.no_ip_found"
-                        : "ui.panel.config.matter.ping_node.ping_failed"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </ha-button>
-            `
-          : this._pingResultEntries
+        ${
+          this._status === "failed"
             ? html`
-                <h2>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.ping_node.ping_complete"
-                  )}
-                </h2>
-                <ha-list>
-                  ${this._pingResultEntries.map(
-                    ([ip, success]) =>
-                      html`<ha-list-item
-                        hasMeta
-                        .ip=${ip}
-                        @click=${this._copyIpToClipboard}
-                        >${ip}
-                        <ha-svg-icon
-                          slot="meta"
-                          .path=${success ? mdiCheckCircle : mdiAlertCircle}
-                          class=${success ? "success" : "failed"}
-                        ></ha-svg-icon>
-                      </ha-list-item>`
-                  )}
-                </ha-list>
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-              `
-            : this._status === "started"
-              ? html`
-                  <div class="flex-container">
-                    <ha-spinner></ha-spinner>
-                    <div class="status">
-                      <p>
-                        <b>
-                          ${this.hass.localize(
-                            "ui.panel.config.matter.ping_node.in_progress"
-                          )}
-                        </b>
-                      </p>
-                    </div>
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCloseCircle}
+                    class="failed"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        this._pingResultEntries
+                          ? "ui.panel.config.matter.ping_node.no_ip_found"
+                          : "ui.panel.config.matter.ping_node.ping_failed"
+                      )}
+                    </p>
                   </div>
+                </div>
+              `
+            : this._pingResultEntries
+              ? html`
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.ping_node.ping_complete"
+                    )}
+                  </h2>
+                  <ha-list>
+                    ${this._pingResultEntries.map(
+                      ([ip, success]) =>
+                        html`<ha-list-item
+                          hasMeta
+                          .ip=${ip}
+                          @click=${this._copyIpToClipboard}
+                          >${ip}
+                          <ha-svg-icon
+                            slot="meta"
+                            .path=${success ? mdiCheckCircle : mdiAlertCircle}
+                            class=${success ? "success" : "failed"}
+                          ></ha-svg-icon>
+                        </ha-list-item>`
+                    )}
+                  </ha-list>
+                `
+              : this._status === "started"
+                ? html`
+                    <div class="flex-container">
+                      <ha-spinner></ha-spinner>
+                      <div class="status">
+                        <p>
+                          <b>
+                            ${this.hass.localize(
+                              "ui.panel.config.matter.ping_node.in_progress"
+                            )}
+                          </b>
+                        </p>
+                      </div>
+                    </div>
+                  `
+                : html`
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.ping_node.introduction"
+                      )}
+                    </p>
+                    <p>
+                      <em>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.ping_node.battery_device_warning"
+                        )}
+                      </em>
+                    </p>
+                  `
+        }
+        <ha-dialog-footer slot="footer">
+          ${
+            this._status === "failed" ||
+            this._pingResultEntries ||
+            this._status === "started"
+              ? html`
                   <ha-button slot="primaryAction" @click=${this.closeDialog}>
                     ${this.hass.localize("ui.common.close")}
                   </ha-button>
                 `
               : html`
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.ping_node.introduction"
-                    )}
-                  </p>
-                  <p>
-                    <em>
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.ping_node.battery_device_warning"
-                      )}
-                    </em>
-                  </p>
                   <ha-button slot="primaryAction" @click=${this._startPing}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.ping_node.start_ping"
                     )}
                   </ha-button>
-                `}
+                `
+          }
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -162,6 +172,10 @@ class DialogMatterPingNode extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this.device_id = undefined;
     this._status = undefined;
     this._pingResultEntries = undefined;

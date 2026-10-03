@@ -1,22 +1,20 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,
-  mdiArrowLeft,
   mdiDotsVertical,
   mdiGrid,
   mdiListBoxOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-list-item";
-import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/media-player/ha-media-manage-button";
 import "../../components/media-player/ha-media-player-browse";
@@ -42,6 +40,7 @@ import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -93,71 +92,64 @@ class PanelMediaBrowser extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._navigateIds.length > 1
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                .path=${mdiArrowLeft}
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
-        <div slot="title">
-          ${!this._currentItem
-            ? this.hass.localize(
-                "ui.components.media-browser.media-player-browser"
-              )
-            : this._currentItem.title}
-        </div>
+        ${
+          this._navigateIds.length > 1
+            ? html`
+                <ha-icon-button-arrow-prev
+                  slot="navigationIcon"
+                  @click=${this._goBack}
+                ></ha-icon-button-arrow-prev>
+              `
+            : nothing
+        }
+        <h1 class="page-title" slot="title">
+          ${
+            !this._currentItem
+              ? this.hass.localize(
+                  "ui.components.media-browser.media-player-browser"
+                )
+              : this._currentItem.title
+          }
+        </h1>
         <ha-media-manage-button
           slot="actionItems"
-          .hass=${this.hass}
           .currentItem=${this._currentItem}
           @media-refresh=${this._refreshMedia}
         ></ha-media-manage-button>
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item
+            value="auto"
+            class=${
+              this._preferredLayout === "auto" ? "selected_menu_item" : ""
+            }
+          >
             ${this.hass.localize("ui.components.media-browser.auto")}
-            <ha-svg-icon
-              class=${this._preferredLayout === "auto"
-                ? "selected_menu_item"
-                : ""}
-              slot="graphic"
-              .path=${mdiAlphaABoxOutline}
-            ></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item
+            value="grid"
+            class=${
+              this._preferredLayout === "grid" ? "selected_menu_item" : ""
+            }
+          >
             ${this.hass.localize("ui.components.media-browser.grid")}
-            <ha-svg-icon
-              class=${this._preferredLayout === "grid"
-                ? "selected_menu_item"
-                : ""}
-              slot="graphic"
-              .path=${mdiGrid}
-            ></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiGrid}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item
+            value="list"
+            class=${
+              this._preferredLayout === "list" ? "selected_menu_item" : ""
+            }
+          >
             ${this.hass.localize("ui.components.media-browser.list")}
-            <ha-svg-icon
-              slot="graphic"
-              class=${this._preferredLayout === "list"
-                ? "selected_menu_item"
-                : ""}
-              .path=${mdiListBoxOutline}
-            ></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiListBoxOutline}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
@@ -176,21 +168,15 @@ class PanelMediaBrowser extends LitElement {
     `;
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._preferredLayout = "auto";
-        break;
-      case 1:
-        this._preferredLayout = "grid";
-        break;
-      case 2:
-        this._preferredLayout = "list";
-        break;
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+
+    if (["auto", "grid", "list"].includes(value)) {
+      this._preferredLayout = value as MediaPlayerLayoutType;
     }
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (
@@ -359,6 +345,12 @@ class PanelMediaBrowser extends LitElement {
           );
         }
 
+        .page-title {
+          font-size: inherit;
+          margin: inherit;
+          line-height: inherit;
+        }
+
         :host([narrow]) ha-media-player-browse {
           height: calc(
             100vh -
@@ -374,11 +366,15 @@ class PanelMediaBrowser extends LitElement {
           color: var(--primary-color);
         }
 
+        .selected_menu_item ha-svg-icon {
+          color: currentColor;
+        }
+
         ha-bar-media-player {
           position: fixed;
           bottom: var(--safe-area-inset-bottom, 0px);
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -386,7 +382,7 @@ class PanelMediaBrowser extends LitElement {
         }
         :host([narrow]) ha-bar-media-player {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)

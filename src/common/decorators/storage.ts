@@ -51,8 +51,9 @@ class StorageClass {
     storageKey: string,
     callback: Callback
   ): UnsubscribeFunc {
-    if (this._listeners[storageKey]) {
-      this._listeners[storageKey].push(callback);
+    const listeners = this._listeners[storageKey];
+    if (listeners) {
+      listeners.push(callback);
     } else {
       this._listeners[storageKey] = [callback];
     }

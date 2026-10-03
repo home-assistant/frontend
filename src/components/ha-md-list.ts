@@ -1,5 +1,5 @@
 import { List } from "@material/web/list/internal/list";
-import { styles } from "@material/web/list/internal/list-styles";
+import { styles } from "@material/web/list/internal/list-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

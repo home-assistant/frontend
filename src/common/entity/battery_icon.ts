@@ -1,3 +1,17 @@
+import {
+  mdiBattery,
+  mdiBattery10,
+  mdiBattery20,
+  mdiBattery30,
+  mdiBattery40,
+  mdiBattery50,
+  mdiBattery60,
+  mdiBattery70,
+  mdiBattery80,
+  mdiBattery90,
+  mdiBatteryAlertVariantOutline,
+  mdiBatteryUnknown,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 
 const BATTERY_ICONS = {
@@ -11,6 +25,18 @@ const BATTERY_ICONS = {
   80: "mdi:battery-80",
   90: "mdi:battery-90",
   100: "mdi:battery",
+};
+const BATTERY_ICON_PATHS = {
+  10: mdiBattery10,
+  20: mdiBattery20,
+  30: mdiBattery30,
+  40: mdiBattery40,
+  50: mdiBattery50,
+  60: mdiBattery60,
+  70: mdiBattery70,
+  80: mdiBattery80,
+  90: mdiBattery90,
+  100: mdiBattery,
 };
 const BATTERY_CHARGING_ICONS = {
   10: "mdi:battery-charging-10",
@@ -56,4 +82,16 @@ export const batteryLevelIcon = (
     return "mdi:battery-alert-variant-outline";
   }
   return BATTERY_ICONS[batteryRound];
+};
+
+export const batteryLevelIconPath = (batteryLevel: number | string): string => {
+  const batteryValue = Number(batteryLevel);
+  if (isNaN(batteryValue)) {
+    return mdiBatteryUnknown;
+  }
+  if (batteryValue <= 5) {
+    return mdiBatteryAlertVariantOutline;
+  }
+  const batteryRound = Math.round(batteryValue / 10) * 10;
+  return BATTERY_ICON_PATHS[batteryRound];
 };

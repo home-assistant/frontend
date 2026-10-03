@@ -1,43 +1,45 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { BINARY_STATE_OFF } from "../../../common/const";
-import { relativeTime } from "../../../common/datetime/relative_time";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/buttons/ha-progress-button";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
-import "../../../components/ha-switch";
-import type { BackupConfig } from "../../../data/backup";
-import { fetchBackupConfig } from "../../../data/backup";
-import { isUnavailableState } from "../../../data/entity";
-import type { EntitySources } from "../../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
-import type { UpdateEntity, UpdateType } from "../../../data/update";
+import "../../../components/progress/ha-progress-bar";
+import { apiContext, formattersContext } from "../../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { UpdateEntity } from "../../../data/update";
 import {
-  getUpdateType,
+  latestVersionIsSkipped,
+  updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
-  latestVersionIsSkipped,
-  updateButtonIsDisabled,
 } from "../../../data/update";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi, HomeAssistantFormatters } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
+import "../components/update/ha-more-info-update-backup";
+import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: UpdateEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @state() private _releaseNotes?: string | null;
 
@@ -45,295 +47,163 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _markdownLoading = true;
 
-  @state() private _backupConfig?: BackupConfig;
-
-  @state() private _createBackup = false;
-
-  @state() private _entitySources?: EntitySources;
-
-  private async _fetchBackupConfig() {
-    try {
-      const { config } = await fetchBackupConfig(this.hass);
-      this._backupConfig = config;
-    } catch (err) {
-      // ignore error, because user will get a manual backup option
-      // eslint-disable-next-line no-console
-      console.error(err);
-    }
-  }
-
-  private async _fetchUpdateBackupConfig(type: UpdateType) {
-    try {
-      const config = await getSupervisorUpdateConfig(this.hass);
-
-      // for home assistant and OS updates
-      if (this._isHaOrOsUpdate(type)) {
-        this._createBackup = config.core_backup_before_update;
-        return;
-      }
-
-      if (type === "addon") {
-        this._createBackup = config.add_on_backup_before_update;
-      }
-    } catch (err) {
-      // ignore error, because user can still set the config
-      // eslint-disable-next-line no-console
-      console.error(err);
-    }
-  }
-
-  private async _fetchEntitySources() {
-    this._entitySources = await fetchEntitySourcesWithCache(this.hass);
-  }
-
-  private _isHaOrOsUpdate(type: UpdateType): boolean {
-    return ["home_assistant", "home_assistant_os"].includes(type);
-  }
-
-  private _computeCreateBackupTexts():
-    | { title: string; description?: string }
-    | undefined {
-    if (
-      !this.stateObj ||
-      !supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
-    ) {
-      return undefined;
-    }
-
-    const updateType = this._entitySources
-      ? getUpdateType(this.stateObj, this._entitySources)
-      : "generic";
-
-    if (this._isHaOrOsUpdate(updateType)) {
-      const isBackupConfigValid =
-        !!this._backupConfig &&
-        !!this._backupConfig.automatic_backups_configured &&
-        !!this._backupConfig.create_backup.password &&
-        this._backupConfig.create_backup.agent_ids.length > 0;
-
-      if (!isBackupConfigValid) {
-        return {
-          title: this.hass.localize(
-            "ui.dialogs.more_info_control.update.create_backup.manual"
-          ),
-          description: this.hass.localize(
-            "ui.dialogs.more_info_control.update.create_backup.manual_description"
-          ),
-        };
-      }
-
-      const lastAutomaticBackupDate = this._backupConfig
-        ?.last_completed_automatic_backup
-        ? new Date(this._backupConfig?.last_completed_automatic_backup)
-        : null;
-      const now = new Date();
-
-      return {
-        title: this.hass.localize(
-          "ui.dialogs.more_info_control.update.create_backup.automatic"
-        ),
-        description: lastAutomaticBackupDate
-          ? this.hass.localize(
-              "ui.dialogs.more_info_control.update.create_backup.automatic_description_last",
-              {
-                relative_time: relativeTime(
-                  lastAutomaticBackupDate,
-                  this.hass.locale,
-                  now,
-                  true
-                ),
-              }
-            )
-          : this.hass.localize(
-              "ui.dialogs.more_info_control.update.create_backup.automatic_description_none"
-            ),
-      };
-    }
-
-    // Addon backup
-    if (updateType === "addon") {
-      const version = this.stateObj.attributes.installed_version;
-      return {
-        title: this.hass.localize(
-          "ui.dialogs.more_info_control.update.create_backup.addon"
-        ),
-        description: version
-          ? this.hass.localize(
-              "ui.dialogs.more_info_control.update.create_backup.addon_description",
-              { version: version }
-            )
-          : undefined,
-      };
-    }
-
-    // Fallback to generic UI
-    return {
-      title: this.hass.localize(
-        "ui.dialogs.more_info_control.update.create_backup.generic"
-      ),
-    };
-  }
+  @query("ha-more-info-update-backup")
+  private _backupElement?: HaMoreInfoUpdateBackup;
 
   protected render() {
     if (
-      !this.hass ||
+      !this._localize ||
       !this.stateObj ||
-      isUnavailableState(this.stateObj.state)
+      this.stateObj.state === UNAVAILABLE ||
+      this.stateObj.state === UNKNOWN
     ) {
       return nothing;
     }
 
-    const createBackupTexts = this._computeCreateBackupTexts();
+    const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
 
     return html`
       <div class="content">
         <div class="summary">
-          ${this.stateObj.attributes.in_progress
-            ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
-              this.stateObj.attributes.update_percentage !== null
-              ? html`<mwc-linear-progress
-                  .progress=${this.stateObj.attributes.update_percentage / 100}
-                  buffer=""
-                ></mwc-linear-progress>`
-              : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-            : nothing}
+          ${
+            this.stateObj.attributes.in_progress
+              ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
+                this.stateObj.attributes.update_percentage !== null
+                ? html`<ha-progress-bar
+                    loading
+                    .value=${this.stateObj.attributes.update_percentage}
+                  ></ha-progress-bar>`
+                : html`<ha-progress-bar indeterminate></ha-progress-bar>`
+              : nothing
+          }
           <h3>${this.stateObj.attributes.title}</h3>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
           <div class="row">
             <div class="key">
-              ${this.hass.formatEntityAttributeName(
+              ${this._formatters.formatEntityAttributeName(
                 this.stateObj,
                 "installed_version"
               )}
             </div>
             <div class="value">
-              ${this.stateObj.attributes.installed_version ??
-              this.hass.localize("state.default.unavailable")}
+              ${
+                this.stateObj.attributes.installed_version ??
+                this._localize("state.default.unavailable")
+              }
             </div>
           </div>
           <div class="row">
             <div class="key">
-              ${this.hass.formatEntityAttributeName(
+              ${this._formatters.formatEntityAttributeName(
                 this.stateObj,
                 "latest_version"
               )}
             </div>
             <div class="value">
-              ${this.stateObj.attributes.latest_version ??
-              this.hass.localize("state.default.unavailable")}
+              ${
+                this.stateObj.attributes.latest_version ??
+                this._localize("state.default.unavailable")
+              }
             </div>
           </div>
 
-          ${this.stateObj.attributes.release_url
-            ? html`<div class="row">
-                <div class="key">
-                  <a
-                    href=${this.stateObj.attributes.release_url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.update.release_announcement"
-                    )}
-                  </a>
-                </div>
-              </div>`
-            : nothing}
+          ${
+            releaseUrl
+              ? html`<div class="row">
+                  <div class="key">
+                    <a href=${releaseUrl} target="_blank" rel="noreferrer">
+                      ${this._localize(
+                        "ui.dialogs.more_info_control.update.release_announcement"
+                      )}
+                    </a>
+                  </div>
+                </div>`
+              : nothing
+          }
         </div>
-        ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
-        !this._error
-          ? this._releaseNotes === undefined
-            ? html`
-                <hr />
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
-            : this._releaseNotes
+        ${
+          supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
+          !this._error
+            ? this._releaseNotes === undefined
+              ? html`
+                  <hr />
+                  ${this._markdownLoading ? this._renderLoader() : nothing}
+                `
+              : this._releaseNotes
+                ? html`
+                    <hr />
+                    <ha-markdown
+                      @content-resize=${this._markdownLoaded}
+                      .content=${this._releaseNotes}
+                      class=${this._markdownLoading ? "hidden" : ""}
+                    ></ha-markdown>
+                    ${this._markdownLoading ? this._renderLoader() : nothing}
+                  `
+                : nothing
+            : this.stateObj.attributes.release_summary
               ? html`
                   <hr />
                   <ha-markdown
                     @content-resize=${this._markdownLoaded}
-                    .content=${this._releaseNotes}
+                    .content=${this.stateObj.attributes.release_summary}
                     class=${this._markdownLoading ? "hidden" : ""}
                   ></ha-markdown>
                   ${this._markdownLoading ? this._renderLoader() : nothing}
                 `
               : nothing
-          : this.stateObj.attributes.release_summary
-            ? html`
-                <hr />
-                <ha-markdown
-                  @content-resize=${this._markdownLoaded}
-                  .content=${this.stateObj.attributes.release_summary}
-                  class=${this._markdownLoading ? "hidden" : ""}
-                ></ha-markdown>
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
-            : nothing}
+        }
       </div>
       <div class="footer">
-        ${createBackupTexts
-          ? html`
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">${createBackupTexts.title}</span>
-                  ${createBackupTexts.description
-                    ? html`
-                        <span slot="supporting-text">
-                          ${createBackupTexts.description}
-                        </span>
-                      `
-                    : nothing}
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._createBackup}
-                    @change=${this._createBackupChanged}
-                    .disabled=${updateIsInstalling(this.stateObj)}
-                  ></ha-switch>
-                </ha-md-list-item>
-              </ha-md-list>
-            `
-          : nothing}
+        <ha-more-info-update-backup
+          .stateObj=${this.stateObj}
+        ></ha-more-info-update-backup>
         <div class="actions">
-          ${this.stateObj.state === BINARY_STATE_OFF &&
-          this.stateObj.attributes.skipped_version
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._handleClearSkipped}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.clear_skipped"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._handleSkip}
-                  .disabled=${latestVersionIsSkipped(this.stateObj) ||
-                  this.stateObj.state === BINARY_STATE_OFF ||
-                  updateIsInstalling(this.stateObj)}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.skip"
-                  )}
-                </ha-button>
-              `}
-          ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
-            ? html`
-                <ha-button
-                  @click=${this._handleInstall}
-                  .loading=${updateIsInstalling(this.stateObj)}
-                  .disabled=${updateButtonIsDisabled(this.stateObj)}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.update"
-                  )}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this.stateObj.state === BINARY_STATE_OFF &&
+            this.stateObj.attributes.skipped_version
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._handleClearSkipped}
+                  >
+                    ${this._localize(
+                      "ui.dialogs.more_info_control.update.clear_skipped"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._handleSkip}
+                    .disabled=${
+                      latestVersionIsSkipped(this.stateObj) ||
+                      this.stateObj.state === BINARY_STATE_OFF ||
+                      updateIsInstalling(this.stateObj)
+                    }
+                  >
+                    ${this._localize("ui.dialogs.more_info_control.update.skip")}
+                  </ha-button>
+                `
+          }
+          ${
+            supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
+              ? html`
+                  <ha-button
+                    @click=${this._handleInstall}
+                    .loading=${updateIsInstalling(this.stateObj)}
+                    .disabled=${updateButtonIsDisabled(this.stateObj)}
+                  >
+                    ${this._localize(
+                      "ui.dialogs.more_info_control.update.update"
+                    )}
+                  </ha-button>
+                `
+              : nothing
+          }
         </div>
       </div>
     `;
@@ -351,21 +221,6 @@ class MoreInfoUpdate extends LitElement {
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES)) {
       this._fetchReleaseNotes();
     }
-    if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      this._fetchEntitySources().then(() => {
-        const type = getUpdateType(this.stateObj!, this._entitySources!);
-        if (
-          isComponentLoaded(this.hass, "hassio") &&
-          ["addon", "home_assistant", "home_assistant_os"].includes(type)
-        ) {
-          this._fetchUpdateBackupConfig(type);
-        }
-
-        if (this._isHaOrOsUpdate(type)) {
-          this._fetchBackupConfig();
-        }
-      });
-    }
   }
 
   private async _markdownLoaded() {
@@ -377,7 +232,7 @@ class MoreInfoUpdate extends LitElement {
   private async _fetchReleaseNotes() {
     try {
       this._releaseNotes = await updateReleaseNotes(
-        this.hass,
+        this._api,
         this.stateObj!.entity_id
       );
     } catch (err: any) {
@@ -385,19 +240,12 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  get _shouldCreateBackup(): boolean {
-    if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      return false;
-    }
-    return this._createBackup;
-  }
-
   private _handleInstall(): void {
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
 
-    if (this._shouldCreateBackup) {
+    if (this._backupElement?.createBackup ?? false) {
       installData.backup = true;
     }
 
@@ -408,32 +256,28 @@ class MoreInfoUpdate extends LitElement {
       installData.version = this.stateObj!.attributes.latest_version;
     }
 
-    this.hass.callService("update", "install", installData);
-  }
-
-  private _createBackupChanged(ev) {
-    this._createBackup = ev.target.checked;
+    this._api.callService("update", "install", installData);
   }
 
   private _handleSkip(): void {
     if (this.stateObj!.attributes.auto_update) {
       showAlertDialog(this, {
-        title: this.hass.localize(
+        title: this._localize(
           "ui.dialogs.more_info_control.update.auto_update_enabled_title"
         ),
-        text: this.hass.localize(
+        text: this._localize(
           "ui.dialogs.more_info_control.update.auto_update_enabled_text"
         ),
       });
       return;
     }
-    this.hass.callService("update", "skip", {
+    this._api.callService("update", "skip", {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
   private _handleClearSkipped(): void {
-    this.hass.callService("update", "clear_skipped", {
+    this._api.callService("update", "clear_skipped", {
       entity_id: this.stateObj!.entity_id,
     });
   }
@@ -448,14 +292,14 @@ class MoreInfoUpdate extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
     ha-expansion-panel {
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
 
     .summary {
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
 
     .row {
@@ -473,30 +317,16 @@ class MoreInfoUpdate extends LitElement {
       );
       position: sticky;
       bottom: 0;
-      margin: 0 -24px 0 -24px;
-      margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
+      margin: 0 calc(var(--ha-space-6) * -1) 0 calc(var(--ha-space-6) * -1);
+      margin-bottom: calc(
+        -1 * max(var(--safe-area-inset-bottom), var(--ha-space-6))
+      );
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
       overflow: hidden;
       z-index: 10;
-    }
-
-    ha-md-list {
-      width: 100%;
-      box-sizing: border-box;
-      margin-bottom: -16px;
-      margin-top: -4px;
-      --md-sys-color-surface: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
-      );
-    }
-
-    ha-md-list-item {
-      --md-list-item-leading-space: 24px;
-      --md-list-item-trailing-space: 24px;
     }
 
     .actions {
@@ -506,7 +336,7 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 16px;
+      padding: var(--ha-space-4);
       z-index: 1;
       gap: var(--ha-space-2);
     }
@@ -519,13 +349,9 @@ class MoreInfoUpdate extends LitElement {
       justify-content: center;
       align-items: center;
     }
-    mwc-linear-progress {
-      margin-bottom: -8px;
-      margin-top: 4px;
-    }
     ha-markdown {
       direction: ltr;
-      padding-bottom: 16px;
+      padding-bottom: var(--ha-space-4);
       box-sizing: border-box;
     }
     ha-markdown.hidden {
@@ -534,7 +360,7 @@ class MoreInfoUpdate extends LitElement {
     .loader {
       height: 80px;
       box-sizing: border-box;
-      padding-bottom: 16px;
+      padding-bottom: var(--ha-space-4);
     }
   `;
 }

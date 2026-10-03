@@ -1,26 +1,33 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
-import "../../../../../components/ha-form/ha-form";
 import { computeInitialHaFormData } from "../../../../../components/ha-form/compute-initial-ha-form-data";
+import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceCapabilities,
   DeviceTrigger,
-} from "../../../../../data/device_automation";
+} from "../../../../../data/device/device_automation";
 import {
+  deviceAutomationEditorMode,
+  fetchReplacementDevices,
+  fetchDeviceTriggers,
   deviceAutomationsEqual,
   fetchDeviceTriggerCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
-} from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+  localizeExtraFieldsComputeLabelCallback,
+} from "../../../../../data/device/device_automation";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-device")
@@ -35,9 +42,15 @@ export class HaDeviceTrigger extends LitElement {
 
   @state() private _capabilities?: DeviceCapabilities;
 
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  @state() private _replacementDeviceIds?: string[];
+
+  private _loadingCompositeSplits = false;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origTrigger?: DeviceTrigger;
 
@@ -53,9 +66,9 @@ export class HaDeviceTrigger extends LitElement {
   private _extraFieldsData = memoizeOne(
     (trigger: DeviceTrigger, capabilities: DeviceCapabilities) => {
       const extraFieldsData = computeInitialHaFormData(
-        capabilities.extra_fields
+        capabilities.extra_fields ?? []
       );
-      capabilities.extra_fields.forEach((item) => {
+      capabilities.extra_fields?.forEach((item) => {
         if (trigger[item.name] !== undefined) {
           extraFieldsData![item.name] = trigger[item.name];
         }
@@ -64,14 +77,19 @@ export class HaDeviceTrigger extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
-    if (!changedProperties.has("trigger")) {
-      return true;
+  public shouldUpdate(_changedProperties: PropertyValues<this>) {
+    const mode = deviceAutomationEditorMode(
+      this.hass,
+      this.trigger.device_id,
+      this._compositeSplits
+    );
+    if (mode === "loading") {
+      // The device is missing; wait for the composite split map before deciding
+      // whether it is a replaced device (editable) or genuinely unknown (YAML).
+      this._loadCompositeSplits();
+      return false;
     }
-    if (
-      this.trigger.device_id &&
-      !(this.trigger.device_id in this.hass.devices)
-    ) {
+    if (mode === "unknown-device") {
       fireEvent(
         this,
         "ui-mode-not-available",
@@ -86,12 +104,41 @@ export class HaDeviceTrigger extends LitElement {
     return true;
   }
 
+  private async _resolveReplacements(compositeSplits: DeviceCompositeSplits) {
+    this._replacementDeviceIds = await fetchReplacementDevices(
+      this.hass,
+      this._entityReg,
+      this.trigger,
+      compositeSplits,
+      fetchDeviceTriggers
+    );
+  }
+
+  private async _loadCompositeSplits() {
+    if (this._loadingCompositeSplits) {
+      return;
+    }
+    this._loadingCompositeSplits = true;
+    try {
+      // Resolve the candidates before exposing the split map, so the picker
+      // never offers one that cannot host the automation.
+      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      await this._resolveReplacements(compositeSplits);
+      this._compositeSplits = compositeSplits;
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
+  }
+
   protected render() {
     const deviceId = this._deviceId || this.trigger.device_id;
 
     return html`
       <ha-device-picker
         .value=${deviceId}
+        .replacementDeviceIds=${this._replacementDeviceIds}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
         .disabled=${this.disabled}
@@ -109,26 +156,41 @@ export class HaDeviceTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.device.trigger"
         )}
       ></ha-device-trigger-picker>
-      ${this._capabilities?.extra_fields
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.trigger, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
-                this.trigger
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
-                this.trigger
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.trigger, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.trigger
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.trigger
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    // The picked device only lives here until the configuration catches up.
+    // Once it points somewhere else, undo and redo included, it is stale.
+    const previous = changedProps.get("trigger");
+    if (previous && previous.device_id !== this.trigger.device_id) {
+      this._deviceId = undefined;
+      this._replacementDeviceIds = undefined;
+      if (this._compositeSplits) {
+        this._resolveReplacements(this._compositeSplits);
+      }
+    }
   }
 
   protected firstUpdated() {
@@ -141,7 +203,7 @@ export class HaDeviceTrigger extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (!changedProps.has("trigger")) {
       return;
     }
@@ -158,7 +220,7 @@ export class HaDeviceTrigger extends LitElement {
     const trigger = this.trigger;
 
     this._capabilities = trigger.domain
-      ? await fetchDeviceTriggerCapabilities(this.hass, trigger)
+      ? await fetchDeviceTriggerCapabilities(this.hass.callWS, trigger)
       : undefined;
 
     if (this._capabilities) {
@@ -178,6 +240,15 @@ export class HaDeviceTrigger extends LitElement {
 
   private _devicePicked(ev) {
     ev.stopPropagation();
+    // The automation exists as is on the replacement, so only the reference
+    // changes and the rest of the configuration is left untouched.
+    if (this._replacementDeviceIds?.includes(ev.target.value)) {
+      this._deviceId = undefined;
+      fireEvent(this, "value-changed", {
+        value: { ...this.trigger, device_id: ev.target.value },
+      });
+      return;
+    }
     this._deviceId = ev.target.value;
     if (this._deviceId === undefined) {
       fireEvent(this, "value-changed", {
@@ -195,9 +266,6 @@ export class HaDeviceTrigger extends LitElement {
     ) {
       trigger = this._origTrigger;
     }
-    if (this.trigger.id) {
-      trigger.id = this.trigger.id;
-    }
     fireEvent(this, "value-changed", { value: trigger });
   }
 
@@ -212,6 +280,10 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

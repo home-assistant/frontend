@@ -8,7 +8,7 @@ import type {
   RowClickedEvent,
   DataTableColumnContainer,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
@@ -106,6 +106,7 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config/integrations/integration/zeroconf"
         .columns=${this._columns(this.hass.localize)}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}

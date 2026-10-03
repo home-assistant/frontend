@@ -2,7 +2,8 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "./entity";
+import type { HomeAssistant } from "../types";
+import { UNAVAILABLE } from "./entity/entity";
 
 export type VacuumEntityState =
   | "on"
@@ -14,14 +15,13 @@ export type VacuumEntityState =
   | "returning"
   | "error";
 
-export const enum VacuumEntityFeature {
+export enum VacuumEntityFeature {
   TURN_ON = 1,
   TURN_OFF = 2,
   PAUSE = 4,
   STOP = 8,
   RETURN_HOME = 16,
   FAN_SPEED = 32,
-  BATTERY = 64,
   STATUS = 128,
   SEND_COMMAND = 256,
   LOCATE = 512,
@@ -29,11 +29,12 @@ export const enum VacuumEntityFeature {
   MAP = 2048,
   STATE = 4096,
   START = 8192,
+  CLEAN_AREA = 16384,
 }
 
 interface VacuumEntityAttributes extends HassEntityAttributeBase {
-  battery_level?: number;
-  fan_speed?: any;
+  fan_speed?: string;
+  fan_speed_list?: string[];
   [key: string]: any;
 }
 
@@ -62,3 +63,18 @@ export function canReturnHome(stateObj: VacuumEntity): boolean {
   }
   return stateObj.state !== "returning";
 }
+
+export interface Segment {
+  id: string;
+  name: string;
+  group: string | null;
+}
+
+export const getVacuumSegments = (
+  hass: HomeAssistant,
+  entity_id: string
+): Promise<{ segments: Segment[] }> =>
+  hass.callWS({
+    type: "vacuum/get_segments",
+    entity_id,
+  });

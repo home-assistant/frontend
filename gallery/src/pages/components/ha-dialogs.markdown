@@ -13,7 +13,7 @@ Our dialogs are based on the latest version of Material Design. Please note that
 
 - Dialogs have a max width of 560px. Alert and confirmation dialogs have a fixed width of 320px. If you need more width, consider a dedicated page instead.
 - The close X-icon is on the top left, on all screen sizes. Except for alert and confirmation dialogs, they only have buttons and no X-icon. This is different compared to the Material guidelines.
-- Dialogs can't be closed with ESC or clicked outside of the dialog when there is a form that the user needs to fill out. Instead it will animate "no" by a little shake.
+- Dialogs can't be closed with ESC or clicked outside of the dialog when there is a form that the user **has made changes to**. Instead it will animate "no" by a little shake.
 - Extra icon buttons are on the top right, for example help, settings and expand dialog. More than 2 icon buttons, they will be in an overflow menu.
 - The submit button is grouped with a cancel button at the bottom right, on all screen sizes. Fullscreen mobile dialogs have them sticky at the bottom.
 - Keep the labels short, for example `Save`, `Delete`, `Enable`.

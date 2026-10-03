@@ -1,7 +1,7 @@
 import {
   mdiBackupRestore,
   mdiFolder,
-  mdiInformation,
+  mdiInformationOutline,
   mdiNas,
   mdiPlayBox,
   mdiReload,
@@ -9,20 +9,20 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { getGraphColorByIndex } from "../../../common/color/colors";
+import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-alert";
+import "../../../components/ha-bar";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
@@ -43,11 +43,12 @@ import {
 } from "../../../data/supervisor/mounts";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { panelIsReady } from "../../../layouts/panel-ready";
 import type { HomeAssistant, Route } from "../../../types";
-import { roundWithOneDecimal } from "../../../util/calculate";
-import "../core/ha-config-analytics";
+import { bytesToString } from "../../../util/bytes-to-string";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
+import "./storage-breakdown-chart";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -65,11 +66,23 @@ class HaConfigSectionStorage extends LitElement {
 
   @state() private _mountsInfo?: SupervisorMounts | null;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  // Keyed by mount name. A missing key means the request is still in flight;
+  // null means it failed, and that row simply shows no usage.
+  @state() private _mountUsage: Record<string, HostDisksUsage | null> = {};
+
+  // Guards against a slow response from a previous reload landing in a newer one.
+  private _mountUsageGeneration = 0;
+
+  protected async firstUpdated(
+    changedProps: PropertyValues<this>
+  ): Promise<void> {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._load();
+    if (isComponentLoaded(this.hass.config, "hassio")) {
+      await this._load();
+    } else {
+      this._mountsInfo = null;
     }
+    await panelIsReady(this);
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -88,43 +101,50 @@ class HaConfigSectionStorage extends LitElement {
         .header=${this.hass.localize("ui.panel.config.storage.caption")}
       >
         <div class="content">
-          ${this._error
-            ? html`
-                <ha-alert alert-type="error"
-                  >${this._error.message || this._error.code}</ha-alert
-                >
-              `
-            : ""}
-          ${this._hostInfo
-            ? html`
-                <ha-card
-                  outlined
-                  .header=${this.hass.localize(
-                    "ui.panel.config.storage.disk_metrics"
-                  )}
-                >
-                  <div class="card-content">
-                    ${this._renderStorageMetrics(
-                      this._hostInfo,
-                      this._storageInfo
+          ${
+            this._error
+              ? html`
+                  <ha-alert alert-type="error"
+                    >${this._error.message || this._error.code}</ha-alert
+                  >
+                `
+              : ""
+          }
+          ${
+            this._hostInfo
+              ? html`
+                  <ha-card
+                    outlined
+                    .header=${this.hass.localize(
+                      "ui.panel.config.storage.disk_metrics"
                     )}
-                    ${this._renderDiskLifeTime(this._hostInfo.disk_life_time)}
-                  </div>
-                  ${this._hostInfo
-                    ? html`<div class="card-actions">
-                        <ha-button
-                          appearance="plain"
-                          @click=${this._moveDatadisk}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.storage.datadisk.title"
-                          )}
-                        </ha-button>
-                      </div>`
-                    : nothing}
-                </ha-card>
-              `
-            : ""}
+                  >
+                    <div class="card-content">
+                      <storage-breakdown-chart
+                        .hass=${this.hass}
+                        .hostInfo=${this._hostInfo}
+                        .storageInfo=${this._storageInfo}
+                      ></storage-breakdown-chart>
+                      ${this._renderDiskLifeTime(this._hostInfo.disk_life_time)}
+                    </div>
+                    ${
+                      this._hostInfo
+                        ? html`<div class="card-actions">
+                            <ha-button
+                              appearance="plain"
+                              @click=${this._moveDatadisk}
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.storage.datadisk.title"
+                              )}
+                            </ha-button>
+                          </div>`
+                        : nothing
+                    }
+                  </ha-card>
+                `
+              : ""
+          }
 
           <ha-card
             outlined
@@ -132,92 +152,112 @@ class HaConfigSectionStorage extends LitElement {
               "ui.panel.config.storage.network_mounts.title"
             )}
           >
-            ${this._mountsInfo === null
-              ? html`<ha-alert
-                  class="mounts-not-supported"
-                  alert-type="warning"
-                  .title=${this.hass.localize(
-                    "ui.panel.config.storage.network_mounts.not_supported.title"
-                  )}
-                >
-                  ${isHAOS
-                    ? html`${this.hass.localize(
-                          "ui.panel.config.storage.network_mounts.not_supported.os",
-                          { version: "10.2" }
+            ${
+              this._mountsInfo === null
+                ? html`<ha-alert
+                    class="mounts-not-supported"
+                    alert-type="warning"
+                    .title=${this.hass.localize(
+                      "ui.panel.config.storage.network_mounts.not_supported.title"
+                    )}
+                  >
+                    ${
+                      isHAOS
+                        ? html`${this.hass.localize(
+                              "ui.panel.config.storage.network_mounts.not_supported.os",
+                              { version: "10.2" }
+                            )}
+                            <ha-button
+                              appearance="plain"
+                              slot="action"
+                              @click=${this._navigateToUpdates}
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
+                              )}
+                            </ha-button>`
+                        : this.hass.localize(
+                            "ui.panel.config.storage.network_mounts.not_supported.supervised"
+                          )
+                    }
+                  </ha-alert>`
+                : validMounts?.length
+                  ? html`<ha-list>
+                      ${validMounts.map(
+                        (mount) => html`
+                          <ha-list-item
+                            graphic="avatar"
+                            .mount=${mount}
+                            twoline
+                            multiline-secondary
+                            hasMeta
+                            @click=${this._changeMount}
+                          >
+                            <div slot="graphic">
+                              <ha-svg-icon
+                                .path=${
+                                  mount.usage === SupervisorMountUsage.MEDIA
+                                    ? mdiPlayBox
+                                    : mount.usage === SupervisorMountUsage.SHARE
+                                      ? mdiFolder
+                                      : mdiBackupRestore
+                                }
+                              ></ha-svg-icon>
+                            </div>
+                            <span
+                              class="mount-state-${mount.state || "unknown"}"
+                            >
+                              ${mount.name}
+                            </span>
+                            <span slot="secondary">
+                              <span class="mount-address">
+                                ${mount.server}${
+                                  mount.port ? `:${mount.port}` : ""
+                                }${
+                                  mount.type === SupervisorMountType.NFS
+                                    ? mount.path
+                                    : `:${mount.share}`
+                                }
+                              </span>
+                              ${this._renderMountUsage(mount)}
+                            </span>
+                            ${
+                              mount.state !== SupervisorMountState.ACTIVE
+                                ? html`<ha-icon-button
+                                    class="reload-btn"
+                                    slot="meta"
+                                    .mount=${mount}
+                                    @click=${this._reloadMount}
+                                    .path=${mdiReload}
+                                  ></ha-icon-button>`
+                                : html`<ha-icon-next
+                                    slot="meta"
+                                  ></ha-icon-next>`
+                            }
+                          </ha-list-item>
+                        `
+                      )}
+                    </ha-list>`
+                  : html`<div class="no-mounts">
+                      <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.storage.network_mounts.no_mounts"
                         )}
-                        <ha-button
-                          appearance="plain"
-                          slot="action"
-                          @click=${this._navigateToUpdates}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
-                          )}
-                        </ha-button>`
-                    : this.hass.localize(
-                        "ui.panel.config.storage.network_mounts.not_supported.supervised"
-                      )}
-                </ha-alert>`
-              : validMounts?.length
-                ? html`<ha-list>
-                    ${validMounts.map(
-                      (mount) => html`
-                        <ha-list-item
-                          graphic="avatar"
-                          .mount=${mount}
-                          twoline
-                          hasMeta
-                          @click=${this._changeMount}
-                        >
-                          <div slot="graphic">
-                            <ha-svg-icon
-                              .path=${mount.usage === SupervisorMountUsage.MEDIA
-                                ? mdiPlayBox
-                                : mount.usage === SupervisorMountUsage.SHARE
-                                  ? mdiFolder
-                                  : mdiBackupRestore}
-                            ></ha-svg-icon>
-                          </div>
-                          <span class="mount-state-${mount.state || "unknown"}">
-                            ${mount.name}
-                          </span>
-                          <span slot="secondary">
-                            ${mount.server}${mount.port
-                              ? `:${mount.port}`
-                              : nothing}${mount.type === SupervisorMountType.NFS
-                              ? mount.path
-                              : `:${mount.share}`}
-                          </span>
-                          ${mount.state !== SupervisorMountState.ACTIVE
-                            ? html`<ha-icon-button
-                                class="reload-btn"
-                                slot="meta"
-                                .mount=${mount}
-                                @click=${this._reloadMount}
-                                .path=${mdiReload}
-                              ></ha-icon-button>`
-                            : html`<ha-icon-next slot="meta"></ha-icon-next>`}
-                        </ha-list-item>
-                      `
-                    )}
-                  </ha-list>`
-                : html`<div class="no-mounts">
-                    <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
-                    <p>
+                      </p>
+                    </div>`
+            }
+            ${
+              this._mountsInfo !== null
+                ? html`<div class="card-actions">
+                    <ha-button appearance="plain" @click=${this._addMount}>
                       ${this.hass.localize(
-                        "ui.panel.config.storage.network_mounts.no_mounts"
+                        "ui.panel.config.storage.network_mounts.add_title"
                       )}
-                    </p>
-                  </div>`}
-            ${this._mountsInfo !== null
-              ? html`<div class="card-actions">
-                  <ha-button appearance="plain" @click=${this._addMount}>
-                    ${this.hass.localize(
-                      "ui.panel.config.storage.network_mounts.add_title"
-                    )}
-                  </ha-button>
-                </div>`
-              : nothing}
+                    </ha-button>
+                  </div>`
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>
@@ -256,7 +296,7 @@ class HaConfigSectionStorage extends LitElement {
       >
         <ha-tooltip slot="extra">
           <ha-icon-button
-            .path=${mdiInformation}
+            .path=${mdiInformationOutline}
             class="help-button"
           ></ha-icon-button>
           <p class="metric-description" slot="content">
@@ -269,93 +309,37 @@ class HaConfigSectionStorage extends LitElement {
     `;
   }
 
-  private _renderStorageMetrics = memoizeOne(
-    (hostInfo?: HassioHostInfo, storageInfo?: HostDisksUsage | null) => {
-      if (!hostInfo) {
-        return nothing;
-      }
-      const computedStyles = getComputedStyle(this);
-      let totalSpaceGB = hostInfo.disk_total;
-      let usedSpaceGB = hostInfo.disk_used;
-      // hostInfo.disk_free is sometimes 0, so we may need to calculate it
-      let freeSpaceGB =
-        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
-      const segments: Segment[] = [];
-      if (storageInfo) {
-        const totalSpace =
-          storageInfo.total_bytes ?? this._gbToBytes(hostInfo.disk_total);
-        totalSpaceGB = this._bytesToGB(totalSpace);
-        usedSpaceGB = this._bytesToGB(storageInfo.used_bytes);
-        freeSpaceGB = this._bytesToGB(totalSpace - storageInfo.used_bytes);
-        storageInfo.children?.forEach((child, index) => {
-          if (child.used_bytes > 0) {
-            const space = this._bytesToGB(child.used_bytes);
-            segments.push({
-              value: space,
-              color: getGraphColorByIndex(index, computedStyles),
-              label: html`${this.hass.localize(
-                  `ui.panel.config.storage.segments.${child.id}`
-                ) ||
-                child.label ||
-                child.id}
-                <span style="color: var(--secondary-text-color)"
-                  >${roundWithOneDecimal(space)} GB</span
-                >`,
-            });
-          }
-        });
-      } else {
-        segments.push({
-          value: usedSpaceGB,
-          color: "var(--primary-color)",
-          label: html`${this.hass.localize(
-              "ui.panel.config.storage.segments.used"
-            )}
-            <span style="color: var(--secondary-text-color)"
-              >${roundWithOneDecimal(usedSpaceGB)} GB</span
-            >`,
-        });
-      }
-      segments.push({
-        value: freeSpaceGB,
-        color:
-          "var(--ha-bar-background-color, var(--secondary-background-color))",
-        label: html`${this.hass.localize(
-            "ui.panel.config.storage.segments.free"
-          )}
-          <span style="color: var(--secondary-text-color)"
-            >${roundWithOneDecimal(freeSpaceGB)} GB</span
-          >`,
-      });
-      return html`<ha-segmented-bar
-          .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
-          .description=${this.hass.localize(
-            "ui.panel.config.storage.detailed_description",
-            {
-              used: `${roundWithOneDecimal(usedSpaceGB)} GB`,
-              total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
-            }
-          )}
-          .segments=${segments}
-        ></ha-segmented-bar>
-
-        ${!storageInfo || storageInfo === null
-          ? html`<ha-alert alert-type="info">
-              <ha-spinner slot="icon"></ha-spinner>
-              ${this.hass.localize(
-                "ui.panel.config.storage.loading_detailed"
-              )}</ha-alert
-            >`
-          : nothing}`;
+  private _renderMountUsage(mount: SupervisorMount) {
+    if (mount.state !== SupervisorMountState.ACTIVE) {
+      return nothing;
     }
-  );
-
-  private _bytesToGB(bytes: number) {
-    return bytes / 1024 / 1024 / 1024;
-  }
-
-  private _gbToBytes(GB: number) {
-    return GB * 1024 * 1024 * 1024;
+    if (!(mount.name in this._mountUsage)) {
+      return html`<div class="mount-usage">
+        <ha-spinner size="tiny"></ha-spinner>
+      </div>`;
+    }
+    const usage = this._mountUsage[mount.name];
+    // Without a total there is no ratio to show, so show nothing rather than a
+    // bar that means something else.
+    if (!usage?.total_bytes) {
+      return nothing;
+    }
+    const percent = (usage.used_bytes / usage.total_bytes) * 100;
+    return html`<div class="mount-usage">
+      <ha-bar
+        class=${classMap({
+          "target-warning": percent > 85,
+          "target-critical": percent > 95,
+        })}
+        .value=${percent}
+      ></ha-bar>
+      <span>
+        ${this.hass.localize("ui.panel.config.storage.detailed_description", {
+          used: bytesToString(usage.used_bytes),
+          total: bytesToString(usage.total_bytes),
+        })}
+      </span>
+    </div>`;
   }
 
   private async _load() {
@@ -374,7 +358,7 @@ class HaConfigSectionStorage extends LitElement {
 
   private async _loadStorageInfo() {
     try {
-      this._storageInfo = await fetchHostDisksUsage(this.hass);
+      this._storageInfo = await fetchHostDisksUsage(this.hass, "default", 3);
     } catch (err: any) {
       this._error = err.message || err;
       this._storageInfo = null;
@@ -430,6 +414,34 @@ class HaConfigSectionStorage extends LitElement {
       this._error = err.message || err;
       this._mountsInfo = null;
     }
+    this._loadMountUsage();
+  }
+
+  // Deliberately not awaited: a mount on a slow or unreachable server can take
+  // ~30 s to answer, and the rows must paint before then. Only active mounts are
+  // asked, since the endpoint has nothing to report for the others.
+  private _loadMountUsage(): void {
+    const generation = ++this._mountUsageGeneration;
+    this._mountUsage = {};
+    this._mountsInfo?.mounts
+      .filter((mount) => mount.state === SupervisorMountState.ACTIVE)
+      .forEach((mount) => {
+        fetchHostDisksUsage(this.hass, mount.name).then(
+          (usage) => this._setMountUsage(generation, mount.name, usage),
+          () => this._setMountUsage(generation, mount.name, null)
+        );
+      });
+  }
+
+  private _setMountUsage(
+    generation: number,
+    name: string,
+    usage: HostDisksUsage | null
+  ): void {
+    if (generation !== this._mountUsageGeneration) {
+      return;
+    }
+    this._mountUsage = { ...this._mountUsage, [name]: usage };
   }
 
   static styles = css`
@@ -478,6 +490,43 @@ class HaConfigSectionStorage extends LitElement {
       color: var(--warning-color);
     }
 
+    /* multiline-secondary lets the secondary slot wrap, so the address keeps its
+       own single ellipsized line and only the usage sits below it. */
+    .mount-address {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mount-usage {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      margin-top: var(--ha-space-1);
+    }
+
+    .mount-usage ha-bar {
+      flex: 0 0 72px;
+      display: flex;
+      align-self: center;
+      --ha-bar-primary-color: var(--metric-bar-ok-color, var(--success-color));
+    }
+
+    .mount-usage ha-bar.target-warning {
+      --ha-bar-primary-color: var(
+        --metric-bar-warning-color,
+        var(--warning-color)
+      );
+    }
+
+    .mount-usage ha-bar.target-critical {
+      --ha-bar-primary-color: var(
+        --metric-bar-critical-color,
+        var(--error-color)
+      );
+    }
+
     .mounts-not-supported {
       padding: 0 16px 16px;
     }
@@ -492,7 +541,7 @@ class HaConfigSectionStorage extends LitElement {
     }
 
     .help-button {
-      --mdc-icon-button-size: 20px;
+      --ha-icon-button-size: 20px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
     }
@@ -522,10 +571,6 @@ class HaConfigSectionStorage extends LitElement {
 
     ha-alert {
       --ha-alert-icon-size: 24px;
-    }
-
-    ha-alert ha-spinner {
-      --ha-spinner-size: 24px;
     }
   `;
 }

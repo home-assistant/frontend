@@ -5,6 +5,7 @@ import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition } from "../common/validate-condition";
 import type { EntityFilterEntityConfig } from "../entity-rows/types";
 import type { DisplayType } from "./hui-entity-badge";
+import type { TimestampRenderingFormat } from "../components/types";
 
 export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
   type: "entity-filter";
@@ -23,7 +24,17 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
   name?: string;
   icon?: string;
   image?: string;
+  color?: string;
   show_name?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface ShortcutBadgeConfig extends LovelaceBadgeConfig {
+  text?: string;
+  icon?: string;
+  color?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -43,8 +54,26 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  time_format?: TimestampRenderingFormat;
   /**
    * @deprecated use `show_state`, `show_name`, `icon_type`
    */
   display_type?: DisplayType;
+}
+
+interface EnergyTotalBadgeConfig extends LovelaceBadgeConfig {
+  title?: string;
+  collection_key?: string;
+}
+
+export interface PowerTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "power-total";
+}
+
+export interface WaterTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "water-total";
+}
+
+export interface GasTotalBadgeConfig extends EnergyTotalBadgeConfig {
+  type: "gas-total";
 }

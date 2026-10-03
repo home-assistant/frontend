@@ -1,21 +1,24 @@
 import {
   mdiAccessPoint,
+  mdiAccountLock,
   mdiChatProcessing,
   mdiChatQuestion,
   mdiExportVariant,
 } from "@mdi/js";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { isComponentLoaded } from "../../../../../../common/config/is_component_loaded";
+import { navigate } from "../../../../../../common/navigate";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import {
   NetworkType,
   getMatterNodeDiagnostics,
 } from "../../../../../../data/matter";
 import type { HomeAssistant } from "../../../../../../types";
-import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
-import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
-import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
-import type { DeviceAction } from "../../../ha-config-device-page";
 import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
-import { navigate } from "../../../../../../common/navigate";
+import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
+import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
+import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
+import { showMatterLockManageDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-lock-manage";
+import type { DeviceAction } from "../../../ha-config-device-page";
 
 export const getMatterDeviceDefaultActions = (
   el: HTMLElement,
@@ -89,13 +92,33 @@ export const getMatterDeviceActions = async (
     });
   }
 
-  if (nodeDiagnostics.network_type === NetworkType.THREAD) {
+  if (
+    nodeDiagnostics.network_type === NetworkType.THREAD &&
+    isComponentLoaded(hass.config, "thread")
+  ) {
     actions.push({
       label: hass.localize(
         "ui.panel.config.matter.device_actions.view_thread_network"
       ),
       icon: mdiAccessPoint,
       action: () => navigate("/config/thread"),
+    });
+  }
+
+  // Check if this device has a lock entity and supports user management
+  const lockEntity = Object.values(hass.entities).find(
+    (entity) =>
+      entity.device_id === device.id && entity.entity_id.startsWith("lock.")
+  );
+
+  if (lockEntity) {
+    actions.push({
+      label: hass.localize("ui.panel.config.matter.device_actions.manage_lock"),
+      icon: mdiAccountLock,
+      action: () =>
+        showMatterLockManageDialog(el, {
+          entity_id: lockEntity.entity_id,
+        }),
     });
   }
 

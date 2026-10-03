@@ -7,7 +7,7 @@ import { customElement, property } from "lit/decorators";
 export class HaSpinner extends Spinner {
   @property() public size?: "tiny" | "small" | "medium" | "large";
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("size")) {

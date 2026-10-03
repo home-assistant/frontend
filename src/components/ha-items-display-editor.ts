@@ -8,10 +8,11 @@ import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
-import type { HomeAssistant } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
@@ -27,6 +28,7 @@ export interface DisplayItem {
   label: string;
   description?: string;
   disableSorting?: boolean;
+  disableHiding?: boolean;
 }
 
 export interface DisplayValue {
@@ -45,7 +47,9 @@ declare global {
 
 @customElement("ha-items-display-editor")
 export class HaItemDisplayEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public items: DisplayItem[] = [];
 
@@ -101,88 +105,108 @@ export class HaItemDisplayEditor extends LitElement {
                 icon,
                 iconPath,
                 disableSorting,
+                disableHiding,
               } = item;
               return html`
                 <ha-md-list-item
                   type="button"
-                  @click=${this.showNavigationButton
-                    ? this._navigate
-                    : undefined}
+                  @click=${
+                    this.showNavigationButton ? this._navigate : undefined
+                  }
                   .value=${value}
                   class=${classMap({
                     hidden: !isVisible,
                     draggable: isVisible && !disableSorting,
                     "drag-selected": this._dragIndex === idx,
                   })}
-                  @keydown=${isVisible && !disableSorting
-                    ? this._listElementKeydown
-                    : undefined}
+                  @keydown=${
+                    isVisible && !disableSorting
+                      ? this._listElementKeydown
+                      : undefined
+                  }
                   .idx=${idx}
                 >
                   <span slot="headline">${label}</span>
-                  ${description
-                    ? html`<span slot="supporting-text">${description}</span>`
-                    : nothing}
-                  ${!showIcon
-                    ? nothing
-                    : icon
-                      ? html`
-                          <ha-icon
-                            class="icon"
-                            .icon=${until(icon, "")}
-                            slot="start"
-                          ></ha-icon>
-                        `
-                      : iconPath
+                  ${
+                    description
+                      ? html`<span slot="supporting-text">${description}</span>`
+                      : nothing
+                  }
+                  ${
+                    !showIcon
+                      ? nothing
+                      : icon
                         ? html`
-                            <ha-svg-icon
+                            <ha-icon
                               class="icon"
-                              .path=${iconPath}
+                              .icon=${until(icon, "")}
                               slot="start"
-                            ></ha-svg-icon>
+                            ></ha-icon>
                           `
-                        : nothing}
-                  ${this.showNavigationButton
-                    ? html`
-                        <ha-icon-next slot="end"></ha-icon-next>
-                        <div slot="end" class="separator"></div>
-                      `
-                    : nothing}
-                  ${this.actionsRenderer
-                    ? html`
-                        <div slot="end" @click=${stopPropagation}>
-                          ${this.actionsRenderer(item)}
-                        </div>
-                      `
-                    : nothing}
-                  <ha-icon-button
-                    .path=${isVisible ? mdiEye : mdiEyeOff}
-                    slot="end"
-                    .label=${this.hass.localize(
-                      `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
-                      {
-                        label: label,
-                      }
-                    )}
-                    .value=${value}
-                    @click=${this._toggle}
-                  ></ha-icon-button>
-                  ${isVisible && !disableSorting
-                    ? html`
-                        <ha-svg-icon
-                          tabindex=${ifDefined(
-                            this.showNavigationButton ? "0" : undefined
-                          )}
-                          .idx=${idx}
-                          @keydown=${this.showNavigationButton
-                            ? this._dragHandleKeydown
-                            : undefined}
-                          class="handle"
-                          .path=${mdiDragHorizontalVariant}
+                        : iconPath
+                          ? html`
+                              <ha-svg-icon
+                                class="icon"
+                                .path=${iconPath}
+                                slot="start"
+                              ></ha-svg-icon>
+                            `
+                          : nothing
+                  }
+                  ${
+                    this.showNavigationButton
+                      ? html`
+                          <ha-icon-next slot="end"></ha-icon-next>
+                          <div slot="end" class="separator"></div>
+                        `
+                      : nothing
+                  }
+                  ${
+                    this.actionsRenderer
+                      ? html`
+                          <div slot="end" @click=${stopPropagation}>
+                            ${this.actionsRenderer(item)}
+                          </div>
+                        `
+                      : nothing
+                  }
+                  ${
+                    !isVisible || !disableHiding
+                      ? html`<ha-icon-button
+                          .path=${isVisible ? mdiEye : mdiEyeOff}
                           slot="end"
-                        ></ha-svg-icon>
-                      `
-                    : html`<ha-svg-icon slot="end"></ha-svg-icon>`}
+                          .label=${this._localize(
+                            `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
+                            {
+                              label: label,
+                            }
+                          )}
+                          .value=${value}
+                          @click=${this._toggle}
+                          .disabled=${disableHiding || false}
+                        ></ha-icon-button>`
+                      : nothing
+                  }
+                  ${
+                    isVisible && !disableSorting
+                      ? html`
+                          <ha-svg-icon
+                            tabindex=${ifDefined(
+                              this.showNavigationButton ? "0" : undefined
+                            )}
+                            .idx=${idx}
+                            @keydown=${
+                              this.showNavigationButton
+                                ? this._dragHandleKeydown
+                                : undefined
+                            }
+                            class="handle"
+                            .path=${mdiDragHorizontalVariant}
+                            slot="end"
+                          ></ha-svg-icon>
+                        `
+                      : html`<ha-svg-icon slot="end"></ha-svg-icon>`
+                  }
                 </ha-md-list-item>
               `;
             }
@@ -309,6 +333,7 @@ export class HaItemDisplayEditor extends LitElement {
     // refocus the item after the sort
     setTimeout(async () => {
       await this.updateComplete;
+      // eslint-disable-next-line lit/prefer-query-decorators
       const selectedElement = this.shadowRoot?.querySelector(
         `ha-md-list-item:nth-child(${this._dragIndex! + 1})`
       ) as HTMLElement | null;

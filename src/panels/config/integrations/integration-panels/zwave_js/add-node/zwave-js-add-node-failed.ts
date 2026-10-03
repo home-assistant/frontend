@@ -22,23 +22,29 @@ export class ZWaveJsAddNodeFailed extends LitElement {
           "ui.panel.config.zwave_js.add_node.inclusion_failed"
         )}
       >
-        ${this.error ||
-        this.hass.localize("ui.panel.config.zwave_js.add_node.check_logs")}
+        ${
+          this.error ||
+          this.hass.localize("ui.panel.config.zwave_js.add_node.check_logs")
+        }
       </ha-alert>
-      ${this.error
-        ? html`<div class="note">
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.check_logs"
-            )}
-          </div>`
-        : nothing}
-      ${this.device?.id
-        ? html`<ha-button href=${`/config/devices/device/${this.device.id}`}>
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.view_device"
-            )}
-          </ha-button>`
-        : nothing}
+      ${
+        this.error
+          ? html`<div class="note">
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.add_node.check_logs"
+              )}
+            </div>`
+          : nothing
+      }
+      ${
+        this.device?.id
+          ? html`<ha-button href=${`/config/devices/device/${this.device.id}`}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.add_node.view_device"
+              )}
+            </ha-button>`
+          : nothing
+      }
     `;
   }
 

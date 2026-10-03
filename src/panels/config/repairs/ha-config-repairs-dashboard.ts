@@ -1,28 +1,29 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import "./ha-config-repairs";
 import { showIntegrationStartupDialog } from "./show-integration-startup-dialog";
 import { showSystemInformationDialog } from "./show-system-information-dialog";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-repairs-dashboard")
 class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
@@ -31,6 +32,8 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _repairsIssues: RepairsIssue[] = [];
+
+  @state() private _loaded = false;
 
   @state() private _showIgnored = false;
 
@@ -58,6 +61,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         this._repairsIssues = repairs.issues.sort(
           (a, b) => severitySort[a.severity] - severitySort[b.severity]
         );
+        this._loaded = true;
         const integrations = new Set<string>();
         for (const issue of this._repairsIssues) {
           integrations.add(issue.domain);
@@ -68,6 +72,10 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    if (!this._loaded) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
     const issues = this._getFilteredIssues(
       this._showIgnored,
       this._repairsIssues
@@ -81,59 +89,64 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu multi>
+          <ha-dropdown @wa-select=${this._handleDropdownSelect}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-check-list-item
-              left
-              @request-selected=${this._toggleIgnored}
-              .selected=${this._showIgnored}
+            <ha-dropdown-item
+              type="checkbox"
+              value="toggle_ignored"
+              .checked=${this._showIgnored}
             >
               ${this.hass.localize("ui.panel.config.repairs.show_ignored")}
-            </ha-check-list-item>
-            <li divider role="separator"></li>
-            ${isComponentLoaded(this.hass, "system_health") ||
-            isComponentLoaded(this.hass, "hassio")
-              ? html`
-                  <ha-list-item
-                    @request-selected=${this._showSystemInformationDialog}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.repairs.system_information"
-                    )}
-                  </ha-list-item>
-                `
-              : ""}
-            <ha-list-item
-              @request-selected=${this._showIntegrationStartupDialog}
-            >
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
+            ${
+              isComponentLoaded(this.hass.config, "system_health") ||
+              isComponentLoaded(this.hass.config, "hassio")
+                ? html`
+                    <ha-dropdown-item value="system_information">
+                      ${this.hass.localize(
+                        "ui.panel.config.repairs.system_information"
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
+            <ha-dropdown-item value="integration_startup_time">
               ${this.hass.localize(
                 "ui.panel.config.repairs.integration_startup_time"
               )}
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
-              ${issues.length
-                ? html`
-                    <ha-config-repairs
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .repairsIssues=${issues}
-                    ></ha-config-repairs>
-                  `
-                : html`
-                    <div class="no-repairs">
-                      ${this.hass.localize(
-                        "ui.panel.config.repairs.no_repairs"
-                      )}
-                    </div>
-                  `}
+              ${
+                issues.length
+                  ? html`
+                      <div class="title" role="heading" aria-level="2">
+                        ${this.hass.localize("ui.panel.config.repairs.title", {
+                          count: issues.length,
+                        })}
+                      </div>
+                      <ha-config-repairs
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .repairsIssues=${issues}
+                      ></ha-config-repairs>
+                    `
+                  : html`
+                      <div class="no-repairs">
+                        ${this.hass.localize(
+                          "ui.panel.config.repairs.no_repairs"
+                        )}
+                      </div>
+                    `
+              }
             </div>
           </ha-card>
         </div>
@@ -141,32 +154,32 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _showSystemInformationDialog(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _showSystemInformationDialog(): void {
     showSystemInformationDialog(this);
   }
 
-  private _showIntegrationStartupDialog(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _showIntegrationStartupDialog(): void {
     showIntegrationStartupDialog(this);
   }
 
-  private _toggleIgnored(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-
+  private _toggleIgnored(): void {
     this._showIgnored = !this._showIgnored;
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    switch (action) {
+      case "toggle_ignored":
+        this._toggleIgnored();
+        break;
+      case "system_information":
+        this._showSystemInformationDialog();
+        break;
+      case "integration_startup_time":
+        this._showIntegrationStartupDialog();
+        break;
+    }
   }
 
   static styles = css`
@@ -191,6 +204,11 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
       justify-content: space-between;
       flex-direction: column;
       padding: 0;
+    }
+
+    .title {
+      padding: var(--ha-space-4) var(--ha-space-4) 0;
+      font-size: var(--ha-font-size-l);
     }
 
     .no-repairs {

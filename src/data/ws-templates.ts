@@ -24,6 +24,7 @@ interface TemplatePreviewState {
   state: string;
   attributes: Record<string, any>;
   listeners: TemplateListeners;
+  domain?: string;
 }
 
 interface TemplatePreviewError {

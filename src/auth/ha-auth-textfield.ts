@@ -1,261 +1,251 @@
-/* eslint-disable lit/value-after-constraints */
 /* eslint-disable lit/prefer-static-styles */
-import { floatingLabel } from "@material/mwc-floating-label/mwc-floating-label-directive";
-import type { TemplateResult } from "lit";
-import { html } from "lit";
-import { customElement } from "lit/decorators";
+import { mdiEye, mdiEyeOff } from "@mdi/js";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { live } from "lit/directives/live";
-import { HaTextField } from "../components/ha-textfield";
+import { stopPropagation } from "../common/dom/stop_propagation";
+import "../components/ha-icon-button";
+import { WaInputMixin } from "../components/input/wa-input-mixin";
 
+/**
+ * Text field for the login page. It renders the native input in the light DOM
+ * so browsers and password manager extensions can find it (#51620).
+ */
 @customElement("ha-auth-textfield")
-export class HaAuthTextField extends HaTextField {
-  protected renderLabel(): TemplateResult | string {
-    return !this.label
-      ? ""
-      : html`
-          <span
-            .floatingLabelFoundation=${floatingLabel(
-              this.label
-            ) as unknown as any}
-            .id=${this.name}
-            >${this.label}</span
-          >
-        `;
+export class HaAuthTextField extends WaInputMixin(LitElement) {
+  @property() public type: "text" | "password" | "email" | "url" = "text";
+
+  @property({ type: Boolean, attribute: "password-toggle" })
+  public passwordToggle = false;
+
+  @property({ attribute: false }) public showPasswordLabel?: string;
+
+  @property({ attribute: false }) public hidePasswordLabel?: string;
+
+  @state() private _passwordVisible = false;
+
+  @query("input") private _input?: HTMLInputElement;
+
+  protected override get _formControl(): HTMLInputElement | undefined {
+    return this._input;
   }
 
-  protected renderInput(shouldRenderHelperText: boolean): TemplateResult {
-    const minOrUndef = this.minLength === -1 ? undefined : this.minLength;
-    const maxOrUndef = this.maxLength === -1 ? undefined : this.maxLength;
-    const autocapitalizeOrUndef = this.autocapitalize
-      ? (this.autocapitalize as
-          | "off"
-          | "none"
-          | "on"
-          | "sentences"
-          | "words"
-          | "characters")
-      : undefined;
-    const showValidationMessage = this.validationMessage && !this.isUiValid;
-    const ariaLabelledbyOrUndef = this.label ? this.name : undefined;
-    const ariaControlsOrUndef = shouldRenderHelperText
-      ? "helper-text"
-      : undefined;
-    const ariaDescribedbyOrUndef =
-      this.focused || this.helperPersistent || showValidationMessage
-        ? "helper-text"
-        : undefined;
-    // TODO: live() directive needs casting for lit-analyzer
-    // https://github.com/runem/lit-analyzer/pull/91/files
-    // TODO: lit-analyzer labels min/max as (number|string) instead of string
-    return html`<input
-      aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
-      aria-controls=${ifDefined(ariaControlsOrUndef)}
-      aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
-      class="mdc-text-field__input"
-      type=${this.type}
-      .value=${live(this.value) as unknown as string}
-      ?disabled=${this.disabled}
-      placeholder=${this.placeholder}
-      ?required=${this.required}
-      ?readonly=${this.readOnly}
-      minlength=${ifDefined(minOrUndef)}
-      maxlength=${ifDefined(maxOrUndef)}
-      pattern=${ifDefined(this.pattern ? this.pattern : undefined)}
-      min=${ifDefined(this.min === "" ? undefined : (this.min as number))}
-      max=${ifDefined(this.max === "" ? undefined : (this.max as number))}
-      step=${ifDefined(this.step === null ? undefined : (this.step as number))}
-      size=${ifDefined(this.size === null ? undefined : this.size)}
-      name=${ifDefined(this.name === "" ? undefined : this.name)}
-      inputmode=${ifDefined(this.inputMode)}
-      autocapitalize=${ifDefined(autocapitalizeOrUndef)}
-      ?autofocus=${this.autofocus}
-      @input=${this.handleInputChange}
-      @focus=${this.onInputFocus}
-      @blur=${this.onInputBlur}
-    />`;
-  }
-
-  public render() {
-    return html`
-      <style>
-        ha-auth-textfield {
-          display: inline-flex;
-          flex-direction: column;
-          outline: none;
-        }
-        ha-auth-textfield:not([disabled]):hover
-          :not(.mdc-text-field--invalid):not(.mdc-text-field--focused)
-          mwc-notched-outline {
-          --mdc-notched-outline-border-color: var(
-            --mdc-text-field-outlined-hover-border-color,
-            rgba(0, 0, 0, 0.87)
-          );
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field:not(.mdc-text-field--outlined) {
-          background-color: var(--mdc-text-field-fill-color, whitesmoke);
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--invalid
-          mwc-notched-outline {
-          --mdc-notched-outline-border-color: var(
-            --mdc-text-field-error-color,
-            var(--mdc-theme-error, #b00020)
-          );
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--invalid
-          + .mdc-text-field-helper-line
-          .mdc-text-field-character-counter,
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--invalid
-          .mdc-text-field__icon {
-          color: var(
-            --mdc-text-field-error-color,
-            var(--mdc-theme-error, #b00020)
-          );
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field:not(.mdc-text-field--invalid):not(
-            .mdc-text-field--focused
-          )
-          .mdc-floating-label,
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field:not(.mdc-text-field--invalid):not(
-            .mdc-text-field--focused
-          )
-          .mdc-floating-label::after {
-          color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--focused
-          mwc-notched-outline {
-          --mdc-notched-outline-stroke-width: 2px;
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--focused:not(.mdc-text-field--invalid)
-          mwc-notched-outline {
-          --mdc-notched-outline-border-color: var(
-            --mdc-text-field-focused-label-color,
-            var(--mdc-theme-primary, rgba(98, 0, 238, 0.87))
-          );
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--focused:not(.mdc-text-field--invalid)
-          .mdc-floating-label {
-          color: #6200ee;
-          color: var(--mdc-theme-primary, #6200ee);
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field
-          .mdc-text-field__input {
-          color: var(--mdc-text-field-ink-color, rgba(0, 0, 0, 0.87));
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field
-          .mdc-text-field__input::placeholder {
-          color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-        }
-
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field-helper-line
-          .mdc-text-field-helper-text:not(
-            .mdc-text-field-helper-text--validation-msg
-          ),
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field-helper-line:not(.mdc-text-field--invalid)
-          .mdc-text-field-character-counter {
-          color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-        }
-
-        ha-auth-textfield[disabled]
-          .mdc-text-field:not(.mdc-text-field--outlined) {
-          background-color: var(--mdc-text-field-disabled-fill-color, #fafafa);
-        }
-
-        ha-auth-textfield[disabled]
-          .mdc-text-field.mdc-text-field--outlined
-          mwc-notched-outline {
-          --mdc-notched-outline-border-color: var(
-            --mdc-text-field-outlined-disabled-border-color,
-            rgba(0, 0, 0, 0.06)
-          );
-        }
-
-        ha-auth-textfield[disabled]
-          .mdc-text-field:not(.mdc-text-field--invalid):not(
-            .mdc-text-field--focused
-          )
-          .mdc-floating-label,
-        ha-auth-textfield[disabled]
-          .mdc-text-field:not(.mdc-text-field--invalid):not(
-            .mdc-text-field--focused
-          )
-          .mdc-floating-label::after {
-          color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.38));
-        }
-
-        ha-auth-textfield[disabled] .mdc-text-field .mdc-text-field__input,
-        ha-auth-textfield[disabled]
-          .mdc-text-field
-          .mdc-text-field__input::placeholder {
-          color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.38));
-        }
-
-        ha-auth-textfield[disabled]
-          .mdc-text-field-helper-line
-          .mdc-text-field-helper-text,
-        ha-auth-textfield[disabled]
-          .mdc-text-field-helper-line
-          .mdc-text-field-character-counter {
-          color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.38));
-        }
-        ha-auth-textfield:not([disabled])
-          .mdc-text-field.mdc-text-field--focused:not(.mdc-text-field--invalid)
-          .mdc-floating-label {
-          color: var(--mdc-theme-primary, #6200ee);
-        }
-        ha-auth-textfield[no-spinner] input::-webkit-outer-spin-button,
-        ha-auth-textfield[no-spinner] input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-
-        /* Firefox */
-        ha-auth-textfield[no-spinner] input[type="number"] {
-          -moz-appearance: textfield;
-        }
-      </style>
-      ${super.render()}
-    `;
-  }
-
-  protected createRenderRoot() {
-    // add parent style to light dom
-    const style = document.createElement("style");
-    style.textContent = HaTextField.elementStyles as unknown as string;
-    this.append(style);
+  protected override createRenderRoot() {
     return this;
   }
 
-  public firstUpdated() {
-    super.firstUpdated();
-
+  protected override firstUpdated(changedProps: PropertyValues<this>): void {
+    super.firstUpdated(changedProps);
     if (this.autofocus) {
       this.focus();
     }
   }
+
+  public override focus(): void {
+    this._input?.focus();
+  }
+
+  public override checkValidity(): boolean {
+    return this._input?.checkValidity() ?? true;
+  }
+
+  public override reportValidity(): boolean {
+    // Adopt a value a password manager wrote to the input without events.
+    this._handleInput();
+    return super.reportValidity();
+  }
+
+  protected override render(): TemplateResult {
+    const invalid = this.invalid || this._invalid;
+    const hintId = this.name ? `${this.name}-hint` : undefined;
+
+    // The blank placeholder lets :placeholder-shown raise the label when a
+    // password manager fills the field without firing events.
+    return html`
+      <style>
+        ${styles.cssText}
+      </style>
+      <div class=${classMap({ base: true, invalid, disabled: this.disabled })}>
+        <input
+          id=${ifDefined(this.name)}
+          name=${ifDefined(this.name)}
+          type=${
+            this.type === "password" && this._passwordVisible
+              ? "text"
+              : this.type
+          }
+          placeholder=" "
+          autocomplete=${ifDefined(this.autocomplete)}
+          ?required=${this.required}
+          ?disabled=${this.disabled}
+          .value=${this.value ?? ""}
+          aria-describedby=${ifDefined(hintId)}
+          aria-invalid=${ifDefined(invalid ? "true" : undefined)}
+          @input=${this._handleInput}
+          @change=${this._handleChange}
+          @blur=${this._handleBlur}
+        />
+        <label for=${ifDefined(this.name)}
+          >${this._renderLabel(this.label ?? "", this.required)}</label
+        >
+        ${
+          this.passwordToggle && !this.disabled
+            ? html`<ha-icon-button
+                .path=${this._passwordVisible ? mdiEyeOff : mdiEye}
+                .label=${
+                  this._passwordVisible
+                    ? this.hidePasswordLabel
+                    : this.showPasswordLabel
+                }
+                @click=${this._togglePasswordVisibility}
+                @keypress=${stopPropagation}
+              ></ha-icon-button>`
+            : nothing
+        }
+      </div>
+      <div
+        id=${ifDefined(hintId)}
+        class=${classMap({ hint: true, error: invalid })}
+        role=${ifDefined(invalid ? "alert" : undefined)}
+        aria-live="polite"
+      >
+        ${
+          invalid
+            ? this.validationMessage || this._input?.validationMessage
+            : this.hint
+        }
+      </div>
+    `;
+  }
+
+  private _togglePasswordVisibility(): void {
+    this._passwordVisible = !this._passwordVisible;
+  }
 }
+
+const styles = css`
+  ha-auth-textfield {
+    display: block;
+    padding-bottom: var(--ha-space-2);
+    text-align: start;
+  }
+  ha-auth-textfield .base {
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 56px;
+    padding: 0 var(--ha-space-4);
+    background-color: var(--ha-color-form-background);
+    border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-sm)
+      var(--ha-border-radius-square) var(--ha-border-radius-square);
+    cursor: text;
+    transition: background-color var(--wa-transition-normal) ease-in-out;
+  }
+  ha-auth-textfield .base:hover {
+    background-color: var(--ha-color-form-background-hover);
+  }
+  ha-auth-textfield .base.disabled {
+    background-color: var(--ha-color-form-background-disabled);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  ha-auth-textfield .base::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--ha-color-border-neutral-loud);
+    transition:
+      height var(--wa-transition-normal) ease-in-out,
+      background-color var(--wa-transition-normal) ease-in-out;
+  }
+  ha-auth-textfield .base:focus-within::after {
+    height: 2px;
+    background-color: var(--primary-color);
+  }
+  ha-auth-textfield .base.invalid:not(.disabled)::after {
+    background-color: var(--ha-color-border-danger-normal);
+  }
+  ha-auth-textfield label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: var(--ha-space-5) var(--ha-space-4) 0;
+    pointer-events: none;
+    font-family: var(--ha-font-family-body);
+    font-size: var(--ha-font-size-m);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-condensed);
+    color: var(--secondary-text-color);
+    transition: all var(--wa-transition-normal) ease-in-out;
+  }
+  ha-auth-textfield input:focus + label,
+  ha-auth-textfield input:not(:placeholder-shown) + label {
+    padding-top: var(--ha-space-3);
+    font-size: var(--ha-font-size-xs);
+  }
+  ha-auth-textfield .base:focus-within label {
+    color: var(--primary-color);
+  }
+  ha-auth-textfield .base.invalid:not(.disabled) label {
+    color: var(--ha-color-fill-danger-loud-resting);
+  }
+  ha-auth-textfield .base.disabled label {
+    opacity: 0.5;
+  }
+  ha-auth-textfield input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: var(--ha-space-3) 0 0;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: var(--primary-text-color);
+    font-family: var(--ha-font-family-body);
+    font-size: var(--ha-font-size-m);
+    -webkit-appearance: none;
+    box-sizing: border-box;
+  }
+  ha-auth-textfield input:-webkit-autofill,
+  ha-auth-textfield input:-webkit-autofill:hover,
+  ha-auth-textfield input:-webkit-autofill:focus,
+  ha-auth-textfield input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--primary-text-color);
+    background-color: transparent;
+    box-shadow: none;
+    caret-color: var(--primary-text-color);
+  }
+  ha-auth-textfield input::-ms-reveal {
+    display: none;
+  }
+  ha-auth-textfield ha-icon-button {
+    display: flex;
+    align-items: center;
+    color: var(--ha-color-text-secondary);
+  }
+  ha-auth-textfield .hint {
+    display: flex;
+    align-items: center;
+    min-height: var(--ha-space-5);
+    margin-inline-start: var(--ha-space-3);
+    font-size: var(--ha-font-size-s);
+    color: var(--ha-color-text-secondary);
+  }
+  ha-auth-textfield .hint.error {
+    color: var(--ha-color-on-danger-quiet);
+  }
+`;
 
 declare global {
   interface HTMLElementTagNameMap {

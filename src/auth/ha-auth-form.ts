@@ -1,19 +1,22 @@
 /* eslint-disable lit/prefer-static-styles */
 import { html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { HaForm } from "../components/ha-form/ha-form";
 import "./ha-auth-form-string";
-import type { LocalizeFunc } from "../common/translations/localize";
 
 const localizeBaseKey = "ui.panel.page-authorize.form";
 
 @customElement("ha-auth-form")
 export class HaAuthForm extends HaForm {
-  @property({ attribute: false }) public localize?: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected getFormProperties(): Record<string, any> {
     return {
-      localize: this.localize,
+      localize: this._localize,
       localizeBaseKey,
     };
   }
@@ -34,6 +37,9 @@ export class HaAuthForm extends HaForm {
   protected render() {
     return html`
       <style>
+        ha-auth-form {
+          --ha-input-required-marker: "";
+        }
         ha-auth-form .root > * {
           display: block;
         }

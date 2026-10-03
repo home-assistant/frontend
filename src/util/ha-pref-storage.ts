@@ -8,8 +8,9 @@ const STORED_STATE = [
   "debugConnection",
   "suspendWhenHidden",
   "enableShortcuts",
-  "defaultPanel",
-];
+] as const;
+
+type StoredHomeAssistant = Pick<HomeAssistant, (typeof STORED_STATE)[number]>;
 
 export function storeState(hass: HomeAssistant) {
   try {
@@ -31,13 +32,27 @@ export function storeState(hass: HomeAssistant) {
   }
 }
 
-export function getState() {
-  const state = {};
+export function getState(): Partial<StoredHomeAssistant> {
+  const state = {} as Partial<StoredHomeAssistant>;
 
   STORED_STATE.forEach((key) => {
     const storageItem = window.localStorage.getItem(key);
     if (storageItem !== null) {
-      let value = JSON.parse(storageItem);
+      let value;
+      try {
+        value = JSON.parse(storageItem);
+      } catch (_err: any) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Failed to json parse localStorage key: ${key}. Key value: ${storageItem}`,
+          _err
+        );
+        window.localStorage.removeItem(key);
+        if (key === "selectedTheme") {
+          state[key] = { theme: "" };
+        }
+        return;
+      }
       // selectedTheme went from string to object on 20200718
       if (key === "selectedTheme" && typeof value === "string") {
         value = { theme: value };
@@ -54,4 +69,12 @@ export function getState() {
 
 export function clearState() {
   window.localStorage.clear();
+}
+
+export function clearSelectedThemeState() {
+  try {
+    window.localStorage.removeItem("selectedTheme");
+  } catch (_err: any) {
+    // Ignore storage errors (private mode, full storage).
+  }
 }

@@ -3,13 +3,10 @@ import { customElement, property } from "lit/decorators";
 import { hex2rgb, rgb2hex } from "../../common/color/convert-color";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ColorRGBSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
-import "../ha-textfield";
+import "../input/ha-input";
 
 @customElement("ha-selector-color_rgb")
 export class HaColorRGBSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: ColorRGBSelector;
 
   @property() public value?: string;
@@ -24,16 +21,15 @@ export class HaColorRGBSelector extends LitElement {
 
   protected render() {
     return html`
-      <ha-textfield
+      <ha-input
         type="color"
-        helperPersistent
         .value=${this.value ? rgb2hex(this.value as any) : ""}
         .label=${this.label || ""}
         .required=${this.required}
-        .helper=${this.helper}
+        .hint=${this.helper}
         .disabled=${this.disabled}
         @change=${this._valueChanged}
-      ></ha-textfield>
+      ></ha-input>
     `;
   }
 
@@ -50,11 +46,10 @@ export class HaColorRGBSelector extends LitElement {
       justify-content: flex-end;
       align-items: center;
     }
-    ha-textfield {
-      --text-field-padding: 8px;
+    ha-input {
       min-width: 75px;
       flex-grow: 1;
-      margin: 0 4px;
+      margin: 0 var(--ha-space-1);
     }
   `;
 }

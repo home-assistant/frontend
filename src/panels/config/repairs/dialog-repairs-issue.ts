@@ -4,15 +4,19 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
+import {
+  isHomeAssistantUrl,
+  sanitizeLinkUrl,
+} from "../../../common/url/sanitize-http-url";
 import "../../../components/ha-alert";
-import "../../../components/ha-wa-dialog";
 import "../../../components/ha-button";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
+import "../../../components/ha-svg-icon";
 import type { RepairsIssue } from "../../../data/repairs";
 import { ignoreRepairsIssue } from "../../../data/repairs";
+import "../../../dialogs/repairs-flow/dialog-repairs-issue-subtitle";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
@@ -52,20 +56,25 @@ class DialogRepairsIssue extends LitElement {
       return nothing;
     }
 
-    const learnMoreUrlIsHomeAssistant =
-      this._issue.learn_more_url?.startsWith("homeassistant://") || false;
+    const learnMoreUrlIsHomeAssistant = isHomeAssistantUrl(
+      this._issue.learn_more_url
+    );
+    const learnMoreUrl = sanitizeLinkUrl(this._issue.learn_more_url);
 
-    const dialogTitle =
-      this.hass.localize(
-        `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.title`,
-        this._issue.translation_placeholders || {}
-      ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
+    const issueTitle = this.hass.localize(
+      `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.title`,
+      this._issue.translation_placeholders || {}
+    );
+
+    const shortIssueTitle = this.hass.localize(
+      `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.short_title`,
+      this._issue.translation_placeholders || {}
+    );
 
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
+      <ha-dialog
         .open=${this._open}
-        header-title=${dialogTitle}
+        header-title=${shortIssueTitle || this.hass.localize("ui.panel.config.repairs.dialog.title")}
         aria-describedby="dialog-repairs-issue-description"
         @closed=${this._dialogClosed}
       >
@@ -75,39 +84,46 @@ class DialogRepairsIssue extends LitElement {
           .issue=${this._issue}
         ></dialog-repairs-issue-subtitle>
         <div class="dialog-content">
-          ${this._issue.breaks_in_ha_version
-            ? html`
-                <ha-alert alert-type="warning">
-                  ${this.hass.localize(
-                    "ui.panel.config.repairs.dialog.breaks_in_version",
-                    { version: this._issue.breaks_in_ha_version }
-                  )}
-                </ha-alert>
-              `
-            : ""}
+          ${!shortIssueTitle ? html`<h2 class="issue-title">${issueTitle}</h2>` : nothing}
+          ${
+            this._issue.breaks_in_ha_version
+              ? html`
+                  <ha-alert alert-type="warning">
+                    ${this.hass.localize(
+                      "ui.panel.config.repairs.dialog.breaks_in_version",
+                      { version: this._issue.breaks_in_ha_version }
+                    )}
+                  </ha-alert>
+                `
+              : ""
+          }
           <ha-markdown
             id="dialog-repairs-issue-description"
             allow-svg
             breaks
             @click=${this._clickHandler}
-            .content=${this.hass.localize(
-              `component.${this._issue.domain}.issues.${
-                this._issue.translation_key || this._issue.issue_id
-              }.description`,
-              this._issue.translation_placeholders
-            ) ||
-            `${this._issue.domain}: ${this._issue.translation_key || this._issue.issue_id}`}
+            .content=${
+              this.hass.localize(
+                `component.${this._issue.domain}.issues.${
+                  this._issue.translation_key || this._issue.issue_id
+                }.description`,
+                this._issue.translation_placeholders
+              ) ||
+              `${this._issue.domain}: ${this._issue.translation_key || this._issue.issue_id}`
+            }
           ></ha-markdown>
-          ${this._issue.dismissed_version
-            ? html`
-                <br /><span class="dismissed">
-                  ${this.hass.localize(
-                    "ui.panel.config.repairs.dialog.ignored_in_version",
-                    { version: this._issue.dismissed_version }
-                  )}</span
-                >
-              `
-            : ""}
+          ${
+            this._issue.dismissed_version
+              ? html`
+                  <br /><span class="dismissed">
+                    ${this.hass.localize(
+                      "ui.panel.config.repairs.dialog.ignored_in_version",
+                      { version: this._issue.dismissed_version }
+                    )}</span
+                  >
+                `
+              : ""
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -115,34 +131,40 @@ class DialogRepairsIssue extends LitElement {
             appearance="plain"
             @click=${this._ignoreIssue}
           >
-            ${this._issue!.ignored
-              ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
-              : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
+            ${
+              this._issue!.ignored
+                ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
+                : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")
+            }
           </ha-button>
-          ${this._issue.learn_more_url
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  appearance="filled"
-                  rel="noopener noreferrer"
-                  href=${learnMoreUrlIsHomeAssistant
-                    ? this._issue.learn_more_url.replace(
-                        "homeassistant://",
-                        "/"
-                      )
-                    : this._issue.learn_more_url}
-                  .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
-                  @click=${learnMoreUrlIsHomeAssistant
-                    ? this.closeDialog
-                    : undefined}
-                >
-                  ${this.hass!.localize("ui.panel.config.repairs.dialog.learn")}
-                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-                </ha-button>
-              `
-            : ""}
+          ${
+            learnMoreUrl
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    appearance="filled"
+                    rel="noopener noreferrer"
+                    href=${learnMoreUrl}
+                    .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                    @click=${
+                      learnMoreUrlIsHomeAssistant ? this.closeDialog : undefined
+                    }
+                  >
+                    ${this.hass!.localize("ui.panel.config.repairs.dialog.learn")}
+                    ${
+                      learnMoreUrlIsHomeAssistant
+                        ? nothing
+                        : html`<ha-svg-icon
+                            slot="end"
+                            .path=${mdiOpenInNew}
+                          ></ha-svg-icon>`
+                    }
+                  </ha-button>
+                `
+              : ""
+          }
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -162,6 +184,13 @@ class DialogRepairsIssue extends LitElement {
     css`
       .dialog-content {
         padding-top: 0;
+      }
+      .issue-title {
+        margin: 0 0 var(--ha-space-4);
+        font-size: var(--ha-font-size-xl);
+        font-weight: var(--ha-font-weight-medium);
+        line-height: var(--ha-line-height-condensed);
+        overflow-wrap: anywhere;
       }
       ha-alert {
         margin-bottom: var(--ha-space-4);

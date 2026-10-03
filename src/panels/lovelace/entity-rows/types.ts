@@ -5,7 +5,10 @@ import type {
 } from "../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../types";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
-import type { Condition } from "../common/validate-condition";
+import type {
+  Condition,
+  VisibilityCondition,
+} from "../common/validate-condition";
 import type { TimestampRenderingFormat } from "../components/types";
 
 export interface EntityConfig {
@@ -14,6 +17,7 @@ export interface EntityConfig {
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
   image?: string;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface ConfirmableRowConfig extends EntityConfig {
@@ -100,12 +104,11 @@ export interface LovelaceRow extends HTMLElement {
 
 export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
-  conditions: Condition[];
+  conditions: VisibilityCondition[];
 }
 
 export interface AttributeRowConfig extends EntityConfig {
   attribute: string;
   prefix?: string;
   suffix?: string;
-  format?: TimestampRenderingFormat;
 }

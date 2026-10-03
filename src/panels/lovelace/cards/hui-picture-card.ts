@@ -1,8 +1,9 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
@@ -12,7 +13,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -21,6 +22,7 @@ import type { PersonEntity } from "../../../data/person";
 import {
   isMediaSourceContentId,
   resolveMediaSource,
+  isStreamingMedia,
 } from "../../../data/media_source";
 
 @customElement("hui-picture-card")
@@ -43,6 +45,25 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   @state() private _resolvedImage?: string;
 
+  private _reconnectImg = false;
+
+  @query("img") private _img?: HTMLImageElement;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
+      this._reconnectImg = true;
+      this._img?.removeAttribute("src");
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._reconnectImg) {
+      this.requestUpdate();
+    }
+  }
+
   public getCardSize(): number {
     return 5;
   }
@@ -52,17 +73,25 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       throw new Error("Image required");
     }
 
-    this._config = {
-      tap_action: { action: "more-info" },
-      ...config,
-    };
+    if (config.image_entity) {
+      this._config = {
+        tap_action: { action: "more-info" },
+        ...config,
+      };
+    } else {
+      this._config = {
+        tap_action: { action: "none" },
+        ...config,
+      };
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
       !this._config ||
       hasConfigChanged(this, changedProps) ||
-      changedProps.has("_resolvedImage")
+      changedProps.has("_resolvedImage") ||
+      this._reconnectImg
     ) {
       return true;
     }
@@ -85,6 +114,9 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     if (!this._config || !this.hass) {
       return;
+    }
+    if (this.isConnected) {
+      this._reconnectImg = false;
     }
 
     const firstHass =
@@ -118,8 +150,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PictureCardConfig
-      | undefined;
+      PictureCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -167,6 +198,11 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const clickable = Boolean(
+      (this._config.image_entity && !this._config.tap_action) ||
+      hasAnyAction(this._config)
+    );
+
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -180,22 +216,14 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
             : undefined
         )}
         class=${classMap({
-          clickable: Boolean(
-            (this._config.image_entity && !this._config.tap_action) ||
-              (this._config.tap_action &&
-                this._config.tap_action.action !== "none") ||
-              (this._config.hold_action &&
-                this._config.hold_action.action !== "none") ||
-              (this._config.double_tap_action &&
-                this._config.double_tap_action.action !== "none")
-          ),
+          clickable,
         })}
       >
         <img
           alt=${ifDefined(
             this._config.alt_text || stateObj?.attributes.friendly_name
           )}
-          src=${this.hass.hassUrl(image)}
+          src=${this._reconnectImg ? nothing : live(this.hass.hassUrl(image))}
         />
       </ha-card>
     `;

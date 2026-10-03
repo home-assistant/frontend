@@ -19,17 +19,17 @@ declare global {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps: PropertyValues) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-automation-editor", (ev) =>
         this._handleShowAutomationEditor(
-          ev as HASSDomEvent<ShowAutomationEditorParams>
+          ev as HASSDomEvent<HASSDomEvents["hass-automation-editor"]>
         )
       );
     }
 
     private _handleShowAutomationEditor(
-      ev: HASSDomEvent<ShowAutomationEditorParams>
+      ev: HASSDomEvent<HASSDomEvents["hass-automation-editor"]>
     ) {
       showAutomationEditor(ev.detail.data, ev.detail.expanded);
     }

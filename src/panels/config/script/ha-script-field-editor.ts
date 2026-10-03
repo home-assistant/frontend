@@ -17,8 +17,7 @@ export default class HaScriptFieldEditor extends LitElement {
 
   @property() public key!: string;
 
-  @property({ attribute: false, type: Array }) public excludeKeys: string[] =
-    [];
+  @property({ attribute: false }) public excludeKeys: string[] = [];
 
   @property({ attribute: false }) public field!: Field;
 
@@ -44,10 +43,6 @@ export default class HaScriptFieldEditor extends LitElement {
           selector: { text: {} },
         },
         {
-          name: "description",
-          selector: { text: {} },
-        },
-        {
           name: "required",
           selector: { boolean: {} },
         },
@@ -61,29 +56,32 @@ export default class HaScriptFieldEditor extends LitElement {
     const yamlValue = { [this.key]: this.field };
 
     return html`
-      ${this.yamlMode
-        ? html`${this._yamlError
-              ? html`<ha-alert alert-type="error">
-                  ${this.hass.localize(
-                    `ui.panel.config.script.editor.field.${this._yamlError}`
-                  )}
-                </ha-alert>`
-              : nothing}
-            <ha-yaml-editor
+      ${
+        this.yamlMode
+          ? html`${
+                this._yamlError
+                  ? html`<ha-alert alert-type="error">
+                      ${this.hass.localize(
+                        `ui.panel.config.script.editor.field.${this._yamlError}`
+                      )}
+                    </ha-alert>`
+                  : nothing
+              }
+              <ha-yaml-editor
+                .defaultValue=${yamlValue}
+                @value-changed=${this._onYamlChange}
+              ></ha-yaml-editor>`
+          : html`<ha-form
+              .schema=${schema}
+              .data=${data}
+              .error=${this._uiError}
               .hass=${this.hass}
-              .defaultValue=${yamlValue}
-              @value-changed=${this._onYamlChange}
-            ></ha-yaml-editor>`
-        : html`<ha-form
-            .schema=${schema}
-            .data=${data}
-            .error=${this._uiError}
-            .hass=${this.hass}
-            .disabled=${this.disabled}
-            .computeLabel=${this._computeLabelCallback}
-            .computeError=${this._computeError}
-            @value-changed=${this._valueChanged}
-          ></ha-form>`}
+              .disabled=${this.disabled}
+              .computeLabel=${this._computeLabelCallback}
+              .computeError=${this._computeError}
+              @value-changed=${this._valueChanged}
+            ></ha-form>`
+      }
     `;
   }
 
@@ -104,7 +102,7 @@ export default class HaScriptFieldEditor extends LitElement {
           "field"
         : slugify(value.name);
       if (this.excludeKeys.includes(key)) {
-        let uniqueKey = key;
+        let uniqueKey: string;
         let i = 2;
         do {
           uniqueKey = `${key}_${i}`;

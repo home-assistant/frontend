@@ -4,14 +4,14 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
-import type { FloorSelector } from "../../data/selector";
 import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
+import type { FloorSelector } from "../../data/selector";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
@@ -53,7 +53,7 @@ export class HaFloorSelector extends LitElement {
     );
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.floor?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
@@ -65,7 +65,7 @@ export class HaFloorSelector extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("selector") &&
       this._hasIntegration(this.selector) &&
@@ -96,12 +96,12 @@ export class HaFloorSelector extends LitElement {
           .label=${this.label}
           .helper=${this.helper}
           no-add
-          .deviceFilter=${this.selector.floor?.device
-            ? this._filterDevices
-            : undefined}
-          .entityFilter=${this.selector.floor?.entity
-            ? this._filterEntities
-            : undefined}
+          .deviceFilter=${
+            this.selector.floor?.device ? this._filterDevices : undefined
+          }
+          .entityFilter=${
+            this.selector.floor?.entity ? this._filterEntities : undefined
+          }
           .disabled=${this.disabled}
           .required=${this.required}
         ></ha-floor-picker>
@@ -115,12 +115,12 @@ export class HaFloorSelector extends LitElement {
         .helper=${this.helper}
         .pickFloorLabel=${this.label}
         no-add
-        .deviceFilter=${this.selector.floor?.device
-          ? this._filterDevices
-          : undefined}
-        .entityFilter=${this.selector.floor?.entity
-          ? this._filterEntities
-          : undefined}
+        .deviceFilter=${
+          this.selector.floor?.device ? this._filterDevices : undefined
+        }
+        .entityFilter=${
+          this.selector.floor?.entity ? this._filterEntities : undefined
+        }
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-floors-picker>
@@ -133,7 +133,13 @@ export class HaFloorSelector extends LitElement {
     }
 
     return ensureArray(this.selector.floor.entity).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
   };
 

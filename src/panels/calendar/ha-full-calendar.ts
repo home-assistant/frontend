@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import type { CalendarOptions } from "@fullcalendar/core";
 import { Calendar } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
@@ -14,16 +15,17 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-button";
 import "../../components/ha-button-toggle-group";
-import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
 import "../../components/ha-icon-button-prev";
 import type {
@@ -74,6 +76,15 @@ export class HAFullCalendar extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ attribute: "add-fab", type: Boolean }) public addFab = false;
+
+  @property({ attribute: "add-fab-size" }) public addFabSize = "large";
+
+  @property({ attribute: "add-fab-style" }) public addFabStyle = "on_top";
+
+  @property({ attribute: "auto-height", type: Boolean }) public autoHeight =
+    false;
+
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
   @property({ attribute: false }) public calendars: CalendarData[] = [];
@@ -94,9 +105,13 @@ export class HAFullCalendar extends LitElement {
 
   private calendar?: Calendar;
 
+  private _midnightRefreshTimeout?: number;
+
   private _viewButtons?: ToggleButton[];
 
   @state() private _activeView = this.initialView;
+
+  @query("style[data-fullcalendar]") private _fullCalendarStyle?: HTMLElement;
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
@@ -104,16 +119,19 @@ export class HAFullCalendar extends LitElement {
   });
 
   disconnectedCallback(): void {
+    this._clearMidnightRefreshTimeout();
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
-    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+    this._fullCalendarStyle?.remove();
   }
 
   connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated && !this.calendar) {
       this._loadCalendar(this._activeView);
+    } else if (this.calendar) {
+      this._scheduleMidnightRefresh();
     }
   }
 
@@ -124,104 +142,157 @@ export class HAFullCalendar extends LitElement {
     );
 
     return html`
-      ${this.calendar
-        ? html`
-            ${this.error
-              ? html`<hui-warning .hass=${this.hass} severity="warning"
-                  >${this.error}</hui-warning
-                >`
-              : ""}
-            <div class="header">
-              ${!this.narrow
-                ? html`
-                    <div class="navigation">
-                      <ha-button
-                        appearance="filled"
-                        size="small"
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.components.calendar.today"
-                        )}</ha-button
-                      >
-                      <ha-icon-button-prev
-                        .label=${this.hass.localize("ui.common.previous")}
-                        class="prev"
-                        @click=${this._handlePrev}
-                      >
-                      </ha-icon-button-prev>
-                      <ha-icon-button-next
-                        .label=${this.hass.localize("ui.common.next")}
-                        class="next"
-                        @click=${this._handleNext}
-                      >
-                      </ha-icon-button-next>
-                    </div>
-                    <h1>${this.calendar.view.title}</h1>
-                    <ha-button-toggle-group
-                      .buttons=${viewToggleButtons}
-                      .active=${this._activeView}
-                      size="small"
-                      no-wrap
-                      @value-changed=${this._handleView}
-                    ></ha-button-toggle-group>
-                  `
-                : html`
-                    <div class="controls">
-                      <h1>${this.calendar.view.title}</h1>
-                      <div>
-                        <ha-icon-button-prev
-                          .label=${this.hass.localize("ui.common.previous")}
-                          class="prev"
-                          @click=${this._handlePrev}
-                        >
-                        </ha-icon-button-prev>
-                        <ha-icon-button-next
-                          .label=${this.hass.localize("ui.common.next")}
-                          class="next"
-                          @click=${this._handleNext}
-                        >
-                        </ha-icon-button-next>
-                      </div>
-                    </div>
-                    <div class="controls buttons">
-                      <ha-button
-                        appearance="plain"
-                        size="small"
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.components.calendar.today"
-                        )}</ha-button
-                      >
-                      <ha-button-toggle-group
-                        .buttons=${viewToggleButtons}
-                        .active=${this._activeView}
-                        size="small"
-                        no-wrap
-                        @value-changed=${this._handleView}
-                      ></ha-button-toggle-group>
-                    </div>
-                  `}
-            </div>
-          `
-        : ""}
+      ${
+        this.calendar
+          ? html`
+              ${
+                this.error
+                  ? html`<hui-warning .hass=${this.hass} severity="warning"
+                      >${this.error}</hui-warning
+                    >`
+                  : ""
+              }
+              <div class="header">
+                ${
+                  !this.narrow
+                    ? html`
+                        <div class="navigation">
+                          <ha-button
+                            appearance="filled"
+                            size="s"
+                            class="today"
+                            @click=${this._handleToday}
+                            >${this.hass.localize(
+                              "ui.components.calendar.today"
+                            )}</ha-button
+                          >
+                          <ha-icon-button-prev
+                            .label=${this.hass.localize("ui.common.previous")}
+                            class="prev"
+                            @click=${this._handlePrev}
+                          >
+                          </ha-icon-button-prev>
+                          <ha-icon-button-next
+                            .label=${this.hass.localize("ui.common.next")}
+                            class="next"
+                            @click=${this._handleNext}
+                          >
+                          </ha-icon-button-next>
+                        </div>
+                        <h1>${this.calendar.view.title}</h1>
+                        <div>
+                          <ha-button-toggle-group
+                            .buttons=${viewToggleButtons}
+                            .active=${this._activeView}
+                            size="s"
+                            no-wrap
+                            @value-changed=${this._handleView}
+                          ></ha-button-toggle-group>
+                          ${
+                            this.addFab &&
+                            this._hasMutableCalendars &&
+                            this.addFabStyle === "header"
+                              ? html`<ha-button
+                                  size="s"
+                                  class="fab-header"
+                                  aria-label=${this.hass.localize(
+                                    "ui.components.calendar.event.add"
+                                  )}
+                                  @click=${this._createEvent}
+                                >
+                                  <ha-svg-icon
+                                    slot=""
+                                    .path=${mdiPlus}
+                                  ></ha-svg-icon>
+                                </ha-button>`
+                              : nothing
+                          }
+                        </div>
+                      `
+                    : html`
+                        <div class="controls">
+                          <h1>${this.calendar.view.title}</h1>
+                          <div>
+                            <ha-icon-button-prev
+                              .label=${this.hass.localize("ui.common.previous")}
+                              class="prev"
+                              @click=${this._handlePrev}
+                            >
+                            </ha-icon-button-prev>
+                            <ha-icon-button-next
+                              .label=${this.hass.localize("ui.common.next")}
+                              class="next"
+                              @click=${this._handleNext}
+                            >
+                            </ha-icon-button-next>
+                          </div>
+                        </div>
+                        <div class="controls buttons">
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            class="today"
+                            @click=${this._handleToday}
+                            >${this.hass.localize(
+                              "ui.components.calendar.today"
+                            )}</ha-button
+                          >
+                          <div>
+                            <ha-button-toggle-group
+                              .buttons=${viewToggleButtons}
+                              .active=${this._activeView}
+                              size="s"
+                              no-wrap
+                              @value-changed=${this._handleView}
+                            ></ha-button-toggle-group>
+                            ${
+                              this.addFab &&
+                              this._hasMutableCalendars &&
+                              this.addFabStyle === "header"
+                                ? html`<ha-button
+                                    size="s"
+                                    class="fab-header"
+                                    aria-label=${this.hass.localize(
+                                      "ui.components.calendar.event.add"
+                                    )}
+                                    @click=${this._createEvent}
+                                  >
+                                    <ha-svg-icon
+                                      slot=""
+                                      .path=${mdiPlus}
+                                    ></ha-svg-icon>
+                                  </ha-button>`
+                                : nothing
+                            }
+                          </div>
+                        </div>
+                      `
+                }
+              </div>
+            `
+          : ""
+      }
 
       <div id="calendar"></div>
-      ${this._hasMutableCalendars
-        ? html`<ha-fab
-            slot="fab"
-            .label=${this.hass.localize("ui.components.calendar.event.add")}
-            extended
-            @click=${this._createEvent}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>`
-        : nothing}
+      ${
+        this.addFab &&
+        this._hasMutableCalendars &&
+        this.addFabStyle !== "header"
+          ? html`<ha-button
+              size=${this.addFabSize.charAt(0)}
+              class=${classMap({ below: this.addFabStyle === "below" })}
+              slot="fab"
+              @click=${this._createEvent}
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.components.calendar.event.add")}
+            </ha-button>`
+          : nothing
+      }
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this.calendar) {
@@ -244,6 +315,10 @@ export class HAFullCalendar extends LitElement {
 
     if (changedProps.has("eventDisplay")) {
       this.calendar!.setOption("eventDisplay", this.eventDisplay);
+    }
+
+    if (changedProps.has("autoHeight")) {
+      this.calendar.setOption("height", this._height);
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant;
@@ -277,6 +352,7 @@ export class HAFullCalendar extends LitElement {
           : this.hass.config.time_zone,
       firstDay: firstWeekdayIndex(this.hass.locale),
       initialView,
+      height: this._height,
       eventDisplay: this.eventDisplay,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
@@ -287,6 +363,11 @@ export class HAFullCalendar extends LitElement {
 
     config.dateClick = (info) => this._handleDateClick(info);
     config.eventClick = (info) => this._handleEventClick(info);
+    // fullcalendar sets the event colors only inline, where styles cannot mix them
+    config.eventDidMount = ({ el, event }) => {
+      el.style.setProperty("--event-color", event.borderColor);
+      el.style.setProperty("--event-text-color", event.textColor);
+    };
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
@@ -294,6 +375,10 @@ export class HAFullCalendar extends LitElement {
     );
     this.calendar!.render();
     this._fireViewChanged();
+  }
+
+  private get _height(): CalendarOptions["height"] {
+    return this.autoHeight ? "auto" : defaultFullCalendarConfig.height;
   }
 
   // Return if there are calendars that support creating events
@@ -378,11 +463,79 @@ export class HAFullCalendar extends LitElement {
   }
 
   private _fireViewChanged(): void {
+    this._scheduleMidnightRefresh();
     fireEvent(this, "view-changed", {
       start: this.calendar!.view.activeStart,
       end: this.calendar!.view.activeEnd,
       view: this.calendar!.view.type,
     });
+  }
+
+  private _scheduleMidnightRefresh(): void {
+    this._clearMidnightRefreshTimeout();
+
+    if (!this.calendar) {
+      return;
+    }
+
+    const wasShowingToday = this._isShowingToday();
+    const nextMidnight = new TZDate(new Date(), this._calendarTimeZone());
+    nextMidnight.setHours(24, 0, 0, 0);
+    const delay = nextMidnight.getTime() - Date.now();
+
+    // Guard against a NaN/negative delay (e.g. Intl longOffset unsupported on
+    // Chromium < 95) so the midnight refresh can't fire in a tight loop (#54182).
+    if (!Number.isFinite(delay) || delay <= 0) {
+      return;
+    }
+
+    this._midnightRefreshTimeout = window.setTimeout(() => {
+      if (wasShowingToday) {
+        this.calendar?.today();
+        this._fireViewChanged();
+        return;
+      }
+
+      this._scheduleMidnightRefresh();
+    }, delay);
+  }
+
+  private _clearMidnightRefreshTimeout(): void {
+    if (this._midnightRefreshTimeout === undefined) {
+      return;
+    }
+
+    window.clearTimeout(this._midnightRefreshTimeout);
+    this._midnightRefreshTimeout = undefined;
+  }
+
+  private _isShowingToday(): boolean {
+    const calendarDate = this.calendar?.getDate();
+
+    if (!calendarDate) {
+      return false;
+    }
+
+    return (
+      this._formatDateInCalendarTimeZone(calendarDate) ===
+      this._formatDateInCalendarTimeZone(new Date())
+    );
+  }
+
+  private _calendarTimeZone(): string {
+    return resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
+  }
+
+  private _formatDateInCalendarTimeZone(date: Date): string {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: this._calendarTimeZone(),
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
   }
 
   private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {
@@ -486,16 +639,28 @@ export class HAFullCalendar extends LitElement {
 
         .prev,
         .next {
-          --mdc-icon-button-size: 32px;
+          --ha-icon-button-size: 32px;
         }
 
-        ha-fab {
+        ha-button[slot="fab"] {
           position: absolute;
-          bottom: 16px;
-          right: 16px;
-          inset-inline-end: 16px;
+          bottom: var(--ha-space-4);
+          right: var(--ha-space-4);
+          inset-inline-end: var(--ha-space-4);
           inset-inline-start: initial;
           z-index: 1;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
+        }
+
+        ha-button.below[slot="fab"] {
+          position: relative;
+          margin-inline-start: auto;
+          padding-top: var(--ha-space-2);
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: 0;
+          --ha-button-box-shadow: none;
         }
 
         #calendar {
@@ -606,6 +771,92 @@ export class HAFullCalendar extends LitElement {
 
         .fc-daygrid-block-event .fc-event-main {
           padding: 0 1px;
+        }
+
+        .tentative {
+          --tentative-tint: color-mix(
+            in srgb,
+            var(--event-color) 25%,
+            transparent
+          );
+          /* In the text color, so the stripes show on every calendar color */
+          --tentative-stripe: color-mix(
+            in srgb,
+            var(--primary-text-color) 12%,
+            transparent
+          );
+        }
+
+        /* A dot keeps its size and color and gets stripes in the color that
+           contrasts with it, 1.5px wide every 4px */
+        .tentative .fc-daygrid-event-dot,
+        .tentative .fc-list-event-dot {
+          --tentative-dot-stripe: color-mix(
+            in srgb,
+            var(--event-text-color, #fff) 80%,
+            transparent
+          );
+          border: none;
+          border-radius: 50%;
+          background-color: var(--event-color);
+          background-image: linear-gradient(
+            45deg,
+            var(--tentative-dot-stripe) 0 9.375%,
+            transparent 9.375% 40.625%,
+            var(--tentative-dot-stripe) 40.625% 59.375%,
+            transparent 59.375% 90.625%,
+            var(--tentative-dot-stripe) 90.625%
+          );
+          background-size: 4px 4px;
+          /* Half a tile, so no stripe runs through the middle like a slash */
+          background-position: 2px 0;
+        }
+
+        .tentative .fc-daygrid-event-dot {
+          /* A long title would otherwise squeeze the dot into an oval */
+          flex-shrink: 0;
+          width: var(--fc-daygrid-event-dot-width, 8px);
+          height: var(--fc-daygrid-event-dot-width, 8px);
+        }
+
+        .tentative .fc-list-event-dot {
+          width: var(--fc-list-event-dot-width, 10px);
+          height: var(--fc-list-event-dot-width, 10px);
+        }
+
+        /* fullcalendar sets the colors as inline styles */
+        .fc-h-event.tentative {
+          background-color: var(--tentative-tint) !important;
+          /* A tile of whole pixels puts every stripe on the same pixels,
+             2.8px wide every 14px */
+          background-image: linear-gradient(
+            45deg,
+            var(--tentative-stripe) 0 5%,
+            transparent 5% 45%,
+            var(--tentative-stripe) 45% 55%,
+            transparent 55% 95%,
+            var(--tentative-stripe) 95%
+          );
+          background-size: 14px 14px;
+        }
+
+        .fc-h-event.tentative .fc-event-main {
+          color: var(--primary-text-color) !important;
+        }
+
+        /* Forced colors drop the stripes and the fill of a dot, so a tentative
+           event falls back to its outline */
+        @media (forced-colors: active) {
+          .fc-h-event.tentative {
+            border-style: dashed;
+          }
+
+          .tentative .fc-daygrid-event-dot,
+          .tentative .fc-list-event-dot {
+            box-sizing: border-box;
+            border-style: solid;
+            border-width: 2px;
+          }
         }
 
         .fc-day-past .fc-daygrid-day-events {

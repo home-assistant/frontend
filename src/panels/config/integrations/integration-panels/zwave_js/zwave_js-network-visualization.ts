@@ -1,33 +1,43 @@
+import { mdiSpiderWeb } from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import { css, html, LitElement } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import type {
   NetworkData,
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
+  RssiError,
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
 import {
+  fetchZwaveNetworkNeighbors,
   fetchZwaveNetworkStatus,
+  getNodeIdFromDevice,
   NodeStatus,
   subscribeZwaveNodeStatistics,
 } from "../../../../../data/zwave_js";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
+import { showToast } from "../../../../../util/toast";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -50,19 +60,72 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
-  public hassSubscribe() {
-    const devices = Object.values(this.hass.devices).filter((device) =>
-      device.config_entries.some((entry) => entry === this.configEntryId)
-    );
+  @state() private _neighbors?: Record<number, number[]>;
 
-    return devices.map((device) =>
-      subscribeZwaveNodeStatistics(this.hass!, device.id, (message) => {
-        const nodeId = message.nodeId ?? message.node_id;
-        this._devices[nodeId!] = device;
-        this._nodeStatistics[nodeId!] = message;
-        this._handleUpdatedNodeStatistics();
-      })
-    );
+  @state() private _showNeighbors = false;
+
+  @state() private _searchFilter = "";
+
+  // Route statistics reference repeaters by device registry ID
+  private _nodeIdsByDeviceId: Record<string, number> = {};
+
+  private _neighborLinks = new Set<string>();
+
+  private _loadingNeighbors = false;
+
+  public hassSubscribe() {
+    const subscriptions: Promise<UnsubscribeFunc>[] = [];
+    const devices: Record<number, DeviceRegistryEntry> = {};
+    const nodeIdsByDeviceId: Record<string, number> = {};
+
+    Object.values(this.hass.devices).forEach((device) => {
+      if (!device.config_entries.includes(this.configEntryId)) {
+        return;
+      }
+      const nodeId = getNodeIdFromDevice(device);
+      if (nodeId === undefined) {
+        return;
+      }
+      devices[nodeId] = device;
+      nodeIdsByDeviceId[device.id] = nodeId;
+      subscriptions.push(
+        subscribeZwaveNodeStatistics(this.hass!, device.id, (message) => {
+          this._nodeStatistics[nodeId] = message;
+          this._handleUpdatedNodeStatistics();
+        })
+      );
+    });
+
+    this._nodeIdsByDeviceId = nodeIdsByDeviceId;
+    this._devices = devices;
+
+    return subscriptions;
+  }
+
+  private async _toggleNeighbors() {
+    this._showNeighbors = !this._showNeighbors;
+    if (!this._showNeighbors || this._neighbors || this._loadingNeighbors) {
+      return;
+    }
+    // fetched on demand: reading neighbors turns the radio off briefly
+    this._loadingNeighbors = true;
+    try {
+      this._neighbors = await fetchZwaveNetworkNeighbors(
+        this.hass,
+        this.configEntryId
+      );
+    } catch (err: unknown) {
+      this._showNeighbors = false;
+      showToast(this, {
+        message:
+          (err as { message?: string }).message ??
+          this.hass.localize(
+            "ui.panel.config.zwave_js.visualization.neighbors_error"
+          ),
+      });
+    } finally {
+      this._loadingNeighbors = false;
+    }
   }
 
   public connectedCallback() {
@@ -72,27 +135,59 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.navigation.visualization"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
+        ${
+          this.narrow
+            ? html`<div slot="header">${this._renderInputSearch()}</div>`
+            : nothing
+        }
         <ha-network-graph
           .hass=${this.hass}
+          .searchFilter=${this._searchFilter}
           .data=${this._getNetworkData(
             this._nodeStatuses,
-            this._nodeStatistics
+            this._nodeStatistics,
+            this._showNeighbors ? this._neighbors : undefined
           )}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        ></ha-network-graph
-      ></hass-tabs-subpage>
+        >
+          ${!this.narrow ? this._renderInputSearch("search") : nothing}
+          <ha-icon-button
+            slot="button"
+            class=${this._showNeighbors ? "active" : "inactive"}
+            .path=${mdiSpiderWeb}
+            .label=${this.hass.localize(
+              "ui.panel.config.zwave_js.visualization.toggle_neighbors"
+            )}
+            @click=${this._toggleNeighbors}
+          ></ha-icon-button>
+        </ha-network-graph>
+      </hass-subpage>
     `;
   }
 
+  private _renderInputSearch(slot = "") {
+    return html`<ha-input-search
+      appearance="outlined"
+      slot=${slot}
+      .value=${this._searchFilter}
+      @input=${this._handleSearchChange}
+    ></ha-input-search>`;
+  }
+
   private async _fetchNetworkStatus() {
-    const network = await fetchZwaveNetworkStatus(this.hass!, {
+    const network = await fetchZwaveNetworkStatus(this.hass!.connection, {
       entry_id: this.configEntryId,
     });
     const nodeStatuses: Record<number, ZWaveJSNodeStatus> = {};
@@ -103,7 +198,32 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     this._nodeStatuses = nodeStatuses;
   }
 
-  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const device = this._devices[Number(nodeId)];
+    const nodeStatus = this._nodeStatuses[Number(nodeId)];
+    const attributes: string[] = [];
+    if (device?.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device?.model) {
+      attributes.push(device.model);
+    }
+    if (nodeStatus) {
+      const statusText = this.hass.localize(
+        `ui.panel.config.zwave_js.node_status.${nodeStatus.status}` as any
+      );
+      if (statusText) {
+        attributes.push(statusText);
+      }
+    }
+    return attributes;
+  };
+
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>): void {
+    this._searchFilter = ev.target.value ?? "";
+  }
+
+  private _tooltipFormatter = (params: TopLevelFormatterParams) => {
     const { dataType, data } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
@@ -113,45 +233,94 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         sourceDevice?.name_by_user ?? sourceDevice?.name ?? source;
       const targetName =
         targetDevice?.name_by_user ?? targetDevice?.name ?? target;
-      let tip = `${sourceName} → ${targetName}`;
-      const route =
-        this._nodeStatistics[source]?.lwr || this._nodeStatistics[source]?.nlwr;
-      if (route?.protocol_data_rate) {
-        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.data_rate")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}`)}`;
+      if (this._neighborLinks.has(`${source}>${target}`)) {
+        return html`${sourceName} ↔ ${targetName}<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.zwave_js.visualization.neighbor"
+            )}</b
+          >`;
       }
-      if (value) {
-        tip += `<br><b>RSSI:</b> ${value}`;
-      }
-      return tip;
+      // links point away from the controller, so the route belongs to the target
+      const stats =
+        this._nodeStatistics[target] ?? this._nodeStatistics[source];
+      const route = stats?.lwr || stats?.nlwr;
+      return html`${sourceName} →
+      ${targetName}${
+        route?.protocol_data_rate
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.data_rate"
+                )}:</b
+              >
+              ${this.hass.localize(
+                `ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}` as any
+              )}`
+          : nothing
+      }${value ? html`<br /><b>RSSI:</b> ${value}` : nothing}`;
     }
     const { id, name } = data as any;
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
-    let tip = `${(params as any).marker} ${name}`;
-    tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.node_id")}:</b> ${id}`;
-    if (device) {
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.manufacturer")}:</b> ${device.manufacturer || "-"}`;
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.model")}:</b> ${device.model || "-"}`;
-    }
-    if (nodeStatus) {
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.status")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.node_status.${nodeStatus.status}`)}`;
-      if (nodeStatus.zwave_plus_version) {
-        tip += `<br><b>Z-Wave Plus:</b> ${this.hass.localize("ui.panel.config.zwave_js.visualization.version")} ${nodeStatus.zwave_plus_version}`;
-      }
-    }
-    if (device) {
-      const area = getDeviceContext(device, this.hass).area;
-      if (area) {
-        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
-      }
-    }
-    return tip;
+    const area = device
+      ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+      : undefined;
+    return html`<ha-chart-tooltip-marker
+        .color=${String((params as CallbackDataParams).color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${name}<br /><b
+        >${this.hass.localize(
+          "ui.panel.config.zwave_js.visualization.node_id"
+        )}:</b
+      >
+      ${id}${
+        device
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.manufacturer"
+                )}:</b
+              >
+              ${device.manufacturer || "-"}<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.model"
+                )}:</b
+              >
+              ${device.model || "-"}`
+          : nothing
+      }${
+        nodeStatus
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.status"
+                )}:</b
+              >
+              ${this.hass.localize(
+                `ui.panel.config.zwave_js.node_status.${nodeStatus.status}` as any
+              )}${
+                nodeStatus.zwave_plus_version
+                  ? html`<br /><b>Z-Wave Plus:</b> ${this.hass.localize(
+                        "ui.panel.config.zwave_js.visualization.version"
+                      )}
+                      ${nodeStatus.zwave_plus_version}`
+                  : nothing
+              }`
+          : nothing
+      }${
+        area
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.area"
+                )}:</b
+              >
+              ${area.name}`
+          : nothing
+      }`;
   };
 
   private _getNetworkData = memoizeOne(
     (
       nodeStatuses: Record<number, ZWaveJSNodeStatus>,
-      nodeStatistics: Record<number, ZWaveJSNodeStatisticsUpdatedMessage>
+      nodeStatistics: Record<number, ZWaveJSNodeStatisticsUpdatedMessage>,
+      neighbors: Record<number, number[]> | undefined
     ): NetworkData => {
       const style = getComputedStyle(this);
       const nodes: NetworkNode[] = [];
@@ -205,10 +374,9 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           controllerNode = node.node_id;
         }
         const device = this._devices[node.node_id] as
-          | DeviceRegistryEntry
-          | undefined;
+          DeviceRegistryEntry | undefined;
         const area = device
-          ? getDeviceContext(device, this.hass).area
+          ? getDeviceArea(device, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: String(node.node_id),
@@ -244,58 +412,114 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         });
       });
 
+      if (controllerNode === undefined) {
+        return { nodes, links, categories };
+      }
+      const controllerId = String(controllerNode);
+
       Object.entries(nodeStatistics).forEach(([nodeId, stats]) => {
         const route = stats.lwr || stats.nlwr;
-        if (route) {
-          const hops = [
-            ...route.repeaters.map((id, i) => [
-              Object.keys(this._devices).find(
-                (_nodeId) => this._devices[_nodeId]?.id === id
-              )?.[0],
-              route.repeater_rssi[i],
-            ]),
-            [controllerNode!, route.rssi],
-          ];
-          let sourceNode: string = nodeId;
-          hops.forEach(([repeater, rssi]) => {
-            const RSSI = typeof rssi === "number" && rssi <= 0 ? rssi : -100;
-            const existingLink = links.find(
-              (link) =>
-                link.source === sourceNode && link.target === String(repeater)
-            );
-            const width = this._getLineWidth(RSSI);
-            if (existingLink) {
-              existingLink.value = Math.max(existingLink.value!, RSSI);
-              existingLink.lineStyle = {
-                ...existingLink.lineStyle,
-                width: Math.max(existingLink.lineStyle!.width!, width),
-                type:
-                  route.protocol_data_rate > 1
-                    ? "solid"
-                    : existingLink.lineStyle!.type,
-              };
-            } else {
-              links.push({
-                source: sourceNode,
-                target: String(repeater),
-                value: RSSI,
-                lineStyle: {
-                  width,
-                  color:
-                    repeater === controllerNode
-                      ? style.getPropertyValue("--primary-color")
-                      : style.getPropertyValue("--disabled-color"),
-                  type: route.protocol_data_rate > 1 ? "solid" : "dotted",
-                },
-                symbolSize: width * 3,
-              });
-            }
-            sourceNode = String(repeater);
-          });
+        if (!route) {
+          return;
         }
+        // Routes go from the controller to the node via the repeaters, in order.
+        // Each station measures the hop leaving it: the controller reports
+        // `rssi`, repeater i reports `repeater_rssi[i]`.
+        const hops: [string, RssiError | number | null][] = [];
+        let hopRssi = route.rssi;
+        route.repeaters.forEach((deviceId, i) => {
+          const repeaterNodeId = this._nodeIdsByDeviceId[deviceId];
+          // skip repeaters we can't resolve, so the chain stays connected
+          if (repeaterNodeId !== undefined) {
+            hops.push([String(repeaterNodeId), hopRssi]);
+          }
+          hopRssi = route.repeater_rssi[i];
+        });
+        hops.push([nodeId, hopRssi]);
+
+        let sourceNode = controllerId;
+        hops.forEach(([target, rssi]) => {
+          if (target === sourceNode) {
+            return;
+          }
+          const RSSI = typeof rssi === "number" && rssi <= 0 ? rssi : -100;
+          const existingLink = links.find(
+            (link) => link.source === sourceNode && link.target === target
+          );
+          const width = this._getLineWidth(RSSI);
+          if (existingLink) {
+            existingLink.value = Math.max(existingLink.value!, RSSI);
+            existingLink.lineStyle = {
+              ...existingLink.lineStyle,
+              width: Math.max(existingLink.lineStyle!.width!, width),
+              type:
+                route.protocol_data_rate > 1
+                  ? "solid"
+                  : existingLink.lineStyle!.type,
+            };
+          } else {
+            links.push({
+              source: sourceNode,
+              target,
+              value: RSSI,
+              lineStyle: {
+                width,
+                color:
+                  sourceNode === controllerId
+                    ? style.getPropertyValue("--primary-color")
+                    : style.getPropertyValue("--disabled-color"),
+                type: route.protocol_data_rate > 1 ? "solid" : "dotted",
+              },
+              symbolSize: width * 3,
+            });
+          }
+          sourceNode = target;
+        });
       });
 
-      return { nodes, links, categories };
+      // Neighbors are the nodes a node can reach directly. They are symmetric
+      // and carry no signal information, so they fill in the mesh underneath
+      // the measured routes without overriding them.
+      const neighborLinks: NetworkLink[] = [];
+      const neighborKeys = new Set<string>();
+      Object.entries(neighbors ?? {}).forEach(([nodeId, neighborIds]) => {
+        neighborIds.forEach((neighborId) => {
+          const target = String(neighborId);
+          if (!nodeStatuses[neighborId] || target === nodeId) {
+            return;
+          }
+          const [a, b] = [nodeId, target].sort();
+          const key = `${a}>${b}`;
+          if (
+            neighborKeys.has(key) ||
+            links.some(
+              (link) =>
+                (link.source === nodeId && link.target === target) ||
+                (link.source === target && link.target === nodeId)
+            )
+          ) {
+            return;
+          }
+          neighborKeys.add(key);
+          neighborLinks.push({
+            source: a,
+            target: b,
+            // equal values in both directions render the link without an arrow
+            value: 1,
+            reverseValue: 1,
+            lineStyle: {
+              width: 1,
+              color: style.getPropertyValue("--disabled-color"),
+              type: "dashed",
+            },
+            // neighbors are plentiful, let the routes shape the layout
+            ignoreForceLayout: true,
+          });
+        });
+      });
+      this._neighborLinks = neighborKeys;
+
+      return { nodes, links: [...neighborLinks, ...links], categories };
     }
   );
 
@@ -327,6 +551,24 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       css`
         ha-network-graph {
           height: 100%;
+        }
+        [slot="header"] {
+          display: flex;
+          align-items: center;
+        }
+        ha-input-search {
+          flex: 1;
+        }
+        /* ha-chart-base can't style re-slotted buttons, so mirror its look */
+        ha-icon-button[slot="button"] {
+          background: var(--card-background-color);
+          border-radius: var(--ha-border-radius-sm);
+          --ha-icon-button-size: 32px;
+          color: var(--primary-color);
+          border: 1px solid var(--divider-color);
+        }
+        ha-icon-button[slot="button"].inactive {
+          color: var(--state-inactive-color);
         }
       `,
     ];

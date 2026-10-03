@@ -1,17 +1,18 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { getShadowRootHost } from "../../../common/dom/get-shadow-root-host";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
@@ -39,206 +40,247 @@ class HaDomainIntegrations extends LitElement {
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
 
+  @property({ attribute: false })
+  public navigateToResult = false;
+
+  @property({ attribute: false })
+  public showManageLink = false;
+
   protected render() {
-    return html`<ha-list>
-      ${this.flowsInProgress?.length
-        ? html`<h3>
-              ${this.hass.localize("ui.panel.config.integrations.discovered")}
-            </h3>
-            ${this.flowsInProgress.map(
-              (flow) =>
-                html`<ha-list-item
-                  graphic="medium"
-                  .flow=${flow}
-                  @request-selected=${this._flowInProgressPicked}
-                  hasMeta
+    return html`<ha-list-base>
+      ${
+        this.flowsInProgress?.length
+          ? html`<h3>
+                ${this.hass.localize("ui.panel.config.integrations.discovered")}
+              </h3>
+              ${this.flowsInProgress.map(
+                (flow) =>
+                  html`<ha-list-item-button
+                    .flow=${flow}
+                    @click=${this._flowInProgressPicked}
+                  >
+                    <img
+                      alt=""
+                      slot="start"
+                      loading="lazy"
+                      src=${brandsUrl(
+                        {
+                          domain: flow.handler,
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                    />
+                    <span slot="headline"
+                      >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+                    >
+                    <span slot="supporting-text"
+                      >${domainToName(this.hass.localize, flow.handler)}</span
+                    >
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-list-item-button>`
+              )}
+              <wa-divider></wa-divider>
+              ${
+                this.integration &&
+                "integrations" in this.integration &&
+                this.integration.integrations
+                  ? html`<h3>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.available_integrations"
+                      )}
+                    </h3>`
+                  : nothing
+              }`
+          : nothing
+      }
+      ${
+        this.integration?.iot_standards
+          ? this.integration.iot_standards
+              .filter((standard) =>
+                (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
+                  standardToDomain[standard] || standard
+                )
+              )
+              .map((standard) => {
+                const domain: (typeof PROTOCOL_INTEGRATIONS)[number] =
+                  standardToDomain[standard] || standard;
+                return html`<ha-list-item-button
+                  .domain=${domain}
+                  @click=${this._standardPicked}
                 >
                   <img
-                    alt=""
-                    slot="graphic"
+                    slot="start"
                     loading="lazy"
-                    src=${brandsUrl({
-                      domain: flow.handler,
-                      type: "icon",
-                      useFallback: true,
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    alt=""
+                    src=${brandsUrl(
+                      {
+                        domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                   />
-                  <span
-                    >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+                  <span slot="headline"
+                    >${this.hass.localize(
+                      `ui.panel.config.integrations.add_${domain}_device`
+                    )}</span
                   >
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>`
-            )}
-            <li divider role="separator"></li>
-            ${this.integration &&
-            "integrations" in this.integration &&
-            this.integration.integrations
-              ? html`<h3>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.available_integrations"
-                  )}
-                </h3>`
-              : ""}`
-        : ""}
-      ${this.integration?.iot_standards
-        ? this.integration.iot_standards
-            .filter((standard) =>
-              (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
-                standardToDomain[standard] || standard
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>`;
+              })
+          : ""
+      }
+      ${
+        this.integration &&
+        "integrations" in this.integration &&
+        this.integration.integrations
+          ? Object.entries(this.integration.integrations)
+              .filter(([, val]) => val.integration_type !== "hardware")
+              .sort((a, b) => {
+                if (a[1].config_flow && !b[1].config_flow) {
+                  return -1;
+                }
+                if (b[1].config_flow && !a[1].config_flow) {
+                  return 0;
+                }
+                return caseInsensitiveStringCompare(
+                  a[1].name || domainToName(this.hass.localize, a[0]),
+                  b[1].name || domainToName(this.hass.localize, b[0]),
+                  this.hass.locale.language
+                );
+              })
+              .map(
+                ([dom, val]) =>
+                  html`<ha-integration-list-item
+                    .domain=${dom}
+                    .integration=${{
+                      ...val,
+                      domain: dom,
+                      name: val.name || domainToName(this.hass.localize, dom),
+                      is_built_in: val.is_built_in !== false,
+                      cloud: val.iot_class?.startsWith("cloud_"),
+                    }}
+                    @click=${this._integrationPicked}
+                  >
+                  </ha-integration-list-item>`
               )
-            )
-            .map((standard) => {
-              const domain: (typeof PROTOCOL_INTEGRATIONS)[number] =
-                standardToDomain[standard] || standard;
-              return html`<ha-list-item
-                graphic="medium"
-                .domain=${domain}
-                @request-selected=${this._standardPicked}
-                hasMeta
-              >
-                <img
-                  slot="graphic"
-                  loading="lazy"
-                  alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-                <span
-                  >${this.hass.localize(
-                    `ui.panel.config.integrations.add_${domain}_device`
-                  )}</span
-                >
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>`;
-            })
-        : ""}
-      ${this.integration &&
-      "integrations" in this.integration &&
-      this.integration.integrations
-        ? Object.entries(this.integration.integrations)
-            .filter(([, val]) => val.integration_type !== "hardware")
-            .sort((a, b) => {
-              if (a[1].config_flow && !b[1].config_flow) {
-                return -1;
-              }
-              if (b[1].config_flow && !a[1].config_flow) {
-                return 0;
-              }
-              return caseInsensitiveStringCompare(
-                a[1].name || domainToName(this.hass.localize, a[0]),
-                b[1].name || domainToName(this.hass.localize, b[0]),
-                this.hass.locale.language
-              );
-            })
-            .map(
-              ([dom, val]) =>
-                html`<ha-integration-list-item
-                  .hass=${this.hass}
-                  .domain=${dom}
-                  .integration=${{
-                    ...val,
-                    domain: dom,
-                    name: val.name || domainToName(this.hass.localize, dom),
-                    is_built_in: val.is_built_in !== false,
-                    cloud: val.iot_class?.startsWith("cloud_"),
-                  }}
-                  @request-selected=${this._integrationPicked}
-                >
-                </ha-integration-list-item>`
-            )
-        : ""}
-      ${(PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
-        ? html`<ha-list-item
-            graphic="medium"
-            .domain=${this.domain}
-            @request-selected=${this._standardPicked}
-            hasMeta
-          >
-            <img
-              slot="graphic"
-              loading="lazy"
-              alt=""
-              src=${brandsUrl({
-                domain: this.domain,
-                type: "icon",
-                useFallback: true,
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-            />
-            <span
-              >${this.hass.localize(
-                `ui.panel.config.integrations.add_${
-                  this.domain as (typeof PROTOCOL_INTEGRATIONS)[number]
-                }_device`
-              )}</span
+          : ""
+      }
+      ${
+        (PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
+          ? html`<ha-list-item-button
+              .domain=${this.domain}
+              @click=${this._standardPicked}
             >
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>`
-        : ""}
-      ${this.integration &&
-      "config_flow" in this.integration &&
-      this.integration.config_flow
-        ? html`${this.flowsInProgress?.length
-            ? html`<ha-list-item
-                .domain=${this.domain}
-                @request-selected=${this._integrationPicked}
-                .integration=${{
-                  ...this.integration,
-                  domain: this.domain,
-                  name:
-                    this.integration.name ||
-                    domainToName(this.hass.localize, this.domain),
-                  is_built_in: this.integration.is_built_in !== false,
-                  cloud: this.integration.iot_class?.startsWith("cloud_"),
-                }}
-                hasMeta
+              <img
+                slot="start"
+                loading="lazy"
+                alt=""
+                src=${brandsUrl(
+                  {
+                    domain: this.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+              />
+              <span slot="headline"
+                >${this.hass.localize(
+                  `ui.panel.config.integrations.add_${
+                    this.domain as (typeof PROTOCOL_INTEGRATIONS)[number]
+                  }_device`
+                )}</span
               >
-                ${this.hass.localize("ui.panel.config.integrations.new_flow", {
-                  integration:
-                    this.integration.name ||
-                    domainToName(this.hass.localize, this.domain),
-                })}
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>`
-            : html`<ha-integration-list-item
-                .hass=${this.hass}
-                .domain=${this.domain}
-                .integration=${{
-                  ...this.integration,
-                  domain: this.domain,
-                  name:
-                    this.integration.name ||
-                    domainToName(this.hass.localize, this.domain),
-                  is_built_in: this.integration.is_built_in !== false,
-                  cloud: this.integration.iot_class?.startsWith("cloud_"),
-                }}
-                @request-selected=${this._integrationPicked}
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+          : ""
+      }
+      ${
+        this.integration &&
+        "config_flow" in this.integration &&
+        this.integration.config_flow
+          ? html`${
+              this.flowsInProgress?.length
+                ? html`<ha-list-item-button
+                    .domain=${this.domain}
+                    @click=${this._integrationPicked}
+                    .integration=${{
+                      ...this.integration,
+                      domain: this.domain,
+                      name:
+                        this.integration.name ||
+                        domainToName(this.hass.localize, this.domain),
+                      is_built_in: this.integration.is_built_in !== false,
+                      cloud: this.integration.iot_class?.startsWith("cloud_"),
+                    }}
+                  >
+                    <span slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.new_flow",
+                        {
+                          integration:
+                            this.integration.name ||
+                            domainToName(this.hass.localize, this.domain),
+                        }
+                      )}
+                    </span>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-list-item-button>`
+                : html`<ha-integration-list-item
+                    .domain=${this.domain}
+                    .integration=${{
+                      ...this.integration,
+                      domain: this.domain,
+                      name:
+                        this.integration.name ||
+                        domainToName(this.hass.localize, this.domain),
+                      is_built_in: this.integration.is_built_in !== false,
+                      cloud: this.integration.iot_class?.startsWith("cloud_"),
+                    }}
+                    @click=${this._integrationPicked}
+                  >
+                  </ha-integration-list-item>`
+            }`
+          : ""
+      }
+      ${
+        this.showManageLink &&
+        // Only show manage link if not already on the integrations dashboard
+        !location.pathname.startsWith("/config/integrations")
+          ? html`<ha-list-item-button @click=${this._manageDiscovered}>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.manage_discovered"
+                )}</span
               >
-              </ha-integration-list-item>`}`
-        : ""}
-    </ha-list> `;
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.manage_discovered_description"
+                )}</span
+              >
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+          : nothing
+      }
+    </ha-list-base> `;
   }
 
   private async _integrationPicked(ev: CustomEvent<RequestSelectedDetail>) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
     const domain = (ev.currentTarget as any).domain;
 
     if (
       ["cloud", "google_assistant", "alexa"].includes(domain) &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       navigate("/config/cloud");
       return;
@@ -276,50 +318,36 @@ class HaDomainIntegrations extends LitElement {
       return;
     }
 
-    const root = this.getRootNode();
-    showConfigFlowDialog(
-      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
-      {
-        startFlowHandler: domain,
-        showAdvanced: this.hass.userData?.showAdvanced,
-        navigateToResult: true,
-        manifest: await fetchIntegrationManifest(this.hass, domain),
-      }
-    );
+    showConfigFlowDialog(getShadowRootHost(this) ?? this, {
+      startFlowHandler: domain,
+      navigateToResult: this.navigateToResult,
+      manifest: await fetchIntegrationManifest(this.hass, domain),
+    });
     fireEvent(this, "close-dialog");
   }
 
-  private async _flowInProgressPicked(ev: CustomEvent<RequestSelectedDetail>) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private async _flowInProgressPicked(ev: Event) {
     const flow: DataEntryFlowProgress = (ev.currentTarget as any).flow;
-    const root = this.getRootNode();
-    showConfigFlowDialog(
-      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
-      {
-        continueFlowId: flow.flow_id,
-        navigateToResult: true,
-        showAdvanced: this.hass.userData?.showAdvanced,
-        manifest: await fetchIntegrationManifest(this.hass, flow.handler),
-      }
-    );
+    showConfigFlowDialog(getShadowRootHost(this) ?? this, {
+      continueFlowId: flow.flow_id,
+      navigateToResult: this.navigateToResult,
+      manifest: await fetchIntegrationManifest(this.hass, flow.handler),
+    });
     fireEvent(this, "close-dialog");
+  }
+
+  private _manageDiscovered() {
+    fireEvent(this, "close-dialog");
+    navigate("/config/integrations/dashboard?historyBack=1");
   }
 
   private _standardPicked(ev: CustomEvent<RequestSelectedDetail>) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
     const domain = (ev.currentTarget as any).domain;
-    const root = this.getRootNode();
+    const dialogParentElement = getShadowRootHost(this) ?? this;
     fireEvent(this, "close-dialog");
-    protocolIntegrationPicked(
-      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
-      this.hass,
-      domain,
-      { brand: this.domain }
-    );
+    protocolIntegrationPicked(dialogParentElement, this.hass, domain, {
+      brand: this.domain,
+    });
   }
 
   static styles = [
@@ -327,11 +355,10 @@ class HaDomainIntegrations extends LitElement {
     css`
       :host {
         display: block;
-        --mdc-list-item-graphic-size: 40px;
-        --mdc-list-side-padding: 24px;
+        --ha-row-item-padding-inline: var(--ha-space-6);
       }
       h3 {
-        margin: 8px 24px 0;
+        margin: var(--ha-space-2) var(--ha-space-6) 0;
         color: var(--secondary-text-color);
         font-size: var(--ha-font-size-m);
         font-weight: var(--ha-font-weight-medium);
@@ -340,11 +367,14 @@ class HaDomainIntegrations extends LitElement {
         margin-top: 0;
       }
       img {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
       }
-      li[divider] {
-        margin-top: 8px;
+      wa-divider {
+        margin-top: var(--ha-space-2);
+      }
+      ha-icon-next {
+        color: var(--ha-color-text-secondary);
       }
     `,
   ];

@@ -4,6 +4,7 @@ import {
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,40 +12,47 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import { sanitizeHttpUrl } from "../../../../../common/url/sanitize-http-url";
 import { groupBy } from "../../../../../common/util/group-by";
 import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-generic-picker";
+import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-combo-box";
+import "../../../../../components/input/ha-input";
 import type {
-  ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
-  ZWaveJSSetConfigParamResult,
+  ZWaveJSSetConfigParamStatus,
+  ZwaveJSNodeConfigParameterUpdate,
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
 import {
+  computeSetConfigParamStatus,
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   invokeZWaveCCApi,
   setZwaveNodeConfigParameter,
+  subscribeZwaveNodeConfigParameterUpdates,
 } from "../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import type {
+  HomeAssistant,
+  Route,
+  ValueChangedEvent,
+} from "../../../../../types";
 import "../../../ha-config-section";
-import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
 
 const icons = {
@@ -53,9 +61,14 @@ const icons = {
   error: mdiCloseCircle,
 };
 
+interface ConfigParamResult {
+  status: ZWaveJSSetConfigParamStatus;
+  error?: string;
+}
+
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -73,19 +86,47 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @state() private _canResetAll = false;
 
-  @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
+  @state() private _results: Record<string, ConfigParamResult> = {};
 
   @state() private _error?: string;
 
   @state() private _resetDialogProgress = false;
 
+  private _unsubConfigParamUpdates?: Promise<UnsubscribeFunc>;
+
+  private _resultTimeouts: Record<string, number> = {};
+
   public connectedCallback(): void {
     super.connectedCallback();
-    this.deviceId = this.route.path.substr(1);
+    this._subscribeConfigParameterUpdates();
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (!this._config || changedProps.has("deviceId")) {
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeConfigParameterUpdates();
+    this._clearAllResultTimeouts();
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("route") || !this.route) {
+      return;
+    }
+    const deviceId = this.route.path.slice(1);
+    if (deviceId !== this.deviceId) {
+      this.deviceId = deviceId;
+      this._config = undefined;
+      this._clearAllResultTimeouts();
+      this._results = {};
+      this._error = undefined;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>): void {
+    if (changedProps.has("deviceId")) {
+      this._fetchData();
+      this._subscribeConfigParameterUpdates();
+    } else if (!this._config) {
       this._fetchData();
     }
   }
@@ -107,15 +148,17 @@ class ZWaveJSNodeConfig extends LitElement {
     const device = this.hass.devices[this.deviceId];
 
     const deviceName = device
-      ? computeDeviceNameDisplay(device, this.hass)
+      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : "";
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.header"
+        )}
+        back-path="/config/devices/device/${this.deviceId}"
       >
         <ha-config-section
           .narrow=${this.narrow}
@@ -127,14 +170,16 @@ class ZWaveJSNodeConfig extends LitElement {
           </div>
 
           <div slot="introduction">
-            ${device
-              ? html`
-                  <div class="device-info">
-                    <h2>${deviceName}</h2>
-                    <p>${device.manufacturer} ${device.model}</p>
-                  </div>
-                `
-              : ``}
+            ${
+              device
+                ? html`
+                    <div class="device-info">
+                      <h2>${deviceName}</h2>
+                      <p>${device.manufacturer} ${device.model}</p>
+                    </div>
+                  `
+                : ``
+            }
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.introduction"
             )}
@@ -145,8 +190,11 @@ class ZWaveJSNodeConfig extends LitElement {
                   {
                     device_database: html`<a
                       rel="noreferrer noopener"
-                      href=${this._nodeMetadata?.device_database_url ||
-                      "https://devices.zwave-js.io"}
+                      href=${
+                        sanitizeHttpUrl(
+                          this._nodeMetadata?.device_database_url
+                        ) || "https://devices.zwave-js.io"
+                      }
                       target="_blank"
                       >${this.hass.localize(
                         "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
@@ -190,19 +238,21 @@ class ZWaveJSNodeConfig extends LitElement {
                 </ha-card>
               </div>`
           )}
-          ${this._canResetAll
-            ? html`<div class="reset">
-                <ha-progress-button
-                  .disabled=${this._resetDialogProgress}
-                  .progress=${this._resetDialogProgress}
-                  @click=${this._openResetDialog}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
-                  )}
-                </ha-progress-button>
-              </div>`
-            : nothing}
+          ${
+            this._canResetAll
+              ? html`<div class="reset">
+                  <ha-progress-button
+                    .disabled=${this._resetDialogProgress}
+                    .progress=${this._resetDialogProgress}
+                    @click=${this._openResetDialog}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
+                    )}
+                  </ha-progress-button>
+                </div>`
+              : nothing
+          }
           <h3>
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.custom_config"
@@ -221,7 +271,7 @@ class ZWaveJSNodeConfig extends LitElement {
             ></zwave_js-custom-param>
           </ha-card>
         </ha-config-section>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -240,49 +290,59 @@ class ZWaveJSNodeConfig extends LitElement {
         ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
         <br />
         <span>${item.property}</span>
-        ${item.property_key !== null
-          ? html`<br />
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.bitmask"
-              )}
-              <br />
-              <span>${item.property_key.toString(16)}</span>`
-          : nothing}
+        ${
+          item.property_key !== null
+            ? html`<br />
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.bitmask"
+                )}
+                <br />
+                <span>${item.property_key.toString(16)}</span>`
+            : nothing
+        }
       </span>
       <span slot="heading" class="heading" .title=${item.metadata.label}>
         ${item.metadata.label}
       </span>
       <span slot="description">
         ${item.metadata.description}
-        ${item.metadata.description !== null && !item.metadata.writeable
-          ? html`<br />`
-          : nothing}
-        ${!item.metadata.writeable
-          ? html`<em>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
-              )}
-            </em>`
-          : nothing}
-        ${result?.status
-          ? html`<p
-              class="result ${classMap({
-                [result.status]: true,
-              })}"
-            >
-              <ha-svg-icon
-                .path=${icons[result.status] ? icons[result.status] : mdiCircle}
-                class="result-icon"
-                slot="item-icon"
-              ></ha-svg-icon>
-              ${this.hass.localize(
-                `ui.panel.config.zwave_js.node_config.set_param_${result.status}`
-              )}
-              ${result.status === "error" && result.error
-                ? html` <br /><em>${result.error}</em> `
-                : nothing}
-            </p>`
-          : nothing}
+        ${
+          item.metadata.description !== null && !item.metadata.writeable
+            ? html`<br />`
+            : nothing
+        }
+        ${
+          !item.metadata.writeable
+            ? html`<em>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
+                )}
+              </em>`
+            : nothing
+        }
+        ${
+          result?.status
+            ? html`<p
+                class="result ${classMap({
+                  [result.status]: true,
+                })}"
+              >
+                <ha-svg-icon
+                  .path=${icons[result.status] ? icons[result.status] : mdiCircle}
+                  class="result-icon"
+                  slot="item-icon"
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.panel.config.zwave_js.node_config.set_param_${result.status}`
+                )}
+                ${
+                  result.status === "error" && result.error
+                    ? html` <br /><em>${result.error}</em> `
+                    : nothing
+                }
+              </p>`
+            : nothing
+        }
       </span>
     `;
 
@@ -329,25 +389,28 @@ class ZWaveJSNodeConfig extends LitElement {
       ) {
         return html`
           ${labelAndDescription}
-          <ha-combo-box
+          <ha-generic-picker
             .hass=${this.hass}
             .value=${item.value?.toString()}
             allow-custom-value
             hide-clear-icon
-            .items=${this._getComboBoxOptions(item.metadata.states)}
+            .getItems=${this._getManualEntryItems(item.metadata.states)}
             .disabled=${!item.metadata.writeable}
             .invalid=${result?.status === "error"}
             .placeholder=${item.metadata.unit}
             .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
+            .valueRenderer=${this._enumeratedPickerValueRenderer(
+              item.metadata.states
+            )}
             @value-changed=${this._getComboBoxValueChangedCallback(id, item)}
           >
-          </ha-combo-box>
+          </ha-generic-picker>
         `;
       }
       return html`${labelAndDescription}
-        <ha-textfield
+        <ha-input
           type="number"
-          .value=${item.value}
+          .value=${item.value?.toString()}
           .min=${item.metadata.min}
           .max=${item.metadata.max}
           .property=${item.property}
@@ -356,18 +419,23 @@ class ZWaveJSNodeConfig extends LitElement {
           .key=${id}
           .disabled=${!item.metadata.writeable}
           @change=${this._numericInputChanged}
-          .suffix=${item.metadata.unit}
-          .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
-          helperPersistent
+          .hint=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
         >
-        </ha-textfield>`;
+          ${
+            item.metadata.unit
+              ? html`<span slot="end">${item.metadata.unit}</span>`
+              : nothing
+          }
+        </ha-input>`;
     }
 
-    if (item.configuration_value_type === "enumerated") {
+    if (
+      item.configuration_value_type === "enumerated" &&
+      Object.keys(item.metadata.states ?? {}).length < 5
+    ) {
       return html`
         ${labelAndDescription}
         <ha-select
-          fixedMenuPosition
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}
@@ -376,19 +444,94 @@ class ZWaveJSNodeConfig extends LitElement {
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
           .helper=${defaultLabel}
-        >
-          ${Object.entries(item.metadata.states).map(
-            ([key, entityState]) => html`
-              <ha-list-item .value=${key}>${entityState}</ha-list-item>
-            `
+          .options=${Object.entries(item.metadata.states ?? {}).map(
+            ([key, entityState]) => ({
+              value: key,
+              label: entityState,
+            })
           )}
+        >
         </ha-select>
+      `;
+    }
+    if (item.configuration_value_type === "enumerated") {
+      return html`
+        ${labelAndDescription}
+        <ha-generic-picker
+          .hass=${this.hass}
+          .disabled=${!item.metadata.writeable}
+          .value=${item.value?.toString()}
+          .key=${id}
+          hide-clear-icon
+          @value-changed=${this._pickerValueChanged}
+          .helper=${defaultLabel}
+          .getItems=${this._getEnumeratedPickerItems(item.metadata.states!)}
+          .valueRenderer=${this._enumeratedPickerValueRenderer(
+            item.metadata.states!
+          )}
+          .property=${item.property}
+          .endpoint=${item.endpoint}
+          .propertyKey=${item.property_key}
+        >
+        </ha-generic-picker>
       `;
     }
 
     return html`${labelAndDescription}
       <p>${item.value}</p>`;
   }
+
+  private _subscribeConfigParameterUpdates(): void {
+    this._unsubscribeConfigParameterUpdates();
+    if (!this.isConnected || !this.hass || !this.deviceId) {
+      return;
+    }
+    this._unsubConfigParamUpdates = subscribeZwaveNodeConfigParameterUpdates(
+      this.hass,
+      this.deviceId,
+      this._handleConfigParameterUpdate
+    );
+    this._unsubConfigParamUpdates.catch(() => {
+      // The backend doesn't support the subscription; the page still works,
+      // it just won't receive live updates
+      this._unsubConfigParamUpdates = undefined;
+    });
+  }
+
+  private _unsubscribeConfigParameterUpdates(): void {
+    if (this._unsubConfigParamUpdates) {
+      this._unsubConfigParamUpdates
+        .then((unsub) => unsub())
+        .catch(() => {
+          // The subscription never succeeded, so there is nothing to clean up
+        });
+      this._unsubConfigParamUpdates = undefined;
+    }
+  }
+
+  private _handleConfigParameterUpdate = (
+    update: ZwaveJSNodeConfigParameterUpdate
+  ): void => {
+    const param = this._config?.[update.id];
+    if (!param) {
+      return;
+    }
+    const status = this._results[update.id]?.status;
+    if (status === "queued") {
+      // The device applied the queued change; the accepted result is cleared
+      // after a short delay by _setResult so the success message shows.
+      // The value was already set optimistically when the change was queued,
+      // so this runs even if the reported value matches the stored one.
+      this._setResult(update.id, "accepted");
+    } else if (status === "error" && param.value !== update.value) {
+      // The parameter changed, so the previous error no longer applies
+      this._setResult(update.id, undefined);
+    }
+    if (param.value !== update.value) {
+      param.value = update.value;
+      this._config = { ...this._config };
+    }
+  };
 
   private _isEnumeratedBool(item: ZWaveJSNodeConfigParam): boolean {
     // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
@@ -399,7 +542,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (item.configuration_value_type !== "enumerated") {
       return false;
     }
-    if (!("states" in item.metadata)) {
+    if (!item.metadata.states) {
       return false;
     }
     if (Object.keys(item.metadata.states).length !== 2) {
@@ -428,24 +571,36 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
-  private _dropdownSelected(ev) {
+  private _dropdownSelected(ev: HaSelectSelectEvent) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
+  }
+
+  private _pickerValueChanged(ev) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
+  }
+
+  private _handleEnumeratedPickerValueChanged(ev, value: string) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value?.toString() === ev.target.value) {
+    if (this._config![ev.target.key].value === Number(value)) {
       return;
     }
     this._setResult(ev.target.key, undefined);
 
-    this._updateConfigParameter(ev.target, Number(ev.target.value));
+    this._updateConfigParameter(ev.target, Number(value));
   }
 
   private _numericInputChanged(ev) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    const value = Number(ev.target.value);
-    if (Number(this._config![ev.target.key].value) === value) {
+    // An empty input must not be coerced to 0 by Number()
+    const value =
+      ev.target.value === undefined || ev.target.value === ""
+        ? NaN
+        : Number(ev.target.value);
+    if (this._config![ev.target.key].value === value) {
       return;
     }
     if (isNaN(value)) {
@@ -474,18 +629,43 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, value);
   }
 
-  private _getComboBoxOptions = memoizeOne((states: Record<string, string>) =>
-    Object.entries(states).map(([value, label]) => ({
-      value,
-      label: `${value} - ${label}`,
-    }))
+  private _getEnumeratedPickerItems = memoizeOne(
+    (states: Record<string, string>) => {
+      const items: PickerComboBoxItem[] = Object.entries(states).map(
+        ([value, label]) => ({
+          id: value,
+          primary: label,
+          sorting_label: `${label}_${value}`,
+        })
+      );
+      return () => items;
+    }
+  );
+
+  private _enumeratedPickerValueRenderer = memoizeOne(
+    (states: Record<string, string>) => (value: string) =>
+      html`<span slot="headline">${states[value] || value}</span>`
+  );
+
+  private _getManualEntryItems = memoizeOne(
+    (states: Record<string, string>) => {
+      const items: PickerComboBoxItem[] = Object.entries(states).map(
+        ([value, label]) => ({
+          id: value,
+          primary: `${label}`,
+          secondary: value,
+          sorting_label: `${label}_${value}`,
+        })
+      );
+      return () => items;
+    }
   );
 
   private _getComboBoxValueChangedCallback(
     id: string,
     item: ZWaveJSNodeConfigParam
   ) {
-    return (ev: CustomEvent<{ value: number }>) =>
+    return (ev: ValueChangedEvent<number>) =>
       this._numericInputChanged({
         ...ev,
         target: {
@@ -513,23 +693,48 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       this._config![target.key].value = value;
 
-      this._setResult(target.key, result.status);
+      this._setResult(target.key, computeSetConfigParamStatus(result.status));
     } catch (err: any) {
       this._setError(target.key, err.message);
     }
   }
 
-  private _setResult(key: string, value: string | undefined) {
+  private _clearResultTimeout(key: string): void {
+    if (key in this._resultTimeouts) {
+      clearTimeout(this._resultTimeouts[key]);
+      delete this._resultTimeouts[key];
+    }
+  }
+
+  private _clearAllResultTimeouts(): void {
+    Object.values(this._resultTimeouts).forEach((timeout) =>
+      clearTimeout(timeout)
+    );
+    this._resultTimeouts = {};
+  }
+
+  private _setResult(
+    key: string,
+    value: ZWaveJSSetConfigParamStatus | undefined
+  ) {
+    this._clearResultTimeout(key);
     if (value === undefined) {
       delete this._results[key];
       this.requestUpdate();
     } else {
       this._results = { ...this._results, [key]: { status: value } };
+      if (value === "accepted") {
+        // Show the success message briefly, then clear it
+        this._resultTimeouts[key] = window.setTimeout(() => {
+          this._setResult(key, undefined);
+        }, 2000);
+      }
     }
   }
 
   private _setError(key: string, message: string) {
-    const errorParam = { status: "error", error: message };
+    this._clearResultTimeout(key);
+    const errorParam: ConfigParamResult = { status: "error", error: message };
     this._results = { ...this._results, [key]: errorParam };
   }
 
@@ -544,12 +749,17 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
 
-    let capabilities: ZWaveJSNodeCapabilities | undefined;
-    [this._nodeMetadata, this._config, capabilities] = await Promise.all([
+    const [nodeMetadata, config, capabilities] = await Promise.all([
       fetchZwaveNodeMetadata(this.hass, device.id),
       fetchZwaveNodeConfigParameters(this.hass, device.id),
       fetchZwaveNodeCapabilities(this.hass, device.id),
     ]);
+    if (device.id !== this.deviceId) {
+      // The user navigated to another node while the data was loading
+      return;
+    }
+    this._nodeMetadata = nodeMetadata;
+    this._config = config;
     this._canResetAll =
       capabilities &&
       Object.values(capabilities).some((endpoint) =>
@@ -689,7 +899,7 @@ class ZWaveJSNodeConfig extends LitElement {
           white-space: normal;
         }
 
-        :host(:not([narrow])) ha-settings-row ha-textfield {
+        :host(:not([narrow])) ha-settings-row ha-input {
           text-align: right;
         }
 

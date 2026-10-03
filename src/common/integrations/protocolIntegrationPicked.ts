@@ -41,7 +41,7 @@ export const protocolIntegrationPicked = async (
         ).filter((e) => !e.disabled_by);
 
     if (
-      !isComponentLoaded(hass, "zwave_js") ||
+      !isComponentLoaded(hass.config, "zwave_js") ||
       (!options?.config_entry && !entries?.length)
     ) {
       // If the component isn't loaded, ask them to load the integration first
@@ -90,7 +90,7 @@ export const protocolIntegrationPicked = async (
         ).filter((e) => !e.disabled_by);
 
     if (
-      !isComponentLoaded(hass, "zha") ||
+      !isComponentLoaded(hass.config, "zha") ||
       (!options?.config_entry && !entries?.length)
     ) {
       // If the component isn't loaded, ask them to load the integration first
@@ -139,7 +139,7 @@ export const protocolIntegrationPicked = async (
           })
         ).filter((e) => !e.disabled_by);
     if (
-      !isComponentLoaded(hass, domain) ||
+      !isComponentLoaded(hass.config, domain) ||
       (!options?.config_entry && !entries?.length)
     ) {
       // If the component isn't loaded, ask them to load the integration first

@@ -1,0 +1,62 @@
+name: Setup Node and install
+description: Set up Node from .nvmrc and install pnpm dependencies
+
+inputs:
+  immutable:
+    description: Pass --frozen-lockfile to pnpm install
+    default: "true"
+  cache:
+    description: Cache the pnpm store
+    default: "true"
+  node-modules-cache:
+    description: Restore the exact shared node_modules cache before installing
+    default: "false"
+  node-modules-cache-key:
+    description: Prefix for the shared node_modules cache key
+    default: node-modules-v1
+
+runs:
+  using: composite
+  steps:
+    # The pnpm store is cached with node_modules because `pnpm licenses`
+    # (used by the license file generation) reads package metadata from it.
+    - name: Restore complete dependency tree
+      id: dependency-cache
+      if: inputs.node-modules-cache == 'true'
+      continue-on-error: true
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          ~/.local/share/pnpm/store
+        key: >-
+          ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
+          hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
+
+    - name: Setup Node
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version-file: ".nvmrc"
+
+    - name: Enable Corepack
+      shell: bash
+      run: corepack enable
+
+    - name: Get pnpm store directory
+      id: pnpm-store
+      if: inputs.cache == 'true' && (inputs.node-modules-cache != 'true' || steps.dependency-cache.outputs.cache-hit != 'true')
+      shell: bash
+      run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache pnpm store
+      if: steps.pnpm-store.outputs.path
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.pnpm-store.outputs.path }}
+        key: pnpm-store-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-store-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Install dependencies
+      if: inputs.node-modules-cache != 'true' || steps.dependency-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: pnpm install ${{ inputs.immutable == 'true' && '--frozen-lockfile' || '--no-frozen-lockfile' }}

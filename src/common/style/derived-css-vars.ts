@@ -33,13 +33,12 @@ const extractVarFromBase = (
   varName: string,
   baseVars: Record<string, string>
 ): string | undefined => {
-  if (baseVars[varName] && baseVars[varName].startsWith("var(")) {
-    const baseVarName = baseVars[varName]
-      .substring(6, baseVars[varName].length - 1)
-      .trim();
+  const value = baseVars[varName];
+  if (value && value.startsWith("var(")) {
+    const baseVarName = value.substring(6, value.length - 1).trim();
     return extractVarFromBase(baseVarName, baseVars);
   }
-  return baseVars[varName];
+  return value;
 };
 
 /**

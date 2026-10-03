@@ -1,24 +1,32 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   findEntities,
   generateEntityFilter,
   type EntityFilter,
 } from "../../../common/entity/entity_filter";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
-import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
+import type { LogbookCardConfig } from "../../lovelace/cards/types";
+import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { computeFavoriteCardConfig } from "../../lovelace/strategies/helpers/favorite-cards";
+import { computeSecurityAlertCardConfig } from "./security-alerts";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
+  alert_entities?: SecurityAlertEntityConfig[];
+  favorite_entities?: string[];
 }
 
 export const securityEntityFilters: EntityFilter[] = [
@@ -36,7 +44,7 @@ export const securityEntityFilters: EntityFilter[] = [
   },
   {
     domain: "cover",
-    device_class: ["door", "garage", "gate"],
+    device_class: ["door", "garage", "gate", "window"],
     entity_category: "none",
   },
   {
@@ -52,6 +60,7 @@ export const securityEntityFilters: EntityFilter[] = [
       // Safety
       "carbon_monoxide",
       "gas",
+      "glass_break",
       "moisture",
       "safety",
       "smoke",
@@ -66,6 +75,17 @@ export const securityEntityFilters: EntityFilter[] = [
     entity_category: "diagnostic",
   },
 ];
+
+export const isSecurityPanelEntity = (
+  hass: Pick<
+    HomeAssistant,
+    "states" | "entities" | "devices" | "areas" | "floors"
+  >,
+  stateObj: HassEntity
+): boolean =>
+  securityEntityFilters.some((filter) =>
+    generateEntityFilter(hass, filter)(stateObj.entity_id)
+  );
 
 const processAreasForSecurity = (
   areaIds: string[],
@@ -95,6 +115,12 @@ const processAreasForSecurity = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
+        tap_action: hass.panels.home
+          ? {
+              action: "navigate",
+              navigation_path: `/home/areas-${area.area_id}`,
+            }
+          : undefined,
       });
       cards.push(...areaCards);
     }
@@ -124,12 +150,12 @@ const processUnassignedEntities = (
 @customElement("security-view-strategy")
 export class SecurityViewStrategy extends ReactiveElement {
   static async generate(
-    _config: SecurityViewStrategyConfig,
+    config: SecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
-    const home = getHomeStructure(floors, areas);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
+    const hierarchy = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
@@ -141,10 +167,34 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const entities = findEntities(allEntities, securityFilters);
 
-    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
+    const favoriteEntities = (config.favorite_entities ?? []).filter(
+      (entityId) =>
+        hass.states[entityId] &&
+        isSecurityPanelEntity(hass, hass.states[entityId])
+    );
+
+    if (favoriteEntities.length > 0) {
+      sections.push({
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.favorites"
+            ),
+            heading_style: "title",
+          },
+          ...favoriteEntities.map(computeFavoriteCardConfig),
+        ],
+      });
+    }
+
+    const floorCount =
+      hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
 
     // Process floors
-    for (const floorStructure of home.floors) {
+    for (const floorStructure of hierarchy.floors) {
       const floorId = floorStructure.id;
       const areaIds = floorStructure.areas;
       const floor = hass.floors[floorId];
@@ -173,7 +223,7 @@ export class SecurityViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned areas
-    if (home.areas.length > 0) {
+    if (hierarchy.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
         column_span: 2,
@@ -188,7 +238,11 @@ export class SecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(home.areas, hass, entities);
+      const areaCards = processAreasForSecurity(
+        hierarchy.areas,
+        hass,
+        entities
+      );
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -219,10 +273,105 @@ export class SecurityViewStrategy extends ReactiveElement {
       sections.push(section);
     }
 
+    // Build sidebar with activity log
+    const hasLogbook = isComponentLoaded(hass.config, "logbook");
+
+    // Collect person entity IDs
+    const personEntities = Object.keys(hass.states).filter(
+      (entityId) => computeStateDomain(hass.states[entityId]) === "person"
+    );
+
+    const logbookEntityIds = [...entities, ...personEntities];
+
+    const sidebarSections: LovelaceSectionConfig[] = [];
+
+    const alertCards = config.alert_entities?.map((alertEntity) =>
+      computeSecurityAlertCardConfig(
+        hass.states[alertEntity.entity],
+        alertEntity
+      )
+    );
+
+    if (alertCards?.length) {
+      sidebarSections.push({
+        type: "grid",
+        visibility: [
+          {
+            condition: "or",
+            conditions: alertCards.map((alertCard) => ({
+              condition: "and",
+              conditions: alertCard.visibility!,
+            })),
+          },
+        ],
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.active_alerts"
+            ),
+            heading_style: "title",
+          },
+          ...alertCards.map((alertCard) => ({
+            ...alertCard,
+            grid_options: { columns: 12 },
+          })),
+        ] satisfies LovelaceCardConfig[],
+      });
+    }
+
+    const hasLogbookSection = hasLogbook && logbookEntityIds.length > 0;
+    if (hasLogbookSection) {
+      sidebarSections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.activity"
+            ),
+            heading_style: "title",
+          } as LovelaceCardConfig,
+          {
+            type: "logbook",
+            target: {
+              entity_id: logbookEntityIds,
+            },
+            hours_to_show: 24,
+            grid_options: { columns: 12 },
+          } satisfies LogbookCardConfig,
+        ],
+      });
+    }
+
     return {
       type: "sections",
-      max_columns: 2,
+      max_columns: 3,
       sections: sections,
+      ...(sidebarSections.length > 0 && {
+        sidebar: {
+          sections: sidebarSections,
+          ...(!hasLogbookSection && alertCards?.length
+            ? {
+                visibility: [
+                  {
+                    condition: "or" as const,
+                    conditions: alertCards.map((alertCard) => ({
+                      condition: "and" as const,
+                      conditions: alertCard.visibility!,
+                    })),
+                  },
+                ],
+              }
+            : {}),
+          content_label: hass.localize(
+            "ui.panel.lovelace.strategy.security.devices"
+          ),
+          sidebar_label: hass.localize(
+            "ui.panel.lovelace.strategy.security.activity"
+          ),
+        },
+      }),
     };
   }
 }

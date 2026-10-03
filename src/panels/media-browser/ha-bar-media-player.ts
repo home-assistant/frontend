@@ -1,5 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiChevronDown,
   mdiMonitor,
@@ -15,21 +13,27 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
+import { MediaProgressController } from "../../common/controllers/media-progress-controller";
+import { VolumeSliderController } from "../../common/util/volume-slider";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
 import "../../components/ha-domain-icon";
+import "../../components/ha-dropdown";
 import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
 import "../../components/ha-slider";
+import type { HaSlider } from "../../components/ha-slider";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../data/entity";
+import "../../components/media-player/ha-media-player-picker";
 import type {
   ControlButton,
   MediaPlayerEntity,
@@ -42,7 +46,6 @@ import {
   computeMediaControls,
   computeMediaDescription,
   formatMediaTime,
-  getCurrentProgress,
   handleMediaControlClick,
   setMediaPlayerVolume,
 } from "../../data/media-player";
@@ -51,10 +54,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
-import {
-  BrowserMediaPlayer,
-  ERR_UNSUPPORTED_MEDIA,
-} from "./browser-media-player";
+import { BrowserMediaPlayer } from "./browser-media-player";
 
 declare global {
   interface HASSDomEvents {
@@ -70,9 +70,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @query("mwc-linear-progress") private _progressBar?: LinearProgress;
+  @query(".progress-slider") private _progressBar?: HaSlider;
 
-  @query("#CurrentProgress") private _currentProgress?: HTMLElement;
+  @query(".volume-slider") private _volumeSlider?: HaSlider;
 
   @state() private _marqueeActive = false;
 
@@ -80,37 +80,33 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @state() private _browserPlayer?: BrowserMediaPlayer;
 
-  private _progressInterval?: number;
+  private _volumeValue = 0;
+
+  private _progressController = new MediaProgressController(this, {
+    getStateObj: () => this._stateObj,
+    getSlider: () => this._progressBar,
+  });
 
   private _browserPlayerVolume = 0.8;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
+  private _volumeStep = 2;
 
-    const stateObj = this._stateObj;
+  private _debouncedVolumeSet = debounce((value: number) => {
+    this._setVolume(value);
+  }, 100);
 
-    if (!stateObj) {
-      return;
-    }
-
-    if (
-      !this._progressInterval &&
-      this._showProgressBar &&
-      stateObj.state === "playing"
-    ) {
-      this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(),
-        1000
-      );
-    }
-  }
+  private _volumeController = new VolumeSliderController({
+    getSlider: () => this._volumeSlider,
+    step: this._volumeStep,
+    onSetVolume: (value) => this._setVolume(value),
+    onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
+    onValueUpdated: (value) => {
+      this._volumeValue = value;
+    },
+  });
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this._progressInterval) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
-    }
     this._tearDownBrowserPlayer();
   }
 
@@ -134,25 +130,21 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       throw Error("Only browser supported");
     }
     this._tearDownBrowserPlayer();
-    try {
-      this._browserPlayer = new BrowserMediaPlayer(
-        this.hass,
-        item,
-        resolved,
-        this._browserPlayerVolume,
-        () => this.requestUpdate("_browserPlayer")
-      );
-    } catch (err: any) {
-      if (err.message === ERR_UNSUPPORTED_MEDIA) {
+    this._browserPlayer = new BrowserMediaPlayer(
+      this.hass,
+      item,
+      resolved,
+      this._browserPlayerVolume,
+      () => this.requestUpdate("_browserPlayer"),
+      () => {
+        this._tearDownBrowserPlayer();
         showAlertDialog(this, {
           text: this.hass.localize(
             "ui.components.media-browser.media_not_supported"
           ),
         });
-      } else {
-        throw err;
       }
-    }
+    );
     this._newMediaExpected = false;
   }
 
@@ -174,7 +166,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const stateObj = this._stateObj;
 
     if (!stateObj) {
-      return this._renderChoosePlayer(stateObj);
+      return this._renderChoosePlayer(stateObj, this._volumeValue);
     }
 
     const controls: ControlButton[] | undefined = !this.narrow
@@ -214,7 +206,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const mediaArt =
       stateObj.attributes.entity_picture_local ||
       stateObj.attributes.entity_picture;
-
     return html`
       <div
         class=${classMap({
@@ -224,16 +215,20 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         })}
         @click=${this._openMoreInfo}
       >
-        ${mediaArt
-          ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
-          : ""}
+        ${
+          mediaArt
+            ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
+            : ""
+        }
         <div class="media-info">
           <hui-marquee
-            .text=${mediaTitleClean ||
-            mediaDescription ||
-            (stateObj.state !== "playing" && stateObj.state !== "on"
-              ? this.hass.localize(`ui.card.media_player.nothing_playing`)
-              : "")}
+            .text=${
+              mediaTitleClean ||
+              mediaDescription ||
+              (stateObj.state !== "playing" && stateObj.state !== "on"
+                ? this.hass.localize(`ui.card.media_player.nothing_playing`)
+                : "")
+            }
             .active=${this._marqueeActive}
             @mouseover=${this._marqueeMouseOver}
             @mouseleave=${this._marqueeMouseLeave}
@@ -244,48 +239,91 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         </div>
       </div>
       <div
-        class="controls-progress ${stateObj.state === "buffering"
-          ? "buffering"
-          : ""}"
+        class="controls-progress ${
+          stateObj.state === "buffering" ? "buffering" : ""
+        }"
       >
-        ${stateObj.state === "buffering"
-          ? html`<ha-spinner></ha-spinner> `
-          : html`
-              <div class="controls">
-                ${controls === undefined
-                  ? ""
-                  : controls.map(
-                      (control) => html`
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            `ui.card.media_player.${control.action}`
+        ${
+          stateObj.state === "buffering"
+            ? html`<ha-spinner></ha-spinner> `
+            : html`
+                <div class="controls">
+                  ${
+                    controls === undefined
+                      ? ""
+                      : controls.map(
+                          (control) => html`
+                            <ha-icon-button
+                              .label=${this.hass.localize(
+                                `ui.card.media_player.${control.action}`
+                              )}
+                              .path=${control.icon}
+                              action=${control.action}
+                              @click=${this._handleControlClick}
+                            >
+                            </ha-icon-button>
+                          `
+                        )
+                  }
+                </div>
+                ${
+                  stateObj.attributes.media_duration === Infinity
+                    ? nothing
+                    : this.narrow
+                      ? html`<ha-slider
+                          class="progress-slider"
+                          min="0"
+                          max=${stateObj.attributes.media_duration || 0}
+                          step="1"
+                          .withTooltip=${false}
+                          size="s"
+                          aria-label=${this.hass.localize(
+                            "ui.card.media_player.track_position"
                           )}
-                          .path=${control.icon}
-                          action=${control.action}
-                          @click=${this._handleControlClick}
-                        >
-                        </ha-icon-button>
-                      `
-                    )}
-              </div>
-              ${stateObj.attributes.media_duration === Infinity
-                ? nothing
-                : this.narrow
-                  ? html`<mwc-linear-progress></mwc-linear-progress>`
-                  : html`
-                      <div class="progress">
-                        <div id="CurrentProgress"></div>
-                        <mwc-linear-progress wide></mwc-linear-progress>
-                        <div>${mediaDuration}</div>
-                      </div>
-                    `}
-            `}
+                          ?disabled=${!supportsFeature(
+                            stateObj,
+                            MediaPlayerEntityFeature.SEEK
+                          )}
+                          @change=${this._handleMediaSeekChanged}
+                        ></ha-slider>`
+                      : html`
+                          <div class="progress">
+                            <div id="CurrentProgress">
+                              ${formatMediaTime(
+                                this._progressController.progress
+                              )}
+                            </div>
+                            <ha-slider
+                              class="progress-slider"
+                              min="0"
+                              max=${stateObj.attributes.media_duration || 0}
+                              step="1"
+                              .withTooltip=${false}
+                              size="s"
+                              aria-label=${this.hass.localize(
+                                "ui.card.media_player.track_position"
+                              )}
+                              ?disabled=${!supportsFeature(
+                                stateObj,
+                                MediaPlayerEntityFeature.SEEK
+                              )}
+                              @change=${this._handleMediaSeekChanged}
+                            ></ha-slider>
+                            <div>${mediaDuration}</div>
+                          </div>
+                        `
+                }
+              `
+        }
       </div>
-      ${this._renderChoosePlayer(stateObj)}
+      ${this._renderChoosePlayer(stateObj, this._volumeValue)}
     `;
   }
 
-  private _renderChoosePlayer(stateObj: MediaPlayerEntity | undefined) {
+  private _renderChoosePlayer(
+    stateObj: MediaPlayerEntity | undefined,
+    volumeValue: number
+  ) {
     const isBrowser = this.entityId === BROWSER_PLAYER;
     return html`
     <div class="choose-player ${isBrowser ? "browser" : ""}">
@@ -294,74 +332,68 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
           ? html`
-              <ha-button-menu y="0" x="76">
+              <ha-dropdown class="volume-menu" placement="top" .distance=${8}>
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
                 ></ha-icon-button>
-                <ha-slider
-                  labeled
-                  min="0"
-                  max="100"
-                  step="1"
-                  .value=${stateObj.attributes.volume_level! * 100}
-                  @change=${this._handleVolumeChange}
+                <div
+                  class="volume-slider-container"
+                  @touchstart=${this._volumeController.handleTouchStart}
+                  @touchmove=${this._volumeController.handleTouchMove}
+                  @touchend=${this._volumeController.handleTouchEnd}
+                  @touchcancel=${this._volumeController.handleTouchCancel}
+                  @wheel=${this._volumeController.handleWheel}
                 >
-                </ha-slider>
-              </ha-button-menu>
+                  <ha-slider
+                    class="volume-slider"
+                    labeled
+                    min="0"
+                    max="100"
+                    .step=${this._volumeStep}
+                    .value=${volumeValue}
+                    @input=${this._volumeController.handleInput}
+                    @change=${this._volumeController.handleChange}
+                  >
+                  </ha-slider>
+                </div>
+              </ha-dropdown>
             `
           : ""
       }
 
-          <ha-button-menu>
-            ${
-              this.narrow
-                ? html`
-                    <ha-icon-button slot="trigger">
-                      ${this._renderIcon(isBrowser, stateObj)}
-                    </ha-icon-button>
-                  `
-                : html`
-                    <ha-button slot="trigger">
-                      <span slot="start">
-                        ${this._renderIcon(isBrowser, stateObj)}
-                      </span>
-                      ${this.narrow
-                        ? nothing
-                        : isBrowser
-                          ? this.hass.localize(
-                              "ui.components.media-browser.web-browser"
-                            )
-                          : stateObj
-                            ? computeStateName(stateObj)
-                            : this.entityId}
-                      <ha-svg-icon
-                        slot="end"
-                        .path=${mdiChevronDown}
-                      ></ha-svg-icon>
-                    </ha-button>
-                  `
-            }
-            <ha-list-item
-              .player=${BROWSER_PLAYER}
-              ?selected=${isBrowser}
-              @click=${this._selectPlayer}
-            >
-              ${this.hass.localize("ui.components.media-browser.web-browser")}
-            </ha-list-item>
-            ${this._mediaPlayerEntities.map(
-              (source) => html`
-                <ha-list-item
-                  ?selected=${source.entity_id === this.entityId}
-                  .disabled=${source.state === UNAVAILABLE}
-                  .player=${source.entity_id}
-                  @click=${this._selectPlayer}
-                >
-                  ${computeStateName(source)}
-                </ha-list-item>
-              `
-            )}
-          </ha-button-menu>
+          <ha-media-player-picker
+            class="player-menu"
+            .value=${this.entityId}
+            @value-changed=${this._handlePlayerSelect}
+          >
+            <ha-button slot="field">
+              <span slot="start">${this._renderIcon(isBrowser, stateObj)}</span>
+              ${
+                isBrowser
+                  ? this.hass.localize(
+                      "ui.components.media-browser.web-browser"
+                    )
+                  : stateObj
+                    ? (() => {
+                        const { primary, secondary } =
+                          computeEntityPickerDisplay(this.hass, stateObj);
+                        return html`<div class="player-label">
+                          <div>${primary}</div>
+                          ${
+                            secondary
+                              ? html`<div class="player-secondary">
+                                  ${secondary}
+                                </div>`
+                              : nothing
+                          }
+                        </div>`;
+                      })()
+                    : this.entityId
+              }
+              <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
+            </ha-button>
+          </ha-media-player-picker>
         </div>
       </div>
 
@@ -373,19 +405,14 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       return html`<ha-svg-icon .path=${mdiMonitor}></ha-svg-icon>`;
     }
     if (stateObj) {
-      return html`
-        <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
-      `;
+      return html` <ha-state-icon .stateObj=${stateObj}></ha-state-icon> `;
     }
     return html`
-      <ha-domain-icon
-        .hass=${this.hass}
-        .domain=${computeDomain(this.entityId)}
-      ></ha-domain-icon>
+      <ha-domain-icon .domain=${computeDomain(this.entityId)}></ha-domain-icon>
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("entityId")) {
       this._tearDownBrowserPlayer();
@@ -400,6 +427,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       oldHass.states[this.entityId] !== this.hass.states[this.entityId]
     ) {
       this._newMediaExpected = false;
+    }
+    if (changedProps.has("hass")) {
+      this._updateVolumeValueFromState(this._stateObj);
     }
   }
 
@@ -419,24 +449,11 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
     const stateObj = this._stateObj;
 
-    this._updateProgressBar();
-
-    if (
-      !this._progressInterval &&
-      this._showProgressBar &&
-      stateObj?.state === "playing"
-    ) {
-      this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(),
-        1000
-      );
-    } else if (
-      this._progressInterval &&
-      (!this._showProgressBar || stateObj?.state !== "playing")
-    ) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
+    if (this.entityId === BROWSER_PLAYER) {
+      this._updateVolumeValueFromState(stateObj);
     }
+
+    this._syncVolumeSlider();
   }
 
   private get _stateObj(): MediaPlayerEntity | undefined {
@@ -462,60 +479,33 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-more-info", { entityId: this.entityId });
   }
 
-  private get _showProgressBar() {
-    if (!this.hass) {
-      return false;
-    }
-
-    const stateObj = this._stateObj;
-
-    return (
-      stateObj &&
-      (stateObj.state === "playing" || stateObj.state === "paused") &&
-      "media_duration" in stateObj.attributes &&
-      "media_position" in stateObj.attributes
-    );
-  }
-
-  private get _mediaPlayerEntities() {
-    return Object.values(this.hass!.states).filter(
-      (entity) =>
-        computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
-        !this.hass.entities[entity.entity_id]?.hidden
-    );
-  }
-
-  private _updateProgressBar(): void {
-    const stateObj = this._stateObj;
-
-    if (!this._progressBar || !this._currentProgress || !stateObj) {
+  private _updateVolumeValueFromState(stateObj?: MediaPlayerEntity): void {
+    if (!stateObj) {
       return;
     }
-
-    if (!stateObj.attributes.media_duration) {
-      this._progressBar.progress = 0;
-      this._currentProgress.innerHTML = "";
+    const volumeLevel = stateObj.attributes.volume_level;
+    if (typeof volumeLevel !== "number" || !Number.isFinite(volumeLevel)) {
       return;
     }
-
-    const currentProgress = getCurrentProgress(stateObj);
-    this._progressBar.progress =
-      currentProgress / stateObj.attributes.media_duration;
-
-    if (this._currentProgress) {
-      this._currentProgress.innerHTML = formatMediaTime(currentProgress);
-    }
+    this._volumeValue = Math.round(volumeLevel * 100);
   }
 
-  private _handleControlClick(e: MouseEvent): void {
-    const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
+  private _syncVolumeSlider(): void {
+    if (!this._volumeSlider || this._volumeController.isInteracting) {
+      return;
+    }
+    this._volumeSlider.value = this._volumeValue;
+  }
 
+  private _handleControlClick(
+    e: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ): void {
+    const action = e.currentTarget.getAttribute("action")!;
     if (!this._browserPlayer) {
       handleMediaControlClick(
         this.hass!,
         this._stateObj!,
-        (e.currentTarget as HTMLElement).getAttribute("action")!
+        e.currentTarget.getAttribute("action")!
       );
       return;
     }
@@ -524,6 +514,25 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     } else if (action === "media_play") {
       this._browserPlayer.play();
     }
+  }
+
+  private _handleMediaSeekChanged(e: HASSDomTargetEvent<HaSlider>): void {
+    if (!this._stateObj) {
+      return;
+    }
+
+    const newValue = e.target.value;
+    this._progressController.seek(newValue);
+
+    if (this.entityId === BROWSER_PLAYER) {
+      this._browserPlayer?.seek(newValue);
+      return;
+    }
+
+    this.hass.callService("media_player", "media_seek", {
+      entity_id: this._stateObj.entity_id,
+      seek_position: newValue,
+    });
   }
 
   private _marqueeMouseOver(): void {
@@ -538,20 +547,23 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _selectPlayer(ev: CustomEvent): void {
-    const entityId = (ev.currentTarget as any).player;
+  private _handlePlayerSelect(ev: HASSDomEvent<{ value: string }>): void {
+    ev.stopPropagation();
+    const { value: entityId } = ev.detail;
+    if (!entityId) {
+      return;
+    }
     fireEvent(this, "player-picked", { entityId });
   }
 
-  private async _handleVolumeChange(ev) {
-    ev.stopPropagation();
-    const value = Number(ev.target.value) / 100;
+  private _setVolume(value: number) {
+    const volume = value / 100;
     if (this._browserPlayer) {
-      this._browserPlayerVolume = value;
-      this._browserPlayer.setVolume(value);
-    } else {
-      await setMediaPlayerVolume(this.hass, this.entityId, value);
+      this._browserPlayerVolume = volume;
+      this._browserPlayer.setVolume(volume);
+      return;
     }
+    setMediaPlayerVolume(this.hass, this.entityId, volume);
   }
 
   static styles = css`
@@ -565,21 +577,25 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       );
       border-top: 1px solid var(--divider-color);
       margin-right: var(--safe-area-inset-right);
+      transition:
+        width var(--ha-animation-duration-normal) ease,
+        margin-left var(--ha-animation-duration-normal) ease,
+        margin-right var(--ha-animation-duration-normal) ease;
     }
     :host([narrow]) {
       margin-left: var(--safe-area-inset-left);
     }
-
-    mwc-linear-progress {
-      width: 100%;
-      padding: 0 4px;
-      --mdc-theme-primary: var(--secondary-text-color);
+    @media (prefers-reduced-motion: reduce) {
+      :host {
+        transition: 1ms;
+      }
     }
 
-    ha-button-menu ha-button[slot="trigger"] {
-      line-height: 1;
-      --mdc-theme-primary: var(--primary-text-color);
-      --mdc-icon-size: 16px;
+    ha-slider {
+      width: 100%;
+      min-width: 100%;
+      --ha-slider-thumb-color: var(--primary-color);
+      --ha-slider-indicator-color: var(--primary-color);
     }
 
     .info {
@@ -605,12 +621,33 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       color: var(--secondary-text-color);
     }
 
+    .player-label {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--ha-space-1);
+      max-width: 120px;
+    }
+
+    .player-label > div {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .player-secondary {
+      font-size: var(--ha-font-size-s);
+      color: color-mix(in srgb, currentColor 70%, transparent);
+    }
+
     .choose-player {
       flex: 1;
       display: flex;
       justify-content: flex-end;
       align-items: center;
       padding: 16px;
+      gap: var(--ha-space-2);
     }
 
     .controls {
@@ -633,8 +670,33 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       align-items: center;
     }
 
-    mwc-linear-progress[wide] {
+    .progress > div:first-child {
+      margin-right: var(--ha-space-2);
+    }
+
+    .progress > div:last-child {
+      margin-left: var(--ha-space-2);
+    }
+
+    .progress ha-slider {
       margin: 0 4px;
+    }
+
+    ha-dropdown.volume-menu::part(menu) {
+      width: 220px;
+      max-width: 220px;
+      overflow: visible;
+      padding: 15px 15px;
+    }
+
+    .volume-slider-container {
+      width: 100%;
+    }
+
+    @media (pointer: coarse) {
+      .volume-slider {
+        pointer-events: none;
+      }
     }
 
     .media-info {
@@ -700,15 +762,11 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       justify-content: flex-end;
     }
 
-    :host([narrow]) mwc-linear-progress {
-      padding: 0;
+    :host([narrow]) ha-slider {
       position: absolute;
-      top: -4px;
+      top: -6px;
       left: 0;
-    }
-
-    ha-list-item[selected] {
-      font-weight: var(--ha-font-weight-bold);
+      right: 0;
     }
   `;
 }

@@ -658,8 +658,9 @@ export class HaControlCircularSlider extends LitElement {
         >
           <path d=${trackPath} ?data-interaction=${!onlyDotInteraction} />
           <path class="background" d=${trackPath} />
-          ${currentStroke
-            ? svg`
+          ${
+            currentStroke
+              ? svg`
                   <path
                     class="current"
                     d=${trackPath}
@@ -667,17 +668,22 @@ export class HaControlCircularSlider extends LitElement {
                     stroke-dashoffset=${currentStroke[1]}
                   />
                 `
-            : nothing}
-          ${lowValue != null || this.mode === "full"
-            ? this.renderArc(
-                this.dual ? "low" : "value",
-                lowValue,
-                (!this.dual && this.mode) || "start"
-              )
-            : nothing}
-          ${this.dual && highValue != null
-            ? this.renderArc("high", highValue, "end")
-            : nothing}
+              : nothing
+          }
+          ${
+            lowValue != null || this.mode === "full"
+              ? this.renderArc(
+                  this.dual ? "low" : "value",
+                  lowValue,
+                  (!this.dual && this.mode) || "start"
+                )
+              : nothing
+          }
+          ${
+            this.dual && highValue != null
+              ? this.renderArc("high", highValue, "end")
+              : nothing
+          }
         </g>
       </svg>
     `;

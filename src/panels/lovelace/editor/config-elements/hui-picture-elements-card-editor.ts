@@ -15,20 +15,24 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import type { HomeAssistant } from "../../../../types";
-import type { PictureElementsCardConfig } from "../../cards/types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import {
+  PREVIEW_CLICK_CALLBACK,
+  type PictureElementsCardConfig,
+} from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import type { UIConfigChangedEvent } from "../hui-element-editor";
 import { configElementStyle } from "./config-elements-style";
 import "../hui-picture-elements-card-row-editor";
 import type { LovelaceElementConfig } from "../../elements/types";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const genericElementConfigStruct = type({
@@ -66,6 +70,44 @@ export class HuiPictureElementsCardEditor
     this._config = config;
   }
 
+  private _onPreviewClick = (x: number, y: number): void => {
+    if (this._subElementEditorConfig?.type === "element") {
+      this._handlePositionClick(x, y);
+    }
+  };
+
+  private _handlePositionClick(x: number, y: number): void {
+    if (
+      !this._subElementEditorConfig?.elementConfig ||
+      this._subElementEditorConfig.type !== "element" ||
+      this._subElementEditorConfig.elementConfig.type === "conditional"
+    ) {
+      return;
+    }
+
+    const elementConfig = this._subElementEditorConfig
+      .elementConfig as LovelaceElementConfig;
+    const currentPosition = (elementConfig.style as Record<string, string>)
+      ?.position;
+    if (currentPosition && currentPosition !== "absolute") {
+      return;
+    }
+
+    const newElement = {
+      ...elementConfig,
+      style: {
+        ...((elementConfig.style as Record<string, string>) || {}),
+        left: `${Math.round(x)}%`,
+        top: `${Math.round(y)}%`,
+      },
+    };
+
+    const updateEvent = new CustomEvent("config-changed", {
+      detail: { config: newElement },
+    });
+    this._handleSubElementChanged(updateEvent);
+  }
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
@@ -82,7 +124,6 @@ export class HuiPictureElementsCardEditor
               selector: {
                 media: {
                   accept: ["image/*"] as string[],
-                  clearable: true,
                   image_upload: true,
                   hide_content_type: true,
                   content_id_helper: localize(
@@ -96,7 +137,6 @@ export class HuiPictureElementsCardEditor
               selector: {
                 media: {
                   accept: ["image/*"] as string[],
-                  clearable: true,
                   image_upload: true,
                   hide_content_type: true,
                   content_id_helper: localize(
@@ -138,6 +178,18 @@ export class HuiPictureElementsCardEditor
 
     if (this._subElementEditorConfig) {
       return html`
+        ${
+          this._subElementEditorConfig.type === "element" &&
+          this._subElementEditorConfig.elementConfig?.type !== "conditional"
+            ? html`
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.picture-elements.position_hint"
+                  )}
+                </ha-alert>
+              `
+            : nothing
+        }
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
@@ -175,12 +227,13 @@ export class HuiPictureElementsCardEditor
       : {}),
   }));
 
-  private _formChanged(ev: CustomEvent): void {
+  private _formChanged(ev: ValueChangedEvent<PictureElementsCardConfig>): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
     }
 
+    // no need to attach the preview click callback here, no element is being edited
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
@@ -191,7 +244,8 @@ export class HuiPictureElementsCardEditor
     const config = {
       ...this._config,
       elements: ev.detail.elements as LovelaceElementConfig[],
-    } as LovelaceCardConfig;
+      [PREVIEW_CLICK_CALLBACK]: this._onPreviewClick,
+    } as PictureElementsCardConfig;
 
     fireEvent(this, "config-changed", { config });
 
@@ -206,7 +260,9 @@ export class HuiPictureElementsCardEditor
     }
   }
 
-  private _handleSubElementChanged(ev: CustomEvent): void {
+  private _handleSubElementChanged(
+    ev: UIConfigChangedEvent<LovelaceElementConfig>
+  ): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
@@ -232,7 +288,12 @@ export class HuiPictureElementsCardEditor
       elementConfig: value,
     };
 
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        [PREVIEW_CLICK_CALLBACK]: this._onPreviewClick,
+      },
+    });
   }
 
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {

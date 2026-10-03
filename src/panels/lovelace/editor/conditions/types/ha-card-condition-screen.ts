@@ -73,11 +73,11 @@ function computeBreakpointsKey(breakpoints) {
 }
 
 // Compute all possible media queries from each breakpoints combination (2 ^ breakpoints = 16)
-const queries = getAllCombinations(BREAKPOINTS as unknown as Breakpoint[])
+const queries = getAllCombinations<Breakpoint>(BREAKPOINTS)
   .filter((arr) => arr.length !== 0)
   .map(
     (breakpoints) =>
-      [breakpoints, computeBreakpointsSize(breakpoints)] as [
+      [breakpoints, computeBreakpointsSize(breakpoints)] satisfies [
         Breakpoint[],
         string,
       ]

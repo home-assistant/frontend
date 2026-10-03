@@ -1,57 +1,112 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
-import { onBoardingStyles } from "./styles";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
-import "../components/ha-divider";
-import "../components/ha-md-list";
-import "../components/ha-md-list-item";
-import "../components/ha-icon-button-next";
+import "../components/ha-icon-next";
+import "../components/item/ha-list-item-button";
+import "../components/list/ha-list-base";
+import { translationsReadyContext } from "../mixins/lit-localize-lite-mixin";
+import { renderSkeleton, skeletonStyles } from "./render-skeleton";
+import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-welcome")
 class OnboardingWelcome extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consume({ context: translationsReadyContext, subscribe: true })
+  private _translationsReady!: boolean;
 
   protected render(): TemplateResult {
+    const ready = this._translationsReady;
     return html`
-      <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
-      <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
+      <h1>
+        ${
+          ready
+            ? this._localize("ui.panel.page-onboarding.welcome.header")
+            : renderSkeleton("title")
+        }
+      </h1>
+      <p>
+        ${
+          ready
+            ? this._localize("ui.panel.page-onboarding.intro")
+            : renderSkeleton("line")
+        }
+      </p>
 
-      <ha-button @click=${this._start} class="start">
-        ${this.localize("ui.panel.page-onboarding.welcome.start")}
+      <ha-button @click=${this._start} class="start" .disabled=${!ready}>
+        ${
+          ready
+            ? this._localize("ui.panel.page-onboarding.welcome.start")
+            : renderSkeleton("button")
+        }
       </ha-button>
 
-      <ha-divider
-        .label=${this.localize("ui.panel.page-onboarding.welcome.or_restore")}
-      ></ha-divider>
+      <div class="divider">
+        <wa-divider></wa-divider>
+        <div>
+          <span>
+            ${
+              ready
+                ? this._localize("ui.panel.page-onboarding.welcome.or_restore")
+                : renderSkeleton("chip")
+            }
+          </span>
+        </div>
+      </div>
 
-      <ha-md-list>
-        <ha-md-list-item type="button" @click=${this._restoreBackupUpload}>
+      <ha-list-base>
+        <ha-list-item-button
+          @click=${this._restoreBackupUpload}
+          .disabled=${!ready}
+        >
           <div slot="headline">
-            ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
+            ${
+              ready
+                ? this._localize(
+                    "ui.panel.page-onboarding.restore.upload_backup"
+                  )
+                : renderSkeleton("headline")
+            }
           </div>
           <div slot="supporting-text">
-            ${this.localize(
-              "ui.panel.page-onboarding.restore.options.upload_description"
-            )}
+            ${
+              ready
+                ? this._localize(
+                    "ui.panel.page-onboarding.restore.options.upload_description"
+                  )
+                : renderSkeleton("line")
+            }
           </div>
-          <ha-icon-button-next slot="end"></ha-icon-button-next>
-        </ha-md-list-item>
-        <ha-md-list-item type="button" @click=${this._restoreBackupCloud}>
-          <div slot="headline">Home Assistant Cloud</div>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+        <ha-list-item-button
+          @click=${this._restoreBackupCloud}
+          .disabled=${!ready}
+        >
+          <div slot="headline">
+            ${ready ? "Home Assistant Cloud" : renderSkeleton("headline")}
+          </div>
           <div slot="supporting-text">
-            ${this.localize(
-              "ui.panel.page-onboarding.restore.ha-cloud.description"
-            )}
+            ${
+              ready
+                ? this._localize(
+                    "ui.panel.page-onboarding.restore.ha-cloud.description"
+                  )
+                : renderSkeleton("line")
+            }
           </div>
-          <ha-icon-button-next slot="end"></ha-icon-button-next>
-        </ha-md-list-item>
-      </ha-md-list>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+      </ha-list-base>
     `;
   }
 
@@ -83,31 +138,48 @@ class OnboardingWelcome extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin-bottom: -16px;
+          margin-bottom: calc(var(--ha-space-4) * -1);
         }
         h1 {
-          margin-top: 16px;
-          margin-bottom: 8px;
+          width: 100%;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-2);
         }
         p {
+          width: 100%;
           margin: 0;
         }
         .start {
-          margin: 32px 0;
+          margin: var(--ha-space-8) 0;
           width: 100%;
         }
-        ha-divider {
-          --ha-divider-width: calc(100% + 64px);
-          margin-left: -32px;
-          margin-right: -32px;
+        .divider {
+          width: calc(100% + var(--ha-space-16));
+          position: relative;
+          margin-left: calc(var(--ha-space-8) * -1);
+          margin-right: calc(var(--ha-space-8) * -1);
         }
-        ha-md-list {
+        .divider div {
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          top: 0;
+          bottom: 0;
+          width: 100%;
+        }
+        .divider div span {
+          background-color: var(--card-background-color);
+          padding: 0 var(--ha-space-4);
+        }
+
+        ha-list-base {
           width: 100%;
           padding-bottom: 0;
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
+          --ha-row-item-padding-inline: 0;
         }
       `,
+      skeletonStyles,
     ];
   }
 }

@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import { mdiCamera } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,17 +9,20 @@ import { customElement, property, query, state } from "lit/decorators";
 // WebAssembly port of ZXing:
 import { prepareZXingModule } from "barcode-detector";
 import type QrScanner from "qr-scanner";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { configContext } from "../data/context";
 import { addExternalBarCodeListener } from "../external_app/external_app_entrypoint";
-import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-button";
-import "./ha-button-menu";
-import "./ha-list-item";
+import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-spinner";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
 
 prepareZXingModule({
   overrides: {
@@ -33,7 +37,13 @@ prepareZXingModule({
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property() public description?: string;
 
@@ -52,6 +62,8 @@ class HaQrScanner extends LitElement {
 
   @state() private _warning?: string;
 
+  @state() private _selectedCamera?: string;
+
   private _qrScanner?: QrScanner;
 
   private _qrNotFoundCount = 0;
@@ -62,7 +74,7 @@ class HaQrScanner extends LitElement {
 
   @query("#canvas-container", true) private _canvasContainer?: HTMLDivElement;
 
-  @query("ha-textfield") private _manualInput?: HaTextField;
+  @query("ha-input") private _manualInput?: HaInput;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -96,76 +108,86 @@ class HaQrScanner extends LitElement {
       return nothing;
     }
 
-    return html`${this._error || this._warning
-      ? html`<ha-alert
-          .alertType=${this._error ? "error" : "warning"}
-          class=${this._error ? "" : "warning"}
-        >
-          ${this._error || this._warning}
-          ${this._error
-            ? html`<ha-button @click=${this._retry} slot="action">
-                ${this.hass.localize("ui.components.qr-scanner.retry")}
-              </ha-button>`
-            : nothing}
-        </ha-alert>`
-      : nothing}
-    ${navigator.mediaDevices
-      ? html`<video></video>
-          <div id="canvas-container">
-            ${this._loading
-              ? html`<div class="loading">
-                  <ha-spinner active></ha-spinner>
-                </div>`
-              : nothing}
-            ${!this._loading &&
-            !this._error &&
-            this._cameras &&
-            this._cameras.length > 1
-              ? html`<ha-button-menu fixed @closed=${stopPropagation}>
-                  <ha-icon-button
-                    slot="trigger"
-                    .label=${this.hass.localize(
-                      "ui.components.qr-scanner.select_camera"
-                    )}
-                    .path=${mdiCamera}
-                  ></ha-icon-button>
-                  ${this._cameras!.map(
-                    (camera) => html`
-                      <ha-list-item
-                        .value=${camera.id}
-                        @click=${this._cameraChanged}
-                      >
-                        ${camera.label}
-                      </ha-list-item>
-                    `
-                  )}
-                </ha-button-menu>`
-              : nothing}
-          </div>`
-      : html`<ha-alert alert-type="warning">
-            ${!window.isSecureContext
-              ? this.hass.localize(
-                  "ui.components.qr-scanner.only_https_supported"
-                )
-              : this.hass.localize("ui.components.qr-scanner.not_supported")}
-          </ha-alert>
-          <p>${this.hass.localize("ui.components.qr-scanner.manual_input")}</p>
-          <div class="row">
-            <ha-textfield
-              .label=${this.hass.localize(
-                "ui.components.qr-scanner.enter_qr_code"
-              )}
-              @keyup=${this._manualKeyup}
-              @paste=${this._manualPaste}
-            ></ha-textfield>
-            <ha-button @click=${this._manualSubmit}>
-              ${this.hass.localize("ui.common.submit")}
-            </ha-button>
-          </div>`}`;
+    return html`${
+      this._error || this._warning
+        ? html`<ha-alert
+            .alertType=${this._error ? "error" : "warning"}
+            class=${this._error ? "" : "warning"}
+          >
+            ${this._error || this._warning}
+            ${
+              this._error
+                ? html`<ha-button @click=${this._retry} slot="action">
+                    ${this._localize("ui.components.qr-scanner.retry")}
+                  </ha-button>`
+                : nothing
+            }
+          </ha-alert>`
+        : nothing
+    }
+    ${
+      navigator.mediaDevices
+        ? html`<video></video>
+            <div id="canvas-container">
+              ${
+                this._loading
+                  ? html`<div class="loading">
+                      <ha-spinner active></ha-spinner>
+                    </div>`
+                  : nothing
+              }
+              ${
+                !this._loading &&
+                !this._error &&
+                this._cameras &&
+                this._cameras.length > 1
+                  ? html`<ha-dropdown @wa-select=${this._handleDropdownSelect}>
+                      <ha-icon-button
+                        slot="trigger"
+                        .label=${this._localize(
+                          "ui.components.qr-scanner.select_camera"
+                        )}
+                        .path=${mdiCamera}
+                      ></ha-icon-button>
+                      ${this._cameras!.map(
+                        (camera) => html`
+                          <ha-dropdown-item
+                            .value=${camera.id}
+                            .selected=${this._selectedCamera === camera.id}
+                          >
+                            ${camera.label}
+                          </ha-dropdown-item>
+                        `
+                      )}
+                    </ha-dropdown>`
+                  : nothing
+              }
+            </div>`
+        : html`<ha-alert alert-type="warning">
+              ${
+                !window.isSecureContext
+                  ? this._localize(
+                      "ui.components.qr-scanner.only_https_supported"
+                    )
+                  : this._localize("ui.components.qr-scanner.not_supported")
+              }
+            </ha-alert>
+            <p>${this._localize("ui.components.qr-scanner.manual_input")}</p>
+            <div class="row">
+              <ha-input
+                .label=${this._localize("ui.components.qr-scanner.enter_qr_code")}
+                @keyup=${this._manualKeyup}
+                @paste=${this._manualPaste}
+              ></ha-input>
+              <ha-button @click=${this._manualSubmit}>
+                ${this._localize("ui.common.submit")}
+              </ha-button>
+            </div>`
+    }`;
   }
 
   private get _nativeBarcodeScanner(): boolean {
-    return Boolean(this.hass.auth.external?.config.hasBarCodeScanner);
+    return Boolean(this._config.auth.external?.config.hasBarCodeScanner);
   }
 
   private async _loadQrScanner() {
@@ -180,7 +202,7 @@ class HaQrScanner extends LitElement {
     const QrScanner = (await import("qr-scanner")).default;
     if (!(await QrScanner.hasCamera())) {
       this._reportError(
-        this.hass.localize("ui.components.qr-scanner.no_camera_found")
+        this._localize("ui.components.qr-scanner.no_camera_found")
       );
       return;
     }
@@ -205,6 +227,9 @@ class HaQrScanner extends LitElement {
 
   private async _listCameras(qrScanner: typeof QrScanner): Promise<void> {
     this._cameras = await qrScanner.listCameras(true);
+    if (this._cameras.length > 0) {
+      this._selectedCamera = this._cameras[0].id;
+    }
   }
 
   private _qrCodeError = (err: any) => {
@@ -237,7 +262,7 @@ class HaQrScanner extends LitElement {
 
   private _manualKeyup(ev: KeyboardEvent) {
     if (ev.key === "Enter") {
-      this._qrCodeScanned((ev.target as HaTextField).value);
+      this._qrCodeScanned((ev.target as HaInput).value ?? "");
     }
   }
 
@@ -249,11 +274,15 @@ class HaQrScanner extends LitElement {
   }
 
   private _manualSubmit() {
-    this._qrCodeScanned(this._manualInput!.value);
+    this._qrCodeScanned(this._manualInput!.value ?? "");
   }
 
-  private _cameraChanged(ev: CustomEvent): void {
-    this._qrScanner?.setCamera((ev.target as any).value);
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const cameraId = ev.detail?.item?.value;
+    if (cameraId) {
+      this._selectedCamera = cameraId;
+      this._qrScanner?.setCamera(cameraId);
+    }
   }
 
   private _openExternalScanner() {
@@ -261,7 +290,7 @@ class HaQrScanner extends LitElement {
       if (msg.command === "bar_code/scan_result") {
         if (msg.payload.format !== "qr_code") {
           this._notifyExternalScanner(
-            this.hass.localize("ui.components.qr-scanner.wrong_code", {
+            this._localize("ui.components.qr-scanner.wrong_code", {
               format: msg.payload.format,
               rawValue: msg.payload.rawValue,
             })
@@ -279,20 +308,17 @@ class HaQrScanner extends LitElement {
       }
       return true;
     });
-    this.hass.auth.external!.fireMessage({
+    this._config.auth.external!.fireMessage({
       type: "bar_code/scan",
       payload: {
         title:
-          this.title ||
-          this.hass.localize("ui.components.qr-scanner.app.title"),
+          this.title || this._localize("ui.components.qr-scanner.app.title"),
         description:
           this.description ||
-          this.hass.localize("ui.components.qr-scanner.app.description"),
+          this._localize("ui.components.qr-scanner.app.description"),
         alternative_option_label:
           this.alternativeOptionLabel ||
-          this.hass.localize(
-            "ui.components.qr-scanner.app.alternativeOptionLabel"
-          ),
+          this._localize("ui.components.qr-scanner.app.alternativeOptionLabel"),
       },
     });
   }
@@ -300,7 +326,7 @@ class HaQrScanner extends LitElement {
   private _closeExternalScanner() {
     this._removeListener?.();
     this._removeListener = undefined;
-    this.hass.auth.external!.fireMessage({
+    this._config.auth.external!.fireMessage({
       type: "bar_code/close",
     });
   }
@@ -309,7 +335,7 @@ class HaQrScanner extends LitElement {
     if (!this._nativeBarcodeScanner) {
       return;
     }
-    this.hass.auth.external!.fireMessage({
+    this._config.auth.external!.fireMessage({
       type: "bar_code/notify",
       payload: {
         message,
@@ -359,7 +385,7 @@ class HaQrScanner extends LitElement {
     #canvas-container {
       position: relative;
     }
-    ha-button-menu {
+    ha-icon-button {
       position: absolute;
       bottom: 8px;
       right: 8px;
@@ -373,7 +399,7 @@ class HaQrScanner extends LitElement {
       display: flex;
       align-items: center;
     }
-    ha-textfield {
+    ha-input {
       flex: 1;
       margin-right: 8px;
       margin-inline-end: 8px;

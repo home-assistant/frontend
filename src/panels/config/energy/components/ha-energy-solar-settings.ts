@@ -59,7 +59,7 @@ export class EnergySolarSettings extends LitElement {
     });
 
     return html`
-      <ha-card outlined>
+      <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.solar.title")}
@@ -85,66 +85,79 @@ export class EnergySolarSettings extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-
-          <h3>
-            ${this.hass.localize(
-              "ui.panel.config.energy.solar.solar_production"
-            )}
-          </h3>
-          ${solarSources.map((source) => {
-            const entityState = this.hass.states[source.stat_energy_from];
-            return html`
-              <div class="row" .source=${source}>
-                ${entityState?.attributes.icon
-                  ? html`<ha-icon
-                      .icon=${entityState.attributes.icon}
-                    ></ha-icon>`
-                  : html`<ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>`}
-                <span class="content"
-                  >${getStatisticLabel(
-                    this.hass,
-                    source.stat_energy_from,
-                    this.statsMetadata?.[source.stat_energy_from]
-                  )}</span
-                >
-                ${this.info
-                  ? html`
-                      <ha-icon-button
-                        .label=${this.hass.localize(
-                          "ui.panel.config.energy.solar.edit_solar_production"
-                        )}
-                        @click=${this._editSource}
-                        .path=${mdiPencil}
-                      ></ha-icon-button>
-                    `
-                  : ""}
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.solar.delete_solar_production"
-                  )}
-                  @click=${this._deleteSource}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
-          ${this.info
-            ? html`
-                <div class="row border-bottom">
-                  <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-                  <ha-button
-                    @click=${this._addSource}
-                    appearance="filled"
-                    size="small"
-                  >
-                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.energy.solar.add_solar_production"
-                    )}
-                  </ha-button>
-                </div>
-              `
-            : ""}
+          ${
+            solarSources.length > 0
+              ? html`
+                  <div class="items-container">
+                    ${solarSources.map((source) => {
+                      const entityState =
+                        this.hass.states[source.stat_energy_from];
+                      return html`
+                        <div class="row" .source=${source}>
+                          ${
+                            entityState?.attributes.icon
+                              ? html`<ha-icon
+                                  .icon=${entityState.attributes.icon}
+                                ></ha-icon>`
+                              : html`<ha-svg-icon
+                                  .path=${mdiSolarPower}
+                                ></ha-svg-icon>`
+                          }
+                          <span class="content"
+                            >${
+                              source.name ||
+                              getStatisticLabel(
+                                this.hass,
+                                source.stat_energy_from,
+                                this.statsMetadata?.[source.stat_energy_from]
+                              )
+                            }</span
+                          >
+                          ${
+                            this.info
+                              ? html`
+                                  <ha-icon-button
+                                    .label=${this.hass.localize(
+                                      "ui.panel.config.energy.solar.edit_solar_production"
+                                    )}
+                                    @click=${this._editSource}
+                                    .path=${mdiPencil}
+                                  ></ha-icon-button>
+                                `
+                              : ""
+                          }
+                          <ha-icon-button
+                            .label=${this.hass.localize(
+                              "ui.panel.config.energy.solar.delete_solar_production"
+                            )}
+                            @click=${this._deleteSource}
+                            .path=${mdiDelete}
+                          ></ha-icon-button>
+                        </div>
+                      `;
+                    })}
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.info
+              ? html`
+                  <div class="row">
+                    <ha-button
+                      @click=${this._addSource}
+                      appearance="filled"
+                      size="s"
+                    >
+                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.config.energy.solar.add_solar_production"
+                      )}
+                    </ha-button>
+                  </div>
+                `
+              : ""
+          }
         </div>
       </ha-card>
     `;
@@ -152,6 +165,7 @@ export class EnergySolarSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsSolarDialog(this, {
+      statsMetadata: this.statsMetadata,
       info: this.info!,
       solar_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "solar"
@@ -169,6 +183,7 @@ export class EnergySolarSettings extends LitElement {
     const origSource: SolarSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsSolarDialog(this, {
+      statsMetadata: this.statsMetadata,
       info: this.info!,
       source: { ...origSource },
       solar_sources: this.preferences.energy_sources.filter(

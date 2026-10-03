@@ -31,6 +31,7 @@ const LAZY_LOAD_TYPES = {
   "date-entity": () => import("../entity-rows/hui-date-entity-row"),
   "datetime-entity": () => import("../entity-rows/hui-datetime-entity-row"),
   "event-entity": () => import("../entity-rows/hui-event-entity-row"),
+  "fan-entity": () => import("../entity-rows/hui-fan-entity-row"),
   "group-entity": () => import("../entity-rows/hui-group-entity-row"),
   "input-button-entity": () =>
     import("../entity-rows/hui-input-button-entity-row"),
@@ -60,7 +61,7 @@ const LAZY_LOAD_TYPES = {
   attribute: () => import("../special-rows/hui-attribute-row"),
   text: () => import("../special-rows/hui-text-row"),
 };
-const DOMAIN_TO_ELEMENT_TYPE = {
+export const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "simple",
   alert: "toggle",
   automation: "toggle",
@@ -70,7 +71,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   date: "date",
   datetime: "datetime",
   event: "event",
-  fan: "toggle",
+  fan: "fan",
   group: "group",
   humidifier: "humidifier",
   input_boolean: "toggle",

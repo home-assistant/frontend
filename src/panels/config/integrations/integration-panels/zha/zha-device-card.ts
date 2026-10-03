@@ -9,14 +9,15 @@ import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-textfield";
-import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import { updateDeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../../../data/entity_registry";
+} from "../../../../../data/entity/entity_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
@@ -90,7 +91,6 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                     <state-badge
                       @click=${this._openMoreInfo}
                       .title=${entity.stateName!}
-                      .hass=${this.hass}
                       .stateObj=${this.hass!.states[entity.entity_id]}
                       slot="item-icon"
                     ></state-badge>
@@ -98,17 +98,16 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                 : ""
             )}
           </div>
-          <ha-textfield
-            type="string"
+          <ha-input
             @change=${this._rename}
             .value=${this.device.user_given_name || this.device.name}
             .label=${this.hass.localize(
               "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
             )}
-          ></ha-textfield>
+          ></ha-input>
           <ha-area-picker
-            .hass=${this.hass}
             .device=${this.device.device_reg_id}
+            .value=${this.device.area_id ?? undefined}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>
         </div>
@@ -116,14 +115,14 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private async _rename(event): Promise<void> {
+  private async _rename(event: InputEvent): Promise<void> {
     if (!this.hass || !this.device) {
       return;
     }
     const device = this.device;
 
     const oldDeviceName = device.user_given_name || device.name;
-    const newDeviceName = event.target.value;
+    const newDeviceName = (event.target as HaInput).value;
     this.device.user_given_name = newDeviceName;
     await updateDeviceRegistryEntry(this.hass, device.device_reg_id, {
       name_by_user: newDeviceName,
@@ -150,8 +149,8 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         entity.has_entity_name &&
         (entity.name === oldDeviceName || entity.name === newDeviceName)
       ) {
-        // clear name if it matches the device name and it uses the device name (entity naming)
-        newName = null;
+        // Use the device name when the entity name matches it
+        newName = "";
       } else if (name && name.includes(oldDeviceName)) {
         newName = name.replace(oldDeviceName, newDeviceName);
       }
@@ -234,7 +233,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         ha-card {
           border: none;
         }
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
       `,

@@ -16,10 +16,12 @@ export class HaCodeEditorCompletionItems extends LitElement {
       (item) => html`
         <span><strong>${item.label}</strong>:</span>
         <span
-          >${item.value}${item.subValue && item.subValue.length > 0
-            ? // prettier-ignore
-              html` (<pre>${item.subValue}</pre>)`
-            : nothing}</span
+          >${item.value}${
+            item.subValue && item.subValue.length > 0
+              ? // prettier-ignore
+                html` (<pre>${item.subValue}</pre>)`
+              : nothing
+          }</span
         >
       `
     );

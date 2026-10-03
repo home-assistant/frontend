@@ -1,16 +1,16 @@
 import {
   mdiCheck,
-  mdiCheckCircleOutline,
   mdiDelete,
   mdiDotsVertical,
+  mdiHomeCircleOutline,
+  mdiHomeEdit,
   mdiPencil,
   mdiPlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
@@ -20,24 +20,26 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-fab";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-overflow-menu";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
-import type { LovelacePanelConfig } from "../../../../data/lovelace";
+import { saveFrontendSystemData } from "../../../../data/frontend";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
   saveConfig,
 } from "../../../../data/lovelace/config/types";
+import { fetchResources } from "../../../../data/lovelace/resource";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
+  LovelaceDashboardSuggestions,
 } from "../../../../data/lovelace/dashboard";
 import {
   createDashboard,
@@ -45,15 +47,37 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../../../data/lovelace/dashboard";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  DEFAULT_PANEL,
+  getPanelIcon,
+  getPanelTitle,
+  updatePanel,
+} from "../../../../data/panel";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
+import type { WindowWithPreloads } from "../../../../data/preloads";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../types";
-import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
+import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
+import { loadDashboardStrategyWithCreateSuggestions } from "../../../lovelace/strategies/get-strategy";
+import type { NewDashboardSelection } from "../../dashboard/show-dialog-new-dashboard";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import { showPanelDetailDialog } from "./show-dialog-panel-detail";
+
+export const PANEL_DASHBOARDS = [
+  "home",
+  "light",
+  "security",
+  "climate",
+  "energy",
+  "maintenance",
+] as string[];
 
 type DataTableItem = Pick<
   LovelaceDashboard,
@@ -61,6 +85,7 @@ type DataTableItem = Pick<
 > & {
   default: boolean;
   filename: string;
+  localized_type: string;
   type: string;
 };
 
@@ -75,6 +100,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _dashboards: LovelaceDashboard[] = [];
+
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
 
   @state()
   @storage({
@@ -111,7 +140,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _activeGrouping?: string = "type";
+  private _activeGrouping?: string = "localized_type";
 
   @storage({
     key: "lovelace-dashboards-table-collapsed",
@@ -160,29 +189,38 @@ export class HaConfigLovelaceDashboards extends LitElement {
           template: narrow
             ? undefined
             : (dashboard) => html`
-                ${dashboard.title}
-                ${dashboard.default
-                  ? html`
-                      <ha-svg-icon
-                        .id="default-icon-${dashboard.title}"
-                        style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
-                        .path=${mdiCheckCircleOutline}
-                      ></ha-svg-icon>
-                      <ha-tooltip
-                        .for="default-icon-${dashboard.title}"
-                        placement="right"
-                      >
-                        ${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.default_dashboard`
-                        )}
-                      </ha-tooltip>
-                    `
-                  : nothing}
+                <span
+                  style="display:flex; align-items:center; gap: var(--ha-space-2); min-width:0; width:100%;"
+                >
+                  <span
+                    style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"
+                    >${dashboard.title}</span
+                  >
+                  ${
+                    dashboard.default
+                      ? html`
+                          <ha-svg-icon
+                            .id="default-icon-${dashboard.title}"
+                            style="flex-shrink:0;"
+                            .path=${mdiHomeCircleOutline}
+                          ></ha-svg-icon>
+                          <ha-tooltip
+                            .for="default-icon-${dashboard.title}"
+                            placement="right"
+                          >
+                            ${this.hass.localize(
+                              `ui.panel.config.lovelace.dashboards.default_dashboard`
+                            )}
+                          </ha-tooltip>
+                        `
+                      : nothing
+                  }
+                </span>
               `,
         },
       };
 
-      columns.type = {
+      columns.localized_type = {
         title: localize(
           "ui.panel.config.lovelace.dashboards.picker.headers.type"
         ),
@@ -198,9 +236,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
         sortable: true,
         filterable: true,
         template: (dashboard) => html`
-          ${this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-          ) || dashboard.mode}
+          ${
+            this.hass.localize(
+              `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+            ) || dashboard.mode
+          }
         `,
       };
       if (dashboards.some((dashboard) => dashboard.filename)) {
@@ -249,10 +289,29 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hideable: false,
         template: (dashboard) => html`
           <ha-icon-overflow-menu
-            .hass=${this.hass}
             narrow
             .items=${[
-              ...(this._canEdit(dashboard.url_path)
+              {
+                path: mdiHomeEdit,
+                label: localize(
+                  "ui.panel.config.lovelace.dashboards.picker.set_as_default"
+                ),
+                action: () => this._handleSetAsDefault(dashboard),
+                disabled: dashboard.default,
+              },
+              ...(dashboard.type === "built_in"
+                ? [
+                    {
+                      path: mdiPencil,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.edit"
+                      ),
+                      action: () => this._handleEditPanel(dashboard),
+                    },
+                  ]
+                : []),
+              ...(dashboard.type === "user_created" &&
+              dashboard.mode === "storage"
                 ? [
                     {
                       path: mdiPencil,
@@ -261,10 +320,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       ),
                       action: () => this._handleEdit(dashboard),
                     },
-                  ]
-                : []),
-              ...(this._canDelete(dashboard.url_path)
-                ? [
                     {
                       label: this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.picker.delete"
@@ -286,79 +341,32 @@ export class HaConfigLovelaceDashboards extends LitElement {
   );
 
   private _getItems = memoize(
-    (dashboards: LovelaceDashboard[], defaultUrlPath: string) => {
-      const defaultMode = (
-        this.hass.panels?.lovelace?.config as LovelacePanelConfig
-      ).mode;
-      const isDefault = defaultUrlPath === "lovelace";
-      const result: DataTableItem[] = [
-        {
-          icon: "mdi:view-dashboard",
-          title: this.hass.localize("panel.states"),
-          default: isDefault,
-          show_in_sidebar: isDefault,
-          require_admin: false,
-          url_path: "lovelace",
-          mode: defaultMode,
-          filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
-          type: this._localizeType("built_in"),
-        },
-      ];
-      if (isComponentLoaded(this.hass, "energy")) {
-        result.push({
-          icon: "mdi:lightning-bolt",
-          title: this.hass.localize(`ui.panel.config.dashboard.energy.main`),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "energy",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
+    (
+      dashboards: LovelaceDashboard[],
+      defaultUrlPath: string | null,
+      panels: HomeAssistant["panels"]
+    ) => {
+      const result: DataTableItem[] = [];
 
-      if (this.hass.panels.light) {
-        result.push({
-          icon: this.hass.panels.light.icon || "mdi:lamps",
-          title: this.hass.localize("panel.light"),
-          show_in_sidebar: true,
+      PANEL_DASHBOARDS.forEach((panel) => {
+        const panelInfo = panels[panel];
+        if (!panelInfo) {
+          return;
+        }
+        const item: DataTableItem = {
+          icon: getPanelIcon(panelInfo),
+          title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
+          show_in_sidebar: panelInfo.show_in_sidebar || false,
           mode: "storage",
-          url_path: "light",
+          url_path: panelInfo.url_path,
           filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
-
-      if (this.hass.panels.security) {
-        result.push({
-          icon: this.hass.panels.security.icon || "mdi:security",
-          title: this.hass.localize("panel.security"),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "security",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
-
-      if (this.hass.panels.climate) {
-        result.push({
-          icon: this.hass.panels.climate.icon || "mdi:home-thermometer",
-          title: this.hass.localize("panel.climate"),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "climate",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
+          default: defaultUrlPath === panelInfo.url_path,
+          require_admin: panelInfo.require_admin || false,
+          type: "built_in",
+          localized_type: this._localizeType("built_in"),
+        };
+        result.push(item);
+      });
 
       result.push(
         ...dashboards
@@ -371,7 +379,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 filename: "",
                 ...dashboard,
                 default: defaultUrlPath === dashboard.url_path,
-                type: this._localizeType("user_created"),
+                type: "user_created",
+                localized_type: this._localizeType("user_created"),
               }) satisfies DataTableItem
           )
       );
@@ -389,6 +398,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -402,7 +413,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards,
           this.hass.localize
         )}
-        .data=${this._getItems(this._dashboards, this.hass.defaultPanel)}
+        .loading=${this._loading}
+        .data=${
+          this._loading
+            ? []
+            : this._getItems(this._dashboards, defaultPanel, this.hass.panels)
+        }
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -415,41 +431,77 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.picker.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryGetDashboards}
         id="url_path"
         has-fab
         clickable
       >
-        <ha-md-button-menu slot="toolbar-icon">
+        <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-md-list-item type="link" href="/config/lovelace/resources">
-            ${this.hass.localize("ui.panel.config.lovelace.resources.caption")}
-          </ha-md-list-item>
-        </ha-md-button-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+          <a href="/config/lovelace/resources">
+            <ha-dropdown-item>
+              ${this.hass.localize(
+                "ui.panel.config.lovelace.resources.caption"
+              )}
+            </ha-dropdown-item>
+          </a>
+        </ha-dropdown>
+        <ha-button slot="fab" size="l" @click=${this._addDashboard}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
           )}
-          extended
-          @click=${this._addDashboard}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+
+    const preloadWindow = window as WindowWithPreloads;
+    if (!preloadWindow.llResProm) {
+      preloadWindow.llResProm = fetchResources(this.hass.connection);
+    }
+
+    preloadWindow.llResProm
+      .then((resources) => {
+        loadLovelaceResources(resources, this.hass);
+      })
+      .catch((err: unknown) => {
+        preloadWindow.llResProm = undefined;
+        // eslint-disable-next-line
+        console.error("Unable to preload Lovelace resources", err);
+      });
+
     this._getDashboards();
   }
 
   private async _getDashboards() {
-    this._dashboards = await fetchDashboards(this.hass);
+    try {
+      this._dashboards = await fetchDashboards(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryGetDashboards() {
+    this._loading = true;
+    this._getDashboards();
   }
 
   private _handleRowClicked(ev: CustomEvent) {
@@ -469,15 +521,67 @@ export class HaConfigLovelaceDashboards extends LitElement {
     this._openDetailDialog(dashboard, urlPath);
   }
 
-  private _canDelete(urlPath: string) {
-    return !["lovelace", "energy", "light", "security", "climate"].includes(
-      urlPath
-    );
+  private _handleEditPanel(item: DataTableItem) {
+    const panelInfo = this.hass.panels[item.url_path];
+    if (!panelInfo) {
+      return;
+    }
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
+    showPanelDetailDialog(this, {
+      urlPath: panelInfo.url_path,
+      title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
+      icon: getPanelIcon(panelInfo),
+      requireAdmin: panelInfo.require_admin || false,
+      showInSidebar: panelInfo.show_in_sidebar || false,
+      isDefault: panelInfo.url_path === defaultPanel,
+      updatePanel: async (values) => {
+        await updatePanel(this.hass!, panelInfo.url_path, values);
+      },
+    });
   }
 
-  private _canEdit(urlPath: string) {
-    return !["light", "security", "climate"].includes(urlPath);
-  }
+  private _handleSetAsDefault = async (item: DataTableItem) => {
+    if (item.default) {
+      return;
+    }
+
+    if (item.require_admin) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_admin_only_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_admin_only_text"
+        ),
+      });
+      return;
+    }
+
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
+      ),
+      text: html`${this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+        )}<br /><br /><ha-alert alert-type="info"
+          >${this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_note"
+          )}</ha-alert
+        >`,
+      confirmText: this.hass.localize("ui.common.ok"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: false,
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    await saveFrontendSystemData(this.hass.connection, "core", {
+      ...this.hass.systemData,
+      default_panel: item.url_path,
+    });
+  };
 
   private _handleDelete = async (item: DataTableItem) => {
     const dashboard = this._dashboards.find(
@@ -491,26 +595,39 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private async _addDashboard() {
     showNewDashboardDialog(this, {
-      selectConfig: async (config) => {
+      selectConfig: async ({ config }: NewDashboardSelection) => {
+        let fieldSuggestions: LovelaceDashboardSuggestions | undefined;
+
         if (config && isStrategyDashboard(config)) {
-          const strategyType = config.strategy.type;
-          const strategyClass = await getLovelaceStrategy(
-            "dashboard",
-            strategyType
-          );
+          const { strategyClass, fieldSuggestions: suggested } =
+            await loadDashboardStrategyWithCreateSuggestions(
+              this.hass,
+              config.strategy.type
+            );
+          fieldSuggestions = suggested;
 
           if (strategyClass.configRequired) {
             showDashboardConfigureStrategyDialog(this, {
               config: config,
               saveConfig: async (updatedConfig) => {
-                this._openDetailDialog(undefined, undefined, updatedConfig);
+                const { fieldSuggestions: afterConfigure } =
+                  await loadDashboardStrategyWithCreateSuggestions(
+                    this.hass,
+                    updatedConfig.strategy.type
+                  );
+                this._openDetailDialog(
+                  undefined,
+                  undefined,
+                  updatedConfig,
+                  afterConfigure
+                );
               },
             });
             return;
           }
         }
 
-        this._openDetailDialog(undefined, undefined, config);
+        this._openDetailDialog(undefined, undefined, config, fieldSuggestions);
       },
     });
   }
@@ -518,11 +635,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _openDetailDialog(
     dashboard?: LovelaceDashboard,
     urlPath?: string,
-    defaultConfig?: LovelaceRawConfig
+    defaultConfig?: LovelaceRawConfig,
+    fieldSuggestions?: LovelaceDashboardSuggestions
   ): Promise<void> {
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
+      isDefault: dashboard?.url_path === defaultPanel,
+      suggestions: fieldSuggestions,
+      takenUrlPaths: dashboard
+        ? undefined
+        : this._collectTakenDashboardUrlPaths(),
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(created).sort(
@@ -556,13 +680,21 @@ export class HaConfigLovelaceDashboards extends LitElement {
     });
   }
 
+  private _collectTakenDashboardUrlPaths(): ReadonlySet<string> {
+    const taken = new Set<string>();
+    for (const d of this._dashboards ?? []) {
+      taken.add(d.url_path);
+    }
+    for (const path of Object.keys(this.hass.panels)) {
+      taken.add(path);
+    }
+    taken.add("lovelace");
+    return taken;
+  }
+
   private async _deleteDashboard(
     dashboard: LovelaceDashboard
   ): Promise<boolean> {
-    if (!this._canDelete(dashboard.url_path)) {
-      return false;
-    }
-
     const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.lovelace.dashboards.confirm_delete_title",
@@ -606,6 +738,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
   }
+
+  static styles = css`
+    ha-dropdown a {
+      text-decoration: none;
+    }
+  `;
 }
 
 declare global {

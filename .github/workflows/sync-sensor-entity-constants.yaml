@@ -1,0 +1,49 @@
+name: Sync sensor entity constants
+
+# Mirrors Home Assistant Core's numeric `SensorDeviceClass`, `SensorStateClass`,
+# units and related device and state classes arrays into the
+# build-time default in src/data/sensor_entity_constants.ts and opens a PR
+# when it drifts. Reads homeassistant/generated/sensor.json from core.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *" # Daily, 04:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    if: github.repository == 'home-assistant/frontend'
+    name: Sync
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
+      - name: Regenerate sensor entity constants
+        run: ./script/gen_sensor_entity_constants
+
+      - name: Format
+        run: pnpm exec prettier --write src/data/sensor_entity_constants.ts
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: chore/sync-sensor-entity-constants
+          commit-message: Update sensor entity constants
+          title: Update sensor entity constants
+          body: |
+            Regenerated the sensor entity constants from Home Assistant Core's
+            `homeassistant/generated/sensor.json`.
+
+            Automated by `.github/workflows/sync-sensor-entity-constants.yaml`.

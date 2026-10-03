@@ -1,8 +1,14 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 let askWrite;
 
+const HASS_URL = `${location.protocol}//${location.host}`;
+
 describe("token_storage.askWrite", () => {
+  beforeEach(() => {
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
+  });
+
   afterEach(() => {
     vi.resetModules();
   });

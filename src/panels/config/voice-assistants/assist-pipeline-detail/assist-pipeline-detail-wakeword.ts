@@ -61,7 +61,7 @@ export class AssistPipelineDetailWakeWord extends LitElement {
         )
       : "";
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (
       changedProps.has("data") &&
       changedProps.get("data")?.wake_word_entity !== this.data?.wake_word_entity

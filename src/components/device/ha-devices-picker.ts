@@ -61,7 +61,6 @@ class HaDevicesPicker extends LitElement {
         (entityId) => html`
           <div>
             <ha-device-picker
-              allow-custom-entity
               .curValue=${entityId}
               .hass=${this.hass}
               .deviceFilter=${this.deviceFilter}
@@ -79,7 +78,6 @@ class HaDevicesPicker extends LitElement {
       )}
       <div>
         <ha-device-picker
-          allow-custom-entity
           .hass=${this.hass}
           .helper=${this.helper}
           .deviceFilter=${this.deviceFilter}

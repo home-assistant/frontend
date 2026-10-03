@@ -25,10 +25,7 @@ class StateCardHumidifier extends LitElement {
           .inDialog=${this.inDialog}
         >
         </state-info>
-        <ha-humidifier-state
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-humidifier-state>
+        <ha-humidifier-state .stateObj=${this.stateObj}></ha-humidifier-state>
       </div>
     `;
   }

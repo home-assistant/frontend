@@ -1,10 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "../../../../src/data/entity_registry";
+} from "../../../../src/data/entity/entity_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 
 export const mockStateObj = (partial: Partial<HassEntity>): HassEntity => ({
@@ -77,6 +77,7 @@ export const mockDevice = (
   disabled_by: null,
   configuration_url: null,
   primary_config_entry: null,
+  parent_device_id: null,
   created_at: 0,
   modified_at: 0,
   ...partial,

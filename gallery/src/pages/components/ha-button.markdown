@@ -25,8 +25,11 @@ title: Button
   <ha-button appearance="filled">
     filled button
   </ha-button>
+  <ha-button appearance="outlined">
+    outlined button
+  </ha-button>
 
-  <ha-button size="small">
+  <ha-button size="s">
     small
   </ha-button>
 </div>
@@ -34,8 +37,18 @@ title: Button
 ```html
 <ha-button> simple button </ha-button>
 
-<ha-button size="small"> small </ha-button>
+<ha-button size="s"> small </ha-button>
 ```
+
+### Icons in the `xs` size
+
+Avoid icons in `xs` buttons. At 24px the label carries the meaning on its own, and a
+16px glyph next to it adds visual noise without adding information.
+
+Use an icon only when the button needs to be recognized at a glance in a dense layout,
+and only when the glyph is a common one users can identify from its silhouette alone,
+such as close, add, or settings. A detailed or unfamiliar glyph is unreadable at this
+size and should be replaced by the label alone.
 
 ### API
 
@@ -55,9 +68,9 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/butt
 
 | Name       | Type                                           | Default  | Description                                                                       |
 | ---------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| appearance | "accent"/"filled"/"plain"                      | "accent" | Sets the button appearance.                                                       |
+| appearance | "accent"/"filled"/"outlined"/"plain"           | "accent" | Sets the button appearance.                                                       |
 | variants   | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                |
-| size       | "small"/"medium"                               | "medium" | Sets the button size.                                                             |
+| size       | "xs"/"s"/"m"/"l"/"xl"                          | "m"      | Sets the button size.                                                             |
 | loading    | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click. |
 | disabled   | Boolean                                        | false    | Disables the button and prevents user interaction.                                |
 

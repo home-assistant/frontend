@@ -6,15 +6,14 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { valueFromParts } from "../../../common/entity/value_parts";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -96,8 +95,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const entityState = Number(stateObj.state);
-
     if (stateObj.state === UNAVAILABLE) {
       return html`
         <hui-warning
@@ -109,11 +106,26 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const valueToDisplay = this._config.attribute
+    let parts;
+    if (this._config.attribute) {
+      parts = this.hass.formatEntityAttributeValueToParts(
+        stateObj,
+        this._config.attribute
+      );
+    } else {
+      parts = this.hass.formatEntityStateToParts(stateObj);
+    }
+    const customUnit = this._config.unit;
+    // Custom unit can't keep a locale position, so append it at the end;
+    // otherwise render natively.
+    const valueToDisplay = customUnit
+      ? valueFromParts(parts)
+      : parts.map((part) => part.value).join("");
+    const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
 
-    if (isNaN(valueToDisplay)) {
+    if (isNaN(value)) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -126,14 +138,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
-    // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
-    // for consistent value display across gauge, entity, entity-row, etc.
     return html`
       <ha-card
         class=${classMap({
@@ -153,28 +159,22 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${valueToDisplay}
-          .formatOptions=${getNumberFormatOptions(
-            stateObj,
-            this.hass.entities[stateObj.entity_id]
-          )}
+          .value=${value}
+          .valueText=${valueToDisplay}
           .locale=${this.hass!.locale}
-          .label=${this._config!.unit ||
-          this.hass?.states[this._config!.entity].attributes
-            .unit_of_measurement ||
-          ""}
+          .label=${customUnit ?? ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(entityState),
+            "--gauge-color": this._computeSeverity(Number(value)),
           })}
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <div class="name" .title=${name}>${name}</div>
+        <p class="title" .title=${name}>${name}</p>
       </ha-card>
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -186,8 +186,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | GaugeCardConfig
-      | undefined;
+      GaugeCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -287,7 +286,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ha-card {
       height: 100%;
       overflow: hidden;
-      padding: 16px;
+      padding: var(--ha-space-3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -303,18 +302,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       outline: none;
     }
 
+    .title {
+      width: 100%;
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-expanded);
+      margin: 0;
+      text-align: center;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: none;
+      color: var(--primary-text-color);
+    }
+
     ha-gauge {
       width: 100%;
       max-width: 250px;
-    }
-
-    .name {
-      text-align: center;
-      line-height: initial;
-      color: var(--primary-text-color);
-      width: 100%;
-      font-size: var(--ha-font-size-m);
-      margin-top: 8px;
     }
   `;
 }

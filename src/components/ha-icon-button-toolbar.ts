@@ -19,7 +19,7 @@ export interface HaIconButtonToolbarItem {
 
 @customElement("ha-icon-button-toolbar")
 export class HaIconButtonToolbar extends LitElement {
-  @property({ type: Array, attribute: false })
+  @property({ attribute: false })
   public items: (HaIconButtonToolbarItem | string)[] = [];
 
   @queryAll("ha-icon-button") private _buttons?: HaIconButton[];
@@ -109,7 +109,7 @@ export class HaIconButtonToolbar extends LitElement {
 
     .icon-toolbar-button {
       color: var(--secondary-text-color);
-      --mdc-icon-button-size: var(--icon-button-toolbar-button);
+      --ha-icon-button-size: var(--icon-button-toolbar-button);
       --mdc-icon-size: var(--icon-button-toolbar-icon);
       /* Ensure button is clickable on iOS */
       cursor: pointer;

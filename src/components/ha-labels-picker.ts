@@ -1,29 +1,28 @@
 import { mdiPlaylistPlus } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../common/color/compute-color";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import {
-  subscribeLabelRegistry,
-  updateLabelRegistryEntry,
-} from "../data/label_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { labelsContext } from "../data/context";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
+import { updateLabelRegistryEntry } from "../data/label/label_registry";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import { getLabelColorStyle } from "./ha-label";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
+import "./ha-tooltip";
 
 @customElement("ha-labels-picker")
-export class HaLabelsPicker extends SubscribeMixin(LitElement) {
+export class HaLabelsPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -79,7 +78,9 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _labels?: Record<string, LabelRegistryEntry>;
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
 
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 
@@ -93,27 +94,20 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     await this.labelPicker?.focus();
   }
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        const lookUp = {};
-        labels.forEach((label) => {
-          lookUp[label.label_id] = label;
-        });
-        this._labels = lookUp;
-      }),
-    ];
-  }
-
   private _sortedLabels = memoizeOne(
     (
       value: string[] | undefined,
-      labels: Record<string, LabelRegistryEntry> | undefined,
+      labels: LabelRegistryEntry[] | undefined,
       language: string
     ) =>
       value
-        ?.map((id) => labels?.[id])
-        .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
+        ?.map((id) => labels?.find((label) => label.label_id === id))
+        .filter((label): label is LabelRegistryEntry => label !== undefined)
+        .sort((a, b) => stringCompare(a.name, b.name, language))
+        .map((label) => ({
+          ...label,
+          style: getLabelColorStyle(label.color),
+        }))
   );
 
   protected render(): TemplateResult {
@@ -134,38 +128,48 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
         @value-changed=${this._labelChanged}
       >
         <ha-chip-set>
-          ${labels?.length
-            ? repeat(
-                labels,
-                (label) => label?.label_id,
-                (label) => {
-                  const color = label?.color
-                    ? computeCssColor(label.color)
-                    : undefined;
-                  return html`
-                    <ha-input-chip
-                      .item=${label}
-                      @remove=${this._removeItem}
-                      @click=${this._openDetail}
-                      .disabled=${this.disabled}
-                      .label=${label?.name}
-                      selected
-                      style=${color ? `--color: ${color}` : ""}
-                    >
-                      ${label?.icon
-                        ? html`<ha-icon
-                            slot="icon"
-                            .icon=${label.icon}
-                          ></ha-icon>`
-                        : nothing}
-                    </ha-input-chip>
-                  `;
-                }
-              )
-            : nothing}
+          ${
+            labels?.length
+              ? repeat(
+                  labels,
+                  (label) => label?.label_id,
+                  (label) => {
+                    if (!label) return nothing;
+                    const elementId = "label-" + label.label_id;
+                    return html`
+                      <ha-tooltip
+                        .for=${elementId}
+                        .disabled=${!label.description?.trim()}
+                      >
+                        ${label.description}
+                      </ha-tooltip>
+                      <ha-input-chip
+                        .item=${label}
+                        .id=${elementId}
+                        @remove=${this._removeItem}
+                        @click=${this._openDetail}
+                        .disabled=${this.disabled}
+                        .label=${label.name}
+                        selected
+                        style=${label.style}
+                      >
+                        ${
+                          label.icon
+                            ? html`<ha-icon
+                                slot="icon"
+                                .icon=${label.icon}
+                              ></ha-icon>`
+                            : nothing
+                        }
+                      </ha-input-chip>
+                    `;
+                  }
+                )
+              : nothing
+          }
           <ha-button
             id="picker"
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._openPicker}
             .disabled=${this.disabled}
@@ -222,7 +226,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   static styles = css`
     ha-chip-set {
-      margin-bottom: 8px;
       background-color: var(--mdc-text-field-fill-color);
       border-bottom: 1px solid var(--ha-color-border-neutral-normal);
       border-top-right-radius: var(--ha-border-radius-sm);
@@ -236,8 +239,10 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
       height: var(--ha-space-8);
     }
     ha-input-chip {
-      --md-input-chip-selected-container-color: var(--color, var(--grey-color));
-      --ha-input-chip-selected-container-opacity: 0.5;
+      --md-input-chip-selected-container-color: var(
+        --ha-label-background-color,
+        var(--grey-color)
+      );
       --md-input-chip-selected-outline-width: 1px;
     }
     label {

@@ -2,11 +2,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-bottom-sheet";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-icon";
-import "../../components/ha-md-list";
-import "../../components/ha-md-list-item";
 import "../../components/ha-svg-icon";
+import "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { ListItemsDialogParams } from "./show-list-items-dialog";
@@ -20,8 +20,16 @@ export class ListItemsDialog
 
   @state() private _params?: ListItemsDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(params: ListItemsDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
+  }
+
+  public closeDialog(_historyState?: any): boolean {
+    this._open = false;
+    return true;
   }
 
   private _dialogClosed(): void {
@@ -33,7 +41,7 @@ export class ListItemsDialog
     const item = (ev.currentTarget as any).item;
     if (!item) return;
     item.action();
-    this._dialogClosed();
+    this.closeDialog();
   }
 
   protected render() {
@@ -43,47 +51,46 @@ export class ListItemsDialog
 
     const content = html`
       <div class="container">
-        <ha-md-list>
+        <ha-list-base>
           ${this._params.items.map(
             (item) => html`
-              <ha-md-list-item
-                type="button"
-                @click=${this._itemClicked}
-                .item=${item}
-              >
-                ${item.iconPath
-                  ? html`
-                      <ha-svg-icon
-                        .path=${item.iconPath}
-                        slot="start"
-                        class="item-icon"
-                      ></ha-svg-icon>
-                    `
-                  : item.icon
+              <ha-list-item-button @click=${this._itemClicked} .item=${item}>
+                ${
+                  item.iconPath
                     ? html`
-                        <ha-icon
-                          icon=${item.icon}
+                        <ha-svg-icon
+                          .path=${item.iconPath}
                           slot="start"
-                          class="item-icon"
-                        ></ha-icon>
+                        ></ha-svg-icon>
                       `
-                    : nothing}
-                <span class="headline">${item.label}</span>
-                ${item.description
-                  ? html`
-                      <span class="supporting-text">${item.description}</span>
-                    `
-                  : nothing}
-              </ha-md-list-item>
+                    : item.icon
+                      ? html`
+                          <ha-icon icon=${item.icon} slot="start"></ha-icon>
+                        `
+                      : nothing
+                }
+                <span slot="headline">${item.label}</span>
+                ${
+                  item.description
+                    ? html`
+                        <span slot="supporting-text">${item.description}</span>
+                      `
+                    : nothing
+                }
+              </ha-list-item-button>
             `
           )}
-        </ha-md-list>
+        </ha-list-base>
       </div>
     `;
 
     if (this._params.mode === "bottom-sheet") {
       return html`
-        <ha-bottom-sheet placement="bottom" open @closed=${this._dialogClosed}>
+        <ha-bottom-sheet
+          placement="bottom"
+          .open=${this._open}
+          @closed=${this._dialogClosed}
+        >
           ${content}
         </ha-bottom-sheet>
       `;
@@ -91,10 +98,9 @@ export class ListItemsDialog
 
     return html`
       <ha-dialog
-        open
-        .heading=${createCloseHeading(this.hass, this._params.title ?? " ")}
+        .open=${this._open}
+        header-title=${this._params.title ?? " "}
         @closed=${this._dialogClosed}
-        hideActions
       >
         ${content}
       </ha-dialog>
@@ -102,12 +108,16 @@ export class ListItemsDialog
   }
 
   static styles = css`
-    ha-dialog {
+    ha-dialog,
+    ha-bottom-sheet {
       /* Place above other dialogs */
       --dialog-z-index: 104;
       --dialog-content-padding: 0;
-      --md-list-item-leading-space: 24px;
-      --md-list-item-trailing-space: 24px;
+      --ha-row-item-padding-inline: var(--ha-space-6);
+    }
+
+    ha-bottom-sheet {
+      --ha-bottom-sheet-content-padding: var(--ha-space-4) 0 0;
     }
   `;
 }

@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCircle,
+  mdiCircleOffOutline,
   mdiCircleOutline,
   mdiProgressClock,
   mdiProgressWrench,
@@ -11,23 +11,18 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import { toggleAttribute } from "../../common/dom/toggle_attribute";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import { fullEntitiesContext } from "../../data/context";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../data/logbook";
+import { localizeTriggerSource } from "../../data/logbook";
 import type {
   ChooseAction,
-  Option,
   IfAction,
+  Option,
   ParallelAction,
   RepeatAction,
   SequenceAction,
@@ -197,8 +192,6 @@ class ActionRenderer {
   constructor(
     private hass: HomeAssistant,
     private entityReg: EntityRegistryEntry[],
-    private labelReg: LabelRegistryEntry[],
-    private floorReg: Record<string, FloorRegistryEntry>,
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -313,14 +306,7 @@ class ActionRenderer {
 
     this._renderEntry(
       path,
-      describeAction(
-        this.hass,
-        this.entityReg,
-        this.labelReg,
-        this.floorReg,
-        data,
-        actionType
-      ),
+      describeAction(this.hass, this.entityReg, data, actionType),
       undefined,
       data.enabled === false
     );
@@ -337,6 +323,23 @@ class ActionRenderer {
   }
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
+    if (this.trace.not_triggered) {
+      this._renderEntry(
+        triggerStep.path,
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.evaluated_not_triggered",
+          {
+            time: formatDateTimeWithSeconds(
+              new Date(triggerStep.timestamp),
+              this.hass.locale,
+              this.hass.config
+            ),
+          }
+        ),
+        mdiCircleOffOutline
+      );
+      return index + 1;
+    }
     this._renderEntry(
       triggerStep.path,
       this.hass.localize(
@@ -347,7 +350,10 @@ class ActionRenderer {
             : "other",
           alias: triggerStep.changed_variables.trigger?.alias,
           triggeredPath: triggerStep.path === "trigger" ? "manual" : "trigger",
-          trigger: this.trace.trigger,
+          trigger: localizeTriggerSource(
+            this.hass.localize,
+            this.trace.trigger
+          ),
           time: formatDateTimeWithSeconds(
             new Date(triggerStep.timestamp),
             this.hass.locale,
@@ -485,13 +491,7 @@ class ActionRenderer {
 
     const name =
       repeatConfig.alias ||
-      describeAction(
-        this.hass,
-        this.entityReg,
-        this.labelReg,
-        this.floorReg,
-        repeatConfig
-      );
+      describeAction(this.hass, this.entityReg, repeatConfig);
 
     this._renderEntry(repeatPath, name, undefined, disabled);
 
@@ -585,14 +585,7 @@ class ActionRenderer {
     this._renderEntry(
       sequencePath,
       sequenceConfig.alias ||
-        describeAction(
-          this.hass,
-          this.entityReg,
-          this.labelReg,
-          this.floorReg,
-          sequenceConfig,
-          "sequence"
-        ),
+        describeAction(this.hass, this.entityReg, sequenceConfig, "sequence"),
       undefined,
       sequenceConfig.enabled === false
     );
@@ -650,13 +643,15 @@ class ActionRenderer {
   ) {
     this.entries.push(html`
       <ha-timeline .icon=${icon} data-path=${path} .notEnabled=${disabled}>
-        ${description}${disabled
-          ? html`<span class="disabled">
-              ${this.hass.localize(
-                "ui.panel.config.automation.trace.messages.disabled"
-              )}</span
-            >`
-          : ""}
+        ${description}${
+          disabled
+            ? html`<span class="disabled">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.trace.messages.disabled"
+                )}</span
+              >`
+            : ""
+        }
       </ha-timeline>
     `);
   }
@@ -681,15 +676,7 @@ export class HaAutomationTracer extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
-
-  @state()
-  @consume({ context: labelsContext, subscribe: true })
-  _labelReg!: LabelRegistryEntry[];
-
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: Record<string, FloorRegistryEntry>;
+  _entityReg: EntityRegistryEntry[] = [];
 
   protected render() {
     if (!this.trace) {
@@ -707,8 +694,6 @@ export class HaAutomationTracer extends LitElement {
     const actionRenderer = new ActionRenderer(
       this.hass,
       this._entityReg,
-      this._labelReg,
-      this._floorReg,
       entries,
       this.trace,
       logbookRenderer,
@@ -758,6 +743,16 @@ export class HaAutomationTracer extends LitElement {
           "ui.panel.config.automation.trace.messages.debugged"
         ),
         icon: mdiProgressWrench,
+      };
+    } else if (this.trace.not_triggered) {
+      entry = {
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.not_triggered",
+          {
+            time: renderFinishedAt(),
+          }
+        ),
+        icon: mdiCircleOffOutline,
       };
     } else if (this.trace.script_execution === "finished") {
       entry = {
@@ -850,7 +845,7 @@ export class HaAutomationTracer extends LitElement {
     return html`${entries}`;
   }
 
-  protected updated(props: PropertyValues) {
+  protected updated(props: PropertyValues<this>) {
     super.updated(props);
 
     // Pick first path when we load a new trace.
@@ -874,7 +869,7 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        toggleAttribute(el, "selected", this.selectedPath === el.dataset.path);
+        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
         if (!this.allowPick || el.tabIndex === 0) {
           return;
         }

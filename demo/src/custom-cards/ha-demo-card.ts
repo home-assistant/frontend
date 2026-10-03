@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
@@ -13,9 +13,9 @@ import type {
   LovelaceCard,
 } from "../../../src/panels/lovelace/types";
 import {
-  demoConfigs,
+  demos,
+  selectedDemo,
   selectedDemoConfig,
-  selectedDemoConfigIndex,
 } from "../configs/demo-configs";
 
 @customElement("ha-demo-card")
@@ -43,28 +43,30 @@ export class HADemoCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="picker">
           <div class="label">
-            ${this._switching
-              ? html`<ha-spinner></ha-spinner>`
-              : until(
-                  selectedDemoConfig.then(
-                    (conf) => html`
-                      ${conf.name}
-                      <small>
-                        ${this.hass.localize(
-                          "ui.panel.page-demo.cards.demo.demo_by",
-                          {
-                            name: html`
-                              <a target="_blank" href=${conf.authorUrl}>
-                                ${conf.authorName}
-                              </a>
-                            `,
-                          }
-                        )}
-                      </small>
-                    `
-                  ),
-                  ""
-                )}
+            ${
+              this._switching
+                ? html`<ha-spinner></ha-spinner>`
+                : until(
+                    selectedDemoConfig.then(
+                      (conf) => html`
+                        ${conf.name}
+                        <small>
+                          ${this.hass.localize(
+                            "ui.panel.page-demo.cards.demo.demo_by",
+                            {
+                              name: html`
+                                <a target="_blank" href=${conf.authorUrl}>
+                                  ${conf.authorName}
+                                </a>
+                              `,
+                            }
+                          )}
+                        </small>
+                      `
+                    ),
+                    ""
+                  )
+            }
           </div>
 
           <ha-button @click=${this._nextConfig} .disabled=${this._switching}>
@@ -102,7 +104,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (this._hidden) {
       this.style.display = "none";
@@ -110,16 +112,12 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   }
 
   private _nextConfig() {
-    this._updateConfig(
-      selectedDemoConfigIndex < demoConfigs.length - 1
-        ? selectedDemoConfigIndex + 1
-        : 0
-    );
+    this._updateConfig(demos[(demos.indexOf(selectedDemo) + 1) % demos.length]);
   }
 
-  private async _updateConfig(index: number) {
+  private async _updateConfig(demo: string) {
     this._switching = true;
-    fireEvent(this, "set-demo-config" as any, { index });
+    fireEvent(this, "set-demo-config" as any, { demo });
   }
 
   static get styles(): CSSResultGroup {

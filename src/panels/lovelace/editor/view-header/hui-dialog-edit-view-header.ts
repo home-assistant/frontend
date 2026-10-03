@@ -1,28 +1,34 @@
-import type { ActionDetail } from "@material/mwc-list";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyleDialog } from "../../../../resources/styles";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./hui-view-header-settings-editor";
 import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("hui-dialog-edit-view-header")
-export class HuiDialogEditViewHeader extends LitElement {
+export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceViewHeaderConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: EditViewHeaderDialogParams;
@@ -31,13 +37,14 @@ export class HuiDialogEditViewHeader extends LitElement {
 
   @state() private _saving = false;
 
-  @state() private _dirty = false;
-
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
+  @state() private _open = false;
+
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const config = {
         ...this._config,
@@ -49,15 +56,19 @@ export class HuiDialogEditViewHeader extends LitElement {
   public showDialog(params: EditViewHeaderDialogParams): void {
     this._params = params;
 
-    this._dirty = false;
     this._config = this._params.config;
+    this._initDirtyTracking({ type: "deep" }, this._config);
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._config = undefined;
     this._yamlMode = false;
-    this._dirty = false;
     this._saving = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -72,8 +83,8 @@ export class HuiDialogEditViewHeader extends LitElement {
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          .hass=${this.hass}
-          dialogInitialFocus
+          autofocus
+          in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -93,67 +104,52 @@ export class HuiDialogEditViewHeader extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        @closed=${this.closeDialog}
-        .heading=${title}
+        .open=${this._open}
+        header-title=${title}
+        width="large"
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dropdown
+          slot="headerActionItems"
+          placement="bottom-end"
+          @wa-select=${this._handleAction}
+        >
           <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass!.localize("ui.common.close")}
-            .path=${mdiClose}
+            slot="trigger"
+            .label=${this.hass!.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <h2 slot="title">${title}</h2>
-          <ha-button-menu
-            slot="actionItems"
-            fixed
-            corner="BOTTOM_END"
-            menu-corner="END"
-            @action=${this._handleAction}
-            @closed=${stopPropagation}
-          >
-            <ha-icon-button
-              slot="trigger"
-              .label=${this.hass!.localize("ui.common.menu")}
-              .path=${mdiDotsVertical}
-            ></ha-icon-button>
-            <ha-list-item graphic="icon">
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.edit_view_header.edit_${!this._yamlMode ? "yaml" : "ui"}`
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
-        </ha-dialog-header>
+          <ha-dropdown-item value="toggle-mode">
+            ${this.hass!.localize(
+              `ui.panel.lovelace.editor.edit_view_header.edit_${!this._yamlMode ? "yaml" : "ui"}`
+            )}
+            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
         ${content}
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._config || this._saving || !this._dirty}
-          @click=${this._save}
-          .loading=${this._saving}
-        >
-          ${this.hass!.localize("ui.common.save")}</ha-button
-        >
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="primaryAction"
+            .disabled=${!this._config || this._saving || !this.isDirtyState}
+            @click=${this._save}
+            .loading=${this._saving}
+          >
+            ${this.hass!.localize("ui.common.save")}</ha-button
+          >
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    switch (ev.detail.index) {
-      case 0:
-        this._yamlMode = !this._yamlMode;
-        break;
+  private async _handleAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+
+    if (action === "toggle-mode") {
+      this._yamlMode = !this._yamlMode;
     }
   }
 
@@ -163,8 +159,9 @@ export class HuiDialogEditViewHeader extends LitElement {
       ev.detail.config &&
       !deepEqual(this._config, ev.detail.config)
     ) {
-      this._config = ev.detail.config;
-      this._dirty = true;
+      const config: LovelaceViewHeaderConfig = ev.detail.config;
+      this._config = config;
+      this._updateDirtyState(config);
     }
   }
 
@@ -173,8 +170,9 @@ export class HuiDialogEditViewHeader extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = ev.detail.value;
-    this._dirty = true;
+    const config: LovelaceViewHeaderConfig = ev.detail.value;
+    this._config = config;
+    this._updateDirtyState(config);
   }
 
   private async _save(): Promise<void> {
@@ -201,32 +199,10 @@ export class HuiDialogEditViewHeader extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: 0px;
-          }
-        }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
-        }
-        h2 {
-          margin: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-
-        @media all and (min-width: 600px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 600px;
-          }
         }
       `,
     ];

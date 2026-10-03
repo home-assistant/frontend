@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
@@ -11,14 +11,21 @@ import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceAction,
   DeviceCapabilities,
-} from "../../../../../data/device_automation";
+} from "../../../../../data/device/device_automation";
 import {
+  deviceAutomationEditorMode,
+  fetchReplacementDevices,
+  fetchDeviceActions,
   deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
-} from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+  localizeExtraFieldsComputeLabelCallback,
+} from "../../../../../data/device/device_automation";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
@@ -33,9 +40,15 @@ export class HaDeviceAction extends LitElement {
 
   @state() private _capabilities?: DeviceCapabilities;
 
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  @state() private _replacementDeviceIds?: string[];
+
+  private _loadingCompositeSplits = false;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origAction?: DeviceAction;
 
@@ -50,7 +63,7 @@ export class HaDeviceAction extends LitElement {
   private _extraFieldsData = memoizeOne(
     (action: DeviceAction, capabilities: DeviceCapabilities) => {
       const extraFieldsData: Record<string, any> = {};
-      capabilities.extra_fields.forEach((item) => {
+      capabilities.extra_fields?.forEach((item) => {
         if (action[item.name] !== undefined) {
           extraFieldsData![item.name] = action[item.name];
         }
@@ -59,14 +72,19 @@ export class HaDeviceAction extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
-    if (!changedProperties.has("action")) {
-      return true;
+  public shouldUpdate(_changedProperties: PropertyValues<this>) {
+    const mode = deviceAutomationEditorMode(
+      this.hass,
+      this.action.device_id,
+      this._compositeSplits
+    );
+    if (mode === "loading") {
+      // The device is missing; wait for the composite split map before deciding
+      // whether it is a replaced device (editable) or genuinely unknown (YAML).
+      this._loadCompositeSplits();
+      return false;
     }
-    if (
-      this.action.device_id &&
-      !(this.action.device_id in this.hass.devices)
-    ) {
+    if (mode === "unknown-device") {
       fireEvent(
         this,
         "ui-mode-not-available",
@@ -81,12 +99,41 @@ export class HaDeviceAction extends LitElement {
     return true;
   }
 
+  private async _resolveReplacements(compositeSplits: DeviceCompositeSplits) {
+    this._replacementDeviceIds = await fetchReplacementDevices(
+      this.hass,
+      this._entityReg,
+      this.action,
+      compositeSplits,
+      fetchDeviceActions
+    );
+  }
+
+  private async _loadCompositeSplits() {
+    if (this._loadingCompositeSplits) {
+      return;
+    }
+    this._loadingCompositeSplits = true;
+    try {
+      // Resolve the candidates before exposing the split map, so the picker
+      // never offers one that cannot host the automation.
+      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      await this._resolveReplacements(compositeSplits);
+      this._compositeSplits = compositeSplits;
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
+  }
+
   protected render() {
     const deviceId = this._deviceId || this.action.device_id;
 
     return html`
       <ha-device-picker
         .value=${deviceId}
+        .replacementDeviceIds=${this._replacementDeviceIds}
         .disabled=${this.disabled}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
@@ -104,26 +151,41 @@ export class HaDeviceAction extends LitElement {
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields?.length
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.action, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
-                this.action
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
-                this.action
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields?.length
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.action, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    // The picked device only lives here until the configuration catches up.
+    // Once it points somewhere else, undo and redo included, it is stale.
+    const previous = changedProps.get("action");
+    if (previous && previous.device_id !== this.action.device_id) {
+      this._deviceId = undefined;
+      this._replacementDeviceIds = undefined;
+      if (this._compositeSplits) {
+        this._resolveReplacements(this._compositeSplits);
+      }
+    }
   }
 
   protected firstUpdated() {
@@ -136,7 +198,7 @@ export class HaDeviceAction extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     const prevAction = changedProps.get("action");
     if (
       prevAction &&
@@ -149,12 +211,21 @@ export class HaDeviceAction extends LitElement {
 
   private async _getCapabilities() {
     this._capabilities = this.action.domain
-      ? await fetchDeviceActionCapabilities(this.hass, this.action)
+      ? await fetchDeviceActionCapabilities(this.hass.callWS, this.action)
       : undefined;
   }
 
   private _devicePicked(ev) {
     ev.stopPropagation();
+    // The automation exists as is on the replacement, so only the reference
+    // changes and the rest of the configuration is left untouched.
+    if (this._replacementDeviceIds?.includes(ev.target.value)) {
+      this._deviceId = undefined;
+      fireEvent(this, "value-changed", {
+        value: { ...this.action, device_id: ev.target.value },
+      });
+      return;
+    }
     this._deviceId = ev.target.value;
     if (this._deviceId === undefined) {
       fireEvent(this, "value-changed", {
@@ -186,6 +257,10 @@ export class HaDeviceAction extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

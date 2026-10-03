@@ -44,12 +44,14 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     return html`
       <h3>
-        ${this.label ||
-        `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.entities"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.required"
-        )})`}
+        ${
+          this.label ||
+          `${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.entities"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})`
+        }
       </h3>
       <ha-sortable handle-selector=".handle" @item-moved=${this._rowMoved}>
         <div class="entities">
@@ -61,33 +63,33 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                 <div class="handle">
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
                 </div>
-                ${entityConf.type
-                  ? html`
-                      <div class="special-row">
-                        <div>
-                          <span>
-                            ${this.hass!.localize(
-                              `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
-                            )}
-                          </span>
-                          <span class="secondary"
-                            >${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.entities.edit_special_row"
-                            )}</span
-                          >
+                ${
+                  entityConf.type
+                    ? html`
+                        <div class="special-row">
+                          <div>
+                            <span>
+                              ${this.hass!.localize(
+                                `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
+                              )}
+                            </span>
+                            <span class="secondary"
+                              >${this.hass!.localize(
+                                "ui.panel.lovelace.editor.card.entities.edit_special_row"
+                              )}</span
+                            >
+                          </div>
                         </div>
-                      </div>
-                    `
-                  : html`
-                      <ha-entity-picker
-                        allow-custom-entity
-                        hide-clear-icon
-                        .hass=${this.hass}
-                        .value=${(entityConf as EntityConfig).entity}
-                        .index=${index}
-                        @value-changed=${this._valueChanged}
-                      ></ha-entity-picker>
-                    `}
+                      `
+                    : html`
+                        <ha-entity-picker
+                          hide-clear-icon
+                          .value=${(entityConf as EntityConfig).entity}
+                          .index=${index}
+                          @value-changed=${this._valueChanged}
+                        ></ha-entity-picker>
+                      `
+                }
                 <ha-icon-button
                   .label=${this.hass!.localize(
                     "ui.components.entity.entity-picker.clear"
@@ -113,7 +115,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       </ha-sortable>
       <ha-entity-picker
         class="add-entity"
-        .hass=${this.hass}
         @value-changed=${this._addEntity}
         add-button
       ></ha-entity-picker>
@@ -182,10 +183,14 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   static styles = css`
     ha-entity-picker {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
+    }
+    ha-sortable ha-entity-picker {
+      margin-top: 0;
     }
     .add-entity {
       display: block;
+      margin-bottom: var(--ha-space-1);
       margin-left: 31px;
       margin-right: 71px;
       margin-inline-start: 31px;
@@ -195,6 +200,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     .entity {
       display: flex;
       align-items: center;
+      margin-top: var(--ha-space-2);
     }
 
     .entity .handle {
@@ -230,7 +236,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       color: var(--secondary-text-color);
     }
 

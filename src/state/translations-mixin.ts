@@ -1,5 +1,7 @@
+import type { PropertyValues } from "lit";
 import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { computeLocalize } from "../common/translations/localize";
 import {
@@ -22,7 +24,7 @@ import {
   subscribeTranslationPreferences,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { Constructor, HomeAssistant } from "../types";
+import type { Constructor, HomeAssistant, Resources } from "../types";
 import {
   getLocalLanguage,
   getTranslation,
@@ -34,24 +36,12 @@ import type { HassBaseEl } from "./hass-base-mixin";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-language-select": {
-      language: string;
-    };
-    "hass-number-format-select": {
-      number_format: NumberFormat;
-    };
-    "hass-time-format-select": {
-      time_format: TimeFormat;
-    };
-    "hass-date-format-select": {
-      date_format: DateFormat;
-    };
-    "hass-time-zone-select": {
-      time_zone: TimeZone;
-    };
-    "hass-first-weekday-select": {
-      first_weekday: FirstWeekday;
-    };
+    "hass-language-select": string;
+    "hass-number-format-select": NumberFormat;
+    "hass-time-format-select": TimeFormat;
+    "hass-date-format-select": DateFormat;
+    "hass-time-zone-select": TimeZone;
+    "hass-first-weekday-select": FirstWeekday;
     "translations-updated": undefined;
   }
 }
@@ -78,33 +68,60 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private __loadedFragmentTranslations = new Set<string>();
 
+    private __inflightFragmentTranslations = new Map<
+      string,
+      Promise<LocalizeFunc>
+    >();
+
     private __loadedTranslations: Record<string, LoadedTranslationCategory> =
       {};
 
-    protected firstUpdated(changedProps) {
+    private __resources: Resources = {};
+
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
-        this._selectLanguage((e as CustomEvent).detail, true);
+        this._selectLanguage(
+          (e as HASSDomEvent<HASSDomEvents["hass-language-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-number-format-select", (e) => {
-        this._selectNumberFormat((e as CustomEvent).detail, true);
+        this._selectNumberFormat(
+          (e as HASSDomEvent<HASSDomEvents["hass-number-format-select"]>)
+            .detail,
+          true
+        );
       });
       this.addEventListener("hass-time-format-select", (e) => {
-        this._selectTimeFormat((e as CustomEvent).detail, true);
+        this._selectTimeFormat(
+          (e as HASSDomEvent<HASSDomEvents["hass-time-format-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-date-format-select", (e) => {
-        this._selectDateFormat((e as CustomEvent).detail, true);
+        this._selectDateFormat(
+          (e as HASSDomEvent<HASSDomEvents["hass-date-format-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-time-zone-select", (e) => {
-        this._selectTimeZone((e as CustomEvent).detail, true);
+        this._selectTimeZone(
+          (e as HASSDomEvent<HASSDomEvents["hass-time-zone-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-first-weekday-select", (e) => {
-        this._selectFirstWeekday((e as CustomEvent).detail, true);
+        this._selectFirstWeekday(
+          (e as HASSDomEvent<HASSDomEvents["hass-first-weekday-select"]>)
+            .detail,
+          true
+        );
       });
       this._loadCoreTranslations(getLocalLanguage());
     }
 
-    protected updated(changedProps) {
+    protected updated(changedProps: PropertyValues<this>) {
       super.updated(changedProps);
       if (!changedProps.has("hass")) {
         return;
@@ -268,6 +285,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
       this.__loadedFragmentTranslations = new Set();
+      this.__inflightFragmentTranslations = new Map();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -390,12 +408,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return undefined;
       }
 
+      if (this.__inflightFragmentTranslations.has(fragment)) {
+        return this.__inflightFragmentTranslations.get(fragment)!;
+      }
       if (this.__loadedFragmentTranslations.has(fragment)) {
         return this.hass!.localize;
       }
-      this.__loadedFragmentTranslations.add(fragment);
-      const result = await getTranslation(fragment, language);
-      return this._updateResources(language, result.data);
+      const promise = getTranslation(fragment, language).then((result) =>
+        this._updateResources(language, result.data).finally(() => {
+          this.__inflightFragmentTranslations.delete(fragment);
+          this.__loadedFragmentTranslations.add(fragment);
+        })
+      );
+      this.__inflightFragmentTranslations.set(fragment, promise);
+      return promise;
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -442,13 +468,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       const resources = {
         [language]: {
-          ...(this.hass ?? this._pendingHass)?.resources?.[language],
+          ...this.__resources[language],
           ...data,
         },
       };
 
       // Update resources immediately, so when a new update comes in we don't miss values
-      this._updateHass({ resources });
+      this.__resources = resources;
 
       const localize = await computeLocalize(this, language, resources);
 

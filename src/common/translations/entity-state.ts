@@ -1,6 +1,6 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValuePart } from "../../types";
 import {
   computeEntityNameDisplay,
   type EntityNameItem,
@@ -12,21 +12,28 @@ export type FormatEntityStateFunc = (
   stateObj: HassEntity,
   state?: string
 ) => string;
+export type FormatEntityStateToPartsFunc = (
+  stateObj: HassEntity,
+  state?: string
+) => ValuePart[];
 export type FormatEntityAttributeValueFunc = (
   stateObj: HassEntity,
   attribute: string,
   value?: any
 ) => string;
+export type FormatEntityAttributeValueToPartsFunc = (
+  stateObj: HassEntity,
+  attribute: string,
+  value?: any
+) => ValuePart[];
 export type FormatEntityAttributeNameFunc = (
   stateObj: HassEntity,
   attribute: string
 ) => string;
 
-export type EntityNameType = "entity" | "device" | "area" | "floor";
-
 export type FormatEntityNameFunc = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[],
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
   options?: EntityNameOptions
 ) => string;
 
@@ -37,33 +44,40 @@ export const computeFormatFunctions = async (
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"],
-  sensorNumericDeviceClasses: string[]
+  floors: HomeAssistant["floors"]
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
+  formatEntityStateToParts: FormatEntityStateToPartsFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
+  formatEntityAttributeValueToParts: FormatEntityAttributeValueToPartsFunc;
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
   formatEntityName: FormatEntityNameFunc;
 }> => {
-  const { computeStateDisplay } = await import(
-    "../entity/compute_state_display"
-  );
-  const { computeAttributeValueDisplay, computeAttributeNameDisplay } =
-    await import("../entity/compute_attribute_display");
+  const { computeStateDisplay, computeStateToParts } =
+    await import("../entity/compute_state_display");
+  const {
+    computeAttributeValueDisplay,
+    computeAttributeValueToParts,
+    computeAttributeNameDisplay,
+  } = await import("../entity/compute_attribute_display");
 
   return {
     formatEntityState: (stateObj, state) =>
-      computeStateDisplay(
+      computeStateDisplay(localize, stateObj, locale, config, entities, state),
+    formatEntityStateToParts: (stateObj, state) =>
+      computeStateToParts(localize, stateObj, locale, config, entities, state),
+    formatEntityAttributeValue: (stateObj, attribute, value) =>
+      computeAttributeValueDisplay(
         localize,
         stateObj,
         locale,
-        sensorNumericDeviceClasses,
         config,
         entities,
-        state
+        attribute,
+        value
       ),
-    formatEntityAttributeValue: (stateObj, attribute, value) =>
-      computeAttributeValueDisplay(
+    formatEntityAttributeValueToParts: (stateObj, attribute, value) =>
+      computeAttributeValueToParts(
         localize,
         stateObj,
         locale,

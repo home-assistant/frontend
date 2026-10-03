@@ -3,11 +3,10 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
-import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-dialog";
 import type {
   MatterFabricData,
   MatterNodeDiagnostics,
@@ -32,10 +31,13 @@ class DialogMatterManageFabrics extends LitElement {
 
   @state() private _nodeDiagnostics?: MatterNodeDiagnostics;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: MatterManageFabricsDialogParams
   ): Promise<void> {
     this.device_id = params.device_id;
+    this._open = true;
     this._fetchNodeDetails();
   }
 
@@ -46,41 +48,45 @@ class DialogMatterManageFabrics extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.matter.manage_fabrics.title")
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.matter.manage_fabrics.title"
         )}
+        @closed=${this._dialogClosed}
       >
         <p>
           ${this.hass.localize("ui.panel.config.matter.manage_fabrics.fabrics")}
         </p>
-        ${this._nodeDiagnostics
-          ? html`<ha-list>
-              ${this._nodeDiagnostics.active_fabrics.map(
-                (fabric) =>
-                  html`<ha-list-item
-                    noninteractive
-                    .hasMeta=${this._nodeDiagnostics!.available &&
-                    fabric.fabric_index !==
-                      this._nodeDiagnostics!.active_fabric_index}
-                    >${fabric.vendor_name ||
-                    fabric.fabric_label ||
-                    fabric.vendor_id}
-                    <ha-icon-button
-                      @click=${this._removeFabric}
-                      slot="meta"
-                      .fabric=${fabric}
-                      .path=${mdiDelete}
-                    ></ha-icon-button>
-                  </ha-list-item>`
-              )}
-            </ha-list>`
-          : html`<div class="center">
-              <ha-spinner></ha-spinner>
-            </div>`}
+        ${
+          this._nodeDiagnostics
+            ? html`<ha-list>
+                ${this._nodeDiagnostics.active_fabrics.map(
+                  (fabric) =>
+                    html`<ha-list-item
+                      noninteractive
+                      .hasMeta=${
+                        this._nodeDiagnostics!.available &&
+                        fabric.fabric_index !==
+                          this._nodeDiagnostics!.active_fabric_index
+                      }
+                      >${
+                        fabric.vendor_name ||
+                        fabric.fabric_label ||
+                        fabric.vendor_id
+                      }
+                      <ha-icon-button
+                        @click=${this._removeFabric}
+                        slot="meta"
+                        .fabric=${fabric}
+                        .path=${mdiDelete}
+                      ></ha-icon-button>
+                    </ha-list-item>`
+                )}
+              </ha-list>`
+            : html`<div class="center">
+                <ha-spinner></ha-spinner>
+              </div>`
+        }
       </ha-dialog>
     `;
   }
@@ -140,6 +146,10 @@ class DialogMatterManageFabrics extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this.device_id = undefined;
     this._nodeDiagnostics = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });

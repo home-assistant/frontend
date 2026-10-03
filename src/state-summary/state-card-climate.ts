@@ -23,10 +23,7 @@ class StateCardClimate extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <ha-climate-state
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-climate-state>
+        <ha-climate-state .stateObj=${this.stateObj}></ha-climate-state>
       </div>
     `;
   }

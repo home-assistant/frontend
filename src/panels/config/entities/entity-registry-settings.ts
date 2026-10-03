@@ -2,7 +2,11 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import type { ConfigEntry } from "../../../data/config_entries";
@@ -10,12 +14,16 @@ import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,
@@ -27,12 +35,17 @@ import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import "./entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
+import { getDeleteConfirmationText } from "./get-delete-confirmation-text";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext;
 
   @state() private _helperConfigEntry?: ConfigEntry;
 
@@ -43,7 +56,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entry")) {
       this._fetchHelperConfigEntry();
@@ -79,55 +92,62 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       : undefined;
 
     return html`
-      ${!stateObj
-        ? html`
-            <ha-alert alert-type="warning">
-              ${device?.disabled_by
-                ? html`${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.device_disabled"
-                    )}<ha-button
-                      size="small"
-                      variant="warning"
-                      @click=${this._openDeviceSettings}
-                      slot="action"
-                    >
-                      ${this.hass!.localize(
-                        "ui.dialogs.entity_registry.editor.open_device_settings"
-                      )}
-                    </ha-button>`
-                : this.entry.disabled_by
-                  ? html`${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.entity_disabled"
-                    )}${["user", "integration"].includes(
-                      this.entry.disabled_by!
-                    )
-                      ? html`<ha-button
-                          size="small"
+      ${
+        !stateObj
+          ? html`
+              <ha-alert alert-type="warning">
+                ${
+                  device?.disabled_by
+                    ? html`${this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.device_disabled"
+                        )}<ha-button
+                          size="s"
                           variant="warning"
+                          @click=${this._openDeviceSettings}
                           slot="action"
-                          @click=${this._enableEntry}
                         >
                           ${this.hass!.localize(
-                            "ui.dialogs.entity_registry.editor.enable_entity"
-                          )}</ha-button
-                        >`
-                      : ""}`
-                  : this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.unavailable"
-                    )}
-            </ha-alert>
-          `
-        : ""}
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : ""}
+                            "ui.dialogs.entity_registry.editor.open_device_settings"
+                          )}
+                        </ha-button>`
+                    : this.entry.disabled_by
+                      ? html`${this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.entity_disabled"
+                        )}${
+                          ["user", "integration"].includes(
+                            this.entry.disabled_by!
+                          )
+                            ? html`<ha-button
+                                size="s"
+                                variant="warning"
+                                slot="action"
+                                @click=${this._enableEntry}
+                              >
+                                ${this.hass!.localize(
+                                  "ui.dialogs.entity_registry.editor.enable_entity"
+                                )}</ha-button
+                              >`
+                            : ""
+                        }`
+                      : this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.unavailable"
+                        )
+                }
+              </ha-alert>
+            `
+          : ""
+      }
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""
+      }
       <div class="form container">
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
           .helperConfigEntry=${this._helperConfigEntry}
           .disabled=${!!this._submitting}
-          @change=${this._entityRegistryChanged}
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
@@ -135,20 +155,22 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           variant="danger"
           appearance="plain"
           @click=${this._confirmDeleteEntry}
-          .disabled=${this._submitting ||
-          (!this._helperConfigEntry && !stateObj?.attributes.restored)}
+          .disabled=${
+            this._submitting ||
+            (!this._helperConfigEntry && !stateObj?.attributes.restored)
+          }
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>
-        <ha-button @click=${this._updateEntry} .loading=${!!this._submitting}>
+        <ha-button
+          @click=${this._updateEntry}
+          .disabled=${!this._dirtyState?.isDirty || !!this._submitting}
+          .loading=${!!this._submitting}
+        >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
       </div>
     `;
-  }
-
-  private _entityRegistryChanged() {
-    this._error = undefined;
   }
 
   private _openDeviceSettings() {
@@ -196,8 +218,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+    this._error = undefined;
     try {
       const result = await this._registryEditor!.updateEntry();
+      if (!result) {
+        return;
+      }
+      this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
       }
@@ -209,11 +236,32 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _confirmDeleteEntry(): Promise<void> {
+    let name = computeEntityEntryName(this.entry, this.hass.devices);
+    if (!name) {
+      const { device } = getEntityEntryContext(
+        this.entry,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+      if (device) {
+        name = computeDeviceName(device);
+      }
+    }
+
+    const confirmationText = await getDeleteConfirmationText(
+      this.hass,
+      this.entry,
+      name
+    );
+
     if (
       !(await showConfirmationDialog(this, {
-        text: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.confirm_delete"
+        title: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete_title"
         ),
+        text: confirmationText,
         confirmText: this.hass.localize("ui.common.delete"),
         dismissText: this.hass.localize("ui.common.cancel"),
         destructive: true,
@@ -244,14 +292,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           display: block;
         }
         .container {
-          padding: 8px 24px 20px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-5)
+            var(--ha-space-6);
         }
         .buttons {
           box-sizing: border-box;
           display: flex;
-          padding: 16px;
+          padding: var(--ha-space-4);
           justify-content: space-between;
-          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
           background-color: var(--mdc-theme-surface, #fff);
           border-top: 1px solid var(--divider-color);
           position: sticky;

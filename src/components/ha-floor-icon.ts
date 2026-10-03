@@ -6,7 +6,7 @@ import {
   mdiHomeFloor3,
   mdiHomeFloorNegative1,
 } from "@mdi/js";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import "./ha-icon";
@@ -48,7 +48,7 @@ export const floorDefaultIcon = (floor: Pick<FloorRegistryEntry, "level">) => {
 
 @customElement("ha-floor-icon")
 export class HaFloorIcon extends LitElement {
-  @property({ attribute: false }) public floor!: Pick<
+  @property({ attribute: false }) public floor?: Pick<
     FloorRegistryEntry,
     "icon" | "level"
   >;
@@ -56,6 +56,9 @@ export class HaFloorIcon extends LitElement {
   @property() public icon?: string;
 
   protected render() {
+    if (!this.floor) {
+      return nothing;
+    }
     if (this.floor.icon) {
       return html`<ha-icon .icon=${this.floor.icon}></ha-icon>`;
     }

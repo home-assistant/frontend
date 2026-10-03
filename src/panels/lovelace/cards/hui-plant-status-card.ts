@@ -11,11 +11,13 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
+import { batteryStateColorProperty } from "../../../common/entity/color/battery_color";
+import { valueFromParts } from "../../../common/entity/value_parts";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
+import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -71,7 +73,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -82,8 +84,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PlantStatusCardConfig
-      | undefined;
+      PlantStatusCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -110,6 +111,16 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const attributes = this._computeAttributes(stateObj);
+    let batteryColorVar: string | undefined;
+    if (attributes.includes("battery")) {
+      const batteryLevel = stateObj.attributes.battery;
+      const batteryColorProperty = batteryStateColorProperty(batteryLevel);
+      if (batteryColorProperty) {
+        batteryColorVar = computeCssVariable(batteryColorProperty);
+      }
+    }
+
     return html`
       <ha-card
         class=${stateObj.attributes.entity_picture ? "has-plant-image" : ""}
@@ -119,11 +130,11 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${computeLovelaceEntityName(this.hass, stateObj, this._config.name)}
+            ${this.hass.formatEntityName(stateObj, this._config.name)}
           </div>
         </div>
         <div class="content">
-          ${this._computeAttributes(stateObj).map(
+          ${attributes.map(
             (item) => html`
               <div
                 class="attributes"
@@ -133,20 +144,25 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                 .value=${item}
               >
                 <div class="icon">
-                  ${item === "battery"
-                    ? html`<ha-icon
-                        .icon=${batteryLevelIcon(stateObj.attributes.battery)}
-                      ></ha-icon>`
-                    : html`<ha-svg-icon
-                        .path=${SENSOR_ICONS[item]}
-                      ></ha-svg-icon>`}
+                  ${
+                    item === "battery"
+                      ? html`<ha-icon
+                          style="color: ${batteryColorVar};"
+                          .icon=${batteryLevelIcon(stateObj.attributes.battery)}
+                        ></ha-icon>`
+                      : html`<ha-svg-icon
+                          .path=${SENSOR_ICONS[item]}
+                        ></ha-svg-icon>`
+                  }
                 </div>
                 <div
-                  class=${stateObj.attributes.problem.indexOf(item) === -1
-                    ? ""
-                    : "problem"}
+                  class=${
+                    stateObj.attributes.problem.indexOf(item) === -1
+                      ? ""
+                      : "problem"
+                  }
                 >
-                  ${stateObj.attributes[item]}
+                  ${this._formatSensorValue(stateObj, item)}
                 </div>
                 <div class="uom">
                   ${stateObj.attributes.unit_of_measurement_dict[item] || ""}
@@ -239,6 +255,19 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       color: var(--secondary-text-color);
     }
   `;
+
+  private _formatSensorValue(stateObj: HassEntity, attribute: string): string {
+    const sensorEntityId = stateObj.attributes.sensors?.[attribute];
+    const sensorStateObj = sensorEntityId
+      ? this.hass!.states[sensorEntityId]
+      : undefined;
+    if (sensorStateObj) {
+      return valueFromParts(
+        this.hass!.formatEntityStateToParts(sensorStateObj)
+      );
+    }
+    return stateObj.attributes[attribute] ?? "";
+  }
 
   private _computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(

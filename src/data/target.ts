@@ -1,14 +1,38 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
-import type { HomeAssistant } from "../types";
-import type { AreaRegistryEntry } from "./area_registry";
-import type { DeviceRegistryEntry } from "./device_registry";
-import type { HaEntityPickerEntityFilterFunc } from "./entity";
-import type { EntityRegistryDisplayEntry } from "./entity_registry";
+import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
+import type { CallWS, HomeAssistant } from "../types";
+import type { AreaRegistryEntry } from "./area/area_registry";
+import type { FloorComboBoxItem } from "./area_floor_picker";
+import type { DevicePickerItem } from "./device/device_picker";
+import {
+  devicesInEffectiveArea,
+  type DeviceRegistryEntry,
+} from "./device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
+import type { EntityComboBoxItem } from "./entity/entity_picker";
+import type { EntityRegistryDisplayEntry } from "./entity/entity_registry";
+import { shareInFlightRequest } from "../common/util/share-in-flight-request";
+
+export const TARGET_SEPARATOR = "________";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
+
+export interface TargetItem {
+  type: TargetType;
+  id: string;
+}
+
+export interface SingleHassServiceTarget {
+  entity_id?: string;
+  device_id?: string;
+  area_id?: string;
+  floor_id?: string;
+  label_id?: string;
+}
 
 export interface ExtractFromTargetResult {
   missing_areas: string[];
@@ -27,12 +51,76 @@ export interface ExtractFromTargetResultReferenced {
 }
 
 export const extractFromTarget = async (
-  hass: HomeAssistant,
-  target: HassServiceTarget
-) =>
-  hass.callWS<ExtractFromTargetResult>({
-    type: "extract_from_target",
+  callWS: CallWS,
+  target: HassServiceTarget,
+  expandGroup = false,
+  primaryEntitiesOnly = true
+) => {
+  const request = {
+    type: "extract_from_target" as const,
     target,
+    expand_group: expandGroup,
+    primary_entities_only: primaryEntitiesOnly,
+  };
+
+  return shareInFlightRequest(callWS, JSON.stringify(request), () =>
+    callWS<ExtractFromTargetResult>(request)
+  );
+};
+
+export const getTargetEntityCount = (target?: HassServiceTarget): number => {
+  const tempTarget = {
+    entity_id: target?.entity_id ? ensureArray(target?.entity_id) : [],
+    device_id: target?.device_id ? ensureArray(target?.device_id) : [],
+    area_id: target?.area_id ? ensureArray(target?.area_id) : [],
+    floor_id: target?.floor_id ? ensureArray(target?.floor_id) : [],
+    label_id: target?.label_id ? ensureArray(target?.label_id) : [],
+  };
+
+  if (
+    tempTarget?.device_id?.length > 0 ||
+    tempTarget?.area_id?.length > 0 ||
+    tempTarget?.floor_id?.length > 0 ||
+    tempTarget?.label_id?.length > 0
+  ) {
+    // if targeting non entities the number of entities is dynamic
+    return Infinity;
+  }
+
+  return tempTarget?.entity_id?.length;
+};
+
+export const getTriggersForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_triggers_for_target",
+    target,
+    expand_group: expandGroup,
+  });
+
+export const getConditionsForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_conditions_for_target",
+    target,
+    expand_group: expandGroup,
+  });
+
+export const getServicesForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_services_for_target",
+    target,
+    expand_group: expandGroup,
   });
 
 export const areaMeetsFilter = (
@@ -43,11 +131,10 @@ export const areaMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
-  const areaDevices = Object.values(devices).filter(
-    (device) => device.area_id === area.area_id
-  );
+  const areaDevices = devicesInEffectiveArea(devices, area.area_id);
 
   if (
     areaDevices.some((device) =>
@@ -58,7 +145,8 @@ export const areaMeetsFilter = (
         includeDomains,
         includeDeviceClasses,
         states,
-        entityFilter
+        entityFilter,
+        includeSecondary
       )
     )
   ) {
@@ -73,7 +161,7 @@ export const areaMeetsFilter = (
     areaEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,
@@ -94,8 +182,12 @@ export const deviceMeetsFilter = (
   includeDomains?: string[],
   includeDeviceClasses?: string[],
   states?: HomeAssistant["states"],
-  entityFilter?: HaEntityPickerEntityFilterFunc
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeSecondary = false
 ): boolean => {
+  // Only the device's own entities: child devices are targeted through the
+  // device itself (see core's target resolution), not by making a parent match
+  // on behalf of a child.
   const devEntities = Object.values(entities).filter(
     (entity) => entity.device_id === device.id
   );
@@ -104,7 +196,7 @@ export const deviceMeetsFilter = (
     !devEntities.some((entity) =>
       entityRegMeetsFilter(
         entity,
-        false,
+        includeSecondary,
         includeDomains,
         includeDeviceClasses,
         states,
@@ -161,4 +253,33 @@ export const entityRegMeetsFilter = (
     return entityFilter!(stateObj);
   }
   return true;
+};
+
+export const getTargetComboBoxItemType = (
+  item:
+    | PickerComboBoxItem
+    | (FloorComboBoxItem & { last?: boolean | undefined })
+    | EntityComboBoxItem
+    | DevicePickerItem
+) => {
+  if (
+    (item as FloorComboBoxItem).type === "area" ||
+    (item as FloorComboBoxItem).type === "floor"
+  ) {
+    return (item as FloorComboBoxItem).type;
+  }
+
+  if ("domain" in item) {
+    return "device";
+  }
+
+  if ("stateObj" in item) {
+    return "entity";
+  }
+
+  if (item.id === "___EMPTY_SEARCH___") {
+    return "empty";
+  }
+
+  return "label";
 };

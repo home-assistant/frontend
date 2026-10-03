@@ -2,7 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { computeDeviceName } from "./compute_device_name";
 import { computeStateName } from "./compute_state_name";
@@ -14,8 +14,7 @@ export const computeEntityName = (
   devices: HomeAssistant["devices"]
 ): string | undefined => {
   const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
 
   if (!entry) {
     // Fall back to state name if not in the entity registry (friendly name)
@@ -30,7 +29,7 @@ export const computeEntityEntryName = (
   fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
-    entry.name ||
+    entry.name ??
     ("original_name" in entry && entry.original_name != null
       ? String(entry.original_name)
       : undefined);
@@ -49,8 +48,8 @@ export const computeEntityEntryName = (
 
   const deviceName = computeDeviceName(device);
 
-  // If the device name is the same as the entity name, consider empty entity name
-  if (deviceName === name) {
+  // An empty entity name or one equal to the device name means the entity uses the device name
+  if (!name || deviceName === name) {
     return undefined;
   }
 

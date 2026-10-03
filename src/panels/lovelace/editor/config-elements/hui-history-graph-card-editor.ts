@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,47 +13,105 @@ import {
   optional,
   string,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { HistoryGraphCardConfig } from "../../cards/types";
-import "../../components/hui-entity-editor";
-import "../hui-sub-element-editor";
-import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import type { EntityConfig } from "../../entity-rows/types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { isNumericFromAttributes } from "../../../../common/number/format_number";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
+import type {
+  GraphEntityConfig,
+  HistoryGraphCardConfig,
+} from "../../cards/types";
+import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
+import { graphEntitiesConfigStruct } from "../structs/entities-struct";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import { orderPropertiesGraphCard } from "./order-properties/order-properties-graph";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entities: array(entitiesConfigStruct),
+    entities: array(graphEntitiesConfigStruct),
     title: optional(string()),
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
     logarithmic_scale: optional(boolean()),
+    expand_legend: optional(boolean()),
     min_y_axis: optional(number()),
     max_y_axis: optional(number()),
     fit_y_data: optional(boolean()),
   })
 );
 
-const SUB_SCHEMA = [
-  { name: "entity", selector: { entity: {} }, required: true },
+const SCHEMA = [
+  { name: "title", selector: { text: {} } },
   {
-    name: "name",
-    selector: { entity_name: {} },
-    context: {
-      entity: "entity",
-    },
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { min: 0, step: "any", mode: "box" } },
+      },
+      {
+        name: "show_names",
+        default: true,
+        required: false,
+        selector: { boolean: {} },
+      },
+      {
+        name: "logarithmic_scale",
+        required: false,
+        selector: { boolean: {} },
+      },
+      {
+        name: "expand_legend",
+        required: false,
+        selector: { boolean: {} },
+      },
+    ],
   },
-] as const;
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "min_y_axis",
+        required: false,
+        selector: { number: { mode: "box", step: "any" } },
+      },
+      {
+        name: "max_y_axis",
+        required: false,
+        selector: { number: { mode: "box", step: "any" } },
+      },
+    ],
+  },
+  {
+    name: "fit_y_data",
+    required: false,
+    visible: {
+      condition: "or",
+      conditions: [
+        { field: "min_y_axis", operator: "exists" },
+        { field: "max_y_axis", operator: "exists" },
+      ],
+    },
+    selector: { boolean: {} },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
@@ -65,61 +124,36 @@ export class HuiHistoryGraphCardEditor
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
-  @state() private _configEntities?: EntityConfig[];
-
   public setConfig(config: HistoryGraphCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
   }
 
-  private _schema = memoizeOne(
-    (showFitOption: boolean) =>
-      [
-        { name: "title", selector: { text: {} } },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "hours_to_show",
-              default: DEFAULT_HOURS_TO_SHOW,
-              selector: { number: { min: 0, step: "any", mode: "box" } },
-            },
-          ],
+  private _subForm = memoizeOne((localize: LocalizeFunc, entityId: string) => ({
+    schema: [
+      { name: "entity", selector: { entity: {} }, required: true },
+      {
+        name: "name",
+        selector: { entity_name: {} },
+        context: {
+          entity: "entity",
         },
-        {
-          name: "logarithmic_scale",
-          required: false,
-          selector: { boolean: {} },
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "min_y_axis",
-              required: false,
-              selector: { number: { mode: "box", step: "any" } },
-            },
-            {
-              name: "max_y_axis",
-              required: false,
-              selector: { number: { mode: "box", step: "any" } },
-            },
-          ],
-        },
-        ...(showFitOption
-          ? [
-              {
-                name: "fit_y_data",
-                required: false,
-                selector: { boolean: {} },
-              },
-            ]
-          : []),
-      ] as const
-  );
+      },
+      {
+        name: "color",
+        disabled: this._shouldDisableColorOption(entityId),
+        selector: { ui_color: {} },
+      },
+    ] as const,
+    computeLabel: (item: HaFormSchema) => {
+      switch (item.name) {
+        case "color":
+          return localize(`ui.panel.lovelace.editor.card.generic.${item.name}`);
+        default:
+          return undefined;
+      }
+    },
+  }));
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -127,11 +161,14 @@ export class HuiHistoryGraphCardEditor
     }
 
     if (this._subElementEditorConfig) {
+      const entityId = (
+        this._subElementEditorConfig.elementConfig! as { entity: string }
+      ).entity;
       return html`
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${SUB_SCHEMA}
+          .form=${this._subForm(this.hass.localize, entityId)}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >
@@ -139,22 +176,20 @@ export class HuiHistoryGraphCardEditor
       `;
     }
 
-    const schema = this._schema(
-      this._config!.min_y_axis !== undefined ||
-        this._config!.max_y_axis !== undefined
-    );
-
+    const configEntities = this._config.entities
+      ? (processEditorEntities(this._config.entities) as GraphEntityConfig[])
+      : [];
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <hui-entity-editor
         .hass=${this.hass}
-        .entities=${this._configEntities}
+        .entities=${configEntities}
         can-edit
         @entities-changed=${this._entitiesChanged}
         @edit-detail-element=${this._editDetailElement}
@@ -173,41 +208,81 @@ export class HuiHistoryGraphCardEditor
   private _handleSubEntityChanged(ev: CustomEvent): void {
     ev.stopPropagation();
 
-    const index = this._subElementEditorConfig!.index!;
+    // get updated entity config
+    let newEntityConfig = ev.detail.config as GraphEntityConfig;
+    const entityId = newEntityConfig.entity;
+    if (this._shouldDisableColorOption(entityId)) {
+      // remove unused "color" option
+      newEntityConfig = this._deleteColorOption(newEntityConfig);
+    }
 
-    const newEntities = this._configEntities!.concat();
-    const newConfig = ev.detail.config as EntityConfig;
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: newConfig,
-    };
-    newEntities[index] = newConfig;
+    // update card config with updated entity config
+    const index = this._subElementEditorConfig!.index!;
+    const newEntities = [...this._config!.entities];
+    newEntities[index] = newEntityConfig;
     let config = this._config!;
     config = { ...config, entities: newEntities };
+    config = this._orderProperties(config);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+
+    // update sub-element editor config
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: {
+        ...(this._config!.entities[index] as GraphEntityConfig),
+      },
+    };
 
     fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = this._orderProperties(ev.detail.value);
+    fireEvent(this, "config-changed", { config });
   }
 
   private _entitiesChanged(ev: CustomEvent): void {
     let config = this._config!;
-
     config = { ...config, entities: ev.detail.entities };
-    this._configEntities = processEditorEntities(config.entities);
 
+    config = this._orderProperties(config);
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  // a rough assumption about a numerical entity
+  // which may use state-history-chart-line
+  // where "color" option may be used
+  private _shouldDisableColorOption = (entityId: string) => {
+    const domain = computeDomain(entityId);
+    const isNumberDomain =
+      domain === "counter" || domain === "number" || domain === "input_number";
+    const stateObj = this.hass!.states[entityId] as HassEntity | undefined;
+    const attributes = stateObj?.attributes;
+    const isNumeric = attributes ? isNumericFromAttributes(attributes) : false;
+    return !isNumeric && !isNumberDomain;
+  };
+
+  // remove "color" option when needed
+  private _deleteColorOption(config: GraphEntityConfig): GraphEntityConfig {
+    const { color, ...rest } = config;
+    return rest as GraphEntityConfig;
+  }
+
+  // normalize a generated yaml code by placing lines in a consistent order
+  private _orderProperties(
+    config: HistoryGraphCardConfig
+  ): HistoryGraphCardConfig {
+    return orderPropertiesGraphCard(
+      config,
+      cardConfigStruct
+    ) as HistoryGraphCardConfig;
+  }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
+      case "show_names":
       case "logarithmic_scale":
+      case "expand_legend":
       case "min_y_axis":
       case "max_y_axis":
       case "fit_y_data":

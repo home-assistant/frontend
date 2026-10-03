@@ -41,16 +41,18 @@ class MediaUploadButton extends LitElement {
         .loading=${this._uploading > 0}
       >
         <ha-svg-icon .path=${mdiUpload} slot="start"></ha-svg-icon>
-        ${this._uploading > 0
-          ? this.hass.localize(
-              "ui.components.media-browser.file_management.uploading",
-              {
-                count: this._uploading,
-              }
-            )
-          : this.hass.localize(
-              "ui.components.media-browser.file_management.add_media"
-            )}
+        ${
+          this._uploading > 0
+            ? this.hass.localize(
+                "ui.components.media-browser.file_management.uploading",
+                {
+                  count: this._uploading,
+                }
+              )
+            : this.hass.localize(
+                "ui.components.media-browser.file_management.add_media"
+              )
+        }
       </ha-button>
     `;
   }

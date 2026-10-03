@@ -24,7 +24,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
     return { delay: "" };
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("action")) {
       return;
     }

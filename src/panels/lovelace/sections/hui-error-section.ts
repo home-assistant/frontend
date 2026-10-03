@@ -1,6 +1,5 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -47,7 +46,9 @@ export class HuiErrorSection
 
     // Todo improve
     return html`
-      <h1>Error</h1>
+      <h1>
+        ${this.hass!.localize("ui.panel.lovelace.editor.error_section.title")}
+      </h1>
       <p>${this._config.error}</p>
     `;
   }

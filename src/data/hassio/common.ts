@@ -1,5 +1,8 @@
-import { atLeastVersion } from "../../common/config/version";
-import type { HomeAssistant } from "../../types";
+import { resolveHassUrl } from "../../common/url/hass-url";
+import type { CallWS } from "../../types";
+
+export const supervisorUrl = (path: string): string =>
+  resolveHassUrl(`/api/hassio/${path}`);
 
 export interface HassioResponse<T> {
   data: T;
@@ -10,16 +13,16 @@ export interface HassioResponse<T> {
 export interface HassioStats {
   blk_read: number;
   blk_write: number;
-  cpu_percent: number;
+  cpu_percent: number | null;
+  cpu_system_usage: number;
+  cpu_usage: number;
   memory_limit: number;
   memory_percent: number;
   memory_usage: number;
   network_rx: number;
   network_tx: number;
+  online_cpus: number;
 }
-
-export const hassioApiResultExtractor = <T>(response: HassioResponse<T>) =>
-  response.data;
 
 export const extractApiErrorMessage = (error: any): string =>
   typeof error === "object"
@@ -46,21 +49,12 @@ export const ignoreSupervisorError = (error): boolean => {
 };
 
 export const fetchHassioStats = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   container: string
 ): Promise<HassioStats> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/${container}/stats`,
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioStats>>(
-      "GET",
-      `hassio/${container}/stats`
-    )
-  );
+  return callWS({
+    type: "supervisor/api",
+    endpoint: `/${container}/stats`,
+    method: "get",
+  });
 };

@@ -1,14 +1,28 @@
-import { mdiClose, mdiContentCopy } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import "../../../components/skeleton/ha-skeleton-text";
+import type { ContextType } from "@lit/context";
+import { mdiContentCopy } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  GITHUB_CORE_ISSUES_URL,
+  GITHUB_FRONTEND_ISSUES_URL,
+} from "../../../common/url/github";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
-import "../../../components/ha-dialog";
-import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-dialog";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
@@ -19,39 +33,97 @@ import {
   getLoggedErrorIntegration,
   isCustomIntegrationError,
 } from "../../../data/system_log";
+import { systemLogReportUrl } from "../../../data/system_log_report";
+import { subscribeSystemHealthInfo } from "../../../data/system_health";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
+import {
+  DOCUMENTATION_URL,
+  documentationUrl,
+} from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
+/** Compares the host, so a URL that merely contains ours does not pass. */
+const isOfficialDocumentationUrl = (url: string): boolean => {
+  try {
+    return new URL(url).hostname === "www.home-assistant.io";
+  } catch (_err) {
+    return false;
+  }
+};
+
+@customElement("dialog-system-log-detail")
 class DialogSystemLogDetail extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _params?: SystemLogDetailDialogParams;
 
-  @state() private _manifest?: IntegrationManifest;
+  @state() private _manifest?: IntegrationManifest | null;
+
+  @state() private _installationType?: string;
+
+  @state() private _open = false;
+
+  @query(".contents") private _contents?: HTMLElement;
+
+  private _reportUrl = memoizeOne(systemLogReportUrl);
+
+  private _fetchingInstallationType = false;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!changedProps.has("_params") || !this._params) {
+
+    if (
+      (!changedProps.has("_params") && !changedProps.has("_manifest")) ||
+      !this._params
+    ) {
       return;
     }
+
     const integration = getLoggedErrorIntegration(this._params.item);
-    if (integration) {
-      this._fetchManifest(integration);
+
+    if (changedProps.has("_params") && integration) {
+      this._fetchManifest(integration, this._params);
+    }
+
+    if (
+      !/^frontend\.js(?:_dev)?(?:\.|$)/.test(this._params.item.name) &&
+      !isCustomIntegrationError(this._params.item) &&
+      (!integration || this._manifest?.is_built_in) &&
+      isComponentLoaded(this._config.config, "system_health")
+    ) {
+      this._fetchInstallationType();
     }
   }
 
@@ -63,124 +135,199 @@ class DialogSystemLogDetail extends LitElement {
 
     const integration = getLoggedErrorIntegration(item);
 
+    const reportUrl = this._reportUrl(
+      item,
+      this._connection.connection.haVersion,
+      this._manifest,
+      this._installationType
+    );
+
+    const reportTarget = reportUrl.startsWith(`${GITHUB_CORE_ISSUES_URL}/`)
+      ? "core"
+      : reportUrl.startsWith(`${GITHUB_FRONTEND_ISSUES_URL}/`)
+        ? "frontend"
+        : "custom";
+
+    const reportMessage =
+      this.isCustomIntegration && reportTarget === "core"
+        ? "custom_fallback"
+        : reportTarget;
+
     const showDocumentation =
       this._manifest &&
       (this._manifest.is_built_in ||
         // Custom components with our official docs should not link to our docs
-        !this._manifest.documentation.includes("://www.home-assistant.io"));
+        (!!this._manifest.documentation &&
+          !isOfficialDocumentationUrl(this._manifest.documentation)));
 
-    const title = this.hass.localize("ui.panel.config.logs.details", {
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this._config, `/integrations/${this._manifest.domain}`)
+      : this._manifest?.documentation;
+
+    const title = this._i18n.localize("ui.panel.config.logs.details", {
       level: html`<span class=${item.level}
-        >${this.hass.localize(`ui.panel.config.logs.level.${item.level}`)}</span
+        >${this._i18n.localize(`ui.panel.config.logs.level.${item.level}`)}</span
       >`,
     });
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">${title}</span>
-          <ha-icon-button
-            id="copy"
-            @click=${this._copyLog}
-            slot="actionItems"
-            .label=${this.hass.localize("ui.panel.config.logs.copy")}
-            .path=${mdiContentCopy}
-          ></ha-icon-button>
-        </ha-dialog-header>
-        ${this.isCustomIntegration
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.logs.error_from_custom_integration"
-              )}
-            </ha-alert>`
-          : ""}
-        <div class="contents" tabindex="-1" dialogInitialFocus>
-          <p>
-            ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
-            ${item.name}<br />
-            ${this.hass.localize("ui.panel.config.logs.detail.source")}:
-            ${item.source.join(":")}
-            ${integration
-              ? html`
-                  <br />
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.integration"
-                  )}:
-                  ${domainToName(this.hass.localize, integration)}
-                  ${!this._manifest ||
-                  // Can happen with custom integrations
-                  !showDocumentation
-                    ? ""
-                    : html`
-                        (<a
-                          href=${this._manifest.is_built_in
-                            ? documentationUrl(
-                                this.hass,
-                                `/integrations/${this._manifest.domain}`
-                              )
-                            : this._manifest.documentation}
-                          target="_blank"
-                          rel="noreferrer"
-                          >${this.hass.localize(
-                            "ui.panel.config.logs.detail.documentation"
-                          )}</a
-                        >${this._manifest.is_built_in ||
-                        this._manifest.issue_tracker
-                          ? html`,
-                              <a
-                                href=${integrationIssuesUrl(
-                                  integration,
-                                  this._manifest
-                                )}
-                                target="_blank"
-                                rel="noreferrer"
-                                >${this.hass.localize(
-                                  "ui.panel.config.logs.detail.issues"
-                                )}</a
-                              >`
-                          : ""})
-                      `}
-                `
-              : ""}
-            <br />
-            ${item.count > 0
-              ? html`
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.first_occurred"
-                  )}:
-                  ${formatSystemLogTime(
-                    item.first_occurred,
-                    this.hass!.locale,
-                    this.hass!.config
-                  )}
-                  (${this.hass.localize(
-                    "ui.panel.config.logs.detail.number_of_occurrences",
+      <ha-dialog
+        .open=${this._open}
+        width="large"
+        @closed=${this._dialogClosed}
+      >
+        <span slot="headerTitle">${title}</span>
+        <ha-icon-button
+          id="copy"
+          autofocus
+          @click=${this._copyLog}
+          slot="headerActionItems"
+          .label=${this._i18n.localize("ui.panel.config.logs.copy")}
+          .path=${mdiContentCopy}
+        ></ha-icon-button>
+        ${
+          integration &&
+          this._manifest === undefined &&
+          reportTarget !== "frontend"
+            ? html`<ha-alert
+                alert-type=${this.isCustomIntegration ? "warning" : "info"}
+              >
+                <ha-skeleton-text></ha-skeleton-text>
+              </ha-alert>`
+            : html`<ha-alert
+                alert-type=${this.isCustomIntegration ? "warning" : "info"}
+              >
+                <p>
+                  ${this._i18n.localize(
+                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.introduction`,
                     {
-                      count: item.count,
+                      integration:
+                        this._manifest?.name ??
+                        (integration
+                          ? domainToName(this._i18n.localize, integration)
+                          : new URL(reportUrl).hostname),
                     }
-                  )}) <br />
-                `
-              : ""}
-            ${this.hass.localize("ui.panel.config.logs.detail.last_logged")}:
+                  )}
+                </p>
+                <p>
+                  ${this._i18n.localize(
+                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.report`,
+                    {
+                      report_link: html`<a
+                        href=${reportUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >${this._i18n.localize(`ui.panel.config.logs.detail.report_issue.${reportTarget}.link_text`)}</a
+                      >`,
+                    }
+                  )}
+                </p>
+                ${
+                  reportMessage !== "custom"
+                    ? html`<p>
+                        ${this._i18n.localize(
+                          `ui.panel.config.logs.detail.report_issue.${reportMessage}.guidance`,
+                          {
+                            guide_link: html`<a
+                              href=${`${DOCUMENTATION_URL}/help/reporting_issues/`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >${this._i18n.localize("ui.panel.config.logs.detail.report_issue.guide_link_text")}</a
+                            >`,
+                          }
+                        )}
+                      </p>`
+                    : nothing
+                }
+              </ha-alert>`
+        }
+        <div class="contents">
+          <p>
+            ${this._i18n.localize("ui.panel.config.logs.detail.logger")}:
+            ${item.name}<br />
+            ${this._i18n.localize("ui.panel.config.logs.detail.source")}:
+            ${item.source.join(":")}
+            ${
+              integration
+                ? html`
+                    <br />
+                    ${this._i18n.localize(
+                      "ui.panel.config.logs.detail.integration"
+                    )}:
+                    ${domainToName(this._i18n.localize, integration)}
+                    ${
+                      !this._manifest ||
+                      // Can happen with custom integrations
+                      !showDocumentation ||
+                      !documentationLink
+                        ? ""
+                        : html`
+                            (<a
+                              href=${documentationLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              >${this._i18n.localize(
+                                "ui.panel.config.logs.detail.documentation"
+                              )}</a
+                            >${
+                              this._manifest.is_built_in ||
+                              this._manifest.issue_tracker
+                                ? html`,
+                                    <a
+                                      href=${integrationIssuesUrl(
+                                        integration,
+                                        this._manifest
+                                      )}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      >${this._i18n.localize(
+                                        "ui.panel.config.logs.detail.issues"
+                                      )}</a
+                                    >`
+                                : ""
+                            })
+                          `
+                    }
+                  `
+                : ""
+            }
+            <br />
+            ${
+              item.count > 0
+                ? html`
+                    ${this._i18n.localize(
+                      "ui.panel.config.logs.detail.first_occurred"
+                    )}:
+                    ${formatSystemLogTime(
+                      item.first_occurred,
+                      this._i18n.locale,
+                      this._config.config
+                    )}
+                    (${this._i18n.localize(
+                      "ui.panel.config.logs.detail.number_of_occurrences",
+                      {
+                        count: item.count,
+                      }
+                    )}) <br />
+                  `
+                : ""
+            }
+            ${this._i18n.localize("ui.panel.config.logs.detail.last_logged")}:
             ${formatSystemLogTime(
               item.timestamp,
-              this.hass!.locale,
-              this.hass!.config
+              this._i18n.locale,
+              this._config.config
             )}
           </p>
-          ${item.message.length > 1
-            ? html`
-                <ul>
-                  ${item.message.map((msg) => html` <li>${msg}</li> `)}
-                </ul>
-              `
-            : item.message[0]}
+          ${
+            item.message.length > 1
+              ? html`
+                  <ul>
+                    ${item.message.map((msg) => html` <li>${msg}</li> `)}
+                  </ul>
+                `
+              : item.message[0]
+          }
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
         </div>
       </ha-dialog>
@@ -193,24 +340,53 @@ class DialogSystemLogDetail extends LitElement {
       : isCustomIntegrationError(this._params!.item);
   }
 
-  private async _fetchManifest(integration: string) {
+  private async _fetchManifest(
+    integration: string,
+    params: SystemLogDetailDialogParams
+  ) {
+    let manifest: IntegrationManifest | null;
     try {
-      this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (_err: any) {
-      // Ignore if loading manifest fails. Probably bad JSON in manifest
+      manifest = await fetchIntegrationManifest(this._api, integration);
+    } catch {
+      // Ignore if loading manifest fails. Probably bad JSON in manifest.
+      manifest = null;
+    }
+
+    if (this._params === params && this._open) {
+      this._manifest = manifest;
     }
   }
 
+  private _fetchInstallationType() {
+    if (this._installationType || this._fetchingInstallationType) {
+      return;
+    }
+
+    this._fetchingInstallationType = true;
+
+    const subscription = subscribeSystemHealthInfo(this._connection, (info) => {
+      this._fetchingInstallationType = false;
+      if (!info) {
+        return;
+      }
+
+      this._installationType = info.homeassistant?.info.installation_type;
+
+      subscription.then((unsub) => unsub?.());
+    }).catch(() => {
+      // The report remains usable without system health information.
+      this._fetchingInstallationType = false;
+    });
+  }
+
   private async _copyLog(): Promise<void> {
-    const copyElement = this.shadowRoot?.querySelector(
-      ".contents"
-    ) as HTMLElement;
+    const copyElement = this._contents!;
 
     let text = copyElement.innerText;
 
     if (this.isCustomIntegration) {
       text =
-        this.hass.localize(
+        this._i18n.localize(
           "ui.panel.config.logs.error_from_custom_integration"
         ) +
         "\n\n" +
@@ -219,7 +395,7 @@ class DialogSystemLogDetail extends LitElement {
 
     await copyToClipboard(text);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 
@@ -227,10 +403,6 @@ class DialogSystemLogDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --dialog-content-padding: 0px;
-        }
-
         a {
           color: var(--primary-color);
         }
@@ -243,10 +415,35 @@ class DialogSystemLogDetail extends LitElement {
         }
         ha-alert {
           display: block;
-          margin: -4px 0;
+          margin-inline: calc(-1 * var(--ha-space-3));
+          margin-block-end: var(--ha-space-4);
+        }
+        ha-alert p {
+          margin: 0;
+        }
+        ha-alert p + p {
+          margin-block-start: var(--ha-space-2);
+        }
+        ha-skeleton-text {
+          --ha-skeleton-text-width: 320px;
+        }
+        @supports (color: color-mix(in srgb, black, transparent)) {
+          ha-alert[alert-type="info"] ha-skeleton-text {
+            --ha-skeleton-color: color-mix(
+              in srgb,
+              var(--info-color) 24%,
+              transparent
+            );
+          }
+          ha-alert[alert-type="warning"] ha-skeleton-text {
+            --ha-skeleton-color: color-mix(
+              in srgb,
+              var(--warning-color) 24%,
+              transparent
+            );
+          }
         }
         .contents {
-          padding: 16px;
           outline: none;
           direction: ltr;
         }
@@ -255,12 +452,6 @@ class DialogSystemLogDetail extends LitElement {
         }
         .warning {
           color: var(--warning-color);
-        }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 90vw;
-          }
         }
       `,
     ];
@@ -272,5 +463,3 @@ declare global {
     "dialog-system-log-detail": DialogSystemLogDetail;
   }
 }
-
-customElements.define("dialog-system-log-detail", DialogSystemLogDetail);

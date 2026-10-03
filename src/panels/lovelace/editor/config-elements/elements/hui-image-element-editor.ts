@@ -15,9 +15,10 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import type { ImageElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
+import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const imageElementConfigStruct = object({
@@ -69,6 +70,7 @@ export class HuiImageElementEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "hold_action",
@@ -77,6 +79,7 @@ export class HuiImageElementEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -90,6 +93,7 @@ export class HuiImageElementEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
               ],
             },
@@ -100,7 +104,6 @@ export class HuiImageElementEditor
           selector: {
             media: {
               accept: ["image/*"] as string[],
-              clearable: true,
               image_upload: true,
               hide_content_type: true,
               content_id_helper: localize(
@@ -155,7 +158,7 @@ export class HuiImageElementEditor
       : {}),
   }));
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<ImageElementConfig>): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 

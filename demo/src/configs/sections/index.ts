@@ -8,5 +8,5 @@ export const demoSections: DemoConfig = {
   name: "Home Demo",
   lovelace: demoLovelaceSections,
   entities: demoEntitiesSections,
-  theme: () => ({}),
+  theme: { theme: "default", dark: false },
 };

@@ -1,0 +1,719 @@
+import { mdiAlertOutline, mdiHelpCircleOutline } from "@mdi/js";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import { afterNextRender } from "../../../../../common/util/render-status";
+import "../../../../../components/ha-checkbox";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
+import "../../../../../components/ha-selector/ha-selector";
+import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-tooltip";
+import type {
+  ForDict,
+  PlatformCondition,
+} from "../../../../../data/automation";
+import {
+  getConditionDomain,
+  getConditionObjectId,
+  type ConditionDescription,
+} from "../../../../../data/condition";
+import type { IntegrationManifest } from "../../../../../data/integration";
+import { fetchIntegrationManifest } from "../../../../../data/integration";
+import { getRecorderEntityOptions } from "../../../../../data/recorder";
+import type { TargetSelector } from "../../../../../data/selector";
+import {
+  extractFromTarget,
+  getTargetEntityCount,
+} from "../../../../../data/target";
+import type { HomeAssistant } from "../../../../../types";
+import { documentationUrl } from "../../../../../util/documentation-url";
+
+// Mirrors `MAX_HISTORY_PRIMING_LOOKBACK` in homeassistant/helpers/condition.py:
+// when a condition has a `for:` duration, the recorder is only queried this far
+// back to prime it at setup, so longer durations can't be fully satisfied from
+// history after a restart or reload.
+const MAX_HISTORY_PRIMING_LOOKBACK_HOURS = 6;
+
+const showOptionalToggle = (field: ConditionDescription["fields"][string]) =>
+  field.selector &&
+  !field.required &&
+  !("boolean" in field.selector && field.default);
+
+@customElement("ha-automation-condition-platform")
+export class HaPlatformCondition extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public condition!: PlatformCondition;
+
+  @property({ attribute: false }) public description?: ConditionDescription;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @state() private _checkedKeys = new Set();
+
+  @state() private _manifest?: IntegrationManifest;
+
+  @state() private _resolvedTargetEntityCount?: number;
+
+  @state() private _targetHasUnrecordedEntity = false;
+
+  // Incremented on each recording check so stale async responses are ignored.
+  private _recordingCheckId = 0;
+
+  public static get defaultConfig(): PlatformCondition {
+    return { condition: "" };
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (!this.hasUpdated) {
+      this.hass.loadBackendTranslation("conditions");
+      this.hass.loadBackendTranslation("selector");
+    }
+
+    // The `for:` priming info depends on both the condition (target + duration)
+    // and the description (whether the condition targets entities at all), which
+    // can arrive in separate updates.
+    if (
+      changedProperties.has("condition") ||
+      changedProperties.has("description")
+    ) {
+      const previousCondition = changedProperties.get("condition") as
+        undefined | this["condition"];
+      if (
+        changedProperties.has("description") ||
+        previousCondition?.target !== this.condition?.target ||
+        previousCondition?.options?.for !== this.condition?.options?.for
+      ) {
+        this._updateDurationPrimingInfo();
+      }
+    }
+
+    if (!changedProperties.has("condition")) {
+      return;
+    }
+    const oldValue = changedProperties.get("condition") as
+      undefined | this["condition"];
+
+    // Fetch the manifest if we have a condition selected and the condition domain changed.
+    // If no condition is selected, clear the manifest.
+    if (this.condition?.condition) {
+      const domain = getConditionDomain(this.condition.condition);
+
+      const oldDomain = getConditionDomain(oldValue?.condition || "");
+
+      if (domain !== oldDomain) {
+        this._fetchManifest(domain);
+      }
+    } else {
+      this._manifest = undefined;
+    }
+
+    if (
+      this.condition &&
+      oldValue?.condition !== this.condition.condition &&
+      this.description?.fields
+    ) {
+      const hadOptions = "options" in this.condition;
+      const updatedOptions = this.condition.options
+        ? { ...this.condition.options }
+        : {};
+      const loadDefaults = !hadOptions;
+      let updatedDefaultValue = false;
+      // Set mandatory bools without a default value to false
+      Object.entries(this.description.fields).forEach(([key, field]) => {
+        if (
+          field.selector &&
+          field.required &&
+          field.default === undefined &&
+          "boolean" in field.selector &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = false;
+        } else if (
+          loadDefaults &&
+          field.selector &&
+          field.default !== undefined &&
+          updatedOptions[key] === undefined &&
+          !(
+            field.selector &&
+            "automation_behavior" in field.selector &&
+            this.description?.target &&
+            !this.condition?.target
+          )
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = field.default;
+        }
+      });
+      if (!hadOptions || updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.condition,
+            options: updatedOptions,
+          },
+        });
+      }
+    }
+
+    if (oldValue?.target !== this.condition?.target) {
+      this._updateTargetEntityCount();
+      this._setDefaultBehavior();
+    }
+  }
+
+  protected render() {
+    const domain = getConditionDomain(this.condition.condition);
+    const conditionName = getConditionObjectId(this.condition.condition);
+
+    const description = this.hass.localize(
+      `component.${domain}.conditions.${conditionName}.description`
+    );
+
+    const conditionDesc = this.description;
+
+    const shouldRenderDataYaml = !conditionDesc?.fields;
+
+    const hasOptional = Boolean(
+      conditionDesc?.fields &&
+      Object.values(conditionDesc.fields).some((field) =>
+        showOptionalToggle(field)
+      )
+    );
+
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/conditions/${this.condition.condition}`)
+      : this._manifest?.documentation;
+
+    return html`
+      <div class="description">
+        ${description ? html`<p>${description}</p>` : nothing}
+        ${
+          documentationLink
+            ? html`<a
+                href=${documentationLink}
+                title=${this.hass.localize(
+                  "ui.components.service-control.integration_doc"
+                )}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  class="help-icon"
+                  .label=${this.hass.localize(
+                    "ui.components.service-control.integration_doc"
+                  )}
+                ></ha-icon-button>
+              </a>`
+            : nothing
+        }
+      </div>
+      ${
+        conditionDesc && "target" in conditionDesc
+          ? html`<ha-selector
+              class="target-selector"
+              .hass=${this.hass}
+              .selector=${this._targetSelector(conditionDesc.target)}
+              .disabled=${this.disabled}
+              @value-changed=${this._targetChanged}
+              .value=${this.condition?.target}
+            ></ha-selector>`
+          : nothing
+      }
+      ${
+        shouldRenderDataYaml
+          ? html`<ha-yaml-editor
+              .label=${this.hass.localize(
+                "ui.components.service-control.action_data"
+              )}
+              .name=${"data"}
+              .readOnly=${this.disabled}
+              .defaultValue=${this.condition?.options}
+              @value-changed=${this._dataChanged}
+            ></ha-yaml-editor>`
+          : Object.entries(conditionDesc.fields).map(([fieldName, dataField]) =>
+              this._renderField(
+                fieldName,
+                dataField,
+                hasOptional,
+                domain,
+                conditionName
+              )
+            )
+      }
+    `;
+  }
+
+  private _targetSelector = memoizeOne(
+    (targetSelector: TargetSelector["target"] | null | undefined) =>
+      targetSelector ? { target: { ...targetSelector } } : { target: {} }
+  );
+
+  private _renderField = (
+    fieldName: string,
+    dataField: ConditionDescription["fields"][string],
+    hasOptional: boolean,
+    domain: string | undefined,
+    conditionName: string | undefined
+  ) => {
+    const selector = dataField?.selector ?? { text: null };
+
+    const showOptional = showOptionalToggle(dataField);
+
+    if (!dataField.selector) {
+      return nothing;
+    }
+
+    if (
+      "automation_behavior" in selector &&
+      this.description?.target &&
+      (!this.condition?.target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1))
+    ) {
+      return nothing;
+    }
+
+    const description = this.hass.localize(
+      `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
+    );
+
+    return html`<ha-settings-row narrow>
+      ${
+        !showOptional
+          ? hasOptional
+            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+            : nothing
+          : html`<ha-checkbox
+              .key=${fieldName}
+              .checked=${
+                this._checkedKeys.has(fieldName) ||
+                (!!this.condition?.options &&
+                  this.condition.options[fieldName] !== undefined)
+              }
+              .disabled=${this.disabled}
+              @change=${this._checkboxChanged}
+              slot="prefix"
+            ></ha-checkbox>`
+      }
+      <span
+        slot="heading"
+        class=${showOptional ? "clickable" : ""}
+        @click=${showOptional ? this._toggleCheckbox : undefined}
+        >${
+          this.hass.localize(
+            `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
+          ) || fieldName
+        }${this._renderForPrimingInfo(fieldName)}</span
+      >
+      ${
+        description
+          ? html`<span
+              class=${showOptional ? "clickable" : ""}
+              @click=${showOptional ? this._toggleCheckbox : undefined}
+              slot="description"
+              >${description}</span
+            >`
+          : nothing
+      }
+      <ha-selector
+        .disabled=${
+          this.disabled ||
+          (showOptional &&
+            !this._checkedKeys.has(fieldName) &&
+            (!this.condition?.options ||
+              this.condition.options[fieldName] === undefined))
+        }
+        .hass=${this.hass}
+        .selector=${selector}
+        .context=${this._generateContext(dataField)}
+        .key=${fieldName}
+        @value-changed=${this._dataChanged}
+        .value=${
+          this.condition?.options
+            ? this.condition.options[fieldName]
+            : undefined
+        }
+        .placeholder=${dataField.default}
+        .localizeValue=${this._localizeValueCallback}
+        .required=${dataField.required}
+      ></ha-selector>
+    </ha-settings-row>`;
+  };
+
+  private _generateContext(
+    field: ConditionDescription["fields"][string]
+  ): Record<string, any> | undefined {
+    if (!field.context) {
+      return undefined;
+    }
+
+    const context: Record<string, any> = {};
+    for (const [context_key, data_key] of Object.entries(field.context)) {
+      if (data_key === "target" && this.description?.target) {
+        context.target_selector = this._targetSelector(this.description.target);
+      }
+      context[context_key] =
+        data_key === "target"
+          ? this.condition.target
+          : this.condition.options?.[data_key];
+    }
+    return context;
+  }
+
+  private _dataChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (ev.detail.isValid === false) {
+      // Don't clear an object selector that returns invalid YAML
+      return;
+    }
+    const key = (ev.currentTarget as any).key;
+    const value = ev.detail.value;
+    if (
+      this.condition?.options?.[key] === value ||
+      ((!this.condition?.options || !(key in this.condition.options)) &&
+        (value === "" || value === undefined))
+    ) {
+      return;
+    }
+
+    const options = { ...this.condition?.options, [key]: value };
+
+    if (
+      value === "" ||
+      value === undefined ||
+      (typeof value === "object" && !Object.keys(value).length)
+    ) {
+      delete options[key];
+    }
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.condition,
+        options,
+      },
+    });
+  }
+
+  private _targetChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.condition,
+        target: ev.detail.value,
+      },
+    });
+  }
+
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
+  }
+
+  private _checkboxChanged(ev) {
+    const checked = ev.currentTarget.checked;
+    const key = ev.currentTarget.key;
+    let options;
+
+    if (checked) {
+      this._checkedKeys.add(key);
+      const field =
+        this.description &&
+        Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
+      let defaultValue = field?.default;
+
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
+      }
+
+      if (defaultValue != null) {
+        options = {
+          ...this.condition?.options,
+          [key]: defaultValue,
+        };
+      }
+    } else {
+      this._checkedKeys.delete(key);
+      options = { ...this.condition?.options };
+      delete options[key];
+    }
+    if (options) {
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.condition,
+          options,
+        },
+      });
+    }
+    this.requestUpdate("_checkedKeys");
+  }
+
+  private _localizeValueCallback = (key: string) => {
+    if (!this.condition?.condition) {
+      return "";
+    }
+    return this.hass.localize(
+      `component.${getConditionDomain(this.condition.condition)}.selector.${key}`
+    );
+  };
+
+  private async _fetchManifest(integration: string) {
+    this._manifest = undefined;
+    try {
+      this._manifest = await fetchIntegrationManifest(this.hass, integration);
+    } catch (_err: any) {
+      // eslint-disable-next-line no-console
+      console.log(`Unable to fetch integration manifest for ${integration}`);
+      // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
+  }
+
+  private _updateTargetEntityCount() {
+    const target = this.condition?.target;
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
+  }
+
+  private _setDefaultBehavior() {
+    // set default behavior after next render to prevent race conditions with the initial render
+    afterNextRender(() => {
+      if (!this.isConnected) {
+        return;
+      }
+
+      const behaviorFieldEntry = Object.entries(
+        this.description?.fields ?? {}
+      ).find(
+        ([, field]) => field.selector && "automation_behavior" in field.selector
+      );
+
+      if (
+        !behaviorFieldEntry ||
+        this._resolvedTargetEntityCount === undefined
+      ) {
+        return;
+      }
+
+      const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+      if (
+        this.condition?.target &&
+        this._resolvedTargetEntityCount > 1 &&
+        this.condition.options?.[behaviorFieldName] === undefined
+      ) {
+        const behaviorDefault = behaviorField.default;
+        if (behaviorDefault !== undefined) {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this.condition,
+              options: {
+                ...this.condition.options,
+                [behaviorFieldName]: behaviorDefault,
+              },
+            },
+          });
+        }
+      }
+    });
+  }
+
+  // Shows a small info icon beside the `for` duration field's label, with a
+  // tooltip explaining when history priming can't fully cover the duration.
+  private _renderForPrimingInfo(fieldName: string) {
+    if (fieldName !== "for") {
+      return nothing;
+    }
+    const text = this._durationPrimingInfoText();
+    if (!text) {
+      return nothing;
+    }
+    return html`<ha-svg-icon
+        id="for-priming-info"
+        tabindex="0"
+        class="priming-info-icon"
+        .path=${mdiAlertOutline}
+        @click=${stopPropagation}
+      ></ha-svg-icon>
+      <ha-tooltip for="for-priming-info">${text}</ha-tooltip>`;
+  }
+
+  private _durationPrimingInfoText(): string | undefined {
+    const forValue = this.condition.options?.for;
+
+    // Priming only happens for entity conditions that have a `for:` duration.
+    if (
+      forValue === undefined ||
+      forValue === "" ||
+      !this.description?.target
+    ) {
+      return undefined;
+    }
+
+    if (this._targetHasUnrecordedEntity) {
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.duration_priming.entity_not_recorded"
+      );
+    }
+
+    if (this._durationExceedsLookback(forValue)) {
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.duration_priming.history_capped",
+        { hours: MAX_HISTORY_PRIMING_LOOKBACK_HOURS }
+      );
+    }
+
+    return undefined;
+  }
+
+  private _durationExceedsLookback(forValue: unknown): boolean {
+    const duration = createDurationData(
+      forValue as string | number | ForDict | undefined
+    );
+    if (!duration) {
+      return false;
+    }
+    return (
+      durationDataToSeconds(duration) >
+      MAX_HISTORY_PRIMING_LOOKBACK_HOURS * 3600
+    );
+  }
+
+  private async _updateDurationPrimingInfo(): Promise<void> {
+    const forValue = this.condition.options?.for;
+    const target = this.condition.target;
+
+    // Recording status only matters for an entity condition that has both a
+    // target and a `for:` duration.
+    const checkId = ++this._recordingCheckId;
+    if (
+      forValue === undefined ||
+      forValue === "" ||
+      !this.description?.target ||
+      !target ||
+      !this.hass.config.components.includes("recorder")
+    ) {
+      this._targetHasUnrecordedEntity = false;
+      return;
+    }
+
+    try {
+      const { referenced_entities } = await extractFromTarget(
+        this.hass.callWS,
+        target
+      );
+      // Ignore if a newer check superseded this one.
+      if (checkId !== this._recordingCheckId) {
+        return;
+      }
+      if (!referenced_entities.length) {
+        this._targetHasUnrecordedEntity = false;
+        return;
+      }
+      const recordingDisabled = await Promise.all(
+        referenced_entities.map((entityId) =>
+          getRecorderEntityOptions(this.hass, entityId)
+            .then((options) => options.recording_disabled_by !== null)
+            // Unknown entity or command unavailable on older cores: don't warn.
+            .catch(() => false)
+        )
+      );
+      if (checkId !== this._recordingCheckId) {
+        return;
+      }
+      this._targetHasUnrecordedEntity = recordingDisabled.some(Boolean);
+    } catch (_err) {
+      // Target resolution failed; fall back to no warning rather than guessing.
+      if (checkId === this._recordingCheckId) {
+        this._targetHasUnrecordedEntity = false;
+      }
+    }
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      margin: 0px calc(-1 * var(--ha-space-4));
+    }
+    ha-settings-row {
+      padding: 0 var(--ha-space-4);
+    }
+    ha-settings-row[narrow] {
+      padding-bottom: var(--ha-space-2);
+    }
+    ha-settings-row {
+      --settings-row-content-width: 100%;
+      --settings-row-prefix-display: contents;
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-service-picker,
+    ha-entity-picker,
+    ha-yaml-editor {
+      display: block;
+      margin: 0 var(--ha-space-4);
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-yaml-editor {
+      padding: var(--ha-space-4) 0;
+    }
+    p {
+      margin: 0 var(--ha-space-4);
+      padding: var(--ha-space-4) 0;
+    }
+    :host([hide-picker]) p {
+      padding-top: 0;
+    }
+    .checkbox-spacer {
+      width: 32px;
+    }
+    .help-icon {
+      color: var(--secondary-text-color);
+    }
+    .description {
+      justify-content: space-between;
+      display: flex;
+      align-items: center;
+      padding-right: 2px;
+      padding-inline-end: 2px;
+      padding-inline-start: initial;
+    }
+    .description p {
+      direction: ltr;
+    }
+    .clickable {
+      cursor: pointer;
+    }
+    .priming-info-icon {
+      --mdc-icon-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--warning-color);
+      margin-inline-start: var(--ha-space-1);
+      vertical-align: middle;
+      cursor: help;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-condition-platform": HaPlatformCondition;
+  }
+}

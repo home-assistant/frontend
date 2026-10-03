@@ -1,394 +1,39 @@
-import { ContextProvider } from "@lit/context";
-import {
-  mdiAccount,
-  mdiBackupRestore,
-  mdiBadgeAccountHorizontal,
-  mdiCellphoneCog,
-  mdiCog,
-  mdiDatabase,
-  mdiDevices,
-  mdiInformation,
-  mdiInformationOutline,
-  mdiLabel,
-  mdiLightningBolt,
-  mdiMapMarkerRadius,
-  mdiMathLog,
-  mdiMemory,
-  mdiMicrophone,
-  mdiNetwork,
-  mdiNfcVariant,
-  mdiPalette,
-  mdiPaletteSwatch,
-  mdiPuzzle,
-  mdiRobot,
-  mdiScrewdriver,
-  mdiScriptText,
-  mdiShape,
-  mdiSofa,
-  mdiTools,
-  mdiUpdate,
-  mdiViewDashboard,
-} from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
-import { fetchCloudStatus } from "../../data/cloud";
-import { fullEntitiesContext, labelsContext } from "../../data/context";
+import { fetchCloudStatus, subscribeCloudEvents } from "../../data/cloud";
 import {
   entityRegistryByEntityId,
   entityRegistryById,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
-import { subscribeLabelRegistry } from "../../data/label_registry";
+} from "../../data/entity/entity_registry";
 import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../types";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "ha-refresh-cloud-status": undefined;
-    "ha-refresh-supervisor": undefined;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    "ha-refresh-cloud-status": HASSDomEvent<
+      HASSDomEvents["ha-refresh-cloud-status"]
+    >;
   }
 }
 
-export const configSections: Record<string, PageNavigation[]> = {
-  dashboard: [
-    {
-      path: "/config/integrations",
-      translationKey: "devices",
-      iconPath: mdiDevices,
-      iconColor: "#0D47A1",
-      core: true,
-    },
-    {
-      path: "/config/automation",
-      translationKey: "automations",
-      iconPath: mdiRobot,
-      iconColor: "#518C43",
-      core: true,
-    },
-    {
-      path: "/config/areas",
-      translationKey: "areas",
-      iconPath: mdiSofa,
-      iconColor: "#E48629",
-      component: "zone",
-    },
-    {
-      path: "/hassio",
-      translationKey: "supervisor",
-      iconPath: mdiPuzzle,
-      iconColor: "#F1C447",
-      component: "hassio",
-    },
-    {
-      path: "/config/lovelace/dashboards",
-      translationKey: "dashboards",
-      iconPath: mdiViewDashboard,
-      iconColor: "#B1345C",
-      component: "lovelace",
-    },
-    {
-      path: "/config/voice-assistants",
-      translationKey: "voice_assistants",
-      iconPath: mdiMicrophone,
-      iconColor: "#3263C3",
-    },
-    {
-      path: "/config/tags",
-      translationKey: "tags",
-      iconPath: mdiNfcVariant,
-      iconColor: "#616161",
-      component: "tag",
-    },
-    {
-      path: "/config/person",
-      translationKey: "people",
-      iconPath: mdiAccount,
-      iconColor: "#5A87FA",
-      component: ["person", "users"],
-    },
-    {
-      path: "#external-app-configuration",
-      translationKey: "companion",
-      iconPath: mdiCellphoneCog,
-      iconColor: "#8E24AA",
-    },
-    {
-      path: "/config/system",
-      translationKey: "system",
-      iconPath: mdiCog,
-      iconColor: "#301ABE",
-      core: true,
-    },
-    {
-      path: "/config/info",
-      translationKey: "about",
-      iconPath: mdiInformationOutline,
-      iconColor: "#4A5963",
-      core: true,
-    },
-  ],
-  backup: [
-    {
-      path: "/config/backup",
-      translationKey: "ui.panel.config.backup.caption",
-      iconPath: mdiBackupRestore,
-      iconColor: "#4084CD",
-      component: "backup",
-    },
-  ],
-  devices: [
-    {
-      component: "integrations",
-      path: "/config/integrations",
-      translationKey: "ui.panel.config.integrations.caption",
-      iconPath: mdiPuzzle,
-      iconColor: "#2D338F",
-      core: true,
-    },
-    {
-      component: "devices",
-      path: "/config/devices",
-      translationKey: "ui.panel.config.devices.caption",
-      iconPath: mdiDevices,
-      iconColor: "#2D338F",
-      core: true,
-    },
-    {
-      component: "entities",
-      path: "/config/entities",
-      translationKey: "ui.panel.config.entities.caption",
-      iconPath: mdiShape,
-      iconColor: "#2D338F",
-      core: true,
-    },
-    {
-      component: "helpers",
-      path: "/config/helpers",
-      translationKey: "ui.panel.config.helpers.caption",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
-      core: true,
-    },
-  ],
-  automations: [
-    {
-      component: "automation",
-      path: "/config/automation",
-      translationKey: "ui.panel.config.automation.caption",
-      iconPath: mdiRobot,
-      iconColor: "#518C43",
-    },
-    {
-      component: "scene",
-      path: "/config/scene",
-      translationKey: "ui.panel.config.scene.caption",
-      iconPath: mdiPalette,
-      iconColor: "#518C43",
-    },
-    {
-      component: "script",
-      path: "/config/script",
-      translationKey: "ui.panel.config.script.caption",
-      iconPath: mdiScriptText,
-      iconColor: "#518C43",
-    },
-    {
-      component: "blueprint",
-      path: "/config/blueprint",
-      translationKey: "ui.panel.config.blueprint.caption",
-      iconPath: mdiPaletteSwatch,
-      iconColor: "#518C43",
-    },
-  ],
-  tags: [
-    {
-      component: "tag",
-      path: "/config/tags",
-      translationKey: "ui.panel.config.tag.caption",
-      iconPath: mdiNfcVariant,
-      iconColor: "#616161",
-    },
-  ],
-  voice_assistants: [
-    {
-      path: "/config/voice-assistants",
-      translationKey: "ui.panel.config.dashboard.voice_assistants.main",
-      iconPath: mdiMicrophone,
-      iconColor: "#3263C3",
-    },
-  ],
-  // Not used as a tab, but this way it will stay in the quick bar
-  energy: [
-    {
-      component: "energy",
-      path: "/config/energy",
-      translationKey: "ui.panel.config.energy.caption",
-      iconPath: mdiLightningBolt,
-      iconColor: "#F1C447",
-    },
-  ],
-  lovelace: [
-    {
-      component: "lovelace",
-      path: "/config/lovelace/dashboards",
-      translationKey: "ui.panel.config.lovelace.caption",
-      iconPath: mdiViewDashboard,
-      iconColor: "#B1345C",
-    },
-  ],
-  persons: [
-    {
-      component: "person",
-      path: "/config/person",
-      translationKey: "ui.panel.config.person.caption",
-      iconPath: mdiAccount,
-      iconColor: "#5A87FA",
-    },
-    {
-      component: "users",
-      path: "/config/users",
-      translationKey: "ui.panel.config.users.caption",
-      iconPath: mdiBadgeAccountHorizontal,
-      iconColor: "#5A87FA",
-      core: true,
-      advancedOnly: true,
-    },
-  ],
-  areas: [
-    {
-      component: "areas",
-      path: "/config/areas",
-      translationKey: "ui.panel.config.areas.caption",
-      iconPath: mdiSofa,
-      iconColor: "#2D338F",
-      core: true,
-    },
-    {
-      component: "labels",
-      path: "/config/labels",
-      translationKey: "ui.panel.config.labels.caption",
-      iconPath: mdiLabel,
-      iconColor: "#2D338F",
-      core: true,
-    },
-    {
-      component: "zone",
-      path: "/config/zone",
-      translationKey: "ui.panel.config.zone.caption",
-      iconPath: mdiMapMarkerRadius,
-      iconColor: "#E48629",
-    },
-  ],
-  general: [
-    {
-      path: "/config/general",
-      translationKey: "core",
-      iconPath: mdiCog,
-      iconColor: "#653249",
-      core: true,
-    },
-    {
-      path: "/config/updates",
-      translationKey: "updates",
-      iconPath: mdiUpdate,
-      iconColor: "#3B808E",
-    },
-    {
-      path: "/config/repairs",
-      translationKey: "repairs",
-      iconPath: mdiScrewdriver,
-      iconColor: "#5c995c",
-    },
-    {
-      component: "logs",
-      path: "/config/logs",
-      translationKey: "logs",
-      iconPath: mdiMathLog,
-      iconColor: "#C65326",
-      core: true,
-    },
-    {
-      path: "/config/backup",
-      translationKey: "backup",
-      iconPath: mdiBackupRestore,
-      iconColor: "#0D47A1",
-      component: "backup",
-    },
-    {
-      path: "/config/analytics",
-      translationKey: "analytics",
-      iconPath: mdiShape,
-      iconColor: "#f1c447",
-    },
-    {
-      path: "/config/network",
-      translationKey: "network",
-      iconPath: mdiNetwork,
-      iconColor: "#B1345C",
-    },
-    {
-      path: "/config/storage",
-      translationKey: "storage",
-      iconPath: mdiDatabase,
-      iconColor: "#518C43",
-      component: "hassio",
-    },
-    {
-      path: "/config/hardware",
-      translationKey: "hardware",
-      iconPath: mdiMemory,
-      iconColor: "#301A8E",
-      component: ["hassio", "hardware"],
-    },
-  ],
-  about: [
-    {
-      component: "info",
-      path: "/config/info",
-      translationKey: "ui.panel.config.info.caption",
-      iconPath: mdiInformation,
-      iconColor: "#4A5963",
-      core: true,
-    },
-  ],
-};
-
 @customElement("ha-panel-config")
-class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
+class HaPanelConfig extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
-
-  private _entitiesContext = new ContextProvider(this, {
-    context: fullEntitiesContext,
-    initialValue: [],
-  });
-
-  private _labelsContext = new ContextProvider(this, {
-    context: labelsContext,
-    initialValue: [],
-  });
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entitiesContext.setValue(entities);
-      }),
-      subscribeLabelRegistry(this.hass.connection!, (labels) => {
-        this._labelsContext.setValue(labels);
-      }),
-    ];
-  }
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -425,6 +70,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-cloud",
         load: () => import("./cloud/ha-config-cloud"),
       },
+      connectivity: {
+        tag: "ha-config-connectivity",
+        load: () => import("./connectivity/ha-config-connectivity"),
+        waitForReady: true,
+      },
       devices: {
         tag: "ha-config-devices",
         load: () => import("./devices/ha-config-devices"),
@@ -433,6 +83,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-system-navigation",
         load: () => import("./core/ha-config-system-navigation"),
       },
+      tools: {
+        tag: "ha-panel-tools",
+        load: () => import("./tools/ha-panel-tools"),
+        cache: true,
+      },
       logs: {
         tag: "ha-config-logs",
         load: () => import("./logs/ha-config-logs"),
@@ -440,12 +95,14 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       info: {
         tag: "ha-config-info",
         load: () => import("./info/ha-config-info"),
+        waitForReady: true,
       },
       // customize was removed in 2021.12, fallback to dashboard
       customize: "dashboard",
       dashboard: {
         tag: "ha-config-dashboard",
         load: () => import("./dashboard/ha-config-dashboard"),
+        waitForReady: true,
       },
       entities: {
         tag: "ha-config-entities",
@@ -462,6 +119,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
+        waitForReady: true,
       },
       labels: {
         tag: "ha-config-labels",
@@ -494,10 +152,16 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./storage/ha-config-section-storage"),
+        waitForReady: true,
       },
       updates: {
         tag: "ha-config-section-updates",
         load: () => import("./core/ha-config-section-updates"),
+      },
+      "radio-frequency": {
+        tag: "radio-frequency-config-dashboard-router",
+        load: () =>
+          import("./integrations/integration-panels/radio_frequency/radio-frequency-config-dashboard-router"),
       },
       repairs: {
         tag: "ha-config-repairs-dashboard",
@@ -515,12 +179,22 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-section-general",
         load: () => import("./core/ha-config-section-general"),
       },
+      labs: {
+        tag: "ha-config-labs",
+        load: () => import("./labs/ha-config-labs"),
+      },
+      ai: {
+        tag: "ha-config-section-ai",
+        load: () => import("./core/ha-config-section-ai"),
+      },
+      "entity-id-format": {
+        tag: "ha-config-section-entity-id-format",
+        load: () => import("./core/ha-config-section-entity-id-format"),
+      },
       zha: {
         tag: "zha-config-dashboard-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/zha/zha-config-dashboard-router"
-          ),
+          import("./integrations/integration-panels/zha/zha-config-dashboard-router"),
       },
       mqtt: {
         tag: "mqtt-config-panel",
@@ -530,30 +204,39 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       zwave_js: {
         tag: "zwave_js-config-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/zwave_js/zwave_js-config-router"
-          ),
+          import("./integrations/integration-panels/zwave_js/zwave_js-config-router"),
       },
       matter: {
         tag: "matter-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/matter/matter-config-panel"
-          ),
+          import("./integrations/integration-panels/matter/matter-config-panel"),
       },
       thread: {
         tag: "thread-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/thread/thread-config-panel"
-          ),
+          import("./integrations/integration-panels/thread/thread-config-panel"),
       },
       bluetooth: {
         tag: "bluetooth-config-dashboard-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
-          ),
+          import("./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"),
+      },
+      infrared: {
+        tag: "infrared-config-dashboard-router",
+        load: () =>
+          import("./integrations/integration-panels/infrared/infrared-config-dashboard-router"),
+      },
+      serial: {
+        tag: "serial-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/serial/serial-config-dashboard"),
+        waitForReady: true,
+      },
+      modbus: {
+        tag: "modbus-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/modbus/modbus-config-dashboard"),
+        waitForReady: true,
       },
       dhcp: {
         tag: "dhcp-config-panel",
@@ -568,14 +251,20 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       zeroconf: {
         tag: "zeroconf-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/zeroconf/zeroconf-config-panel"
-          ),
+          import("./integrations/integration-panels/zeroconf/zeroconf-config-panel"),
       },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>
           import("./application_credentials/ha-config-application-credentials"),
+      },
+      apps: {
+        tag: "ha-config-apps",
+        load: () => import("./apps/ha-config-apps"),
+      },
+      app: {
+        tag: "ha-config-app-dashboard",
+        load: () => import("./apps/ha-config-app-dashboard"),
       },
     },
   };
@@ -587,6 +276,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
   @state() private _cloudStatus?: CloudStatus;
 
   private _listeners: (() => void)[] = [];
+
+  private _unsubCloudEvents?: Promise<UnsubscribeFunc>;
+
+  private _cloudStatusRequestId = 0;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -600,6 +293,22 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         this._wideSidebar = matches;
       })
     );
+    this._listenOnWindow("ha-refresh-cloud-status", () => {
+      if (this._cloudLoaded()) {
+        this._updateCloudStatus();
+      }
+    });
+    this._listenOnWindow("connection-status", (ev) => {
+      if (ev.detail === "connected" && this._cloudLoaded()) {
+        this._updateCloudStatus();
+        this._subscribeCloudEvents();
+      }
+    });
+
+    if (this._cloudLoaded()) {
+      this._subscribeCloudEvents();
+      this._updateCloudStatus();
+    }
   }
 
   public disconnectedCallback() {
@@ -607,26 +316,45 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
+    this._unsubCloudEvents?.then((unsub) => unsub()).catch(() => undefined);
+    this._unsubCloudEvents = undefined;
     entityRegistryByEntityId.clear();
     entityRegistryById.clear();
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  private _cloudLoaded(): boolean {
+    return !!this.hass && isComponentLoaded(this.hass.config, "cloud");
+  }
+
+  private _listenOnWindow<EventName extends keyof GlobalEventHandlersEventMap>(
+    type: EventName,
+    listener: (ev: GlobalEventHandlersEventMap[EventName]) => void
+  ) {
+    window.addEventListener(type, listener);
+    this._listeners.push(() => window.removeEventListener(type, listener));
+  }
+
+  private _subscribeCloudEvents() {
+    if (this._unsubCloudEvents || !this._cloudLoaded()) {
+      return;
+    }
+
+    const subscription = subscribeCloudEvents(this.hass, () => {
+      this._updateCloudStatus();
+    });
+    this._unsubCloudEvents = subscription;
+
+    subscription.catch(() => {
+      if (this._unsubCloudEvents === subscription) {
+        this._unsubCloudEvents = undefined;
+      }
+    });
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
-    if (isComponentLoaded(this.hass, "cloud")) {
-      this._updateCloudStatus();
-      this.addEventListener("connection-status", (ev) => {
-        if (ev.detail === "connected") {
-          this._updateCloudStatus();
-        }
-      });
-    }
-
-    this.addEventListener("ha-refresh-cloud-status", () =>
-      this._updateCloudStatus()
-    );
     this.style.setProperty(
       "--app-header-background-color",
       "var(--sidebar-background-color)"
@@ -647,14 +375,19 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
 
     el.route = this.routeTail;
     el.hass = this.hass;
-    el.showAdvanced = Boolean(this.hass.userData?.showAdvanced);
     el.isWide = isWide;
     el.narrow = this.narrow;
     el.cloudStatus = this._cloudStatus;
   }
 
   private async _updateCloudStatus() {
-    this._cloudStatus = await fetchCloudStatus(this.hass);
+    const requestId = ++this._cloudStatusRequestId;
+    const status = await fetchCloudStatus(this.hass);
+
+    if (requestId !== this._cloudStatusRequestId) {
+      return;
+    }
+    this._cloudStatus = status;
 
     if (
       // Relayer connecting

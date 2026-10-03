@@ -35,6 +35,7 @@ describe("canToggleDomain", () => {
           services: {
             cover: {
               open_cover: null,
+              close_cover: null,
             },
           },
         } as unknown as HomeAssistant,
@@ -62,6 +63,7 @@ describe("canToggleDomain", () => {
           services: {
             lock: {
               lock: null,
+              unlock: null,
             },
           },
         } as unknown as HomeAssistant,
@@ -78,6 +80,61 @@ describe("canToggleDomain", () => {
           },
         } as unknown as HomeAssistant,
         "lock"
+      )
+    );
+  });
+  it("Scene can toggle", () => {
+    assert.isTrue(
+      canToggleDomain(
+        {
+          services: {
+            scene: {
+              turn_on: null,
+            },
+          },
+        } as unknown as HomeAssistant,
+        "scene"
+      )
+    );
+  });
+  it("Button can toggle", () => {
+    assert.isTrue(
+      canToggleDomain(
+        {
+          services: {
+            button: {
+              press: null,
+            },
+          },
+        } as unknown as HomeAssistant,
+        "button"
+      )
+    );
+  });
+  it("Any domain can toggle with supported actions", () => {
+    assert.isTrue(
+      canToggleDomain(
+        {
+          services: {
+            custom_component: {
+              turn_on: null,
+              turn_off: null,
+            },
+          },
+        } as unknown as HomeAssistant,
+        "custom_component"
+      )
+    );
+    assert.isFalse(
+      canToggleDomain(
+        {
+          services: {
+            custom_component: {
+              turn_on: null,
+            },
+          },
+        } as unknown as HomeAssistant,
+        "custom_component"
       )
     );
   });

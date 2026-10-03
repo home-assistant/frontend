@@ -1,0 +1,211 @@
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  computeEntityEntryNameList,
+  computeEntityNameList,
+  type EntityNameItem,
+} from "../../../../common/entity/compute_entity_name_display";
+import { computeRTL } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-vacuum-segment-area-mapper";
+import type { HaVacuumSegmentAreaMapper } from "../../../../components/ha-vacuum-segment-area-mapper";
+import "../../../../components/ha-dialog";
+import type {
+  ExtEntityRegistryEntry,
+  VacuumEntityOptions,
+} from "../../../../data/entity/entity_registry";
+import {
+  getExtendedEntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../../data/entity/entity_registry";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import type { VacuumSegmentMappingDialogParams } from "./show-dialog-vacuum-segment-mapping";
+
+const BREADCRUMB_NAME: EntityNameItem[] = [
+  { type: "area" },
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+];
+
+interface VacuumSegmentMappingState {
+  areaMapping: Record<string, string[]>;
+}
+
+@customElement("dialog-vacuum-segment-mapping")
+export class DialogVacuumSegmentMapping
+  extends DirtyStateProviderMixin<VacuumSegmentMappingState>()(LitElement)
+  implements HassDialog<VacuumSegmentMappingDialogParams>
+{
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _params?: VacuumSegmentMappingDialogParams;
+
+  @state() private _open = false;
+
+  @state() private _areaMapping?: Record<string, string[]>;
+
+  @state() private _submitting = false;
+
+  @query("ha-vacuum-segment-area-mapper")
+  private _mapper?: HaVacuumSegmentAreaMapper;
+
+  private _entry?: ExtEntityRegistryEntry;
+
+  public async showDialog(
+    params: VacuumSegmentMappingDialogParams
+  ): Promise<void> {
+    this._params = params;
+    this._open = true;
+    await this._loadCurrentMapping();
+  }
+
+  public closeDialog(): boolean {
+    this._open = false;
+    this._params = undefined;
+    this._areaMapping = undefined;
+    return true;
+  }
+
+  private async _loadCurrentMapping() {
+    if (!this._params) return;
+
+    const entityId = this._params.entityId;
+    this._entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+
+    if (this._entry?.options?.vacuum) {
+      this._areaMapping = this._entry.options.vacuum.area_mapping || {};
+    } else {
+      this._areaMapping = {};
+    }
+    this._initDirtyTracking(
+      { type: "deep" },
+      { areaMapping: this._areaMapping }
+    );
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _valueChanged(ev: CustomEvent) {
+    this._areaMapping = ev.detail.value;
+    this._updateDirtyState({ areaMapping: ev.detail.value });
+  }
+
+  private async _save() {
+    if (!this._params || !this._areaMapping) return;
+
+    this._submitting = true;
+
+    try {
+      const mapper = this._mapper!;
+
+      const options: VacuumEntityOptions = {
+        ...(this._entry?.options?.vacuum ?? {}),
+        area_mapping: this._areaMapping,
+        last_seen_segments: mapper.lastSeenSegments,
+      };
+
+      await updateEntityRegistryEntry(this.hass, this._params.entityId, {
+        options_domain: "vacuum",
+        options: options,
+      });
+
+      this._markDirtyStateClean();
+      this.closeDialog();
+    } catch (_err: any) {
+      // Error will be shown by the system
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  protected render() {
+    if (!this._params) {
+      return nothing;
+    }
+
+    const stateObj = this.hass.states[this._params.entityId];
+
+    const breadcrumb = (
+      stateObj
+        ? computeEntityNameList(
+            stateObj,
+            BREADCRUMB_NAME,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : this._entry
+          ? computeEntityEntryNameList(
+              this._entry,
+              BREADCRUMB_NAME,
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            )
+          : [this._params.entityId]
+    ).filter((v): v is string => Boolean(v));
+
+    return html`
+      <ha-dialog
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        .preventScrimClose=${this.isDirtyState}
+        .headerTitle=${this.hass.localize(
+          "ui.dialogs.vacuum_segment_mapping.title"
+        )}
+        .headerSubtitle=${breadcrumb.join(
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
+        )}
+      >
+        <ha-vacuum-segment-area-mapper
+          .hass=${this.hass}
+          entity-id=${this._params.entityId}
+          .value=${this._areaMapping}
+          @value-changed=${this._valueChanged}
+        ></ha-vacuum-segment-area-mapper>
+
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._submitting}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
+    `;
+  }
+
+  static styles: CSSResultGroup = [haStyleDialog];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-vacuum-segment-mapping": DialogVacuumSegmentMapping;
+  }
+}

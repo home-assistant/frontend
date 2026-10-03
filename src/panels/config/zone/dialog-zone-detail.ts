@@ -1,27 +1,46 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import type { ZoneMutableParams } from "../../../data/zone";
+import type { Zone, ZoneMutableParams } from "../../../data/zone";
 import { getZoneEditorInitData } from "../../../data/zone";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
+import {
+  nextZoneColor,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
+import { fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 
-class DialogZoneDetail extends LitElement {
+@customElement("dialog-zone-detail")
+class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // Registry creation order decides the zone color
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _error?: Record<string, string>;
 
   @state() private _data?: ZoneMutableParams;
 
   @state() private _params?: ZoneDetailDialogParams;
+
+  @state() private _open = false;
 
   @state() private _submitting = false;
 
@@ -49,9 +68,15 @@ class DialogZoneDetail extends LitElement {
         radius: 100,
       };
     }
+    this._initDirtyTracking({ type: "deep" }, this._data);
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -76,67 +101,97 @@ class DialogZoneDetail extends LitElement {
       !lngInvalid &&
       !radiusInvalid;
 
+    // From the registry context, so a deep link opening before the registry
+    // loads still resolves the color
+    const entityId = this._zoneEntityId(this._params.entry, this._entityReg);
+    const color = entityId
+      ? zoneColor(
+          entityId,
+          !!this._data.passive,
+          this._entityReg,
+          getComputedStyle(this)
+        )
+      : nextZoneColor(
+          !!this._data.passive,
+          this._entityReg,
+          getComputedStyle(this)
+        );
+
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
+        .open=${this._open}
+        header-title=${
           this._params.entry
             ? this.hass!.localize("ui.common.edit_item", {
                 name: this._params.entry.name,
               })
             : this.hass!.localize("ui.panel.config.zone.detail.new_zone")
-        )}
+        }
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
       >
-        <div>
-          <ha-form
-            .hass=${this.hass}
-            .schema=${this._schema(this._data.icon)}
-            .data=${this._formData(this._data)}
-            .error=${this._error}
-            .computeLabel=${this._computeLabel}
-            class=${this._data.passive ? "passive" : ""}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
-        </div>
-        ${this._params.entry
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                variant="danger"
-                appearance="plain"
-                @click=${this._deleteEntry}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          appearance="plain"
-          @click=${this.closeDialog}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!valid || this._submitting}
-        >
-          ${this._params.entry
-            ? this.hass!.localize("ui.common.save")
-            : this.hass!.localize("ui.panel.config.zone.detail.create")}
-        </ha-button>
+        <ha-form
+          autofocus
+          .hass=${this.hass}
+          .schema=${this._schema(this._data.icon, color, this._data.name)}
+          .data=${this._formData(this._data)}
+          .error=${this._error}
+          .computeLabel=${this._computeLabel}
+          class=${this._data.passive ? "passive" : ""}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+        <ha-dialog-footer slot="footer">
+          ${
+            this._params.entry
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEntry}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass!.localize("ui.common.cancel")}
+                  </ha-button>
+                `
+          }
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!valid || this._submitting || !this.isDirtyState}
+          >
+            ${
+              this._params.entry
+                ? this.hass!.localize("ui.common.save")
+                : this.hass!.localize("ui.panel.config.zone.detail.create")
+            }
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
+  // Storage zones register their entity with the zone id as unique id
+  private _zoneEntityId = memoizeOne(
+    (entry: Zone | undefined, entityReg: EntityRegistryEntry[]) =>
+      entry
+        ? entityReg.find(
+            (ent) => ent.platform === "zone" && ent.unique_id === entry.id
+          )?.entity_id
+        : undefined
+  );
+
   private _schema = memoizeOne(
-    (icon?: string) =>
+    (icon?: string, color?: string, name?: string) =>
       [
         {
           name: "name",
@@ -155,7 +210,7 @@ class DialogZoneDetail extends LitElement {
         {
           name: "location",
           required: true,
-          selector: { location: { radius: true, icon } },
+          selector: { location: { radius: true, icon, color, name } },
         },
         { name: "passive_note", type: "constant" },
         { name: "passive", selector: { boolean: {} } },
@@ -182,6 +237,7 @@ class DialogZoneDetail extends LitElement {
       delete value.icon;
     }
     this._data = value;
+    this._updateDirtyState(value);
   }
 
   private _computeLabel = (
@@ -208,7 +264,7 @@ class DialogZoneDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry!()) {
-        this._params = undefined;
+        this.closeDialog();
       }
     } finally {
       this._submitting = false;
@@ -219,15 +275,6 @@ class DialogZoneDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-min-width: min(600px, 95vw);
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-width: 100vw;
-          }
-        }
         ha-form.passive {
           --zone-radius-color: var(--secondary-text-color);
         }
@@ -241,5 +288,3 @@ declare global {
     "dialog-zone-detail": DialogZoneDetail;
   }
 }
-
-customElements.define("dialog-zone-detail", DialogZoneDetail);

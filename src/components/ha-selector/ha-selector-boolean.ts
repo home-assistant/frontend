@@ -1,15 +1,12 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
 import "../ha-switch";
 import "../ha-input-helper-text";
 
 @customElement("ha-selector-boolean")
 export class HaBooleanSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean }) public value = false;
 
   @property() public placeholder?: any;
@@ -30,9 +27,11 @@ export class HaBooleanSelector extends LitElement {
         ></ha-switch>
         <span slot="label">
           <p class="primary">${this.label}</p>
-          ${this.helper
-            ? html`<p class="secondary">${this.helper}</p>`
-            : nothing}
+          ${
+            this.helper
+              ? html`<p class="secondary">${this.helper}</p>`
+              : nothing
+          }
         </span>
       </ha-formfield>
     `;

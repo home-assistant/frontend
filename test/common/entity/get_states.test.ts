@@ -132,12 +132,13 @@ describe("getStates", () => {
         expect.arrayContaining([
           "battery",
           "battery_charging",
-          "co",
+          "carbon_monoxide",
           "cold",
           "connectivity",
           "door",
           "garage_door",
           "gas",
+          "glass_break",
           "heat",
           "light",
           "lock",
@@ -160,7 +161,7 @@ describe("getStates", () => {
           "window",
         ])
       );
-      expect(result.length).toBe(28);
+      expect(result.length).toBe(29);
     });
 
     it("should return media player device classes", () => {
@@ -210,13 +211,14 @@ describe("getStates", () => {
           "sulphur_dioxide",
           "temperature",
           "timestamp",
+          "uptime",
           "volatile_organic_compounds",
           "volatile_organic_compounds_parts",
           "voltage",
           "volume_flow_rate",
         ])
       );
-      expect(result.length).toBe(35);
+      expect(result.length).toBe(36);
     });
 
     it("should return empty array for unknown attribute", () => {

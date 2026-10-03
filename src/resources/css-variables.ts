@@ -2,11 +2,12 @@ export function computeCssVariable(
   props: string | string[]
 ): string | undefined {
   if (Array.isArray(props)) {
-    return props
-      .reverse()
-      .reduce<
-        string | undefined
-      >((str, variable) => `var(${variable}${str ? `, ${str}` : ""})`, undefined);
+    // reduceRight builds the nested var() fallback chain from last to first
+    // without mutating the caller's array (unlike reverse()).
+    return props.reduceRight<string | undefined>(
+      (str, variable) => `var(${variable}${str ? `, ${str}` : ""})`,
+      undefined
+    );
   }
   return `var(${props})`;
 }

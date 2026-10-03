@@ -1,19 +1,19 @@
 import { mdiAccountGroup, mdiFileDocument, mdiTabletCellphone } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
-import type { HomeAssistant } from "../types";
 import { showAppDialog } from "./dialogs/show-app-dialog";
 import { showCommunityDialog } from "./dialogs/show-community-dialog";
 import "./onboarding-welcome-link";
 
 @customElement("onboarding-welcome-links")
 class OnboardingWelcomeLinks extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public localize!: LocalizeFunc<any>;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: "mobile-app", type: Boolean })
   public mobileApp = false;
@@ -27,7 +27,7 @@ class OnboardingWelcomeLinks extends LitElement {
         <onboarding-welcome-link
           noninteractive
           .iconPath=${mdiFileDocument}
-          .label=${this.localize("ui.panel.page-onboarding.welcome.vision")}
+          .label=${this._localize("ui.panel.page-onboarding.welcome.vision")}
         >
         </onboarding-welcome-link>
       </a>
@@ -35,28 +35,30 @@ class OnboardingWelcomeLinks extends LitElement {
         class="community"
         @click=${this._openCommunity}
         .iconPath=${mdiAccountGroup}
-        .label=${this.localize("ui.panel.page-onboarding.welcome.community")}
+        .label=${this._localize("ui.panel.page-onboarding.welcome.community")}
       >
       </onboarding-welcome-link>
-      ${this.mobileApp
-        ? nothing
-        : html`<onboarding-welcome-link
-            class="app"
-            @click=${this._openApp}
-            .iconPath=${mdiTabletCellphone}
-            .label=${this.localize(
-              "ui.panel.page-onboarding.welcome.download_app"
-            )}
-          >
-          </onboarding-welcome-link>`}`;
+      ${
+        this.mobileApp
+          ? nothing
+          : html`<onboarding-welcome-link
+              class="app"
+              @click=${this._openApp}
+              .iconPath=${mdiTabletCellphone}
+              .label=${this._localize(
+                "ui.panel.page-onboarding.welcome.download_app"
+              )}
+            >
+            </onboarding-welcome-link>`
+      }`;
   }
 
   private _openCommunity(): void {
-    showCommunityDialog(this, { localize: this.localize });
+    showCommunityDialog(this);
   }
 
   private _openApp(): void {
-    showAppDialog(this, { localize: this.localize });
+    showAppDialog(this);
   }
 
   static styles = css`

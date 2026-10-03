@@ -1,24 +1,24 @@
 import { mdiDownload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultArray } from "lit";
+import type { CSSResultArray, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
   subscribeZWaveJSLogs,
 } from "../../../../../data/zwave_js";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-logs")
 class ZWaveJSLogs extends SubscribeMixin(LitElement) {
@@ -62,11 +62,13 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize("ui.panel.config.zwave_js.logs.caption")}
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
         <div class="container">
           <ha-card>
@@ -76,24 +78,31 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
               </h1>
             </div>
             <div class="card-content">
-              ${this._logConfig
-                ? html`
-                    <ha-select
-                      .label=${this.hass.localize(
-                        "ui.panel.config.zwave_js.logs.log_level"
-                      )}
-                      .value=${this._logConfig.level}
-                      @selected=${this._dropdownSelected}
-                    >
-                      <ha-list-item value="error">Error</ha-list-item>
-                      <ha-list-item value="warn">Warn</ha-list-item>
-                      <ha-list-item value="info">Info</ha-list-item>
-                      <ha-list-item value="verbose">Verbose</ha-list-item>
-                      <ha-list-item value="debug">Debug</ha-list-item>
-                      <ha-list-item value="silly">Silly</ha-list-item>
-                    </ha-select>
-                  `
-                : ""}
+              ${
+                this._logConfig
+                  ? html`
+                      <ha-select
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.logs.log_level"
+                        )}
+                        .value=${this._logConfig.level}
+                        @selected=${this._dropdownSelected}
+                        .options=${[
+                          "error",
+                          "warn",
+                          "info",
+                          "verbose",
+                          "debug",
+                          "silly",
+                        ].map((level) => ({
+                          value: level,
+                          label: capitalizeFirstLetter(level),
+                        }))}
+                      >
+                      </ha-select>
+                    `
+                  : ""
+              }
             </div>
             <ha-icon-button
               .label=${this.hass.localize(
@@ -105,11 +114,11 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
           </ha-card>
           <textarea readonly></textarea>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
   }
@@ -133,11 +142,11 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _dropdownSelected(ev) {
+  private _dropdownSelected(ev: HaSelectSelectEvent) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
     }
-    const selected = ev.target.value;
+    const selected = ev.detail.value;
     if (this._logConfig.level === selected) {
       return;
     }

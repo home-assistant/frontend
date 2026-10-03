@@ -1,8 +1,17 @@
+import {
+  mdiBattery,
+  mdiBattery10,
+  mdiBattery50,
+  mdiBattery90,
+  mdiBatteryAlertVariantOutline,
+  mdiBatteryUnknown,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   batteryIcon,
   batteryLevelIcon,
+  batteryLevelIconPath,
 } from "../../../src/common/entity/battery_icon";
 
 describe("batteryIcon", () => {
@@ -41,5 +50,26 @@ describe("batteryLevelIcon", () => {
   it("should return battery icon for on/off", () => {
     expect(batteryLevelIcon("off")).toBe("mdi:battery");
     expect(batteryLevelIcon("on")).toBe("mdi:battery-alert");
+  });
+});
+
+describe("batteryLevelIconPath", () => {
+  it("rounds to the nearest 10% bucket", () => {
+    expect(batteryLevelIconPath(46)).toBe(mdiBattery50);
+    expect(batteryLevelIconPath(94)).toBe(mdiBattery90);
+    expect(batteryLevelIconPath(95)).toBe(mdiBattery);
+  });
+
+  it("returns the alert path for very low levels", () => {
+    expect(batteryLevelIconPath(0)).toBe(mdiBatteryAlertVariantOutline);
+    expect(batteryLevelIconPath(5)).toBe(mdiBatteryAlertVariantOutline);
+  });
+
+  it("returns the 10% bucket just above the alert threshold", () => {
+    expect(batteryLevelIconPath(6)).toBe(mdiBattery10);
+  });
+
+  it("returns the unknown path for non-numeric input", () => {
+    expect(batteryLevelIconPath("unavailable")).toBe(mdiBatteryUnknown);
   });
 });

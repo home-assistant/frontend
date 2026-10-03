@@ -1,23 +1,20 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
-import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
 
 export interface HassioHostInfo {
   agent_version: string;
-  chassis: string;
-  cpe: string;
-  deployment: string;
+  chassis: string | null;
+  cpe: string | null;
+  deployment: string | null;
   disk_life_time: number | null;
   disk_free: number;
   disk_total: number;
   disk_used: number;
   features: string[];
-  hostname: string;
-  kernel: string;
-  operating_system: string;
-  boot_timestamp: number;
-  startup_time: number;
+  hostname: string | null;
+  kernel: string | null;
+  operating_system: string | null;
+  boot_timestamp: number | null;
+  startup_time: number | null;
 }
 
 export interface HassioHassOSInfo {
@@ -26,7 +23,8 @@ export interface HassioHassOSInfo {
   update_available: boolean;
   version_latest: string | null;
   version: string | null;
-  data_disk: string;
+  version_pending: string | null;
+  data_disk: string | null;
 }
 
 export interface Datadisk {
@@ -54,155 +52,93 @@ export interface HostDisksUsage {
 
 export const fetchHassioHostInfo = async (
   hass: HomeAssistant
-): Promise<HassioHostInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/host/info",
-      method: "get",
-    });
-  }
-
-  const response = await hass.callApi<HassioResponse<HassioHostInfo>>(
-    "GET",
-    "hassio/host/info"
-  );
-  return hassioApiResultExtractor(response);
-};
+): Promise<HassioHostInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/host/info",
+    method: "get",
+  });
 
 export const fetchHassioHassOsInfo = async (
   hass: HomeAssistant
-): Promise<HassioHassOSInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/os/info",
-      method: "get",
-    });
-  }
+): Promise<HassioHassOSInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/os/info",
+    method: "get",
+  });
 
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioHassOSInfo>>(
-      "GET",
-      "hassio/os/info"
-    )
-  );
-};
+export const rebootHost = async (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/host/reboot",
+    method: "post",
+    timeout: null,
+  });
 
-export const rebootHost = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/host/reboot",
-      method: "post",
-      timeout: null,
-    });
-  }
+export const shutdownHost = async (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/host/shutdown",
+    method: "post",
+    timeout: null,
+  });
 
-  return hass.callApi<HassioResponse<void>>("POST", "hassio/host/reboot");
-};
+export const updateOS = async (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/os/update",
+    method: "post",
+    timeout: null,
+  });
 
-export const shutdownHost = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/host/shutdown",
-      method: "post",
-      timeout: null,
-    });
-  }
+export const configSyncOS = async (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/os/config/sync",
+    method: "post",
+    timeout: null,
+  });
 
-  return hass.callApi<HassioResponse<void>>("POST", "hassio/host/shutdown");
-};
+export const changeHostOptions = async (hass: HomeAssistant, options: any) =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/host/options",
+    method: "post",
+    data: options,
+  });
 
-export const updateOS = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/os/update",
-      method: "post",
-      timeout: null,
-    });
-  }
-
-  return hass.callApi<HassioResponse<void>>("POST", "hassio/os/update");
-};
-
-export const configSyncOS = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/os/config/sync",
-      method: "post",
-      timeout: null,
-    });
-  }
-
-  return hass.callApi<HassioResponse<void>>("POST", "hassio/os/config/sync");
-};
-
-export const changeHostOptions = async (hass: HomeAssistant, options: any) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/host/options",
-      method: "post",
-      data: options,
-    });
-  }
-
-  return hass.callApi<HassioResponse<void>>(
-    "POST",
-    "hassio/host/options",
-    options
-  );
-};
-
-export const moveDatadisk = async (hass: HomeAssistant, device: string) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/os/datadisk/move",
-      method: "post",
-      timeout: null,
-      data: { device },
-    });
-  }
-
-  return hass.callApi<HassioResponse<void>>("POST", "hassio/os/datadisk/move");
-};
+export const moveDatadisk = async (hass: HomeAssistant, device: string) =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/os/datadisk/move",
+    method: "post",
+    timeout: null,
+    data: { device },
+  });
 
 export const listDatadisks = async (
   hass: HomeAssistant
-): Promise<DatadiskList> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS<DatadiskList>({
-      type: "supervisor/api",
-      endpoint: "/os/datadisk/list",
-      method: "get",
-      timeout: null,
-    });
-  }
+): Promise<DatadiskList> =>
+  hass.callWS<DatadiskList>({
+    type: "supervisor/api",
+    endpoint: "/os/datadisk/list",
+    method: "get",
+    timeout: null,
+  });
 
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<DatadiskList>>("GET", "/os/datadisk/list")
-  );
-};
-
-export const fetchHostDisksUsage = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS<HostDisksUsage>({
-      type: "supervisor/api",
-      endpoint: "/host/disks/default/usage",
-      method: "get",
-      timeout: 3600, // seconds. This can take a while
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HostDisksUsage>>(
-      "GET",
-      "hassio/host/disks/default/usage"
-    )
-  );
-};
+// `disk` is "default" for the data disk, or a mount name. Omitting maxDepth
+// leaves the depth to the Supervisor, which defaults per target — walking a
+// mount costs a round trip per directory, so mounts want no depth at all.
+export const fetchHostDisksUsage = async (
+  hass: HomeAssistant,
+  disk = "default",
+  maxDepth?: number
+) =>
+  hass.callWS<HostDisksUsage>({
+    type: "supervisor/api",
+    endpoint: `/host/disks/${disk}/usage`,
+    method: "get",
+    timeout: 3600, // seconds. This can take a while
+    ...(maxDepth === undefined ? {} : { params: { max_depth: maxDepth } }),
+  });

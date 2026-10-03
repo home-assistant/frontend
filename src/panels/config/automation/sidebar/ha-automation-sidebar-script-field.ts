@@ -1,15 +1,20 @@
-import { mdiAppleKeyboardCommand, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import { mdiCommentEditOutline, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-sidebar-script-field")
 export default class HaAutomationSidebarScriptField extends LitElement {
@@ -33,7 +38,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
 
-  protected willUpdate(changedProperties) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
       this._warnings = undefined;
       if (this.config) {
@@ -56,54 +61,57 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
       .narrow=${this.narrow}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
-      <ha-md-menu-item
+      <ha-dropdown-item slot="menu-items" value="edit_note">
+        <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.note.${this.config.config.field.description ? "edit" : "add"}`
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
+      </ha-dropdown-item>
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this._toggleYamlMode}
+        value="toggle_yaml_mode"
         .disabled=${!!this._warnings}
       >
-        <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
-      <ha-md-menu-item
+      </ha-dropdown-item>
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this.config.delete}
+        value="delete"
         .disabled=${this.disabled}
-        class="warning"
+        variant="danger"
       >
-        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.delete"
           )}
-          ${!this.narrow
-            ? html`<span class="shortcut">
-                <span
-                  >${isMac
-                    ? html`<ha-svg-icon
-                        slot="start"
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )}</span
-                >
-                <span>+</span>
-                <span
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.del"
-                  )}</span
-                >
-              </span>`
-            : nothing}
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
+                  <span>+</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.del"
+                    )}</span
+                  >
+                </span>`
+              : nothing
+          }
         </div>
-      </ha-md-menu-item>
+      </ha-dropdown-item>
       ${keyed(
         this.sidebarKey,
         html`<ha-script-field-editor
@@ -118,6 +126,14 @@ export default class HaAutomationSidebarScriptField extends LitElement {
           @yaml-changed=${this._yamlChangedSidebar}
         ></ha-script-field-editor>`
       )}
+      ${
+        this.config.config.field.description?.trim() && !this.yamlMode
+          ? html`<ha-automation-note
+              @edit-note=${this.config.editNote}
+              .note=${this.config.config.field.description}
+            ></ha-automation-note>`
+          : nothing
+      }
     </ha-automation-sidebar-card>`;
   }
 
@@ -153,6 +169,26 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   private _toggleYamlMode = () => {
     fireEvent(this, "toggle-yaml-mode");
   };
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle_yaml_mode":
+        this._toggleYamlMode();
+        break;
+      case "edit_note":
+        this.config.editNote();
+        break;
+      case "delete":
+        this.config.delete();
+        break;
+    }
+  }
 
   static styles = [sidebarEditorStyles, overflowStyles];
 }

@@ -1,10 +1,9 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
-// eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../../../src/common/decorators/consume-context-entry";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import type {
   LandingPageKeys,
@@ -36,15 +35,16 @@ const SCHEDULE_FETCH_OBSERVER_LOGS = 5;
 
 @customElement("landing-page-logs")
 class LandingPageLogs extends LitElement {
-  @property({ attribute: false })
-  public localize!: LocalizeFunc<LandingPageKeys>;
-
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
   @query(".logs") private _logElement?: HTMLElement;
 
   @query("#scroll-bottom-marker")
   private _scrollBottomMarkerElement?: HTMLElement;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc<LandingPageKeys>;
 
   @state() private _show = false;
 
@@ -65,32 +65,36 @@ class LandingPageLogs extends LitElement {
     return html`
       <div class="actions">
         <ha-button appearance="plain" @click=${this._toggleLogDetails}>
-          ${this.localize(this._show ? "hide_details" : "show_details")}
+          ${this._localize(this._show ? "hide_details" : "show_details")}
         </ha-button>
-        ${this._show
-          ? html`<ha-icon-button
-              .label=${this.localize("logs.download_logs")}
-              .path=${mdiDownload}
-              @click=${this._downloadLogs}
-            ></ha-icon-button>`
-          : nothing}
+        ${
+          this._show
+            ? html`<ha-icon-button
+                .label=${this._localize("logs.download_logs")}
+                .path=${mdiDownload}
+                @click=${this._downloadLogs}
+              ></ha-icon-button>`
+            : nothing
+        }
       </div>
-      ${this._error
-        ? html`
-            <ha-alert
-              alert-type="error"
-              .title=${this.localize("logs.fetch_error")}
-            >
-              <ha-button
-                size="small"
-                variant="danger"
-                @click=${this._startLogStream}
+      ${
+        this._error
+          ? html`
+              <ha-alert
+                alert-type="error"
+                .title=${this._localize("logs.fetch_error")}
               >
-                ${this.localize("logs.retry")}
-              </ha-button>
-            </ha-alert>
-          `
-        : nothing}
+                <ha-button
+                  size="small"
+                  variant="danger"
+                  @click=${this._startLogStream}
+                >
+                  ${this._localize("logs.retry")}
+                </ha-button>
+              </ha-alert>
+            `
+          : nothing
+      }
       <div
         class=${classMap({
           logs: true,
@@ -113,13 +117,13 @@ class LandingPageLogs extends LitElement {
         @click=${this._scrollToBottom}
       >
         <ha-svg-icon .path=${mdiArrowCollapseDown} slot="start"></ha-svg-icon>
-        ${this.localize("logs.scroll_down_button")}
+        ${this._localize("logs.scroll_down_button")}
         <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
       </ha-button>
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);

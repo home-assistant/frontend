@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
@@ -7,34 +8,31 @@ interface DockSidebarParams {
   dock: HomeAssistant["dockedSidebar"];
 }
 
-interface DefaultPanelParams {
-  defaultPanel: HomeAssistant["defaultPanel"];
-}
-
 declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-dock-sidebar": DockSidebarParams;
-    "hass-default-panel": DefaultPanelParams;
+    "hass-kiosk-mode": { enable: boolean };
   }
   // for add event listener
   interface HTMLElementEventMap {
-    "hass-dock-sidebar": HASSDomEvent<DockSidebarParams>;
-    "hass-default-panel": HASSDomEvent<DefaultPanelParams>;
+    "hass-dock-sidebar": HASSDomEvent<HASSDomEvents["hass-dock-sidebar"]>;
+  }
+  interface GlobalEventHandlersEventMap {
+    "hass-kiosk-mode": HASSDomEvent<HASSDomEvents["hass-kiosk-mode"]>;
   }
 }
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-dock-sidebar", (ev) => {
         this._updateHass({ dockedSidebar: ev.detail.dock });
         storeState(this.hass!);
       });
-      this.addEventListener("hass-default-panel", (ev) => {
-        this._updateHass({ defaultPanel: ev.detail.defaultPanel });
-        storeState(this.hass!);
+      window.addEventListener("hass-kiosk-mode", (ev) => {
+        this._updateHass({ kioskMode: ev.detail.enable });
       });
     }
   };

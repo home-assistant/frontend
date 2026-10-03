@@ -1,4 +1,4 @@
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import { fetchZwaveNodeAlerts } from "../../../../../../data/zwave_js";
 import type { HomeAssistant } from "../../../../../../types";
 import type { DeviceAlert } from "../../../ha-config-device-page";

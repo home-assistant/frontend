@@ -1,16 +1,15 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import { activateScene } from "../../../data/scene";
 import type { HomeAssistant } from "../../../types";
+import { confirmAction } from "../common/confirm-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { ActionRowConfig, LovelaceRow } from "./types";
-import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -25,7 +24,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -48,13 +47,15 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           @click=${this._callService}
           .disabled=${stateObj.state === UNAVAILABLE}
           class="text-content"
         >
-          ${this._config.action_name ||
-          this.hass!.localize("ui.card.scene.activate")}
+          ${
+            this._config.action_name ||
+            this.hass!.localize("ui.card.scene.activate")
+          }
         </ha-button>
       </hui-generic-entity-row>
     `;

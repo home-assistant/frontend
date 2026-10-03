@@ -4,10 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/user/ha-user-badge";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/list/ha-list-base";
+import "../../../../components/user/ha-user-badge";
 import type {
   LovelaceViewConfig,
   ShowViewConfig,
@@ -46,7 +47,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     )
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     fetchUsers(this.hass).then((users) => {
@@ -65,24 +66,22 @@ export class HuiViewVisibilityEditor extends LitElement {
           "ui.panel.lovelace.editor.edit_view.visibility.select_users"
         )}
       </p>
-      ${this._sortedUsers(this._users).map(
-        (user) => html`
-          <ha-list-item graphic="avatar" hasMeta>
-            <ha-user-badge
-              slot="graphic"
-              .hass=${this.hass}
-              .user=${user}
-            ></ha-user-badge>
-            <span>${user.name}</span>
-            <ha-switch
-              slot="meta"
-              .userId=${user.id}
-              @change=${this._valChange}
-              .checked=${this.checkUser(user.id)}
-            ></ha-switch>
-          </ha-list-item>
-        `
-      )}
+      <ha-list-base>
+        ${this._sortedUsers(this._users).map(
+          (user) => html`
+            <ha-list-item-base>
+              <ha-user-badge slot="start" .user=${user}></ha-user-badge>
+              <span slot="headline">${user.name}</span>
+              <ha-switch
+                slot="end"
+                .userId=${user.id}
+                @change=${this._valChange}
+                .checked=${this.checkUser(user.id)}
+              ></ha-switch>
+            </ha-list-item-base>
+          `
+        )}
+      </ha-list-base>
     `;
   }
 
@@ -135,6 +134,11 @@ export class HuiViewVisibilityEditor extends LitElement {
   static styles = css`
     :host {
       display: block;
+    }
+    ha-list-item-base {
+      --ha-row-item-padding-inline: 0;
+      --ha-row-item-padding-block: var(--ha-space-1);
+      --ha-row-item-min-height: 48px;
     }
   `;
 }

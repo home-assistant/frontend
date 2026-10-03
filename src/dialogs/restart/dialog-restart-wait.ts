@@ -4,7 +4,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-spinner";
 import {
   subscribeBackupEvents,
@@ -75,26 +75,29 @@ class DialogRestartWait extends LitElement {
     const waitMessage = this._getWaitMessage();
 
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
+      <ha-dialog
         .open=${this._open}
         .headerTitle=${this._title}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error"
-                >${this.hass.localize("ui.dialogs.restart.error_backup_state", {
-                  error: this._error,
-                })}</ha-alert
-              > `
-            : html`
-                <ha-spinner></ha-spinner>
-                ${waitMessage}
-              `}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error"
+                  >${this.hass.localize(
+                    "ui.dialogs.restart.error_backup_state",
+                    {
+                      error: this._error,
+                    }
+                  )}</ha-alert
+                > `
+              : html`
+                  <ha-spinner></ha-spinner>
+                  ${waitMessage}
+                `
+          }
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -120,7 +123,7 @@ class DialogRestartWait extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         .content {

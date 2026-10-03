@@ -1,7 +1,9 @@
+import type { ContextType } from "@lit/context";
 import { mdiEyedropper } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import {
   hex2rgb,
   hs2rgb,
@@ -10,19 +12,20 @@ import {
   rgb2hs,
   rgb2hsv,
 } from "../../../../common/color/convert-color";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
+import { apiContext } from "../../../../data/context";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   getLightCurrentModeRgbColor,
   LightColorMode,
   lightSupportsColorMode,
 } from "../../../../data/light";
-import type { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -32,7 +35,13 @@ declare global {
 
 @customElement("light-color-rgb-picker")
 class LightRgbColorPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
 
@@ -89,72 +98,86 @@ class LightRgbColorPicker extends LitElement {
           @value-changed=${this._hsColorChanged}
           @cursor-moved=${this._hsColorCursorMoved}
           .value=${this._hsPickerValue}
-          .colorBrightness=${this._colorBrightnessSliderValue != null
-            ? (this._colorBrightnessSliderValue * 255) / 100
-            : undefined}
-          .wv=${this._wvSliderValue != null
-            ? (this._wvSliderValue * 255) / 100
-            : undefined}
-          .ww=${this._wwSliderValue != null
-            ? (this._wwSliderValue * 255) / 100
-            : undefined}
-          .cw=${this._cwSliderValue != null
-            ? (this._cwSliderValue * 255) / 100
-            : undefined}
+          .colorBrightness=${
+            this._colorBrightnessSliderValue != null
+              ? (this._colorBrightnessSliderValue * 255) / 100
+              : undefined
+          }
+          .wv=${
+            this._wvSliderValue != null
+              ? (this._wvSliderValue * 255) / 100
+              : undefined
+          }
+          .ww=${
+            this._wwSliderValue != null
+              ? (this._wwSliderValue * 255) / 100
+              : undefined
+          }
+          .cw=${
+            this._cwSliderValue != null
+              ? (this._cwSliderValue * 255) / 100
+              : undefined
+          }
           .minKelvin=${this.stateObj.attributes.min_color_temp_kelvin}
           .maxKelvin=${this.stateObj.attributes.max_color_temp_kelvin}
         >
         </ha-hs-color-picker>
       </div>
-      ${supportsRgbw || supportsRgbww
-        ? html`<ha-labeled-slider
-            labeled
-            .caption=${this.hass.localize("ui.card.light.color_brightness")}
-            icon="mdi:brightness-7"
-            min="0"
-            max="100"
-            .value=${this._colorBrightnessSliderValue}
-            @value-changed=${this._colorBrightnessSliderChanged}
-          ></ha-labeled-slider>`
-        : nothing}
-      ${supportsRgbw
-        ? html`
-            <ha-labeled-slider
+      ${
+        supportsRgbw || supportsRgbww
+          ? html`<ha-labeled-slider
               labeled
-              .caption=${this.hass.localize("ui.card.light.white_value")}
-              icon="mdi:file-word-box"
+              .caption=${this._localize("ui.card.light.color_brightness")}
+              icon="mdi:brightness-7"
               min="0"
               max="100"
-              .name=${"wv"}
-              .value=${this._wvSliderValue}
-              @value-changed=${this._wvSliderChanged}
-            ></ha-labeled-slider>
-          `
-        : nothing}
-      ${supportsRgbww
-        ? html`
-            <ha-labeled-slider
-              labeled
-              .caption=${this.hass.localize("ui.card.light.cold_white_value")}
-              icon="mdi:file-word-box-outline"
-              min="0"
-              max="100"
-              .name=${"cw"}
-              .value=${this._cwSliderValue}
-              @value-changed=${this._wvSliderChanged}
-            ></ha-labeled-slider>
-            <ha-labeled-slider
-              labeled
-              .caption=${this.hass.localize("ui.card.light.warm_white_value")}
-              icon="mdi:file-word-box"
-              min="0"
-              max="100"
-              .name=${"ww"}
-              .value=${this._wwSliderValue}
-              @value-changed=${this._wvSliderChanged}
-            ></ha-labeled-slider>
-          `
-        : nothing}
+              .value=${this._colorBrightnessSliderValue}
+              @value-changed=${this._colorBrightnessSliderChanged}
+            ></ha-labeled-slider>`
+          : nothing
+      }
+      ${
+        supportsRgbw
+          ? html`
+              <ha-labeled-slider
+                labeled
+                .caption=${this._localize("ui.card.light.white_value")}
+                icon="mdi:file-word-box"
+                min="0"
+                max="100"
+                .name=${"wv"}
+                .value=${this._wvSliderValue}
+                @value-changed=${this._wvSliderChanged}
+              ></ha-labeled-slider>
+            `
+          : nothing
+      }
+      ${
+        supportsRgbww
+          ? html`
+              <ha-labeled-slider
+                labeled
+                .caption=${this._localize("ui.card.light.cold_white_value")}
+                icon="mdi:file-word-box-outline"
+                min="0"
+                max="100"
+                .name=${"cw"}
+                .value=${this._cwSliderValue}
+                @value-changed=${this._wvSliderChanged}
+              ></ha-labeled-slider>
+              <ha-labeled-slider
+                labeled
+                .caption=${this._localize("ui.card.light.warm_white_value")}
+                icon="mdi:file-word-box"
+                min="0"
+                max="100"
+                .name=${"ww"}
+                .value=${this._wwSliderValue}
+                @value-changed=${this._wvSliderChanged}
+              ></ha-labeled-slider>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -212,10 +235,7 @@ class LightRgbColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (
-      this._isInteracting ||
-      (!changedProps.has("entityId") && !changedProps.has("hass"))
-    ) {
+    if (this._isInteracting || !changedProps.has("stateObj")) {
       return;
     }
 
@@ -346,7 +366,7 @@ class LightRgbColorPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this.hass.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       ...color,
       ...params,
@@ -463,18 +483,16 @@ class LightRgbColorPicker extends LitElement {
 
         input[type="color"] {
           appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
           border: none;
           outline: none;
           display: block;
-          width: var(--mdc-icon-button-size, 48px);
-          height: var(--mdc-icon-button-size, 48px);
+          width: var(--ha-icon-button-size, 48px);
+          height: var(--ha-icon-button-size, 48px);
           padding: calc(
-            (var(--mdc-icon-button-size, 48px) - var(--mdc-icon-size, 24px)) / 2
+            (var(--ha-icon-button-size, 48px) - var(--mdc-icon-size, 24px)) / 2
           );
           background-color: transparent;
-          border-radius: calc(var(--mdc-icon-button-size, 48px) / 2);
+          border-radius: calc(var(--ha-icon-button-size, 48px) / 2);
           overflow: hidden;
           cursor: pointer;
           transition: background-color 180ms ease-in-out;
@@ -515,7 +533,7 @@ class LightRgbColorPicker extends LitElement {
         hr {
           border-color: var(--divider-color);
           border-bottom: none;
-          margin: 16px 0;
+          margin: var(--ha-space-4) 0;
         }
       `,
     ];

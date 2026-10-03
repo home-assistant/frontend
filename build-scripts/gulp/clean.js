@@ -24,10 +24,6 @@ gulp.task(
   )
 );
 
-gulp.task("clean-hassio", async () =>
-  deleteSync([paths.hassio_output_root, paths.build_dir])
-);
-
 gulp.task(
   "clean-gallery",
   gulp.parallel("clean-translations", async () =>
@@ -47,5 +43,12 @@ gulp.task(
       paths.landingPage_build,
       paths.build_dir,
     ])
+  )
+);
+
+gulp.task(
+  "clean-e2e-test-app",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.e2eTestApp_output_root, paths.build_dir])
   )
 );

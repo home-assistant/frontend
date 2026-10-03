@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -11,20 +12,20 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ type: Array }) public path!: LovelaceCardPath;
@@ -42,7 +43,8 @@ export class HuiCardEditMode extends LitElement {
   public noMove = false;
 
   @state()
-  public _menuOpened = false;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   public _hover = false;
@@ -61,6 +63,9 @@ export class HuiCardEditMode extends LitElement {
     });
     this.addEventListener("touchstart", () => {
       this._touchStarted = true;
+      // Set hover on touchstart for touch devices
+      this._hover = true;
+      document.addEventListener("click", this._documentClicked);
     });
     this.addEventListener("touchend", () => {
       setTimeout(() => {
@@ -91,129 +96,103 @@ export class HuiCardEditMode extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const showOverlay =
-      (this._hover || this._menuOpened || this._focused) && !this.hiddenOverlay;
+    const showOverlay = (this._hover || this._focused) && !this.hiddenOverlay;
 
     return html`
       <div class="card-wrapper" inert><slot></slot></div>
       <div class="card-overlay ${classMap({ visible: showOverlay })}">
-        ${this.noEdit
-          ? html`
-              <div class="control">
-                <div class="control-overlay"></div>
-                <ha-svg-icon .path=${mdiCursorMove}> </ha-svg-icon>
-              </div>
-            `
-          : html`
-              <div
-                class="control"
-                @click=${this._handleOverlayClick}
-                @keydown=${this._handleOverlayClick}
-                tabindex="0"
-              >
-                <div class="control-overlay"></div>
-                <ha-svg-icon .path=${mdiPencil}> </ha-svg-icon>
-              </div>
-            `}
-        <ha-button-menu
+        ${
+          this.noEdit
+            ? html`
+                <div class="control">
+                  <div class="control-overlay"></div>
+                  <ha-svg-icon .path=${mdiCursorMove}> </ha-svg-icon>
+                </div>
+              `
+            : html`
+                <div
+                  class="control"
+                  role="button"
+                  aria-label=${this._localize(
+                    "ui.panel.lovelace.editor.edit_card.edit_label"
+                  )}
+                  @click=${this._handleOverlayClick}
+                  @keydown=${this._handleOverlayClick}
+                  tabindex="0"
+                >
+                  <div class="control-overlay"></div>
+                  <ha-svg-icon .path=${mdiPencil}> </ha-svg-icon>
+                </div>
+              `
+        }
+        <ha-dropdown
           class="more"
-          corner="BOTTOM_END"
-          menu-corner="END"
-          .path=${[this.path!]}
-          @action=${this._handleAction}
-          @opened=${this._handleOpened}
-          @closed=${this._handleClosed}
+          placement="bottom-end"
+          @wa-select=${this._handleDropdownSelect}
         >
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
-          ${this.noEdit
-            ? nothing
-            : html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"edit"}
-                >
-                  <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.edit"
-                  )}
-                </ha-list-item>
-              `}
-          ${this.noDuplicate
-            ? nothing
-            : html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"duplicate"}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiPlusCircleMultipleOutline}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.duplicate"
-                  )}
-                </ha-list-item>
-              `}
-          ${this.noMove
-            ? nothing
-            : html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"copy"}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiContentCopy}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.copy"
-                  )}
-                </ha-list-item>
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"cut"}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiContentCut}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.cut"
-                  )}
-                </ha-list-item>
-              `}
-          ${this.noDuplicate && this.noEdit && this.noMove
-            ? nothing
-            : html`<li divider role="separator"></li>`}
-          <ha-list-item
-            graphic="icon"
-            class="warning"
-            @click=${this._handleAction}
-            .action=${"delete"}
-          >
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
+          ${
+            this.noEdit
+              ? nothing
+              : html`
+                  <ha-dropdown-item value="edit">
+                    <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+                    ${this._localize("ui.panel.lovelace.editor.edit_card.edit")}
+                  </ha-dropdown-item>
+                `
+          }
+          ${
+            this.noDuplicate
+              ? nothing
+              : html`
+                  <ha-dropdown-item value="duplicate">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiPlusCircleMultipleOutline}
+                    ></ha-svg-icon>
+                    ${this._localize(
+                      "ui.panel.lovelace.editor.edit_card.duplicate"
+                    )}
+                  </ha-dropdown-item>
+                `
+          }
+          ${
+            this.noMove
+              ? nothing
+              : html`
+                  <ha-dropdown-item value="copy">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                    ${this._localize("ui.panel.lovelace.editor.edit_card.copy")}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item value="cut">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentCut}
+                    ></ha-svg-icon>
+                    ${this._localize("ui.panel.lovelace.editor.edit_card.cut")}
+                  </ha-dropdown-item>
+                `
+          }
+          ${
+            this.noDuplicate && this.noEdit && this.noMove
+              ? nothing
+              : html`<wa-divider></wa-divider>`
+          }
+          <ha-dropdown-item value="delete" variant="danger">
+            ${this._localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
-              slot="graphic"
+              slot="icon"
               .path=${mdiDelete}
             ></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </div>
     `;
-  }
-
-  private _handleOpened() {
-    this._menuOpened = true;
-  }
-
-  private _handleClosed() {
-    this._menuOpened = false;
   }
 
   private _handleOverlayClick(ev): void {
@@ -228,8 +207,14 @@ export class HuiCardEditMode extends LitElement {
     this._editCard();
   }
 
-  private _handleAction(ev) {
-    switch (ev.currentTarget.action) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
       case "edit":
         this._editCard();
         break;
@@ -330,18 +315,16 @@ export class HuiCardEditMode extends LitElement {
           background: var(--secondary-background-color);
           --mdc-icon-size: 20px;
         }
-        .more {
+        .more ha-icon-button {
           position: absolute;
           right: -6px;
           top: -6px;
           inset-inline-end: -6px;
           inset-inline-start: initial;
-        }
-        .more ha-icon-button {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
-          --mdc-icon-button-size: 32px;
+          --ha-icon-button-size: 32px;
           --mdc-icon-size: 20px;
         }
       `,

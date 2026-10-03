@@ -1,85 +1,88 @@
-import {
-  mdiAvTimer,
-  mdiCalendar,
-  mdiClockOutline,
-  mdiCodeBraces,
-  mdiDevices,
-  mdiFormatListBulleted,
-  mdiGestureDoubleTap,
-  mdiMapClock,
-  mdiMapMarker,
-  mdiMapMarkerRadius,
-  mdiMessageAlert,
-  mdiMicrophoneMessage,
-  mdiNfcVariant,
-  mdiNumeric,
-  mdiShape,
-  mdiStateMachine,
-  mdiSwapHorizontal,
-  mdiWeatherSunny,
-  mdiWebhook,
-} from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
 
-import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+import { computeDomain } from "../common/entity/compute_domain";
+import { computeObjectId } from "../common/entity/compute_object_id";
 import type {
   AutomationElementGroupCollection,
   Trigger,
   TriggerList,
 } from "./automation";
-
-export const TRIGGER_ICONS = {
-  calendar: mdiCalendar,
-  device: mdiDevices,
-  event: mdiGestureDoubleTap,
-  state: mdiStateMachine,
-  geo_location: mdiMapMarker,
-  homeassistant: mdiHomeAssistant,
-  mqtt: mdiSwapHorizontal,
-  numeric_state: mdiNumeric,
-  sun: mdiWeatherSunny,
-  conversation: mdiMicrophoneMessage,
-  tag: mdiNfcVariant,
-  template: mdiCodeBraces,
-  time: mdiClockOutline,
-  time_pattern: mdiAvTimer,
-  webhook: mdiWebhook,
-  persistent_notification: mdiMessageAlert,
-  zone: mdiMapMarkerRadius,
-  list: mdiFormatListBulleted,
-};
+import type { Selector, TargetSelector } from "./selector";
 
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
-      device: {},
-      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
-      time_location: {
-        icon: mdiMapClock,
+      dynamicGroups: {},
+      time: {
+        icon: mdiClockOutline,
         members: {
-          calendar: {},
-          sun: {},
           time: {},
           time_pattern: {},
-          zone: {},
         },
+        domains: ["calendar", "schedule"],
       },
-    },
-  },
-  {
-    titleKey: "ui.panel.config.automation.editor.triggers.groups.other.label",
-    groups: {
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
+      },
       event: {},
       geo_location: {},
       homeassistant: {},
-      mqtt: {},
       conversation: {},
       tag: {},
       template: {},
       webhook: {},
       persistent_notification: {},
+      helpers: {},
+    },
+  },
+  {
+    titleKey: "ui.panel.config.automation.editor.triggers.groups.generic.label",
+    generic: true,
+    groups: {
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+    },
+  },
+  {
+    titleKey:
+      "ui.panel.config.automation.editor.triggers.groups.integrations.label",
+    groups: {
+      integrationGroups: {},
     },
   },
 ] as const;
 
 export const isTriggerList = (trigger: Trigger): trigger is TriggerList =>
   "triggers" in trigger;
+
+export interface TriggerDescription {
+  target?: TargetSelector["target"];
+  fields: Record<
+    string,
+    {
+      example?: string | boolean | number;
+      default?: unknown;
+      required?: boolean;
+      selector?: Selector;
+      context?: Record<string, string>;
+    }
+  >;
+}
+
+export type TriggerDescriptions = Record<string, TriggerDescription>;
+
+export const subscribeTriggers = (
+  connection: Connection,
+  callback: (triggers: TriggerDescriptions) => void
+) =>
+  connection.subscribeMessage<TriggerDescriptions>(callback, {
+    type: "trigger_platforms/subscribe",
+  });
+
+export const getTriggerDomain = (trigger: string) =>
+  trigger.includes(".") ? computeDomain(trigger) : trigger;
+
+export const getTriggerObjectId = (trigger: string) =>
+  trigger.includes(".") ? computeObjectId(trigger) : "_";

@@ -11,7 +11,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-icon";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import type { User } from "../../../data/user";
 import {
@@ -23,7 +23,7 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
 import { storage } from "../../../common/decorators/storage";
@@ -39,6 +39,10 @@ export class HaConfigUsers extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _users: User[] = [];
+
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
 
   @storage({ key: "users-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -90,7 +94,6 @@ export class HaConfigUsers extends LitElement {
           title: localize("ui.panel.config.users.picker.headers.username"),
           sortable: true,
           filterable: true,
-          direction: "asc",
           template: (user) => html`${user.username || "—"}`,
         },
         group: {
@@ -98,7 +101,6 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           groupable: true,
-          direction: "asc",
         },
         is_active: {
           title: this.hass.localize(
@@ -167,7 +169,7 @@ export class HaConfigUsers extends LitElement {
     }
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchUsers();
   }
@@ -181,7 +183,14 @@ export class HaConfigUsers extends LitElement {
         back-path="/config"
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._userData(this._users, this.hass.localize)}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.users.picker.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchUsers}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
@@ -197,14 +206,10 @@ export class HaConfigUsers extends LitElement {
         has-fab
         clickable
       >
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.users.picker.add_user")}
-          extended
-          @click=${this._addUser}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._addUser}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.users.picker.add_user")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -218,13 +223,27 @@ export class HaConfigUsers extends LitElement {
   );
 
   private async _fetchUsers() {
-    this._users = await fetchUsers(this.hass);
+    try {
+      this._users = await fetchUsers(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+
+      return;
+    } finally {
+      this._loading = false;
+    }
 
     this._users.forEach((user) => {
       if (user.is_owner) {
         user.group_ids.unshift("owner");
       }
     });
+  }
+
+  private _retryFetchUsers() {
+    this._loading = true;
+    this._fetchUsers();
   }
 
   private _editUser(ev: HASSDomEvent<RowClickedEvent>) {

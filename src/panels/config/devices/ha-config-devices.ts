@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
@@ -17,8 +18,6 @@ class HaConfigDevices extends HassRouterPage {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
@@ -32,13 +31,31 @@ class HaConfigDevices extends HassRouterPage {
     },
   };
 
-  @state() private _configEntries: ConfigEntry[] = [];
+  @state() private _configEntries?: ConfigEntry[];
+
+  @state() private _configEntriesFailed = false;
 
   @state() private _manifests: IntegrationManifest[] = [];
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this._loadData();
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("reload-config-entries", this._reloadConfigEntries);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "reload-config-entries",
+      this._reloadConfigEntries
+    );
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._loadData();
+    }
   }
 
   protected updatePageEl(pageEl) {
@@ -46,23 +63,53 @@ class HaConfigDevices extends HassRouterPage {
 
     if (this._currentPage === "device") {
       pageEl.deviceId = this.routeTail.path.substr(1);
+      pageEl.entries = this._configEntries ?? [];
+    } else {
+      pageEl.entries = this._configEntries;
+      pageEl.entriesFailed = this._configEntriesFailed;
     }
 
-    pageEl.entries = this._configEntries;
     pageEl.manifests = this._manifests;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
-    pageEl.showAdvanced = this.showAdvanced;
     pageEl.route = this.routeTail;
   }
 
   private async _loadData() {
-    this._configEntries = await getConfigEntries(this.hass);
-    this._manifests = await fetchIntegrationManifests(this.hass);
+    await Promise.all([
+      this._loadConfigEntries(),
+      fetchIntegrationManifests(this.hass)
+        .then((manifests) => {
+          this._manifests = manifests;
+        })
+        .catch(() => {
+          // The pages remain usable without integration manifests.
+        }),
+    ]);
+  }
+
+  private _reloadConfigEntries = () => {
+    this._loadConfigEntries();
+  };
+
+  private async _loadConfigEntries() {
+    this._configEntriesFailed = false;
+    this._configEntries = undefined;
+
+    try {
+      this._configEntries = await getConfigEntries(this.hass);
+    } catch {
+      this._configEntriesFailed = true;
+      this._configEntries = [];
+    }
   }
 }
 
 declare global {
+  interface HASSDomEvents {
+    "reload-config-entries": undefined;
+  }
+
   interface HTMLElementTagNameMap {
     "ha-config-devices": HaConfigDevices;
   }

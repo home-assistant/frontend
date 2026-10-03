@@ -92,14 +92,16 @@ export class DemoHaControlSelectMenu extends LitElement {
                       .value=${option.value}
                       .graphic=${option.icon ? "icon" : undefined}
                     >
-                      ${option.icon
-                        ? html`
-                            <ha-svg-icon
-                              slot="graphic"
-                              .path=${option.icon}
-                            ></ha-svg-icon>
-                          `
-                        : nothing}
+                      ${
+                        option.icon
+                          ? html`
+                              <ha-svg-icon
+                                slot="graphic"
+                                .path=${option.icon}
+                              ></ha-svg-icon>
+                            `
+                          : nothing
+                      }
                       ${option.label ?? option.value}
                     </ha-list-item>
                   `

@@ -10,8 +10,8 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { MediaControlCardConfig } from "../../cards/types";
-import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
+import type { LovelaceStrategyDependency } from "../types";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
 export interface HomeMediaPlayersViewStrategyConfig {
@@ -81,13 +81,20 @@ const processUnassignedEntities = (
 
 @customElement("home-media-players-view-strategy")
 export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+  ];
+
   static async generate(
     _config: HomeMediaPlayersViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
-    const home = getHomeStructure(floors, areas);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
+    const home = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 

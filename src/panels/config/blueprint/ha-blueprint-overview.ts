@@ -3,7 +3,7 @@ import {
   mdiDelete,
   mdiDownload,
   mdiEye,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiOpenInNew,
   mdiPlus,
   mdiShareVariant,
@@ -13,7 +13,10 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
@@ -24,9 +27,7 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
@@ -43,6 +44,7 @@ import {
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
 import { findRelated } from "../../../data/search";
+import "../../../components/chips/ha-assist-chip";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -52,7 +54,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
@@ -60,6 +62,7 @@ type BlueprintMetaDataPath = BlueprintMetaData & {
   error: boolean;
   type: "automation" | "script";
   fullpath: string;
+  usageCount?: number;
 };
 
 const createNewFunctions = {
@@ -128,14 +131,20 @@ class HaBlueprintOverview extends LitElement {
   })
   private _filter = "";
 
+  @state() private _usageCounts: Record<string, number> = {};
+
+  private _usageCountRequest = 0;
+
   private _processedBlueprints = memoizeOne(
     (
       blueprints: Record<string, Blueprints>,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      usageCounts: Record<string, number>
     ): BlueprintMetaDataPath[] => {
       const result: any[] = [];
       Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
         Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
+          const fullpath = `${type}/${path}`;
           if ("error" in blueprint) {
             result.push({
               name: blueprint.error,
@@ -145,7 +154,8 @@ class HaBlueprintOverview extends LitElement {
               ),
               error: true,
               path,
-              fullpath: `${type}/${path}`,
+              fullpath,
+              usageCount: 0,
             });
           } else {
             result.push({
@@ -156,7 +166,8 @@ class HaBlueprintOverview extends LitElement {
               ),
               error: false,
               path,
-              fullpath: `${type}/${path}`,
+              fullpath,
+              usageCount: usageCounts[fullpath] || 0,
             });
           }
         })
@@ -182,26 +193,53 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         groupable: true,
-        direction: "asc",
       },
       path: {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
-        direction: "asc",
         flex: 2,
+      },
+      usage_count: {
+        title: localize(
+          "ui.panel.config.blueprint.overview.headers.usage_count"
+        ),
+        sortable: true,
+        valueColumn: "usageCount",
+        type: "numeric",
+        minWidth: "90px",
+        maxWidth: "90px",
+        template: (blueprint) => {
+          const count = blueprint.usageCount ?? 0;
+          return html`
+            <ha-assist-chip
+              filled
+              .active=${count > 0}
+              label=${String(count)}
+              title=${
+                blueprint.error
+                  ? String(count)
+                  : this.hass.localize(
+                      `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                    )
+              }
+              ?disabled=${blueprint.error}
+              data-fullpath=${blueprint.fullpath}
+              @click=${this._handleUsageClick}
+            ></ha-assist-chip>
+          `;
+        },
       },
       fullpath: {
         title: "fullpath",
         hidden: true,
       },
       actions: {
+        lastFixed: true,
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
@@ -210,7 +248,6 @@ class HaBlueprintOverview extends LitElement {
               ></ha-svg-icon>`
             : html`
                 <ha-icon-overflow-menu
-                  .hass=${this.hass}
                   narrow
                   .items=${[
                     {
@@ -266,14 +303,22 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+    this._loadUsageCounts();
     if (this.route.path === "/import") {
       const url = extractSearchParam("blueprint_url");
       navigate("/config/blueprint/dashboard", { replace: true });
       if (url) {
         this._addBlueprint(url);
       }
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    if (changedProps.has("blueprints")) {
+      this._loadUsageCounts();
     }
   }
 
@@ -286,7 +331,11 @@ class HaBlueprintOverview extends LitElement {
         .route=${this.route}
         .tabs=${configSections.automations}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._processedBlueprints(this.blueprints, this.hass.localize)}
+        .data=${this._processedBlueprints(
+          this.blueprints,
+          this.hass.localize,
+          this._usageCounts
+        )}
         id="fullpath"
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.overview.no_blueprints"
@@ -301,10 +350,10 @@ class HaBlueprintOverview extends LitElement {
         >
           <ha-button
             appearance="plain"
-            href="https://www.home-assistant.io/get-blueprints"
+            href=${documentationUrl(this.hass, "/get-blueprints")}
             target="_blank"
             rel="noreferrer noopener"
-            size="small"
+            size="s"
           >
             ${this.hass.localize(
               "ui.panel.config.blueprint.overview.discover_more"
@@ -327,19 +376,15 @@ class HaBlueprintOverview extends LitElement {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
+          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
-          extended
-          @click=${this._addBlueprintClicked}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -382,10 +427,51 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
+  private async _loadUsageCounts() {
+    if (!this.blueprints) {
+      return;
+    }
+
+    const request = ++this._usageCountRequest;
+    const usageCounts: Record<string, number> = {};
+
+    const blueprintList = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize,
+      {}
+    );
+
+    await Promise.all(
+      blueprintList.map(async (blueprint) => {
+        if (blueprint.error) {
+          usageCounts[blueprint.fullpath] = 0;
+          return;
+        }
+        try {
+          const related = await findRelated(
+            this.hass,
+            `${blueprint.domain}_blueprint`,
+            blueprint.path
+          );
+          const count =
+            (related.automation?.length || 0) + (related.script?.length || 0);
+          usageCounts[blueprint.fullpath] = count;
+        } catch (_err) {
+          usageCounts[blueprint.fullpath] = 0;
+        }
+      })
+    );
+
+    if (request === this._usageCountRequest) {
+      this._usageCounts = usageCounts;
+    }
+  }
+
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const blueprint = this._processedBlueprints(
       this.blueprints,
-      this.hass.localize
+      this.hass.localize,
+      this._usageCounts
     ).find((b) => b.fullpath === ev.detail.id)!;
     if (blueprint.error) {
       showAlertDialog(this, {
@@ -398,6 +484,25 @@ class HaBlueprintOverview extends LitElement {
     }
     this._createNew(blueprint);
   }
+
+  private _handleUsageClick = (ev: HASSDomCurrentTargetEvent<HTMLElement>) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const target = ev.currentTarget as HTMLElement | null;
+    const fullpath = target?.dataset.fullpath;
+    if (!fullpath) {
+      return;
+    }
+    const blueprint = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize,
+      this._usageCounts
+    ).find((item) => item.fullpath === fullpath);
+    if (!blueprint || blueprint.error) {
+      return;
+    }
+    this._showUsed(blueprint);
+  };
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {
     navigate(
@@ -504,9 +609,11 @@ class HaBlueprintOverview extends LitElement {
                 (item) => {
                   const automationState = this.hass.states[item];
                   return html`<li>
-                    ${automationState
-                      ? `${computeStateName(automationState)} (${item})`
-                      : item}
+                    ${
+                      automationState
+                        ? `${computeStateName(automationState)} (${item})`
+                        : item
+                    }
                   </li>`;
                 }
               )}
@@ -514,8 +621,7 @@ class HaBlueprintOverview extends LitElement {
           }
         ),
         confirmText: this.hass!.localize(
-          "ui.panel.config.blueprint.overview.blueprint_in_use_view",
-          { type }
+          `ui.panel.config.blueprint.overview.blueprint_in_use_view_${blueprint.domain}`
         ),
       });
       if (result) {

@@ -1,18 +1,17 @@
 import {
+  mdiAccountKey,
   mdiChatQuestion,
   mdiCog,
   mdiDelete,
   mdiDeleteForever,
   mdiHospitalBox,
-  mdiInformation,
+  mdiInformationOutline,
   mdiPlus,
   mdiUpload,
-  mdiWrench,
 } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import {
-  fetchZwaveIntegrationSettings,
   fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
   fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNetworkStatus,
@@ -22,14 +21,15 @@ import {
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
-import { showZWaveJSRebuildNodeRoutesDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-rebuild-node-routes";
+import { showZwaveCredentialManageDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-credential-manage";
+import { showZWaveJSAddNodeDialog } from "../../../../integrations/integration-panels/zwave_js/add-node/show-dialog-zwave_js-add-node";
+import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
+import { showZWaveJSRebuildNodeRoutesDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-rebuild-node-routes";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
+import { showZWaveJSRemoveNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-node";
 import { showZWaveJSUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
 import type { DeviceAction } from "../../../ha-config-device-page";
-import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
-import { showZWaveJSAddNodeDialog } from "../../../../integrations/integration-panels/zwave_js/add-node/show-dialog-zwave_js-add-node";
-import { showZWaveJSRemoveNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-node";
 
 export const getZwaveDeviceActions = async (
   el: HTMLElement,
@@ -60,7 +60,7 @@ export const getZwaveDeviceActions = async (
   if (provisioningEntry && !provisioningEntry.nodeId) {
     return [
       {
-        label: hass.localize("ui.panel.config.devices.delete_device"),
+        label: hass.localize("ui.common.remove"),
         classes: "warning",
         icon: mdiDelete,
         action: async () => {
@@ -128,14 +128,14 @@ export const getZwaveDeviceActions = async (
         label: hass.localize(
           "ui.panel.config.zwave_js.device_info.node_statistics"
         ),
-        icon: mdiInformation,
+        icon: mdiInformationOutline,
         action: () =>
           showZWaveJSNodeStatisticsDialog(el, {
             device,
           }),
       },
       {
-        label: hass.localize("ui.panel.config.devices.delete_device"),
+        label: hass.localize("ui.common.remove"),
         classes: "warning",
         icon: mdiDelete,
         action: () =>
@@ -147,24 +147,29 @@ export const getZwaveDeviceActions = async (
     );
   }
 
-  const integrationSettings = await fetchZwaveIntegrationSettings(hass);
-
-  if (integrationSettings.installer_mode) {
-    actions.push({
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.installer_settings"
-      ),
-      icon: mdiWrench,
-      href: `/config/zwave_js/node_installer/${device.id}?config_entry=${entryId}`,
-    });
+  // Check if this device has a lock entity and show credential management.
+  // Capability/support gating happens inside the dialog.
+  if (!nodeStatus.is_controller_node) {
+    const lockEntity = Object.values(hass.entities).find(
+      (entity) =>
+        entity.device_id === device.id && entity.entity_id.startsWith("lock.")
+    );
+    if (lockEntity) {
+      actions.push({
+        label: hass.localize("ui.panel.config.zwave_js.credentials.manage"),
+        icon: mdiAccountKey,
+        action: () =>
+          showZwaveCredentialManageDialog(el, {
+            entity_id: lockEntity.entity_id,
+          }),
+      });
+    }
   }
 
-  if (
-    !(
-      nodeStatus.ready &&
-      (nodeStatus.is_controller_node || nodeStatus.has_firmware_update_cc)
-    )
-  ) {
+  if (!(
+    nodeStatus.ready &&
+    (nodeStatus.is_controller_node || nodeStatus.has_firmware_update_cc)
+  )) {
     return actions;
   }
 
@@ -203,7 +208,7 @@ export const getZwaveDeviceActions = async (
   }
 
   if (nodeStatus.is_controller_node) {
-    const networkStatus = await fetchZwaveNetworkStatus(hass, {
+    const networkStatus = await fetchZwaveNetworkStatus(hass.connection, {
       entry_id: entryId,
     });
     actions.unshift({
@@ -212,7 +217,8 @@ export const getZwaveDeviceActions = async (
       action: async () => {
         showZWaveJSAddNodeDialog(el, {
           entry_id: entryId,
-          longRangeSupported: networkStatus.controller?.supports_long_range,
+          longRangeSupported:
+            networkStatus.controller?.supports_long_range ?? undefined,
         });
       },
     });

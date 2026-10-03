@@ -1,15 +1,16 @@
 import type { HomeAssistant } from "../types";
 
 export type BackupManagerState =
-  | "idle"
-  | "create_backup"
-  | "receive_backup"
-  | "restore_backup";
+  "idle" | "create_backup" | "receive_backup" | "restore_backup" | "blocked";
 
 export type CreateBackupStage =
   | "addon_repositories"
   | "addons"
   | "await_addon_restarts"
+  | "app_repositories"
+  | "apps"
+  | "await_app_restarts"
+  | "cleaning_up"
   | "docker_config"
   | "finishing_file"
   | "folders"
@@ -26,15 +27,20 @@ export type RestoreBackupStage =
   | "addon_repositories"
   | "addons"
   | "await_addon_restarts"
+  | "app_repositories"
+  | "apps"
+  | "await_app_restarts"
   | "await_home_assistant_restart"
   | "check_home_assistant"
   | "docker_config"
   | "download_from_agent"
   | "folders"
   | "home_assistant"
-  | "remove_delta_addons";
+  | "remove_delta_addons"
+  | "remove_delta_apps";
 
-export type RestoreBackupState = "completed" | "failed" | "in_progress";
+export type RestoreBackupState =
+  "completed" | "core_restart" | "failed" | "in_progress";
 
 interface IdleEvent {
   manager_state: "idle";
@@ -42,40 +48,54 @@ interface IdleEvent {
 
 interface CreateBackupEvent {
   manager_state: "create_backup";
+  reason: string | null;
   stage: CreateBackupStage | null;
   state: CreateBackupState;
 }
 
 interface ReceiveBackupEvent {
   manager_state: "receive_backup";
+  reason: string | null;
   stage: ReceiveBackupStage | null;
   state: ReceiveBackupState;
 }
 
 interface RestoreBackupEvent {
   manager_state: "restore_backup";
+  reason: string | null;
   stage: RestoreBackupStage | null;
   state: RestoreBackupState;
 }
 
+interface BlockedEvent {
+  manager_state: "blocked";
+}
+
+export interface UploadBackupEvent {
+  manager_state: BackupManagerState;
+  agent_id: string;
+  uploaded_bytes: number;
+  total_bytes: number;
+}
+
 export type ManagerState =
-  | "idle"
-  | "create_backup"
-  | "receive_backup"
-  | "restore_backup";
+  "idle" | "create_backup" | "receive_backup" | "restore_backup" | "blocked";
 
 export type ManagerStateEvent =
   | IdleEvent
   | CreateBackupEvent
   | ReceiveBackupEvent
-  | RestoreBackupEvent;
+  | RestoreBackupEvent
+  | BlockedEvent;
+
+export type BackupSubscriptionEvent = ManagerStateEvent | UploadBackupEvent;
 
 export const subscribeBackupEvents = (
   hass: HomeAssistant,
-  callback: (event: ManagerStateEvent) => void,
+  callback: (event: BackupSubscriptionEvent) => void,
   preCheck?: () => boolean | Promise<boolean>
 ) =>
-  hass.connection.subscribeMessage<ManagerStateEvent>(
+  hass.connection.subscribeMessage<BackupSubscriptionEvent>(
     callback,
     {
       type: "backup/subscribe_events",

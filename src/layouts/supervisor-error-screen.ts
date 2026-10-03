@@ -5,6 +5,7 @@ import { atLeastVersion } from "../common/config/version";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import "../components/ha-card";
 import { haStyle } from "../resources/styles";
+import { documentationUrl } from "../util/documentation-url";
 import type { HomeAssistant } from "../types";
 import "./hass-subpage";
 
@@ -12,13 +13,13 @@ import "./hass-subpage";
 class SupervisorErrorScreen extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._applyTheme();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass) {
@@ -57,7 +58,7 @@ class SupervisorErrorScreen extends LitElement {
               </li>
               <li>
                 <a
-                  href="https://www.home-assistant.io/help/"
+                  href=${documentationUrl(this.hass, "/help/")}
                   target="_blank"
                   rel="noreferrer"
                 >

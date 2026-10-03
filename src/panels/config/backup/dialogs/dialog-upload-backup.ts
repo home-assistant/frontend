@@ -1,28 +1,28 @@
-import { mdiClose, mdiFolderUpload } from "@mdi/js";
+import { mdiFolderUpload } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   fireEvent,
   type HASSDomEvent,
 } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-file-upload";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
+  INITIAL_UPLOAD_FORM_DATA,
+  isSupportedBackupFile,
   SUPPORTED_UPLOAD_FORMAT,
   uploadBackup,
-  INITIAL_UPLOAD_FORM_DATA,
   type BackupUploadFileFormData,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
@@ -30,7 +30,7 @@ import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 @customElement("ha-dialog-upload-backup")
 export class DialogUploadBackup
-  extends LitElement
+  extends DirtyStateProviderMixin<BackupUploadFileFormData>()(LitElement)
   implements HassDialog<UploadBackupDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -43,11 +43,14 @@ export class DialogUploadBackup
 
   @state() private _formData?: BackupUploadFileFormData;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public async showDialog(params: UploadBackupDialogParams): Promise<void> {
     this._params = params;
     this._formData = INITIAL_UPLOAD_FORM_DATA;
+    this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, INITIAL_UPLOAD_FORM_DATA);
+    this._updateDirtyState(this._formData);
   }
 
   private _dialogClosed() {
@@ -56,16 +59,13 @@ export class DialogUploadBackup
     }
     this._formData = undefined;
     this._params = undefined;
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._open = false;
     return true;
-  }
-
-  private _formValid() {
-    return this._formData?.file !== undefined;
   }
 
   protected render() {
@@ -74,61 +74,52 @@ export class DialogUploadBackup
     }
 
     return html`
-      <ha-md-dialog
-        open
+      <ha-dialog
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.backup.dialogs.upload.title"
+        )}
+        .preventScrimClose=${this.isDirtyState || this._uploading}
         @closed=${this._dialogClosed}
-        .disableCancelAction=${this._uploading}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-            .disabled=${this._uploading}
-          ></ha-icon-button>
-
-          <span slot="title">
-            ${this.hass.localize("ui.panel.config.backup.dialogs.upload.title")}
-          </span>
-        </ha-dialog-header>
-        <div slot="content">
-          ${this._error
+        ${
+          this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          <ha-file-upload
-            .hass=${this.hass}
-            .uploading=${this._uploading}
-            .icon=${mdiFolderUpload}
-            .accept=${SUPPORTED_UPLOAD_FORMAT}
-            .localize=${this.hass.localize}
-            .label=${this.hass.localize(
-              "ui.panel.config.backup.dialogs.upload.input_label"
-            )}
-            .supports=${this.hass.localize(
-              "ui.panel.config.backup.dialogs.upload.supports_tar"
-            )}
-            @file-picked=${this._filePicked}
-            @files-cleared=${this._filesCleared}
-          ></ha-file-upload>
-        </div>
-        <div slot="actions">
+            : nothing
+        }
+        <ha-file-upload
+          .uploading=${this._uploading}
+          .icon=${mdiFolderUpload}
+          .accept=${SUPPORTED_UPLOAD_FORMAT}
+          .label=${this.hass.localize(
+            "ui.panel.config.backup.dialogs.upload.input_label"
+          )}
+          .supports=${this.hass.localize(
+            "ui.panel.config.backup.dialogs.upload.supports_tar"
+          )}
+          @file-picked=${this._filePicked}
+          @files-cleared=${this._filesCleared}
+        ></ha-file-upload>
+        <ha-dialog-footer slot="footer">
           <ha-button
+            slot="secondaryAction"
             appearance="plain"
             @click=${this.closeDialog}
             .disabled=${this._uploading}
-            >${this.hass.localize("ui.common.cancel")}</ha-button
           >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
           <ha-button
+            slot="primaryAction"
             @click=${this._upload}
-            .disabled=${!this._formValid() || this._uploading}
+            .disabled=${!this.isDirtyState || this._uploading}
           >
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.upload.action"
             )}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-dialog>
     `;
   }
 
@@ -140,16 +131,18 @@ export class DialogUploadBackup
       ...this._formData!,
       file,
     };
+    this._updateDirtyState(this._formData);
   }
 
   private _filesCleared() {
     this._error = undefined;
     this._formData = INITIAL_UPLOAD_FORM_DATA;
+    this._updateDirtyState(this._formData);
   }
 
   private async _upload() {
     const { file } = this._formData!;
-    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
+    if (!file || !isSupportedBackupFile(file)) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.backup.dialogs.upload.unsupported.title"
@@ -162,7 +155,7 @@ export class DialogUploadBackup
       return;
     }
 
-    const agentIds = isComponentLoaded(this.hass!, "hassio")
+    const agentIds = isComponentLoaded(this.hass.config, "hassio")
       ? [HASSIO_LOCAL_AGENT]
       : [CORE_LOCAL_AGENT];
 
@@ -170,6 +163,7 @@ export class DialogUploadBackup
     try {
       await uploadBackup(this.hass, file, agentIds);
       this._params!.submit?.();
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
@@ -183,15 +177,9 @@ export class DialogUploadBackup
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
-          max-width: 500px;
-          width: 100%;
-          max-width: 500px;
-          max-height: 100%;
-        }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
       `,
     ];

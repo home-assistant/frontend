@@ -1,13 +1,24 @@
+import type { ContextType } from "@lit/context";
+import { initialState } from "@lit/task";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { until } from "lit/directives/until";
-import { formatNumber } from "../common/number/format_number";
-import type { HomeAssistant } from "../types";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { getValueAttribute } from "../common/entity/get_states";
+import { valueFromParts } from "../common/entity/value_parts";
+import { formattersContext } from "../data/context";
+
+const isObjectValue = (value: unknown): boolean =>
+  (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
+  (!Array.isArray(value) && value instanceof Object);
 
 @customElement("ha-attribute-value")
 class HaAttributeValue extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -15,15 +26,22 @@ class HaAttributeValue extends LitElement {
 
   @property({ type: Boolean, attribute: "hide-unit" }) public hideUnit = false;
 
+  private _yamlTask = new AsyncValueTask(this, {
+    task: async ([attributeValue]) => {
+      if (!isObjectValue(attributeValue)) {
+        return initialState;
+      }
+      const { dump } = await import("js-yaml");
+      return dump(attributeValue);
+    },
+    args: () => [this.stateObj?.attributes[this.attribute]] as const,
+  });
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
     const attributeValue = this.stateObj.attributes[this.attribute];
-
-    if (typeof attributeValue === "number" && this.hideUnit) {
-      return formatNumber(attributeValue, this.hass.locale);
-    }
 
     if (typeof attributeValue === "string") {
       // URL handling
@@ -31,7 +49,7 @@ class HaAttributeValue extends LitElement {
         try {
           // If invalid URL, exception will be raised
           const url = new URL(attributeValue);
-          if (url.protocol === "http:" || url.protocol === "https:")
+          if (url.protocol === "http:" || url.protocol === "https:") {
             return html`
               <a
                 target="_blank"
@@ -41,22 +59,49 @@ class HaAttributeValue extends LitElement {
                 ${attributeValue}
               </a>
             `;
+          }
         } catch {
           // Nothing to do here
         }
       }
     }
 
-    if (
-      (Array.isArray(attributeValue) &&
-        attributeValue.some((val) => val instanceof Object)) ||
-      (!Array.isArray(attributeValue) && attributeValue instanceof Object)
-    ) {
-      const yaml = import("js-yaml").then(({ dump }) => dump(attributeValue));
-      return html`<pre>${until(yaml, "")}</pre>`;
+    if (isObjectValue(attributeValue)) {
+      return html`<pre>${this._yamlTask.value ?? ""}</pre>`;
     }
 
-    return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
+    // Options-list attributes (effect_list, preset_modes, …) translated through
+    // their value attribute, or the main state for lists like hvac_modes.
+    if (Array.isArray(attributeValue)) {
+      const domain = computeStateDomain(this.stateObj);
+      const valueAttribute = getValueAttribute(domain, this.attribute);
+      if (valueAttribute) {
+        return attributeValue
+          .map((item) =>
+            valueAttribute === "_"
+              ? this._formatters!.formatEntityState(this.stateObj!, item)
+              : this._formatters!.formatEntityAttributeValue(
+                  this.stateObj!,
+                  valueAttribute,
+                  item
+                )
+          )
+          .join(", ");
+      }
+    }
+
+    if (this.hideUnit) {
+      const parts = this._formatters!.formatEntityAttributeValueToParts(
+        this.stateObj!,
+        this.attribute
+      );
+      return valueFromParts(parts);
+    }
+
+    return this._formatters!.formatEntityAttributeValue(
+      this.stateObj!,
+      this.attribute
+    );
   }
 
   static styles = css`

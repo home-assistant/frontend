@@ -1,14 +1,27 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
-import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import type { Calendar, CalendarEvent } from "../../../data/calendar";
-import { fetchCalendarEvents } from "../../../data/calendar";
+import "../../../components/ha-spinner";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventSubscription,
+  CalendarEventApiData,
+} from "../../../data/calendar";
+import {
+  getCalendarColors,
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../../data/calendar";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -25,7 +38,10 @@ import type {
 import type { CalendarCardConfig } from "./types";
 
 @customElement("hui-calendar-card")
-export class HuiCalendarCard extends LitElement implements LovelaceCard {
+export class HuiCalendarCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-calendar-card-editor");
     return document.createElement("hui-calendar-card-editor");
@@ -65,11 +81,19 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: string = undefined;
 
+  @state() private _errorCalendars: string[] = [];
+
+  @state() private _entityRegistry?: EntityRegistryEntry[];
+
+  @state() private _eventsLoaded = false;
+
   private _startDate?: Date;
 
   private _endDate?: Date;
 
   private _resizeObserver?: ResizeObserver;
+
+  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
@@ -80,16 +104,50 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
-    this._calendars = config!.entities.map((entity, idx) => ({
-      entity_id: entity,
-      backgroundColor: getColorByIndex(idx),
-    }));
-
     if (this._config?.entities !== config.entities) {
-      this._fetchCalendarEvents();
+      this._unsubscribeAll();
+      // Subscription will happen when view-changed event fires
     }
 
     this._config = { initial_view: "dayGridMonth", ...config };
+  }
+
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    // Don't build calendars until entity registry is loaded
+    if (!this._entityRegistry) {
+      return;
+    }
+
+    // Reset loading state when config changes or entity registry updates
+    if (changedProps.has("_config") || changedProps.has("_entityRegistry")) {
+      this._eventsLoaded = false;
+    }
+
+    if (
+      !this.hasUpdated ||
+      (changedProps.has("_config") && this._config?.entities) ||
+      changedProps.has("_entityRegistry")
+    ) {
+      const computedStyles = getComputedStyle(this);
+      const entityOptionsMap = new Map(
+        this._entityRegistry?.map((entry) => [
+          entry.entity_id,
+          entry.options,
+        ]) ?? []
+      );
+      if (this._config?.entities) {
+        this._calendars = this._config.entities.map((entity, idx) => ({
+          entity_id: entity,
+          ...getCalendarColors(
+            entityOptionsMap.get(entity)?.calendar?.color,
+            idx,
+            computedStyles
+          ),
+        }));
+      }
+    }
   }
 
   public getCardSize(): number {
@@ -105,6 +163,14 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass!.connection!, (entities) => {
+        this._entityRegistry = entities;
+      }),
+    ];
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachObserver());
@@ -115,12 +181,19 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    this._unsubscribeAll();
   }
 
   protected render() {
-    if (!this._config || !this.hass || !this._calendars.length) {
+    if (!this._config || !this.hass) {
       return nothing;
     }
+
+    const loading = !this._entityRegistry || !this._eventsLoaded;
+    const rows = this._config.grid_options
+      ? this._config.grid_options.rows
+      : this._config.layout_options?.grid_rows;
+    const autoHeight = this.layout === "grid" && rows === "auto";
 
     const views: FullCalendarView[] = [
       "dayGridMonth",
@@ -130,35 +203,68 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <div class="header">${this._config.title}</div>
+        ${
+          this._config.title
+            ? html`<div class="header">${this._config.title}</div>`
+            : nothing
+        }
         <ha-full-calendar
           class=${classMap({
-            "is-grid": this.layout === "grid",
+            "is-grid": this.layout === "grid" && !autoHeight,
             "is-panel": this.layout === "panel",
             "has-title": !!this._config.title,
+            loading: loading,
           })}
+          ?auto-height=${autoHeight}
+          ?add-fab=${this._config.show_add_event}
+          add-fab-style=${this._config.show_add_event ? (this._config.add_event_style ?? "below") : nothing}
+          add-fab-size=${this._config.show_add_event && this._config.add_event_style !== "header" ? (this._config.add_event_size ?? "small") : nothing}
           .narrow=${this._narrow}
           .events=${this._events}
+          .calendars=${this._calendars}
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
+        ${
+          loading
+            ? html`<div class="loading">
+                <ha-spinner></ha-spinner>
+              </div>`
+            : nothing
+        }
       </ha-card>
     `;
   }
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
     if (!this._config || !this.hass) {
       return;
     }
 
+    // Resubscribe when entity registry changes (to update colors)
+    if (changedProps.has("_entityRegistry") && this._entityRegistry) {
+      this._unsubscribeAll().then(() => {
+        this._subscribeCalendarEvents();
+      });
+    }
+
+    // If no calendars configured, mark events as loaded to hide spinner
+    if (
+      this._entityRegistry &&
+      !this._calendars.length &&
+      !this._eventsLoaded
+    ) {
+      this._eventsLoaded = true;
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | CalendarCardConfig
-      | undefined;
+      CalendarCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -170,39 +276,98 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+  private async _handleViewChanged(
+    ev: HASSDomEvent<CalendarViewChanged>
+  ): Promise<void> {
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
-    this._fetchCalendarEvents();
+    this._eventsLoaded = false;
+    await this._unsubscribeAll();
+    this._subscribeCalendarEvents();
   }
 
-  private async _fetchCalendarEvents(): Promise<void> {
-    if (!this._startDate || !this._endDate) {
+  private _subscribeCalendarEvents(): void {
+    if (!this.hass || !this._startDate || !this._endDate) {
       return;
     }
 
     this._error = undefined;
-    const result = await fetchCalendarEvents(
-      this.hass!,
-      this._startDate,
-      this._endDate,
-      this._calendars
-    );
-    this._events = result.events;
 
-    if (result.errors.length > 0) {
+    this._calendars.forEach((calendar) => {
+      const unsub = subscribeCalendarEvents(
+        this.hass!,
+        calendar.entity_id,
+        this._startDate!,
+        this._endDate!,
+        (update: CalendarEventSubscription) => {
+          this._handleCalendarUpdate(calendar, update);
+        }
+      );
+      this._unsubs[calendar.entity_id] = unsub;
+    });
+  }
+
+  private _handleCalendarUpdate(
+    calendar: Calendar,
+    update: CalendarEventSubscription
+  ): void {
+    // Remove events from this calendar
+    this._events = this._events.filter(
+      (event) => event.calendar !== calendar.entity_id
+    );
+
+    if (update.events === null) {
+      // Error fetching events
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
+      }
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
       )}`;
+      return;
+    }
+
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    if (this._errorCalendars.length === 0) {
+      this._error = undefined;
+    }
+
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events
+      .map((eventData: CalendarEventApiData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
+      )
+      .filter((event): event is CalendarEvent => event !== null);
+
+    this._events = [...this._events, ...newEvents];
+
+    if (!this._eventsLoaded) {
+      this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          this._eventsLoaded = true;
+        });
+      });
     }
   }
 
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
+    this._unsubs = {};
+  }
+
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card");
-    if (!card) {
-      return;
-    }
-    this._narrow = card.offsetWidth < 870;
+    this._narrow = this.offsetWidth < 870;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -211,12 +376,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         debounce(() => this._measureCard(), 250, false)
       );
     }
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
+    this._resizeObserver.observe(this);
   }
 
   static styles = css`
@@ -242,7 +402,19 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     ha-full-calendar {
       --calendar-height: 400px;
-      height: var(--calendar-height);
+      display: flex;
+      width: 100%;
+      height: 100%;
+      min-height: var(--calendar-height);
+    }
+
+    ha-full-calendar[auto-height] {
+      --calendar-height: auto;
+      height: auto;
+    }
+
+    ha-full-calendar.loading {
+      visibility: hidden;
     }
 
     ha-full-calendar.is-grid,
@@ -252,9 +424,24 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     ha-full-calendar.is-grid.has-title,
     ha-full-calendar.is-panel.has-title {
+      --header-height: calc(
+        var(--ha-card-header-font-size, var(--ha-font-size-2xl)) *
+          var(--ha-line-height-condensed) + 16px
+      );
       --calendar-height: calc(
         100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
       );
+      height: calc(100% - var(--header-height));
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-background-color, var(--ha-card-background));
+      z-index: 1;
     }
   `;
 }

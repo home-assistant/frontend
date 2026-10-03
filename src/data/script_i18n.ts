@@ -1,22 +1,16 @@
 import { ensureArray } from "../common/array/ensure-array";
 import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
 import type { Condition } from "./automation";
-import { describeCondition } from "./automation_i18n";
-import { localizeDeviceAutomationAction } from "./device_automation";
-import type { EntityRegistryEntry } from "./entity_registry";
-import {
-  computeEntityRegistryName,
-  entityRegistryById,
-} from "./entity_registry";
-import type { FloorRegistryEntry } from "./floor_registry";
+import { describeCondition, type DescribeOptions } from "./automation_i18n";
+import { localizeDeviceAutomationAction } from "./device/device_automation";
+import type { EntityRegistryEntry } from "./entity/entity_registry";
 import { domainToName } from "./integration";
-import type { LabelRegistryEntry } from "./label_registry";
+import type { DomainManifestLookup } from "./integration";
 import type {
   ActionType,
   ActionTypes,
@@ -38,24 +32,32 @@ import { getActionType } from "./script";
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
 
+const shouldShowDomainPrefix = (
+  domain: string,
+  manifests?: DomainManifestLookup
+): boolean => {
+  if (!manifests) return true;
+  const manifest = manifests[domain];
+  if (!manifest) return true;
+  return manifest.integration_type !== "entity" || !manifest.is_built_in;
+};
+
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  labelRegistry: LabelRegistryEntry[],
-  floorRegistry: Record<string, FloorRegistryEntry>,
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false
+  options?: DescribeOptions,
+  manifests?: DomainManifestLookup
 ): string => {
   try {
     const description = tryDescribeAction(
       hass,
       entityRegistry,
-      labelRegistry,
-      floorRegistry,
       action,
       actionType,
-      ignoreAlias
+      options,
+      manifests
     );
     if (typeof description !== "string") {
       throw new Error(String(description));
@@ -75,13 +77,12 @@ export const describeAction = <T extends ActionType>(
 const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  labelRegistry: LabelRegistryEntry[],
-  floorRegistry: Record<string, FloorRegistryEntry>,
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false
+  options?: DescribeOptions,
+  manifests?: DomainManifestLookup
 ): string => {
-  if (action.alias && !ignoreAlias) {
+  if (action.alias && !options?.ignoreAlias) {
     return action.alias;
   }
   if (!actionType) {
@@ -100,107 +101,6 @@ const tryDescribeAction = <T extends ActionType>(
           { name: "target" }
         )
       );
-    } else if (targetOrData) {
-      for (const [key, name] of Object.entries({
-        area_id: "areas",
-        device_id: "devices",
-        entity_id: "entities",
-        floor_id: "floors",
-        label_id: "labels",
-      })) {
-        if (!(key in targetOrData)) {
-          continue;
-        }
-        const keyConf: string[] = ensureArray(targetOrData[key]) || [];
-
-        for (const targetThing of keyConf) {
-          if (isTemplate(targetThing)) {
-            targets.push(
-              hass.localize(
-                `${actionTranslationBaseKey}.service.description.target_template`,
-                { name }
-              )
-            );
-            break;
-          } else if (key === "entity_id") {
-            if (targetThing.includes(".")) {
-              const state = hass.states[targetThing];
-              if (state) {
-                targets.push(computeStateName(state));
-              } else {
-                targets.push(targetThing);
-              }
-            } else {
-              const entityReg = entityRegistryById(entityRegistry)[targetThing];
-              if (entityReg) {
-                targets.push(
-                  computeEntityRegistryName(hass, entityReg) || targetThing
-                );
-              } else if (targetThing === "all") {
-                targets.push(
-                  hass.localize(
-                    `${actionTranslationBaseKey}.service.description.target_every_entity`
-                  )
-                );
-              } else {
-                targets.push(
-                  hass.localize(
-                    `${actionTranslationBaseKey}.service.description.target_unknown_entity`
-                  )
-                );
-              }
-            }
-          } else if (key === "device_id") {
-            const device = hass.devices[targetThing];
-            if (device) {
-              targets.push(computeDeviceNameDisplay(device, hass));
-            } else {
-              targets.push(
-                hass.localize(
-                  `${actionTranslationBaseKey}.service.description.target_unknown_device`
-                )
-              );
-            }
-          } else if (key === "area_id") {
-            const area = hass.areas[targetThing];
-            if (area?.name) {
-              targets.push(area.name);
-            } else {
-              targets.push(
-                hass.localize(
-                  `${actionTranslationBaseKey}.service.description.target_unknown_area`
-                )
-              );
-            }
-          } else if (key === "floor_id") {
-            const floor = floorRegistry[targetThing] ?? undefined;
-            if (floor?.name) {
-              targets.push(floor.name);
-            } else {
-              targets.push(
-                hass.localize(
-                  `${actionTranslationBaseKey}.service.description.target_unknown_floor`
-                )
-              );
-            }
-          } else if (key === "label_id") {
-            const label = labelRegistry.find(
-              (lbl) => lbl.label_id === targetThing
-            );
-            if (label?.name) {
-              targets.push(label.name);
-            } else {
-              targets.push(
-                hass.localize(
-                  `${actionTranslationBaseKey}.service.description.target_unknown_label`
-                )
-              );
-            }
-          } else {
-            targets.push(targetThing);
-          }
-        }
-      }
     }
 
     if (
@@ -219,32 +119,29 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (config.action) {
       const [domain, serviceName] = config.action.split(".", 2);
+      const descriptionPlaceholders =
+        hass.services[domain]?.[serviceName]?.description_placeholders;
       const service =
-        hass.localize(`component.${domain}.services.${serviceName}.name`) ||
-        hass.services[domain][serviceName]?.name;
+        hass.localize(
+          `component.${domain}.services.${serviceName}.name`,
+          descriptionPlaceholders
+        ) || hass.services[domain]?.[serviceName]?.name;
 
       if (config.metadata) {
-        return hass.localize(
-          targets.length
-            ? `${actionTranslationBaseKey}.service.description.service_name`
-            : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
-          {
-            domain: domainToName(hass.localize, domain),
-            name: service || config.action,
-            targets: formatListWithAnds(hass.locale, targets),
-          }
-        );
+        if (service && shouldShowDomainPrefix(domain, manifests)) {
+          return `${domainToName(hass.localize, domain)}: ${service}`;
+        }
+        return service || config.action;
       }
 
       return hass.localize(
-        targets.length
-          ? `${actionTranslationBaseKey}.service.description.service_based_on_name`
-          : `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
+        `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
         {
           name: service
-            ? `${domainToName(hass.localize, domain)}: ${service}`
+            ? shouldShowDomainPrefix(domain, manifests)
+              ? `${domainToName(hass.localize, domain)}: ${service}`
+              : service
             : config.action,
-          targets: formatListWithAnds(hass.locale, targets),
         }
       );
     }
@@ -425,7 +322,12 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.check_condition.description.full`,
       {
-        condition: describeCondition(action as Condition, hass, entityRegistry),
+        condition: describeCondition(
+          action as Condition,
+          hass,
+          entityRegistry,
+          options
+        ),
       }
     );
   }
@@ -438,14 +340,17 @@ const tryDescribeAction = <T extends ActionType>(
       );
     }
     const localized = localizeDeviceAutomationAction(
-      hass,
+      hass.localize,
+      hass.states,
       entityRegistry,
       config
     );
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id];
+    const stateObj = config.entity_id
+      ? hass.states[config.entity_id]
+      : undefined;
     if (config.type) {
       return `${config.type} ${
         stateObj ? computeStateName(stateObj) : config.entity_id
@@ -461,7 +366,7 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "sequence") {
     const config = action as SequenceAction;
-    const numActions = ensureArray(config.sequence).length;
+    const numActions = ensureArray(config.sequence ?? []).length;
     return hass.localize(
       `${actionTranslationBaseKey}.sequence.description.full`,
       { number: numActions }

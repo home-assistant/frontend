@@ -1,68 +1,40 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
-import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
 
-type HassioDockerRegistries = Record<
+type HassioDockerRegistries = Record<string, { username: string }>;
+
+type HassioDockerRegistryCredentials = Record<
   string,
-  { username: string; password?: string }
+  { username: string; password: string }
 >;
 
 export const fetchHassioDockerRegistries = async (
   hass: HomeAssistant
-): Promise<HassioDockerRegistries> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/docker/registries`,
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioDockerRegistries>>(
-      "GET",
-      "hassio/docker/registries"
-    )
-  );
-};
+): Promise<{ registries: HassioDockerRegistries }> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/docker/registries`,
+    method: "get",
+  });
 
 export const addHassioDockerRegistry = async (
   hass: HomeAssistant,
-  data: HassioDockerRegistries
+  data: HassioDockerRegistryCredentials
 ) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/docker/registries`,
-      method: "post",
-      data,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<HassioDockerRegistries>>(
-    "POST",
-    "hassio/docker/registries",
-    data
-  );
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/docker/registries`,
+    method: "post",
+    data,
+  });
 };
 
 export const removeHassioDockerRegistry = async (
   hass: HomeAssistant,
   registry: string
 ) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/docker/registries/${registry}`,
-      method: "delete",
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "DELETE",
-    `hassio/docker/registries/${registry}`
-  );
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/docker/registries/${registry}`,
+    method: "delete",
+  });
 };

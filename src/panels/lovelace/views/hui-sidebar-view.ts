@@ -1,8 +1,9 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -13,6 +14,7 @@ import type { HuiCardOptions } from "../components/hui-card-options";
 import { replaceCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
 
+@customElement("hui-sidebar-view")
 export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -27,6 +29,12 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
+
+  @query("#main") private _oldMain?: HTMLElement;
+
+  @query("#sidebar") private _oldSidebar?: HTMLElement;
+
+  @query(".container") private _container?: HTMLElement;
 
   private _mqlListenerRef?: () => void;
 
@@ -69,8 +77,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
-      | Lovelace
-      | undefined;
+      Lovelace | undefined;
 
     if (
       (!changedProperties.has("cards") &&
@@ -84,7 +91,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       <hui-view-badges
-        .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
@@ -93,19 +99,16 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       <div
         class="container ${this.lovelace?.editMode ? "edit-mode" : ""}"
       ></div>
-      ${this.lovelace?.editMode
-        ? html`
-            <ha-fab
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              extended
-              @click=${this._addCard}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>
-          `
-        : ""}
+      ${
+        this.lovelace?.editMode
+          ? html`
+              <ha-button size="l" @click=${this._addCard}>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+              </ha-button>
+            `
+          : ""
+      }
     `;
   }
 
@@ -126,20 +129,18 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     }
 
     if (this.hasUpdated) {
-      const oldMain = this.renderRoot.querySelector("#main");
-      const oldSidebar = this.renderRoot.querySelector("#sidebar");
-      const container = this.renderRoot.querySelector(".container")!;
-      if (oldMain) {
-        container.removeChild(oldMain);
+      const container = this._container!;
+      if (this._oldMain) {
+        container.removeChild(this._oldMain);
       }
-      if (oldSidebar) {
-        container.removeChild(oldSidebar);
+      if (this._oldSidebar) {
+        container.removeChild(this._oldSidebar);
       }
       container.appendChild(mainDiv);
       container.appendChild(sidebarDiv);
     } else {
       this.updateComplete.then(() => {
-        const container = this.renderRoot.querySelector(".container")!;
+        const container = this._container!;
         container.appendChild(mainDiv);
         container.appendChild(sidebarDiv);
       });
@@ -240,13 +241,14 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       }
     }
 
-    ha-fab {
+    ha-button {
       position: fixed;
       right: calc(16px + var(--safe-area-inset-right));
       bottom: calc(16px + var(--safe-area-inset-bottom));
       inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }
@@ -256,5 +258,3 @@ declare global {
     "hui-sidebar-view": SideBarView;
   }
 }
-
-customElements.define("hui-sidebar-view", SideBarView);

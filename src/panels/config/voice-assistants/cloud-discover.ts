@@ -6,7 +6,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
+import "../../../components/voice-assistant-brand-icon";
 
 @customElement("cloud-discover")
 export class CloudDiscover extends LitElement {
@@ -47,26 +47,12 @@ export class CloudDiscover extends LitElement {
             </div>
             <div class="feature">
               <div class="logos">
-                <img
-                  alt="Google Assistant"
-                  src=${brandsUrl({
-                    domain: "google_assistant",
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-                <img
-                  alt="Amazon Alexa"
-                  src=${brandsUrl({
-                    domain: "alexa",
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
+                <voice-assistant-brand-icon
+                  .voiceAssistantId=${"cloud.google_assistant"}
+                >
+                </voice-assistant-brand-icon>
+                <voice-assistant-brand-icon .voiceAssistantId=${"cloud.alexa"}>
+                </voice-assistant-brand-icon>
               </div>
               <h2>
                 ${this.hass.localize(
@@ -83,7 +69,7 @@ export class CloudDiscover extends LitElement {
           <div class="more">
             <ha-button
               appearance="plain"
-              size="small"
+              size="s"
               href="https://www.nabucasa.com"
               target="_blank"
               rel="noreferrer"
@@ -95,22 +81,24 @@ export class CloudDiscover extends LitElement {
             </ha-button>
           </div>
         </div>
-        ${isComponentLoaded(this.hass, "cloud")
-          ? html`
-              <div class="card-actions">
-                <ha-button appearance="plain" href="/config/cloud/login">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                  )}
-                </ha-button>
-                <ha-button href="/config/cloud/register" appearance="filled">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : nothing}
+        ${
+          isComponentLoaded(this.hass.config, "cloud")
+            ? html`
+                <div class="card-actions">
+                  <ha-button appearance="plain" href="/config/cloud/login">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                    )}
+                  </ha-button>
+                  <ha-button href="/config/cloud/register" appearance="filled">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : nothing
+        }
       </ha-card>
     `;
   }
@@ -162,11 +150,12 @@ export class CloudDiscover extends LitElement {
     }
     .feature .logos {
       margin-bottom: 16px;
+      display: flex;
+      gap: var(--ha-space-4);
     }
     .feature .logos > * {
       width: 40px;
       height: 40px;
-      margin: 0 4px;
     }
     .round-icon {
       border-radius: var(--ha-border-radius-circle);

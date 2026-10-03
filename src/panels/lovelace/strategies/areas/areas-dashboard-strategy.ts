@@ -4,7 +4,10 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceStrategyEditor } from "../types";
+import type {
+  LovelaceStrategyEditor,
+  LovelaceStrategyDependency,
+} from "../types";
 import type {
   AreaViewStrategyConfig,
   EntitiesDisplay,
@@ -31,6 +34,10 @@ export interface AreasDashboardStrategyConfig {
 
 @customElement("areas-dashboard-strategy")
 export class AreasDashboardStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "areas",
+  ];
+
   static async generate(
     config: AreasDashboardStrategyConfig,
     hass: HomeAssistant

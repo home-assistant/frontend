@@ -1,9 +1,9 @@
 import { expose } from "comlink";
+import type { FuseOptionKey, IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
 import { ipCompare, stringCompare } from "../../common/string/compare";
 import { stripDiacritics } from "../../common/string/strip-diacritics";
-import { HaFuse } from "../../resources/fuse";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -11,48 +11,159 @@ import type {
   SortingDirection,
 } from "./ha-data-table";
 
-const fuseIndex = memoizeOne(
-  (data: DataTableRowData[], columns: SortableColumnContainer) => {
-    const searchKeys = new Set<string>();
-    Object.entries(columns).forEach(([key, column]) => {
-      if (column.filterable) {
-        searchKeys.add(
-          column.filterKey
-            ? `${column.valueColumn || key}.${column.filterKey}`
-            : key
-        );
-      }
-    });
-    return Fuse.createIndex([...searchKeys], data);
-  }
+interface FilterKeyConfig {
+  key: string;
+  filterKey?: string;
+}
+
+const getFilterKeys = memoizeOne(
+  (columns: SortableColumnContainer): FilterKeyConfig[] =>
+    Object.entries(columns)
+      .filter(([, column]) => column.filterable)
+      .map(([key, column]) => ({
+        key: column.valueColumn || key,
+        filterKey: column.filterKey,
+      }))
 );
 
+const getSearchableValue = (
+  row: DataTableRowData,
+  { key, filterKey }: FilterKeyConfig
+): string => {
+  let value = row[key];
+
+  if (value == null) {
+    return "";
+  }
+
+  if (filterKey && typeof value === "object" && !Array.isArray(value)) {
+    value = value[filterKey];
+    if (value == null) {
+      return "";
+    }
+  }
+
+  if (Array.isArray(value)) {
+    const stringValues = value
+      .filter((item) => item != null && typeof item !== "object")
+      .map(String);
+    return stripDiacritics(stringValues.join(" ").toLowerCase());
+  }
+
+  return stripDiacritics(String(value).toLowerCase());
+};
+
+/** Filters data using exact substring matching (all terms must match). */
+const filterDataExact = (
+  data: DataTableRowData[],
+  filterKeys: FilterKeyConfig[],
+  terms: string[]
+): DataTableRowData[] => {
+  if (terms.length === 1) {
+    const term = terms[0];
+    return data.filter((row) =>
+      filterKeys.some((config) =>
+        getSearchableValue(row, config).includes(term)
+      )
+    );
+  }
+
+  return data.filter((row) => {
+    const searchString = filterKeys
+      .map((config) => getSearchableValue(row, config))
+      .join(" ");
+    return terms.every((term) => searchString.includes(term));
+  });
+};
+
+const FUZZY_OPTIONS: IFuseOptions<DataTableRowData> = {
+  ignoreDiacritics: true,
+  isCaseSensitive: false,
+  threshold: 0.2, // Stricter than default 0.3
+  minMatchCharLength: 2,
+  ignoreLocation: true,
+  shouldSort: false,
+};
+
+interface FuseKeyConfig {
+  name: string | string[];
+  getFn: (row: DataTableRowData) => string;
+}
+
+/** Filters data using fuzzy matching with Fuse.js (all terms must match). */
+const filterDataFuzzy = (
+  data: DataTableRowData[],
+  filterKeys: FilterKeyConfig[],
+  terms: string[]
+): DataTableRowData[] => {
+  // Build Fuse.js search keys from filter keys
+  const fuseKeys: FuseKeyConfig[] = filterKeys.map((config) => ({
+    name: config.filterKey ? [config.key, config.filterKey] : config.key,
+    getFn: (row: DataTableRowData) => getSearchableValue(row, config),
+  }));
+
+  // Find minimum term length to adjust minMatchCharLength
+  const minTermLength = Math.min(...terms.map((t) => t.length));
+  const minMatchCharLength = Math.min(minTermLength, 2);
+
+  const fuse = new Fuse<DataTableRowData>(data, {
+    ...FUZZY_OPTIONS,
+    keys: fuseKeys as FuseOptionKey<DataTableRowData>[],
+    minMatchCharLength,
+  });
+
+  // For single term, simple search
+  if (terms.length === 1) {
+    return fuse.search(terms[0]).map((r) => r.item);
+  }
+
+  // For multiple terms, all must match (AND logic)
+  const expression = {
+    $and: terms.map((term) => ({
+      $or: fuseKeys.map((key) => ({
+        $path: Array.isArray(key.name) ? key.name : [key.name],
+        $val: term,
+      })),
+    })),
+  };
+
+  return fuse.search(expression).map((r) => r.item);
+};
+
+/**
+ * Filters data with exact match priority and fuzzy fallback.
+ * - First tries exact substring matching
+ * - If exact matches found, returns only those
+ * - If no exact matches, falls back to fuzzy search with strict scoring
+ */
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
-) => {
-  filter = stripDiacritics(filter.toLowerCase());
+): DataTableRowData[] => {
+  const normalizedFilter = stripDiacritics(filter.toLowerCase().trim());
 
-  if (filter === "") {
+  if (!normalizedFilter) {
     return data;
   }
 
-  const index = fuseIndex(data, columns);
+  const filterKeys = getFilterKeys(columns);
 
-  const fuse = new HaFuse(
-    data,
-    { shouldSort: false, minMatchCharLength: 1 },
-    index
-  );
-
-  const searchResults = fuse.multiTermsSearch(filter);
-
-  if (searchResults) {
-    return searchResults.map((result) => result.item);
+  if (!filterKeys.length) {
+    return data;
   }
 
-  return data;
+  const terms = normalizedFilter.split(/\s+/);
+
+  // First, try exact substring matching
+  const exactMatches = filterDataExact(data, filterKeys, terms);
+
+  if (exactMatches.length > 0) {
+    return exactMatches;
+  }
+
+  // No exact matches, fall back to fuzzy search
+  return filterDataFuzzy(data, filterKeys, terms);
 };
 
 const sortData = (

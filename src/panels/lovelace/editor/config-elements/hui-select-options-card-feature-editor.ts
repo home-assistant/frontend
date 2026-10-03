@@ -38,34 +38,45 @@ export class HuiSelectOptionsCardFeatureEditor
   private _schema = memoizeOne(
     (
       formatEntityState: FormatEntityStateFunc,
-      stateObj: HassEntity | undefined,
-      customizeOptions: boolean
+      stateObj: HassEntity | undefined
     ) =>
       [
+        {
+          name: "style",
+          selector: {
+            select: {
+              multiple: false,
+              mode: "list",
+              options: ["dropdown", "buttons"].map((value) => ({
+                value,
+                label: this.hass!.localize(
+                  `ui.panel.lovelace.editor.features.types.select-options.style_list.${value}`
+                ),
+              })),
+            },
+          },
+        },
         {
           name: "customize_options",
           selector: {
             boolean: {},
           },
         },
-        ...(customizeOptions
-          ? ([
-              {
-                name: "options",
-                selector: {
-                  select: {
-                    multiple: true,
-                    reorder: true,
-                    options:
-                      stateObj?.attributes.options?.map((option) => ({
-                        value: option,
-                        label: formatEntityState(stateObj, option),
-                      })) || [],
-                  },
-                },
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
+        {
+          name: "options",
+          visible: { field: "customize_options", value: true },
+          selector: {
+            select: {
+              multiple: true,
+              reorder: true,
+              options:
+                stateObj?.attributes.options?.map((option) => ({
+                  value: option,
+                  label: formatEntityState(stateObj, option),
+                })) || [],
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -79,15 +90,12 @@ export class HuiSelectOptionsCardFeatureEditor
       : undefined;
 
     const data: SelectOptionsCardFeatureData = {
+      style: "dropdown",
       ...this._config,
       customize_options: this._config.options !== undefined,
     };
 
-    const schema = this._schema(
-      this.hass.formatEntityState,
-      stateObj,
-      data.customize_options
-    );
+    const schema = this._schema(this.hass.formatEntityState, stateObj);
 
     return html`
       <ha-form
@@ -124,6 +132,7 @@ export class HuiSelectOptionsCardFeatureEditor
     switch (schema.name) {
       case "options":
       case "customize_options":
+      case "style":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.select-options.${schema.name}`
         );

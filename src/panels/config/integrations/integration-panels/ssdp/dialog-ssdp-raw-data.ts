@@ -1,12 +1,13 @@
 import { LitElement, html, nothing, css } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import type { TemplateResult } from "lit";
+import type { ContextType } from "@lit/context";
 import { dump } from "js-yaml";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-dialog";
+import { internationalizationContext } from "../../../../../data/context";
 
 export interface SSDPRawDataDialogParams {
   key: string;
@@ -14,19 +15,27 @@ export interface SSDPRawDataDialogParams {
 }
 
 @customElement("dialog-ssdp-raw-data")
-class DialogSSDPRawData extends LitElement implements HassDialog {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+class DialogSSDPRawData extends LitElement {
   @state() private _params?: SSDPRawDataDialogParams;
+
+  @state() private _open = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   public async showDialog(params: SSDPRawDataDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
-  public closeDialog(): boolean {
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -36,17 +45,14 @@ class DialogSSDPRawData extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          `${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`
-        )}
+        .open=${this._open}
+        header-title=${`${this._i18n.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`}
+        @closed=${this._dialogClosed}
       >
         <ha-code-editor
           mode="yaml"
           .value=${dump(this._params.data)}
-          readonly
+          read-only
           autofocus
         ></ha-code-editor>
       </ha-dialog>

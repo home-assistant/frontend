@@ -24,7 +24,6 @@ declare global {
   interface HASSDomEvents {
     "ll-rebuild": Record<string, unknown>;
     "ll-upgrade": Record<string, unknown>;
-    "ll-badge-rebuild": Record<string, unknown>;
   }
 }
 
@@ -44,6 +43,8 @@ export interface Lovelace {
 
 export interface LovelaceBadge extends HTMLElement {
   hass?: HomeAssistant;
+  preview?: boolean;
+  connectedWhileHidden?: boolean;
   setConfig(config: LovelaceBadgeConfig): void;
 }
 
@@ -63,8 +64,6 @@ export interface LovelaceGridOptions {
   min_columns?: number;
   min_rows?: number;
   max_rows?: number;
-  fixed_rows?: boolean;
-  fixed_columns?: boolean;
 }
 
 export interface LovelaceCard extends HTMLElement {
@@ -98,6 +97,7 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
     entities: string[],
     entitiesFallback: string[]
   ) => LovelaceCardConfig;
+  getDefaultConfig?: () => Partial<LovelaceCardConfig>;
   getConfigElement?: () => LovelaceCardEditor;
   getConfigForm?: () => LovelaceConfigForm;
 }
@@ -108,12 +108,12 @@ export interface LovelaceBadgeConstructor extends Constructor<LovelaceBadge> {
     entities: string[],
     entitiesFallback: string[]
   ) => LovelaceBadgeConfig;
+  getDefaultConfig?: () => Partial<LovelaceBadgeConfig>;
   getConfigElement?: () => LovelaceBadgeEditor;
   getConfigForm?: () => LovelaceConfigForm;
 }
 
-export interface LovelaceHeaderFooterConstructor
-  extends Constructor<LovelaceHeaderFooter> {
+export interface LovelaceHeaderFooterConstructor extends Constructor<LovelaceHeaderFooter> {
   getStubConfig?: (
     hass: HomeAssistant,
     entities: string[],
@@ -126,8 +126,7 @@ export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
   getConfigElement?: () => LovelaceRowEditor;
 }
 
-export interface LovelaceElementConstructor
-  extends Constructor<LovelaceElement> {
+export interface LovelaceElementConstructor extends Constructor<LovelaceElement> {
   getConfigElement?: () => LovelacePictureElementEditor;
   getStubConfig?: (
     hass: HomeAssistant,
@@ -151,8 +150,7 @@ export interface LovelaceBadgeEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceBadgeConfig): void;
 }
 
-export interface LovelaceHeaderFooterEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelaceHeaderFooterEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
@@ -160,8 +158,7 @@ export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
 }
 
-export interface LovelacePictureElementEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelacePictureElementEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceElementConfig): void;
 }
 
@@ -184,8 +181,7 @@ export interface LovelaceCardFeature extends HTMLElement {
   position?: LovelaceCardFeaturePosition;
 }
 
-export interface LovelaceCardFeatureConstructor
-  extends Constructor<LovelaceCardFeature> {
+export interface LovelaceCardFeatureConstructor extends Constructor<LovelaceCardFeature> {
   getStubConfig?: (
     hass: HomeAssistant,
     context?: LovelaceCardFeatureContext
@@ -198,8 +194,7 @@ export interface LovelaceCardFeatureConstructor
   isSupported?: (stateObj?: HassEntity) => boolean;
 }
 
-export interface LovelaceCardFeatureEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelaceCardFeatureEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardFeatureConfig): void;
 }
 
@@ -209,8 +204,7 @@ export interface LovelaceHeadingBadge extends HTMLElement {
   setConfig(config: LovelaceHeadingBadgeConfig);
 }
 
-export interface LovelaceHeadingBadgeConstructor
-  extends Constructor<LovelaceHeadingBadge> {
+export interface LovelaceHeadingBadgeConstructor extends Constructor<LovelaceHeadingBadge> {
   getStubConfig?: (
     hass: HomeAssistant,
     stateObj?: HassEntity
@@ -222,7 +216,6 @@ export interface LovelaceHeadingBadgeConstructor
   };
 }
 
-export interface LovelaceHeadingBadgeEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelaceHeadingBadgeEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceHeadingBadgeConfig): void;
 }

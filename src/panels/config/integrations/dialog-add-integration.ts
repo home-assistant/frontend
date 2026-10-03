@@ -3,11 +3,14 @@ import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
+import { customElement, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -16,13 +19,23 @@ import {
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
-import "../../../components/ha-list";
-import "../../../components/ha-spinner";
-import "../../../components/search-input";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-virtualized";
+import type {
+  HaListVirtualized,
+  HaListVirtualizedItem,
+} from "../../../components/list/ha-list-virtualized";
 import { getConfigEntries } from "../../../data/config_entries";
-import { fetchConfigFlowInProgress } from "../../../data/config_flow";
+import {
+  DISCOVERY_SOURCES,
+  fetchConfigFlowInProgress,
+} from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   domainToName,
@@ -43,15 +56,17 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
+import { haStyleDialog } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
+import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
+import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
 
-export interface IntegrationListItem {
+export interface IntegrationListItem extends HaListVirtualizedItem {
   name: string;
   domain: string;
   config_flow?: boolean;
@@ -65,6 +80,7 @@ export interface IntegrationListItem {
   overwrites_built_in?: boolean;
   is_add?: boolean;
   single_config_entry?: boolean;
+  is_discovered?: boolean;
 }
 
 @customElement("dialog-add-integration")
@@ -85,9 +101,17 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _flowsInProgress?: DataEntryFlowProgress[];
 
+  @state() private _showDiscovered = false;
+
+  @state() private _openedDirectly = false;
+
+  @state() private _navigateToResult = false;
+
   @state() private _open = false;
 
   @state() private _narrow = false;
+
+  @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
 
   private _width?: number;
 
@@ -95,23 +119,38 @@ class AddIntegrationDialog extends LitElement {
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
     const loadPromise = this._load();
-    if (params?.domain) {
-      // Just open the config flow dialog, do not show this dialog
-      await this._createFlow(params.domain);
-      return;
-    }
 
-    if (params?.brand) {
+    if (params?.domain) {
+      // If we get here we clicked the button to add an entry for a specific integration
+      // If there is discovery in process, show this dialog to select a new flow
+      // or continue an existing flow.
+      // If no flow in process, just open the config flow dialog directly
       await loadPromise;
-      const brand = this._integrations?.[params.brand];
-      if (brand && "integrations" in brand && brand.integrations) {
-        this._fetchFlowsInProgress(Object.keys(brand.integrations));
+      const flowsInProgress = this._getFlowsInProgressForDomains([
+        params.domain,
+      ]);
+
+      if (!flowsInProgress.length) {
+        await this._createFlow(params.domain);
+        return;
       }
     }
-    // Only open the dialog if no domain is provided
+
+    if (params?.brand === "_discovered") {
+      // Wait for load to complete before showing discovered flows
+      await loadPromise;
+      this._showDiscovered = true;
+    }
+
+    // Only open the dialog if no domain is provided or we need to select a flow
     this._open = true;
-    this._pickedBrand = params?.brand;
+    this._pickedBrand =
+      params?.brand === "_discovered"
+        ? undefined
+        : params?.domain || params?.brand;
+    this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
+    this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
@@ -119,11 +158,18 @@ class AddIntegrationDialog extends LitElement {
 
   public closeDialog() {
     this._open = false;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._integrations = undefined;
     this._helpers = undefined;
     this._pickedBrand = undefined;
     this._prevPickedBrand = undefined;
     this._flowsInProgress = undefined;
+    this._showDiscovered = false;
+    this._openedDirectly = false;
+    this._navigateToResult = false;
     this._filter = undefined;
     this._width = undefined;
     this._height = undefined;
@@ -152,8 +198,9 @@ class AddIntegrationDialog extends LitElement {
       (!this._width || !this._height)
     ) {
       // Store the width and height so that when we search, box doesn't jump
-      const boundingRect =
-        this.shadowRoot!.querySelector("ha-list")?.getBoundingClientRect();
+      const boundingRect = this.shadowRoot!.querySelector(
+        "ha-list-virtualized"
+      )?.getBoundingClientRect();
       this._width = boundingRect?.width;
       this._height = boundingRect?.height;
     }
@@ -165,12 +212,34 @@ class AddIntegrationDialog extends LitElement {
       h: Integrations,
       components: HassConfig["components"],
       localize: LocalizeFunc,
+      discoveredFlowsCount: number,
       filter?: string
     ): IntegrationListItem[] => {
+      // Create a single discovered devices row if there are any discovered flows
+      const discoveredRows: IntegrationListItem[] =
+        discoveredFlowsCount > 0
+          ? [
+              {
+                id: "_discovered",
+                interactive: true,
+                name: localize(
+                  "ui.panel.config.integrations.discovered_devices",
+                  { count: discoveredFlowsCount }
+                ),
+                domain: "_discovered",
+                config_flow: true,
+                is_built_in: true,
+                is_discovered: true,
+              },
+            ]
+          : [];
+
       const addDeviceRows: IntegrationListItem[] = PROTOCOL_INTEGRATIONS.filter(
         (domain) => components.includes(domain)
       )
         .map((domain) => ({
+          id: `device_${domain}`,
+          interactive: true,
           name: localize(`ui.panel.config.integrations.add_${domain}_device`),
           domain,
           config_flow: true,
@@ -211,6 +280,8 @@ class AddIntegrationDialog extends LitElement {
             return;
           }
           integrations.push({
+            id: domain,
+            interactive: true,
             domain,
             name: integration.name || domainToName(localize, domain),
             config_flow: supportedIntegration.config_flow,
@@ -227,6 +298,8 @@ class AddIntegrationDialog extends LitElement {
         ) {
           // Brand
           integrations.push({
+            id: domain,
+            interactive: true,
             domain,
             name: integration.name || domainToName(localize, domain),
             iot_standards: integration.iot_standards,
@@ -244,6 +317,8 @@ class AddIntegrationDialog extends LitElement {
         } else if (filter && "integration_type" in integration) {
           // Integration without a config flow
           yamlIntegrations.push({
+            id: domain,
+            interactive: true,
             domain,
             name: integration.name || domainToName(localize, domain),
             config_flow: integration.config_flow,
@@ -269,6 +344,8 @@ class AddIntegrationDialog extends LitElement {
           ignoreDiacritics: true,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
+          id: domain,
+          interactive: true,
           domain,
           name: integration.name || domainToName(localize, domain),
           config_flow: integration.config_flow,
@@ -289,6 +366,7 @@ class AddIntegrationDialog extends LitElement {
         ];
       }
       return [
+        ...discoveredRows,
         ...addDeviceRows,
         ...integrations.sort((a, b) =>
           caseInsensitiveStringCompare(
@@ -307,12 +385,13 @@ class AddIntegrationDialog extends LitElement {
       this._helpers!,
       this.hass.config.components,
       this.hass.localize,
+      this._flowsInProgress?.length ?? 0,
       this._filter
     );
   }
 
   protected render() {
-    if (!this._open) {
+    if (!this._open && !this._integrations && !this._helpers) {
       return nothing;
     }
     const integrations = this._integrations
@@ -324,61 +403,106 @@ class AddIntegrationDialog extends LitElement {
         findIntegration(this._integrations, this._pickedBrand)
       : undefined;
 
+    const showingBrandView =
+      (this._pickedBrand && (!this._integrations || pickedIntegration)) ||
+      this._showDiscovered;
+
+    const flowsInProgress = showingBrandView
+      ? this._getFlowsForCurrentView(pickedIntegration)
+      : [];
+
+    const headerTitle = showingBrandView
+      ? this._getBrandHeading(pickedIntegration, flowsInProgress)
+      : this.hass.localize("ui.panel.config.integrations.new");
+
     return html`<ha-dialog
-      open
-      @closed=${this.closeDialog}
-      scrimClickAction
-      hideActions
-      .heading=${createCloseHeading(
-        this.hass,
-        this.hass.localize("ui.panel.config.integrations.new")
-      )}
+      .open=${this._open}
+      header-title=${headerTitle}
+      @closed=${this._dialogClosed}
     >
-      ${this._pickedBrand && (!this._integrations || pickedIntegration)
-        ? html`<div slot="heading">
-              <ha-icon-button-prev
-                @click=${this._prevClicked}
-              ></ha-icon-button-prev>
-              <h2 class="mdc-dialog__title">
-                ${this._calculateBrandHeading(pickedIntegration)}
-              </h2>
-            </div>
-            ${this._renderIntegration(pickedIntegration)}`
-        : this._renderAll(integrations)}
+      ${
+        showingBrandView
+          ? html`
+              ${
+                !this._openedDirectly
+                  ? html`
+                      <ha-icon-button-prev
+                        slot="headerNavigationIcon"
+                        @click=${this._prevClicked}
+                      ></ha-icon-button-prev>
+                    `
+                  : nothing
+              }
+              ${this._renderBrandView(pickedIntegration, flowsInProgress)}
+            `
+          : this._renderAll(integrations)
+      }
     </ha-dialog>`;
   }
 
-  private _calculateBrandHeading(integration: Brand | Integration | undefined) {
+  private _getFlowsForCurrentView(
+    integration: Brand | Integration | undefined
+  ): DataEntryFlowProgress[] {
+    if (this._showDiscovered) {
+      // Show all discovered flows
+      return this._flowsInProgress || [];
+    }
+    if (!this._pickedBrand || !integration) {
+      return [];
+    }
+    // Get domains for this brand
+    let domains: string[];
+    if ("integrations" in integration && integration.integrations) {
+      domains = Object.keys(integration.integrations);
+      if (this._pickedBrand === "apple") {
+        // we show discovered homekit devices in their own brand section, dont show them in apple
+        domains = domains.filter((domain) => domain !== "homekit_controller");
+      }
+    } else {
+      domains = [this._pickedBrand];
+    }
+    return this._getFlowsInProgressForDomains(domains);
+  }
+
+  private _getBrandHeading(
+    integration: Brand | Integration | undefined,
+    flowsInProgress: DataEntryFlowProgress[]
+  ): string {
     if (
       integration?.iot_standards &&
       !("integrations" in integration) &&
-      !this._flowsInProgress?.length
+      !flowsInProgress.length
     ) {
       return this.hass.localize(
         "ui.panel.config.integrations.what_device_type"
       );
     }
+
     if (
       integration &&
       !integration?.iot_standards &&
       !("integrations" in integration) &&
-      this._flowsInProgress?.length
+      flowsInProgress.length
     ) {
       return this.hass.localize(
         "ui.panel.config.integrations.confirm_add_discovered"
       );
     }
+
     return this.hass.localize("ui.panel.config.integrations.what_to_add");
   }
 
-  private _renderIntegration(
-    integration: Brand | Integration | undefined
+  private _renderBrandView(
+    integration: Brand | Integration | undefined,
+    flowsInProgress: DataEntryFlowProgress[]
   ): TemplateResult {
     return html`<ha-domain-integrations
       .hass=${this.hass}
       .domain=${this._pickedBrand}
       .integration=${integration}
-      .flowsInProgress=${this._flowsInProgress}
+      .flowsInProgress=${flowsInProgress}
+      .navigateToResult=${this._navigateToResult}
+      .showManageLink=${this._showDiscovered}
       style=${styleMap({
         minWidth: `${this._width}px`,
         minHeight: `581px`,
@@ -423,6 +547,7 @@ class AddIntegrationDialog extends LitElement {
         }
         if (supportIntegration) {
           this._handleIntegrationPicked({
+            id: integration.supported_by,
             domain: integration.supported_by,
             name:
               supportIntegration.name ||
@@ -441,45 +566,34 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
-    return html`<search-input
-        .hass=${this.hass}
-        dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
-        .filter=${this._filter}
-        @value-changed=${this._filterChanged}
-        .label=${this.hass.localize(
+    return html`<ha-input-search
+        appearance="outlined"
+        ?autofocus=${!this._narrow}
+        .value=${this._filter}
+        @input=${this._filterChanged}
+        .placeholder=${this.hass.localize(
           "ui.panel.config.integrations.search_brand"
         )}
-        @keypress=${this._maybeSubmit}
-      ></search-input>
-      ${integrations
-        ? html`<ha-list
-            dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
-          >
-            <lit-virtualizer
-              scroller
-              tabindex="-1"
-              class="ha-scrollbar"
+        @keydown=${this._maybeSubmit}
+      ></ha-input-search>
+      ${
+        integrations
+          ? html`<ha-list-virtualized
+              .rows=${integrations}
+              .rowRenderer=${this._renderRow}
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow
                   ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
                   : "500px",
               })}
-              @click=${this._integrationPicked}
-              @keypress=${this._handleKeyPress}
-              .items=${integrations}
-              .keyFunction=${this._keyFunction}
-              .renderItem=${this._renderRow}
             >
-            </lit-virtualizer>
-          </ha-list>`
-        : html`<div class="flex center">
-            <ha-spinner></ha-spinner>
-          </div>`} `;
+            </ha-list-virtualized>`
+          : html`<div class="flex center">
+              <ha-spinner></ha-spinner>
+            </div>`
+      }`;
   }
-
-  private _keyFunction = (integration: IntegrationListItem) =>
-    integration.domain;
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
@@ -487,17 +601,32 @@ class AddIntegrationDialog extends LitElement {
     }
     return html`
       <ha-integration-list-item
-        brand
-        .hass=${this.hass}
+        @click=${this._integrationPicked}
         .integration=${integration}
-        tabindex="0"
       >
       </ha-integration-list-item>
     `;
   };
 
   private async _load() {
-    const descriptions = await getIntegrationDescriptions(this.hass);
+    const [descriptions, flowsInProgress] = await Promise.all([
+      getIntegrationDescriptions(this.hass),
+      fetchConfigFlowInProgress(this.hass.connection),
+    ]);
+
+    // Filter discovered flows
+    this._flowsInProgress = flowsInProgress.filter((flow) =>
+      DISCOVERY_SOURCES.includes(flow.context.source)
+    );
+
+    // Load translations for discovered flow handlers
+    if (this._flowsInProgress.length) {
+      const discoveredHandlers = [
+        ...new Set(this._flowsInProgress.map((flow) => flow.handler)),
+      ];
+      await this.hass.loadBackendTranslation("title", discoveredHandlers, true);
+    }
+
     for (const integration in descriptions.custom.integration) {
       if (
         !Object.prototype.hasOwnProperty.call(
@@ -535,27 +664,28 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  private async _filterChanged(e) {
-    this._filter = e.detail.value;
+  private async _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
   }
 
-  private _integrationPicked(ev) {
-    const listItem = ev.target.closest("ha-integration-list-item");
-    if (!listItem) {
+  private _integrationPicked = (
+    ev: HASSDomCurrentTargetEvent<HaIntegrationListItem>
+  ) => {
+    if (!ev.currentTarget.integration) {
       return;
     }
-    this._handleIntegrationPicked(listItem.integration);
-  }
-
-  private _handleKeyPress(ev) {
-    if (ev.key === "Enter") {
-      this._integrationPicked(ev);
-    }
-  }
+    this._handleIntegrationPicked(ev.currentTarget.integration);
+  };
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
     if (integration.supported_by) {
       this._supportedBy(integration);
+      return;
+    }
+
+    if (integration.is_discovered) {
+      // Show all discovered flows
+      this._showDiscovered = true;
       return;
     }
 
@@ -572,12 +702,6 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.integrations) {
-      let domains = integration.domains || [];
-      if (integration.domain === "apple") {
-        // we show discovered homekit devices in their own brand section, dont show them in apple
-        domains = domains.filter((domain) => domain !== "homekit_controller");
-      }
-      this._fetchFlowsInProgress(domains);
       this._pickedBrand = integration.domain;
       return;
     }
@@ -586,7 +710,7 @@ class AddIntegrationDialog extends LitElement {
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
-      isComponentLoaded(this.hass, integration.domain)
+      isComponentLoaded(this.hass.config, integration.domain)
     ) {
       this._pickedBrand = integration.domain;
       return;
@@ -603,21 +727,8 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
-        const localize = await this.hass.loadBackendTranslation(
-          "title",
-          integration.name
-        );
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry_title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry",
-            {
-              integration_name: domainToName(localize, integration.name),
-            }
-          ),
-        });
+
+        showSingleConfigEntryWarning(this, { domain: integration.domain });
         return;
       }
     }
@@ -629,7 +740,7 @@ class AddIntegrationDialog extends LitElement {
 
     if (
       integration.domain === "cloud" &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/cloud");
@@ -638,7 +749,7 @@ class AddIntegrationDialog extends LitElement {
 
     if (
       ["google_assistant", "alexa"].includes(integration.domain) &&
-      isComponentLoaded(this.hass, "cloud")
+      isComponentLoaded(this.hass.config, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/voice-assistants/assistants");
@@ -653,9 +764,9 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private async _createFlow(domain: string) {
-    const flowsInProgress = await this._fetchFlowsInProgress([domain]);
+    const flowsInProgress = this._getFlowsInProgressForDomains([domain]);
 
-    if (flowsInProgress?.length) {
+    if (flowsInProgress.length) {
       this._pickedBrand = domain;
       return;
     }
@@ -666,16 +777,16 @@ class AddIntegrationDialog extends LitElement {
 
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
-      navigateToResult: true,
+      navigateToResult: this._navigateToResult,
     });
   }
 
-  private async _fetchFlowsInProgress(domains: string[]) {
-    const flowsInProgress = (
-      await fetchConfigFlowInProgress(this.hass.connection)
-    ).filter(
+  private _getFlowsInProgressForDomains(domains: string[]) {
+    if (!this._flowsInProgress) {
+      return [];
+    }
+    return this._flowsInProgress.filter(
       (flow) =>
         // filter config flows that are not for the integration we are looking for
         domains.includes(flow.handler) ||
@@ -683,14 +794,14 @@ class AddIntegrationDialog extends LitElement {
         ("alternative_domain" in flow.context &&
           domains.includes(flow.context.alternative_domain))
     );
-
-    if (flowsInProgress.length) {
-      this._flowsInProgress = flowsInProgress;
-    }
-    return flowsInProgress;
   }
 
   private _maybeSubmit(ev: KeyboardEvent) {
+    if (ev.key === "ArrowDown" && this._listElement) {
+      ev.preventDefault();
+      this._listElement.focus();
+      return;
+    }
     if (ev.key !== "Enter") {
       return;
     }
@@ -703,35 +814,25 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _prevClicked() {
-    this._pickedBrand = this._prevPickedBrand;
-    if (!this._prevPickedBrand) {
-      this._flowsInProgress = undefined;
+    if (this._showDiscovered) {
+      this._showDiscovered = false;
+      return;
     }
+    this._pickedBrand = this._prevPickedBrand;
     this._prevPickedBrand = undefined;
   }
 
   static styles = [
-    haStyleScrollbar,
     haStyleDialog,
     css`
-      @media all and (min-width: 550px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 500px;
-        }
-      }
       ha-dialog {
         --dialog-content-padding: 0;
       }
-      search-input {
-        display: block;
-        margin: 16px 16px 0;
+      ha-input-search {
+        margin: 0 var(--ha-space-4) var(--ha-space-3);
       }
       .divider {
         border-bottom-color: var(--divider-color);
-      }
-      h2 {
-        padding-inline-end: 66px;
-        direction: var(--direction);
       }
       p {
         text-align: center;
@@ -749,50 +850,8 @@ class AddIntegrationDialog extends LitElement {
       ha-spinner {
         margin: 24px 0;
       }
-      ha-list {
+      ha-list-virtualized {
         position: relative;
-      }
-      lit-virtualizer {
-        contain: size layout !important;
-      }
-      ha-integration-list-item {
-        width: 100%;
-      }
-      ha-icon-button-prev {
-        color: var(--secondary-text-color);
-        position: absolute;
-        left: 16px;
-        top: 14px;
-        inset-inline-end: initial;
-        inset-inline-start: 16px;
-        direction: var(--direction);
-      }
-      .mdc-dialog__title {
-        margin: 0;
-        margin-bottom: 8px;
-        margin-left: 48px;
-        margin-inline-start: 48px;
-        margin-inline-end: initial;
-        padding: 24px 24px 0 24px;
-        color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
-        font-size: var(
-          --mdc-typography-headline6-font-size,
-          var(--ha-font-size-l)
-        );
-        line-height: var(--mdc-typography-headline6-line-height, 2rem);
-        font-weight: var(
-          --mdc-typography-headline6-font-weight,
-          var(--ha-font-weight-medium)
-        );
-        letter-spacing: var(
-          --mdc-typography-headline6-letter-spacing,
-          0.0125em
-        );
-        text-decoration: var(
-          --mdc-typography-headline6-text-decoration,
-          inherit
-        );
-        text-transform: var(--mdc-typography-headline6-text-transform, inherit);
       }
     `,
   ];

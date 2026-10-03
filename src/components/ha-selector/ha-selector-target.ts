@@ -7,15 +7,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { TargetSelector } from "../../data/selector";
 import {
+  computeCreateDomains,
   filterSelectorDevices,
   filterSelectorEntities,
-  computeCreateDomains,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
@@ -53,7 +53,7 @@ export class HaTargetSelector extends LitElement {
     );
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
@@ -83,6 +83,7 @@ export class HaTargetSelector extends LitElement {
         .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
         .createDomains=${this._createDomains}
+        .primaryEntitiesOnly=${this.selector.target?.primary_entities_only}
       ></ha-target-picker>`;
   }
 
@@ -92,7 +93,13 @@ export class HaTargetSelector extends LitElement {
     }
 
     return ensureArray(this.selector.target.entity).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
   };
 

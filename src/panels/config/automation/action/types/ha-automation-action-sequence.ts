@@ -1,14 +1,13 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
-import { query, customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
 import type { Action, SequenceAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
-import type { ActionElement } from "../ha-automation-action-row";
 import type HaAutomationAction from "../ha-automation-action";
+import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-sequence")
 export class HaSequenceAction extends LitElement implements ActionElement {
@@ -36,7 +35,7 @@ export class HaSequenceAction extends LitElement implements ActionElement {
 
     return html`
       <ha-automation-action
-        .actions=${action.sequence}
+        .actions=${action.sequence ?? []}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}

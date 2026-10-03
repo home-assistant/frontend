@@ -1,18 +1,28 @@
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiMenuDown, mdiMinus, mdiPlus } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-icon-button";
+import "./ha-svg-icon";
 import "./ha-input-helper-text";
-import "./ha-list-item";
 import "./ha-select";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import type { HaSelectSelectEvent } from "./ha-select";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
+
+const SIGNS = [
+  { negative: false, label: "+" },
+  { negative: true, label: "−" },
+];
 
 export interface TimeChangedEvent {
+  negative?: boolean;
   days?: number;
   hours: number;
   minutes: number;
@@ -132,149 +142,230 @@ export class HaBaseTimeInput extends LitElement {
    */
   @property({ attribute: false }) amPm: "AM" | "PM" = "AM";
 
+  @property({ attribute: "enable-sign", type: Boolean }) enableSign = false;
+
+  @property({ type: Boolean }) negative = false;
+
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
+
+  @property({ attribute: "placeholder-labels", type: Boolean })
+  public placeholderLabels = false;
+
+  @queryAll("ha-input") private _inputs?: NodeListOf<HaInput>;
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    const inputs = this._inputs;
+    if (!inputs) return true;
+    return [...inputs].every((input) => input.reportValidity());
+  }
 
   protected render(): TemplateResult {
     return html`
-      ${this.label
-        ? html`<label>${this.label}${this.required ? " *" : ""}</label>`
-        : nothing}
+      ${
+        this.label
+          ? html`<label id="label"
+              >${this.label}${this.required ? " *" : ""}</label
+            >`
+          : nothing
+      }
       <div class="time-input-wrap-wrap">
-        <div class="time-input-wrap">
-          ${this.enableDay
-            ? html`
-                <ha-textfield
-                  id="day"
-                  type="number"
-                  inputmode="numeric"
-                  .value=${this.days.toFixed()}
-                  .label=${this.dayLabel}
-                  name="days"
-                  @change=${this._valueChanged}
-                  @focusin=${this._onFocus}
-                  no-spinner
-                  .required=${this.required}
-                  .autoValidate=${this.autoValidate}
-                  min="0"
-                  .disabled=${this.disabled}
-                  suffix=":"
-                  class="hasSuffix"
-                >
-                </ha-textfield>
-              `
-            : nothing}
+        <div
+          class="time-input-wrap"
+          role="group"
+          aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+        >
+          ${
+            this.enableSign
+              ? html`<ha-dropdown
+                    placement="bottom-start"
+                    @wa-select=${this._signSelected}
+                    @wa-after-hide=${stopPropagation}
+                    @wa-hide=${stopPropagation}
+                  >
+                    <button
+                      slot="trigger"
+                      type="button"
+                      class="sign"
+                      aria-label=${this.negative ? "-" : "+"}
+                      .disabled=${this.disabled}
+                    >
+                      <ha-svg-icon
+                        .path=${this.negative ? mdiMinus : mdiPlus}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        class="chevron"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon>
+                    </button>
+                    ${SIGNS.map(
+                      ({ negative, label }) => html`
+                        <ha-dropdown-item
+                          .value=${negative ? "-" : "+"}
+                          .selected=${this.negative === negative}
+                        >
+                          ${label}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                  </ha-dropdown>
+                  <div class="sign-divider"></div>`
+              : nothing
+          }
+          ${
+            this.enableDay
+              ? html`
+                  <ha-input
+                    id="day"
+                    type="number"
+                    inputmode="numeric"
+                    .value=${this.days.toFixed()}
+                    .label=${!this.placeholderLabels ? this.dayLabel : ""}
+                    .placeholder=${this.placeholderLabels ? this.dayLabel : ""}
+                    name="days"
+                    @change=${this._valueChanged}
+                    @focusin=${this._onFocus}
+                    without-spin-buttons
+                    .required=${this.required}
+                    .autoValidate=${this.autoValidate}
+                    min="0"
+                    .disabled=${this.disabled}
+                  >
+                  </ha-input>
+                  <div class="time-separator">:</div>
+                `
+              : nothing
+          }
 
-          <ha-textfield
+          <ha-input
             id="hour"
             type="number"
             inputmode="numeric"
             .value=${this.hours.toFixed()}
-            .label=${this.hourLabel}
+            .label=${!this.placeholderLabels ? this.hourLabel : ""}
+            .placeholder=${this.placeholderLabels ? this.hourLabel : ""}
             name="hours"
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
-            no-spinner
+            without-spin-buttons
             .required=${this.required}
             .autoValidate=${this.autoValidate}
             maxlength="2"
             max=${ifDefined(this._hourMax)}
             min="0"
             .disabled=${this.disabled}
-            suffix=":"
-            class="hasSuffix"
           >
-          </ha-textfield>
-          <ha-textfield
+          </ha-input>
+          <div class="time-separator">:</div>
+          <ha-input
             id="min"
             type="number"
             inputmode="numeric"
             .value=${this._formatValue(this.minutes)}
-            .label=${this.minLabel}
+            .label=${!this.placeholderLabels ? this.minLabel : ""}
+            .placeholder=${this.placeholderLabels ? this.minLabel : ""}
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
             name="minutes"
-            no-spinner
+            without-spin-buttons
             .required=${this.required}
             .autoValidate=${this.autoValidate}
             maxlength="2"
             max="59"
             min="0"
             .disabled=${this.disabled}
-            .suffix=${this.enableSecond ? ":" : ""}
-            class=${this.enableSecond ? "has-suffix" : ""}
           >
-          </ha-textfield>
-          ${this.enableSecond
-            ? html`<ha-textfield
-                id="sec"
-                type="number"
-                inputmode="numeric"
-                .value=${this._formatValue(this.seconds)}
-                .label=${this.secLabel}
-                @change=${this._valueChanged}
-                @focusin=${this._onFocus}
-                name="seconds"
-                no-spinner
-                .required=${this.required}
-                .autoValidate=${this.autoValidate}
-                maxlength="2"
-                max="59"
-                min="0"
-                .disabled=${this.disabled}
-                .suffix=${this.enableMillisecond ? ":" : ""}
-                class=${this.enableMillisecond ? "has-suffix" : ""}
-              >
-              </ha-textfield>`
-            : nothing}
-          ${this.enableMillisecond
-            ? html`<ha-textfield
-                id="millisec"
-                type="number"
-                .value=${this._formatValue(this.milliseconds, 3)}
-                .label=${this.millisecLabel}
-                @change=${this._valueChanged}
-                @focusin=${this._onFocus}
-                name="milliseconds"
-                no-spinner
-                .required=${this.required}
-                .autoValidate=${this.autoValidate}
-                maxlength="3"
-                max="999"
-                min="0"
-                .disabled=${this.disabled}
-              >
-              </ha-textfield>`
-            : nothing}
-          ${this.clearable && !this.required && !this.disabled
-            ? html`<ha-icon-button
-                label="clear"
-                @click=${this._clearValue}
-                .path=${mdiClose}
-              ></ha-icon-button>`
-            : nothing}
+          </ha-input>
+          ${
+            this.enableSecond
+              ? html`<div class="time-separator">:</div>`
+              : nothing
+          }
+          ${
+            this.enableSecond
+              ? html`<ha-input
+                    id="sec"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    .value=${this._formatValue(this.seconds)}
+                    .label=${!this.placeholderLabels ? this.secLabel : ""}
+                    .placeholder=${this.placeholderLabels ? this.secLabel : ""}
+                    @change=${this._valueChanged}
+                    @focusin=${this._onFocus}
+                    name="seconds"
+                    without-spin-buttons
+                    .required=${this.required}
+                    .autoValidate=${this.autoValidate}
+                    max="59"
+                    min="0"
+                    .disabled=${this.disabled}
+                  >
+                  </ha-input>
+                  ${
+                    this.enableMillisecond
+                      ? html`<div class="time-separator">:</div>`
+                      : nothing
+                  }`
+              : nothing
+          }
+          ${
+            this.enableMillisecond
+              ? html`<ha-input
+                  id="millisec"
+                  type="number"
+                  .value=${this._formatValue(this.milliseconds, 3)}
+                  .label=${!this.placeholderLabels ? this.millisecLabel : ""}
+                  .placeholder=${this.placeholderLabels ? this.millisecLabel : ""}
+                  @change=${this._valueChanged}
+                  @focusin=${this._onFocus}
+                  name="milliseconds"
+                  without-spin-buttons
+                  .required=${this.required}
+                  .autoValidate=${this.autoValidate}
+                  maxlength="3"
+                  max="999"
+                  min="0"
+                  .disabled=${this.disabled}
+                >
+                </ha-input>`
+              : nothing
+          }
+          ${
+            this.format === 24
+              ? nothing
+              : html`<ha-select
+                  .required=${this.required}
+                  .value=${this.amPm}
+                  .disabled=${this.disabled}
+                  .name=${"amPm"}
+                  @selected=${this._valueChanged}
+                  @wa-after-hide=${stopPropagation}
+                  @wa-hide=${stopPropagation}
+                  .options=${["AM", "PM"]}
+                >
+                </ha-select>`
+          }
+          ${
+            this.clearable && !this.required && !this.disabled
+              ? html`<ha-icon-button
+                  label="clear"
+                  @click=${this._clearValue}
+                  .path=${mdiClose}
+                ></ha-icon-button>`
+              : nothing
+          }
         </div>
-
-        ${this.format === 24
-          ? nothing
-          : html`<ha-select
-              .required=${this.required}
-              .value=${this.amPm}
-              .disabled=${this.disabled}
-              name="amPm"
-              naturalMenuWidth
-              fixedMenuPosition
-              @selected=${this._valueChanged}
-              @closed=${stopPropagation}
-            >
-              <ha-list-item value="AM">AM</ha-list-item>
-              <ha-list-item value="PM">PM</ha-list-item>
-            </ha-select>`}
       </div>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          : nothing
+      }
     `;
   }
 
@@ -282,16 +373,35 @@ export class HaBaseTimeInput extends LitElement {
     fireEvent(this, "value-changed");
   }
 
-  private _valueChanged(ev: InputEvent) {
-    const textField = ev.currentTarget as HaTextField;
-    this[textField.name] =
-      textField.name === "amPm" ? textField.value : Number(textField.value);
+  private _signSelected(ev: HaDropdownSelectEvent): void {
+    ev.stopPropagation();
+    const negative = ev.detail.item.value === "-";
+    if (negative === this.negative) {
+      return;
+    }
+    this.negative = negative;
+    this._fireValue();
+  }
+
+  private _valueChanged(ev: InputEvent | HaSelectSelectEvent): void {
+    const textField = ev.currentTarget as HaInput;
+    this[textField.name || ""] =
+      textField.name === "amPm"
+        ? (ev as HaSelectSelectEvent).detail.value
+        : Number(textField.value);
+    this._fireValue();
+  }
+
+  private _fireValue(): void {
     const value: TimeChangedEvent = {
       hours: this.hours,
       minutes: this.minutes,
       seconds: this.seconds,
       milliseconds: this.milliseconds,
     };
+    if (this.enableSign) {
+      value.negative = this.negative;
+    }
     if (this.enableDay) {
       value.days = this.days;
     }
@@ -304,14 +414,15 @@ export class HaBaseTimeInput extends LitElement {
   }
 
   private _onFocus(ev: FocusEvent) {
-    (ev.currentTarget as HaTextField).select();
+    (ev.currentTarget as HaInput).select();
   }
 
   /**
    * Format time fragments
    */
   private _formatValue(value: number, padding = 2) {
-    return value.toString().padStart(padding, "0");
+    const str = value.toString();
+    return str.includes(".") ? str : str.padStart(padding, "0");
   }
 
   /**
@@ -345,45 +456,125 @@ export class HaBaseTimeInput extends LitElement {
       direction: ltr;
       padding-right: 3px;
     }
-    ha-textfield {
+    ha-input {
+      height: 56px;
+      padding: 0;
       width: 60px;
       flex-grow: 1;
-      text-align: center;
-      --mdc-shape-small: 0;
-      --text-field-appearance: none;
-      --text-field-padding: 0 4px;
-      --text-field-suffix-padding-left: 2px;
-      --text-field-suffix-padding-right: 0;
-      --text-field-text-align: center;
     }
-    ha-textfield.hasSuffix {
-      --text-field-padding: 0 0 0 4px;
-    }
-    ha-textfield:first-child {
+    ha-input:first-child {
       --text-field-border-top-left-radius: var(--mdc-shape-medium);
     }
-    ha-textfield:last-child {
+    ha-input:last-child {
       --text-field-border-top-right-radius: var(--mdc-shape-medium);
     }
-    ha-select {
-      --mdc-shape-small: 0;
-      width: 85px;
+
+    ha-input::part(wa-base) {
+      padding: var(--ha-space-1);
     }
+
+    ha-input:first-child::part(wa-base) {
+      padding-inline-start: var(--ha-space-4);
+    }
+
+    .sign-divider + ha-input::part(wa-base) {
+      padding-inline-start: var(--ha-space-2);
+    }
+
+    ha-input:last-child::part(wa-base) {
+      padding-inline-end: var(--ha-space-4);
+    }
+
+    ha-input::part(wa-hint) {
+      height: 0;
+    }
+
+    ha-input::part(wa-input) {
+      text-align: center;
+    }
+
+    .sign {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      height: 56px;
+      padding: 0;
+      padding-inline: var(--ha-space-3) var(--ha-space-1);
+      border: none;
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+      background-color: var(--ha-color-form-background);
+      color: var(--ha-color-text-secondary);
+      cursor: pointer;
+      --mdc-icon-size: 20px;
+    }
+    .sign .chevron {
+      --mdc-icon-size: 18px;
+    }
+    .sign:hover {
+      background-color: var(--ha-color-form-background-hover);
+    }
+    .sign:disabled {
+      cursor: default;
+      color: var(--ha-color-text-disabled);
+    }
+    .sign:focus-visible {
+      outline: 2px solid var(--ha-color-border-primary-normal);
+      outline-offset: -2px;
+    }
+    ha-dropdown-item {
+      font-size: var(--ha-font-size-l);
+      text-align: center;
+    }
+    .sign-divider {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      height: 56px;
+      padding-inline: 0 var(--ha-space-1);
+      background-color: var(--ha-color-form-background);
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+    }
+    .sign-divider::after {
+      content: "";
+      width: 1px;
+      height: 24px;
+      background-color: var(--ha-color-border-neutral-quiet);
+    }
+    .time-separator,
+    ha-icon-button {
+      background-color: var(--ha-color-form-background);
+      color: var(--ha-color-text-secondary);
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+      box-sizing: border-box;
+      height: 56px;
+      margin-inline-start: calc(var(--ha-space-1) * -1);
+    }
+
+    .time-separator {
+      width: 12px;
+      margin-inline-end: calc(var(--ha-space-1) * -1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     :host([clearable]) .mdc-select__anchor {
       padding-inline-end: var(--select-selected-text-padding-end, 12px);
     }
     ha-icon-button {
       position: relative;
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
+      border-start-end-radius: var(--ha-border-radius-sm);
       --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
       direction: var(--direction);
       display: flex;
       align-items: center;
-      background-color: var(--mdc-text-field-fill-color, whitesmoke);
-      border-bottom-style: solid;
-      border-bottom-width: 1px;
     }
+
+    ha-select {
+      margin-inline: calc(var(--ha-space-1) * -1);
+    }
+
     label {
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);

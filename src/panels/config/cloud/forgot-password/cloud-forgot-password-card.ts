@@ -2,22 +2,21 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import "../../../../components/ha-textfield";
-import { haStyle } from "../../../../resources/styles";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import { cloudForgotPassword } from "../../../../data/cloud";
 import { forgotPasswordHaCloud } from "../../../../data/onboarding";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 
 @customElement("cloud-forgot-password-card")
 export class CloudForgotPasswordCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     | "page-onboarding.restore.ha-cloud.forgot_password"
@@ -27,11 +26,15 @@ export class CloudForgotPasswordCard extends LitElement {
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   @state() private _inProgress = false;
 
   @state() private _error?: string;
 
-  @query("#email", true) public emailField!: HaTextField;
+  @query("#email", true) public emailField!: HaInput;
 
   protected render(): TemplateResult {
     if (this.cardLess) {
@@ -41,7 +44,7 @@ export class CloudForgotPasswordCard extends LitElement {
     return html`
       <ha-card
         outlined
-        .header=${this.localize(
+        .header=${this._localize(
           `ui.panel.${this.translationKeyPanel}.subtitle`
         )}
       >
@@ -54,31 +57,33 @@ export class CloudForgotPasswordCard extends LitElement {
     return html`
       <div class="card-content">
         <p>
-          ${this.localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
+          ${this._localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
         </p>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
-        <ha-textfield
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
+        <ha-input
           autofocus
           id="email"
-          label=${this.localize(`ui.panel.${this.translationKeyPanel}.email`)}
+          label=${this._localize(`ui.panel.${this.translationKeyPanel}.email`)}
           .value=${this.email ?? ""}
           type="email"
           required
           .disabled=${this._inProgress}
           @keydown=${this._keyDown}
-          .validationMessage=${this.localize(
+          .validationMessage=${this._localize(
             `ui.panel.${this.translationKeyPanel}.email_error_msg`
           )}
-        ></ha-textfield>
+        ></ha-input>
       </div>
       <div class="card-actions">
         <ha-progress-button
           @click=${this._handleEmailPasswordReset}
           .progress=${this._inProgress}
         >
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.send_reset_email`
           )}
         </ha-progress-button>
@@ -105,7 +110,7 @@ export class CloudForgotPasswordCard extends LitElement {
       fireEvent(this, "cloud-email-changed", { value: email });
       this._inProgress = false;
       fireEvent(this, "cloud-done", {
-        flashMessage: this.localize(
+        flashMessage: this._localize(
           `ui.panel.${this.translationKeyPanel}.check_your_email`
         ),
       });
@@ -126,7 +131,7 @@ export class CloudForgotPasswordCard extends LitElement {
   private async _handleEmailPasswordReset() {
     const emailField = this.emailField;
 
-    const email = emailField.value;
+    const email = emailField.value ?? "";
 
     if (!emailField.reportValidity()) {
       emailField.focus();
@@ -150,7 +155,7 @@ export class CloudForgotPasswordCard extends LitElement {
         h1 {
           margin: 0;
         }
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
         .card-actions {
@@ -166,5 +171,9 @@ export class CloudForgotPasswordCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "cloud-forgot-password-card": CloudForgotPasswordCard;
+  }
+
+  interface HASSDomEvents {
+    "cloud-done": { flashMessage: string };
   }
 }

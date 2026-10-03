@@ -1,32 +1,69 @@
-import { mdiRefresh } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiDownload,
+  mdiFilterRemove,
+  mdiRefresh,
+  mdiTextBoxOutline,
+  mdiTuneVariant,
+} from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fromUnixTime } from "date-fns";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
-import { goBack, navigate } from "../../common/navigate";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
-  createSearchParam,
+  createHistoryLogbookUrl,
+  decodeHistoryLogbookQueryParams,
+  historyLogbookTargetFromQueryParams,
+  historyLogbookTargetsEqual,
+} from "../../common/url/history-logbook-query-params";
+import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import "../../components/entity/ha-entity-picker";
-import "../../components/ha-date-range-picker";
+import { deepEqual } from "../../common/util/deep-equal";
+import { shallowEqual } from "../../common/util/shallow-equal";
+import "../../components/date-picker/ha-date-range-nav";
+import "../../components/ha-button";
+import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import "../../components/ha-empty-state";
+import "../../components/ha-filter-pane-chip";
+import "../../components/ha-filter-pane";
+import type { HaFilterPane } from "../../components/ha-filter-pane";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
-import "../../components/ha-target-picker";
+import {
+  applySourceFilters,
+  countSourceFilters,
+  countTargets,
+} from "../../components/ha-sources-picker";
+import type { SourceFilters } from "../../components/ha-sources-picker";
+import { entityTypesNeedStates } from "../../data/entity/entity_type";
 import "../../components/ha-top-app-bar-fixed";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { resolveEntityIDs } from "../../data/selector";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { csvDownload, csvSafeString } from "../../util/csv";
+
+const EMPTY_STATES: HomeAssistant["states"] = {};
+
+interface LogbookState {
+  time: { range: [Date, Date] };
+  targetPickerValue: HassServiceTarget;
+}
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -41,92 +78,206 @@ export class HaPanelLogbook extends LitElement {
   @state()
   private _showBack?: boolean;
 
-  @state()
+  @state() private _filters: SourceFilters = {};
+
+  @state() private _showSources?: boolean;
+
+  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
+
+  @state() private _entitySources?: EntitySources;
+
+  @state() private _targetPickerValue: HassServiceTarget = {};
+
+  // Remembers the last user-picked selection as a fallback for visits without
+  // URL params. Kept separate from _targetPickerValue because localStorage is
+  // synced across tabs and would leak one tab's selection into the others.
   @storage({
     key: "logbookPickedValue",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _targetPickerValue: HassServiceTarget = {};
+  private _storedTargetPickerValue?: HassServiceTarget;
 
-  @state() private _sensorNumericDeviceClasses?: string[] = [];
+  @storage({
+    key: "logbookSourceFilters",
+    state: false,
+    subscribe: false,
+  })
+  private _storedFilters?: SourceFilters;
 
   public constructor() {
     super();
-
-    const start = new Date();
-    start.setHours(start.getHours() - 1, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(end.getHours() + 2, 0, 0, 0);
-
-    this._time = { range: [start, end] };
-  }
-
-  private _goBack(): void {
-    goBack();
+    this._time = this._defaultState.time;
   }
 
   protected render() {
+    const entityIds = this._getEntityIds();
+    const filterCount = countSourceFilters(this._filters);
+    const sourceCount = countTargets(this._targetPickerValue) + filterCount;
+    const sourcesLabel = sourceCount
+      ? this.hass.localize("ui.panel.logbook.sources_count", {
+          count: entityIds?.length ?? 0,
+        })
+      : this.hass.localize("ui.panel.logbook.sources");
+
     return html`
-      <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._showBack
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${!!this._showBack}
+      >
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._refreshLogbook}
-          .path=${mdiRefresh}
-          .label=${this.hass!.localize("ui.common.refresh")}
-        ></ha-icon-button>
+
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-dropdown-item value="refresh">
+            ${this.hass.localize("ui.common.refresh")}
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item value="download">
+            ${this.hass.localize("ui.panel.logbook.download_data")}
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item value="reset" .disabled=${this._isDefaultState()}>
+            ${this.hass.localize("ui.common.reset")}
+            <ha-svg-icon slot="icon" .path=${mdiFilterRemove}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="content">
-          <div class="filters">
-            <ha-date-range-picker
-              .hass=${this.hass}
-              .startDate=${this._time.range[0]}
-              .endDate=${this._time.range[1]}
-              @value-changed=${this._dateRangeChanged}
-              time-picker
-            ></ha-date-range-picker>
+          <div class="main">
+            ${
+              this._sourcesShown()
+                ? html`<ha-filter-pane
+                    .narrow=${this.narrow}
+                    .label=${sourcesLabel}
+                    .path=${mdiTuneVariant}
+                    .count=${sourceCount}
+                    .resultCount=${entityIds?.length}
+                    @close-filter-pane=${this._closeSources}
+                    @clear-filter=${this._clearSources}
+                  >
+                    <ha-sources-picker
+                      .hass=${this.hass}
+                      .value=${this._targetPickerValue}
+                      .filters=${this._filters}
+                      .entitySources=${this._entitySources}
+                      .entityFilter=${this._filterFunc}
+                      .description=${this.hass.localize(
+                        "ui.panel.logbook.no_targets"
+                      )}
+                      @value-changed=${this._targetsChanged}
+                      @source-filters-changed=${this._filtersChanged}
+                    ></ha-sources-picker>
+                  </ha-filter-pane>`
+                : nothing
+            }
+            <div class="content-column">
+              <div class="toolbar">
+                ${
+                  this._sourcesShown() && !this.narrow
+                    ? nothing
+                    : html`<ha-filter-pane-chip
+                        .label=${sourcesLabel}
+                        .path=${mdiTuneVariant}
+                        .count=${filterCount}
+                        .active=${sourceCount > 0}
+                        @click=${this._toggleSources}
+                      ></ha-filter-pane-chip>`
+                }
+                <ha-date-range-nav
+                  .startDate=${this._time.range[0]}
+                  .endDate=${this._time.range[1]}
+                  @value-changed=${this._dateRangeChanged}
+                  extended-presets
+                  time-picker
+                ></ha-date-range-nav>
+              </div>
 
-            <ha-target-picker
-              .hass=${this.hass}
-              .entityFilter=${this._filterFunc}
-              .value=${this._targetPickerValue}
-              add-on-top
-              @value-changed=${this._targetsChanged}
-              compact
-            ></ha-target-picker>
+              <ha-logbook
+                .hass=${this.hass}
+                .time=${this._time}
+                .entityIds=${entityIds}
+                .narrow=${this.narrow}
+                show-cause
+                virtualize
+              >
+                ${
+                  sourceCount > 0
+                    ? html`<ha-empty-state
+                        slot="empty"
+                        .icon=${mdiTextBoxOutline}
+                        .heading=${this.hass.localize(
+                          "ui.panel.logbook.no_results_title"
+                        )}
+                        .description=${this.hass.localize(
+                          "ui.panel.logbook.no_results"
+                        )}
+                      >
+                        <ha-button
+                          appearance="plain"
+                          @click=${this._openSources}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.logbook.change_sources"
+                          )}
+                        </ha-button>
+                      </ha-empty-state>`
+                    : nothing
+                }
+              </ha-logbook>
+            </div>
           </div>
-
-          <ha-logbook
-            .hass=${this.hass}
-            .time=${this._time}
-            .entityIds=${this._getEntityIds()}
-            virtualize
-          ></ha-logbook>
         </div>
       </ha-top-app-bar-fixed>
     `;
   }
 
-  private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
-    filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
+  private _sourcesShown(): boolean {
+    return this._showSources ?? !this.narrow;
+  }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  private _toggleSources() {
+    this._showSources = !this._sourcesShown();
+  }
+
+  private _openSources() {
+    if (this._sourcesShown()) {
+      this._filterPane?.highlight();
+      return;
+    }
+    this._showSources = true;
+  }
+
+  private _closeSources() {
+    this._showSources = false;
+  }
+
+  private _filtersChanged(
+    ev: HASSDomEvent<HASSDomEvents["source-filters-changed"]>
+  ) {
+    this._filters = ev.detail.value;
+    this._storedFilters = this._filters;
+  }
+
+  private _clearSources() {
+    this._filters = {};
+    this._storedFilters = this._filters;
+    this._targetPickerValue = {};
+    this._storedTargetPickerValue = this._targetPickerValue;
+    this._updatePath();
+  }
+
+  private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
+    filterLogbookCompatibleEntities(entity);
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this.hasUpdated) {
@@ -136,15 +287,12 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   }
 
-  private async _loadNumericDeviceClasses() {
-    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
-    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
-    this._loadNumericDeviceClasses();
+    fetchEntitySourcesWithCache(this.hass).then((sources) => {
+      this._entitySources = sources;
+    });
 
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
@@ -169,20 +317,40 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   };
 
+  /** The entities to show activity for, or undefined for all of them. */
   private _getEntityIds(): string[] | undefined {
-    const entities = this.__getEntityIds(
-      this._targetPickerValue,
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas
-    );
-    if (entities.length === 0) {
-      return undefined;
+    const hasTargets = countTargets(this._targetPickerValue) > 0;
+    const targetEntities = hasTargets
+      ? this.__filterTargetEntityIds(
+          this.__resolveTargetEntityIds(
+            this._targetPickerValue,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas
+          ),
+          this._targetPickerValue.entity_id,
+          this.hass.entities,
+          this.hass.states
+        )
+      : undefined;
+
+    if (!countSourceFilters(this._filters)) {
+      return targetEntities;
     }
-    return entities;
+
+    return this.__filterEntityIds(
+      targetEntities ?? this.__logbookEntityIds(this.hass.states),
+      this._filters,
+      // Only a device class narrows down using the states.
+      entityTypesNeedStates(this._filters.types)
+        ? this.hass.states
+        : EMPTY_STATES,
+      this.hass.entities,
+      this._entitySources
+    );
   }
 
-  private __getEntityIds = memoizeOne(
+  private __resolveTargetEntityIds = memoizeOne(
     (
       targetPickerValue: HassServiceTarget,
       entities: HomeAssistant["entities"],
@@ -192,45 +360,80 @@ export class HaPanelLogbook extends LitElement {
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
+  // Same rules as the target picker, so that the chip and the picker agree.
+  private __filterTargetEntityIds = memoizeOne(
+    (
+      entityIds: string[],
+      pickedEntityIds: string | string[] | undefined,
+      entities: HomeAssistant["entities"],
+      states: HomeAssistant["states"]
+    ): string[] => {
+      const picked = new Set(ensureArray(pickedEntityIds));
+      return this._stableEntityIds(
+        entityIds.filter((entityId) => {
+          if (picked.has(entityId)) {
+            return true;
+          }
+          const stateObj = states[entityId];
+          return (
+            !entities[entityId]?.hidden &&
+            stateObj &&
+            filterLogbookCompatibleEntities(stateObj)
+          );
+        })
+      );
+    }
+  );
+
+  private __logbookEntityIds = memoizeOne(
+    (states: HomeAssistant["states"]): string[] =>
+      this._stableEntityIds(
+        Object.values(states)
+          .filter((stateObj) => filterLogbookCompatibleEntities(stateObj))
+          .map((stateObj) => stateObj.entity_id)
+      )
+  );
+
+  private __filterEntityIds = memoizeOne(applySourceFilters);
+
+  private _lastEntityIds?: string[];
+
+  // A list keyed on the states must keep its identity or ha-logbook resubscribes.
+  private _stableEntityIds(entityIds: string[]): string[] {
+    if (this._lastEntityIds && shallowEqual(this._lastEntityIds, entityIds)) {
+      return this._lastEntityIds;
+    }
+    this._lastEntityIds = entityIds;
+    return entityIds;
+  }
+
   private _applyURLParams() {
-    const searchParams = extractSearchParamsObject();
-    const entityIds = searchParams.entity_id;
-    const deviceIds = searchParams.device_id;
-    const areaIds = searchParams.area_id;
-    const floorIds = searchParams.floor_id;
-    const labelsIds = searchParams.label_id;
-    if (entityIds || deviceIds || areaIds || floorIds || labelsIds) {
-      this._targetPickerValue = {};
-    }
-    if (entityIds) {
-      const splitIds = entityIds.split(",");
-      this._targetPickerValue!.entity_id = splitIds;
-    }
-    if (deviceIds) {
-      const splitIds = deviceIds.split(",");
-      this._targetPickerValue!.device_id = splitIds;
-    }
-    if (areaIds) {
-      const splitIds = areaIds.split(",");
-      this._targetPickerValue!.area_id = splitIds;
-    }
-    if (floorIds) {
-      const splitIds = floorIds.split(",");
-      this._targetPickerValue!.floor_id = splitIds;
-    }
-    if (labelsIds) {
-      const splitIds = labelsIds.split(",");
-      this._targetPickerValue!.label_id = splitIds;
+    const queryParams = decodeHistoryLogbookQueryParams(
+      extractSearchParamsObject()
+    );
+    const targetPickerValue = historyLogbookTargetFromQueryParams(queryParams);
+    if (targetPickerValue) {
+      this._targetPickerValue = targetPickerValue;
+    } else if (!this.hasUpdated && this._storedTargetPickerValue) {
+      this._targetPickerValue = this._storedTargetPickerValue;
     }
 
-    const startDateStr = searchParams.start_date;
-    const endDateStr = searchParams.end_date;
+    // A target linked from another page must not be narrowed by the filters.
+    if (
+      targetPickerValue &&
+      !historyLogbookTargetsEqual(
+        targetPickerValue,
+        this._storedTargetPickerValue ?? {}
+      )
+    ) {
+      this._filters = {};
+    } else if (!this.hasUpdated && this._storedFilters) {
+      this._filters = this._storedFilters;
+    }
 
-    if (startDateStr || endDateStr) {
-      const startDate = startDateStr
-        ? new Date(startDateStr)
-        : this._time.range[0];
-      const endDate = endDateStr ? new Date(endDateStr) : this._time.range[1];
+    if (queryParams.start_date || queryParams.end_date) {
+      const startDate = queryParams.start_date ?? this._time.range[0];
+      const endDate = queryParams.end_date ?? this._time.range[1];
 
       // Only set if date has changed.
       if (
@@ -239,8 +442,8 @@ export class HaPanelLogbook extends LitElement {
       ) {
         this._time = {
           range: [
-            startDateStr ? new Date(startDateStr) : this._time.range[0],
-            endDateStr ? new Date(endDateStr) : this._time.range[1],
+            queryParams.start_date ?? this._time.range[0],
+            queryParams.end_date ?? this._time.range[1],
           ],
         };
       }
@@ -258,119 +461,192 @@ export class HaPanelLogbook extends LitElement {
 
   private _targetsChanged(ev) {
     this._targetPickerValue = ev.detail.value || {};
+    this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();
   }
 
   private _updatePath() {
-    const params: Record<string, string> = {};
+    navigate(
+      createHistoryLogbookUrl(
+        "/logbook",
+        this._targetPickerValue,
+        this._time.range[0],
+        this._time.range[1]
+      ),
+      { replace: true }
+    );
+  }
 
-    if (this._targetPickerValue.entity_id) {
-      params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
-        ","
-      );
-    }
-    if (this._targetPickerValue.label_id) {
-      params.label_id = ensureArray(this._targetPickerValue.label_id).join(",");
-    }
-    if (this._targetPickerValue.floor_id) {
-      params.floor_id = ensureArray(this._targetPickerValue.floor_id).join(",");
-    }
-    if (this._targetPickerValue.area_id) {
-      params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
-    }
-    if (this._targetPickerValue.device_id) {
-      params.device_id = ensureArray(this._targetPickerValue.device_id).join(
-        ","
-      );
-    }
+  private get _defaultState(): LogbookState {
+    const start = new Date();
+    start.setHours(start.getHours() - 1, 0, 0, 0);
 
-    if (this._time.range[0]) {
-      params.start_date = this._time.range[0].toISOString();
-    }
+    const end = new Date();
+    end.setHours(end.getHours() + 2, 0, 0, 0);
 
-    if (this._time.range[1]) {
-      params.end_date = this._time.range[1].toISOString();
-    }
+    return {
+      time: { range: [start, end] },
+      targetPickerValue: {},
+    };
+  }
 
-    navigate(`/logbook?${createSearchParam(params)}`, { replace: true });
+  private _isDefaultState(): boolean {
+    return (
+      !countSourceFilters(this._filters) &&
+      deepEqual(
+        { time: this._time, targetPickerValue: this._targetPickerValue },
+        this._defaultState
+      )
+    );
+  }
+
+  private _resetLogbook() {
+    const defaultState = this._defaultState;
+    this._time = defaultState.time;
+    this._targetPickerValue = defaultState.targetPickerValue;
+    this._storedTargetPickerValue = undefined;
+    this._filters = {};
+    this._storedFilters = undefined;
+    navigate("/logbook", { replace: true });
   }
 
   private _refreshLogbook() {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
   }
 
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "download":
+        this._downloadData();
+        break;
+      case "refresh":
+        this._refreshLogbook();
+        break;
+      case "reset":
+        this._resetLogbook();
+        break;
+    }
+  }
+
+  private _downloadData() {
+    const data =
+      this.shadowRoot!.querySelector("ha-logbook")?.getEntries() || [];
+
+    if (data.length === 0) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.logbook.download_data_error"),
+        text: this.hass.localize("ui.panel.logbook.error_no_data"),
+        warning: true,
+      });
+      return;
+    }
+
+    const headers = [
+      "time",
+      "entity_id",
+      "state",
+      "event_type",
+      "name",
+      "message",
+      "source",
+      "context_id",
+      "context_user_id",
+      "context_event_type",
+      "context_domain",
+      "context_service",
+      "context_entity_id",
+      "context_state",
+      "context_source",
+    ];
+    const csv: string[][] = [headers];
+
+    for (const d of data) {
+      const time = fromUnixTime(d.when).toISOString();
+      csv.push([
+        time,
+        d.entity_id || "",
+        csvSafeString(d.state),
+        csvSafeString(d.attributes?.event_type),
+        csvSafeString(d.name),
+        csvSafeString(d.message),
+        csvSafeString(d.source),
+        d.context_id || "",
+        d.context_user_id || "",
+        csvSafeString(d.context_event_type),
+        d.context_domain || "",
+        d.context_service || "",
+        d.context_entity_id || "",
+        csvSafeString(d.context_state),
+        d.context_source || "",
+      ]);
+    }
+    csvDownload(csv, "activity.csv");
+  }
+
   static get styles() {
     return [
       haStyle,
       css`
-        ha-logbook {
-          height: calc(
-            100vh -
-              168px - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
-        }
-
-        :host([narrow]) ha-logbook {
-          height: calc(
-            100vh -
-              250px - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
-        }
-
-        ha-date-range-picker {
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-          max-width: 100%;
-          direction: var(--direction);
-        }
-
-        @media all and (max-width: 870px) {
-          ha-date-range-picker {
-            width: 100%;
-          }
-        }
-
-        :host([narrow]) ha-date-range-picker {
-          margin-right: 0;
-          margin-inline-end: 0;
-          margin-inline-start: initial;
-          direction: var(--direction);
-          margin-bottom: 8px;
+        :host {
+          --ha-generic-picker-width: min(400px, calc(100vw - 32px));
+          --ha-generic-picker-max-width: 400px;
+          /* The target picker chips need more room than a plain filter list. */
+          --ha-filter-pane-width: 340px;
         }
 
         .content {
-          overflow-x: hidden;
-        }
-
-        .filters {
           display: flex;
-          padding: 16px 16px 0;
+          flex-direction: column;
+          height: calc(
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
+          );
+          box-sizing: border-box;
+          overflow: hidden;
         }
 
-        :host([narrow]) .filters {
-          flex-wrap: wrap;
-        }
-
-        ha-entity-picker {
-          display: inline-block;
-          flex-grow: 1;
-          max-width: 400px;
-        }
-
-        ha-target-picker {
+        .main {
+          display: flex;
           flex: 1;
+          min-height: 0;
         }
 
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
+        .content-column {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-width: 0;
+        }
+
+        .toolbar {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+          box-sizing: border-box;
+          height: 56px;
+          flex-shrink: 0;
+          padding: 0 16px;
+          background: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+          direction: var(--direction);
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .toolbar::-webkit-scrollbar {
+          display: none;
+        }
+
+        .toolbar > * {
+          flex-shrink: 0;
+        }
+
+        ha-logbook {
+          flex: 1;
+          min-height: 0;
         }
       `,
     ];

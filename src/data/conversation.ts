@@ -1,25 +1,33 @@
 import { ensureArray } from "../common/array/ensure-array";
 import type { HomeAssistant } from "../types";
 
-export const enum ConversationEntityFeature {
+export enum ConversationEntityFeature {
   CONTROL = 1,
 }
 
 interface IntentTarget {
-  type: "area" | "device" | "entity" | "domain" | "device_class" | "custom";
+  type:
+    | "area"
+    | "floor"
+    | "device"
+    | "entity"
+    | "domain"
+    | "device_class"
+    | "custom";
   name: string;
   id: string | null;
 }
 
 interface IntentResultBase {
   language: string;
-  speech: Record<"plain" | "ssml", { extra_data: any; speech: string }> | null;
+  speech: Partial<
+    Record<"plain" | "ssml", { extra_data: any; speech: string }>
+  >;
 }
 
 interface IntentResultActionDone extends IntentResultBase {
   response_type: "action_done";
   data: {
-    targets: IntentTarget[];
     success: IntentTarget[];
     failed: IntentTarget[];
   };
@@ -28,7 +36,6 @@ interface IntentResultActionDone extends IntentResultBase {
 interface IntentResultQueryAnswer extends IntentResultBase {
   response_type: "query_answer";
   data: {
-    targets: IntentTarget[];
     success: IntentTarget[];
     failed: IntentTarget[];
   };
@@ -38,19 +45,14 @@ interface IntentResultError extends IntentResultBase {
   response_type: "error";
   data: {
     code:
-      | "no_intent_match"
-      | "no_valid_targets"
-      | "failed_to_handle"
-      | "unknown";
+      "no_intent_match" | "no_valid_targets" | "failed_to_handle" | "unknown";
   };
 }
 
 export interface ConversationResult {
   conversation_id: string | null;
   response:
-    | IntentResultActionDone
-    | IntentResultQueryAnswer
-    | IntentResultError;
+    IntentResultActionDone | IntentResultQueryAnswer | IntentResultError;
   continue_conversation: boolean;
 }
 
@@ -61,17 +63,24 @@ export interface Agent {
 }
 
 export interface AssistDebugResult {
-  intent: {
+  match: boolean;
+  sentence_template: string;
+  source?: "trigger" | "custom" | "builtin";
+  file?: string | null;
+  intent?: {
     name: string;
   };
-  entities: Record<
+  slots?: Record<string, unknown>;
+  details?: Record<
     string,
     {
       name: string;
-      value: string;
-      text: string;
+      value: unknown;
+      text: string | null;
     }
   >;
+  targets?: Record<string, { matched: boolean }>;
+  unmatched_slots?: Record<string, string | number>;
 }
 
 export interface AssistDebugResponse {
@@ -137,7 +146,7 @@ export const getLanguageScores = (
   hass: HomeAssistant,
   language?: string,
   country?: string
-): Promise<{ languages: LanguageScores; preferred_language: string | null }> =>
+): Promise<{ languages: LanguageScores; preferred_language: string }> =>
   hass.callWS({
     type: "conversation/agent/homeassistant/language_scores",
     language,

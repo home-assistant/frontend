@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, queryAll, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -8,6 +8,7 @@ import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
+import { applyDefaultColor } from "../common/entity-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -20,9 +21,12 @@ import type {
 import type {
   LovelaceCard,
   LovelaceCardEditor,
+  LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
-import type { EntitiesCardConfig } from "./types";
+import { migrateEntitiesCardConfig } from "./migrate-card-config";
+import type { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
+import { haStyleScrollbar } from "../../../resources/styles";
 
 export const computeShowHeaderToggle = <
   T extends EntityConfig | LovelaceRowConfig,
@@ -46,6 +50,8 @@ export const computeShowHeaderToggle = <
   }
   return !!config.show_header_toggle;
 };
+
+export { migrateEntitiesCardConfig };
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -72,6 +78,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   @state() private _config?: EntitiesCardConfig;
+
+  @queryAll("#states > div > *") private _rowElements!: NodeListOf<HTMLElement>;
+
+  @query("hui-entities-toggle") private _entitiesToggle?: HTMLElement;
 
   private _hass?: HomeAssistant;
 
@@ -100,22 +110,17 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot
-      ?.querySelectorAll("#states > div > *")
-      .forEach((element: unknown) => {
-        (element as LovelaceRow).hass = hass;
-      });
+    this._rowElements.forEach((element: unknown) => {
+      (element as LovelaceRow).hass = hass;
+    });
     if (this._headerElement) {
       this._headerElement.hass = hass;
     }
     if (this._footerElement) {
       this._footerElement.hass = hass;
     }
-    const entitiesToggle = this.shadowRoot?.querySelector(
-      "hui-entities-toggle"
-    );
-    if (entitiesToggle) {
-      (entitiesToggle as any).hass = hass;
+    if (this._entitiesToggle) {
+      (this._entitiesToggle as any).hass = hass;
     }
   }
 
@@ -139,16 +144,25 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return size;
   }
 
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      rows: "auto",
+      min_columns: 3,
+    };
+  }
+
   public setConfig(config: EntitiesCardConfig): void {
     if (!config.entities || !Array.isArray(config.entities)) {
       throw new Error("Entities must be specified");
     }
 
-    const entities = processConfigEntities(config.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = config;
+    this._config = { color: "state", ...migratedConfig };
     this._configEntities = entities;
-    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
+    this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header
@@ -181,8 +195,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("_hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntitiesCardConfig
-      | undefined;
+      EntitiesCardConfig | undefined;
 
     if (
       (changedProps.has("_hass") &&
@@ -201,127 +214,148 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${this._headerElement
-          ? html`<div class="header-footer header">${this._headerElement}</div>`
-          : ""}
-        ${!this._config.title && !this._showHeaderToggle && !this._config.icon
-          ? ""
-          : html`
-              <h1 class="card-header">
-                <div class="name">
-                  ${this._config.icon
-                    ? html`
-                        <ha-icon
-                          class="icon"
-                          .icon=${this._config.icon}
-                        ></ha-icon>
-                      `
-                    : ""}
-                  ${this._config.title}
-                </div>
-                ${!this._showHeaderToggle
-                  ? nothing
-                  : html`
-                      <hui-entities-toggle
-                        .hass=${this._hass}
-                        .entities=${(
-                          this._configEntities!.filter(
-                            (conf) => "entity" in conf
-                          ) as EntityConfig[]
-                        ).map((conf) => conf.entity)}
-                      ></hui-entities-toggle>
-                    `}
-              </h1>
-            `}
-        <div id="states" class="card-content">
+        ${
+          this._headerElement
+            ? html`<div class="header-footer header">
+                ${this._headerElement}
+              </div>`
+            : ""
+        }
+        ${
+          !this._config.title && !this._showHeaderToggle && !this._config.icon
+            ? ""
+            : html`
+                <h1 class="card-header">
+                  <div class="name">
+                    ${
+                      this._config.icon
+                        ? html`
+                            <ha-icon
+                              class="icon"
+                              .icon=${this._config.icon}
+                            ></ha-icon>
+                          `
+                        : ""
+                    }
+                    ${this._config.title}
+                  </div>
+                  ${
+                    !this._showHeaderToggle
+                      ? nothing
+                      : html`
+                          <hui-entities-toggle
+                            .hass=${this._hass}
+                            .entities=${(
+                              this._configEntities!.filter(
+                                (conf) => "entity" in conf
+                              ) as EntityConfig[]
+                            ).map((conf) => conf.entity)}
+                          ></hui-entities-toggle>
+                        `
+                  }
+                </h1>
+              `
+        }
+        <div id="states" class="card-content ha-scrollbar">
           ${this._configEntities!.map((entityConf) =>
             this._renderEntity(entityConf)
           )}
         </div>
 
-        ${this._footerElement
-          ? html`<div class="header-footer footer">${this._footerElement}</div>`
-          : ""}
+        ${
+          this._footerElement
+            ? html`<div class="header-footer footer">
+                ${this._footerElement}
+              </div>`
+            : ""
+        }
       </ha-card>
     `;
   }
 
-  static styles = css`
-    ha-card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-    }
+  static styles = [
+    haStyleScrollbar,
+    css`
+      ha-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+      }
 
-    .card-header .name {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      .card-header .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-    #states {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: var(--entities-card-row-gap, var(--card-row-gap, 8px));
-    }
+      #states {
+        flex: 1;
+        min-height: 0;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: var(--entities-card-row-gap, var(--card-row-gap, 8px));
+      }
 
-    #states > div > * {
-      overflow: clip visible;
-    }
+      #states > div > * {
+        overflow: clip visible;
+      }
 
-    #states > div {
-      position: relative;
-    }
+      #states > div {
+        position: relative;
+      }
 
-    .icon {
-      padding: 0px 18px 0px 8px;
-    }
+      .icon {
+        padding: 0px 18px 0px 8px;
+      }
 
-    .header {
-      border-top-left-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      border-top-right-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
+      .header {
+        border-top-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-top-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        overflow: hidden;
+      }
+      .header:not(:has(> hui-buttons-header-footer)) {
+        margin-bottom: var(--ha-space-4);
+      }
 
-    .footer {
-      border-bottom-left-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      border-bottom-right-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      margin-top: -16px;
-      overflow: hidden;
+      .footer {
+        border-bottom-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-bottom-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        margin-top: -16px;
+        overflow: hidden;
+      }
+    `,
+  ];
+
+  private _rowConfig(entityConf: LovelaceRowConfig): LovelaceRowConfig {
+    if (entityConf.type === "perform-action") {
+      return { ...entityConf, type: "call-service" };
     }
-  `;
+    return applyDefaultColor(
+      entityConf as EntitiesCardEntityConfig,
+      this._config!.color
+    );
+  }
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
-    const element = createRowElement(
-      (!("type" in entityConf) || entityConf.type === "conditional") &&
-        "state_color" in this._config!
-        ? ({
-            state_color: this._config.state_color,
-            ...(entityConf as EntityConfig),
-          } as EntityConfig)
-        : entityConf.type === "perform-action"
-          ? { ...entityConf, type: "call-service" }
-          : entityConf
-    );
+    const element = createRowElement(this._rowConfig(entityConf));
     if (this._hass) {
       element.hass = this._hass;
     }

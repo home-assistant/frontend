@@ -1,40 +1,58 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
-import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { consume } from "../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import "../ha-code-editor";
-import "../ha-icon-button";
-import "./hat-logbook-note";
+import type { Trigger } from "../../data/automation";
+import { migrateAutomationTrigger } from "../../data/automation";
+import { describeCondition, describeTrigger } from "../../data/automation_i18n";
+import type { ConditionDescriptions } from "../../data/condition";
+import {
+  conditionDescriptionsContext,
+  fullEntitiesContext,
+  labelsContext,
+  manifestsContext,
+  triggerDescriptionsContext,
+} from "../../data/context";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import type { DomainManifestLookup } from "../../data/integration";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { LogbookEntry } from "../../data/logbook";
+import { describeAction } from "../../data/script_i18n";
 import type {
   ActionTraceStep,
   ChooseActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import { getDataFromPath } from "../../data/trace";
+import type { TargetSelector } from "../../data/selector";
+import { getDataFromPath, isTriggerPath } from "../../data/trace";
+import type { TriggerDescriptions } from "../../data/trigger";
+import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
+import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
+import "../../panels/config/automation/target/ha-automation-row-targets";
 import "../../panels/logbook/ha-logbook-renderer";
-import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
+import "../ha-alert";
+import "../ha-code-editor";
+import "../ha-icon-button";
+import "../ha-tab-group";
+import "../ha-tab-group-tab";
+import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
-import { describeCondition, describeTrigger } from "../../data/automation_i18n";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../data/label_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
-import { describeAction } from "../../data/script_i18n";
 
 const TRACE_PATH_TABS = [
   "step_config",
   "changed_variables",
   "logbook",
 ] as const;
+
+// A repeat keeps only its last iterations, so the array index is not the real
+// one. Use the recorded repeat.index when we have it.
+const iterationNumber = (trace: ActionTraceStep, index: number): number =>
+  (trace.changed_variables?.repeat as { index?: number } | undefined)?.index ??
+  index + 1;
 
 @customElement("ha-trace-path-details")
 export class HaTracePathDetails extends LitElement {
@@ -51,49 +69,78 @@ export class HaTracePathDetails extends LitElement {
   @property({ attribute: false })
   public renderedNodes: Record<string, any> = {};
 
-  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<
+    string,
+    NodeInfo
+  >;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
 
   @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: Record<string, FloorRegistryEntry>;
+  @consume({ context: manifestsContext, subscribe: true })
+  private _manifests?: DomainManifestLookup;
+
+  @state()
+  @consume({ context: triggerDescriptionsContext, subscribe: true })
+  private _triggerDescriptions?: TriggerDescriptions;
+
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions?: ConditionDescriptions;
 
   protected render(): TemplateResult {
     return html`
       <div class="padded-box trace-info">
-        ${this._renderSelectedTraceInfo()}
+        ${this._renderNotTriggeredNotice()} ${this._renderSelectedTraceInfo()}
       </div>
 
-      <div class="tabs top">
+      <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
         ${TRACE_PATH_TABS.map(
           (view) => html`
-            <button
-              .view=${view}
-              class=${classMap({ active: this._view === view })}
-              @click=${this._showTab}
+            <ha-tab-group-tab
+              slot="nav"
+              .active=${this._view === view}
+              .panel=${view}
             >
               ${this.hass!.localize(
                 `ui.panel.config.automation.trace.tabs.${view}`
               )}
-            </button>
+            </ha-tab-group-tab>
           `
         )}
-      </div>
-      ${this._view === "step_config"
-        ? this._renderSelectedConfig()
-        : this._view === "changed_variables"
-          ? this._renderChangedVars()
-          : this._renderLogbook()}
+      </ha-tab-group>
+      ${
+        this._view === "step_config"
+          ? this._renderSelectedConfig()
+          : this._view === "changed_variables"
+            ? this._renderChangedVars()
+            : this._renderLogbook()
+      }
     `;
+  }
+
+  private _renderNotTriggeredNotice() {
+    if (
+      !this.trace.not_triggered ||
+      !this.selected?.path ||
+      !isTriggerPath(this.selected.path) ||
+      !(this.selected.path in this.trace.trace)
+    ) {
+      return nothing;
+    }
+    return html`<ha-alert alert-type="info">
+      ${this.hass!.localize(
+        "ui.panel.config.automation.trace.path.not_triggered"
+      )}
+    </ha-alert>`;
   }
 
   private _renderSelectedTraceInfo() {
@@ -148,17 +195,29 @@ export class HaTracePathDetails extends LitElement {
       const nestPath = curPath
         .substring(this.selected.path.length + 1)
         .split("/");
-      let currentDetail = this.selected.config;
+      let currentDetail: unknown = this.selected.config;
       for (const part of nestPath) {
-        if (!["undefined", "string"].includes(typeof currentDetail[part])) {
-          currentDetail = currentDetail[part];
+        if (typeof currentDetail !== "object" || currentDetail === null) {
+          break;
         }
+        const child = (currentDetail as Record<string, unknown>)[part];
+        if (child === undefined || typeof child === "string") {
+          break;
+        }
+        currentDetail = child;
       }
 
       parts.push(
         data.map((trace, idx) => {
-          const { path, timestamp, result, error, changed_variables, ...rest } =
-            trace as any;
+          const {
+            path,
+            timestamp,
+            result,
+            error,
+            template_errors,
+            changed_variables,
+            ...rest
+          } = trace as any;
 
           if (result?.enabled === false) {
             return html`${this.hass!.localize(
@@ -166,66 +225,19 @@ export class HaTracePathDetails extends LitElement {
             )}`;
           }
 
-          const selectedType = this.selected.type;
-
           return html`
-            ${curPath === this.selected.path
-              ? currentDetail.alias
-                ? html`<h2>${currentDetail.alias}</h2>`
-                : selectedType === "trigger"
-                  ? html`<h2>
-                      ${describeTrigger(
-                        currentDetail,
-                        this.hass,
-                        this._entityReg
-                      )}
-                    </h2>`
-                  : selectedType === "condition"
-                    ? html`<h2>
-                        ${describeCondition(
-                          currentDetail,
-                          this.hass,
-                          this._entityReg
-                        )}
-                      </h2>`
-                    : selectedType === "action"
-                      ? html`<h2>
-                          ${describeAction(
-                            this.hass,
-                            this._entityReg,
-                            this._labelReg,
-                            this._floorReg,
-                            currentDetail
-                          )}
-                        </h2>`
-                      : selectedType === "chooseOption"
-                        ? html`<h2>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.actions.type.choose.option",
-                              { number: pathParts[pathParts.length - 1] }
-                            )}
-                          </h2>`
-                        : nothing
-              : html`<h2>
-                  ${curPath.substring(this.selected.path.length + 1)}
-                </h2>`}
-            ${data.length === 1
-              ? nothing
-              : html`<h3>
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.iteration",
-                    { number: idx + 1 }
-                  )}
-                </h3>`}
-            ${curPath
-              .substring(this.selected.path.length + 1)
-              .includes("condition")
-              ? html`[${describeCondition(
-                    currentDetail,
-                    this.hass,
-                    this._entityReg
-                  )}]<br />`
-              : nothing}
+            ${this._renderStepHeading(curPath, currentDetail, pathParts)}
+            ${
+              data.length === 1
+                ? nothing
+                : html`<h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.iteration",
+                      { number: iterationNumber(trace, idx) }
+                    )}
+                  </h3>`
+            }
+            ${this._renderNestedCondition(curPath, currentDetail)}
             ${this.hass!.localize(
               "ui.panel.config.automation.trace.path.executed",
               {
@@ -237,37 +249,187 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
-            ${error
-              ? html`<div class="error">
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.error",
-                    {
-                      error: error,
-                    }
-                  )}
-                </div>`
-              : nothing}
-            ${result
-              ? html`${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.result"
-                  )}
-                  <pre>${dump(result)}</pre>`
-              : nothing}
-            ${Object.keys(rest).length === 0
-              ? nothing
-              : html`<pre>${dump(rest)}</pre>`}
-            ${currentDetail.entity_id &&
-            curPath
-              .substring(this.selected.path.length + 1)
-              .includes("entity_id")
-              ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
-              : nothing}
+            ${
+              error
+                ? html`<div class="error">
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.error",
+                      {
+                        error: error,
+                      }
+                    )}
+                  </div>`
+                : nothing
+            }
+            ${
+              template_errors?.length
+                ? html`<div class="error">
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.template_errors"
+                    )}
+                    <ul>
+                      ${template_errors.map(
+                        (templateError: string) =>
+                          html`<li>${templateError}</li>`
+                      )}
+                    </ul>
+                  </div>`
+                : nothing
+            }
+            ${
+              result
+                ? html`${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.result"
+                    )}
+                    <pre>${dump(result)}</pre>`
+                : nothing
+            }
+            ${
+              Object.keys(rest).length === 0
+                ? nothing
+                : html`<pre>${dump(rest)}</pre>`
+            }
+            ${
+              typeof currentDetail === "object" &&
+              currentDetail !== null &&
+              "entity_id" in currentDetail &&
+              currentDetail.entity_id &&
+              curPath
+                .substring(this.selected.path.length + 1)
+                .includes("entity_id")
+                ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
+                : nothing
+            }
           `;
         })
       );
     }
 
     return parts;
+  }
+
+  private _renderStepHeading(
+    curPath: string,
+    currentDetail: any,
+    pathParts: string[]
+  ) {
+    if (curPath !== this.selected.path) {
+      return html`<div class="heading">
+        <h2>${curPath.substring(this.selected.path.length + 1)}</h2>
+      </div>`;
+    }
+
+    const selectedType = this.selected.type;
+
+    const description = currentDetail.alias
+      ? currentDetail.alias
+      : selectedType === "trigger"
+        ? describeTrigger(
+            migrateAutomationTrigger({ ...currentDetail }) as Trigger,
+            this.hass,
+            this._entityReg
+          )
+        : selectedType === "condition"
+          ? describeCondition(currentDetail, this.hass, this._entityReg)
+          : selectedType === "action"
+            ? describeAction(
+                this.hass,
+                this._entityReg,
+                currentDetail,
+                undefined,
+                undefined,
+                this._manifests
+              )
+            : selectedType === "chooseOption"
+              ? this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.option",
+                  { number: pathParts[pathParts.length - 1] }
+                )
+              : undefined;
+
+    if (description === undefined) {
+      return nothing;
+    }
+
+    return html`<div class="heading">
+      <h2>${description}</h2>
+      ${this._renderTargets(currentDetail, selectedType)}
+    </div>`;
+  }
+
+  private _renderNestedCondition(curPath: string, currentDetail: any) {
+    if (
+      !curPath.substring(this.selected.path.length + 1).includes("condition")
+    ) {
+      return nothing;
+    }
+
+    return html`<div class="nested-condition">
+      ${describeCondition(currentDetail, this.hass, this._entityReg)}
+      ${this._renderTargets(currentDetail, "condition", "s")}
+    </div>`;
+  }
+
+  private _renderTargets(
+    config: any,
+    type: NodeInfo["type"],
+    size: "s" | "m" = "m"
+  ) {
+    const target = this._getTarget(config, type);
+    if (!target) {
+      return nothing;
+    }
+    const targetSpec = this._getTargetSelector(config, type);
+    return html`<div class="targets">
+      <ha-automation-row-targets
+        .target=${target}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
+        .size=${size}
+        interactive
+      ></ha-automation-row-targets>
+    </div>`;
+  }
+
+  private _getTargetSelector(
+    config: any,
+    type: NodeInfo["type"]
+  ): TargetSelector["target"] | undefined {
+    if (type === "trigger") {
+      return this._triggerDescriptions?.[config.trigger]?.target;
+    }
+    if (type === "condition") {
+      return this._conditionDescriptions?.[config.condition]?.target;
+    }
+    if (type === "action" && typeof config.action === "string") {
+      const [domain, service] = config.action.split(".", 2);
+      return this.hass.services?.[domain]?.[service]?.target;
+    }
+    return undefined;
+  }
+
+  private _getTarget(
+    config: any,
+    type: NodeInfo["type"]
+  ): HassServiceTarget | undefined {
+    if (config.target) {
+      return config.target;
+    }
+    if (type === "trigger" || type === "condition") {
+      const element = type === "trigger" ? config.trigger : config.condition;
+      if (element === "state" || element === "numeric_state") {
+        return getEntityTarget(config.entity_id);
+      }
+      if (element === "device") {
+        return getDeviceTarget(config.device_id);
+      }
+      return undefined;
+    }
+    if (type === "action") {
+      return config.entity_id
+        ? getEntityTarget(config.entity_id)
+        : getDeviceTarget(config.device_id);
+    }
+    return undefined;
   }
 
   private _renderSelectedConfig() {
@@ -302,19 +464,27 @@ export class HaTracePathDetails extends LitElement {
       <div class="padded-box">
         ${data.map(
           (trace, idx) => html`
-            ${data.length > 1
-              ? html`<p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.iteration",
-                    { number: idx + 1 }
-                  )}
-                </p>`
-              : ""}
-            ${Object.keys(trace.changed_variables || {}).length === 0
-              ? this.hass!.localize(
-                  "ui.panel.config.automation.trace.path.no_variables_changed"
-                )
-              : html`<pre>${dump(trace.changed_variables).trimEnd()}</pre>`}
+            ${
+              data.length > 1
+                ? html`<p>
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.iteration",
+                      { number: iterationNumber(trace, idx) }
+                    )}
+                  </p>`
+                : ""
+            }
+            ${
+              Object.keys(trace.changed_variables || {}).length === 0
+                ? this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.no_variables_changed"
+                  )
+                : html`<ha-code-editor
+                    read-only
+                    dir="ltr"
+                    .value=${dump(trace.changed_variables).trimEnd()}
+                  ></ha-code-editor>`
+            }
           `
         )}
       </div>
@@ -327,7 +497,9 @@ export class HaTracePathDetails extends LitElement {
     const trackedPaths = Object.keys(this.trackedNodes);
     const index = trackedPaths.indexOf(this.selected.path);
 
-    if (index === -1) {
+    // Synthetic choose-option nodes have no direct trace records, so there is
+    // no start timestamp to slice the logbook with.
+    if (index === -1 || !startTrace) {
       return html`<div class="padded-box">
         ${this.hass!.localize(
           "ui.panel.config.automation.trace.path.step_not_executed"
@@ -337,7 +509,11 @@ export class HaTracePathDetails extends LitElement {
 
     let entries: LogbookEntry[];
 
-    if (index === trackedPaths.length - 1) {
+    const nextTrace =
+      index < trackedPaths.length - 1
+        ? paths[trackedPaths[index + 1]]
+        : undefined;
+    if (!nextTrace) {
       // it's the last entry. Find all logbook entries after start.
       const startTime = new Date(startTrace[0].timestamp);
       const idx = this.logbookEntries.findIndex(
@@ -349,8 +525,6 @@ export class HaTracePathDetails extends LitElement {
         entries = this.logbookEntries.slice(idx);
       }
     } else {
-      const nextTrace = paths[trackedPaths[index + 1]];
-
       const startTime = new Date(startTrace[0].timestamp);
       const endTime = new Date(nextTrace[0].timestamp);
 
@@ -372,15 +546,12 @@ export class HaTracePathDetails extends LitElement {
     return entries.length
       ? html`
           <ha-logbook-renderer
-            relative-time
             .hass=${this.hass}
             .entries=${entries}
             .narrow=${this.narrow}
+            no-detail
           ></ha-logbook-renderer>
-          <hat-logbook-note
-            .hass=${this.hass}
-            .domain=${this.trace.domain}
-          ></hat-logbook-note>
+          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
           ${this.hass!.localize(
@@ -389,13 +560,12 @@ export class HaTracePathDetails extends LitElement {
         </div>`;
   }
 
-  private _showTab(ev) {
-    this._view = ev.target.view;
+  private _handleTabChanged(ev: CustomEvent) {
+    this._view = ev.detail.name as typeof this._view;
   }
 
   static get styles(): CSSResultGroup {
     return [
-      traceTabStyles,
       css`
         .padded-box {
           margin: 16px;
@@ -405,12 +575,63 @@ export class HaTracePathDetails extends LitElement {
           min-height: 250px;
         }
 
+        .heading {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: var(--ha-space-2);
+          margin: var(--ha-space-4) 0;
+        }
+
+        .heading h2 {
+          margin: 0;
+        }
+
+        .heading .targets {
+          margin-top: 0;
+        }
+
+        .targets {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: var(--ha-space-2);
+          margin-top: var(--ha-space-2);
+        }
+
+        .nested-condition {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: var(--ha-space-2);
+          margin-bottom: var(--ha-space-2);
+        }
+
+        .nested-condition .targets {
+          margin-top: 0;
+        }
+
         pre {
           margin: 0;
         }
 
         .error {
           color: var(--error-color);
+        }
+
+        .error ul {
+          margin: var(--ha-space-1) 0;
+          padding-left: var(--ha-space-6);
+        }
+
+        ha-tab-group {
+          background-color: var(--primary-background-color);
+          border-top: 1px solid var(--divider-color);
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        ha-tab-group-tab::part(base) {
+          padding: 2px 16px;
         }
       `,
     ];

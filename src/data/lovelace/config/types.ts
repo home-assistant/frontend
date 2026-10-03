@@ -2,17 +2,19 @@ import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceResource } from "../resource";
 import type { LovelaceStrategyConfig } from "./strategy";
-import type { LovelaceViewRawConfig } from "./view";
+import type {
+  LovelaceDashboardBackgroundConfig,
+  LovelaceViewRawConfig,
+} from "./view";
 
 export interface LovelaceDashboardBaseConfig {}
 
 export interface LovelaceConfig extends LovelaceDashboardBaseConfig {
-  background?: string;
+  background?: LovelaceDashboardBackgroundConfig;
   views: LovelaceViewRawConfig[];
 }
 
-export interface LovelaceDashboardStrategyConfig
-  extends LovelaceDashboardBaseConfig {
+export interface LovelaceDashboardStrategyConfig extends LovelaceDashboardBaseConfig {
   strategy: LovelaceStrategyConfig;
 }
 
@@ -21,8 +23,7 @@ export interface LegacyLovelaceConfig extends LovelaceConfig {
 }
 
 export type LovelaceRawConfig =
-  | LovelaceConfig
-  | LovelaceDashboardStrategyConfig;
+  LovelaceConfig | LovelaceDashboardStrategyConfig;
 
 export function isStrategyDashboard(
   config: LovelaceRawConfig

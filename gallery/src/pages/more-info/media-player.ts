@@ -20,12 +20,12 @@ class DemoMoreInfoMediaPlayer extends LitElement {
     return html`
       <demo-more-infos
         .hass=${this.hass}
-        .entities=${ENTITIES.map((ent) => ent.entityId)}
+        .entities=${ENTITIES.map((ent) => ent.entity_id)}
       ></demo-more-infos>
     `;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");

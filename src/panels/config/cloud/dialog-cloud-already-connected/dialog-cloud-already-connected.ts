@@ -6,8 +6,9 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { obfuscateUrl } from "../../../../util/url";
@@ -19,13 +20,21 @@ class DialogCloudAlreadyConnected extends LitElement {
 
   @state() private _params?: CloudAlreadyConnectedDialogParams;
 
+  @state() private _open = false;
+
   @state() private _obfuscateIp = true;
 
   public showDialog(params: CloudAlreadyConnectedDialogParams) {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._params?.closeDialog?.();
     this._params = undefined;
     this._obfuscateIp = true;
@@ -40,14 +49,11 @@ class DialogCloudAlreadyConnected extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            "ui.panel.config.cloud.dialog_already_connected.heading"
-          )
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.cloud.dialog_already_connected.heading"
         )}
+        @closed=${this._dialogClosed}
       >
         <div class="intro">
           <span>
@@ -62,26 +68,30 @@ class DialogCloudAlreadyConnected extends LitElement {
           </b>
         </div>
         <div class="instance-details">
-          ${details.name
-            ? html`<div class="instance-detail">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.dialog_already_connected.instance_name"
-                  )}:
-                </span>
-                <span>${details.name}</span>
-              </div>`
-            : nothing}
-          ${details.version
-            ? html`<div class="instance-detail">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.dialog_already_connected.instance_version"
-                  )}:
-                </span>
-                <span>${details.version}</span>
-              </div>`
-            : nothing}
+          ${
+            details.name
+              ? html`<div class="instance-detail">
+                  <span>
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.dialog_already_connected.instance_name"
+                    )}:
+                  </span>
+                  <span>${details.name}</span>
+                </div>`
+              : nothing
+          }
+          ${
+            details.version
+              ? html`<div class="instance-detail">
+                  <span>
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.dialog_already_connected.instance_version"
+                    )}:
+                  </span>
+                  <span>${details.version}</span>
+                </div>`
+              : nothing
+          }
           <div class="instance-detail">
             <span>
               ${this.hass.localize(
@@ -90,9 +100,11 @@ class DialogCloudAlreadyConnected extends LitElement {
             </span>
             <div class="obfuscated">
               <span>
-                ${this._obfuscateIp
-                  ? obfuscateUrl(details.remote_ip_address)
-                  : details.remote_ip_address}
+                ${
+                  this._obfuscateIp
+                    ? obfuscateUrl(details.remote_ip_address)
+                    : details.remote_ip_address
+                }
               </span>
 
               <ha-icon-button
@@ -131,18 +143,20 @@ class DialogCloudAlreadyConnected extends LitElement {
           )}
         </ha-alert>
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="secondaryAction"
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button @click=${this._logInHere} slot="primaryAction">
-          ${this.hass!.localize(
-            "ui.panel.config.cloud.dialog_already_connected.login_here"
-          )}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._logInHere}>
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_already_connected.login_here"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -160,9 +174,6 @@ class DialogCloudAlreadyConnected extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 535px;
-        }
         .intro b {
           display: block;
           margin-top: 16px;

@@ -1,6 +1,5 @@
 import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
+import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import type { HomeAssistant } from "../../../src/types";
@@ -16,16 +15,11 @@ class DemoCards extends LitElement {
 
   @state() private _showConfig = false;
 
-  @query("#container") private _container!: HTMLElement;
-
   render() {
     return html`
       <ha-demo-options>
         <ha-formfield label="Show config">
           <ha-switch @change=${this._showConfigToggled}> </ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Dark theme">
-          <ha-switch @change=${this._darkThemeToggled}> </ha-switch>
         </ha-formfield>
       </ha-demo-options>
       <div id="container">
@@ -46,12 +40,6 @@ class DemoCards extends LitElement {
 
   private _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
-  }
-
-  private _darkThemeToggled(ev) {
-    applyThemesOnElement(this._container, { themes: {} } as any, "default", {
-      dark: ev.target.checked,
-    });
   }
 
   static styles = css`

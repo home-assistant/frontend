@@ -3,7 +3,7 @@
  * @param arr - The array to get combinations of
  * @returns A multidimensional array of all possible combinations
  */
-export function getAllCombinations<T>(arr: T[]) {
+export function getAllCombinations<T>(arr: readonly T[]): T[][] {
   return arr.reduce<T[][]>(
     (combinations, element) =>
       combinations.concat(

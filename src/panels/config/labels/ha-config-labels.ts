@@ -1,51 +1,100 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiLabelOutline,
+  mdiPalette,
   mdiPlus,
   mdiRobot,
+  mdiScriptText,
   mdiShape,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  FlattenObjectKeys,
+  LocalizeFunc,
+} from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "../../../components/ha-dropdown";
+import type {
+  HaDropdown,
+  HaDropdownSelectEvent,
+} from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-button";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
+import { renderLabelColorBadge } from "../../../components/ha-label-picker";
 import "../../../components/ha-svg-icon";
 import type {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   deleteLabelRegistryEntry,
   fetchLabelRegistry,
   updateLabelRegistryEntry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import type { HomeAssistant, Route, TranslationDict } from "../../../types";
+import {
+  getCreatedAtTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
+import { configSections } from "../config-sections";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
+
+type ConfigTranslationKey = FlattenObjectKeys<
+  TranslationDict["ui"]["panel"]["config"]
+>;
+
+const NAVIGATION_ACTIONS: {
+  value: string;
+  icon: string;
+  translationKey: ConfigTranslationKey;
+}[] = [
+  {
+    value: "navigate-entities",
+    icon: mdiShape,
+    translationKey: "entities.caption",
+  },
+  {
+    value: "navigate-devices",
+    icon: mdiDevices,
+    translationKey: "devices.caption",
+  },
+  {
+    value: "navigate-automations",
+    icon: mdiRobot,
+    translationKey: "automation.caption",
+  },
+  {
+    value: "navigate-scenes",
+    icon: mdiPalette,
+    translationKey: "scene.caption",
+  },
+  {
+    value: "navigate-scripts",
+    icon: mdiScriptText,
+    translationKey: "script.caption",
+  },
+] as const;
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -58,6 +107,8 @@ export class HaConfigLabels extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _labels: LabelRegistryEntry[] = [];
+
+  @state() private _loading = true;
 
   @state()
   @storage({
@@ -89,9 +140,11 @@ export class HaConfigLabels extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
-  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
+  @query("#overflow-menu") private _overflowMenu?: HaDropdown;
 
   private _overflowLabel!: LabelRegistryEntry;
+
+  private _openingOverflow = false;
 
   private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
@@ -111,19 +164,7 @@ export class HaConfigLabels extends LitElement {
         showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
-        template: (label) =>
-          html`<div
-            style=${styleMap({
-              backgroundColor: label.color
-                ? computeCssColor(label.color)
-                : undefined,
-              borderRadius: "var(--ha-border-radius-md)",
-              border: "1px solid var(--outline-color)",
-              boxSizing: "border-box",
-              width: "var(--ha-space-5)",
-              height: "var(--ha-space-5)",
-            })}
-          ></div>`,
+        template: (label) => renderLabelColorBadge(label.color ?? undefined),
       },
       name: {
         title: localize("ui.panel.config.labels.headers.name"),
@@ -135,9 +176,11 @@ export class HaConfigLabels extends LitElement {
           ? undefined
           : (label) => html`
               <div>${label.name}</div>
-              ${label.description
-                ? html`<div class="secondary">${label.description}</div>`
-                : nothing}
+              ${
+                label.description
+                  ? html`<div class="secondary">${label.description}</div>`
+                  : nothing
+              }
             `,
       },
       description: {
@@ -146,44 +189,17 @@ export class HaConfigLabels extends LitElement {
         filterable: true,
         hideable: true,
       },
-      created_at: {
-        title: localize("ui.panel.config.generic.headers.created_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (label) =>
-          label.created_at
-            ? formatShortDateTime(
-                new Date(label.created_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
-      modified_at: {
-        title: localize("ui.panel.config.generic.headers.modified_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (label) =>
-          label.modified_at
-            ? formatShortDateTime(
-                new Date(label.modified_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
+      created_at: getCreatedAtTableColumn(localize, this.hass),
+      modified_at: getModifiedAtTableColumn(localize, this.hass),
       actions: {
+        lastFixed: true,
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         type: "overflow-menu",
         template: (label) => html`
           <ha-icon-button
-            .selected=${label}
+            .selectedLabel=${label}
             .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._toggleOverflowMenu}
@@ -206,16 +222,30 @@ export class HaConfigLabels extends LitElement {
       return;
     }
 
-    if (this._overflowMenu.open) {
-      this._overflowMenu.close();
+    if (this._overflowMenu.anchorElement === ev.target) {
+      this._overflowMenu.anchorElement = undefined;
       return;
     }
-    this._overflowLabel = ev.target.selected;
+    this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
-    this._overflowMenu.show();
+    this._overflowLabel = ev.target.selectedLabel;
+    this._overflowMenu.open = true;
   };
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  private _overflowMenuOpened = () => {
+    this._openingOverflow = false;
+  };
+
+  private _overflowMenuClosed = () => {
+    // changing the anchorElement triggers a close event, ignore it
+    if (this._openingOverflow || !this._overflowMenu) {
+      return;
+    }
+
+    this._overflowMenu.anchorElement = undefined;
+  };
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchLabels();
   }
@@ -230,6 +260,7 @@ export class HaConfigLabels extends LitElement {
         .tabs=${configSections.areas}
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._data(this._labels)}
+        .loading=${this._loading}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         has-fab
         .initialSorting=${this._activeSorting}
@@ -247,43 +278,33 @@ export class HaConfigLabels extends LitElement {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.labels.add_label")}
-          extended
-          @click=${this._addLabel}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._addLabel}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
-      <ha-md-menu id="overflow-menu" positioning="fixed">
-        <ha-md-menu-item .clickAction=${this._navigateEntities}>
-          <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.entities.caption")}
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._navigateDevices}>
-          <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.devices.caption")}
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._navigateAutomations}>
-          <ha-svg-icon slot="start" .path=${mdiRobot}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.automation.caption")}
-        </ha-md-menu-item>
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-        <ha-md-menu-item
-          class="warning"
-          .clickAction=${this._handleRemoveLabelClick}
-        >
-          <ha-svg-icon
-            slot="start"
-            class="warning"
-            .path=${mdiDelete}
-          ></ha-svg-icon>
+      <ha-dropdown
+        id="overflow-menu"
+        @wa-select=${this._handleOverflowAction}
+        @wa-after-show=${this._overflowMenuOpened}
+        @wa-after-hide=${this._overflowMenuClosed}
+      >
+        ${NAVIGATION_ACTIONS.map(
+          (action) => html`
+            <ha-dropdown-item value=${action.value}>
+              <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
+              ${this.hass.localize(`ui.panel.config.${action.translationKey}`)}
+            </ha-dropdown-item>
+          `
+        )}
+        <wa-divider></wa-divider>
+        <ha-dropdown-item variant="danger" value="remove">
+          <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
           ${this.hass.localize("ui.common.delete")}
-        </ha-md-menu-item>
-      </ha-md-menu>
+        </ha-dropdown-item>
+      </ha-dropdown>
     `;
   }
 
@@ -303,7 +324,11 @@ export class HaConfigLabels extends LitElement {
   }
 
   private async _fetchLabels() {
-    this._labels = await fetchLabelRegistry(this.hass.connection);
+    try {
+      this._labels = await fetchLabelRegistry(this.hass.connection);
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _addLabel() {
@@ -375,22 +400,36 @@ export class HaConfigLabels extends LitElement {
     }
   }
 
-  private _navigateEntities = () => {
-    navigate(
-      `/config/entities?historyBack=1&label=${this._overflowLabel.label_id}`
-    );
+  private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+    switch (action) {
+      case "navigate-entities":
+        this._navigateConfig("/config/entities");
+        break;
+      case "navigate-devices":
+        this._navigateConfig("/config/devices/dashboard");
+        break;
+      case "navigate-automations":
+        this._navigateConfig("/config/automation/dashboard");
+        break;
+      case "navigate-scenes":
+        this._navigateConfig("/config/scene/dashboard");
+        break;
+      case "navigate-scripts":
+        this._navigateConfig("/config/script/dashboard");
+        break;
+      case "remove":
+        this._handleRemoveLabelClick();
+        break;
+    }
   };
 
-  private _navigateDevices = () => {
-    navigate(
-      `/config/devices/dashboard?historyBack=1&label=${this._overflowLabel.label_id}`
-    );
-  };
-
-  private _navigateAutomations = () => {
-    navigate(
-      `/config/automation/dashboard?historyBack=1&label=${this._overflowLabel.label_id}`
-    );
+  private _navigateConfig = (path: string) => {
+    navigate(`${path}?historyBack=1&label=${this._overflowLabel.label_id}`);
   };
 
   private _handleSortingChanged(ev: CustomEvent) {

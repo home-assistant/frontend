@@ -13,7 +13,7 @@ class IntegrationBadge extends LitElement {
   @property({ attribute: "dark-optimized-icon", type: Boolean })
   public darkOptimizedIcon = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true })
+  @property({ attribute: false })
   public clickable = false;
 
   protected render(): TemplateResult {
@@ -21,11 +21,14 @@ class IntegrationBadge extends LitElement {
       <div class="icon">
         <img
           alt=""
-          src=${brandsUrl({
-            domain: this.domain,
-            type: "icon",
-            darkOptimized: this.darkOptimizedIcon,
-          })}
+          src=${brandsUrl(
+            {
+              domain: this.domain,
+              type: "icon",
+              darkOptimized: this.darkOptimizedIcon,
+            },
+            location.origin
+          )}
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
         />

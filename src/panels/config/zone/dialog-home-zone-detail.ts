@@ -1,25 +1,37 @@
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { HomeZoneMutableParams } from "../../../data/zone";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 
-const SCHEMA = [
-  {
-    name: "location",
-    required: true,
-    selector: { location: { radius: true } },
-  },
-];
+const SCHEMA = memoizeOne(
+  (icon: string, color: string) =>
+    [
+      {
+        name: "location",
+        required: true,
+        selector: { location: { radius: true, icon, color } },
+      },
+    ] as const
+);
 
-class DialogHomeZoneDetail extends LitElement {
+@customElement("dialog-home-zone-detail")
+class DialogHomeZoneDetail extends DirtyStateProviderMixin<HomeZoneMutableParams>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: Record<string, string>;
@@ -27,6 +39,8 @@ class DialogHomeZoneDetail extends LitElement {
   @state() private _data?: HomeZoneMutableParams;
 
   @state() private _params?: HomeZoneDetailDialogParams;
+
+  @state() private _open = false;
 
   @state() private _submitting = false;
 
@@ -39,9 +53,15 @@ class DialogHomeZoneDetail extends LitElement {
       longitude: this.hass.config.longitude,
       radius: this.hass.config.radius,
     };
+    this._initDirtyTracking({ type: "deep" }, this._data);
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -58,39 +78,42 @@ class DialogHomeZoneDetail extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass!.localize("ui.common.edit_item", { name: this._data.name })
-        )}
+        .open=${this._open}
+        header-title=${this.hass!.localize("ui.common.edit_item", {
+          name: this._data.name,
+        })}
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
       >
-        <div>
-          <ha-form
-            .hass=${this.hass}
-            .schema=${SCHEMA}
-            .data=${this._formData(this._data)}
-            .error=${this._error}
-            .computeLabel=${this._computeLabel}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
-        </div>
-        <ha-button
-          slot="primaryAction"
-          appearance="plain"
-          @click=${this.closeDialog}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!valid || this._submitting}
-        >
-          ${this.hass!.localize("ui.common.save")}
-        </ha-button>
+        <ha-form
+          autofocus
+          .hass=${this.hass}
+          .schema=${SCHEMA(
+            this.hass.states[HOME_ZONE_ENTITY_ID]?.attributes.icon ||
+              "mdi:home",
+            zoneColor(HOME_ZONE_ENTITY_ID, false, [], getComputedStyle(this))
+          )}
+          .data=${this._formData(this._data)}
+          .error=${this._error}
+          .computeLabel=${this._computeLabel}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!valid || this._submitting || !this.isDirtyState}
+          >
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -112,6 +135,7 @@ class DialogHomeZoneDetail extends LitElement {
     value.radius = value.location.radius;
     delete value.location;
     this._data = value;
+    this._updateDirtyState(value);
   }
 
   private _computeLabel = (): string => "";
@@ -129,20 +153,7 @@ class DialogHomeZoneDetail extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        ha-dialog {
-          --mdc-dialog-min-width: min(600px, 95vw);
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-width: 100vw;
-          }
-        }
-      `,
-    ];
+    return [haStyleDialog];
   }
 }
 
@@ -151,5 +162,3 @@ declare global {
     "dialog-home-zone-detail": DialogHomeZoneDetail;
   }
 }
-
-customElements.define("dialog-home-zone-detail", DialogHomeZoneDetail);

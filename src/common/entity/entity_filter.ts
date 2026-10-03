@@ -15,6 +15,7 @@ export interface EntityFilter {
   label?: string | string[];
   entity_category?: EntityCategory | EntityCategory[];
   hidden_platform?: string | string[];
+  hidden_domains?: string | string[];
 }
 
 export type EntityFilterFunc = (entityId: string) => boolean;
@@ -32,11 +33,17 @@ const normalizeFilterArray = <T>(
 };
 
 export const generateEntityFilter = (
-  hass: HomeAssistant,
+  hass: Pick<
+    HomeAssistant,
+    "states" | "entities" | "devices" | "areas" | "floors"
+  >,
   filter: EntityFilter
 ): EntityFilterFunc => {
   const domains = filter.domain
     ? new Set(ensureArray(filter.domain))
+    : undefined;
+  const hiddenDomains = filter.hidden_domains
+    ? new Set(ensureArray(filter.hidden_domains))
     : undefined;
   const deviceClasses = filter.device_class
     ? new Set(ensureArray(filter.device_class))
@@ -57,12 +64,16 @@ export const generateEntityFilter = (
     if (!stateObj) {
       return false;
     }
-    if (domains) {
+    if (domains || hiddenDomains) {
       const domain = computeDomain(entityId);
-      if (!domains.has(domain)) {
+      if (domains && !domains.has(domain)) {
+        return false;
+      }
+      if (hiddenDomains && hiddenDomains.has(domain)) {
         return false;
       }
     }
+
     if (deviceClasses) {
       const dc = stateObj.attributes.device_class || "none";
       if (!deviceClasses.has(dc)) {
@@ -109,9 +120,6 @@ export const generateEntityFilter = (
       }
     }
     if (entityCategories) {
-      if (!entity) {
-        return false;
-      }
       const category = entity?.entity_category || "none";
       if (!entityCategories.has(category)) {
         return false;

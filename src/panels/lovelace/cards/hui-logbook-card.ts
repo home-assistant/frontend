@@ -1,15 +1,28 @@
+import { startOfYesterday } from "date-fns";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
+import { createSearchParam } from "../../../common/url/search-params";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../data/device/device_registry";
+import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import type { HaLogbook } from "../../logbook/ha-logbook";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-warning";
@@ -20,8 +33,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { LogbookCardConfig } from "./types";
-import { resolveEntityIDs } from "../../../data/selector";
-import { ensureArray } from "../../../common/array/ensure-array";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -65,6 +76,12 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   @state() private _targetPickerValue: HassServiceTarget = {};
 
   @state() private _stateFilter?: string[];
+
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
+
+  private _showMoreLinkId = `logbook-${Math.random().toString(36).substring(2, 9)}`;
 
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
@@ -135,17 +152,95 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._stateFilter = ensureArray(config.state_filter);
   }
 
-  private _getEntityIds(): string[] | undefined {
-    const entities = this._getMemoizedEntityIds(
-      this._targetPickerValue,
+  private _showMoreUrl(): string {
+    const target = this._getTarget();
+    const params: Record<string, string> = {
+      start_date: startOfYesterday().toISOString(),
+      back: "1",
+    };
+    if (target.entity_id) {
+      params.entity_id = ensureArray(target.entity_id).join(",");
+    }
+    if (target.device_id) {
+      params.device_id = ensureArray(target.device_id).join(",");
+    }
+    if (target.area_id) {
+      params.area_id = ensureArray(target.area_id).join(",");
+    }
+    if (target.floor_id) {
+      params.floor_id = ensureArray(target.floor_id).join(",");
+    }
+    if (target.label_id) {
+      params.label_id = ensureArray(target.label_id).join(",");
+    }
+    return `/logbook?${createSearchParam(params)}`;
+  }
+
+  // An empty list must stay empty: ha-logbook treats undefined as "no
+  // filter" and would show all activity when the targets resolve to nothing.
+  private _getEntityIds(): string[] {
+    return this._getMemoizedEntityIds(
+      this._getTarget(),
       this.hass.entities,
       this.hass.devices,
       this.hass.areas
     );
-    if (entities.length === 0) {
-      return undefined;
+  }
+
+  private _getMissingDeviceIds = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      devices: HomeAssistant["devices"]
+    ): string[] =>
+      devices && targetPickerValue.device_id
+        ? ensureArray(targetPickerValue.device_id).filter(
+            (deviceId) => !devices[deviceId]
+          )
+        : []
+  );
+
+  private _getTarget(): HassServiceTarget {
+    return this._getMemoizedTarget(
+      this._targetPickerValue,
+      this.hass.devices,
+      this._compositeSplits
+    );
+  }
+
+  // Swap legacy composite devices for the devices they were split into.
+  private _getMemoizedTarget = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      devices: HomeAssistant["devices"],
+      compositeSplits: DeviceCompositeSplits | undefined
+    ): HassServiceTarget => {
+      if (!devices || !compositeSplits || !targetPickerValue.device_id) {
+        return targetPickerValue;
+      }
+      const deviceIds = new Set<string>();
+      for (const deviceId of ensureArray(targetPickerValue.device_id)) {
+        const splitIds = devices[deviceId]
+          ? undefined
+          : compositeSplits[deviceId]?.split_ids.filter((id) => devices[id]);
+        if (splitIds?.length) {
+          splitIds.forEach((id) => deviceIds.add(id));
+        } else {
+          deviceIds.add(deviceId);
+        }
+      }
+      return { ...targetPickerValue, device_id: [...deviceIds] };
     }
-    return entities;
+  );
+
+  private async _loadCompositeSplits() {
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
   }
 
   private _getMemoizedEntityIds = memoizeOne(
@@ -158,11 +253,96 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
-  protected update(changedProperties) {
+  private _getNameDetail(): LogbookNameDetail | undefined {
+    const nameDetail = this._config?.name_detail ?? "auto";
+    if (nameDetail !== "auto") {
+      return nameDetail;
+    }
+    return this._getAutoNameDetail(
+      this._getEntityIds(),
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
+  }
+
+  // Pick the least detail the targeted entities need to stay unambiguous: a
+  // single entity needs no name, a shared device needs only the entity name, a
+  // shared area needs the device, otherwise show the full context.
+  private _getAutoNameDetail = memoizeOne(
+    (
+      entityIds: string[],
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"]
+    ): LogbookNameDetail => {
+      if (entityIds.length <= 1) {
+        return "none";
+      }
+      const deviceIds = new Set<string | undefined>();
+      const areaIds = new Set<string | undefined>();
+      for (const entityId of entityIds) {
+        const entry = entities[entityId];
+        const { device, area } = entry
+          ? getEntityEntryContext(entry, entities, devices, areas, floors)
+          : { device: null, area: null };
+        deviceIds.add(device?.id);
+        areaIds.add(area?.area_id);
+      }
+      // An entity without a device or area counts as its own group: it does not
+      // share the context, so it must not collapse the level.
+      if (deviceIds.size === 1 && !deviceIds.has(undefined)) {
+        return "entity";
+      }
+      if (areaIds.size === 1 && !areaIds.has(undefined)) {
+        return "device";
+      }
+      return "area";
+    }
+  );
+
+  protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
     if (changedProperties.has("layout")) {
       this.toggleAttribute("ispanel", this.layout === "panel");
     }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (
+      this.hass &&
+      this._compositeSplits === undefined &&
+      !this._loadingCompositeSplits &&
+      this._getMissingDeviceIds(this._targetPickerValue, this.hass.devices)
+        .length
+    ) {
+      // A targeted device is missing from the registry; it might be a legacy
+      // composite device that was split.
+      this._loadCompositeSplits();
+    }
+  }
+
+  private _renderMissingDevicesWarning() {
+    if (this._compositeSplits === undefined) {
+      return nothing;
+    }
+    const missing = this._getMissingDeviceIds(
+      this._getTarget(),
+      this.hass.devices
+    );
+    if (!missing.length) {
+      return nothing;
+    }
+    return html`
+      <ha-alert alert-type="warning">
+        ${this.hass.localize("ui.card.logbook.device_not_found", {
+          count: missing.length,
+        })}
+      </ha-alert>
+    `;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -189,7 +369,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    if (!isComponentLoaded(this.hass, "logbook")) {
+    if (!isComponentLoaded(this.hass.config, "logbook")) {
       return html`
         <hui-warning .hass=${this.hass}>
           ${this.hass.localize("ui.components.logbook.not_loaded", {
@@ -200,24 +380,52 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card
-        .header=${this._config!.title}
-        class=${classMap({ "no-header": !this._config!.title })}
-      >
+      <ha-card class=${classMap({ "no-header": !this._config!.title })}>
+        ${
+          this._config!.title
+            ? html`<h1 class="card-header">
+                ${this._config!.title}
+                <a
+                  id=${this._showMoreLinkId}
+                  href=${this._showMoreUrl()}
+                  aria-label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._showMoreLinkId} placement="left">
+                  ${this.hass.localize("ui.dialogs.more_info_control.show_more")}
+                </ha-tooltip>
+              </h1>`
+            : nothing
+        }
+        ${this._renderMissingDevicesWarning()}
         <div class="content">
-          <ha-logbook
-            class=${classMap({
-              "is-grid": this.layout === "grid",
-              "is-panel": this.layout === "panel",
-            })}
-            .hass=${this.hass}
-            .time=${this._time}
-            .entityIds=${this._getEntityIds()}
-            .stateFilter=${this._stateFilter}
-            narrow
-            relative-time
-            virtualize
-          ></ha-logbook>
+          ${
+            // Wait for the split map so a replaced device doesn't flash as
+            // having no activity.
+            this._compositeSplits === undefined &&
+            this._getMissingDeviceIds(
+              this._targetPickerValue,
+              this.hass.devices
+            ).length
+              ? nothing
+              : html`<ha-logbook
+                  class=${classMap({
+                    "is-grid": this.layout === "grid",
+                    "is-panel": this.layout === "panel",
+                  })}
+                  .hass=${this.hass}
+                  .time=${this._time}
+                  .entityIds=${this._getEntityIds()}
+                  .stateFilter=${this._stateFilter}
+                  .nameDetail=${this._getNameDetail()}
+                  narrow
+                  no-icon
+                  virtualize
+                ></ha-logbook>`
+          }
         </div>
       </ha-card>
     `;
@@ -233,9 +441,28 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           justify-content: space-between;
         }
 
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 0;
+        }
+
+        .card-header ha-icon-next {
+          --ha-icon-button-size: 24px;
+          line-height: 24px;
+          color: var(--primary-text-color);
+        }
+
         .content {
           height: 100%;
-          padding: 0 16px 16px;
+          min-height: 0;
+          padding: 0 0 16px;
+        }
+
+        ha-alert {
+          display: block;
+          margin: var(--ha-space-2) var(--ha-space-4) 0;
         }
 
         .no-header .content {

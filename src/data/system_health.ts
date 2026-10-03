@@ -21,10 +21,7 @@ export type SystemCheckValueObject =
   | SystemCheckValuePendingObject;
 
 export type SystemCheckValue =
-  | string
-  | number
-  | boolean
-  | SystemCheckValueObject;
+  string | number | boolean | SystemCheckValueObject;
 
 export type SystemHealthInfo = Partial<{
   homeassistant: {
@@ -84,7 +81,7 @@ type SystemHealthEvent =
   | SystemHealthEventFinish;
 
 export const subscribeSystemHealthInfo = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callback: (info: SystemHealthInfo | undefined) => void
 ) => {
   let data = {};

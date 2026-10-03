@@ -1,8 +1,7 @@
-import { convertEntities } from "../../../../src/fake_data/entity";
 import type { DemoConfig } from "../types";
 
 export const demoEntitiesJimpower: DemoConfig["entities"] = () =>
-  convertEntities({
+  Object.values({
     "todo.shopping_list": {
       entity_id: "todo.shopping_list",
       state: "2",

@@ -31,8 +31,9 @@ export class HaSelectorEntityName extends SubscribeMixin(LitElement) {
     return html`
       <ha-entity-name-picker
         .hass=${this.hass}
-        .entityId=${this.selector.entity_name?.entity_id ||
-        this.context?.entity}
+        .entityId=${
+          this.selector.entity_name?.entity_id || this.context?.entity
+        }
         .value=${value}
         .label=${this.label}
         .helper=${this.helper}

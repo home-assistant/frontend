@@ -53,18 +53,20 @@ export class HaChooseAction extends LitElement implements ActionElement {
         @show-default-actions=${this._addDefault}
       ></ha-automation-option>
 
-      ${this._showDefault || action.default
-        ? html`
-            <ha-automation-option-row
-              .defaultActions=${(ensureArray(action.default) || []) as Action[]}
-              .narrow=${this.narrow}
-              .disabled=${this.disabled}
-              .hass=${this.hass}
-              .optionsInSidebar=${this.indent}
-              @value-changed=${this._defaultChanged}
-            ></ha-automation-option-row>
-          `
-        : nothing}
+      ${
+        this._showDefault || action.default
+          ? html`
+              <ha-automation-option-row
+                .defaultActions=${(ensureArray(action.default) || []) as Action[]}
+                .narrow=${this.narrow}
+                .disabled=${this.disabled}
+                .hass=${this.hass}
+                .optionsInSidebar=${this.indent}
+                @value-changed=${this._defaultChanged}
+              ></ha-automation-option-row>
+            `
+          : nothing
+      }
     `;
   }
 

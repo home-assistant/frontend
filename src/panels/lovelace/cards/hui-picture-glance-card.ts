@@ -14,6 +14,7 @@ import "../../../components/ha-state-icon";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { PersonEntity } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -29,7 +30,6 @@ import type {
   PictureGlanceCardConfig,
   PictureGlanceEntityConfig,
 } from "./types";
-import type { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
@@ -108,7 +108,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (!this._config || hasConfigOrEntityChanged(this, changedProps)) {
       return true;
     }
@@ -161,8 +161,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PictureGlanceCardConfig
-      | undefined;
+      PictureGlanceCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -207,9 +206,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       hasAction(this._config.tap_action) ||
       Boolean(
         !this._config.tap_action &&
-          (this._config.camera_image ||
-            this._config.image_entity ||
-            this._config.entity)
+        (this._config.camera_image ||
+          this._config.image_entity ||
+          this._config.entity)
       );
 
     return html`
@@ -240,15 +239,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             .cameraView=${this._config.camera_view}
             .entity=${this._config.entity}
             .fitMode=${this._config.fit_mode}
-            .aspectRatio=${ignoreAspectRatio
-              ? undefined
-              : this._config.aspect_ratio}
+            .aspectRatio=${
+              ignoreAspectRatio ? undefined : this._config.aspect_ratio
+            }
           ></hui-image>
         </div>
         <div class="box">
-          ${this._config.title
-            ? html`<div class="title">${this._config.title}</div>`
-            : ""}
+          ${
+            this._config.title
+              ? html`<div class="title">${this._config.title}</div>`
+              : ""
+          }
           <div class="row">
             ${this._entitiesDialog!.map((entityConf) =>
               this._renderEntity(entityConf, true)
@@ -307,23 +308,26 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           <ha-state-icon
             .icon=${entityConf.icon}
             .stateObj=${stateObj}
-            .hass=${this.hass}
           ></ha-state-icon>
         </ha-icon-button>
 
-        ${this._config!.show_state !== true && entityConf.show_state !== true
-          ? html`<div class="state"></div>`
-          : html`
-              <div class="state">
-                ${entityConf.attribute
-                  ? html`
-                      ${entityConf.prefix}${stateObj.attributes[
-                        entityConf.attribute
-                      ]}${entityConf.suffix}
-                    `
-                  : this.hass.formatEntityState(stateObj)}
-              </div>
-            `}
+        ${
+          this._config!.show_state !== true && entityConf.show_state !== true
+            ? html`<div class="state"></div>`
+            : html`
+                <div class="state">
+                  ${
+                    entityConf.attribute
+                      ? html`
+                          ${entityConf.prefix}${
+                            stateObj.attributes[entityConf.attribute]
+                          }${entityConf.suffix}
+                        `
+                      : this.hass.formatEntityState(stateObj)
+                  }
+                </div>
+              `
+        }
       </div>
     `;
   }
@@ -382,7 +386,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       font-size: 0;
     }
     ha-icon-button {
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --disabled-text-color: currentColor;
       color: var(--ha-picture-icon-button-color, #a9a9a9);
     }

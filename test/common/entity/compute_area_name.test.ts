@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { computeAreaName } from "../../../src/common/entity/compute_area_name";
-import type { AreaRegistryEntry } from "../../../src/data/area_registry";
+import type { AreaRegistryEntry } from "../../../src/data/area/area_registry";
 
 describe("computeAreaName", () => {
   it("returns the trimmed name if present", () => {

@@ -1,4 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { ContextProvider } from "@lit/context";
 import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,18 +9,22 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { clamp } from "../../../common/number/clamp";
+import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import {
+  DEFAULT_SECTION_COLUMN_SPAN,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
-import "../components/hui-badge-edit-mode";
 import "../components/hui-section-edit-mode";
 import { addSection, moveCard, moveSection } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
@@ -29,8 +34,13 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import type { HuiSection } from "../sections/hui-section";
+import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
+import { generateDefaultSection } from "./default-section";
+import "./hui-view-footer";
 import "./hui-view-header";
+import "./hui-view-sidebar";
+import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
@@ -46,6 +56,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public isStrategy = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
@@ -56,7 +68,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _sectionColumnCount = 0;
 
+  private _maxColumns = 0;
+
+  private _maxColumnsProvider = new ContextProvider(this, {
+    context: maxColumnsContext,
+  });
+
   @state() _dragging = false;
+
+  @state() private _sidebarTabActive = false;
+
+  @state() private _sidebarVisible = true;
+
+  private _contentScrollTop = 0;
+
+  private _sidebarScrollTop = 0;
 
   private _columnsController = new ResizeController(this, {
     callback: (entries) => {
@@ -65,11 +91,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       if (!totalWidth) return 1;
 
       const style = getComputedStyle(this);
+      const wrapper = this.shadowRoot!.querySelector(".wrapper")!;
+      const wrapperStyle = getComputedStyle(wrapper);
       const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
 
-      const paddingLeft = parsePx(containerStyle.paddingLeft);
-      const paddingRight = parsePx(containerStyle.paddingRight);
+      const paddingLeft = parsePx(wrapperStyle.paddingLeft);
+      const paddingRight = parsePx(wrapperStyle.paddingRight);
       const padding = paddingLeft + paddingRight;
       const minColumnWidth = parsePx(
         style.getPropertyValue("--column-min-width")
@@ -79,8 +107,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const columns = Math.floor(
         (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
       );
-      const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
-      return clamp(columns, 1, maxColumns);
+      return Math.max(columns, 1);
     },
   });
 
@@ -100,7 +127,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _computeSectionsCount() {
     this._sectionColumnCount = this.sections
       .filter((section) => !section.hidden)
-      .map((section) => section.config.column_span ?? 1)
+      .map(
+        (section) => section.config.column_span ?? DEFAULT_SECTION_COLUMN_SPAN
+      )
       .reduce((acc, val) => acc + val, 0);
   }
 
@@ -114,6 +143,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
+    this._sidebarTabActive = Boolean(getHistoryState()?.sidebar);
   }
 
   disconnectedCallback(): void {
@@ -124,9 +154,26 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
+    }
+    this._updateMaxColumnCount();
+  }
+
+  private _updateMaxColumnCount(): void {
+    // The column count is clamped here instead of in the resize callback, so
+    // that it follows the config of the view the element is currently used for
+    const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
+    const maxColumnCount = clamp(
+      this._columnsController.value ?? 1,
+      1,
+      maxColumns
+    );
+
+    if (maxColumnCount !== this._maxColumns) {
+      this._maxColumns = maxColumnCount;
+      this._maxColumnsProvider.setValue(maxColumnCount);
     }
   }
 
@@ -134,17 +181,49 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (!this.lovelace) return nothing;
 
     const sections = this.sections;
-    const totalSectionCount =
-      this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
+    const hasSidebar =
+      this._config?.sidebar && (this._sidebarVisible || editMode);
+    const singleColumn = this._maxColumns <= 1;
 
-    const maxColumnCount = this._columnsController.value ?? 1;
+    // The tab switcher is opt-in: a sidebar enables it by labelling both tabs,
+    // otherwise the sidebar stacks below the content.
+    const useSidebarTabs = Boolean(
+      singleColumn &&
+      hasSidebar &&
+      this._config?.sidebar?.content_label &&
+      this._config?.sidebar?.sidebar_label
+    );
+
+    const totalSectionCount =
+      this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
+
+    const columnCount = Math.max(
+      Math.min(this._maxColumns, totalSectionCount),
+      1
+    );
+
+    const contentColumnCount = hasSidebar
+      ? Math.max(1, columnCount - 1)
+      : columnCount;
+
+    const sectionNeedsMargin = computeSectionsBackgroundAlignment(
+      sections,
+      contentColumnCount
+    );
 
     return html`
       <div
         class="wrapper ${classMap({
           "top-margin": Boolean(this._config?.top_margin),
+          "has-sidebar": Boolean(hasSidebar),
+          "single-column": singleColumn,
+          "has-sidebar-tabs": useSidebarTabs,
         })}"
+        style=${styleMap({
+          "--column-count": columnCount,
+          "--content-column-count": contentColumnCount,
+        })}
       >
         <hui-view-header
           .hass=${this.hass}
@@ -152,98 +231,155 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .lovelace=${this.lovelace}
           .viewIndex=${this.index}
           .config=${this._config?.header}
-          style=${styleMap({
-            "--max-column-count": maxColumnCount,
-          })}
         ></hui-view-header>
-        <ha-sortable
-          .disabled=${!editMode}
-          @item-moved=${this._sectionMoved}
-          group="section"
-          handle-selector=".handle"
-          draggable-selector=".section"
-          .rollback=${false}
-        >
-          <div
-            class="container ${classMap({
-              dense: Boolean(this._config?.dense_section_placement),
-            })}"
-            style=${styleMap({
-              "--total-section-count": totalSectionCount,
-              "--max-column-count": maxColumnCount,
-            })}
-          >
-            ${repeat(
-              sections,
-              (section) => this._getSectionKey(section),
-              (section, idx) => {
-                const columnSpan = Math.min(
-                  section.config.column_span || 1,
-                  maxColumnCount
-                );
-                const rowSpan = section.config.row_span || 1;
-
-                return html`
-                <div
-                  class="section"
-                  style=${styleMap({
-                    "--column-span": columnSpan,
-                    "--row-span": rowSpan,
-                  })}
-                >
-                    ${
-                      editMode
-                        ? html`
-                            <hui-section-edit-mode
-                              .hass=${this.hass}
-                              .lovelace=${this.lovelace}
-                              .index=${idx}
-                              .viewIndex=${this.index}
-                            >
-                              ${section}
-                            </hui-section-edit-mode>
-                          `
-                        : section
-                    }
-                  </div>
-                </div>
-              `;
-              }
-            )}
-            ${editMode
-              ? html`
-                  <ha-sortable
-                    group="card"
-                    @item-added=${this._handleCardAdded}
-                    draggable-selector=".card"
-                    .rollback=${false}
+        ${
+          useSidebarTabs
+            ? html`
+                <div class="sidebar-tabs">
+                  <ha-control-select
+                    .value=${this._sidebarTabActive ? "sidebar" : "content"}
+                    @value-changed=${this._viewChanged}
+                    .options=${[
+                      {
+                        value: "content",
+                        label: this._config!.sidebar!.content_label,
+                      },
+                      {
+                        value: "sidebar",
+                        label: this._config!.sidebar!.sidebar_label,
+                      },
+                    ]}
                   >
-                    <div class="create-section-container">
-                      <div class="drop-helper" aria-hidden="true">
-                        <p>
-                          ${this.hass.localize(
-                            "ui.panel.lovelace.editor.section.drop_card_create_section"
-                          )}
-                        </p>
-                      </div>
-                      <button
-                        class="create-section"
-                        @click=${this._createSection}
-                        aria-label=${this.hass.localize(
-                          "ui.panel.lovelace.editor.section.create_section"
-                        )}
-                        .title=${this.hass.localize(
-                          "ui.panel.lovelace.editor.section.create_section"
-                        )}
-                      >
-                        <ha-ripple></ha-ripple>
-                        <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
-                      </button>
+                  </ha-control-select>
+                </div>
+              `
+            : nothing
+        }
+        <div class="container">
+          <ha-sortable
+            .disabled=${!editMode}
+            @item-moved=${this._sectionMoved}
+            group="section"
+            handle-selector=".handle"
+            draggable-selector=".section"
+          >
+            <div
+              class="content ${classMap({
+                dense: Boolean(this._config?.dense_section_placement),
+                hidden: useSidebarTabs && this._sidebarTabActive,
+              })}"
+            >
+              ${repeat(
+                sections,
+                (section) => this._getSectionKey(section),
+                (section, idx) => {
+                  const columnSpan = Math.min(
+                    section.config.column_span || DEFAULT_SECTION_COLUMN_SPAN,
+                    contentColumnCount
+                  );
+                  const rowSpan = section.config.row_span || 1;
+
+                  return html`
+                    <div
+                      class="section"
+                      style=${styleMap({
+                        "--column-span": columnSpan,
+                        "--row-span": rowSpan,
+                      })}
+                    >
+                      ${
+                        editMode
+                          ? html`
+                              <hui-section-edit-mode
+                                .hass=${this.hass}
+                                .lovelace=${this.lovelace}
+                                .index=${idx}
+                                .viewIndex=${this.index}
+                                .isStrategy=${isStrategySection(section.config)}
+                              >
+                                ${this._renderSection(
+                                  section,
+                                  sectionNeedsMargin.has(idx)
+                                )}
+                              </hui-section-edit-mode>
+                            `
+                          : this._renderSection(
+                              section,
+                              sectionNeedsMargin.has(idx)
+                            )
+                      }
                     </div>
-                  </ha-sortable>
+                  `;
+                }
+              )}
+              ${
+                editMode
+                  ? html`
+                      <ha-sortable
+                        group="card"
+                        @item-added=${this._handleCardAdded}
+                        draggable-selector=".card"
+                        .rollback=${false}
+                      >
+                        <div class="create-section-container">
+                          <div class="drop-helper" aria-hidden="true">
+                            <p>
+                              ${this.hass.localize(
+                                "ui.panel.lovelace.editor.section.drop_card_create_section"
+                              )}
+                            </p>
+                          </div>
+                          <button
+                            class="create-section"
+                            @click=${this._createSection}
+                            aria-label=${this.hass.localize(
+                              "ui.panel.lovelace.editor.section.create_section"
+                            )}
+                            .title=${this.hass.localize(
+                              "ui.panel.lovelace.editor.section.create_section"
+                            )}
+                          >
+                            <ha-ripple></ha-ripple>
+                            <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
+                          </button>
+                        </div>
+                      </ha-sortable>
+                    `
+                  : nothing
+              }
+            </div>
+          </ha-sortable>
+          ${
+            this._config?.sidebar
+              ? html`
+                  <hui-view-sidebar
+                    class=${classMap({
+                      hidden:
+                        !hasSidebar ||
+                        (useSidebarTabs && !this._sidebarTabActive),
+                    })}
+                    .hass=${this.hass}
+                    .badges=${this.badges}
+                    .lovelace=${this.lovelace}
+                    .viewIndex=${this.index}
+                    .config=${this._config.sidebar}
+                    @sidebar-visibility-changed=${
+                      this._handleSidebarVisibilityChanged
+                    }
+                  ></hui-view-sidebar>
                 `
-              : nothing}
-            ${editMode && this._config?.cards?.length
+              : nothing
+          }
+        </div>
+        <hui-view-footer
+          .hass=${this.hass}
+          .lovelace=${this.lovelace}
+          .viewIndex=${this.index}
+          .config=${this._config?.footer}
+        ></hui-view-footer>
+        <div class="imported-cards-section">
+          ${
+            editMode && this._config?.cards?.length
               ? html`
                   <div class="section imported-cards">
                     <div class="imported-card-header">
@@ -271,27 +407,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     ></hui-section>
                   </div>
                 `
-              : nothing}
-          </div>
-        </ha-sortable>
+              : nothing
+          }
+        </div>
       </div>
     `;
-  }
-
-  private _defaultSection(includeHeading: boolean): LovelaceSectionConfig {
-    return {
-      type: "grid",
-      cards: includeHeading
-        ? [
-            {
-              type: "heading",
-              heading: this.hass!.localize(
-                "ui.panel.lovelace.editor.section.default_section_title"
-              ),
-            },
-          ]
-        : [],
-    };
   }
 
   private _handleCardAdded(ev) {
@@ -310,7 +430,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const configWithNewSection = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection(cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
+      generateDefaultSection(this.hass.localize, cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
     );
     const viewConfig = configWithNewSection.views[
       this.index!
@@ -331,11 +451,35 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     })
   );
 
+  private _renderSection(section: HuiSection, alignBackground: boolean) {
+    const hasBackground = section.config.background !== undefined;
+
+    return html`
+      <div
+        class="section-container ${classMap({
+          "has-background": hasBackground,
+          "align-background": alignBackground,
+        })}"
+      >
+        ${
+          hasBackground
+            ? html`<hui-section-background
+                .hass=${this.hass}
+                .background=${section.config.background}
+                .theme=${section.config.theme}
+              ></hui-section-background>`
+            : nothing
+        }
+        ${section}
+      </div>
+    `;
+  }
+
   private _createSection(): void {
     const newConfig = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection(true)
+      generateDefaultSection(this.hass.localize, true)
     );
     this.lovelace!.saveConfig(newConfig);
   }
@@ -352,35 +496,88 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
+  private _viewChanged(ev: CustomEvent) {
+    const newValue = ev.detail.value;
+    const shouldShowSidebar = newValue === "sidebar";
+
+    if (shouldShowSidebar !== this._sidebarTabActive) {
+      this._toggleView();
+    }
+  }
+
+  private _toggleView() {
+    // Save current scroll position
+    if (this._sidebarTabActive) {
+      this._sidebarScrollTop = window.scrollY;
+    } else {
+      this._contentScrollTop = window.scrollY;
+    }
+
+    this._sidebarTabActive = !this._sidebarTabActive;
+
+    // Add sidebar state to history
+    updateHistoryState({ sidebar: this._sidebarTabActive });
+
+    // Restore scroll position after view updates
+    this.updateComplete.then(() => {
+      const scrollY = this._sidebarTabActive
+        ? this._sidebarScrollTop
+        : this._contentScrollTop;
+      window.scrollTo(0, scrollY);
+    });
+  }
+
+  private _handleSidebarVisibilityChanged = (
+    e: CustomEvent<{ visible: boolean }>
+  ) => {
+    this._sidebarVisible = e.detail.visible;
+    // Reset sidebar tab when sidebar becomes hidden
+    if (!e.detail.visible) {
+      this._sidebarTabActive = false;
+    }
+  };
+
   static styles = css`
     :host {
       --row-height: var(--ha-view-sections-row-height, 56px);
-      --row-gap: var(--ha-view-sections-row-gap, 8px);
+      --row-gap: var(--ha-view-sections-row-gap, 24px);
       --column-gap: var(--ha-view-sections-column-gap, 32px);
       --column-max-width: var(--ha-view-sections-column-max-width, 500px);
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+      --narrow-column-gap: var(--ha-view-sections-narrow-column-gap, 8px);
       --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
+      flex: 1;
     }
 
     @media (max-width: 600px) {
       :host {
-        --column-gap: var(--row-gap);
+        --column-gap: var(--narrow-column-gap);
       }
     }
 
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      padding: 0 var(--column-gap);
+      box-sizing: content-box;
+      margin: 0 auto;
+      max-width: calc(
+        var(--column-count) * var(--column-max-width) +
+          (var(--column-count) - 1) * var(--column-gap)
+      );
+    }
+
     .wrapper.top-margin {
-      display: block;
       margin-top: var(--top-margin);
     }
 
-    .container > * {
-      position: relative;
-      width: 100%;
-    }
-
     .section {
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       grid-column: span var(--column-span);
       grid-row: span var(--row-span);
     }
@@ -389,23 +586,112 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       display: none;
     }
 
+    .section-container {
+      position: relative;
+    }
+
+    .section-container.has-background {
+      padding: var(--ha-space-2);
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
+    }
+
+    .section-container.align-background {
+      margin-top: var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
+    }
+
     .container {
-      --column-count: min(var(--max-column-count), var(--total-section-count));
+      display: grid;
+      grid-template-columns: [content-start] repeat(
+          var(--content-column-count),
+          1fr
+        );
+      gap: var(--row-gap) var(--column-gap);
+      padding: var(--row-gap) 0;
+      align-items: flex-start;
+      flex: 1 0 auto;
+    }
+
+    .wrapper.has-sidebar .container {
+      grid-template-columns:
+        [content-start] repeat(var(--content-column-count), 1fr)
+        [sidebar-start] 1fr;
+    }
+
+    /* With a single column, content and sidebar stack at full width */
+    .wrapper.single-column.has-sidebar .container {
+      grid-template-columns: 1fr;
+    }
+
+    hui-view-sidebar {
+      grid-column: sidebar-start / -1;
+    }
+
+    .wrapper.single-column hui-view-sidebar {
+      grid-column: 1 / -1;
+    }
+
+    .wrapper.has-sidebar-tabs hui-view-sidebar {
+      padding-bottom: calc(
+        var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
+      );
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .sidebar-tabs {
+      position: fixed;
+      bottom: calc(var(--ha-space-3) + var(--safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0;
+      z-index: 1;
+    }
+
+    .sidebar-tabs ha-control-select {
+      width: max-content;
+      min-width: 280px;
+      max-width: 90%;
+      --control-select-thickness: var(--ha-space-14);
+      --control-select-border-radius: var(--ha-border-radius-pill);
+      --control-select-background: var(--card-background-color);
+      --control-select-background-opacity: 1;
+      --control-select-color: var(--primary-color);
+      --control-select-padding: 6px;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 10px 0px;
+    }
+
+    ha-sortable {
+      display: contents;
+    }
+
+    .content {
+      grid-column: content-start / sidebar-start;
+      grid-row: 1 / -1;
       display: grid;
       align-items: start;
       justify-content: center;
-      grid-template-columns: repeat(var(--column-count), 1fr);
+      grid-template-columns: repeat(var(--content-column-count), 1fr);
       grid-auto-flow: row;
       gap: var(--row-gap) var(--column-gap);
-      padding: var(--row-gap) var(--column-gap);
-      box-sizing: content-box;
-      margin: 0 auto;
-      max-width: calc(
-        var(--column-count) * var(--column-max-width) +
-          (var(--column-count) - 1) * var(--column-gap)
+    }
+
+    .wrapper.single-column .content {
+      grid-column: 1 / -1;
+    }
+
+    .wrapper.has-sidebar-tabs .content {
+      padding-bottom: calc(
+        var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
     }
-    .container.dense {
+
+    .content.dense {
       grid-auto-flow: row dense;
     }
 
@@ -436,7 +722,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       outline: none;
       background: none;
       cursor: pointer;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--primary-color);
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
       padding: 8px;
@@ -461,7 +750,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       outline: none;
       background: none;
       cursor: pointer;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--primary-color);
       order: 1;
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
@@ -478,18 +770,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .sortable-ghost {
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
     }
 
     hui-view-header {
       display: block;
-      padding: 0 var(--column-gap);
       padding-top: var(--row-gap);
-      margin: auto;
-      max-width: calc(
-        var(--max-column-count) * var(--column-max-width) +
-          (var(--max-column-count) - 1) * var(--column-gap)
-      );
+    }
+
+    hui-view-footer {
+      display: block;
     }
 
     .imported-cards {

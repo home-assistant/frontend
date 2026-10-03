@@ -1,10 +1,10 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/entity/ha-state-label-badge";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -33,6 +33,7 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
   return minIndex;
 };
 
+@customElement("hui-masonry-view")
 export class MasonryView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -56,6 +57,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   private _mqlListenerRef?: () => void;
 
+  private _resolveInitialRender?: () => void;
+
+  public initialRenderComplete = new Promise<void>((resolve) => {
+    this._resolveInitialRender = resolve;
+  });
+
   public connectedCallback() {
     super.connectedCallback();
     this._initMqls();
@@ -76,7 +83,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       <hui-view-badges
-        .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
@@ -86,19 +92,16 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         id="columns"
         class=${this.lovelace?.editMode ? "edit-mode" : ""}
       ></div>
-      ${this.lovelace?.editMode
-        ? html`
-            <ha-fab
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              extended
-              @click=${this._addCard}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>
-          `
-        : ""}
+      ${
+        this.lovelace?.editMode
+          ? html`
+              <ha-button size="l" @click=${this._addCard}>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+              </ha-button>
+            `
+          : ""
+      }
     `;
   }
 
@@ -120,7 +123,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     return this._mqls!;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode) {
@@ -129,8 +132,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as
-        | HomeAssistant
-        | undefined;
+        HomeAssistant | undefined;
 
       if (this.hass!.dockedSidebar !== oldHass?.dockedSidebar) {
         this._updateColumns();
@@ -144,8 +146,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
-      | Lovelace
-      | undefined;
+      Lovelace | undefined;
 
     if (
       changedProperties.has("cards") ||
@@ -170,7 +171,13 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       root.removeChild(root.lastChild);
     }
 
-    columns.forEach((column) => root.appendChild(column));
+    columns.forEach((column) => {
+      root.appendChild(column);
+    });
+    if (this.cards.length === 0 || columns.some((column) => column.lastChild)) {
+      this._resolveInitialRender?.();
+      this._resolveInitialRender = undefined;
+    }
   }
 
   private async _createColumns() {
@@ -206,7 +213,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Calculate the size of every card and determine in what column it should go
     for (const [index, el] of this.cards.entries()) {
       if (tillNextRender === undefined) {
-        // eslint-disable-next-line no-loop-func
         tillNextRender = nextRender().then(() => {
           tillNextRender = undefined;
           start = undefined;
@@ -239,6 +245,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         index,
         this.lovelace!.editMode
       );
+      if (columnElements.some((column) => column.isConnected)) {
+        this._resolveInitialRender?.();
+        this._resolveInitialRender = undefined;
+      }
     }
 
     // Remove empty columns
@@ -327,13 +337,14 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       margin: var(--masonry-view-card-margin, 4px 4px 8px);
     }
 
-    ha-fab {
+    ha-button {
       position: fixed;
       right: calc(16px + var(--safe-area-inset-right));
       bottom: calc(16px + var(--safe-area-inset-bottom));
       inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
+      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
 
     @media (max-width: 500px) {
@@ -356,5 +367,3 @@ declare global {
     "hui-masonry-view": MasonryView;
   }
 }
-
-customElements.define("hui-masonry-view", MasonryView);

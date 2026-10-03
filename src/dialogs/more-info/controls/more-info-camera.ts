@@ -1,16 +1,29 @@
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { slugify } from "../../../common/string/slugify";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-camera-stream";
 import type { CameraEntity } from "../../../data/camera";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
+import { apiContext } from "../../../data/context";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { HomeAssistantApi } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 
+@customElement("more-info-camera")
 class MoreInfoCamera extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
@@ -29,13 +42,12 @@ class MoreInfoCamera extends LitElement {
   }
 
   protected render() {
-    if (!this._attached || !this.stateObj) {
+    if (!this._attached || !this.stateObj || !this._localize) {
       return nothing;
     }
 
     return html`
       <ha-camera-stream
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
         allow-exoplayer
         controls
@@ -48,7 +60,7 @@ class MoreInfoCamera extends LitElement {
           .disabled=${this.stateObj.state === UNAVAILABLE}
           appearance="filled"
         >
-          ${this.hass.localize(
+          ${this._localize(
             "ui.dialogs.more_info_control.camera.download_snapshot"
           )}
         </ha-progress-button>
@@ -56,12 +68,14 @@ class MoreInfoCamera extends LitElement {
     `;
   }
 
-  private async _downloadSnapshot(ev: CustomEvent) {
-    const button = ev.currentTarget as any;
+  private async _downloadSnapshot(
+    ev: HASSDomCurrentTargetEvent<HaProgressButton>
+  ) {
+    const button = ev.currentTarget;
     this._waiting = true;
 
     try {
-      const result: Response | undefined = await this.hass.callApiRaw(
+      const result: Response | undefined = await this._api.callApiRaw(
         "GET",
         `camera_proxy/${this.stateObj!.entity_id}`
       );
@@ -82,7 +96,7 @@ class MoreInfoCamera extends LitElement {
       this._waiting = false;
       button.actionError();
       showToast(this, {
-        message: this.hass.localize(
+        message: this._localize(
           "ui.dialogs.more_info_control.camera.failed_to_download"
         ),
       });
@@ -105,14 +119,12 @@ class MoreInfoCamera extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 16px;
+      padding: var(--ha-space-4);
       z-index: 1;
       gap: var(--ha-space-2);
     }
   `;
 }
-
-customElements.define("more-info-camera", MoreInfoCamera);
 
 declare global {
   interface HTMLElementTagNameMap {

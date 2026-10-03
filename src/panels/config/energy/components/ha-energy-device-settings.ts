@@ -1,4 +1,5 @@
 import {
+  mdiAlertCircle,
   mdiDelete,
   mdiDevices,
   mdiDragHorizontalVariant,
@@ -6,23 +7,29 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { repeat } from "lit/directives/repeat";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
 import "../../../../components/ha-card";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
   EnergyPreferencesValidation,
+  EnergyValidationIssue,
 } from "../../../../data/energy";
-import { saveEnergyPreferences } from "../../../../data/energy";
+import {
+  computeEnergyLabel,
+  saveEnergyPreferences,
+} from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
-import { getStatisticLabel } from "../../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -49,7 +56,7 @@ export class EnergyDeviceSettings extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card outlined>
+      <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
           ${this.hass.localize(
@@ -82,54 +89,54 @@ export class EnergyDeviceSettings extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-          <h3>
-            ${this.hass.localize(
-              "ui.panel.config.energy.device_consumption.devices"
-            )}
-          </h3>
-          <ha-sortable handle-selector=".handle" @item-moved=${this._itemMoved}>
-            <div class="devices">
-              ${repeat(
-                this.preferences.device_consumption,
-                (device) => device.stat_consumption,
-                (device) => html`
-                  <div class="row" .device=${device}>
-                    <div class="handle">
-                      <ha-svg-icon
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    </div>
-                    <span class="content"
-                      >${device.name ||
-                      getStatisticLabel(
-                        this.hass,
-                        device.stat_consumption,
-                        this.statsMetadata?.[device.stat_consumption]
-                      )}</span
+          ${
+            this.preferences.device_consumption.length > 0
+              ? html`
+                  <div class="items-container">
+                    <ha-sortable
+                      handle-selector=".handle"
+                      @item-moved=${this._itemMoved}
                     >
-                    <ha-icon-button
-                      .label=${this.hass.localize("ui.common.edit")}
-                      @click=${this._editDevice}
-                      .path=${mdiPencil}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      .label=${this.hass.localize("ui.common.delete")}
-                      @click=${this._deleteDevice}
-                      .device=${device}
-                      .path=${mdiDelete}
-                    ></ha-icon-button>
+                      <div class="devices">
+                        ${repeat(
+                          this.preferences.device_consumption,
+                          (device) => device.stat_consumption,
+                          (device, index) => html`
+                            <div class="row" .device=${device}>
+                              <div class="handle">
+                                <ha-svg-icon
+                                  .path=${mdiDragHorizontalVariant}
+                                ></ha-svg-icon>
+                              </div>
+                              ${this._renderName(device)}
+                              ${this._renderIssueIndicator(
+                                this.validationResult?.device_consumption[
+                                  index
+                                ],
+                                index
+                              )}
+                              <ha-icon-button
+                                .label=${this.hass.localize("ui.common.edit")}
+                                @click=${this._editDevice}
+                                .path=${mdiPencil}
+                              ></ha-icon-button>
+                              <ha-icon-button
+                                .label=${this.hass.localize("ui.common.delete")}
+                                @click=${this._deleteDevice}
+                                .device=${device}
+                                .path=${mdiDelete}
+                              ></ha-icon-button>
+                            </div>
+                          `
+                        )}
+                      </div>
+                    </ha-sortable>
                   </div>
                 `
-              )}
-            </div>
-          </ha-sortable>
+              : ""
+          }
           <div class="row">
-            <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-            <ha-button
-              @click=${this._addDevice}
-              appearance="filled"
-              size="small"
-            >
+            <ha-button @click=${this._addDevice} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption.add_device"
@@ -138,6 +145,57 @@ export class EnergyDeviceSettings extends LitElement {
           </div>
         </div>
       </ha-card>
+    `;
+  }
+
+  private _renderName(device: DeviceConsumptionEnergyPreference) {
+    const name = computeEnergyLabel(
+      this.hass,
+      device.stat_consumption,
+      this.statsMetadata?.[device.stat_consumption],
+      device.name
+    );
+    const areaId = getEntityAreaId(
+      device.stat_consumption,
+      this.hass.entities,
+      this.hass.devices
+    );
+    const area = areaId ? this.hass.areas[areaId] : undefined;
+    const areaName = area ? computeAreaName(area) : undefined;
+    return html`
+      <div class="content">
+        <span class="label">${name}</span>
+        ${
+          areaName
+            ? html`<span class="label secondary">${areaName}</span>`
+            : nothing
+        }
+      </div>
+    `;
+  }
+
+  private _renderIssueIndicator(
+    issues: EnergyValidationIssue[] | undefined,
+    index: number
+  ) {
+    if (!issues?.length) {
+      return nothing;
+    }
+    const titles = issues.map(
+      (issue) =>
+        this.hass.localize(`component.energy.issues.${issue.type}.title`) ||
+        issue.type
+    );
+    const label = titles.join("\n");
+    const id = `issue-icon-${index}`;
+    return html`
+      <ha-svg-icon
+        id=${id}
+        class="issue-icon"
+        .path=${mdiAlertCircle}
+        aria-label=${label}
+      ></ha-svg-icon>
+      <ha-tooltip .for=${id} placement="top">${label}</ha-tooltip>
     `;
   }
 
@@ -237,9 +295,28 @@ export class EnergyDeviceSettings extends LitElement {
       haStyle,
       energyCardStyles,
       css`
+        .row {
+          height: 58px;
+        }
+        .content {
+          display: flex;
+          flex-direction: column;
+        }
+        .label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .label.secondary {
+          color: var(--secondary-text-color);
+          font-size: 0.9em;
+        }
         .handle {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
+        }
+        .issue-icon {
+          color: var(--warning-color);
         }
       `,
     ];

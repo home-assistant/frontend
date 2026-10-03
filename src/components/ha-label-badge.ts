@@ -18,22 +18,26 @@ class HaLabelBadge extends LitElement {
           <div class="value">
             <slot></slot>
           </div>
-          ${this.label
-            ? html`
-                <div
-                  class=${classMap({
-                    label: true,
-                    big: this.label.length > 5,
-                  })}
-                >
-                  <span>${this.label}</span>
-                </div>
-              `
-            : ""}
+          ${
+            this.label
+              ? html`
+                  <div
+                    class=${classMap({
+                      label: true,
+                      big: this.label.length > 5,
+                    })}
+                  >
+                    <span>${this.label}</span>
+                  </div>
+                `
+              : ""
+          }
         </div>
-        ${this.description
-          ? html`<div class="title">${this.description}</div>`
-          : ""}
+        ${
+          this.description
+            ? html`<div class="title">${this.description}</div>`
+            : ""
+        }
       </div>
     `;
   }
@@ -114,7 +118,7 @@ class HaLabelBadge extends LitElement {
     ];
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("image")) {
       this.shadowRoot!.getElementById("badge")!.style.backgroundImage = this

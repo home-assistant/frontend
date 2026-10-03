@@ -36,12 +36,14 @@ export type ItemType =
   | "script_blueprint";
 
 export const findRelated = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   itemType: ItemType,
-  itemId: string
+  itemId: string,
+  includeDisabledEntities = false
 ): Promise<RelatedResult> =>
-  hass.callWS({
+  hass.callWS<RelatedResult>({
     type: "search/related",
     item_type: itemType,
     item_id: itemId,
+    ...(includeDisabledEntities ? { include_disabled_entities: true } : {}),
   });

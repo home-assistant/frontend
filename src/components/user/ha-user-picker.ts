@@ -1,5 +1,5 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { TemplateResult } from "lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { TemplateResult, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -17,6 +17,12 @@ interface UserComboBoxItem extends PickerComboBoxItem {
   user?: User;
 }
 
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "search_labels.username", weight: 6 },
+  { name: "id", weight: 3 },
+];
+
 @customElement("ha-user-picker")
 class HaUserPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -33,7 +39,7 @@ class HaUserPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
       this._fetchUsers();
@@ -58,41 +64,37 @@ class HaUserPicker extends LitElement {
     }
 
     return html`
-      <ha-user-badge
-        slot="start"
-        .hass=${this.hass}
-        .user=${user}
-      ></ha-user-badge>
+      <ha-user-badge slot="start" .user=${user}></ha-user-badge>
       <span slot="headline">${user.name}</span>
     `;
   };
 
-  private _rowRenderer: ComboBoxLitRenderer<UserComboBoxItem> = (item) => {
+  private _rowRenderer: RenderItemFunction<UserComboBoxItem> = (item) => {
     const user = item.user;
     if (!user) {
-      return html`<ha-combo-box-item type="button" compact>
-        ${item.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item.icon_path
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : nothing}
+      return html`<ha-combo-box-item>
+        ${
+          item.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item.icon_path
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>`
+              : nothing
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
       </ha-combo-box-item>`;
     }
 
     return html`
-      <ha-combo-box-item type="button" compact>
-        <ha-user-badge
-          slot="start"
-          .hass=${this.hass}
-          .user=${item.user}
-        ></ha-user-badge>
+      <ha-combo-box-item>
+        <ha-user-badge slot="start" .user=${item.user}></ha-user-badge>
         <span slot="headline">${item.primary}</span>
       </ha-combo-box-item>
     `;
@@ -109,9 +111,7 @@ class HaUserPicker extends LitElement {
         id: user.id,
         primary: user.name,
         domain_name: user.name,
-        search_labels: [user.name, user.id, user.username].filter(
-          Boolean
-        ) as string[],
+        search_labels: { username: user.username },
         sorting_label: user.name,
         user,
       }));
@@ -128,14 +128,16 @@ class HaUserPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.user-picker.no_match"
-        )}
         .placeholder=${placeholder}
         .value=${this.value}
+        .notFoundLabel=${this._notFoundLabel}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.user-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -149,6 +151,11 @@ class HaUserPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.user-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

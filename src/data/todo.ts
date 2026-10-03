@@ -1,8 +1,8 @@
-import type { HomeAssistant, ServiceCallResponse } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { isUnavailableState } from "./entity";
 import { stringCompare } from "../common/string/compare";
+import type { HomeAssistant, ServiceCallResponse } from "../types";
+import { UNAVAILABLE } from "./entity/entity";
 
 export interface TodoList {
   entity_id: string;
@@ -28,9 +28,10 @@ export interface TodoItem {
   status: TodoItemStatus | null;
   description?: string | null;
   due?: string | null;
+  completed?: string | null;
 }
 
-export const enum TodoListEntityFeature {
+export enum TodoListEntityFeature {
   CREATE_TODO_ITEM = 1,
   DELETE_TODO_ITEM = 2,
   UPDATE_TODO_ITEM = 4,
@@ -40,12 +41,16 @@ export const enum TodoListEntityFeature {
   SET_DESCRIPTION_ON_ITEM = 64,
 }
 
-export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
+export const getTodoLists = (
+  hass: HomeAssistant,
+  includeHidden = true
+): TodoList[] =>
   Object.keys(hass.states)
     .filter(
       (entityId) =>
         computeDomain(entityId) === "todo" &&
-        !isUnavailableState(hass.states[entityId].state)
+        hass.states[entityId].state !== UNAVAILABLE &&
+        (includeHidden || hass.entities[entityId]?.hidden !== true)
     )
     .map((entityId) => ({
       ...hass.states[entityId],
@@ -74,7 +79,7 @@ export const subscribeItems = (
   entity_id: string,
   callback: (update: TodoItems) => void
 ) =>
-  hass.connection.subscribeMessage<any>(callback, {
+  hass.connection.subscribeMessage<TodoItems>(callback, {
     type: "todo/item/subscribe",
     entity_id,
   });

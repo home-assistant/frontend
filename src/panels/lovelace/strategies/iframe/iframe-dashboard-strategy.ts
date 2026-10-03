@@ -1,13 +1,18 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { LovelaceStrategyEditor } from "../types";
+import type {
+  LovelaceStrategyEditor,
+  LovelaceStrategyDependency,
+} from "../types";
 import type { IframeViewStrategyConfig } from "./iframe-view-strategy";
 
 export type IframeDashboardStrategyConfig = IframeViewStrategyConfig;
 
 @customElement("iframe-dashboard-strategy")
 export class IframeDashboardStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     config: IframeDashboardStrategyConfig
   ): Promise<LovelaceConfig> {
@@ -21,9 +26,7 @@ export class IframeDashboardStrategy extends ReactiveElement {
   }
 
   public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
-    await import(
-      "../../editor/dashboard-strategy-editor/hui-iframe-dashboard-strategy-editor"
-    );
+    await import("../../editor/dashboard-strategy-editor/hui-iframe-dashboard-strategy-editor");
     return document.createElement("hui-iframe-dashboard-strategy-editor");
   }
 

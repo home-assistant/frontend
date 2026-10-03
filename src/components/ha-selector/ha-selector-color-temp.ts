@@ -2,9 +2,8 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import type { ColorTempSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
 import { generateColorTemperatureGradient } from "../../dialogs/more-info/components/lights/light-color-temp-picker";
 import {
@@ -15,8 +14,6 @@ import {
 
 @customElement("ha-selector-color_temp")
 export class HaColorTempSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: ColorTempSelector;
 
   @property() public value?: string;
@@ -94,10 +91,10 @@ export class HaColorTempSelector extends LitElement {
     }
   );
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: Number((ev.detail as any).value),
+      value: Number(ev.detail.value),
     });
   }
 }

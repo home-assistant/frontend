@@ -58,38 +58,42 @@ class BrowseMediaTTS extends LitElement {
       <ha-card>
         <div class="card-content">
           <ha-textarea
-            autogrow
+            resize="auto"
             .label=${this.hass.localize(
               "ui.components.media-browser.tts.message"
             )}
-            .value=${this._message ||
-            this.hass.localize(
-              "ui.components.media-browser.tts.example_message",
-              {
-                name: this.hass.user?.name || "Alice",
-              }
-            )}
+            .value=${
+              this._message ||
+              this.hass.localize(
+                "ui.components.media-browser.tts.example_message",
+                {
+                  name: this.hass.user?.name || "Alice",
+                }
+              )
+            }
           >
           </ha-textarea>
-          ${this._provider?.supported_languages?.length
-            ? html` <div class="options">
-                <ha-language-picker
-                  .hass=${this.hass}
-                  .languages=${this._provider.supported_languages}
-                  .value=${this._language}
-                  required
-                  @value-changed=${this._languageChanged}
-                ></ha-language-picker>
-                <ha-tts-voice-picker
-                  .hass=${this.hass}
-                  .value=${this._voice}
-                  .engineId=${this._provider.engine_id}
-                  .language=${this._language}
-                  required
-                  @value-changed=${this._voiceChanged}
-                ></ha-tts-voice-picker>
-              </div>`
-            : nothing}
+          ${
+            this._provider?.supported_languages?.length
+              ? html` <div class="options">
+                  <ha-language-picker
+                    .hass=${this.hass}
+                    .languages=${this._provider.supported_languages}
+                    .value=${this._language}
+                    required
+                    @value-changed=${this._languageChanged}
+                  ></ha-language-picker>
+                  <ha-tts-voice-picker
+                    .hass=${this.hass}
+                    .value=${this._voice}
+                    .engineId=${this._provider.engine_id}
+                    .language=${this._language}
+                    required
+                    @value-changed=${this._voiceChanged}
+                  ></ha-tts-voice-picker>
+                </div>`
+              : nothing
+          }
         </div>
         <div class="card-actions">
           <ha-button appearance="plain" @click=${this._ttsClicked}>
@@ -99,23 +103,25 @@ class BrowseMediaTTS extends LitElement {
           </ha-button>
         </div>
       </ha-card>
-      ${this._voice
-        ? html`
-            <div class="footer">
-              ${this.hass.localize(
-                `ui.components.media-browser.tts.selected_voice_id`
-              )}
-              <code>${this._voice || "-"}</code>
-              <ha-icon-button
-                .path=${mdiContentCopy}
-                @click=${this._copyVoiceId}
-                title=${this.hass.localize(
-                  "ui.components.media-browser.tts.copy_voice_id"
+      ${
+        this._voice
+          ? html`
+              <div class="footer">
+                ${this.hass.localize(
+                  `ui.components.media-browser.tts.selected_voice_id`
                 )}
-              ></ha-icon-button>
-            </div>
-          `
-        : nothing}
+                <code>${this._voice || "-"}</code>
+                <ha-icon-button
+                  .path=${mdiContentCopy}
+                  @click=${this._copyVoiceId}
+                  title=${this.hass.localize(
+                    "ui.components.media-browser.tts.copy_voice_id"
+                  )}
+                ></ha-icon-button>
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -200,7 +206,7 @@ class BrowseMediaTTS extends LitElement {
   }
 
   private async _ttsClicked(): Promise<void> {
-    const message = this.shadowRoot!.querySelector("ha-textarea")!.value;
+    const message = this.shadowRoot!.querySelector("ha-textarea")!.value ?? "";
     this._message = message;
     const item = { ...this.item };
     const query = new URLSearchParams();
@@ -242,6 +248,10 @@ class BrowseMediaTTS extends LitElement {
         margin-top: 16px;
         display: flex;
         justify-content: space-between;
+        gap: var(--ha-space-2);
+      }
+      ha-language-picker {
+        width: 100%;
       }
       ha-textarea {
         width: 100%;
@@ -260,7 +270,7 @@ class BrowseMediaTTS extends LitElement {
       }
       .footer {
         --mdc-icon-size: 14px;
-        --mdc-icon-button-size: 24px;
+        --ha-icon-button-size: 24px;
         display: flex;
         justify-content: center;
         align-items: center;

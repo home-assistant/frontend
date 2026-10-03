@@ -25,9 +25,11 @@ export class HaDialogHeader extends LitElement {
             <slot name="navigationIcon"></slot>
           </section>
           <section class="header-content">
-            ${this.subtitlePosition === "above"
-              ? html`${subtitleSlot}${titleSlot}`
-              : html`${titleSlot}${subtitleSlot}`}
+            ${
+              this.subtitlePosition === "above"
+                ? html`${subtitleSlot}${titleSlot}`
+                : html`${titleSlot}${subtitleSlot}`
+            }
           </section>
           <section class="header-action-items">
             <slot name="actionItems"></slot>
@@ -75,11 +77,15 @@ export class HaDialogHeader extends LitElement {
           font-size: var(--ha-font-size-xl);
           line-height: var(--ha-line-height-condensed);
           font-weight: var(--ha-font-weight-medium);
+          color: var(--ha-dialog-header-title-color, var(--primary-text-color));
         }
         .header-subtitle {
           font-size: var(--ha-font-size-m);
           line-height: var(--ha-line-height-normal);
-          color: var(--secondary-text-color);
+          color: var(
+            --ha-dialog-header-subtitle-color,
+            var(--secondary-text-color)
+          );
         }
         @media all and (min-width: 450px) and (min-height: 500px) {
           .header-bar {

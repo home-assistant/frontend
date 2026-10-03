@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import type { GroupEntity } from "../../../data/group";
 import { computeGroupDomain } from "../../../data/group";
@@ -13,6 +13,7 @@ import {
   importMoreInfoControl,
 } from "../state_more_info_control";
 
+@customElement("more-info-group")
 class MoreInfoGroup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -22,7 +23,7 @@ class MoreInfoGroup extends LitElement {
 
   @state() private _moreInfoType?: string;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (
       !this.hass ||
       !this.stateObj ||
@@ -73,12 +74,14 @@ class MoreInfoGroup extends LitElement {
     if (!this.hass || !this.stateObj) {
       return nothing;
     }
-    return html`${this._moreInfoType
-      ? dynamicElement(this._moreInfoType, {
-          hass: this.hass,
-          stateObj: this._groupDomainStateObj,
-        })
-      : ""}
+    return html`${
+      this._moreInfoType
+        ? dynamicElement(this._moreInfoType, {
+            hass: this.hass,
+            stateObj: this._groupDomainStateObj,
+          })
+        : ""
+    }
     ${this.stateObj.attributes.entity_id.map((entity_id) => {
       const entityState = this.hass!.states[entity_id];
       if (!entityState) {
@@ -99,14 +102,12 @@ class MoreInfoGroup extends LitElement {
       css`
         state-card-content {
           display: block;
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
       `,
     ];
   }
 }
-
-customElements.define("more-info-group", MoreInfoGroup);
 
 declare global {
   interface HTMLElementTagNameMap {

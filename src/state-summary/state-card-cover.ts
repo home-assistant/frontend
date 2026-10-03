@@ -26,12 +26,10 @@ class StateCardCover extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         <ha-cover-controls
-          .hass=${this.hass}
           .hidden=${isTiltOnly(this.stateObj)}
           .stateObj=${this.stateObj}
         ></ha-cover-controls>
         <ha-cover-tilt-controls
-          .hass=${this.hass}
           .hidden=${!isTiltOnly(this.stateObj)}
           .stateObj=${this.stateObj}
         ></ha-cover-tilt-controls>

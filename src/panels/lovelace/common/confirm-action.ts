@@ -21,5 +21,8 @@ export const confirmAction = async (
       hass.localize("ui.panel.lovelace.cards.actions.action_confirmation", {
         action,
       }),
+    title: config.title,
+    dismissText: config.dismiss_text,
+    confirmText: config.confirm_text,
   });
 };

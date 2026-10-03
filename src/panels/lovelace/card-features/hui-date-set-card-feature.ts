@@ -1,22 +1,46 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-slider";
-import type { HomeAssistant } from "../../../types";
+import { apiContext, internationalizationContext } from "../../../data/context";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  LovelaceCardFeatureContext,
   DateSetCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { DatePickerDialogParams } from "../../../components/ha-date-input";
-import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 
 const loadDatePickerDialog = () =>
-  import("../../../components/ha-dialog-date-picker");
+  import("../../../components/date-picker/ha-dialog-date-picker");
+
+const supportsDateSetCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    (domain === "input_datetime" && stateObj.attributes.has_date) ||
+    ["datetime", "date"].includes(domain)
+  );
+};
 
 export const supportsDateSetCardFeature = (
   hass: HomeAssistant,
@@ -26,50 +50,55 @@ export const supportsDateSetCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    (domain === "input_datetime" && stateObj.attributes.has_date) ||
-    ["datetime", "date"].includes(domain)
-  );
+  return supportsDateSetCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-date-set-card-feature")
 class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
 
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   @state() private _config?: DateSetCardFeatureConfig;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] ?? undefined;
-  }
-
-  private _pressButton() {
-    if (!this.hass || !this._stateObj) return;
-
-    const dialogParams: DatePickerDialogParams = {
-      min: "1970-01-01",
-      value: this._stateObj.state,
-      onChange: (value) => this._dateChanged(value),
-      locale: this.hass.locale.language,
-      firstWeekday: firstWeekdayIndex(this.hass.locale),
-    };
+  private _pressButton(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    if (!this._stateObj || !this._locale) return;
 
     fireEvent(this, "show-dialog", {
       dialogTag: "ha-dialog-date-picker",
       dialogImport: loadDatePickerDialog,
-      dialogParams,
+      dialogAnchor: ev.currentTarget,
+      dialogParams: {
+        min: "1970-01-01",
+        value: this._stateObj.state,
+        onChange: (value) => this._dateChanged(value),
+        locale: this._locale.language,
+        firstWeekday: firstWeekdayIndex(this._locale),
+      },
     });
   }
 
   private _dateChanged(value: string | undefined) {
-    if (!this.hass || !this._stateObj || !value) return;
+    if (!this._stateObj || !value) return;
 
     const domain = computeDomain(this._stateObj.entity_id);
     const service = domain === "input_datetime" ? "set_datetime" : "set_value";
@@ -84,12 +113,12 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
         selectedDate.getDate()
       );
 
-      this.hass.callService(domain, service, {
+      this._api.callService(domain, service, {
         entity_id: this._stateObj.entity_id,
         datetime: dateObj.toISOString(),
       });
     } else {
-      this.hass.callService(domain, service, {
+      this._api.callService(domain, service, {
         entity_id: this._stateObj.entity_id,
         date: value,
       });
@@ -112,10 +141,10 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsDateSetCardFeature(this.hass, this.context)
+      !this._locale ||
+      !supportsDateSetCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -127,7 +156,7 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
           class="press-button"
           @click=${this._pressButton}
         >
-          ${this.hass.localize("ui.card.date.set_date")}
+          ${this._localize("ui.card.date.set_date")}
         </ha-control-button>
       </ha-control-button-group>
     `;
