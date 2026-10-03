@@ -9430,6 +9430,7 @@
               "lights": "Lights",
               "covers": "Covers",
               "climate": "Climate",
+              "sensors": "Sensors",
               "media_players": "Media players",
               "security": "Security",
               "actions": "Actions",

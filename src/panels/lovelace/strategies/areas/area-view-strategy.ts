@@ -86,6 +86,7 @@ export class AreaViewStrategy extends ReactiveElement {
     const {
       lights,
       climate,
+      sensors,
       covers,
       media_players,
       security,
@@ -128,6 +129,19 @@ export class AreaViewStrategy extends ReactiveElement {
             AREA_STRATEGY_GROUP_ICONS.climate
           ),
           ...climate.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (sensors.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.sensors"),
+            AREA_STRATEGY_GROUP_ICONS.sensors
+          ),
+          ...sensors.map(computeTileCard),
         ],
       });
     }
