@@ -354,7 +354,7 @@ class HaPanelDevTemplate extends LitElement {
                         class="copy-result"
                         .path=${mdiContentCopy}
                         .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.copy_to_clipboard"
+                          "ui.panel.config.tools.tabs.templates.copy_to_clipboard"
                         )}
                         @click=${this._copyResult}
                       ></ha-icon-button>
@@ -645,8 +645,8 @@ class HaPanelDevTemplate extends LitElement {
 
         .copy-result {
           position: absolute;
-          top: var(--ha-space-1);
-          inset-inline-end: var(--ha-space-1);
+          top: var(--ha-space-2);
+          inset-inline-end: var(--ha-space-2);
           --ha-icon-button-size: 32px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);

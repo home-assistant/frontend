@@ -233,7 +233,7 @@ export class ToolsYamlConfig extends LitElement {
       class="copy-log"
       .path=${mdiContentCopy}
       .label=${this.hass.localize(
-        "ui.panel.config.automation.editor.copy_to_clipboard"
+        "ui.panel.config.tools.tabs.yaml.section.validation.copy_to_clipboard"
       )}
       .copyText=${text}
       @click=${this._copyLog}
