@@ -10,6 +10,7 @@ import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  formatPowerShort,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -181,6 +182,7 @@ export class HuiPowerSourcesGraphCard
 
     const result = generatePowerSourcesGraphData({
       localize: this.hass.localize,
+      formatPower: (powerWatts) => formatPowerShort(this.hass, powerWatts),
       states: this.hass.states,
       energyData,
       computedStyles: getComputedStyle(this),

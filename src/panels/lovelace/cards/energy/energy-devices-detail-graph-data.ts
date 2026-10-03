@@ -23,12 +23,14 @@ import {
   computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  formatSeriesTotal,
   generateFillBuckets,
   getCompareTransform,
   getPeriodMidpointOffset,
   splitUntrackedConsumption,
 } from "./common/energy-chart-options";
 import { getEnergyColor } from "./common/color";
+import type { FrontendLocaleData } from "../../../../data/translation";
 
 const UNIT = "kWh";
 
@@ -312,11 +314,13 @@ function processUntracked(
 // Legend item for an untracked series (positive or negative): not tied to an
 // entity, so the label isn't clickable, and paired with its compare series.
 const untrackedLegendItem = (
-  dataset: BarSeriesOption
+  dataset: BarSeriesOption,
+  locale: FrontendLocaleData
 ): NonNullable<CustomLegendOption["data"]>[number] => ({
   id: dataset.id as string,
   secondaryIds: [`compare-${dataset.id}`],
   name: dataset.name as string,
+  value: formatSeriesTotal(dataset, locale, UNIT),
   itemStyle: {
     color: dataset.color as string,
     borderColor: dataset.itemStyle?.borderColor as string,
@@ -480,6 +484,7 @@ export function generateEnergyDevicesDetailGraphData(
       id: d.id as string,
       secondaryIds: [`compare-${d.id}`],
       name: d.name as string,
+      value: formatSeriesTotal(d, hass.locale, UNIT),
       itemStyle: {
         color: d.color as string,
         borderColor: d.itemStyle?.borderColor as string,
@@ -498,7 +503,7 @@ export function generateEnergyDevicesDetailGraphData(
       false
     );
     datasets.push(untrackedData);
-    legendData.push(untrackedLegendItem(untrackedData));
+    legendData.push(untrackedLegendItem(untrackedData, hass.locale));
 
     // Only surface the negative untracked series (and its legend item) when
     // either the main or compare period actually has negative values, so users
@@ -510,7 +515,7 @@ export function generateEnergyDevicesDetailGraphData(
       datasets.push(negativeDataset);
     }
     if (hasNegative || hasCompareNegative) {
-      legendData.push(untrackedLegendItem(negativeDataset));
+      legendData.push(untrackedLegendItem(negativeDataset, hass.locale));
     }
   }
 

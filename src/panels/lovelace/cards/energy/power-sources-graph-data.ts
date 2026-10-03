@@ -13,6 +13,8 @@ import { fillLineGaps } from "./common/energy-chart-options";
 
 export interface PowerSourcesGraphDataParams {
   localize: LocalizeFunc;
+  /** Formats a power value in W (e.g. "1.234 kW"). */
+  formatPower: (powerWatts: number) => string;
   states: HassEntities;
   energyData: EnergyData;
   computedStyles: CSSStyleDeclaration;
@@ -82,7 +84,7 @@ function processData(
 export function generatePowerSourcesGraphData(
   params: PowerSourcesGraphDataParams
 ): PowerSourcesGraphData {
-  const { localize, states, energyData, computedStyles } = params;
+  const { localize, formatPower, states, energyData, computedStyles } = params;
 
   const datasets: LineSeriesOption[] = [];
   const legendData: CustomLegendOption["data"] = [];
@@ -146,6 +148,7 @@ export function generatePowerSourcesGraphData(
   // it once instead of inside the per-id map below.
   const showingToday =
     isSameDay(now, params.start) && isSameDay(now, params.end);
+  const currentWatts: Record<string, number> = {};
   const seriesData: Record<
     string,
     {
@@ -170,6 +173,7 @@ export function generatePowerSourcesGraphData(
             // Append current state if we are showing today
             const currentStateWatts = getPowerFromState(states[id]);
             if (currentStateWatts !== undefined) {
+              currentWatts[key] = (currentWatts[key] ?? 0) + currentStateWatts;
               // getPowerFromState returns power in W; convert to kW for this graph
               stats.push({
                 start: now,
@@ -249,6 +253,7 @@ export function generatePowerSourcesGraphData(
         id: key,
         secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
         name: statIds[key].name,
+        value: key in currentWatts ? formatPower(currentWatts[key]) : undefined,
         itemStyle: {
           color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
           borderColor: colorHex,
@@ -316,6 +321,14 @@ export function generatePowerSourcesGraphData(
   legendData!.push({
     id: "usage",
     name: localize("ui.panel.lovelace.cards.energy.power_graph.usage"),
+    value: showingToday
+      ? formatPower(
+          Math.max(
+            0,
+            Object.values(currentWatts).reduce((a, b) => a + b, 0)
+          )
+        )
+      : undefined,
     itemStyle: {
       color: computedStyles.getPropertyValue("--primary-text-color"),
     },
