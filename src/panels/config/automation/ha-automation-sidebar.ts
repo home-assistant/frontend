@@ -227,8 +227,12 @@ export default class HaAutomationSidebar extends LitElement {
         : "script-field";
     }
 
-    // option is always a building block and doesn't have a config
-    if (this.config && !(this.config as any)?.config) {
+    // option is a building block; its config only carries the option itself
+    if (
+      this.config &&
+      (!(this.config as any)?.config ||
+        "option" in ((this.config as any).config ?? {}))
+    ) {
       return "option";
     }
 
