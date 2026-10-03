@@ -32,9 +32,9 @@ const ENTITIES = [
     attributes: {
       friendly_name: "White Color Temperature Light",
       brightness: 128,
-      color_temp: 75,
-      min_mireds: 30,
-      max_mireds: 150,
+      color_temp_kelvin: 4000,
+      min_color_temp_kelvin: 2000,
+      max_color_temp_kelvin: 6500,
       supported_color_modes: [
         LightColorMode.BRIGHTNESS,
         LightColorMode.COLOR_TEMP,
@@ -71,9 +71,9 @@ const ENTITIES = [
     attributes: {
       friendly_name: "Color RGB + CT Light",
       brightness: 255,
-      color_temp: 75,
-      min_mireds: 30,
-      max_mireds: 150,
+      color_temp_kelvin: 4000,
+      min_color_temp_kelvin: 2000,
+      max_color_temp_kelvin: 6500,
       supported_features:
         LightEntityFeature.EFFECT +
         LightEntityFeature.FLASH +
