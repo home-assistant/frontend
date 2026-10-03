@@ -11811,6 +11811,7 @@
         "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
+        "redirect_host": "You will be redirected to {redirectHost}.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
         "store_token": "Keep me logged in",
@@ -12035,6 +12036,8 @@
           "finish": "Next"
         },
         "integration": {
+          "authorizing_client": "[%key:ui::panel::page-authorize::authorizing_client%]",
+          "redirect_host": "[%key:ui::panel::page-authorize::redirect_host%]",
           "header": "We found compatible devices!",
           "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
           "more_integrations": "+{count} more",

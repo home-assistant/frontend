@@ -1,16 +1,16 @@
 /* eslint-disable lit/prefer-static-styles */
 import { mdiOpenInNew } from "@mdi/js";
+import { genClientId } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
 import "../components/ha-button";
 import "../components/ha-svg-icon";
 import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
-import { fetchAuthProviders } from "../data/auth";
+import { fetchAuthProviders, formatClientId } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { provideLiteI18nMixin } from "../mixins/provide-lite-i18n-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
@@ -46,6 +46,8 @@ export class HaAuthorize extends provideLiteI18nMixin(
   @state() private _preselectStoreToken = false;
 
   @state() private _ownInstance = false;
+
+  @state() private _redirectHost?: string;
 
   @state() private _error?: string;
 
@@ -174,12 +176,21 @@ export class HaAuthorize extends provideLiteI18nMixin(
                         clientId: html`<b
                           >${
                             this.clientId
-                              ? punycode.toASCII(this.clientId)
+                              ? formatClientId(this.clientId)
                               : this.clientId
                           }</b
                         >`,
                       }
                     )
+              }
+              ${
+                this._redirectHost
+                  ? html`<p>
+                      ${this.localize("ui.panel.page-authorize.redirect_host", {
+                        redirectHost: html`<b>${this._redirectHost}</b>`,
+                      })}
+                    </p>`
+                  : nothing
               }
             </ha-alert>`
           : nothing
@@ -266,6 +277,12 @@ export class HaAuthorize extends provideLiteI18nMixin(
       return;
     }
 
+    this._ownInstance =
+      this.clientId === genClientId() && url.origin === location.origin;
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      this._redirectHost = url.host;
+    }
+
     this._fetchAuthProviders();
 
     if (matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -294,7 +311,6 @@ export class HaAuthorize extends provideLiteI18nMixin(
     // If we are logging into the instance that is hosting this auth form
     // we will register the service worker to start preloading.
     if (url.host === location.host) {
-      this._ownInstance = true;
       registerServiceWorker(this, false);
     }
 

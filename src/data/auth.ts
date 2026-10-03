@@ -26,6 +26,14 @@ export interface SignedPath {
 
 export const hassUrl = __HASS_URL__;
 
+export const formatClientId = (clientId: string): string => {
+  try {
+    return new URL(clientId).href;
+  } catch {
+    return clientId;
+  }
+};
+
 export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
   schema.map((field) => {
     if (field.type !== "string") return field;

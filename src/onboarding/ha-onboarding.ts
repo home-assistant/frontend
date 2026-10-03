@@ -24,10 +24,11 @@ import {
   extractSearchParamsObject,
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
+import "../components/ha-alert";
 import "../components/ha-card";
 import "../components/progress/ha-progress-bar";
 import type { AuthUrlSearchParams } from "../data/auth";
-import { hassUrl } from "../data/auth";
+import { formatClientId, hassUrl } from "../data/auth";
 import { saveFrontendSystemData } from "../data/frontend";
 import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
@@ -187,10 +188,54 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
     if (step.step === "integration") {
       return html`
+        ${this._renderAuthorizationNotice()}
         <onboarding-integrations .hass=${this.hass}></onboarding-integrations>
       `;
     }
     return nothing;
+  }
+
+  private _renderAuthorizationNotice() {
+    const { client_id, redirect_uri } = extractSearchParamsObject();
+    if (
+      !client_id ||
+      !redirect_uri ||
+      [
+        genClientId(),
+        "https://home-assistant.io/iOS",
+        "https://home-assistant.io/android",
+      ].includes(client_id)
+    ) {
+      return nothing;
+    }
+
+    let redirectUrl: URL;
+    try {
+      redirectUrl = new URL(redirect_uri);
+    } catch {
+      return nothing;
+    }
+
+    return html`<ha-alert alert-type="warning">
+      ${this.localize(
+        "ui.panel.page-onboarding.integration.authorizing_client",
+        {
+          clientId: html`<b>${formatClientId(client_id)}</b>`,
+        }
+      )}
+      ${
+        redirectUrl.protocol === "http:" || redirectUrl.protocol === "https:"
+          ? html`<p>
+              ${this.localize(
+                "ui.panel.page-onboarding.integration.redirect_host",
+                {
+                  redirectHost: html`<b>${redirectUrl.host}</b>`,
+                }
+              )}
+            </p>`
+          : nothing
+      }
+    </ha-alert>`;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
