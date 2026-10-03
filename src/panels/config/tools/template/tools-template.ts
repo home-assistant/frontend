@@ -1,4 +1,5 @@
 import {
+  mdiContentCopy,
   mdiRestore,
   mdiTrashCanOutline,
   mdiViewSplitHorizontal,
@@ -12,11 +13,13 @@ import { customElement, property, state } from "lit/decorators";
 import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
 import type { HaIconButtonToolbarItem } from "../../../../components/ha-icon-button-toolbar";
 import "../../../../components/ha-label";
 import "../../../../components/ha-spinner";
@@ -30,6 +33,7 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import { haStyle, haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
+import { showToast } from "../../../../util/toast";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
@@ -138,7 +142,7 @@ class HaPanelDevTemplate extends LitElement {
         : type;
 
     const editorCard = this._renderEditorCard();
-    const resultCard = this._renderResultCard(type, resultType);
+    const resultCard = this._renderResultCard(resultType);
 
     // On narrow viewports side-by-side is too cramped, so force the (still
     // resizable) stacked layout and hide the orientation toggle.
@@ -300,7 +304,7 @@ class HaPanelDevTemplate extends LitElement {
     `;
   }
 
-  private _renderResultCard(type: string, resultType: string) {
+  private _renderResultCard(resultType: string) {
     const showEmptyState =
       !this._error && !this._rendering && !this._template?.trim();
 
@@ -343,12 +347,18 @@ class HaPanelDevTemplate extends LitElement {
                       )}:
                       ${resultType}
                     </ha-label>
-                    <pre class="rendered">
-${
-                        type === "object"
-                          ? JSON.stringify(this._templateResult.result, null, 2)
-                          : this._templateResult.result
-                      }</pre>
+                    <div class="result-container">
+                      <!-- prettier-ignore -->
+                      <pre class="rendered">${this._resultText()}</pre>
+                      <ha-icon-button
+                        class="copy-result"
+                        .path=${mdiContentCopy}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.copy_to_clipboard"
+                        )}
+                        @click=${this._copyResult}
+                      ></ha-icon-button>
+                    </div>
                     ${
                       this._templateResult.listeners.time
                         ? html`
@@ -423,6 +433,20 @@ ${
       </ha-card>
     `;
   }
+
+  private _resultText(): string {
+    const result = this._templateResult?.result;
+    return typeof result === "object"
+      ? JSON.stringify(result, null, 2)
+      : String(result ?? "");
+  }
+
+  private _copyResult = async () => {
+    await copyToClipboard(this._resultText());
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  };
 
   private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
     this._splitPosition = (ev.target as HaSplitPanel).position;
@@ -615,6 +639,19 @@ ${
           color: var(--secondary-text-color);
         }
 
+        .result-container {
+          position: relative;
+        }
+
+        .copy-result {
+          position: absolute;
+          top: var(--ha-space-1);
+          inset-inline-end: var(--ha-space-1);
+          --ha-icon-button-size: 32px;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+        }
+
         .rendered {
           font-family: var(--ha-font-family-code);
           -webkit-font-smoothing: var(--ha-font-smoothing);
@@ -624,6 +661,7 @@ ${
           background-color: var(--secondary-background-color);
           border-radius: var(--ha-border-radius-md);
           padding: var(--ha-space-2);
+          padding-inline-end: var(--ha-space-10);
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
