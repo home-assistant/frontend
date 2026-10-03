@@ -100,14 +100,19 @@ export class MCPPref extends LitElement {
         </h1>
         <div class="card-content">
           <p>
-            ${this.hass.localize("ui.panel.config.mcp.description", {
-              documentation_link: html`<a
-                href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize("ui.panel.config.mcp.documentation")}</a
-              >`,
-            })}
+            ${this.hass.localize(
+              enabled
+                ? "ui.panel.config.mcp.description"
+                : "ui.panel.config.mcp.description_disabled",
+              {
+                documentation_link: html`<a
+                  href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize("ui.panel.config.mcp.documentation")}</a
+                >`,
+              }
+            )}
           </p>
           ${
             this._entry === undefined && this._error === undefined

@@ -371,7 +371,7 @@ const createEngine = async (events: Partial<MapEngineEvents> = {}) => {
   const ready = engine.init(container, {
     center: [52, 4],
     zoom: 13,
-    darkMode: false,
+    mapStyle: { palette: "colorful" as const },
     zoomControlPosition: "topleft",
     events,
   });
@@ -439,7 +439,7 @@ describe("MapLibreMapEngine", () => {
       const { engine, map, ready } = await createEngine();
       await ready;
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledOnce();
       expect(map.isStyleLoaded()).toBe(false);
@@ -468,7 +468,7 @@ describe("MapLibreMapEngine", () => {
       const customLayers = layerIds(map).filter((id) => id.startsWith("ha-"));
       expect(customLayers).toHaveLength(2);
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       map.loadStyle();
 
@@ -486,10 +486,10 @@ describe("MapLibreMapEngine", () => {
       await ready;
       engine.addCircle([52, 4], { radius: 100, color: "red" });
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       // The dark style has not loaded, so this swap sees no previous style
-      engine.setDarkMode(false);
+      engine.setMapStyle({ palette: "colorful" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledTimes(2);
 
@@ -505,18 +505,18 @@ describe("MapLibreMapEngine", () => {
       await ready;
       expect(loadStyle).toHaveBeenCalledTimes(1);
 
-      engine.setDarkMode(false);
+      engine.setMapStyle({ palette: "colorful" });
       await flush();
       expect(loadStyle).toHaveBeenCalledTimes(1);
 
       // The dark style fails to fetch: the map stays light and dark can be
       // requested again
       loadStyle.mockRejectedValueOnce(new Error("offline"));
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).not.toHaveBeenCalled();
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(loadStyle).toHaveBeenCalledTimes(3);
       expect(map.setStyle).toHaveBeenCalledOnce();
@@ -527,13 +527,13 @@ describe("MapLibreMapEngine", () => {
       await ready;
 
       fakeMap.failNextSetStyle = true;
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledOnce();
       expect(map.isStyleLoaded()).toBe(true);
 
       // Dark was not applied, so asking for it again applies it
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledTimes(2);
       expect(map.isStyleLoaded()).toBe(false);
@@ -608,6 +608,17 @@ describe("MapLibreMapEngine", () => {
       map.fire("movestart");
       expect(moveStart).toHaveBeenCalledOnce();
     });
+
+    it("reports the map drawn on its first load only", async () => {
+      const drawn = vi.fn();
+      const { map, ready } = await createEngine({ drawn });
+      await ready;
+      expect(drawn).not.toHaveBeenCalled();
+
+      map.fire("load");
+      map.fire("load");
+      expect(drawn).toHaveBeenCalledOnce();
+    });
   });
 
   describe("fitting", () => {
@@ -628,6 +639,25 @@ describe("MapLibreMapEngine", () => {
         bottom: 200,
         left: 0,
       });
+    });
+
+    it("keeps padded bounds within the poles", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Points 150 degrees apart; half of that as padding would overshoot
+      engine.fitBounds(
+        [
+          [-75, -20],
+          [75, 20],
+        ],
+        { pad: 0.5 }
+      );
+      const [bounds] = map.fitBounds.mock.calls[0];
+      expect(bounds[0][1]).toBe(-90);
+      expect(bounds[1][1]).toBe(90);
+      expect(bounds[0][0]).toBe(-40);
+      expect(bounds[1][0]).toBe(40);
     });
   });
 
@@ -1582,7 +1612,7 @@ describe("MapLibreMapEngine", () => {
     it("keeps a circle moved while a swapped style was loading", async () => {
       const { engine, map, ready } = await createEngine();
       await ready;
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.isStyleLoaded()).toBe(false);
 

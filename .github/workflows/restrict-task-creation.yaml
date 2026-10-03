@@ -51,6 +51,6 @@ jobs:
         with:
           script: |
             const { default: checkTaskAuthorization } = await import(
-              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-task-authorization.mjs`
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-task-authorization.mts`
             );
             await checkTaskAuthorization({ github, context, core });

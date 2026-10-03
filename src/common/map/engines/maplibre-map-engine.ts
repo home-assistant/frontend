@@ -22,13 +22,13 @@ import {
   MAP_MAX_ZOOM,
   MAP_MIN_ZOOM,
   RECOVERY_THROTTLE,
-  VECTOR_STYLES,
 } from "../base-layer";
 import {
   refreshMapTilesToken,
   subscribeMapTilesToken,
   withMapTilesToken,
 } from "../../../data/map_tiles";
+import { deepEqual } from "../../util/deep-equal";
 import { isTouch } from "../../../util/is_touch";
 import type {
   MapCircleOptions,
@@ -51,6 +51,7 @@ import type {
   MapPath,
 } from "../map-engine";
 import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
+import type { ResolvedMapStyle } from "../map-styles";
 import {
   createResizeHandleElement,
   RADIUS_ARIA_MAX,
@@ -226,10 +227,10 @@ export class MapLibreMapEngine implements MapEngine {
   // until the next frame and throws on mutation; layer work queues until then
   private _pendingStyleOps: (() => void)[] = [];
 
-  // A failed style request rolls back to the applied mode, not the requested one
-  private _appliedDarkMode = false;
+  // A failed style request rolls back to the applied style, not the requested one
+  private _appliedStyle!: ResolvedMapStyle;
 
-  private _requestedDarkMode = false;
+  private _requestedStyle!: ResolvedMapStyle;
 
   private _latestStyleRequest = 0;
 
@@ -273,13 +274,11 @@ export class MapLibreMapEngine implements MapEngine {
       root.appendChild(style);
     }
 
-    this._appliedDarkMode = options.darkMode;
-    this._requestedDarkMode = options.darkMode;
+    this._appliedStyle = options.mapStyle;
+    this._requestedStyle = options.mapStyle;
     this._events = options.events;
 
-    const style = await loadStyle(
-      VECTOR_STYLES[options.darkMode ? "dark" : "light"]
-    );
+    const style = await loadStyle(options.mapStyle);
     if (this._destroyed) {
       return;
     }
@@ -326,11 +325,11 @@ export class MapLibreMapEngine implements MapEngine {
       this._refused = true;
       refreshMapTilesToken();
     });
-    // Only a new token clears a refusal; a theme change in between is refused too
+    // Only a new token clears a refusal; a style change in between is refused too
     this._unsubscribeToken = subscribeMapTilesToken(() => {
       if (this._refused) {
         this._refused = false;
-        this._applyStyle(this._requestedDarkMode);
+        this._applyStyle(this._requestedStyle);
       }
     });
 
@@ -346,6 +345,9 @@ export class MapLibreMapEngine implements MapEngine {
         this._events.click?.([ev.lngLat.lat, ev.lngLat.lng]);
       }
     });
+    // Everything the first view needs has been drawn; before this the canvas
+    // can still be blank, whatever the style says
+    map.once("load", () => this._events.drawn?.());
     map.on("zoomstart", () => this._events.zoomStart?.());
     map.on("movestart", () => {
       // resize() fires movestart even when nothing changed (see _resize)
@@ -459,30 +461,30 @@ export class MapLibreMapEngine implements MapEngine {
     }
   }
 
-  public setDarkMode(darkMode: boolean): void {
-    if (!this._map || darkMode === this._requestedDarkMode) {
+  public setMapStyle(mapStyle: ResolvedMapStyle): void {
+    if (!this._map || deepEqual(mapStyle, this._requestedStyle)) {
       return;
     }
-    this._requestedDarkMode = darkMode;
-    this._applyStyle(darkMode);
+    this._requestedStyle = mapStyle;
+    this._applyStyle(mapStyle);
   }
 
-  private _applyStyle(darkMode: boolean): void {
+  private _applyStyle(mapStyle: ResolvedMapStyle): void {
     const request = ++this._latestStyleRequest;
 
-    loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"])
+    loadStyle(mapStyle)
       .then((style) => {
         if (request === this._latestStyleRequest && this._map) {
           this._map.setStyle(style, {
             transformStyle: (previous, next) =>
               this._carryCustomLayers(previous, next),
           });
-          this._appliedDarkMode = darkMode;
+          this._appliedStyle = mapStyle;
         }
       })
       .catch(() => {
         if (request === this._latestStyleRequest) {
-          this._requestedDarkMode = this._appliedDarkMode;
+          this._requestedStyle = this._appliedStyle;
         }
       });
   }
@@ -622,10 +624,11 @@ export class MapLibreMapEngine implements MapEngine {
     const pad = options?.pad ?? 0.5;
     const latPad = (maxLat - minLat) * pad;
     const lngPad = (maxLng - minLng) * pad;
+    // MapLibre rejects a latitude beyond the poles
     return {
       bounds: [
-        [minLng - lngPad, minLat - latPad],
-        [maxLng + lngPad, maxLat + latPad],
+        [minLng - lngPad, Math.max(-90, minLat - latPad)],
+        [maxLng + lngPad, Math.min(90, maxLat + latPad)],
       ] as [[number, number], [number, number]],
       options: { maxZoom, padding },
     };
