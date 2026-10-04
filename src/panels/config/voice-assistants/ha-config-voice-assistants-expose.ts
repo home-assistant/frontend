@@ -428,10 +428,16 @@ export class VoiceAssistantsExpose extends LitElement {
         if (!result[entityId]) {
           continue;
         }
+        const lockedAssistants = Object.keys(lockedEntities![entityId]).filter(
+          (assistant) => lockedEntities![entityId][assistant]
+        );
+        if (!lockedAssistants.length) {
+          continue;
+        }
         result[entityId].manAssistants = [
           ...new Set([
             ...(result[entityId].manAssistants ?? []),
-            ...Object.keys(lockedEntities![entityId]),
+            ...lockedAssistants,
           ]),
         ];
       }

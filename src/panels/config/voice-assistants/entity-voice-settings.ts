@@ -196,12 +196,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       googleManual && manFilterFuncs!.google(this.entityId);
 
     const anyExposed = uiExposed || manExposedAlexa || manExposedGoogle;
-    // A locked-off assistant (YAML expose: false) has no entry in `exposed`,
-    // so it wouldn't otherwise make anyExposed true; show its row anyway so
-    // the "Managed in configuration.yaml" explanation isn't hidden.
-    const anyLocked = showAssistants.some(
-      (key) => this.locked?.[key] !== undefined
-    );
+    const anyLocked = showAssistants.some((key) => this.locked?.[key]);
 
     const exposedToAlexa =
       showAssistants.includes("cloud.alexa") &&
@@ -242,7 +237,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               const manualConfig =
                 (alexaManual && key === "cloud.alexa") ||
                 (googleManual && key === "cloud.google_assistant") ||
-                this.locked?.[key] !== undefined;
+                Boolean(this.locked?.[key]);
 
               const support2fa =
                 key === "cloud.google_assistant" &&
