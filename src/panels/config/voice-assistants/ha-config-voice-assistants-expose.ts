@@ -660,7 +660,7 @@ export class VoiceAssistantsExpose extends LitElement {
           entities,
           this.lockedEntities,
           true
-        ).then(() => fireEvent(this, "exposed-entities-changed"));
+        ).finally(() => fireEvent(this, "exposed-entities-changed"));
       },
     });
   }
@@ -701,7 +701,7 @@ export class VoiceAssistantsExpose extends LitElement {
       [entityId],
       this.lockedEntities,
       false
-    ).then(() => fireEvent(this, "exposed-entities-changed"));
+    ).finally(() => fireEvent(this, "exposed-entities-changed"));
   };
 
   private _unexposeSelected() {
@@ -736,7 +736,7 @@ export class VoiceAssistantsExpose extends LitElement {
           entities,
           this.lockedEntities,
           false
-        ).then(() => fireEvent(this, "exposed-entities-changed"));
+        ).finally(() => fireEvent(this, "exposed-entities-changed"));
         this._clearSelection();
       },
     });
@@ -774,7 +774,7 @@ export class VoiceAssistantsExpose extends LitElement {
           entities,
           this.lockedEntities,
           true
-        ).then(() => fireEvent(this, "exposed-entities-changed"));
+        ).finally(() => fireEvent(this, "exposed-entities-changed"));
         this._clearSelection();
       },
     });
