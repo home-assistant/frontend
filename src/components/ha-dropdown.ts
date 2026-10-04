@@ -74,11 +74,44 @@ export class HaDropdown extends Dropdown {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private override async showMenu() {
     // @ts-ignore
+    const items: HaDropdownItem[] = this.getItems();
+    const selectedItem = items.find((item) => item.selected);
+
+    // @ts-ignore
+    if (selectedItem && this.popup && !this.popup.active) {
+      // @ts-ignore
+      this.popup.addEventListener(
+        "wa-reposition",
+        () => requestAnimationFrame(() => this._scrollToItem(selectedItem)),
+        { once: true }
+      );
+    }
+
+    // @ts-ignore
     await super.showMenu();
     const triggerElement = this.getTrigger();
     if (triggerElement && triggerElement.localName === "ha-icon-button") {
       (triggerElement as HaIconButton).selected = true;
     }
+
+    if (selectedItem && this.open) {
+      items.forEach((item) => {
+        item.active = item === selectedItem;
+      });
+      selectedItem.focus({ preventScroll: true });
+    }
+  }
+
+  private _scrollToItem(item: HaDropdownItem) {
+    // @ts-ignore
+    const menu: HTMLElement | undefined = this.menu;
+    if (!menu) {
+      return;
+    }
+    const menuRect = menu.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    menu.scrollTop +=
+      itemRect.top - menuRect.top - (menu.clientHeight - itemRect.height) / 2;
   }
 
   // @ts-ignore
