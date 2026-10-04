@@ -35,11 +35,15 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public redirectUri?: string;
 
-  @property({ attribute: false }) public oauth2State?: string;
+  @property({ attribute: false }) public resource?: string;
+
+  @property({ attribute: false }) public responseType?: string;
 
   @property({ attribute: false }) public codeChallenge?: string;
 
   @property({ attribute: false }) public codeChallengeMethod?: string;
+
+  @property({ attribute: false }) public oauth2State?: string;
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
@@ -303,11 +307,16 @@ export class HaAuthFlow extends LitElement {
 
     try {
       const response = await createLoginFlow(
-        this.clientId,
-        this.redirectUri,
-        [newProvider.type, newProvider.id],
-        this.codeChallenge,
-        this.codeChallengeMethod
+        {
+          client_id: this.clientId,
+          code_challenge: this.codeChallenge,
+          code_challenge_method: this.codeChallengeMethod,
+          redirect_uri: this.redirectUri,
+          resource: this.resource,
+          response_type: this.responseType,
+          state: this.oauth2State,
+        },
+        [newProvider.type, newProvider.id]
       );
 
       const data = await response.json();

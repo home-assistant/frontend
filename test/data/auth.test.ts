@@ -1,52 +1,44 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { createLoginFlow } from "../../src/data/auth";
 
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
+
 describe("createLoginFlow", () => {
-  beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn());
-  });
+  it.each([
+    {},
+    {
+      code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+      code_challenge_method: "S256",
+      resource: "https://home-assistant.example",
+      response_type: "code",
+      state: "opaque state",
+    },
+  ])("forwards the authorization request %j", async (parameters) => {
+    const fetchMock = vi
+      .spyOn(window, "fetch")
+      .mockResolvedValue(new Response());
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.resetAllMocks();
-  });
-
-  it("posts basic login flow without PKCE parameters", async () => {
     await createLoginFlow(
-      "https://myclient.com",
-      "https://myclient.com/callback",
+      {
+        client_id: "https://client.example/",
+        redirect_uri: "https://client.example/callback",
+        ...parameters,
+      },
       ["homeassistant", null]
     );
 
-    expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
+    expect(fetchMock).toHaveBeenCalledWith("/auth/login_flow", {
       method: "POST",
       credentials: "same-origin",
       body: JSON.stringify({
-        client_id: "https://myclient.com",
+        client_id: "https://client.example/",
+        redirect_uri: "https://client.example/callback",
+        ...parameters,
         handler: ["homeassistant", null],
-        redirect_uri: "https://myclient.com/callback",
-      }),
-    });
-  });
-
-  it("posts login flow with code_challenge and code_challenge_method", async () => {
-    await createLoginFlow(
-      "https://myclient.com",
-      "https://myclient.com/callback",
-      ["homeassistant", null],
-      "E9Melhoa2OwvFrGMTJguCHaoeK1t8URWbuGJSstw-cM",
-      "S256"
-    );
-
-    expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
-      method: "POST",
-      credentials: "same-origin",
-      body: JSON.stringify({
-        client_id: "https://myclient.com",
-        handler: ["homeassistant", null],
-        redirect_uri: "https://myclient.com/callback",
-        code_challenge: "E9Melhoa2OwvFrGMTJguCHaoeK1t8URWbuGJSstw-cM",
-        code_challenge_method: "S256",
       }),
     });
   });
