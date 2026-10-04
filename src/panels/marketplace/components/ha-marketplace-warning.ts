@@ -94,11 +94,13 @@ export class HaMarketplaceWarning extends LitElement {
                 ${this.hass.localize("ui.panel.marketplace.warning.intro")}
               </p>
               <ha-alert
+                class="risks"
                 alert-type="warning"
                 .title=${this.hass.localize(
                   "ui.panel.marketplace.warning.risks_title"
                 )}
               >
+                <span slot="icon"></span>
                 <ul>
                   ${RISKS.map(
                     (risk) =>
@@ -193,10 +195,11 @@ export class HaMarketplaceWarning extends LitElement {
         }
 
         .card-content {
+          --card-padding: var(--ha-space-6);
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
-          padding: var(--ha-space-6);
+          padding: var(--card-padding);
         }
 
         .heading {
@@ -204,7 +207,6 @@ export class HaMarketplaceWarning extends LitElement {
           flex-direction: column;
           align-items: center;
           gap: var(--ha-space-2);
-          text-align: center;
         }
 
         .heading ha-svg-icon {
@@ -213,6 +215,7 @@ export class HaMarketplaceWarning extends LitElement {
         }
 
         h1 {
+          align-self: stretch;
           margin: 0;
           font-size: var(--ha-font-size-3xl);
           font-weight: var(--ha-font-weight-bold);
@@ -224,11 +227,19 @@ export class HaMarketplaceWarning extends LitElement {
           margin: 0;
           font-size: var(--ha-font-size-l);
           line-height: var(--ha-line-height-normal);
-          text-align: center;
         }
 
         ha-alert {
           display: block;
+        }
+
+        /* Span the full card width, aligning the text with the card content */
+        ha-alert.risks {
+          margin-inline: calc(-1 * var(--card-padding));
+          --ha-alert-icon-size: 0;
+          --ha-alert-padding: var(--ha-space-4)
+            calc(var(--card-padding) - var(--ha-space-2));
+          --ha-border-radius-sm: 0;
         }
 
         ul {
@@ -264,7 +275,7 @@ export class HaMarketplaceWarning extends LitElement {
           }
 
           .card-content {
-            padding: var(--ha-space-4);
+            --card-padding: var(--ha-space-4);
           }
 
           .heading ha-svg-icon {
