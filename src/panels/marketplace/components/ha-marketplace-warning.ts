@@ -94,6 +94,7 @@ export class HaMarketplaceWarning extends LitElement {
                 ${this.hass.localize("ui.panel.marketplace.warning.intro")}
               </p>
               <ha-alert
+                class="risks"
                 alert-type="warning"
                 .title=${this.hass.localize(
                   "ui.panel.marketplace.warning.risks_title"
@@ -229,9 +230,12 @@ export class HaMarketplaceWarning extends LitElement {
           text-align: center;
         }
 
-        /* Span the full card width, aligning the text with the card content */
         ha-alert {
           display: block;
+        }
+
+        /* Span the full card width, aligning the text with the card content */
+        ha-alert.risks {
           margin-inline: calc(-1 * var(--card-padding));
           --ha-alert-icon-size: 0;
           --ha-alert-padding: var(--ha-space-4)
