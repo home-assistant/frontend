@@ -1049,7 +1049,8 @@ export const filterSelectorEntities = (
 
   if (
     filterIntegration &&
-    entitySources?.[entity.entity_id]?.domain !== filterIntegration
+    (entityRegistry?.[entity.entity_id]?.platform ??
+      entitySources?.[entity.entity_id]?.domain) !== filterIntegration
   ) {
     return false;
   }
