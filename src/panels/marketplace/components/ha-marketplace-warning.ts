@@ -207,7 +207,6 @@ export class HaMarketplaceWarning extends LitElement {
           flex-direction: column;
           align-items: center;
           gap: var(--ha-space-2);
-          text-align: center;
         }
 
         .heading ha-svg-icon {
@@ -216,6 +215,7 @@ export class HaMarketplaceWarning extends LitElement {
         }
 
         h1 {
+          align-self: stretch;
           margin: 0;
           font-size: var(--ha-font-size-3xl);
           font-weight: var(--ha-font-weight-bold);
@@ -227,7 +227,6 @@ export class HaMarketplaceWarning extends LitElement {
           margin: 0;
           font-size: var(--ha-font-size-l);
           line-height: var(--ha-line-height-normal);
-          text-align: center;
         }
 
         ha-alert {
