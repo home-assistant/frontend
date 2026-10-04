@@ -2,13 +2,14 @@ import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { LovelaceInfo } from "../../../src/data/lovelace/resource";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import {
+  selectedDemo,
   selectedDemoConfig,
-  selectedDemoConfigIndex,
   setDemoConfig,
 } from "../configs/demo-configs";
 import "../custom-cards/cast-demo-row";
 import "../custom-cards/ha-demo-card";
-import { mapEntities } from "./entities";
+import "../custom-cards/ha-demo-next-card";
+import { mockMap } from "./map";
 
 export const mockLovelace = (
   hass: MockHomeAssistant,
@@ -16,7 +17,7 @@ export const mockLovelace = (
 ) => {
   hass.mockWS("lovelace/config", ({ url_path }) => {
     if (url_path === "map") {
-      hass.addEntities(mapEntities());
+      mockMap(hass);
       return {
         strategy: {
           type: "map",
@@ -45,11 +46,11 @@ customElements.whenDefined("hui-root").then(() => {
   HUIRoot.prototype.firstUpdated = function (changedProperties) {
     oldFirstUpdated.call(this, changedProperties);
     this.addEventListener("set-demo-config", async (ev) => {
-      const index = (ev as CustomEvent).detail.index;
+      const demo = (ev as CustomEvent).detail.demo;
       try {
-        await setDemoConfig(this.hass, this.lovelace!, index);
+        await setDemoConfig(this.hass, this.lovelace!, demo);
       } catch (_err: any) {
-        setDemoConfig(this.hass, this.lovelace!, selectedDemoConfigIndex);
+        setDemoConfig(this.hass, this.lovelace!, selectedDemo);
         alert("Failed to switch config :-(");
       }
     });

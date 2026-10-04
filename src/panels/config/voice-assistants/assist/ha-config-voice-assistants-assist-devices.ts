@@ -16,6 +16,7 @@ import {
   listAssistPipelines,
 } from "../../../../data/assist_pipeline";
 import "../../../../layouts/hass-subpage";
+import "../../../../layouts/hass-loading-screen";
 import type { HomeAssistant } from "../../../../types";
 
 interface AssistDeviceExtra extends AssistDevice {
@@ -79,7 +80,9 @@ class AssistDevicesPage extends LitElement {
     ): AssistDeviceExtra[] =>
       assistDevices.map((assistDevice) => {
         const device = deviceReg[assistDevice.device_id];
-        const selected = states[assistDevice.pipeline_entity]?.state;
+        const selected = assistDevice.pipeline_entity
+          ? states[assistDevice.pipeline_entity]?.state
+          : undefined;
         const isPreferred = selected === "preferred";
         const pipeline = isPreferred ? preferred : selected;
         const pipelineName =
@@ -124,10 +127,15 @@ class AssistDevicesPage extends LitElement {
   }
 
   render() {
+    if (!this._devices) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
     return html`
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/voice-assistants/assistants"
         .header=${this.hass.localize(
           "ui.panel.config.voice_assistants.assistants.pipeline.devices.title"
         )}
@@ -143,7 +151,7 @@ class AssistDevicesPage extends LitElement {
             this.hass.states,
             this._pipelines,
             this._preferred,
-            this._devices || []
+            this._devices
           )}
           auto-height
           @row-click=${this._handleRowClicked}

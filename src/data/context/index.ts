@@ -207,7 +207,7 @@ declare global {
     "hass-related-context": RelatedContextItem | undefined;
   }
   interface HTMLElementEventMap {
-    "hass-related-context": HASSDomEvent<RelatedContextItem | undefined>;
+    "hass-related-context": HASSDomEvent<HASSDomEvents["hass-related-context"]>;
   }
 }
 

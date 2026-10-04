@@ -2,11 +2,11 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
@@ -19,6 +19,10 @@ import type {
 } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import {
+  childPanelReadyContext,
+  type RegisterChildPanelReady,
+} from "../../../layouts/panel-ready";
 import "../badges/hui-badge";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
@@ -95,6 +99,15 @@ export class HUIView extends ReactiveElement {
 
   private _config?: LovelaceViewConfig;
 
+  private _resolveInitialRender?: () => void;
+
+  private _initialRenderComplete = new Promise<void>((resolve) => {
+    this._resolveInitialRender = resolve;
+  });
+
+  @consume({ context: childPanelReadyContext })
+  private _registerChildPanelReady?: RegisterChildPanelReady;
+
   @storage({
     key: "dashboardCardClipboard",
     state: false,
@@ -150,6 +163,11 @@ export class HUIView extends ReactiveElement {
 
   protected createRenderRoot() {
     return this;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._registerChildPanelReady?.(this._initialRenderComplete);
   }
 
   public willUpdate(changedProperties: PropertyValues<this>): void {
@@ -324,6 +342,13 @@ export class HUIView extends ReactiveElement {
     const viewConfig = await this._generateConfig(rawConfig);
 
     this._setConfig(viewConfig, isStrategy);
+    await customElements.whenDefined(this._layoutElement!.localName);
+    if (this._layoutElement instanceof ReactiveElement) {
+      await this._layoutElement.updateComplete;
+    }
+    await this._layoutElement!.initialRenderComplete;
+    this._resolveInitialRender?.();
+    this._resolveInitialRender = undefined;
   }
 
   private _createLayoutElement(config: LovelaceViewConfig): void {

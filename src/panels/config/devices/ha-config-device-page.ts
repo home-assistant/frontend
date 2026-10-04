@@ -1,9 +1,7 @@
 import { startOfYesterday } from "date-fns";
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiCog,
-  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -16,6 +14,7 @@ import {
   mdiRobot,
   mdiScriptText,
   mdiShapeOutline,
+  mdiTextureBox,
   mdiTools,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -24,6 +23,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
@@ -32,6 +32,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -44,7 +45,9 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-next";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/item/ha-list-item-button";
@@ -65,7 +68,7 @@ import {
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
-  removeConfigEntryFromDevice,
+  removeDeviceFromRegistry,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
@@ -96,12 +99,20 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
+import {
+  isHomeAssistantUrl,
+  sanitizeLinkUrl,
+} from "../../../common/url/sanitize-http-url";
 import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
+import { isWsErrorCode, getWsErrorMessage } from "../../../util/ws-error";
 import "../../logbook/ha-logbook";
+import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import type { ESPHomeSetupController } from "./device-detail/integration-elements/esphome/esphome-setup-controller";
+import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
 import {
@@ -198,6 +209,10 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
   private _deviceAlertsActionsTimeout?: number;
+
+  private _esphomeSetup?: ESPHomeSetupController;
+
+  private _esphomeSetupRequest = 0;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -358,6 +373,7 @@ export class HaConfigDevicePage extends LitElement {
       this._deviceAlerts = [];
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
+      this._esphomeSetup?.clear();
     }
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -435,7 +451,7 @@ export class HaConfigDevicePage extends LitElement {
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
-    const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
+    const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
 
     const deviceInfo: TemplateResult[] = integrations.length
       ? [
@@ -892,6 +908,16 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      ${this._esphomeSetup?.renderReminder() ?? nothing}
+      <ha-device-child-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+      ></ha-device-child-devices-card>
+      <ha-device-linked-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+        .entries=${this.entries}
+      ></ha-device-linked-devices-card>
     `;
 
     const entitiesColumn = html`
@@ -941,12 +967,11 @@ export class HaConfigDevicePage extends LitElement {
                   back: "1",
                 })}"
               >
-                <ha-icon-button
-                  .path=${mdiChevronRight}
+                <ha-icon-button-next
                   .label=${this.hass.localize(
                     "ui.dialogs.more_info_control.show_more"
                   )}
-                ></ha-icon-button>
+                ></ha-icon-button-next>
               </a>
             </div>
             <ha-logbook
@@ -976,6 +1001,7 @@ export class HaConfigDevicePage extends LitElement {
     return html`<hass-subpage
       .hass=${this.hass}
       .narrow=${this.narrow}
+      back-path="/config/devices/dashboard"
       .header=${deviceName}
     >
       <ha-tooltip for="edit-settings-button" slot="toolbar-icon">
@@ -1025,12 +1051,27 @@ export class HaConfigDevicePage extends LitElement {
           ${
             area
               ? html`<div class="header-name">
-                  <a href="/config/areas/area/${area.area_id}"
-                    >${this.hass.localize(
+                  <ha-button
+                    href="/config/areas/area/${area.area_id}"
+                    size="s"
+                    appearance="plain"
+                  >
+                    ${
+                      area.icon
+                        ? html`<ha-icon
+                            slot="start"
+                            .icon=${area.icon}
+                          ></ha-icon>`
+                        : html`<ha-svg-icon
+                            slot="start"
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>`
+                    }
+                    ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.area",
                       { area: area.name || "Unnamed Area" }
-                    )}</a
-                  >
+                    )}
+                  </ha-button>
                 </div>`
               : ""
           }
@@ -1081,6 +1122,7 @@ export class HaConfigDevicePage extends LitElement {
             }
           </div>
         </div>
+        ${this._esphomeSetup?.renderBanner(deviceName) ?? nothing}
         ${columnContents.map(
           (contents) => html`<div class="column">${contents}</div>`
         )}
@@ -1095,7 +1137,34 @@ export class HaConfigDevicePage extends LitElement {
       clearTimeout(this._deviceAlertsActionsTimeout);
       this._getDeviceActions();
       this._getDeviceAlerts();
+      this._updateESPHomeSetup();
     }
+  }
+
+  private async _updateESPHomeSetup() {
+    const request = ++this._esphomeSetupRequest;
+    const deviceId = this.deviceId;
+    const device = this.hass.devices[deviceId];
+    if (
+      !device ||
+      !this._integrations(device, this.entries, this.manifests).some(
+        (entry) => entry.domain === "esphome"
+      )
+    ) {
+      this._esphomeSetup?.clear();
+      return;
+    }
+    if (!this._esphomeSetup) {
+      const esphomeSetup =
+        await import("./device-detail/integration-elements/esphome/esphome-setup-controller");
+      if (request !== this._esphomeSetupRequest || this.deviceId !== deviceId) {
+        return;
+      }
+      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(this, () =>
+        this._entities(this.deviceId, this._entityReg, this.hass.devices)
+      );
+    }
+    this._esphomeSetup.refresh(deviceId);
   }
 
   private async _getDiagnosticButtons(): Promise<void> {
@@ -1120,7 +1189,7 @@ export class HaConfigDevicePage extends LitElement {
           try {
             info = await fetchDiagnosticHandler(this.hass, entry.domain);
           } catch (err: unknown) {
-            if (err instanceof Error && err.message.includes("not_found")) {
+            if (isWsErrorCode(err, "not_found")) {
               return false;
             }
             throw err;
@@ -1208,17 +1277,15 @@ export class HaConfigDevicePage extends LitElement {
             }
 
             try {
-              await removeConfigEntryFromDevice(
-                this.hass,
-                this.deviceId,
-                entry.entry_id
-              );
+              await removeDeviceFromRegistry(this.hass, this.deviceId);
             } catch (err: unknown) {
               showAlertDialog(this, {
                 title: this.hass.localize(
                   "ui.panel.config.devices.error_delete"
                 ),
-                text: err instanceof Error ? err.message : String(err),
+                text:
+                  getWsErrorMessage(err) ??
+                  this.hass.localize("ui.common.unknown_error"),
               });
             }
           },
@@ -1257,12 +1324,11 @@ export class HaConfigDevicePage extends LitElement {
 
     const deviceActions: DeviceAction[] = [];
 
-    const configurationUrlIsHomeAssistant =
-      device.configuration_url?.startsWith("homeassistant://") || false;
+    const configurationUrlIsHomeAssistant = isHomeAssistantUrl(
+      device.configuration_url
+    );
 
-    const configurationUrl = configurationUrlIsHomeAssistant
-      ? device.configuration_url?.replace("homeassistant://", "/")
-      : device.configuration_url;
+    const configurationUrl = sanitizeLinkUrl(device.configuration_url);
 
     if (configurationUrl) {
       deviceActions.push({
@@ -1556,7 +1622,9 @@ export class HaConfigDevicePage extends LitElement {
                     title: this.hass.localize(
                       "ui.panel.config.integrations.config_entry.disable_error"
                     ),
-                    text: err instanceof Error ? err.message : String(err),
+                    text:
+                      getWsErrorMessage(err) ??
+                      this.hass.localize("ui.common.unknown_error"),
                   });
                   return;
                 }
@@ -1584,7 +1652,9 @@ export class HaConfigDevicePage extends LitElement {
             title: this.hass.localize(
               "ui.panel.config.devices.update_device_error"
             ),
-            text: err instanceof Error ? err.message : String(err),
+            text:
+              getWsErrorMessage(err) ??
+              this.hass.localize("ui.common.unknown_error"),
           });
           return;
         }
@@ -1614,8 +1684,8 @@ export class HaConfigDevicePage extends LitElement {
             entity.has_entity_name &&
             (entity.name === oldDeviceName || entity.name === newDeviceName)
           ) {
-            // clear name if it matches the device name and it uses the device name (entity naming)
-            newName = null;
+            // Use the device name when the entity name matches it
+            newName = "";
           } else if (name?.includes(oldDeviceName)) {
             newName = name.replace(oldDeviceName, newDeviceName);
           } else {
@@ -1738,10 +1808,12 @@ export class HaConfigDevicePage extends LitElement {
         .header-name {
           display: flex;
           align-items: center;
-          padding-left: var(--ha-space-2);
-          padding-inline-start: var(--ha-space-2);
-          padding-inline-end: initial;
           direction: var(--direction);
+        }
+
+        .header-name ha-icon,
+        .header-name ha-svg-icon {
+          --mdc-icon-size: 18px;
         }
 
         .column,

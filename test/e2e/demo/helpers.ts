@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import type { HaDrawer } from "../../../src/components/ha-drawer";
 import type { ThemeSettings } from "../../../src/types";
 import { NAVIGATION_TIMEOUT, SHELL_TIMEOUT } from "../helpers";
 
@@ -66,26 +67,34 @@ export async function expectStoredDemoTheme(
 }
 
 export async function openDemoSidebar(page: Page) {
-  const menuButton = page.locator("ha-menu-button");
-  if (await menuButton.isVisible()) {
-    const modalDrawer = page.locator("ha-drawer").locator("wa-drawer");
-    await Promise.all([
-      modalDrawer.evaluate(
-        (element) =>
-          new Promise<void>((resolve) => {
-            element.addEventListener("wa-after-show", () => resolve(), {
-              once: true,
-            });
-          })
-      ),
-      menuButton.click(),
-    ]);
+  const drawer = page.locator("ha-drawer");
+  await expect(drawer).toBeAttached({ timeout: NAVIGATION_TIMEOUT });
+
+  // Pick the layout from ha-drawer, which home-assistant-main sets to "modal"
+  // while committing its very first render (the narrow media query is resolved
+  // synchronously in its constructor). ha-menu-button must not be used for
+  // this: it renders nothing until its Lit contexts resolve, so sampling its
+  // visibility straight after load reports "hidden" on the narrow layout too,
+  // and the drawer would then silently never be opened.
+  const isModal = await drawer.evaluate(
+    (element) => (element as HaDrawer).type === "modal"
+  );
+
+  if (!isModal) {
+    // Wide layout: the sidebar is permanently on screen.
+    await expect(page.locator("ha-sidebar")).toBeVisible({
+      timeout: NAVIGATION_TIMEOUT,
+    });
     return;
   }
 
-  await expect(page.locator("ha-sidebar")).toBeAttached({
-    timeout: NAVIGATION_TIMEOUT,
-  });
+  const menuButton = page.locator("ha-menu-button");
+  await expect(menuButton).toBeVisible({ timeout: SHELL_TIMEOUT });
+  await menuButton.click();
+  // ha-drawer reflects `open` once the app has actually opened the drawer.
+  // The slide-in animation is covered by Playwright's stability check on the
+  // next interaction.
+  await expect(drawer).toHaveAttribute("open", "", { timeout: SHELL_TIMEOUT });
 }
 
 export async function activateDemoSidebarPanel(page: Page, panel: string) {

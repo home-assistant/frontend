@@ -34,7 +34,12 @@ class ZWaveJSConfigEntryPicker extends LitElement {
 
     if (this._configEntries.length === 0) {
       return html`
-        <hass-subpage header="Z-Wave" .narrow=${this.narrow} .hass=${this.hass}>
+        <hass-subpage
+          header="Z-Wave"
+          .narrow=${this.narrow}
+          .hass=${this.hass}
+          back-path="/config/integrations/integration/zwave_js"
+        >
           <div class="content">
             <ha-card>
               <div class="card-content">
@@ -51,7 +56,12 @@ class ZWaveJSConfigEntryPicker extends LitElement {
     }
 
     return html`
-      <hass-subpage header="Z-Wave" .narrow=${this.narrow} .hass=${this.hass}>
+      <hass-subpage
+        header="Z-Wave"
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        back-path="/config/integrations/integration/zwave_js"
+      >
         <div class="content">
           <ha-card
             .header=${this.hass.localize(

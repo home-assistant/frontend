@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiCloseBoxMultiple,
   mdiCloseCircleOutline,
@@ -10,6 +9,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -58,7 +58,6 @@ import {
   getAssistantsTableColumn,
 } from "./expose/assistants-table-column";
 import { getAvailableAssistants } from "./expose/available-assistants";
-import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
@@ -417,9 +416,11 @@ export class VoiceAssistantsExpose extends LitElement {
               aliases: entry?.aliases || [],
             };
           }
-          result[entityId].assistants_sortable_key = getAssistantsSortableKey(
-            result[entityId].assistants
-          );
+          if (result[entityId]) {
+            result[entityId].assistants_sortable_key = getAssistantsSortableKey(
+              result[entityId].assistants
+            );
+          }
         });
       }
 
@@ -464,9 +465,14 @@ export class VoiceAssistantsExpose extends LitElement {
   };
 
   private async _fetchEntities() {
-    this._extEntities = await getExtendedEntityRegistryEntries(
+    const entries = await getExtendedEntityRegistryEntries(
       this.hass,
       Object.keys(this._entities)
+    );
+    this._extEntities = Object.fromEntries(
+      Object.entries(entries).filter(
+        (entry): entry is [string, ExtEntityRegistryEntry] => entry[1] !== null
+      )
     );
     this._fetchSupportedEntities();
   }
@@ -530,9 +536,7 @@ export class VoiceAssistantsExpose extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
         .columns=${this._columns(
@@ -783,6 +787,9 @@ export class VoiceAssistantsExpose extends LitElement {
       extEntityReg: this._extEntities?.[entityId],
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");
+      },
+      entityEntryUpdated: (entry) => {
+        this._extEntities = { ...this._extEntities, [entityId]: entry };
       },
     });
   }

@@ -8,13 +8,13 @@ import type {
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  computeEnergyDeviceLabels,
   getSuggestedPeriod,
   getSummedData,
 } from "../../../../data/energy";
-import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
+import type { Statistics } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
-  getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
@@ -69,13 +69,13 @@ interface ProcessContext {
   end: Date;
   compareStart?: Date;
   untrackedOrder: number;
+  deviceLabels: Record<string, string>;
 }
 
 function processDataSet(
   ctx: ProcessContext,
   computedStyle: CSSStyleDeclaration,
   statistics: Statistics,
-  statisticsMetaData: Record<string, StatisticsMetaData>,
   devices: DeviceConsumptionEnergyPreference[],
   sorted_devices: string[],
   childMap: Record<string, string[]>,
@@ -167,12 +167,7 @@ function processDataSet(
     }
 
     const name =
-      (source.name ||
-        getStatisticLabel(
-          ctx.hass,
-          source.stat_consumption,
-          statisticsMetaData[source.stat_consumption]
-        )) +
+      ctx.deviceLabels[source.stat_consumption] +
       (source.stat_consumption in childMap
         ? ` (${ctx.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
         : "");
@@ -351,6 +346,8 @@ export function generateEnergyDevicesDetailGraphData(
   const data = energyData.stats;
   const compareData = energyData.statsCompare;
 
+  const devices = energyData.prefs.device_consumption;
+
   const ctx: ProcessContext = {
     hass,
     config,
@@ -358,9 +355,12 @@ export function generateEnergyDevicesDetailGraphData(
     end,
     compareStart,
     untrackedOrder,
+    deviceLabels: computeEnergyDeviceLabels(
+      hass,
+      devices,
+      energyData.statsMetadata
+    ),
   };
-
-  const devices = energyData.prefs.device_consumption;
 
   const childMap: Record<string, string[]> = {};
   devices.forEach((d) => {
@@ -425,7 +425,6 @@ export function generateEnergyDevicesDetailGraphData(
       ctx,
       computedStyles,
       compareData,
-      energyData.statsMetadata,
       energyData.prefs.device_consumption,
       sorted_devices,
       childMap,
@@ -468,7 +467,6 @@ export function generateEnergyDevicesDetailGraphData(
     ctx,
     computedStyles,
     data,
-    energyData.statsMetadata,
     energyData.prefs.device_consumption,
     sorted_devices,
     childMap,

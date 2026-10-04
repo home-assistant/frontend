@@ -2,6 +2,7 @@ import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { atLeastVersion } from "../common/config/version";
 import type { HomeAssistant, LogFileDisabledReason } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
+import { supervisorUrl } from "./hassio/common";
 
 export interface LogProvider {
   key: string;
@@ -18,7 +19,7 @@ export const fetchErrorLog = (hass: HomeAssistant) =>
 
 export const getErrorLogDownloadUrl = (hass: HomeAssistant) =>
   hasSupervisorCoreLogDownload(hass)
-    ? "/api/hassio/core/logs/latest"
+    ? supervisorUrl("core/logs/latest")
     : "/api/error_log";
 
 export const getCoreLogFileDownloadUnavailableReason = (

@@ -8,6 +8,7 @@ export interface VoiceSettingsDialogParams {
   locked?: ExposeEntitySettings;
   extEntityReg?: ExtEntityRegistryEntry;
   exposedEntitiesChanged?: () => void;
+  entityEntryUpdated?: (entry: ExtEntityRegistryEntry) => void;
 }
 
 export const loadVoiceSettingsDialog = () => import("./dialog-voice-settings");

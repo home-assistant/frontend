@@ -160,15 +160,16 @@ export class HuiGraphHeaderFooter
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!.config, "history") ||
+      !this.hass ||
+      !this._config ||
       this._subscribed ||
-      !this._config
+      !isComponentLoaded(this.hass.config, "history")
     ) {
       return;
     }
     this._setLoadingCoordinates();
     this._subscribed = subscribeHistoryStatesTimeWindow(
-      this.hass!,
+      this.hass,
       (combinedHistory) => {
         if (!this._subscribed || !this._config) {
           // Message came in before we had a chance to unload

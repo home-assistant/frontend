@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,6 +12,7 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { withViewTransition } from "../common/util/view-transition";
@@ -393,10 +394,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog) {
-          -webkit-backdrop-filter: var(
-            --ha-dialog-surface-backdrop-filter,
-            none
-          );
           backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
           box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
           color: var(--primary-text-color);
@@ -429,10 +426,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog)::backdrop {
-          -webkit-backdrop-filter: var(
-            --ha-dialog-scrim-backdrop-filter,
-            var(--dialog-backdrop-filter, none)
-          );
           backdrop-filter: var(
             --ha-dialog-scrim-backdrop-filter,
             var(--dialog-backdrop-filter, none)

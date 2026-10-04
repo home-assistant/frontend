@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -12,8 +12,10 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { join } from "lit/directives/join";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { deepActiveElement } from "../../common/dom/deep-active-element";
@@ -31,8 +33,13 @@ import { internationalizationContext } from "../../data/context";
 import type { FrontendLocaleData } from "../../data/translation";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
+import "../animation/ha-fade-in";
+import "../ha-alert";
+import "../ha-button";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
+import "../skeleton/ha-skeleton-icon";
+import "../skeleton/ha-skeleton-text";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -110,17 +117,22 @@ export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
+// Default row height, used to fill the viewport with skeleton rows.
+const ROW_HEIGHT = 52;
+
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
+
+  @property({ type: Boolean }) public loading = false;
 
   @property({ type: Boolean }) public selectable = false;
 
@@ -139,6 +151,12 @@ export class HaDataTable extends LitElement {
   @property({ type: String }) public id = "id";
 
   @property({ attribute: false }) public noDataText?: string;
+
+  /**
+   * Error to show below the column headings, with a retry action, when loading the table's data failed.
+   * Pass `true` to show the default message.
+   */
+  @property({ attribute: false }) public loadError?: boolean | string;
 
   @property({ attribute: false }) public searchLabel?: string;
 
@@ -163,6 +181,9 @@ export class HaDataTable extends LitElement {
   @state() private _filter = "";
 
   @state() private _filteredData?: DataTableRowData[];
+
+  // Row count of the data that _filteredData was computed from
+  @state() private _filteredDataSourceLength = 0;
 
   @state() private _headerHeight = 0;
 
@@ -203,41 +224,13 @@ export class HaDataTable extends LitElement {
     this._checkedRowsChanged();
   }
 
-  public selectAll(): void {
+  public selectAll(extraFilter?: (row: DataTableRowData) => boolean): void {
     this._checkedRows = (this._filteredData || [])
-      .filter((data) => data.selectable !== false)
+      .filter(
+        (data) =>
+          data.selectable !== false && (!extraFilter || extraFilter(data))
+      )
       .map((data) => data[this.id]);
-    this._lastSelectedRowId = null;
-    this._checkedRowsChanged();
-  }
-
-  public select(ids: string[], clear?: boolean): void {
-    if (clear) {
-      this._checkedRows = [];
-    }
-    // Map + Set keep a large selection O(rows + ids) instead of O(rows × ids).
-    const rowLookup = new Map(
-      (this._filteredData || []).map((data) => [data[this.id], data])
-    );
-    const checkedRows = new Set(this._checkedRows);
-    ids.forEach((id) => {
-      const row = rowLookup.get(id);
-      if (row?.selectable !== false && !checkedRows.has(id)) {
-        this._checkedRows.push(id);
-        checkedRows.add(id);
-      }
-    });
-    this._lastSelectedRowId = null;
-    this._checkedRowsChanged();
-  }
-
-  public unselect(ids: string[]): void {
-    ids.forEach((id) => {
-      const index = this._checkedRows.indexOf(id);
-      if (index > -1) {
-        this._checkedRows.splice(index, 1);
-      }
-    });
     this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
@@ -442,7 +435,7 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          aria-rowcount=${filteredDataLength + 1}
+          aria-rowcount=${filteredDataLength + (this.loadError ? 2 : 1)}
           style=${styleMap({
             height: this.autoHeight
               ? `${(filteredDataLength || 1) * 53 + 53}px`
@@ -483,13 +476,7 @@ export class HaDataTable extends LitElement {
                   : ""
               }
               ${Object.entries(columns).map(([key, column]) => {
-                if (
-                  column.hidden ||
-                  (this.columnOrder && this.columnOrder.includes(key)
-                    ? (this.hiddenColumns?.includes(key) ??
-                      column.defaultHidden)
-                    : column.defaultHidden)
-                ) {
+                if (!this._isColumnVisible(key, column)) {
                   return nothing;
                 }
                 const sorted = key === this.sortColumn;
@@ -547,32 +534,124 @@ export class HaDataTable extends LitElement {
             </slot>
           </div>
           ${
-            !this._filteredData?.length
-              ? html`
-                  <div class="mdc-data-table__content">
-                    <div class="mdc-data-table__row" role="row">
-                      <div
-                        class="mdc-data-table__cell grows center"
-                        role="cell"
+            this.loadError
+              ? html`<div class="load-error" role="row" aria-rowindex="2">
+                  <div role="cell">
+                    <ha-alert alert-type="error">
+                      ${
+                        typeof this.loadError === "string"
+                          ? this.loadError
+                          : this._i18n?.localize?.(
+                              "ui.components.data-table.load_error"
+                            ) || "Failed to load data"
+                      }
+                      <ha-button
+                        slot="action"
+                        appearance="plain"
+                        .loading=${this.loading}
+                        @click=${this._retryLoad}
                       >
                         ${
-                          !this._filteredData
-                            ? this._i18n?.localize?.("ui.common.loading") ||
-                              "Loading"
-                            : this.data.length
-                              ? this._i18n?.localize?.(
-                                  "ui.components.data-table.no_match_filter"
-                                ) || "No rows matching current filters"
-                              : this.noDataText ||
-                                this._i18n?.localize?.(
-                                  "ui.components.data-table.no-data"
-                                ) ||
-                                "No data"
+                          this._i18n?.localize?.(
+                            "ui.components.data-table.retry"
+                          ) || "Retry"
                         }
-                      </div>
-                    </div>
+                      </ha-button>
+                    </ha-alert>
                   </div>
-                `
+                </div>`
+              : nothing
+          }
+          ${
+            !this._filteredData?.length
+              ? this.loading ||
+                !this._filteredData ||
+                (this.data.length && !this._filteredDataSourceLength)
+                ? html`
+                    <div class="mdc-data-table__content" role="row">
+                      <ha-fade-in .duration=${300} easing="ease-in">
+                        <div role="cell">
+                          <div
+                            role="progressbar"
+                            aria-label=${
+                              this._i18n?.localize?.("ui.common.loading") ||
+                              "Loading"
+                            }
+                          >
+                            ${Array.from(
+                              {
+                                length: this.autoHeight
+                                  ? 1
+                                  : Math.ceil(window.innerHeight / ROW_HEIGHT),
+                              },
+                              () => html`
+                                <div class="mdc-data-table__row">
+                                  ${
+                                    this.selectable
+                                      ? html`<div
+                                          class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                        ></div>`
+                                      : nothing
+                                  }
+                                  ${Object.entries(columns).map(
+                                    ([key, column]) =>
+                                      (this.narrow &&
+                                        !column.main &&
+                                        !column.showNarrow) ||
+                                      !this._isColumnVisible(key, column)
+                                        ? nothing
+                                        : html`
+                                            <div
+                                              class="mdc-data-table__cell ${classMap(
+                                                this._cellClasses(column)
+                                              )}"
+                                              style=${styleMap(this._cellStyles(column))}
+                                            >
+                                              ${
+                                                column.type === "icon"
+                                                  ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+                                                  : column.type ===
+                                                        "icon-button" ||
+                                                      column.type ===
+                                                        "overflow-menu"
+                                                    ? nothing
+                                                    : html`<ha-skeleton-text></ha-skeleton-text>`
+                                              }
+                                            </div>
+                                          `
+                                  )}
+                                </div>
+                              `
+                            )}
+                          </div>
+                        </div>
+                      </ha-fade-in>
+                    </div>
+                  `
+                : this.loadError
+                  ? nothing
+                  : html`
+                      <div class="mdc-data-table__content">
+                        <div class="mdc-data-table__row" role="row">
+                          <div
+                            class="mdc-data-table__cell grows center"
+                            role="cell"
+                          >
+                            ${
+                              this.data.length
+                                ? this._i18n?.localize?.(
+                                    "ui.components.data-table.no_match_filter"
+                                  ) || "No rows matching current filters"
+                                : this.noDataText ||
+                                  this._i18n?.localize?.(
+                                    "ui.components.data-table.no-data"
+                                  ) ||
+                                  "No data"
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    `
               : html`
                   <lit-virtualizer
                     scroller
@@ -620,7 +699,7 @@ export class HaDataTable extends LitElement {
     }
     return html`
       <div
-        aria-rowindex=${index + 2}
+        aria-rowindex=${index + (this.loadError ? 3 : 2)}
         role="row"
         .rowId=${row[this.id]}
         @click=${this._handleRowClick}
@@ -657,10 +736,7 @@ export class HaDataTable extends LitElement {
         ${Object.entries(columns).map(([key, column]) => {
           if (
             (narrow && !column.main && !column.showNarrow) ||
-            column.hidden ||
-            (this.columnOrder && this.columnOrder.includes(key)
-              ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
-              : column.defaultHidden)
+            !this._isColumnVisible(key, column)
           ) {
             return nothing;
           }
@@ -669,22 +745,8 @@ export class HaDataTable extends LitElement {
               @mouseover=${this._setTitle}
               @focus=${this._setTitle}
               role=${column.main ? "rowheader" : "cell"}
-              class="mdc-data-table__cell ${classMap({
-                "mdc-data-table__cell--flex": column.type === "flex",
-                "mdc-data-table__cell--numeric": column.type === "numeric",
-                "mdc-data-table__cell--icon": column.type === "icon",
-                "mdc-data-table__cell--icon-button":
-                  column.type === "icon-button",
-                "mdc-data-table__cell--overflow-menu":
-                  column.type === "overflow-menu",
-                "mdc-data-table__cell--overflow": column.type === "overflow",
-                forceLTR: Boolean(column.forceLTR),
-              })}"
-              style=${styleMap({
-                minWidth: column.minWidth,
-                maxWidth: column.maxWidth,
-                flex: column.flex || 1,
-              })}
+              class="mdc-data-table__cell ${classMap(this._cellClasses(column))}"
+              style=${styleMap(this._cellStyles(column))}
             >
               ${
                 column.template
@@ -692,28 +754,19 @@ export class HaDataTable extends LitElement {
                   : narrow && column.main
                     ? html`<div class="primary">${row[key]}</div>
                         <div class="secondary">
-                          ${Object.entries(columns)
-                            .filter(
-                              ([key2, column2]) =>
-                                !column2.hidden &&
-                                !column2.main &&
-                                !column2.showNarrow &&
-                                !(this.columnOrder &&
-                                this.columnOrder.includes(key2)
-                                  ? (this.hiddenColumns?.includes(key2) ??
-                                    column2.defaultHidden)
-                                  : column2.defaultHidden)
-                            )
-                            .map(
-                              ([key2, column2], i) =>
-                                html`${
-                                  i !== 0 ? STRINGS_SEPARATOR_DOT : nothing
-                                }${
-                                  column2.template
-                                    ? column2.template(row)
-                                    : row[key2]
-                                }`
-                            )}
+                          ${join(
+                            Object.entries(columns)
+                              .filter(([key2, column2]) =>
+                                this._isSecondaryColumnVisible(key2, column2)
+                              )
+                              .map(([key2, column2]) =>
+                                column2.template
+                                  ? column2.template(row)
+                                  : row[key2]
+                              )
+                              .filter(this._hasCellValue),
+                            STRINGS_SEPARATOR_DOT
+                          )}
                         </div>
                         ${
                           column.extraTemplate
@@ -733,6 +786,45 @@ export class HaDataTable extends LitElement {
     `;
   };
 
+  private _isColumnVisible(key: string, column: DataTableColumnData): boolean {
+    if (column.hidden) {
+      return false;
+    }
+    if (!this.columnOrder?.includes(key)) {
+      return !column.defaultHidden;
+    }
+    return !(this.hiddenColumns?.includes(key) ?? column.defaultHidden);
+  }
+
+  private _isSecondaryColumnVisible(
+    key: string,
+    column: DataTableColumnData
+  ): boolean {
+    if (column.main || column.showNarrow) {
+      return false;
+    }
+    return this._isColumnVisible(key, column);
+  }
+
+  private _hasCellValue = (value: unknown): boolean =>
+    value !== undefined && value !== null && value !== "" && value !== nothing;
+
+  private _cellClasses = (column: DataTableColumnData) => ({
+    "mdc-data-table__cell--flex": column.type === "flex",
+    "mdc-data-table__cell--numeric": column.type === "numeric",
+    "mdc-data-table__cell--icon": column.type === "icon",
+    "mdc-data-table__cell--icon-button": column.type === "icon-button",
+    "mdc-data-table__cell--overflow-menu": column.type === "overflow-menu",
+    "mdc-data-table__cell--overflow": column.type === "overflow",
+    forceLTR: Boolean(column.forceLTR),
+  });
+
+  private _cellStyles = (column: DataTableColumnData) => ({
+    minWidth: column.minWidth,
+    maxWidth: column.maxWidth,
+    flex: column.flex || 1,
+  });
+
   private async _sortFilterData() {
     const startTime = new Date().getTime();
     const timeBetweenUpdate = startTime - this._lastUpdate;
@@ -743,10 +835,11 @@ export class HaDataTable extends LitElement {
       !this._lastUpdate ||
       (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
-    let filteredData = this.data;
+    const sourceData = this.data;
+    let filteredData = sourceData;
     if (this._filter) {
       filteredData = await this._memFilterData(
-        this.data,
+        sourceData,
         this._sortColumns,
         this._filter.trim()
       );
@@ -782,8 +875,13 @@ export class HaDataTable extends LitElement {
       return;
     }
 
+    if (startTime < this._lastUpdate) {
+      return;
+    }
+
     this._lastUpdate = startTime;
     this._filteredData = data;
+    this._filteredDataSourceLength = sourceData.length;
   }
 
   private _groupData = memoizeOne(
@@ -1080,6 +1178,10 @@ export class HaDataTable extends LitElement {
     });
   }
 
+  private _retryLoad() {
+    fireEvent(this, "retry-load");
+  }
+
   private async _calcTableHeight() {
     if (this.autoHeight) {
       return;
@@ -1152,6 +1254,11 @@ export class HaDataTable extends LitElement {
         /* default mdc styles, colors changed, without checkbox styles */
         :host {
           height: 100%;
+          --_cell-padding-inline: 16px;
+        }
+
+        :host([narrow]) {
+          --_cell-padding-inline: 8px;
         }
         .mdc-data-table__content {
           font-family: var(--ha-font-family-body);
@@ -1214,9 +1321,24 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__header-row {
           height: 56px;
+          flex-shrink: 0;
           display: flex;
           border-bottom: 1px solid var(--divider-color);
           overflow: auto;
+        }
+
+        :host([narrow]) .mdc-data-table {
+          width: calc(
+            100% + var(--safe-area-inset-left, 0px) +
+              var(--safe-area-inset-right, 0px)
+          );
+          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
+          margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+          overflow: visible;
+        }
+
+        :host([narrow]) .mdc-data-table__header-row {
+          overflow: visible;
         }
 
         /* Hide scrollbar for Chrome, Safari and Opera */
@@ -1224,16 +1346,13 @@ export class HaDataTable extends LitElement {
           display: none;
         }
 
-        /* Hide scrollbar for IE, Edge and Firefox */
         .mdc-data-table__header-row {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
+          scrollbar-width: none;
         }
 
         .mdc-data-table__cell,
         .mdc-data-table__header-cell {
-          padding-right: 16px;
-          padding-left: 16px;
+          padding-inline: var(--_cell-padding-inline);
           min-width: 150px;
           align-self: center;
           overflow: hidden;
@@ -1253,24 +1372,30 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__header-cell--checkbox,
         .mdc-data-table__cell--checkbox {
-          /* @noflip */
-          padding-left: 16px;
-          /* @noflip */
-          padding-right: 0;
-          /* @noflip */
-          padding-inline-start: 16px;
-          /* @noflip */
-          padding-inline-end: initial;
+          padding-inline-start: var(--_cell-padding-inline);
+          padding-inline-end: 0;
           width: 60px;
           min-width: 60px;
         }
 
         .mdc-data-table__table {
+          display: flex;
+          flex-direction: column;
           height: 100%;
           width: 100%;
           border: 0;
           white-space: nowrap;
           position: relative;
+        }
+
+        .load-error {
+          flex-shrink: 0;
+          padding: var(--ha-space-2) var(--ha-space-4);
+          white-space: normal;
+        }
+
+        .load-error ha-alert {
+          display: block;
         }
 
         .mdc-data-table__cell {
@@ -1329,7 +1454,8 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__cell--icon:first-child ha-svg-icon,
         .mdc-data-table__cell--icon:first-child ha-state-icon,
         .mdc-data-table__cell--icon:first-child ha-domain-icon,
-        .mdc-data-table__cell--icon:first-child ha-service-icon {
+        .mdc-data-table__cell--icon:first-child ha-service-icon,
+        .mdc-data-table__cell--icon:first-child ha-skeleton-icon {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
@@ -1373,8 +1499,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--overflow-menu:first-child,
         .mdc-data-table__header-cell--icon-button:first-child,
         .mdc-data-table__cell--icon-button:first-child {
-          padding-left: 16px;
-          padding-inline-start: 16px;
+          padding-inline-start: var(--_cell-padding-inline);
           padding-inline-end: initial;
         }
 
@@ -1382,8 +1507,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--overflow-menu:last-child,
         .mdc-data-table__header-cell--icon-button:last-child,
         .mdc-data-table__cell--icon-button:last-child {
-          padding-right: 16px;
-          padding-inline-end: 16px;
+          padding-inline-end: var(--_cell-padding-inline);
           padding-inline-start: initial;
         }
         .mdc-data-table__cell--overflow-menu,
@@ -1510,15 +1634,32 @@ export class HaDataTable extends LitElement {
         .center {
           text-align: center;
         }
+        .primary {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
         .secondary {
           color: var(--secondary-text-color);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          margin-top: 2px;
         }
         .scroller {
-          height: calc(100% - 57px);
+          flex: 1;
+          min-height: 0;
           overflow: overlay !important;
+        }
+
+        :host([narrow]) .mdc-data-table__row {
+          box-sizing: border-box;
+          padding-left: var(--safe-area-inset-left, 0px);
+          padding-right: var(--safe-area-inset-right, 0px);
+        }
+
+        :host([narrow]) .mdc-data-table__row:has(.group-header) {
+          background-color: var(--primary-background-color);
         }
 
         .mdc-data-table__table.auto-height .scroller {
@@ -1564,6 +1705,7 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
+    "retry-load": undefined;
     "selection-changed": SelectionChangedEvent;
     "row-click": RowClickedEvent;
     "sorting-changed": SortingChangedEvent;

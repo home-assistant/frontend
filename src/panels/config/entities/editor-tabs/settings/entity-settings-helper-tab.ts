@@ -1,7 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume } from "@lit/context";
+import { consume } from "../../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -27,7 +27,6 @@ import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
 import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
-import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
@@ -172,6 +171,9 @@ export class EntitySettingsHelperTab extends LitElement {
         );
       }
       const result = await this._registryEditor!.updateEntry();
+      if (!result) {
+        return;
+      }
       this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");

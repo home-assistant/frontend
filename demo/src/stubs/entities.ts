@@ -1,53 +1,3 @@
-export const mapEntities = () =>
-  Object.values({
-    "zone.home": {
-      entity_id: "zone.home",
-      state: "zoning",
-      attributes: {
-        hidden: true,
-        latitude: 52.3631339,
-        longitude: 4.8903147,
-        radius: 200,
-        friendly_name: "Home",
-        icon: "hademo:home",
-      },
-    },
-    "zone.uva": {
-      entity_id: "zone.buckhead",
-      state: "zoning",
-      attributes: {
-        hidden: true,
-        radius: 400,
-        friendly_name: "UvA",
-        icon: "hademo:school",
-        latitude: 52.3558182,
-        longitude: 4.9535376,
-      },
-    },
-    "person.arsaboo": {
-      entity_id: "person.arsaboo",
-      state: "not_home",
-      attributes: {
-        radius: 50,
-        friendly_name: "Arsaboo",
-        latitude: 52.3579946,
-        longitude: 4.8664597,
-        entity_picture: "/assets/arsaboo/images/arsaboo.jpg",
-      },
-    },
-    "person.melody": {
-      entity_id: "person.melody",
-      state: "not_home",
-      attributes: {
-        radius: 50,
-        friendly_name: "Melody",
-        latitude: 52.3408927,
-        longitude: 4.8711073,
-        entity_picture: "/assets/arsaboo/images/melody.jpg",
-      },
-    },
-  });
-
 export const energyEntities = () =>
   Object.values({
     "sensor.grid_fossil_fuel_percentage": {
@@ -85,7 +35,7 @@ export const energyEntities = () =>
       },
     },
     "sensor.energy_consumption_tarif_1": {
-      entity_id: "sensor.energy_consumption_tarif_1	",
+      entity_id: "sensor.energy_consumption_tarif_1",
       state: "88.6",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",

@@ -99,6 +99,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config/integrations/integration/ssdp"
         .columns=${this._columns(this.hass.localize)}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}

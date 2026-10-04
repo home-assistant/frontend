@@ -1,16 +1,14 @@
-import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../../../common/translations/localize";
 import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
-import "../../../../../components/ha-dropdown-item";
 import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
-import "../../../../../components/ha-select";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -151,7 +149,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
   };
 
   private _rowRenderer = (item: PickerComboBoxItem) => html`
-    <ha-combo-box-item type="button">
+    <ha-combo-box-item>
       <ha-condition-icon
         slot="start"
         .hass=${this.hass}

@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import {
   consumeEntityState,
@@ -171,7 +171,7 @@ class HuiCoverTiltPositionCardFeature
       cardFeatureStyles,
       css`
         .gradient {
-          background: -webkit-linear-gradient(left, ${GRADIENT});
+          background: linear-gradient(to right, ${GRADIENT});
           opacity: 0.6;
         }
       `,

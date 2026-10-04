@@ -6,6 +6,7 @@ import type {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
@@ -55,6 +56,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/zha/dashboard"
         .header=${this.hass.localize(
           "ui.panel.config.zha.visualization.header"
         )}
@@ -129,8 +131,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>): void {
+    this._searchFilter = ev.target.value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams) => {
@@ -161,7 +163,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const haDevice = this.hass.devices[device.device_reg_id] as
       DeviceRegistryEntry | undefined;
     const area = haDevice
-      ? getDeviceArea(haDevice, this.hass.areas)
+      ? getDeviceArea(haDevice, this.hass.areas, this.hass.devices)
       : undefined;
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b

@@ -6,6 +6,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LogbookEntry } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
@@ -13,13 +14,14 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-entry";
+import type { LogbookEntrySelectedDetail } from "./ha-logbook-entry";
 import type { LogbookNameDetail } from "./logbook-entry-model";
 import { sameDay } from "./logbook-entry-model";
+import { showLogbookDetailDialog } from "./show-dialog-logbook-detail";
 
 declare global {
   interface HASSDomEvents {
     "hass-logbook-live": { enable: boolean };
-    "logbook-toggle-time": undefined;
   }
 }
 
@@ -32,6 +34,7 @@ class HaLogbookRenderer extends LitElement {
 
   @property({ attribute: false }) public systemUserIds = new Set<string>();
 
+  // Not rendered by rows; read at click time and handed to the detail dialog.
   @property({ attribute: false }) public traceContexts: TraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
@@ -49,13 +52,15 @@ class HaLogbookRenderer extends LitElement {
   @property({ type: Boolean, attribute: "show-cause" }) public showCause =
     false;
 
+  @property({ type: Boolean, attribute: "no-detail" }) public noDetail = false;
+
   @property({ type: String, attribute: "name-detail" })
   public nameDetail?: LogbookNameDetail;
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @state() private _showRelative = false;
+  @state() private _firstVisibleIndex = 0;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (
@@ -78,7 +83,10 @@ class HaLogbookRenderer extends LitElement {
     return (
       changedProps.has("entries") ||
       changedProps.has("traceContexts") ||
-      changedProps.has("_showRelative" as never) ||
+      changedProps.has("noDetail") ||
+      changedProps.has("userIdToName") ||
+      changedProps.has("systemUserIds") ||
+      changedProps.has("_firstVisibleIndex" as never) ||
       languageChanged
     );
   }
@@ -92,12 +100,24 @@ class HaLogbookRenderer extends LitElement {
       `;
     }
 
+    // Rows positioned by the virtualizer cannot carry a sticky date header.
+    const floatingEntry = this.virtualize
+      ? this.entries[this._firstVisibleIndex]
+      : undefined;
+
     return html`
       <div
         class="container ha-scrollbar"
         @scroll=${this._saveScrollPos}
-        @logbook-toggle-time=${this._handleToggleTime}
+        @logbook-entry-selected=${this._handleEntrySelected}
       >
+        ${
+          floatingEntry
+            ? html`<h4 class="date floating-date">
+                ${this._formatDateHeader(new Date(floatingEntry.when * 1000))}
+              </h4>`
+            : nothing
+        }
         ${
           this.virtualize
             ? html`<lit-virtualizer
@@ -105,7 +125,12 @@ class HaLogbookRenderer extends LitElement {
                 scroller
                 class="ha-scrollbar"
                 .items=${this.entries}
-                .renderItem=${this._getRenderRow(this._showRelative) as any}
+                .renderItem=${
+                  this._getRenderRow(
+                    this.userIdToName,
+                    this.systemUserIds
+                  ) as any
+                }
               >
               </lit-virtualizer>`
             : this.entries.map((item, index) => this._renderItem(item, index))
@@ -114,9 +139,12 @@ class HaLogbookRenderer extends LitElement {
     `;
   }
 
+  // Memoized on every input the rows render from, so the virtualizer sees a
+  // new renderItem and refreshes already-rendered rows when one changes.
   private _getRenderRow = memoizeOne(
-    (_showRelative: boolean) => (item: LogbookEntry, index: number) =>
-      this._renderItem(item, index)
+    (_userIdToName: Record<string, string>, _systemUserIds: Set<string>) =>
+      (item: LogbookEntry, index: number) =>
+        this._renderItem(item, index)
   );
 
   private _renderItem = (item: LogbookEntry, index: number) => {
@@ -141,22 +169,32 @@ class HaLogbookRenderer extends LitElement {
           .item=${item}
           .userIdToName=${this.userIdToName}
           .systemUserIds=${this.systemUserIds}
-          .traceContexts=${this.traceContexts}
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}
           .graphColor=${this.graphColor}
           .nameDetail=${this.nameDetail}
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}
-          .showRelative=${this._showRelative}
           .showCause=${this.showCause}
+          .noDetail=${this.noDetail}
         ></ha-logbook-entry>
       </div>
     `;
   };
 
-  private _handleToggleTime() {
-    this._showRelative = !this._showRelative;
+  private _handleEntrySelected(ev: HASSDomEvent<LogbookEntrySelectedDetail>) {
+    ev.stopPropagation();
+    showLogbookDetailDialog(this, {
+      entry: ev.detail.item,
+      traceContexts: this.traceContexts,
+      userIdToName: this.userIdToName,
+      systemUserIds: this.systemUserIds,
+    });
+  }
+
+  private _dayOf(index: number): number | undefined {
+    const entry = this.entries[index];
+    return entry ? new Date(entry.when * 1000).setHours(0, 0, 0, 0) : undefined;
   }
 
   private _formatDateHeader(date: Date): string {
@@ -183,6 +221,10 @@ class HaLogbookRenderer extends LitElement {
 
   @eventOptions({ passive: true })
   private _visibilityChanged(e: VisibilityChangedEvent) {
+    const first = Math.max(0, e.first);
+    if (this._dayOf(first) !== this._dayOf(this._firstVisibleIndex)) {
+      this._firstVisibleIndex = first;
+    }
     fireEvent(this, "hass-logbook-live", {
       enable: e.first === 0,
     });
@@ -209,12 +251,23 @@ class HaLogbookRenderer extends LitElement {
           font-weight: var(--ha-font-weight-medium);
         }
 
+        .floating-date {
+          position: absolute;
+          top: 0;
+          inset-inline: 0;
+          z-index: 2;
+          margin: 0;
+          padding-bottom: var(--ha-space-2);
+          background-color: var(--card-background-color);
+        }
+
         .no-entries {
           text-align: center;
           color: var(--secondary-text-color);
         }
 
         .container {
+          position: relative;
           max-height: var(--logbook-max-height);
         }
 

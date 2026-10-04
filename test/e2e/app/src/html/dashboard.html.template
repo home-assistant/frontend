@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home Assistant</title>
+    <%= renderTemplate("../../../../../src/html/_style_base.html.template") %>
+  </head>
+  <body>
+    <div id="ha-launch-screen">
+      <div id="ha-launch-screen-info-box"></div>
+    </div>
+    <home-assistant></home-assistant>
+    <%= renderTemplate("../../../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../../../src/html/_preload_roboto.html.template") %>
+    <%= renderTemplate("../../../../../src/html/_script_loader.html.template") %>
+  </body>
+</html>

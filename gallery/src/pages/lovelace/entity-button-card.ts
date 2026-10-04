@@ -1,6 +1,8 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { ButtonCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
@@ -18,60 +20,64 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Basic example",
-    config: `
-- type: button
-  entity: light.bed_light
-    `,
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+    },
   },
   {
     heading: "With Name (defined in card)",
-    config: `
-- type: button
-  name: Custom Name
-  entity: light.bed_light
-    `,
+    config: {
+      type: "button",
+      name: "Custom Name",
+      entity: "light.bed_light",
+    },
   },
   {
     heading: "With Icon",
-    config: `
-- type: button
-  entity: light.bed_light
-  icon: mdi:tools
-    `,
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+      icon: "mdi:tools",
+    },
   },
   {
     heading: "With State",
-    config: `
-- type: button
-  entity: light.bed_light
-  show_state: true
-    `,
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+      show_state: true,
+    },
   },
   {
     heading: "Custom Tap Action (toggle)",
-    config: `
-- type: button
-  entity: light.bed_light
-  tap_action:
-    action: toggle
-    `,
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+      tap_action: {
+        action: "toggle",
+      },
+    },
   },
   {
     heading: "Running Service",
-    config: `
-- type: button
-  entity: light.bed_light
-  service: light.toggle
-    `,
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+      tap_action: {
+        action: "perform-action",
+        perform_action: "light.toggle",
+      },
+    },
   },
   {
     heading: "Invalid Entity",
-    config: `
-- type: button
-  entity: sensor.invalid_entity
-    `,
+    config: {
+      type: "button",
+      entity: "sensor.invalid_entity",
+    },
   },
-];
+] satisfies DemoCardConfig<ButtonCardConfig>[];
 
 @customElement("demo-lovelace-entity-button-card")
 class DemoButtonEntity extends LitElement {

@@ -1,6 +1,12 @@
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockSensor = (hass: MockHomeAssistant) => {
+  hass.mockWS(
+    "sensor/device_class_convertible_units",
+    ({ device_class }: { device_class: string }) => ({
+      units: device_class === "energy" ? ["kWh"] : ["W"],
+    })
+  );
   hass.mockWS("sensor/numeric_device_classes", () => ({
     numeric_device_classes: [
       "volume_storage",

@@ -203,6 +203,7 @@ class DialogBackupOnboarding
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (changedProps.has("_step") && this._step === "key") {
       this._save();
     }

@@ -4,6 +4,7 @@ import {
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +12,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import { sanitizeHttpUrl } from "../../../../../common/url/sanitize-http-url";
 import { groupBy } from "../../../../../common/util/group-by";
 import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
@@ -25,18 +27,20 @@ import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/input/ha-input";
 import type {
-  ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
-  ZWaveJSSetConfigParamResult,
+  ZWaveJSSetConfigParamStatus,
+  ZwaveJSNodeConfigParameterUpdate,
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
 import {
+  computeSetConfigParamStatus,
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   invokeZWaveCCApi,
   setZwaveNodeConfigParameter,
+  subscribeZwaveNodeConfigParameterUpdates,
 } from "../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
@@ -57,9 +61,14 @@ const icons = {
   error: mdiCloseCircle,
 };
 
+interface ConfigParamResult {
+  status: ZWaveJSSetConfigParamStatus;
+  error?: string;
+}
+
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -77,19 +86,47 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @state() private _canResetAll = false;
 
-  @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
+  @state() private _results: Record<string, ConfigParamResult> = {};
 
   @state() private _error?: string;
 
   @state() private _resetDialogProgress = false;
 
+  private _unsubConfigParamUpdates?: Promise<UnsubscribeFunc>;
+
+  private _resultTimeouts: Record<string, number> = {};
+
   public connectedCallback(): void {
     super.connectedCallback();
-    this.deviceId = this.route.path.substr(1);
+    this._subscribeConfigParameterUpdates();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeConfigParameterUpdates();
+    this._clearAllResultTimeouts();
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("route") || !this.route) {
+      return;
+    }
+    const deviceId = this.route.path.slice(1);
+    if (deviceId !== this.deviceId) {
+      this.deviceId = deviceId;
+      this._config = undefined;
+      this._clearAllResultTimeouts();
+      this._results = {};
+      this._error = undefined;
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
-    if (!this._config || changedProps.has("deviceId")) {
+    if (changedProps.has("deviceId")) {
+      this._fetchData();
+      this._subscribeConfigParameterUpdates();
+    } else if (!this._config) {
       this._fetchData();
     }
   }
@@ -154,8 +191,9 @@ class ZWaveJSNodeConfig extends LitElement {
                     device_database: html`<a
                       rel="noreferrer noopener"
                       href=${
-                        this._nodeMetadata?.device_database_url ||
-                        "https://devices.zwave-js.io"
+                        sanitizeHttpUrl(
+                          this._nodeMetadata?.device_database_url
+                        ) || "https://devices.zwave-js.io"
                       }
                       target="_blank"
                       >${this.hass.localize(
@@ -393,7 +431,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
     if (
       item.configuration_value_type === "enumerated" &&
-      Object.keys(item.metadata.states).length < 5
+      Object.keys(item.metadata.states ?? {}).length < 5
     ) {
       return html`
         ${labelAndDescription}
@@ -406,7 +444,7 @@ class ZWaveJSNodeConfig extends LitElement {
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
           .helper=${defaultLabel}
-          .options=${Object.entries(item.metadata.states).map(
+          .options=${Object.entries(item.metadata.states ?? {}).map(
             ([key, entityState]) => ({
               value: key,
               label: entityState,
@@ -443,6 +481,58 @@ class ZWaveJSNodeConfig extends LitElement {
       <p>${item.value}</p>`;
   }
 
+  private _subscribeConfigParameterUpdates(): void {
+    this._unsubscribeConfigParameterUpdates();
+    if (!this.isConnected || !this.hass || !this.deviceId) {
+      return;
+    }
+    this._unsubConfigParamUpdates = subscribeZwaveNodeConfigParameterUpdates(
+      this.hass,
+      this.deviceId,
+      this._handleConfigParameterUpdate
+    );
+    this._unsubConfigParamUpdates.catch(() => {
+      // The backend doesn't support the subscription; the page still works,
+      // it just won't receive live updates
+      this._unsubConfigParamUpdates = undefined;
+    });
+  }
+
+  private _unsubscribeConfigParameterUpdates(): void {
+    if (this._unsubConfigParamUpdates) {
+      this._unsubConfigParamUpdates
+        .then((unsub) => unsub())
+        .catch(() => {
+          // The subscription never succeeded, so there is nothing to clean up
+        });
+      this._unsubConfigParamUpdates = undefined;
+    }
+  }
+
+  private _handleConfigParameterUpdate = (
+    update: ZwaveJSNodeConfigParameterUpdate
+  ): void => {
+    const param = this._config?.[update.id];
+    if (!param) {
+      return;
+    }
+    const status = this._results[update.id]?.status;
+    if (status === "queued") {
+      // The device applied the queued change; the accepted result is cleared
+      // after a short delay by _setResult so the success message shows.
+      // The value was already set optimistically when the change was queued,
+      // so this runs even if the reported value matches the stored one.
+      this._setResult(update.id, "accepted");
+    } else if (status === "error" && param.value !== update.value) {
+      // The parameter changed, so the previous error no longer applies
+      this._setResult(update.id, undefined);
+    }
+    if (param.value !== update.value) {
+      param.value = update.value;
+      this._config = { ...this._config };
+    }
+  };
+
   private _isEnumeratedBool(item: ZWaveJSNodeConfigParam): boolean {
     // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
     // We want those to be considered boolean and show a toggle switch
@@ -452,7 +542,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (item.configuration_value_type !== "enumerated") {
       return false;
     }
-    if (!("states" in item.metadata)) {
+    if (!item.metadata.states) {
       return false;
     }
     if (Object.keys(item.metadata.states).length !== 2) {
@@ -603,23 +693,48 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       this._config![target.key].value = value;
 
-      this._setResult(target.key, result.status);
+      this._setResult(target.key, computeSetConfigParamStatus(result.status));
     } catch (err: any) {
       this._setError(target.key, err.message);
     }
   }
 
-  private _setResult(key: string, value: string | undefined) {
+  private _clearResultTimeout(key: string): void {
+    if (key in this._resultTimeouts) {
+      clearTimeout(this._resultTimeouts[key]);
+      delete this._resultTimeouts[key];
+    }
+  }
+
+  private _clearAllResultTimeouts(): void {
+    Object.values(this._resultTimeouts).forEach((timeout) =>
+      clearTimeout(timeout)
+    );
+    this._resultTimeouts = {};
+  }
+
+  private _setResult(
+    key: string,
+    value: ZWaveJSSetConfigParamStatus | undefined
+  ) {
+    this._clearResultTimeout(key);
     if (value === undefined) {
       delete this._results[key];
       this.requestUpdate();
     } else {
       this._results = { ...this._results, [key]: { status: value } };
+      if (value === "accepted") {
+        // Show the success message briefly, then clear it
+        this._resultTimeouts[key] = window.setTimeout(() => {
+          this._setResult(key, undefined);
+        }, 2000);
+      }
     }
   }
 
   private _setError(key: string, message: string) {
-    const errorParam = { status: "error", error: message };
+    this._clearResultTimeout(key);
+    const errorParam: ConfigParamResult = { status: "error", error: message };
     this._results = { ...this._results, [key]: errorParam };
   }
 
@@ -634,12 +749,17 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
 
-    let capabilities: ZWaveJSNodeCapabilities | undefined;
-    [this._nodeMetadata, this._config, capabilities] = await Promise.all([
+    const [nodeMetadata, config, capabilities] = await Promise.all([
       fetchZwaveNodeMetadata(this.hass, device.id),
       fetchZwaveNodeConfigParameters(this.hass, device.id),
       fetchZwaveNodeCapabilities(this.hass, device.id),
     ]);
+    if (device.id !== this.deviceId) {
+      // The user navigated to another node while the data was loading
+      return;
+    }
+    this._nodeMetadata = nodeMetadata;
+    this._config = config;
     this._canResetAll =
       capabilities &&
       Object.values(capabilities).some((endpoint) =>

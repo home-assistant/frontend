@@ -25,6 +25,9 @@ export class HaMarkdown extends LitElement {
 
   @property({ type: Boolean }) public cache = false;
 
+  // For content whose relative addresses belong elsewhere, like a README
+  @property({ attribute: false }) public rewriteUrl?: (url: string) => string;
+
   @query("ha-markdown-element") private _markdownElement?: ReactiveElement;
 
   protected async getUpdateComplete() {
@@ -45,6 +48,7 @@ export class HaMarkdown extends LitElement {
       .breaks=${this.breaks}
       .lazyImages=${this.lazyImages}
       .cache=${this.cache}
+      .rewriteUrl=${this.rewriteUrl}
     ></ha-markdown-element>`;
   }
 
@@ -53,9 +57,7 @@ export class HaMarkdown extends LitElement {
       display: block;
     }
     ha-markdown-element {
-      -ms-user-select: text;
-      -webkit-user-select: text;
-      -moz-user-select: text;
+      user-select: text;
     }
     ha-markdown-element > *:first-child {
       margin-top: 0;

@@ -106,6 +106,7 @@ export function canStopTilt(stateObj: CoverEntity): boolean {
 interface CoverEntityAttributes extends HassEntityAttributeBase {
   current_position?: number;
   current_tilt_position?: number;
+  supported_speeds?: string[];
 }
 
 export interface CoverEntity extends HassEntityBase {

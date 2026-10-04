@@ -15,7 +15,6 @@ import {
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
 import { atLeastVersion } from "../../../../src/common/config/version";
-import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-icon";
 import "../../../../src/components/ha-list";
@@ -197,8 +196,7 @@ class HcCast extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
-    toggleAttribute(
-      this,
+    this.toggleAttribute(
       "hide-icons",
       this.lovelaceViews ? !this.lovelaceViews.some((view) => view.icon) : true
     );

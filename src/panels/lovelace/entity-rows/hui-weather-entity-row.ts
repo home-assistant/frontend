@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import "../../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
@@ -20,9 +21,9 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import "../../../state-display/state-display";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -162,25 +163,15 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasSecondary
             ? html`
                 <div class="secondary">
-                  ${
-                    this._config.secondary_info === "entity-id"
-                      ? stateObj.entity_id
-                      : this._config.secondary_info === "last-changed"
-                        ? html`
-                            <ha-relative-time
-                              .datetime=${stateObj.last_changed}
-                              capitalize
-                            ></ha-relative-time>
-                          `
-                        : this._config.secondary_info === "last-updated"
-                          ? html`
-                              <ha-relative-time
-                                .datetime=${stateObj.last_updated}
-                                capitalize
-                              ></ha-relative-time>
-                            `
-                          : ""
-                  }
+                  <state-display
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                    .content=${this._config.secondary_info}
+                    .timeFormat=${this._config.time_format}
+                    .name=${name}
+                    timestamp-tooltip
+                  >
+                  </state-display>
                 </div>
               `
             : ""

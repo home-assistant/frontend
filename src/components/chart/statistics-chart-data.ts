@@ -53,6 +53,41 @@ export interface StatisticsChartData {
   yAxisFractionDigits: number;
 }
 
+// ECharts stacks a time axis by data index. Merge the sorted point lists so
+// every stacked line has the same x at every index, padding with null.
+function alignStackedLines(datasets: LineSeriesOption[]) {
+  const sources = datasets.map((d) => d.data as [number, number | null][]);
+  const cursors = sources.map(() => 0);
+  const counts = sources.map(() => 0);
+  const aligned = sources.map((): [number, number | null][] => []);
+  while (cursors.some((cursor, i) => cursor < sources[i].length)) {
+    let x = Infinity;
+    for (let i = 0; i < sources.length; i++) {
+      const point = sources[i][cursors[i]];
+      if (point && point[0] < x) x = point[0];
+    }
+    let slots = 1;
+    for (let i = 0; i < sources.length; i++) {
+      let count = 0;
+      while (sources[i][cursors[i] + count]?.[0] === x) count++;
+      counts[i] = count;
+      if (count > slots) slots = count;
+    }
+    for (let i = 0; i < sources.length; i++) {
+      const count = counts[i];
+      for (let slot = 0; slot < slots; slot++) {
+        aligned[i].push(
+          count ? sources[i][cursors[i] + Math.min(slot, count - 1)] : [x, null]
+        );
+      }
+      cursors[i] += count;
+    }
+  }
+  datasets.forEach((d, i) => {
+    d.data = aligned[i];
+  });
+}
+
 /**
  * Transforms raw statistics into ECharts series for `statistics-chart`.
  * Pure data processing: all environment inputs (current time, theme style,
@@ -163,12 +198,15 @@ export function generateStatisticsChartData(
         return;
       }
       const isLineChart = chartType === "line";
+      // Points carry their time as epoch milliseconds, not Date objects:
+      // ECharts accepts both, but Chart2Music only reads a numeric x, and a
+      // Date would make it announce points by index instead of time.
       // For bar charts, optionally center the bar within its time range. The
       // centered time is shared by every series of this data point.
       const barTime =
         !isLineChart && centerBars
-          ? new Date((start.getTime() + end.getTime()) / 2)
-          : start;
+          ? (start.getTime() + end.getTime()) / 2
+          : start.getTime();
       // Whether a gap needs to be drawn before this data point (line charts).
       const drawGap =
         isLineChart &&
@@ -182,10 +220,10 @@ export function generateStatisticsChartData(
           if (drawGap) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime!, ...prevValues![i]!]);
-            d.data!.push([prevEndTime!, null]);
+            d.data!.push([prevEndTime!.getTime(), ...prevValues![i]!]);
+            d.data!.push([prevEndTime!.getTime(), null]);
           }
-          d.data!.push([start, ...dataValue!]);
+          d.data!.push([start.getTime(), ...dataValue!]);
           // For band-top rows dataValues[i] is [diff, top]; the actual Y is
           // the last element. For regular rows it's [value]. Same call works.
           trackY(dataValue[dataValue.length - 1]);
@@ -260,8 +298,10 @@ export function generateStatisticsChartData(
               ),
           symbol: "none",
           // minmax sampling operates independently per series, breaking stacking alignment
+          // echarts stacks before it samples, so its lttb keeps stacks aligned
           // https://github.com/apache/echarts/issues/11879
-          sampling: band && drawBands ? "lttb" : "minmax",
+          sampling:
+            band || (chartStacked && chartType === "line") ? "lttb" : "minmax",
           animationDurationUpdate: 0,
           lineStyle: {
             width: 1.5,
@@ -387,7 +427,7 @@ export function generateStatisticsChartData(
     const lastValues = prevValues;
     if (chartType === "line" && lastEndTime && lastValues) {
       statDataSets.forEach((d, i) => {
-        d.data!.push([lastEndTime, ...lastValues[i]!]);
+        d.data!.push([lastEndTime.getTime(), ...lastValues[i]!]);
       });
     }
 
@@ -423,7 +463,7 @@ export function generateStatisticsChartData(
               } else {
                 val.push(currentValue);
               }
-              statDataSets[i].data!.push([now, ...val]);
+              statDataSets[i].data!.push([now.getTime(), ...val]);
               trackY(val[val.length - 1]);
             });
           }
@@ -435,6 +475,15 @@ export function generateStatisticsChartData(
     Array.prototype.push.apply(totalDataSets, statDataSets);
     Array.prototype.push.apply(legendData, statLegendData);
   });
+
+  if (chartType === "line" && chartStacked) {
+    const stacked = (totalDataSets as LineSeriesOption[]).filter(
+      (d) => d.data?.length
+    );
+    if (stacked.length > 1) {
+      alignStackedLines(stacked);
+    }
+  }
 
   if (chartType === "bar") {
     fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[], chartStacked);

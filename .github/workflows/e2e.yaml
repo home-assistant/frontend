@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -38,14 +38,14 @@ jobs:
     name: Prepare container dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --user 1001
     defaults:
       run:
         shell: bash
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -137,6 +137,7 @@ jobs:
         with:
           target: build-gallery
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
 
       - name: Upload gallery build
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -154,7 +155,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -170,7 +171,7 @@ jobs:
           - 2
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -187,7 +188,7 @@ jobs:
           path: demo/dist/
 
       - name: Run Playwright demo tests
-        run: yarn test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload demo blob report
@@ -206,7 +207,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -224,7 +225,7 @@ jobs:
           - 4
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -241,7 +242,7 @@ jobs:
           path: test/e2e/app/dist/
 
       - name: Run Playwright app tests
-        run: yarn test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload app blob report
@@ -260,7 +261,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -278,7 +279,7 @@ jobs:
           - 4
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -295,7 +296,7 @@ jobs:
           path: gallery/dist/
 
       - name: Run Playwright gallery tests
-        run: yarn test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload gallery blob report
@@ -320,7 +321,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 

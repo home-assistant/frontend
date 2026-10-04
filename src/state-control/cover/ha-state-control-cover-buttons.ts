@@ -1,10 +1,10 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import {
   computeCloseIcon,
   computeOpenIcon,

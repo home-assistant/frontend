@@ -26,7 +26,7 @@ export class HaImagecropperDialog
 
   @state() private _open = false;
 
-  @query("img", true) private _image!: HTMLImageElement;
+  @query("img") private _image!: HTMLImageElement;
 
   private _cropper?: Cropper;
 
@@ -54,6 +54,7 @@ export class HaImagecropperDialog
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (!changedProperties.has("_params") || !this._params) {
       return;
     }

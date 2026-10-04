@@ -48,10 +48,14 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_id?: string;
   media_content_type?: string;
   media_artist?: string;
+  media_album_name?: string;
+  media_album_artist?: string;
+  media_track?: number;
   media_playlist?: string;
   media_series_title?: string;
   media_season?: any;
   media_episode?: any;
+  app_id?: string;
   app_name?: string;
   media_position_updated_at?: string | number | Date;
   media_duration?: number;
@@ -186,6 +190,9 @@ export interface MediaPlayerItem {
   can_play: boolean;
   can_expand: boolean;
   can_search: boolean;
+  search_media_classes?:
+    | (keyof TranslationDict["ui"]["components"]["media-browser"]["class"])[]
+    | null;
   thumbnail?: string;
   iconPath?: string;
   children?: MediaPlayerItem[];
@@ -203,6 +210,29 @@ export const browseMediaPlayer = (
     entity_id: entityId,
     media_content_id: mediaContentId,
     media_content_type: mediaContentType,
+  });
+
+export interface SearchMediaResult {
+  result: MediaPlayerItem[];
+}
+
+export const searchMediaPlayer = (
+  hass: HomeAssistant,
+  entityId: string,
+  searchQuery: string,
+  mediaContentId?: string,
+  mediaContentType?: string,
+  mediaFilterClasses?: string[]
+): Promise<SearchMediaResult> =>
+  hass.callWS<SearchMediaResult>({
+    type: "media_player/search_media",
+    entity_id: entityId,
+    search_query: searchQuery,
+    // the backend requires these two to be passed together, and JSON
+    // serialization drops them both when the current item is the root
+    media_content_id: mediaContentId,
+    media_content_type: mediaContentType,
+    media_filter_classes: mediaFilterClasses,
   });
 
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {

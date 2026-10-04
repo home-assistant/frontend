@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { generateEnergySolarGraphData } from "../../src/panels/lovelace/cards/energy/energy-solar-graph-data";
 import type {
   EnergyPreferences,
@@ -91,29 +91,32 @@ const forecasts = buildForecasts(31 * 24, 60 * 60 * 1000, [
 ]);
 
 describe("generateEnergySolarGraphData", () => {
-  bench("small (2 days hourly, 1 source)", () => {
-    generateEnergySolarGraphData({
-      hass,
-      energyData: { ...small },
-      forecasts: undefined,
-      computedStyles,
-      now: new Date(FIXED_EPOCH_MS + 2 * dayMs),
-    });
+  test("small (2 days hourly, 1 source)", async ({ bench }) => {
+    await bench("small (2 days hourly, 1 source)", () => {
+      generateEnergySolarGraphData({
+        hass,
+        energyData: { ...small },
+        forecasts: undefined,
+        computedStyles,
+        now: new Date(FIXED_EPOCH_MS + 2 * dayMs),
+      });
+    }).run();
   });
 
-  bench("medium (month hourly + compare, 2 sources)", () => {
-    generateEnergySolarGraphData({
-      hass,
-      energyData: { ...medium },
-      forecasts: undefined,
-      computedStyles,
-      now: new Date(FIXED_EPOCH_MS + 31 * dayMs),
-    });
+  test("medium (month hourly + compare, 2 sources)", async ({ bench }) => {
+    await bench("medium (month hourly + compare, 2 sources)", () => {
+      generateEnergySolarGraphData({
+        hass,
+        energyData: { ...medium },
+        forecasts: undefined,
+        computedStyles,
+        now: new Date(FIXED_EPOCH_MS + 31 * dayMs),
+      });
+    }).run();
   });
 
-  bench(
-    "large (month 5-minute + compare, 2 sources)",
-    () => {
+  test("large (month 5-minute + compare, 2 sources)", async ({ bench }) => {
+    await bench("large (month 5-minute + compare, 2 sources)", () => {
       generateEnergySolarGraphData({
         hass,
         energyData: { ...large },
@@ -121,17 +124,20 @@ describe("generateEnergySolarGraphData", () => {
         computedStyles,
         now: new Date(FIXED_EPOCH_MS + 31 * dayMs),
       });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench("with forecast (month hourly, 2 sources + forecast)", () => {
-    generateEnergySolarGraphData({
-      hass,
-      energyData: { ...forecastData },
-      forecasts,
-      computedStyles,
-      now: new Date(FIXED_EPOCH_MS + 31 * dayMs),
-    });
+  test("with forecast (month hourly, 2 sources + forecast)", async ({
+    bench,
+  }) => {
+    await bench("with forecast (month hourly, 2 sources + forecast)", () => {
+      generateEnergySolarGraphData({
+        hass,
+        energyData: { ...forecastData },
+        forecasts,
+        computedStyles,
+        now: new Date(FIXED_EPOCH_MS + 31 * dayMs),
+      });
+    }).run();
   });
 });

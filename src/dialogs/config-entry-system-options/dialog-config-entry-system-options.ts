@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-formfield";
@@ -161,18 +162,18 @@ class DialogConfigEntrySystemOptions extends DirtyStateProviderMixin<SystemOptio
     `;
   }
 
-  private _disableNewEntitiesChanged(ev: Event): void {
+  private _disableNewEntitiesChanged(ev: HASSDomTargetEvent<HaSwitch>): void {
     this._error = undefined;
-    this._disableNewEntities = !(ev.target as HaSwitch).checked;
+    this._disableNewEntities = !ev.target.checked;
     this._updateDirtyState({
       disableNewEntities: this._disableNewEntities,
       disablePolling: this._disablePolling,
     });
   }
 
-  private _disablePollingChanged(ev: Event): void {
+  private _disablePollingChanged(ev: HASSDomTargetEvent<HaSwitch>): void {
     this._error = undefined;
-    this._disablePolling = !(ev.target as HaSwitch).checked;
+    this._disablePolling = !ev.target.checked;
     this._updateDirtyState({
       disableNewEntities: this._disableNewEntities,
       disablePolling: this._disablePolling,

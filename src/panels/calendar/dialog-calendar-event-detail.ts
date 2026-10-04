@@ -12,15 +12,12 @@ import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-alert";
 import "../../components/ha-button";
-import "../../components/ha-date-input";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-time-input";
 import "../../components/ha-dialog";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import { deleteCalendarEvent } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
 import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
@@ -84,6 +81,15 @@ class DialogCalendarEventDetail extends LitElement {
                 this._data!.rrule
                   ? this._renderRRuleAsText(this._data.rrule)
                   : ""
+              }
+              ${
+                this._params.entry.status === "tentative"
+                  ? html`<div class="status">
+                      ${this.hass.localize(
+                        "ui.components.calendar.event.tentative"
+                      )}
+                    </div>`
+                  : nothing
               }
               ${
                 this._data.location
@@ -224,18 +230,9 @@ class DialogCalendarEventDetail extends LitElement {
         : this.hass.localize(
             "ui.components.calendar.event.confirm_delete.prompt"
           ),
-      confirmText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_this"
-          )
-        : this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete"
-          ),
-      confirmFutureText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_future"
-          )
-        : undefined,
+      confirmText: this.hass.localize("ui.common.delete"),
+      recurring: !!entry.recurrence_id,
+      destructive: true,
     });
     if (range === undefined) {
       // Cancel

@@ -1,11 +1,12 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { getEntityAreaId } from "../../common/entity/context/get_entity_context";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import {
+  computeEntityPickerDisplay,
+  computeEntitySearchLabels,
+} from "../../common/entity/compute_entity_name_display";
 import type { RelatedIdSets } from "../../common/search/related-context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { computeRTL } from "../../common/util/compute_rtl";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../types";
@@ -30,6 +31,10 @@ export const entityComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.deviceName",
     weight: 7,
+  },
+  {
+    name: "search_labels.parentDeviceName",
+    weight: 6,
   },
   {
     name: "search_labels.areaName",
@@ -119,24 +124,10 @@ export const getEntities = (
 
   // These values are the same for every entity, so compute them once instead
   // of inside the map over (potentially thousands of) entities.
-  const isRTL = computeRTL(
-    hass.language,
-    hass.translationMetadata.translations
-  );
   const domainNames = new Map<string, string>();
 
   items = entityIds.map<EntityComboBoxItem>((entityId) => {
     const stateObj = hass.states[entityId];
-
-    const friendlyName = computeStateName(stateObj); // Keep this for search
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
-    );
 
     const domain = computeDomain(entityId);
     let domainName = domainNames.get(domain);
@@ -145,10 +136,7 @@ export const getEntities = (
       domainNames.set(domain, domainName);
     }
 
-    const primary = entityName || deviceName || entityId;
-    const secondary = [areaName, entityName ? deviceName : undefined]
-      .filter(Boolean)
-      .join(isRTL ? " ◂ " : " ▸ ");
+    const { primary, secondary } = computeEntityPickerDisplay(hass, stateObj);
 
     return {
       id: `${idPrefix}${entityId}`,
@@ -157,11 +145,14 @@ export const getEntities = (
       domain_name: domainName,
       sorting_label: [primary, secondary].filter(Boolean).join("_"),
       search_labels: {
-        entityName: entityName || null,
-        deviceName: deviceName || null,
-        areaName: areaName || null,
+        ...computeEntitySearchLabels(
+          stateObj,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        ),
         domainName: domainName || null,
-        friendlyName: friendlyName || null,
         entityId: entityId,
       },
       stateObj: stateObj,

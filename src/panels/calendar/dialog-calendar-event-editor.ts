@@ -42,7 +42,6 @@ import {
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
@@ -569,12 +568,8 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
         text: this.hass.localize(
           "ui.components.calendar.event.confirm_update.recurring_prompt"
         ),
-        confirmText: this.hass.localize(
-          "ui.components.calendar.event.confirm_update.update_this"
-        ),
-        confirmFutureText: this.hass.localize(
-          "ui.components.calendar.event.confirm_update.update_future"
-        ),
+        confirmText: this.hass.localize("ui.common.update"),
+        recurring: true,
       });
     }
     if (range === undefined) {
@@ -625,18 +620,9 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
         : this.hass.localize(
             "ui.components.calendar.event.confirm_delete.prompt"
           ),
-      confirmText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_this"
-          )
-        : this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete"
-          ),
-      confirmFutureText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_future"
-          )
-        : undefined,
+      confirmText: this.hass.localize("ui.common.delete"),
+      recurring: !!entry.recurrence_id,
+      destructive: true,
     });
     if (range === undefined) {
       // Cancel

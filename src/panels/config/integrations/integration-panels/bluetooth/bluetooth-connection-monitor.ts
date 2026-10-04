@@ -9,8 +9,6 @@ import { extractSearchParamsObject } from "../../../../../common/url/search-para
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-metric";
-import "../../../../../components/ha-relative-time";
 import type {
   BluetoothAllocationsData,
   BluetoothConnectionData,

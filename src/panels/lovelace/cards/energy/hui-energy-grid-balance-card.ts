@@ -4,6 +4,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
+import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
@@ -91,8 +92,8 @@ class HuiEnergyGridBalanceCard
 
     const { summedData } = getSummedData(this._data);
 
-    const imported = summedData.total.from_grid ?? 0;
-    const exported = summedData.total.to_grid ?? 0;
+    const imported = round(summedData.total.from_grid ?? 0, 3);
+    const exported = round(summedData.total.to_grid ?? 0, 3);
     const net = imported - exported;
 
     const fmt = (value: number) =>

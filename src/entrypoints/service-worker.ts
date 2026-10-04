@@ -77,6 +77,16 @@ const handleProxyRequest: RouteHandler = async ({ request }) => {
   return fetch(req);
 };
 
+// The access token rotates, so keying on the full URL empties the cache every
+// rotation. Other params (such as brands' "placeholder") stay in the key.
+const ignoreTokenPlugin = {
+  cacheKeyWillBeUsed: async ({ request }: { request: Request }) => {
+    const url = new URL(request.url);
+    url.searchParams.delete("token");
+    return url.href;
+  },
+};
+
 const initRouting = () => {
   precacheAndRoute(__WB_MANIFEST__, {
     // Ignore all URL parameters.
@@ -91,8 +101,6 @@ const initRouting = () => {
 
   // Cache any brand images used for 1 day
   // Brands are proxied via the local API with backend caching.
-  // Strip the rotating access token from cache keys so token rotation
-  // doesn't bust the cache, while preserving other params like "placeholder".
   registerRoute(
     ({ url, request }) =>
       url.pathname.startsWith("/api/brands/") &&
@@ -100,15 +108,64 @@ const initRouting = () => {
     new StaleWhileRevalidate({
       cacheName: "brands",
       plugins: [
-        {
-          cacheKeyWillBeUsed: async ({ request }) => {
-            const url = new URL(request.url);
-            url.searchParams.delete("token");
-            return url.href;
-          },
-        },
+        ignoreTokenPlugin,
         // Add 404 so we quickly respond to domains with missing images
         new CacheableResponsePlugin({ statuses: [0, 200, 404] }),
+        new ExpirationPlugin({
+          maxAgeSeconds: 60 * 60 * 24,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    })
+  );
+
+  // A stale token gives a 403, and caching that would pin the failure.
+  const cacheableTile = new CacheableResponsePlugin({ statuses: [0, 200] });
+
+  // A couple of dozen, pinned to an upstream release. Kept apart from the
+  // tiles so panning cannot evict the fonts every label needs.
+  registerRoute(
+    ({ url }) => /^\/api\/map_tiles\/(fonts|sprites)\//.test(url.pathname),
+    new CacheFirst({
+      cacheName: "map-assets",
+      plugins: [
+        ignoreTokenPlugin,
+        cacheableTile,
+        new ExpirationPlugin({
+          maxAgeSeconds: 60 * 60 * 24 * 30,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    })
+  );
+
+  // The working set is a tile pyramid over every zoom visited, so the ceiling
+  // is generous; the quota purge is what actually bounds it.
+  registerRoute(
+    ({ url }) => /^\/api\/map_tiles\/(vector|raster)\//.test(url.pathname),
+    new CacheFirst({
+      cacheName: "map-tiles",
+      plugins: [
+        ignoreTokenPlugin,
+        cacheableTile,
+        new ExpirationPlugin({
+          maxEntries: 1000,
+          maxAgeSeconds: 60 * 60 * 24 * 7,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    })
+  );
+
+  // Every map waits on this before its first tile, so serve it from cache -
+  // revalidated behind that, since it is how a moved endpoint arrives.
+  registerRoute(
+    ({ url }) => url.pathname === "/api/map_tiles/tilejson.json",
+    new StaleWhileRevalidate({
+      cacheName: "map-tilejson",
+      plugins: [
+        ignoreTokenPlugin,
+        cacheableTile,
         new ExpirationPlugin({
           maxAgeSeconds: 60 * 60 * 24,
           purgeOnQuotaError: true,

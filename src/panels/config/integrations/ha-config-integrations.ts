@@ -10,7 +10,7 @@ import {
 } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
-import "../../../layouts/hass-loading-screen";
+import { ChildPanelReady } from "../../../layouts/panel-ready";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -69,6 +69,11 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
   @state() private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
   private _loadTranslationsPromise?: Promise<LocalizeFunc>;
+
+  public constructor() {
+    super();
+    new ChildPanelReady(this);
+  }
 
   public hassSubscribe() {
     return [

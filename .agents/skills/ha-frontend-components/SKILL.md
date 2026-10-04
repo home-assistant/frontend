@@ -7,6 +7,8 @@ description: Home Assistant frontend component patterns. Use when implementing o
 
 Use this skill when creating or reviewing Home Assistant UI components and common interaction patterns.
 
+Cross-load `ha-frontend-events` when component work includes event listener typing, custom event dispatch, or event-map declarations.
+
 ## Dialogs
 
 Open dialogs through the fire-event pattern:

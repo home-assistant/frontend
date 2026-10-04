@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { computeLocalize } from "../common/translations/localize";
 import {
@@ -35,9 +36,7 @@ import type { HassBaseEl } from "./hass-base-mixin";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-language-select": {
-      language: string;
-    };
+    "hass-language-select": string;
     "hass-number-format-select": NumberFormat;
     "hass-time-format-select": TimeFormat;
     "hass-date-format-select": DateFormat;
@@ -82,22 +81,42 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
-        this._selectLanguage((e as CustomEvent).detail, true);
+        this._selectLanguage(
+          (e as HASSDomEvent<HASSDomEvents["hass-language-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-number-format-select", (e) => {
-        this._selectNumberFormat((e as CustomEvent).detail, true);
+        this._selectNumberFormat(
+          (e as HASSDomEvent<HASSDomEvents["hass-number-format-select"]>)
+            .detail,
+          true
+        );
       });
       this.addEventListener("hass-time-format-select", (e) => {
-        this._selectTimeFormat((e as CustomEvent).detail, true);
+        this._selectTimeFormat(
+          (e as HASSDomEvent<HASSDomEvents["hass-time-format-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-date-format-select", (e) => {
-        this._selectDateFormat((e as CustomEvent).detail, true);
+        this._selectDateFormat(
+          (e as HASSDomEvent<HASSDomEvents["hass-date-format-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-time-zone-select", (e) => {
-        this._selectTimeZone((e as CustomEvent).detail, true);
+        this._selectTimeZone(
+          (e as HASSDomEvent<HASSDomEvents["hass-time-zone-select"]>).detail,
+          true
+        );
       });
       this.addEventListener("hass-first-weekday-select", (e) => {
-        this._selectFirstWeekday((e as CustomEvent).detail, true);
+        this._selectFirstWeekday(
+          (e as HASSDomEvent<HASSDomEvents["hass-first-weekday-select"]>)
+            .detail,
+          true
+        );
       });
       this._loadCoreTranslations(getLocalLanguage());
     }

@@ -9,6 +9,7 @@ import "../../src/components/ha-spinner";
 import "../../src/components/ha-svg-icon";
 import "../../src/components/progress/ha-progress-bar";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
+import { provideLiteI18nMixin } from "../../src/mixins/provide-lite-i18n-mixin";
 import "../../src/onboarding/onboarding-welcome-links";
 import { onBoardingStyles } from "../../src/onboarding/styles";
 import { haStyle } from "../../src/resources/styles";
@@ -28,7 +29,7 @@ const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 const SCHEDULE_FETCH_JOBS_INFO_SECONDS = 2;
 
 @customElement("ha-landing-page")
-class HaLandingPage extends LandingPageBaseElement {
+class HaLandingPage extends provideLiteI18nMixin(LandingPageBaseElement) {
   @property({ attribute: false }) public translationFragment = "landing-page";
 
   @state() private _supervisorError = false;
@@ -82,7 +83,6 @@ class HaLandingPage extends LandingPageBaseElement {
             networkIssue || this._networkInfoError
               ? html`
                   <landing-page-network
-                    .localize=${this.localize}
                     .networkInfo=${this._networkInfo}
                     .error=${this._networkInfoError}
                     @dns-set=${this._fetchSupervisorInfo}
@@ -103,13 +103,11 @@ class HaLandingPage extends LandingPageBaseElement {
               : nothing
           }
           <landing-page-logs
-            .localize=${this.localize}
             @landing-page-error=${this._showError}
           ></landing-page-logs>
         </div>
       </ha-card>
       <onboarding-welcome-links
-        .localize=${this.localize}
         .mobileApp=${this._mobileApp}
       ></onboarding-welcome-links>
       <div class="footer">
@@ -182,12 +180,10 @@ class HaLandingPage extends LandingPageBaseElement {
       this._networkInfoError = false;
       this._coreStatusChecked = false;
     } catch (err: any) {
-      if (!this._coreStatusChecked) {
-        // wait before show errors, because we assume that core is starting
-        this._coreCheckActive = true;
-        this._scheduleTurnOffCoreCheck();
+      if (await this._checkCoreAvailability()) {
+        // core is available, page reload in progress -> don't show an error
+        return;
       }
-      await this._checkCoreAvailability();
 
       // assume supervisor update if ping fails -> don't show an error
       if (!this._coreCheckActive && err.message !== "ping-failed") {
@@ -217,7 +213,10 @@ class HaLandingPage extends LandingPageBaseElement {
         this._progress = -1;
       }
     } catch (err: any) {
-      await this._checkCoreAvailability();
+      if (await this._checkCoreAvailability()) {
+        // core is available, page reload in progress -> stop polling
+        return;
+      }
 
       if (!this._coreCheckActive) {
         this._progress = -1;
@@ -229,16 +228,22 @@ class HaLandingPage extends LandingPageBaseElement {
     this._scheduleFetchSupervisorJobsInfo();
   }
 
-  private async _checkCoreAvailability() {
+  private async _checkCoreAvailability(): Promise<boolean> {
     try {
       const response = await fetch("/manifest.json");
-      if (response.ok) {
-        location.reload();
-      } else {
+      if (!response.ok) {
         throw new Error("Failed to fetch manifest");
       }
+      location.reload();
+      return true;
     } catch (_err) {
-      this._coreStatusChecked = true;
+      if (!this._coreStatusChecked) {
+        // wait before showing errors, because we assume that core is starting
+        this._coreStatusChecked = true;
+        this._coreCheckActive = true;
+        this._scheduleTurnOffCoreCheck();
+      }
+      return false;
     }
   }
 

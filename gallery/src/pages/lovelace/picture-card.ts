@@ -1,6 +1,8 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { PictureCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
@@ -19,26 +21,26 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Image URL",
-    config: `
-- type: picture
-  image: /images/living_room.png
-    `,
+    config: {
+      type: "picture",
+      image: "/images/living_room.png",
+    },
   },
   {
     heading: "Person entity",
-    config: `
-- type: picture
-  image_entity: person.paulus
-    `,
+    config: {
+      type: "picture",
+      image_entity: "person.paulus",
+    },
   },
   {
     heading: "Error: Image required",
-    config: `
-- type: picture
-  entity: person.paulus
-    `,
+    config: {
+      type: "picture",
+    },
+    expectConfigError: true,
   },
-];
+] satisfies DemoCardConfig<PictureCardConfig>[];
 
 @customElement("demo-lovelace-picture-card")
 class DemoPicture extends LitElement {

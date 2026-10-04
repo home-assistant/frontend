@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { stringCompare } from "../../../../common/string/compare";
@@ -89,6 +89,27 @@ export class HaDeviceCard extends LitElement {
                       "ui.panel.config.integrations.config_entry.manuf",
                       { manufacturer: this.device.manufacturer }
                     )}
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.device.parent_device_id
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.part_of"
+                    )}
+                    <span class="hub"
+                      ><a
+                        href="/config/devices/device/${
+                          this.device.parent_device_id
+                        }"
+                        >${this._computeDeviceNameDisplay(
+                          this.device.parent_device_id
+                        )}</a
+                      ></span
+                    >
                   </div>
                 `
               : ""

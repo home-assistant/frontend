@@ -5,11 +5,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
-import "../../../components/entity/state-info";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-markdown";
-import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -19,7 +17,7 @@ import {
   hasRequiredScriptFields,
   requiredScriptFieldsFilled,
 } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../components/ha-more-info-state-header";
 
 @customElement("more-info-script")
@@ -209,7 +207,9 @@ class MoreInfoScript extends LitElement {
     });
   }
 
-  private _scriptDataChanged(ev: CustomEvent): void {
+  private _scriptDataChanged(
+    ev: ValueChangedEvent<Record<string, unknown>>
+  ): void {
     this._scriptData = { ...this._scriptData, ...ev.detail.value };
   }
 

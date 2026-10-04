@@ -1,7 +1,12 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type {
+  GlanceCardConfig,
+  GlanceConfigEntity,
+} from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
@@ -86,172 +91,193 @@ const ENTITIES = [
   },
 ];
 
+type LegacyNullNameGlanceCardConfig = Omit<GlanceCardConfig, "entities"> & {
+  type: GlanceCardConfig["type"];
+  entities: (
+    | string
+    | GlanceConfigEntity
+    | (Omit<GlanceConfigEntity, "name"> & { name: null })
+  )[];
+};
+
 const CONFIGS = [
   {
     heading: "Basic example",
-    config: `
-- type: glance
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "No state colors",
-    config: `
-- type: glance
-  state_color: false
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      state_color: false,
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "With title",
-    config: `
-- type: glance
-  title: Custom title
-  columns: 4
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      title: "Custom title",
+      columns: 4,
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "Custom number of columns",
-    config: `
-- type: glance
-  columns: 7
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      columns: 7,
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "No entity names",
-    config: `
-- type: glance
-  columns: 4
-  show_name: false
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      columns: 4,
+      show_name: false,
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "No state labels",
-    config: `
-- type: glance
-  columns: 4
-  show_state: false
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      columns: 4,
+      show_state: false,
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "No names and no state labels",
-    config: `
-- type: glance
-  columns: 4
-  show_name: false
-  show_state: false
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      columns: 4,
+      show_name: false,
+      show_state: false,
+      entities: [
+        "device_tracker.demo_paulus",
+        "media_player.living_room",
+        "sun.sun",
+        "cover.kitchen_window",
+        "light.kitchen_lights",
+        "lock.kitchen_door",
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "Custom name + custom icon",
-    config: `
-- type: glance
-  columns: 4
-  entities:
-    - entity: device_tracker.demo_paulus
-      name: ¯\\_(ツ)_/¯
-      icon: mdi:home-assistant
-    - entity: media_player.living_room
-      name: ¯\\_(ツ)_/¯
-      icon: mdi:home-assistant
-    `,
+    config: {
+      type: "glance",
+      columns: 4,
+      entities: [
+        {
+          entity: "device_tracker.demo_paulus",
+          name: "¯\\_(ツ)_/¯",
+          icon: "mdi:home-assistant",
+        },
+        {
+          entity: "media_player.living_room",
+          name: "¯\\_(ツ)_/¯",
+          icon: "mdi:home-assistant",
+        },
+      ],
+    },
   },
   {
     heading: "Selectively hidden name",
-    config: `
-- type: glance
-  columns: 4
-  entities:
-    - device_tracker.demo_paulus
-    - entity: media_player.living_room
-      name:
-    - sun.sun
-    - entity: cover.kitchen_window
-      name:
-    - light.kitchen_lights
-    - entity: lock.kitchen_door
-      name:
-    - light.ceiling_lights
-    `,
+    config: {
+      type: "glance",
+      columns: 4,
+      entities: [
+        "device_tracker.demo_paulus",
+        { entity: "media_player.living_room", name: null },
+        "sun.sun",
+        { entity: "cover.kitchen_window", name: null },
+        "light.kitchen_lights",
+        { entity: "lock.kitchen_door", name: null },
+        "light.ceiling_lights",
+      ],
+    },
   },
   {
     heading: "Custom tap action",
-    config: `
-- type: glance
-  columns: 4
-  entities:
-    - entity: lock.kitchen_door
-      name: Custom
-      tap_action:
-        type: toggle
-    - entity: light.ceiling_lights
-      name: Custom
-      tap_action:
-        action: call-service
-        service: light.turn_on
-        data:
-          entity_id: light.ceiling_lights
-    - entity: sun.sun
-      name: Regular
-    - entity: light.kitchen_lights
-      name: Regular
-    `,
+    config: {
+      type: "glance",
+      columns: 4,
+      entities: [
+        {
+          entity: "lock.kitchen_door",
+          name: "Custom",
+          tap_action: { action: "toggle" },
+        },
+        {
+          entity: "light.ceiling_lights",
+          name: "Custom",
+          tap_action: {
+            action: "perform-action",
+            perform_action: "light.turn_on",
+            data: { entity_id: "light.ceiling_lights" },
+          },
+        },
+        { entity: "sun.sun", name: "Regular" },
+        { entity: "light.kitchen_lights", name: "Regular" },
+      ],
+    },
   },
-];
+] satisfies DemoCardConfig<GlanceCardConfig | LegacyNullNameGlanceCardConfig>[];
 
 @customElement("demo-lovelace-glance-card")
 class DemoGlanceEntity extends LitElement {

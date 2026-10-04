@@ -13,9 +13,9 @@ import type {
   LovelaceCard,
 } from "../../../src/panels/lovelace/types";
 import {
-  demoConfigs,
+  demos,
+  selectedDemo,
   selectedDemoConfig,
-  selectedDemoConfigIndex,
 } from "../configs/demo-configs";
 
 @customElement("ha-demo-card")
@@ -112,16 +112,12 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   }
 
   private _nextConfig() {
-    this._updateConfig(
-      selectedDemoConfigIndex < demoConfigs.length - 1
-        ? selectedDemoConfigIndex + 1
-        : 0
-    );
+    this._updateConfig(demos[(demos.indexOf(selectedDemo) + 1) % demos.length]);
   }
 
-  private async _updateConfig(index: number) {
+  private async _updateConfig(demo: string) {
     this._switching = true;
-    fireEvent(this, "set-demo-config" as any, { index });
+    fireEvent(this, "set-demo-config" as any, { demo });
   }
 
   static get styles(): CSSResultGroup {

@@ -33,7 +33,6 @@ import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../badges/hui-badge";
 import { getConfigEntityId } from "../../common/get-config-entity-id";
-import "../../sections/hui-section";
 import { addBadge, replaceBadge } from "../config-util";
 import { getBadgeDefaultConfig } from "../get-badge-default-config";
 import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
@@ -146,6 +145,7 @@ export class HuiDialogEditBadge
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!changedProps.has("_badgeConfig")) {
       return;
     }

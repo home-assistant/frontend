@@ -6,7 +6,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewSidebarConfig } from "../../../data/lovelace/config/view";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HomeAssistant } from "../../../types";
-import { checkConditionsMet } from "../common/validate-condition";
 import "../sections/hui-section";
 import type { Lovelace } from "../types";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -37,14 +36,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
   protected _updateVisibility(conditionsMet?: boolean) {
     if (!this.hass || !this.config) return;
 
-    const visible =
-      conditionsMet ??
-      (!this.config.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
 
     if (visible !== this._visible) {
       this._visible = visible;

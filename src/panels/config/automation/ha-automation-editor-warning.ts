@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
@@ -22,7 +22,7 @@ export class HaAutomationEditorWarning extends LitElement {
       >
         ${
           this.warnings.length && this.warnings[0] !== undefined
-            ? html`<ul>
+            ? html`<ul tabindex="0">
                 ${this.warnings.map((warning) => html`<li>${warning}</li>`)}
               </ul>`
             : nothing
@@ -31,6 +31,15 @@ export class HaAutomationEditorWarning extends LitElement {
       </ha-alert>
     `;
   }
+
+  static styles = css`
+    ul {
+      max-height: 160px;
+      overflow-y: auto;
+      overflow-wrap: anywhere;
+      outline-offset: -2px;
+    }
+  `;
 }
 
 declare global {

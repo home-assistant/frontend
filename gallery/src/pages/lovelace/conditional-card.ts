@@ -1,7 +1,12 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type {
+  ConditionalCardConfig,
+  EntitiesCardConfig,
+} from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
@@ -39,35 +44,37 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Controller",
-    config: `
-- type: entities
-  entities:
-    - light.controller_1
-    - light.controller_2
-    - type: divider
-    - light.floor
-    - light.kitchen
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        "light.controller_1",
+        "light.controller_2",
+        { type: "divider" },
+        "light.floor",
+        "light.kitchen",
+      ],
+    },
   },
   {
     heading: "Demo",
-    config: `
-- type: conditional
-  conditions:
-    - entity: light.controller_1
-      state: "on"
-    - entity: light.controller_2
-      state_not: "off"
-  card:
-    type: entities
-    entities:
-      - light.controller_1
-      - light.controller_2
-      - light.floor
-      - light.kitchen
-    `,
+    config: {
+      type: "conditional",
+      conditions: [
+        { entity: "light.controller_1", state: "on" },
+        { entity: "light.controller_2", state_not: "off" },
+      ],
+      card: {
+        type: "entities",
+        entities: [
+          "light.controller_1",
+          "light.controller_2",
+          "light.floor",
+          "light.kitchen",
+        ],
+      },
+    },
   },
-];
+] satisfies DemoCardConfig<EntitiesCardConfig | ConditionalCardConfig>[];
 
 @customElement("demo-lovelace-conditional-card")
 class DemoConditional extends LitElement {

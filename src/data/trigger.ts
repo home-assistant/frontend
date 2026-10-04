@@ -35,7 +35,6 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
       webhook: {},
       persistent_notification: {},
       helpers: {},
-      other: {},
     },
   },
   {
@@ -48,9 +47,9 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.triggers.groups.custom_integrations.label",
+      "ui.panel.config.automation.editor.triggers.groups.integrations.label",
     groups: {
-      customDynamicGroups: {},
+      integrationGroups: {},
     },
   },
 ] as const;

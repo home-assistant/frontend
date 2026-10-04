@@ -11,6 +11,7 @@ export interface TargetDetailsDialogParams {
   selector?: TargetSelector;
   deviceFilter?: HaDevicePickerDeviceFilterFunc;
   entityFilter?: HaEntityPickerEntityFilterFunc;
+  activeFilter?: (entityId: string) => boolean;
   includeDomains?: string[];
   includeDeviceClasses?: string[];
   primaryEntitiesOnly?: boolean;

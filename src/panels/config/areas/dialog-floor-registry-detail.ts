@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
@@ -336,13 +337,13 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
-  private _nameChanged(ev: InputEvent) {
+  private _nameChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
     this._updateDirtyState(this._currentState());
   }
 
-  private _levelChanged(ev: InputEvent) {
+  private _levelChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._level =
       (ev.target as HaInput).value === ""

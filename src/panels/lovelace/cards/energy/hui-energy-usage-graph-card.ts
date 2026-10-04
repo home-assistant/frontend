@@ -44,6 +44,7 @@ import {
 } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
+import { buildCombinedUsed } from "./energy-usage-graph-combined-used";
 
 const colorPropertyMap = {
   to_grid: "--energy-grid-return-color",
@@ -51,6 +52,7 @@ const colorPropertyMap = {
   from_grid: "--energy-grid-consumption-color",
   used_grid: "--energy-grid-consumption-color",
   used_solar: "--energy-solar-color",
+  from_battery: "--energy-battery-out-color",
   used_battery: "--energy-battery-out-color",
 };
 
@@ -58,6 +60,7 @@ const stackOrder = {
   to_battery: 1,
   to_grid: 2,
   used_solar: 3,
+  from_battery: 4,
   used_battery: 4,
   from_grid: 5,
   used_grid: 5,
@@ -177,6 +180,7 @@ export class HuiEnergyUsageGraphCard
               this._legendData
             )}
             chart-type="bar"
+            .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
             !this._chartData.some((dataset) => dataset.data!.length)
@@ -270,6 +274,10 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;
@@ -291,10 +299,12 @@ export class HuiEnergyUsageGraphCard
       to_grid: Record<string, string>;
       from_grid: Record<string, string>;
       to_battery: Record<string, string>;
+      from_battery: Record<string, string>;
     } = {
       to_grid: {},
       from_grid: {},
       to_battery: {},
+      from_battery: {},
     };
 
     // Grid sources can be import-only or export-only; assign color indices by
@@ -327,6 +337,10 @@ export class HuiEnergyUsageGraphCard
         if (source.name) {
           statLabels.to_battery[source.stat_energy_to] = this.hass.localize(
             "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+            { name: source.name }
+          );
+          statLabels.from_battery[source.stat_energy_from] = this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
             { name: source.name }
           );
         }
@@ -537,6 +551,7 @@ export class HuiEnergyUsageGraphCard
       to_grid: Record<string, string>;
       from_grid: Record<string, string>;
       to_battery: Record<string, string>;
+      from_battery: Record<string, string>;
     },
     trackY: (v: number) => void,
     compare = false
@@ -547,13 +562,16 @@ export class HuiEnergyUsageGraphCard
       to_grid?: Record<string, Record<number, number>>;
       to_battery?: Record<string, Record<number, number>>;
       from_grid?: Record<string, Record<number, number>>;
+      from_battery?: Record<string, Record<number, number>>;
       used_grid?: Record<string, Record<number, number>>;
       used_solar?: Record<string, Record<number, number>>;
       used_battery?: Record<string, Record<number, number>>;
     } = {};
 
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
-      if (!["to_grid", "from_grid", "to_battery"].includes(key)) {
+      if (
+        !["to_grid", "from_grid", "to_battery", "from_battery"].includes(key)
+      ) {
         return;
       }
       const sets: Record<string, Record<number, number>> = {};
@@ -578,51 +596,41 @@ export class HuiEnergyUsageGraphCard
       combinedData[key] = sets;
     });
 
-    // Only add solar/battery consumption series when such a source is
-    // actually configured, otherwise the legend shows empty solar/battery
-    // entries for grid-only setups.
+    // Only add the solar consumption series when solar is configured,
+    // otherwise the legend shows an empty solar entry for grid-only setups.
+    // Combined used_grid and used_battery are fallbacks for periods that
+    // can't be split per source; skip them when they have no points.
     if (statIdsByCat.solar) {
       combinedData.used_solar = { used_solar: consumptionData.used_solar };
     }
-    if (statIdsByCat.from_battery) {
-      combinedData.used_battery = {
-        used_battery: consumptionData.used_battery,
-      };
+
+    if (combinedData.from_battery) {
+      // Discharge that did not reach the home
+      const batteryNotUsed: Record<number, number> = {};
+      for (const start of summedData.timestamps) {
+        batteryNotUsed[start] =
+          (summedData.from_battery?.[start] ?? 0) -
+          consumptionData.used_battery[start];
+      }
+      const used_battery = buildCombinedUsed(
+        combinedData.from_battery,
+        batteryNotUsed,
+        consumptionData.used_battery
+      );
+      if (used_battery) {
+        combinedData.used_battery = { used_battery };
+      }
     }
 
     if (combinedData.from_grid && summedData.to_battery) {
-      const used_grid = {};
-      // If we have to_battery and multiple grid sources in the same period, we
-      // can't determine which source was used. So delete all the individual
-      // sources and replace with a 'combined from grid' value.
-      for (const [start, grid_to_battery] of Object.entries(
-        consumptionData.grid_to_battery
-      )) {
-        if (!grid_to_battery) {
-          continue;
-        }
-        let noOfSources = 0;
-        let source: string;
-        for (const [key, stats] of Object.entries(combinedData.from_grid)) {
-          if (stats[start]) {
-            source = key;
-            noOfSources++;
-          }
-          if (noOfSources > 1) {
-            break;
-          }
-        }
-        if (noOfSources === 1) {
-          combinedData.from_grid[source!][start] =
-            consumptionData.used_grid[start];
-        } else {
-          Object.values(combinedData.from_grid).forEach((stats) => {
-            delete stats[start];
-          });
-          used_grid[start] = consumptionData.used_grid[start];
-        }
+      const used_grid = buildCombinedUsed(
+        combinedData.from_grid,
+        consumptionData.grid_to_battery,
+        consumptionData.used_grid
+      );
+      if (used_grid) {
+        combinedData.used_grid = { used_grid };
       }
-      combinedData.used_grid = { used_grid };
     }
 
     const uniqueKeys = summedData.timestamps;

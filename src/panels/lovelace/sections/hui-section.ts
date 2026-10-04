@@ -19,7 +19,6 @@ import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
-import { checkConditionsMet } from "../common/validate-condition";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -229,6 +228,9 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
 
     this._config = sectionConfig;
+    // `_config` isn't reactive; strategy sections assign it after the last
+    // update, so re-feed visibility now.
+    this.setupConditionalListeners();
     // Apply theme now that config is set (after potential strategy await)
     applyThemesOnElement(this, this.hass!.themes, this._config.theme);
 
@@ -280,14 +282,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this._config.visibility ||
-        checkConditionsMet(
-          this._config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
 
     if (!visible) {
       this._setElementVisibility(false);
@@ -324,7 +319,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._layoutElementType = config.type;
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       ev.stopPropagation();
-      if (!this.lovelace) return;
+      if (!this.lovelace || isStrategySection(this.config)) return;
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
@@ -357,7 +352,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       ev.stopPropagation();
-      if (!this.lovelace) return;
+      if (!this.lovelace || isStrategySection(this.config)) return;
       performDeleteCard(this.hass, this.lovelace, ev.detail);
     });
     this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {

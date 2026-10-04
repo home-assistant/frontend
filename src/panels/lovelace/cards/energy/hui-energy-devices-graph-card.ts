@@ -16,6 +16,7 @@ import "../../../../components/chart/ha-chart-tooltip-marker";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  computeEnergyDeviceLabels,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -90,6 +91,8 @@ export class HuiEnergyDevicesGraphCard
   @state() private _isMobile = false;
 
   private _compoundStats: string[] = [];
+
+  private _deviceLabels: Record<string, string> = {};
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -191,7 +194,9 @@ export class HuiEnergyDevicesGraphCard
               this._legendData
             )}
             .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
+            .sonificationLabelFormatter=${this._sonificationLabel}
             .extraComponents=${[PieChart]}
+            .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}
@@ -289,14 +294,21 @@ export class HuiEnergyDevicesGraphCard
     }
   );
 
+  // The chart data is keyed on statistic ids, which is what Chart2Music would
+  // otherwise announce. Names that aren't statistics — the untracked slice —
+  // are already display text, so those stay as they are.
+  private _sonificationLabel = (label: string): string | undefined =>
+    this._deviceLabels[label] || this._data?.statsMetadata[label]
+      ? this._getDeviceName(label)
+      : undefined;
+
   private _getDeviceName(statisticId: string): string {
     const suffix = this._compoundStats.includes(statisticId)
       ? ` (${this.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
       : "";
     return (
-      (this._data?.prefs.device_consumption.find(
-        (d) => d.stat_consumption === statisticId
-      )?.name ||
+      // The untracked slice is not a statistic, so it has no label.
+      (this._deviceLabels[statisticId] ||
         getStatisticLabel(
           this.hass,
           statisticId,
@@ -375,6 +387,12 @@ export class HuiEnergyDevicesGraphCard
     this._compoundStats = energyData.prefs.device_consumption
       .map((d) => d.included_in_stat)
       .filter(Boolean) as string[];
+
+    this._deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      energyData.prefs.device_consumption,
+      energyData.statsMetadata
+    );
 
     const devices = energyData.prefs.device_consumption;
     const devicesTotals: Record<string, number> = {};

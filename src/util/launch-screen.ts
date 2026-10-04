@@ -1,12 +1,11 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
-import { withViewTransition } from "../common/util/view-transition";
 
 let removalInitiated = false;
 
 /**
- * Removes the launch screen with a fade-out view transition.
+ * Removes the launch screen with a CSS fade-out transition.
  *
  * @param instant - Removes the launch screen without animation. Used when the
  * external app covers the frontend with its own splash screen until the
@@ -26,28 +25,49 @@ export const removeLaunchScreen = (instant = false): boolean => {
     return true;
   }
 
-  withViewTransition((viewTransitionAvailable: boolean) => {
-    if (!viewTransitionAvailable) {
+  launchScreenElement.classList.add("removing");
+  const durationFromCss = getComputedStyle(document.documentElement)
+    .getPropertyValue("--ha-animation-duration-normal")
+    .trim();
+  setTimeout(
+    () => {
       launchScreenElement.parentElement?.removeChild(launchScreenElement);
-      return;
-    }
-
-    launchScreenElement.classList.add("removing");
-
-    const durationFromCss = getComputedStyle(document.documentElement)
-      .getPropertyValue("--ha-animation-duration-slow")
-      .trim();
-
-    setTimeout(() => {
-      launchScreenElement.parentElement?.removeChild(launchScreenElement);
-    }, parseAnimationDuration(durationFromCss));
-  });
+    },
+    parseAnimationDuration(durationFromCss || "250ms")
+  );
   return true;
 };
 
-export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
+export const renderLaunchScreenContent = (
+  content: TemplateResult,
+  attribution: string
+) => {
   const infoBoxElement = document.getElementById("ha-launch-screen-info-box");
   if (infoBoxElement) {
     render(content, infoBoxElement);
+  }
+  updateLaunchScreenAttribution(attribution);
+};
+
+/**
+ * Switches the launch screen OHF logo to the variant matching the applied
+ * theme. The `<picture>` element initially picks a variant based on the system
+ * color scheme, which can differ from the theme the frontend ends up applying.
+ */
+export const updateLaunchScreenLogo = (darkMode: boolean) => {
+  const logoSourceElement = document.querySelector<HTMLSourceElement>(
+    "#ha-launch-screen .ohf-logo source"
+  );
+  if (logoSourceElement) {
+    logoSourceElement.media = darkMode ? "all" : "not all";
+  }
+};
+
+export const updateLaunchScreenAttribution = (attribution: string) => {
+  const attributionElement = document.getElementById(
+    "ha-launch-screen-attribution"
+  );
+  if (attributionElement) {
+    attributionElement.textContent = attribution;
   }
 };

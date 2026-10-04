@@ -11,10 +11,7 @@ import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import "./zha-device-endpoint-list";
-import type {
-  DeviceEndpointSelectionChangedEvent,
-  ZHADeviceEndpointList,
-} from "./zha-device-endpoint-list";
+import type { ZHADeviceEndpointList } from "./zha-device-endpoint-list";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
@@ -131,7 +128,7 @@ export class ZHAAddGroupPage extends LitElement {
   }
 
   private _handleAddSelectionChanged(
-    ev: HASSDomEvent<DeviceEndpointSelectionChangedEvent>
+    ev: HASSDomEvent<HASSDomEvents["selection-changed"]>
   ): void {
     this._selectedDevicesToAdd = ev.detail.value;
   }

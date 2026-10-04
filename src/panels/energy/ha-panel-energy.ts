@@ -2,10 +2,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
+import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
-import "../../components/ha-top-app-bar-fixed";
 import type { EnergyFrontendSystemData } from "../../data/frontend";
 import { fetchFrontendSystemData } from "../../data/frontend";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -14,8 +14,6 @@ import type { HomeAssistant, PanelInfo } from "../../types";
 import { generateLovelaceDashboardStrategy } from "../lovelace/strategies/get-strategy";
 import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
-import "../lovelace/views/hui-view";
-import "../lovelace/views/hui-view-container";
 import { DEFAULT_POWER_COLLECTION_KEY } from "../../data/energy";
 
 @customElement("ha-panel-energy")
@@ -161,7 +159,9 @@ class PanelEnergy extends LitElement {
         .route=${this.route}
         .panel=${this.panel}
         .backButton=${this._searchParms.has("historyBack")}
-        .backPath=${this._searchParms.get("backPath") || "/"}
+        .backPath=${
+          sanitizeNavigationPath(this._searchParms.get("backPath")) || "/"
+        }
         @reload-energy-panel=${this._reloadConfig}
       >
       </hui-root>
@@ -193,9 +193,7 @@ class PanelEnergy extends LitElement {
       css`
         :host {
           --ha-view-sections-column-max-width: 100%;
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
         }
         .centered {
           width: 100%;

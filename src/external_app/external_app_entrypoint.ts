@@ -121,6 +121,14 @@ declare global {
   }
 
   interface GlobalEventHandlersEventMap {
-    "matter-commission-finish": HASSDomEvent<MatterCommissionFinish>;
+    "improv-discovered-device": HASSDomEvent<
+      HASSDomEvents["improv-discovered-device"]
+    >;
+    "improv-device-setup-done": HASSDomEvent<
+      HASSDomEvents["improv-device-setup-done"]
+    >;
+    "matter-commission-finish": HASSDomEvent<
+      HASSDomEvents["matter-commission-finish"]
+    >;
   }
 }

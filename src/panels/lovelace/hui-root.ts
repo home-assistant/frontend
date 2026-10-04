@@ -27,10 +27,11 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
-import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import { goBack, navigate } from "../../common/navigate";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
+import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import {
   addSearchParam,
   extractSearchParamsObject,
@@ -70,14 +71,13 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { isMoreInfoView } from "../../dialogs/more-info/const";
-import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
+import { handleBackClick } from "../../layouts/back-navigation";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import { isMac } from "../../util/is_mac";
 import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
@@ -162,6 +162,8 @@ class HUIRoot extends LitElement {
   private _viewScrollPositions: Record<string, number> = {};
 
   private _restoreScroll = false;
+
+  private _childPanelReady?: ChildPanelReady;
 
   private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
     apply: (config) => this._applyUndoRedo(config),
@@ -294,9 +296,7 @@ class HUIRoot extends LitElement {
         overflowAction: this._showQuickBar,
         suffix:
           this.hass.enableShortcuts && !isMobileClient
-            ? isMac
-              ? "(⌘ + K)"
-              : "(Ctrl + K)"
+            ? `(${ctrlOrCmdLabel(this.hass.localize)} + K)`
             : undefined,
         visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
@@ -673,11 +673,7 @@ class HUIRoot extends LitElement {
     );
 
   private _clearParam(param: string) {
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam(param))
-    );
+    replaceCurrentUrl(constructUrlCurrentPath(removeSearchParam(param)));
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -723,21 +719,6 @@ class HUIRoot extends LitElement {
     } else if (searchParams.conversation === "1") {
       this._clearParam("conversation");
       this._showVoiceCommandDialog();
-    } else if (searchParams["more-info-entity-id"]) {
-      const entityId = searchParams["more-info-entity-id"];
-      const view = searchParams["more-info-view"];
-      this._clearParam("more-info-entity-id");
-      if (view) {
-        this._clearParam("more-info-view");
-      }
-      // Wait for the next render to ensure the view is fully loaded
-      // because the more info dialog is closed when the url changes
-      afterNextRender(() => {
-        showMoreInfoDialog(this, {
-          entityId,
-          view: isMoreInfoView(view) ? view : undefined,
-        });
-      });
     }
   }
 
@@ -776,7 +757,7 @@ class HUIRoot extends LitElement {
       huiView.narrow = this.narrow;
     }
 
-    let newSelectView;
+    let newSelectView: HUIRoot["_curView"];
 
     let viewPath: string | undefined = this.route!.path.split("/")[1];
     viewPath = viewPath ? decodeURI(viewPath) : undefined;
@@ -889,41 +870,39 @@ class HUIRoot extends LitElement {
   };
 
   private _goBack(): void {
-    const views = this.lovelace?.config.views ?? [];
-    const curViewConfig =
-      typeof this._curView === "number" ? views[this._curView] : undefined;
-
-    if (curViewConfig?.back_path != null) {
-      navigate(curViewConfig.back_path, { replace: true });
-    } else if (this.backPath) {
-      navigate(this.backPath, { replace: true });
-    } else if (history.length > 1) {
-      goBack();
-    } else if (!views[0].subview) {
-      navigate(this.route!.prefix, { replace: true });
-    } else {
-      navigate("/");
+    const configuredBackPath = this._configuredBackPath;
+    if (configuredBackPath) {
+      navigate(configuredBackPath, { replace: true });
+      return;
     }
+
+    const views = this.lovelace?.config.views ?? [];
+    // Falling back to the dashboard root only makes sense when its first view
+    // is a real one.
+    goBack(views[0]?.subview ? undefined : this.route?.prefix);
   }
 
   private _handleBackClick(ev: MouseEvent): void {
-    if (this._backPath && !isNavigationClick(ev)) {
-      return;
-    }
-    this._goBack();
+    handleBackClick(ev, this._backPath, () => this._goBack());
   }
 
-  private get _backPath(): string | undefined {
+  private get _configuredBackPath(): string | undefined {
     const views = this.lovelace?.config.views ?? [];
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    if (curViewConfig?.back_path != null) {
-      return curViewConfig.back_path;
+    return sanitizeNavigationPath(curViewConfig?.back_path ?? this.backPath);
+  }
+
+  private get _backPath(): string | undefined {
+    if (this._configuredBackPath) {
+      return this._configuredBackPath;
     }
-    if (this.backPath) {
-      return this.backPath;
-    }
+
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
     return curViewConfig?.subview ? this.route!.prefix : undefined;
   }
 
@@ -1083,10 +1062,18 @@ class HUIRoot extends LitElement {
     await this.hass.loadFragmentTranslation("config");
     const dashboards = await fetchDashboards(this.hass);
     const dashboard = dashboards.find((d) => d.url_path === urlPath);
+    const lovelace = this.lovelace;
+    const lovelaceConfig =
+      lovelace && !isStrategyDashboard(lovelace.rawConfig)
+        ? lovelace.rawConfig
+        : undefined;
 
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
+      ...(lovelace && lovelaceConfig
+        ? { lovelaceConfig, saveConfig: lovelace.saveConfig }
+        : {}),
       updateDashboard: async (values) => {
         await updateDashboard(this.hass!, dashboard!.id, values);
       },
@@ -1254,7 +1241,7 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    let view;
+    let view: HUIView;
     const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
@@ -1265,12 +1252,16 @@ class HUIRoot extends LitElement {
     if (this._viewCache[viewIndex]) {
       view = this._viewCache[viewIndex];
     } else {
+      if (!this._childPanelReady) {
+        this._childPanelReady = new ChildPanelReady(this);
+        this.requestUpdate();
+      }
       view = document.createElement("hui-view");
       view.index = viewIndex;
       this._viewCache[viewIndex] = view;
     }
 
-    view.lovelace = this.lovelace;
+    view.lovelace = this.lovelace!;
     view.hass = this.hass;
     view.narrow = this.narrow;
 
@@ -1343,9 +1334,7 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
         }
         .header {
           background-color: var(--app-header-background-color);
@@ -1358,7 +1347,6 @@ class HUIRoot extends LitElement {
                 0px
               )
           );
-          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
@@ -1392,6 +1380,8 @@ class HUIRoot extends LitElement {
           align-items: center;
           font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
+          padding-right: calc(12px + var(--safe-area-inset-right, 0px));
+          width: calc(100% + var(--safe-area-inset-right, 0px));
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
@@ -1399,7 +1389,13 @@ class HUIRoot extends LitElement {
           border-bottom: none;
         }
         .narrow .toolbar {
-          padding: 0 4px;
+          padding: 0 calc(4px + var(--safe-area-inset-right, 0px)) 0
+            calc(4px + var(--safe-area-inset-left, 0px));
+          width: calc(
+            100% + var(--safe-area-inset-left, 0px) +
+              var(--safe-area-inset-right, 0px)
+          );
+          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
         }
         .main-title {
           margin-inline-start: var(--ha-space-6);
@@ -1544,20 +1540,22 @@ class HUIRoot extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
+          --view-container-inset-left: 0px;
+          --view-container-inset-right: var(--safe-area-inset-right);
+          --view-container-inset-bottom: var(--safe-area-inset-bottom);
           padding-top: calc(
             var(--header-height) + var(--safe-area-inset-top) +
               var(--view-container-padding-top, 0px)
           );
-          padding-right: var(--safe-area-inset-right);
-          padding-inline-end: var(--safe-area-inset-right);
+          padding-right: var(--view-container-inset-right);
           padding-bottom: calc(
-            var(--safe-area-inset-bottom) +
+            var(--view-container-inset-bottom) +
               var(--view-container-padding-bottom, 0px)
           );
         }
         .narrow hui-view-container {
-          padding-left: var(--safe-area-inset-left);
-          padding-inline-start: var(--safe-area-inset-left);
+          --view-container-inset-left: var(--safe-area-inset-left);
+          padding-left: var(--view-container-inset-left);
         }
         hui-view-container > * {
           display: flex;

@@ -9,6 +9,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../src/common/dom/fire_event";
+import { computeEntityNameDisplayWithoutContext } from "../../src/common/entity/compute_entity_name_display";
 import { setDirectionStyles } from "../../src/common/util/compute_rtl";
 import "../../src/components/ha-button";
 import "../../src/components/ha-drawer";
@@ -682,10 +683,7 @@ class HaGallery extends LitElement {
       formatEntityAttributeName: (_stateObj, attribute) => attribute,
       formatEntityAttributeValue: (stateObj, attribute, value) =>
         value != null ? value : (stateObj.attributes[attribute] ?? ""),
-      formatEntityName: (stateObj, type) =>
-        typeof type === "string"
-          ? type
-          : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
+      formatEntityName: computeEntityNameDisplayWithoutContext,
     } as unknown as HomeAssistant;
   }
 
@@ -693,9 +691,7 @@ class HaGallery extends LitElement {
     haStyle,
     css`
       :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
+        user-select: initial;
         --ha-sidebar-width: 300px;
         --ha-sidebar-expanded-width: 300px;
         --ha-sidebar-expanded-item-width: 292px;

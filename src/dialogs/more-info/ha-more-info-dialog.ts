@@ -8,8 +8,8 @@ import {
   mdiContentDuplicate,
   mdiDevices,
   mdiDotsVertical,
-  mdiFormatListBulletedSquare,
   mdiInformationOutline,
+  mdiLinkVariant,
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
@@ -27,20 +27,25 @@ import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { mainWindow } from "../../common/dom/get_main_window";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/context/get_entity_context";
+  computeEntityEntryNameList,
+  computeEntityNameList,
+  type EntityNameItem,
+} from "../../common/entity/compute_entity_name_display";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  replaceCurrentUrl,
+  updateHistoryState,
+} from "../../common/navigate";
+import {
+  createMoreInfoUrl,
+  decodeMoreInfoUrl,
+} from "../../common/url/more-info-query-params";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
@@ -50,7 +55,7 @@ import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
-import "../../components/ha-related-items";
+import "./ha-more-info-related";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -59,8 +64,6 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import type { ItemType } from "../../data/search";
-import { SearchableDomains } from "../../data/search";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
@@ -98,6 +101,8 @@ export interface MoreInfoDialogParams {
   tab?: MoreInfoView;
   large?: boolean;
   data?: Record<string, any>;
+  fromUrl?: boolean;
+  returnUrl?: string;
   parentElement?: LitElement;
 }
 
@@ -119,6 +124,13 @@ declare global {
 }
 
 const DEFAULT_VIEW: MoreInfoView = "info";
+
+const BREADCRUMB_NAME: EntityNameItem[] = [
+  { type: "area" },
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+];
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends DirtyStateProviderMixin<
@@ -142,6 +154,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   @state() private _entityId?: string | null;
 
   @state() private _data?: Record<string, any>;
+
+  private _returnUrl?: string;
 
   @state() private _currView: MoreInfoView = DEFAULT_VIEW;
 
@@ -177,6 +191,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const view = params.view || params.tab || DEFAULT_VIEW;
 
     this._data = params.data;
+    this._returnUrl = params.returnUrl;
     this._currView = view;
     this._initialView = view;
     this._childViewStack = [];
@@ -212,6 +227,15 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private _dialogClosed() {
+    // Restore the pre-dialog URL only while the URL still carries this
+    // dialog's deep-link params: navigate() waits for the close only up to
+    // DIALOG_WAIT_TIMEOUT and may have committed a new URL already.
+    if (
+      this._returnUrl &&
+      decodeMoreInfoUrl(mainWindow.location.search).entityId === this._entityId
+    ) {
+      replaceCurrentUrl(this._returnUrl);
+    }
     this._entityId = undefined;
     this._parentEntityIds = [];
     this._entry = undefined;
@@ -220,6 +244,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
     this._childViewStack = [];
+    this._returnUrl = undefined;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -268,17 +293,26 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private _setView(view: MoreInfoView) {
-    history.replaceState(
-      {
-        ...history.state,
-        dialogParams: {
-          ...history.state?.dialogParams,
-          view,
-        },
+    updateHistoryState({
+      dialogParams: {
+        ...getHistoryState()?.dialogParams,
+        view,
       },
-      ""
-    );
+    });
     this._currView = view;
+    this._syncUrl();
+  }
+
+  private _syncUrl() {
+    if (!this._returnUrl || !this._entityId) {
+      return;
+    }
+    replaceCurrentUrl(
+      createMoreInfoUrl(this._returnUrl, {
+        entityId: this._entityId,
+        view: this._currView,
+      })
+    );
   }
 
   private _goBack() {
@@ -307,6 +341,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       this._entityId = this._parentEntityIds.pop();
       this._currView = DEFAULT_VIEW;
       this._loadEntityRegistryEntry();
+      this._syncUrl();
     }
   }
 
@@ -321,6 +356,24 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   private _goToSettings(): void {
     this._setView("settings");
+  }
+
+  private _computeViewTitle(): string | undefined {
+    switch (this._currView) {
+      case "details":
+        return this.hass.localize("ui.dialogs.more_info_control.details");
+      case "related":
+        return this.hass.localize("ui.dialogs.more_info_control.related");
+      case "add_to":
+        return this.hass.localize("ui.dialogs.more_info_control.add_to.item");
+      case "settings":
+        return (
+          this._childView?.viewTitle ||
+          this.hass.localize("ui.dialogs.more_info_control.settings")
+        );
+      default:
+        return this._childView?.viewTitle;
+    }
   }
 
   private _showChildView(ev: CustomEvent): void {
@@ -531,52 +584,36 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const showCloseIcon =
       isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
 
-    const context = stateObj
-      ? getEntityContext(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        )
-      : this._entry
-        ? getEntityEntryContext(
-            this._entry,
+    const breadcrumb = (
+      stateObj
+        ? computeEntityNameList(
+            stateObj,
+            BREADCRUMB_NAME,
             this.hass.entities,
             this.hass.devices,
             this.hass.areas,
             this.hass.floors
           )
-        : undefined;
-
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass.devices)
-        : entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
-
-    const breadcrumb = [areaName, deviceName, entityName].filter(
-      (v): v is string => Boolean(v)
-    );
-    const defaultTitle = breadcrumb.pop() || entityId;
-    const addToTitle = this.hass.localize(
-      "ui.dialogs.more_info_control.add_to.title",
-      { target: defaultTitle }
-    );
+        : this._entry
+          ? computeEntityEntryNameList(
+              this._entry,
+              BREADCRUMB_NAME,
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            )
+          : [entityId]
+    ).filter((v): v is string => Boolean(v));
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
-    const title =
-      this._currView === "details"
-        ? this.hass.localize("ui.dialogs.more_info_control.details")
-        : this._currView === "add_to"
-          ? addToTitle
-          : this._childView?.viewTitle || defaultTitle;
+    const viewTitle = this._computeViewTitle();
+    const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
+    if (!viewTitle) {
+      breadcrumb.pop();
+    }
+    const title = viewTitle || defaultTitle;
 
     const favoritesContext =
       this._entry && stateObj
@@ -599,6 +636,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const resetFavoritesDisabled =
       favoritesContext && favoritesHandler
         ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
+        : false;
+
+    const copyFavoritesDisabled =
+      favoritesContext && favoritesHandler?.canCopy
+        ? !favoritesHandler.canCopy(favoritesContext.entry)
         : false;
 
     const isRTL = computeRTL(
@@ -755,7 +797,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                     ></ha-svg-icon>
                                     ${favoritesLabels?.reset}
                                   </ha-dropdown-item>
-                                  <ha-dropdown-item value="copy_favorites">
+                                  <ha-dropdown-item
+                                    value="copy_favorites"
+                                    .disabled=${copyFavoritesDisabled}
+                                  >
                                     <ha-svg-icon
                                       slot="icon"
                                       .path=${mdiContentDuplicate}
@@ -813,7 +858,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           <ha-dropdown-item value="related">
                             <ha-svg-icon
                               slot="icon"
-                              .path=${mdiInformationOutline}
+                              .path=${mdiLinkVariant}
                             ></ha-svg-icon>
                             ${this.hass.localize(
                               "ui.dialogs.more_info_control.related"
@@ -822,7 +867,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           <ha-dropdown-item value="details">
                             <ha-svg-icon
                               slot="icon"
-                              .path=${mdiFormatListBulletedSquare}
+                              .path=${mdiInformationOutline}
                             ></ha-svg-icon>
                             ${this.hass.localize(
                               "ui.dialogs.more_info_control.details"
@@ -911,15 +956,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                 `
                               : this._currView === "related"
                                 ? html`
-                                    <ha-related-items
+                                    <ha-more-info-related
                                       .hass=${this.hass}
-                                      .itemId=${entityId}
-                                      .itemType=${
-                                        SearchableDomains.has(domain)
-                                          ? (domain as ItemType)
-                                          : "entity"
-                                      }
-                                    ></ha-related-items>
+                                      .entry=${this._entry}
+                                      .params=${{ entityId }}
+                                    ></ha-more-info-related>
                                   `
                                 : this._currView === "add_to"
                                   ? html`
@@ -972,15 +1013,45 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       }
     }
 
-    if (changedProps.has("_currView") || changedProps.has("_entry")) {
-      if (this._currView === "settings" && this._entry) {
-        this._initDirtyTracking({ type: "deep" });
-      }
+    if (
+      this._currView === "settings" &&
+      this._entry &&
+      ((changedProps.has("_currView") &&
+        changedProps.get("_currView") !== "settings") ||
+        (changedProps.has("_entry") && !changedProps.get("_entry")))
+    ) {
+      this._initDirtyTracking({ type: "deep" });
     }
 
     if (changedProps.has("_currView")) {
       this._infoEditMode = false;
       this._detailsYamlMode = false;
+    }
+
+    if (changedProps.has("_entityId")) {
+      this._reportShownEntityToExternalApp(
+        changedProps.get("_entityId") as string | null | undefined
+      );
+    }
+  }
+
+  private _reportShownEntityToExternalApp(
+    previousEntityId: string | null | undefined
+  ) {
+    const external = this.hass.auth.external;
+    if (!external) {
+      return;
+    }
+    if (this._entityId) {
+      external.fireMessage({
+        type: "more_info/opened",
+        payload: { entity_id: this._entityId },
+      });
+    } else if (previousEntityId) {
+      external.fireMessage({
+        type: "more_info/closed",
+        payload: { entity_id: previousEntityId },
+      });
     }
   }
 
@@ -1020,6 +1091,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._detailsYamlMode = false;
     this._childViewStack = [];
     this._loadEntityRegistryEntry();
+    this._syncUrl();
   }
 
   private _enableEscapeKeyClose = () => {
@@ -1063,6 +1135,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           outline: none;
           flex: 1;
           overflow: auto;
+          /* Keep the content width constant when the scrollbar toggles;
+             otherwise width-dependent content can flicker at the overflow
+             threshold (#53228). */
+          scrollbar-gutter: stable;
         }
 
         .content-wrapper.settings-view .fade-bottom {

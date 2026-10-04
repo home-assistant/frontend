@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import { css, html, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
@@ -30,6 +30,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
+      <slot name="alerts"></slot>
       ${
         this.config.description
           ? html`<ha-markdown

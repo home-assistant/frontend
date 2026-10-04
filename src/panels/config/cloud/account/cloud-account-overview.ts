@@ -9,9 +9,9 @@ import {
   mdiVideo,
   mdiWebhook,
 } from "@mdi/js";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { TemplateResult } from "lit";
 import { formatDate } from "../../../../common/datetime/format_date";
 import { relativeTime } from "../../../../common/datetime/relative_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -20,11 +20,13 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
+import "../../../../components/list/ha-list-nav";
 import type { BackupConfig } from "../../../../data/backup";
-import { cloudBackupHealth, cloudBackupEnabled } from "../../../../data/backup";
+import { cloudBackupEnabled, cloudBackupHealth } from "../../../../data/backup";
 import type {
   CloudStatusLoggedIn,
   SubscriptionInfo,
@@ -57,7 +59,7 @@ export class CloudAccountOverview extends LitElement {
 
   private _renderTopCard(): TemplateResult {
     return html`
-      <ha-card outlined>
+      <ha-card outlined class="summary-card">
         <div class="card-content">
           <div
             class="thank-you-header"
@@ -121,8 +123,8 @@ export class CloudAccountOverview extends LitElement {
           <p class="muted">
             ${this.hass.localize("ui.panel.config.cloud.account.funding_note")}
           </p>
-          ${this._renderSubscriptionState()}
         </div>
+        ${this._renderSubscriptionState()}
       </ha-card>
     `;
   }
@@ -132,6 +134,7 @@ export class CloudAccountOverview extends LitElement {
       case "trial":
         return html`
           <ha-alert
+            class="subscription-alert"
             alert-type="warning"
             .title=${this.hass.localize(
               "ui.panel.config.cloud.account.overview.trial_title"
@@ -156,6 +159,7 @@ export class CloudAccountOverview extends LitElement {
       case "canceled":
         return html`
           <ha-alert
+            class="subscription-alert"
             alert-type="warning"
             .title=${this.hass.localize(
               "ui.panel.config.cloud.account.overview.canceled_title"
@@ -181,6 +185,7 @@ export class CloudAccountOverview extends LitElement {
       case "expired":
         return html`
           <ha-alert
+            class="subscription-alert"
             alert-type="error"
             .title=${this.hass.localize(
               "ui.panel.config.cloud.account.overview.expired_title"
@@ -257,8 +262,8 @@ export class CloudAccountOverview extends LitElement {
           />
         </div>
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item>
+          <ha-list-base>
+            <ha-list-item-base>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.email"
@@ -280,16 +285,16 @@ export class CloudAccountOverview extends LitElement {
                   @click=${this._toggleEmail}
                 ></ha-icon-button>
               </span>
-            </ha-md-list-item>
-            <ha-md-list-item>
+            </ha-list-item-base>
+            <ha-list-item-base>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.subscription"
                 )}</span
               >
               <span slot="supporting-text">${this._subscriptionDetail()}</span>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-base>
+          </ha-list-base>
         </div>
         <div class="card-actions split">
           <ha-button
@@ -345,7 +350,11 @@ export class CloudAccountOverview extends LitElement {
               "ui.panel.config.cloud.account.overview.features_intro"
             )}
           </p>
-          <ha-md-list>
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.cloud.account.overview.features_title"
+            )}
+          >
             ${this._featureRow(
               mdiEarth,
               this.hass.localize(
@@ -408,7 +417,7 @@ export class CloudAccountOverview extends LitElement {
               webhookStatus,
               "/config/cloud/webhooks"
             )}
-          </ha-md-list>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -421,12 +430,12 @@ export class CloudAccountOverview extends LitElement {
     href: string
   ): TemplateResult {
     return html`
-      <ha-md-list-item type="link" href=${href}>
+      <ha-list-item-button href=${href}>
         <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
         <span slot="headline">${title}</span>
         <span slot="supporting-text">${supporting}</span>
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -636,11 +645,15 @@ export class CloudAccountOverview extends LitElement {
           width: auto;
           color: var(--primary-text-color);
         }
-        ha-alert {
-          display: block;
-          margin-top: var(--ha-space-3);
+        /* Prevent the embedded .subscription-alert ha-alert from bleeding outside the card */
+        .summary-card {
+          overflow: hidden;
         }
-        ha-alert ha-button[slot="action"] {
+        .subscription-alert {
+          display: block;
+          --ha-alert-padding: var(--ha-space-3);
+        }
+        .subscription-alert ha-button[slot="action"] {
           width: max-content;
           white-space: nowrap;
         }
@@ -653,9 +666,6 @@ export class CloudAccountOverview extends LitElement {
         .nc-logo {
           width: 36px;
           height: auto;
-        }
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
         .muted {
           color: var(--secondary-text-color);
@@ -685,10 +695,8 @@ export class CloudAccountOverview extends LitElement {
         .status-dot.disabled {
           background-color: var(--error-color);
         }
-        ha-md-list {
-          padding: 0;
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
+        ha-list-base {
+          --ha-row-item-padding-inline: 0;
         }
         .extras-header {
           display: flex;
@@ -714,14 +722,12 @@ export class CloudAccountOverview extends LitElement {
           padding-inline: var(--ha-space-4);
           margin-top: 0;
         }
-        .extras-content ha-md-list {
+        .extras-content ha-list-nav {
           padding-top: 0;
-          --md-list-item-leading-space: var(--ha-space-4);
-          --md-list-item-trailing-space: var(--ha-space-4);
+          --ha-row-item-padding-inline: var(--ha-space-4);
         }
-        .extras-content ha-md-list-item {
-          --md-list-item-top-space: var(--ha-space-2);
-          --md-list-item-bottom-space: var(--ha-space-2);
+        .extras-content ha-list-item-button {
+          --ha-row-item-padding-block: var(--ha-space-2);
         }
         .extras-content ha-svg-icon[slot="start"],
         .extras-content ha-icon-next {

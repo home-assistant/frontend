@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { sanitizeHttpUrl } from "../../common/url/sanitize-http-url";
 import type { DataEntryFlowStepExternal } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -24,7 +25,11 @@ class StepFlowExternal extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    window.open(this.step.url);
+    // Opened without user interaction, so only ever follow an http(s) URL
+    const url = sanitizeHttpUrl(this.step.url);
+    if (url) {
+      window.open(url);
+    }
   }
 
   static get styles(): CSSResultGroup {

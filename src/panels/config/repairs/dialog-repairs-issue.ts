@@ -4,15 +4,19 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
+import {
+  isHomeAssistantUrl,
+  sanitizeLinkUrl,
+} from "../../../common/url/sanitize-http-url";
 import "../../../components/ha-alert";
-import "../../../components/ha-dialog";
 import "../../../components/ha-button";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
+import "../../../components/ha-svg-icon";
 import type { RepairsIssue } from "../../../data/repairs";
 import { ignoreRepairsIssue } from "../../../data/repairs";
+import "../../../dialogs/repairs-flow/dialog-repairs-issue-subtitle";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
@@ -52,19 +56,25 @@ class DialogRepairsIssue extends LitElement {
       return nothing;
     }
 
-    const learnMoreUrlIsHomeAssistant =
-      this._issue.learn_more_url?.startsWith("homeassistant://") || false;
+    const learnMoreUrlIsHomeAssistant = isHomeAssistantUrl(
+      this._issue.learn_more_url
+    );
+    const learnMoreUrl = sanitizeLinkUrl(this._issue.learn_more_url);
 
-    const dialogTitle =
-      this.hass.localize(
-        `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.title`,
-        this._issue.translation_placeholders || {}
-      ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
+    const issueTitle = this.hass.localize(
+      `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.title`,
+      this._issue.translation_placeholders || {}
+    );
+
+    const shortIssueTitle = this.hass.localize(
+      `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.short_title`,
+      this._issue.translation_placeholders || {}
+    );
 
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${dialogTitle}
+        header-title=${shortIssueTitle || this.hass.localize("ui.panel.config.repairs.dialog.title")}
         aria-describedby="dialog-repairs-issue-description"
         @closed=${this._dialogClosed}
       >
@@ -74,6 +84,7 @@ class DialogRepairsIssue extends LitElement {
           .issue=${this._issue}
         ></dialog-repairs-issue-subtitle>
         <div class="dialog-content">
+          ${!shortIssueTitle ? html`<h2 class="issue-title">${issueTitle}</h2>` : nothing}
           ${
             this._issue.breaks_in_ha_version
               ? html`
@@ -127,20 +138,13 @@ class DialogRepairsIssue extends LitElement {
             }
           </ha-button>
           ${
-            this._issue.learn_more_url
+            learnMoreUrl
               ? html`
                   <ha-button
                     slot="primaryAction"
                     appearance="filled"
                     rel="noopener noreferrer"
-                    href=${
-                      learnMoreUrlIsHomeAssistant
-                        ? this._issue.learn_more_url.replace(
-                            "homeassistant://",
-                            "/"
-                          )
-                        : this._issue.learn_more_url
-                    }
+                    href=${learnMoreUrl}
                     .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
                     @click=${
                       learnMoreUrlIsHomeAssistant ? this.closeDialog : undefined
@@ -180,6 +184,13 @@ class DialogRepairsIssue extends LitElement {
     css`
       .dialog-content {
         padding-top: 0;
+      }
+      .issue-title {
+        margin: 0 0 var(--ha-space-4);
+        font-size: var(--ha-font-size-xl);
+        font-weight: var(--ha-font-weight-medium);
+        line-height: var(--ha-line-height-condensed);
+        overflow-wrap: anywhere;
       }
       ha-alert {
         margin-bottom: var(--ha-space-4);

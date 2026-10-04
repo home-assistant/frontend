@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-button";
-import "../../components/ha-dialog-header";
 import "../../components/ha-spinner";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { interceptWakeWord } from "../../data/assist_satellite";

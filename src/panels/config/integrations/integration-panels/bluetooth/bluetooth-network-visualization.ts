@@ -8,6 +8,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { throttle } from "../../../../../common/util/throttle";
@@ -174,8 +175,8 @@ export class BluetoothNetworkVisualization extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>): void {
+    this._searchFilter = ev.target.value ?? "";
   }
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {
@@ -240,7 +241,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         const scannerDevice = this._sourceDevices[scanner.source] as
           DeviceRegistryEntry | undefined;
         const area = scannerDevice
-          ? getDeviceArea(scannerDevice, this.hass.areas)
+          ? getDeviceArea(scannerDevice, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: scanner.source,
@@ -282,7 +283,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         const device = this._sourceDevices[node.address] as
           DeviceRegistryEntry | undefined;
         const area = device
-          ? getDeviceArea(device, this.hass.areas)
+          ? getDeviceArea(device, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: node.address,
@@ -350,7 +351,9 @@ export class BluetoothNetworkVisualization extends LitElement {
     const name = this._getBluetoothDeviceName(address);
     const btDevice = this._data.find((d) => d.address === address);
     const device = this._sourceDevices[address];
-    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    const area = device
+      ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+      : undefined;
     const areaLine = area
       ? html`<br /><b
             >${this.hass.localize("ui.panel.config.bluetooth.area")}: </b

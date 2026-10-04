@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { consume } from "@lit/context";
+import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -104,6 +104,7 @@ export class HaSelectSelector extends LitElement {
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
+          .disabled=${this.disabled}
           @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
         ></ha-select-box>
@@ -187,6 +188,7 @@ export class HaSelectSelector extends LitElement {
                             .idx=${idx}
                             @remove=${this._removeItem}
                             .label=${label}
+                            .title=${label}
                             selected
                           >
                             ${
@@ -266,9 +268,7 @@ export class HaSelectSelector extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`<ha-input-helper-text .disabled=${this.disabled}
-          >${this.helper}</ha-input-helper-text
-        >`
+      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
       : "";
   }
 

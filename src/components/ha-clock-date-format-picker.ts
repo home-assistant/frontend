@@ -1,9 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
 import { resolveTimeZone } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
@@ -198,11 +199,7 @@ export class HaClockDateFormatPicker extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`
-          <ha-input-helper-text .disabled=${this.disabled}>
-            ${this.helper}
-          </ha-input-helper-text>
-        `
+      ? html` <ha-input-helper-text> ${this.helper} </ha-input-helper-text> `
       : nothing;
   }
 

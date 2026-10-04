@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { generateStatisticsChartData } from "../../src/components/chart/statistics-chart-data";
 import { StatisticMeanType } from "../../src/data/recorder";
 import type { StatisticsMetaData } from "../../src/data/recorder";
@@ -62,9 +62,8 @@ const base = {
 } as const;
 
 describe("generateStatisticsChartData", () => {
-  bench(
-    "line with bands, hourly month, 5 entities",
-    () => {
+  test("line with bands, hourly month, 5 entities", async ({ bench }) => {
+    await bench("line with bands, hourly month, 5 entities", () => {
       generateStatisticsChartData({
         ...base,
         statisticsData: meanMonth,
@@ -73,13 +72,11 @@ describe("generateStatisticsChartData", () => {
         chartType: "line",
         period: "hour",
       });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "line with bands, 5-minute week, 5 entities",
-    () => {
+  test("line with bands, 5-minute week, 5 entities", async ({ bench }) => {
+    await bench("line with bands, 5-minute week, 5 entities", () => {
       generateStatisticsChartData({
         ...base,
         statisticsData: meanWeek5min,
@@ -88,13 +85,11 @@ describe("generateStatisticsChartData", () => {
         chartType: "line",
         period: "5minute",
       });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "stacked bars, hourly month sums, 5 entities",
-    () => {
+  test("stacked bars, hourly month sums, 5 entities", async ({ bench }) => {
+    await bench("stacked bars, hourly month sums, 5 entities", () => {
       generateStatisticsChartData({
         ...base,
         statisticsData: sumMonth,
@@ -103,7 +98,6 @@ describe("generateStatisticsChartData", () => {
         chartType: "bar-stack",
         period: "hour",
       });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

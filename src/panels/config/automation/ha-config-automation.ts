@@ -47,9 +47,11 @@ class HaConfigAutomation extends HassRouterPage {
       },
       edit: {
         tag: "ha-automation-editor",
+        itemId: true,
       },
       show: {
         tag: "ha-automation-editor",
+        itemId: true,
       },
       trace: {
         tag: "ha-automation-trace",

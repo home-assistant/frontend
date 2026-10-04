@@ -29,7 +29,7 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  *
  * @attr {("xs"|"s"|"m"|"l"|"xl")} size - Sets the button size.
  * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
- * @attr {("accent"|"filled"|"plain")} appearance - Sets the button appearance.
+ * @attr {("accent"|"filled"|"outlined"|"plain")} appearance - Sets the button appearance.
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
  * @attr {boolean} disabled - Disables the button and prevents user interaction.
  */
@@ -63,6 +63,21 @@ export class HaButton extends Button {
             ease-out;
           text-wrap: wrap;
           box-shadow: var(--ha-button-box-shadow);
+        }
+
+        :host([size="xs"]) .button {
+          --wa-form-control-height: var(
+            --ha-button-height,
+            var(--button-height, 24px)
+          );
+          font-size: var(--ha-font-size-m);
+          --wa-form-control-padding-inline: var(--ha-space-2);
+        }
+
+        /* A default 24px icon would fill the whole xs button. */
+        :host([size="xs"]) slot[name="start"]::slotted(*),
+        :host([size="xs"]) slot[name="end"]::slotted(*) {
+          --mdc-icon-size: 16px;
         }
 
         :host([size="s"]) .button {
@@ -184,6 +199,7 @@ export class HaButton extends Button {
         :host([appearance~="outlined"]) .button.disabled {
           background-color: transparent;
           color: var(--ha-color-on-disabled-quiet);
+          border-color: var(--ha-color-on-disabled-quiet);
         }
 
         @media (hover: hover) {

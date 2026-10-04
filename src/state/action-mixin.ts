@@ -20,7 +20,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private async _handleAction(
-      ev: HASSDomEvent<{ config: ActionConfigParams; action: string }>
+      ev: HASSDomEvent<HASSDomEvents["hass-action"]>
     ) {
       if (!this.hass) return;
       handleAction(this, this.hass, ev.detail.config, ev.detail.action);

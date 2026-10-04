@@ -65,7 +65,7 @@ const flushPrefixed = (suite, stream, pending) => {
 const runSuite = (suite, env) =>
   new Promise((resolve) => {
     const started = Date.now();
-    const child = spawn("yarn", [`test:e2e:${suite}`], {
+    const child = spawn("pnpm", [`test:e2e:${suite}`], {
       stdio: ["ignore", "pipe", "pipe"],
       env,
     });

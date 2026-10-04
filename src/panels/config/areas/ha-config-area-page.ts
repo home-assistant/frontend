@@ -1,7 +1,5 @@
 import { startOfYesterday } from "date-fns";
-import { consume } from "@lit/context";
 import {
-  mdiChevronRight,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -20,6 +18,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -39,6 +38,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-button-next";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -604,12 +604,11 @@ class HaConfigAreaPage extends LitElement {
                       back: "1",
                     })}"
                   >
-                    <ha-icon-button
-                      .path=${mdiChevronRight}
+                    <ha-icon-button-next
                       .label=${this.hass.localize(
                         "ui.dialogs.more_info_control.show_more"
                       )}
-                    ></ha-icon-button>
+                    ></ha-icon-button-next>
                   </a>
                 </div>
                 <ha-logbook
@@ -644,6 +643,7 @@ class HaConfigAreaPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/areas/dashboard"
         .header=${html`${
           area.icon
             ? html`<ha-icon
@@ -902,7 +902,7 @@ class HaConfigAreaPage extends LitElement {
       destructive: true,
       confirm: async () => {
         await deleteAreaRegistryEntry(this.hass!, area!.area_id);
-        afterNextRender(() => goBack("/config"));
+        afterNextRender(() => goBack("/config/areas/dashboard"));
       },
     });
   }

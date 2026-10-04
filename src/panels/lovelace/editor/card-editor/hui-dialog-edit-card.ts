@@ -135,6 +135,7 @@ export class HuiDialogEditCard
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this._cardConfig || !changedProps.has("_cardConfig")) {
       return;
     }
@@ -491,8 +492,8 @@ export class HuiDialogEditCard
           max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
+          padding-inline-start: var(--ha-space-1);
           padding-inline-end: var(--ha-space-2);
-          margin-inline-start: var(--ha-space-1);
           margin-bottom: 0;
         }
 

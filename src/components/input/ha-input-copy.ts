@@ -1,7 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { internationalizationContext } from "../../data/context";
 import { showToast } from "../../util/toast";
@@ -111,7 +113,10 @@ export class HaInputCopy extends LitElement {
     `;
   }
 
-  private _focusInput(ev: Event) {
+  private _focusInput(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    if (!this.readonly) {
+      return;
+    }
     const inputElement = ev.currentTarget as HaInput;
     inputElement.select();
   }

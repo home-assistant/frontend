@@ -14,7 +14,7 @@ declare global {
   }
 
   interface GlobalEventHandlersEventMap {
-    "connection-status": HASSDomEvent<ConnectionStatus>;
+    "connection-status": HASSDomEvent<HASSDomEvents["connection-status"]>;
   }
 }
 

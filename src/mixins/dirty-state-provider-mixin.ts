@@ -1,7 +1,8 @@
 import { provide } from "@lit/context";
 import deepClone from "deep-clone-simple";
-import type { LitElement } from "lit";
+import type { LitElement, PropertyValues } from "lit";
 import { state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import { shallowEqual } from "../common/util/shallow-equal";
 import {
@@ -17,6 +18,18 @@ export type CompareStrategy<State> =
   | { type: "shallow" }
   | { type: "custom"; compare: (a: State, b: State) => boolean };
 
+const connectedDirtyStateProviders = new Map<object, boolean>();
+
+const publishGlobalDirtyState = (): void => {
+  const isDirty = Array.from(connectedDirtyStateProviders.values()).some(
+    Boolean
+  );
+  if (isDirty !== window.isDirtyState) {
+    window.isDirtyState = isDirty;
+    fireEvent(window, "dirty-state-changed", { isDirty });
+  }
+};
+
 /**
  * Mixin that provides dirty-state tracking via Lit context.
  *
@@ -25,6 +38,9 @@ export type CompareStrategy<State> =
  * strategy. `isDirty` is true when any slice differs from its initial value,
  * so independent contributors (e.g. a helper form alongside the entity
  * registry editor) can coexist without overwriting each other.
+ *
+ * Connected providers contribute to the global dirty state. It remains dirty
+ * while any provider has unsaved changes.
  *
  * `isEffectiveDirty` runs the same comparison, but first passes each slice's
  * initial and current value through the optional `effectiveNormalize` function
@@ -116,6 +132,24 @@ export const DirtyStateProviderMixin =
 
       private _publishContext(): void {
         this._dirtyStateContext = this._buildContextValue();
+      }
+
+      public connectedCallback(): void {
+        super.connectedCallback();
+        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        publishGlobalDirtyState();
+      }
+
+      protected updated(changedProperties: PropertyValues<this>): void {
+        super.updated(changedProperties);
+        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        publishGlobalDirtyState();
+      }
+
+      public disconnectedCallback(): void {
+        connectedDirtyStateProviders.delete(this);
+        publishGlobalDirtyState();
+        super.disconnectedCallback();
       }
 
       private _writeSlice(key: Key | DefaultDirtyStateKey, value: State): void {

@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiApplicationImport,
   mdiArrowUpBoldCircleOutline,
@@ -36,12 +36,14 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { consumeEntityState } from "../../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { navigate } from "../../../../../common/navigate";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../../../common/url/sanitize-http-url";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/chips/ha-assist-chip";
 import "../../../../../components/chips/ha-chip-set";
@@ -85,6 +87,7 @@ import type { HassioStats } from "../../../../../data/hassio/common";
 import {
   extractApiErrorMessage,
   fetchHassioStats,
+  supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
 import {
@@ -121,6 +124,8 @@ const RATING_ICON = {
   8: mdiNumeric8,
 };
 
+const MAX_RATING = 8;
+
 const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
@@ -139,6 +144,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @consume({ context: internationalizationContext, subscribe: true })
   private i18n!: ContextType<typeof internationalizationContext>;
 
+  @state()
   @consume({ context: registriesContext, subscribe: true })
   private registries!: ContextType<typeof registriesContext>;
 
@@ -204,7 +210,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     <img
                       class="logo"
                       alt=""
-                      src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                      src=${supervisorUrl(
+                        `addons/${this._currentAddon.slug}/logo`
+                      )}
                     />
                   `
                 : nothing
@@ -225,20 +233,33 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.current_version",
                         { version: this._currentAddon.version }
                       )}
-                      <div class="changelog" @click=${this._openChangelog}>
-                        (<span class="changelog-link"
-                          >${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.changelog"
-                          )}</span
-                        >)
-                      </div>
+                      ${
+                        this._currentAddon.changelog
+                          ? html`<div
+                              class="changelog"
+                              @click=${this._openChangelog}
+                            >
+                              (<span class="changelog-link"
+                                >${this.i18n.localize(
+                                  "ui.panel.config.apps.dashboard.changelog"
+                                )}</span
+                              >)
+                            </div>`
+                          : nothing
+                      }
                     `
                   : html`${this._currentAddon.version_latest}
-                      <span class="changelog-link" @click=${this._openChangelog}
-                        >${this.i18n.localize(
-                          "ui.panel.config.apps.dashboard.changelog"
-                        )}</span
-                      >`
+                    ${
+                      this._currentAddon.changelog
+                        ? html`<span
+                            class="changelog-link"
+                            @click=${this._openChangelog}
+                            >${this.i18n.localize(
+                              "ui.panel.config.apps.dashboard.changelog"
+                            )}</span
+                          >`
+                        : nothing
+                    }`
               }
             </div>
           </div>
@@ -531,12 +552,12 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
               ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
               : nothing
           }
-          ${this._currentAddon.description}.<br />
+          <div class="description-text">${this._currentAddon.description}</div>
           ${this.i18n.localize(
             "ui.panel.config.apps.dashboard.visit_app_page",
             {
               name: html`<a
-                href=${this._currentAddon.url!}
+                href=${ifDefined(sanitizeHttpUrl(this._currentAddon.url))}
                 target="_blank"
                 rel="noreferrer"
                 >${getAppDisplayName(
@@ -880,7 +901,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 this._uninstalling
                               }
                               @change=${this._panelToggled}
-                              .checked=${this._currentAddon.ingress_panel}
+                              .checked=${
+                                this._currentAddon.ingress_panel || false
+                              }
                               haptic
                             ></ha-switch>
                           </ha-row-item>
@@ -1071,7 +1094,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         `ui.panel.config.apps.dashboard.capability.${id}.title` as LocalizeKeys
       ),
       text: this.i18n.localize(
-        `ui.panel.config.apps.dashboard.capability.${id}.description`
+        `ui.panel.config.apps.dashboard.capability.${id}.description`,
+        { max: MAX_RATING }
       ),
     });
   }
@@ -1094,7 +1118,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   private get _pathWebui(): string | null {
     const addon = this._currentAddon as HassioAddonDetails;
-    return addon.webui!.replace("[HOST]", document.location.hostname);
+    return (
+      sanitizeHttpUrl(
+        addon.webui!.replace("[HOST]", document.location.hostname)
+      ) ?? null
+    );
   }
 
   private get _computeShowWebUI(): boolean | "" | null {
@@ -1444,29 +1472,34 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       return;
     }
 
-    let removeData = false;
-    const _removeDataToggled = (e: Event) => {
-      removeData = (e.target as HaSwitch).checked;
+    let removeConfig = false;
+    const _removeConfigToggled = (e: Event) => {
+      removeConfig = (e.target as HaSwitch).checked;
     };
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.i18n.localize(
-        "ui.panel.config.apps.dashboard.uninstall_dialog.title",
-        {
-          name: getAppDisplayName(addon.name, addon.stage),
-        }
+        "ui.panel.config.apps.dashboard.uninstall_dialog.title"
       ),
       text: html`
+        <p>
+          ${this.i18n.localize(
+            "ui.panel.config.apps.dashboard.uninstall_dialog.text",
+            {
+              name: getAppDisplayName(addon.name, addon.stage),
+            }
+          )}
+        </p>
         <ha-formfield
           .label=${html`<p>
             ${this.i18n.localize(
-              "ui.panel.config.apps.dashboard.uninstall_dialog.remove_data"
+              "ui.panel.config.apps.dashboard.uninstall_dialog.remove_config"
             )}
           </p>`}
         >
           <ha-switch
-            @change=${_removeDataToggled}
-            .checked=${removeData}
+            @change=${_removeConfigToggled}
+            .checked=${removeConfig}
             haptic
           ></ha-switch>
         </ha-formfield>
@@ -1485,7 +1518,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     this._uninstalling = true;
     this._error = undefined;
     try {
-      await uninstallHassioAddon(this.api.callWS, addon.slug, removeData);
+      await uninstallHassioAddon(this.api.callWS, addon.slug, removeConfig);
       const eventdata = {
         success: true,
         response: undefined,
@@ -1638,6 +1671,15 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         }
         .description a {
           color: var(--primary-color);
+        }
+
+        .description:dir(rtl) > .description-text {
+          text-align: right;
+          direction: ltr;
+        }
+
+        .long-description {
+          direction: ltr;
         }
 
         img.logo {

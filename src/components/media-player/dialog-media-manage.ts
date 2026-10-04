@@ -33,7 +33,6 @@ import "../ha-list";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tip";
-import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
 

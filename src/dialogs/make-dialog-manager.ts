@@ -98,20 +98,31 @@ export const showDialog = async (
       return false;
     }
     LOADED[dialogTag] = {
-      element: dialogImport().then(() => {
-        const dialogEl = document.createElement(dialogTag) as
-          HassDialogNext | HassDialog;
+      element: dialogImport().then(
+        () => {
+          const dialogEl = document.createElement(dialogTag) as
+            HassDialogNext | HassDialog;
 
-        if ("showDialog" in dialogEl) {
-          // provide hass for legacy persistent dialogs
-          element.provideHass(dialogEl);
+          if ("showDialog" in dialogEl) {
+            // provide hass for legacy persistent dialogs
+            element.provideHass(dialogEl);
+          }
+
+          dialogEl.addEventListener("dialog-closed", _handleClosed);
+          dialogEl.addEventListener("dialog-closed", _handleClosedFocus);
+
+          return dialogEl;
+        },
+        (err) => {
+          // Don't cache a rejected import (e.g. a stale build's chunk 404s
+          // while the app stayed open): drop the entry so a later open
+          // re-imports instead of being permanently stuck on the rejected
+          // promise. The rejection still propagates to the global stale-build
+          // handler (logging-mixin) for recovery.
+          delete LOADED[dialogTag];
+          throw err;
         }
-
-        dialogEl.addEventListener("dialog-closed", _handleClosed);
-        dialogEl.addEventListener("dialog-closed", _handleClosedFocus);
-
-        return dialogEl;
-      }),
+      ),
     };
   }
 

@@ -1,14 +1,16 @@
-import type { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { RecurrenceRange } from "../../data/calendar";
 
 export interface ConfirmEventDialogBoxParams {
+  title: string;
+  // Labels the recurrence range options when `recurring` is set
+  text?: string;
   confirmText?: string;
-  confirmFutureText?: string; // Prompt for future recurring events
+  // Let the user pick which occurrences of a recurring event are affected
+  recurring?: boolean;
+  destructive?: boolean;
   confirm?: (recurrenceRange: RecurrenceRange) => void;
   cancel?: () => void;
-  text?: string | TemplateResult;
-  title: string;
 }
 
 export const loadGenericDialog = () => import("./confirm-event-dialog-box");

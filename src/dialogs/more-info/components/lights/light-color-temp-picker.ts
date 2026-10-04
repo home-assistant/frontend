@@ -1,9 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { rgb2hex } from "../../../../common/color/convert-color";
 import {
   DEFAULT_MAX_KELVIN,
@@ -191,8 +192,8 @@ class LightColorTempPicker extends LitElement {
           --control-slider-thickness: 130px;
           --control-slider-border-radius: var(--ha-border-radius-6xl);
           --control-slider-color: var(--primary-color);
-          --control-slider-background: -webkit-linear-gradient(
-            top,
+          --control-slider-background: linear-gradient(
+            to bottom,
             var(--gradient)
           );
           --control-slider-tooltip-font-size: var(--ha-font-size-xl);

@@ -200,6 +200,10 @@ export class HuiTileCardEditor
               context: ACTION_RELATED_CONTEXT,
             },
             {
+              name: "",
+              type: "divider",
+            },
+            {
               name: "icon_tap_action",
               selector: {
                 ui_action: {

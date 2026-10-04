@@ -1,15 +1,21 @@
-import { load } from "js-yaml";
+import { dump } from "js-yaml";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import "../../../src/components/ha-alert";
+import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import "../../../src/panels/lovelace/cards/hui-card";
 import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
 import type { HomeAssistant } from "../../../src/types";
+import { validateCardConfig } from "../common/validate-card-config";
 
-export interface DemoCardConfig {
+export interface DemoCardConfig<
+  T extends LovelaceCardConfig = LovelaceCardConfig,
+> {
   heading: string;
-  config: string;
+  config: T;
+  expectConfigError?: boolean;
 }
 
 @customElement("demo-card")
@@ -23,12 +29,29 @@ class DemoCard extends LitElement {
 
   @state() private _size?: number;
 
+  @state() private _configError?: string;
+
   @query("hui-card", false) private _card?: HuiCard;
 
-  private _config = memoizeOne((config: string) => {
-    const c = (load(config) as any)[0];
-    return c;
-  });
+  private _yamlConfig = memoizeOne((config: LovelaceCardConfig) =>
+    dump([config]).trim()
+  );
+
+  protected async firstUpdated() {
+    try {
+      await validateCardConfig(this.config.config);
+    } catch (err) {
+      if (this.config.expectConfigError) {
+        return;
+      }
+      this._configError = err instanceof Error ? err.message : String(err);
+      return;
+    }
+
+    if (this.config.expectConfigError) {
+      this._configError = `Expected config error for ${this.config.heading}`;
+    }
+  }
 
   render() {
     return html`
@@ -40,15 +63,20 @@ class DemoCard extends LitElement {
             : ""
         }
       </h2>
+      ${
+        this._configError
+          ? html`<ha-alert alert-type="error">${this._configError}</ha-alert>`
+          : nothing
+      }
       <div class="root">
         <hui-card
-          .config=${this._config(this.config.config)}
+          .config=${this.config.config}
           .hass=${this.hass}
           @card-updated=${this._cardUpdated}
         ></hui-card>
         ${
           this.showConfig
-            ? html`<pre>${this.config.config.trim()}</pre>`
+            ? html`<pre>${this._yamlConfig(this.config.config)}</pre>`
             : nothing
         }
       </div>
@@ -80,6 +108,9 @@ class DemoCard extends LitElement {
     h2 small {
       font-size: 0.5em;
       color: var(--primary-text-color);
+    }
+    ha-alert {
+      margin-bottom: 16px;
     }
     hui-card {
       max-width: 400px;

@@ -42,7 +42,6 @@ import {
   haStyleDialogFixedTop,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../components/hui-entity-editor";
 import type { Lovelace } from "../../types";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";
@@ -94,6 +93,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const viewConfig = {
         ...this._config,
@@ -180,7 +180,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
             <hui-view-background-editor
               .hass=${this.hass}
               .config=${this._config}
-              @view-config-changed=${this._viewConfigChanged}
+              @background-config-changed=${this._viewConfigChanged}
             ></hui-view-background-editor>
           `;
           break;

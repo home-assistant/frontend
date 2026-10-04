@@ -18,7 +18,7 @@ declare global {
   }
   // for add event listener
   interface HTMLElementEventMap {
-    "register-dialog": HASSDomEvent<RegisterDialogParams>;
+    "register-dialog": HASSDomEvent<HASSDomEvents["register-dialog"]>;
   }
 }
 
@@ -45,7 +45,8 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
         showDialog(
           this,
           dialogTag,
-          (showEv as HASSDomEvent<unknown>).detail,
+          (showEv as HASSDomEvent<HASSDomEvents[typeof dialogShowEvent]>)
+            .detail,
           dialogImport,
           undefined,
           addHistory

@@ -1,19 +1,12 @@
 import { loadJS, loadModule } from "../../common/dom/load_resource";
 import type { CustomPanelConfig } from "../../data/panel_custom";
 
-// Make sure we only import every JS-based panel once (HTML import has this built-in)
+// Make sure we only import every JS-based panel once
 const JS_CACHE = {};
 
 export const getUrl = (
   panelConfig: CustomPanelConfig
-): { type: "module" | "html" | "js"; url: string } => {
-  if (panelConfig.html_url) {
-    return {
-      type: "html",
-      url: panelConfig.html_url,
-    };
-  }
-
+): { type: "module" | "js"; url: string } => {
   // if both module and JS provided, base url on frontend build
   if (panelConfig.module_url && panelConfig.js_url) {
     if (__BUILD__ === "modern") {
@@ -53,8 +46,5 @@ export const loadCustomPanel = (
     }
     return JS_CACHE[panelSource.url];
   }
-  if (panelSource.type === "module") {
-    return loadModule(panelSource.url);
-  }
-  return Promise.reject("No valid url found in panel config.");
+  return loadModule(panelSource.url);
 };

@@ -23,24 +23,24 @@ export const isNavigationClick = (e: MouseEvent, preventDefault = true) => {
     return undefined;
   }
 
-  let href = anchor.href;
-  if (!href || href.indexOf("mailto:") !== -1) {
+  let url: URL;
+  try {
+    // anchor.href is always absolute; an empty or unparseable value throws.
+    url = new URL(anchor.href);
+  } catch {
     return undefined;
   }
 
-  const location = window.location;
-  const origin = location.origin || location.protocol + "//" + location.host;
-  if (!href.startsWith(origin)) {
-    return undefined;
-  }
-  href = href.slice(origin.length);
-
-  if (href === "#") {
+  // Only intercept same-origin links. A different scheme, host, or port is a
+  // different origin (e.g. another port like ":8123") and must trigger a full
+  // browser navigation instead of an in-app route change. Non-http(s) schemes
+  // such as mailto: resolve to a null origin and are excluded here too.
+  if (url.origin !== window.location.origin) {
     return undefined;
   }
 
   if (preventDefault) {
     e.preventDefault();
   }
-  return href;
+  return url.pathname + url.search + url.hash;
 };

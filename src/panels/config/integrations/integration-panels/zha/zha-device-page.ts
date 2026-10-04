@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiAccessPointNetwork,
   mdiCodeJson,
@@ -10,7 +10,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
-import { goBack, navigate } from "../../../../../common/navigate";
+import { consume } from "../../../../../common/decorators/consume";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-spinner";
 import { narrowViewportContext } from "../../../../../data/context";
 import type { ZHADevice } from "../../../../../data/zha";
@@ -102,7 +103,7 @@ class ZHADevicePage extends LitElement {
           .hass=${this.hass}
           .narrow=${this._narrow}
           .header=${header}
-          .backCallback=${this._goBack}
+          .backPath=${this._backPath}
         >
           <div class="loading">
             <ha-spinner size="large"></ha-spinner>
@@ -130,7 +131,7 @@ class ZHADevicePage extends LitElement {
         .hass=${this.hass}
         .route=${this.route}
         .tabs=${tabNavigation}
-        .backCallback=${this._goBack}
+        .backPath=${this._backPath}
       >
         <div class="container">
           <zha-device-summary-card
@@ -253,13 +254,11 @@ class ZHADevicePage extends LitElement {
     return ["clusters", "bindings", "signature", "neighbors"].includes(tab);
   }
 
-  private _goBack = (): void => {
-    goBack(
-      this._device
-        ? `/config/devices/device/${this._device.device_reg_id}`
-        : "/config/zha/dashboard"
-    );
-  };
+  private get _backPath(): string {
+    return this._device
+      ? `/config/devices/device/${this._device.device_reg_id}`
+      : "/config/zha/dashboard";
+  }
 
   private _getTabs = memoizeOne((device: ZHADevice | undefined) => {
     const tabs: ZHADevicePageTab[] = ["clusters", "bindings", "signature"];

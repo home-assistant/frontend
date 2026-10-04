@@ -49,6 +49,7 @@ const SUPPORTED_UI_TYPES = [
 
 const secretTag = defineScalarTag("!secret", {
   resolve: (data) => `!secret ${data}`,
+  identify: () => false,
 });
 
 const ADDON_YAML_SCHEMA = YAML11_SCHEMA.withTags(secretTag);
