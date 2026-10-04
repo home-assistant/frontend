@@ -424,6 +424,16 @@ class HaWebRtcPlayer extends LitElement {
           (event) => this._handleOfferEvent(event)
         );
       } else {
+        // The previous subscription owns the session on the backend and closes
+        // it when dropped, so hand ownership over before opening the new one.
+        const previousUnsub = this._unsub;
+        this._unsub = undefined;
+        await previousUnsub?.then((unsub) => unsub());
+
+        if (!this._peerConnection) {
+          return;
+        }
+
         this._unsub = webRtcReOffer(
           this._connection,
           this.entityid,
