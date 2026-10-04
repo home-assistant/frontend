@@ -31,8 +31,6 @@ export class HaAuthorize extends provideLiteI18nMixin(
 
   @property({ attribute: false }) public redirectUri?: string;
 
-  @property({ attribute: false }) public resource?: string;
-
   @property({ attribute: false }) public responseType?: string;
 
   @property({ attribute: false }) public codeChallenge?: string;
@@ -62,7 +60,6 @@ export class HaAuthorize extends provideLiteI18nMixin(
     if (query.redirect_uri) {
       this.redirectUri = query.redirect_uri;
     }
-    this.resource = query.resource;
     this.responseType = query.response_type;
     this.codeChallenge = query.code_challenge;
     this.codeChallengeMethod = query.code_challenge_method;
@@ -196,7 +193,6 @@ export class HaAuthorize extends provideLiteI18nMixin(
             : html`<ha-auth-flow
                   .clientId=${this.clientId}
                   .redirectUri=${this.redirectUri}
-                  .resource=${this.resource}
                   .responseType=${this.responseType}
                   .codeChallenge=${this.codeChallenge}
                   .codeChallengeMethod=${this.codeChallengeMethod}
