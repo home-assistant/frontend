@@ -166,7 +166,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.alexa"), 1);
     }
 
-    if (!showsLocalGoogleAssistant(this.hass, googleEnabled)) {
+    if (!showsLocalGoogleAssistant(this.hass, this._cloudStatus)) {
       showAssistants.splice(showAssistants.indexOf("google_assistant"), 1);
       uiAssistants.splice(uiAssistants.indexOf("google_assistant"), 1);
     }
