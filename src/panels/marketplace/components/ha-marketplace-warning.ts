@@ -99,6 +99,7 @@ export class HaMarketplaceWarning extends LitElement {
                   "ui.panel.marketplace.warning.risks_title"
                 )}
               >
+                <span slot="icon"></span>
                 <ul>
                   ${RISKS.map(
                     (risk) =>
@@ -193,10 +194,11 @@ export class HaMarketplaceWarning extends LitElement {
         }
 
         .card-content {
+          --card-padding: var(--ha-space-6);
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
-          padding: var(--ha-space-6);
+          padding: var(--card-padding);
         }
 
         .heading {
@@ -227,8 +229,14 @@ export class HaMarketplaceWarning extends LitElement {
           text-align: center;
         }
 
+        /* Span the full card width, aligning the text with the card content */
         ha-alert {
           display: block;
+          margin-inline: calc(-1 * var(--card-padding));
+          --ha-alert-icon-size: 0;
+          --ha-alert-padding: var(--ha-space-4)
+            calc(var(--card-padding) - var(--ha-space-2));
+          --ha-border-radius-sm: 0;
         }
 
         ul {
@@ -264,7 +272,7 @@ export class HaMarketplaceWarning extends LitElement {
           }
 
           .card-content {
-            padding: var(--ha-space-4);
+            --card-padding: var(--ha-space-4);
           }
 
           .heading ha-svg-icon {
