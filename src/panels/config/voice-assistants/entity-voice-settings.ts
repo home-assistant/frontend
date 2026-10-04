@@ -211,7 +211,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         (googleManual
           ? manExposedGoogle
           : this.exposed["cloud.google_assistant"])) ||
-      Boolean(this.exposed.google_assistant);
+      (showAssistants.includes("google_assistant") &&
+        Boolean(this.exposed.google_assistant));
     const exposedToAssist = this.exposed.conversation;
 
     return html`
