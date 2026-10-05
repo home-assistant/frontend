@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -35,6 +35,8 @@ export class HaAreaSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @state() private _configEntries?: ConfigEntry[];
+
+  private _fetchedConfigEntries = false;
 
   private _deviceIntegrationLookup = memoizeOne(
     (
@@ -73,15 +75,23 @@ export class HaAreaSelector extends LitElement {
   }
 
   protected updated(): void {
-    if (!this._configEntries && this._hasIntegration(this.selector)) {
-      this._configEntries = [];
-      getConfigEntries(this.hass).then((entries) => {
-        this._configEntries = entries;
-      });
+    if (!this._fetchedConfigEntries && this._hasIntegration(this.selector)) {
+      this._fetchedConfigEntries = true;
+      getConfigEntries(this.hass)
+        .then((entries) => {
+          this._configEntries = entries;
+        })
+        .catch(() => {
+          this._configEntries = [];
+        });
     }
   }
 
   protected render() {
+    if (this._hasIntegration(this.selector) && !this._configEntries) {
+      return nothing;
+    }
+
     if (!this.selector.area?.multiple) {
       return html`
         <ha-area-picker

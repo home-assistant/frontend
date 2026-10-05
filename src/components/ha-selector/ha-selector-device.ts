@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -25,6 +25,8 @@ export class HaDeviceSelector extends LitElement {
   @property({ attribute: false }) public selector!: DeviceSelector;
 
   @state() private _configEntries?: ConfigEntry[];
+
+  private _fetchedConfigEntries = false;
 
   @property() public value?: any;
 
@@ -78,15 +80,23 @@ export class HaDeviceSelector extends LitElement {
 
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
-    if (!this._configEntries && this._hasIntegration(this.selector)) {
-      this._configEntries = [];
-      getConfigEntries(this.hass).then((entries) => {
-        this._configEntries = entries;
-      });
+    if (!this._fetchedConfigEntries && this._hasIntegration(this.selector)) {
+      this._fetchedConfigEntries = true;
+      getConfigEntries(this.hass)
+        .then((entries) => {
+          this._configEntries = entries;
+        })
+        .catch(() => {
+          this._configEntries = [];
+        });
     }
   }
 
   protected render() {
+    if (this._hasIntegration(this.selector) && !this._configEntries) {
+      return nothing;
+    }
+
     if (!this.selector.device?.multiple) {
       return html`
         <ha-device-picker
