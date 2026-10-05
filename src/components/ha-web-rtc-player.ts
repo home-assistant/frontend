@@ -168,7 +168,12 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    if (!this._api || !this._connection || !this.entityid) {
+    if (
+      !this._api ||
+      !this._connection ||
+      !this.entityid ||
+      !this.isConnected
+    ) {
       return;
     }
 
