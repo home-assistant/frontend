@@ -77,7 +77,7 @@ import type {
   HomeAssistantUI,
   ThemeMode,
 } from "../../types";
-import "./ha-entity-marker";
+import { floatingMarkerFootprint } from "./ha-entity-marker";
 
 declare global {
   // for fire event
@@ -281,6 +281,10 @@ const CLUSTER_RADIUS = 40;
 // Same-zone markers share the zone's bubble while they span at most this many
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
+// Circle radius (meters) for a selected marker without a reported accuracy
+const NOMINAL_ACCURACY = 2.5;
+// Fixes this good (meters) draw a soft disc without an outline
+const PRECISE_GPS_ACCURACY = 10;
 
 type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
 
@@ -1480,6 +1484,7 @@ export class HaMap extends ReactiveElement {
       entityMarker.entityColor = entityColor;
       entityMarker.selected =
         typeof entity !== "string" && (entity.selected ?? false);
+      entityMarker.floating = entityMarker.selected;
 
       const clusterData: ClusterData = {
         entityId,
@@ -1497,18 +1502,29 @@ export class HaMap extends ReactiveElement {
           : undefined,
       };
 
+      const accuracy =
+        gpsAccuracy || (entityMarker.selected ? NOMINAL_ACCURACY : 0);
       const showAccuracy =
-        !!gpsAccuracy && !(typeof entity !== "string" && entity.hide_accuracy);
+        accuracy > 0 && !(typeof entity !== "string" && entity.hide_accuracy);
 
       const markerSize = this._getMarkerSize(computedStyles);
+      const footprint = entityMarker.floating
+        ? floatingMarkerFootprint(markerSize)
+        : { size: [markerSize, markerSize] as [number, number] };
       this._entityHandles.push(
         engine.addMarker(entityMarker, position, {
-          size: [markerSize, markerSize],
+          ...footprint,
           title,
-          cluster: true,
+          // Selected, it leaves its bubble
+          cluster: !entityMarker.selected,
+          raised: entityMarker.selected,
           clusterData,
           decoration: showAccuracy
-            ? { radius: gpsAccuracy!, color: entityColor }
+            ? {
+                radius: accuracy,
+                color: entityColor,
+                outline: accuracy > PRECISE_GPS_ACCURACY,
+              }
             : undefined,
         })
       );
@@ -1927,6 +1943,7 @@ export class HaMap extends ReactiveElement {
       border-radius: 14px;
       filter: var(--ha-cluster-shadow);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
+      --ha-marker-selected-scale: 1;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
       --ha-marker-shadow: none;

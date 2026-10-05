@@ -226,6 +226,7 @@ export class LeafletMapEngine implements MapEngine {
       ? this.Leaflet!.circle(location, {
           interactive: false,
           color: options.decoration.color,
+          stroke: options.decoration.outline !== false,
           radius: options.decoration.radius,
         })
       : undefined;
@@ -236,6 +237,7 @@ export class LeafletMapEngine implements MapEngine {
     const focusable = options.focusable ?? interactive;
     setMarkerAccessibility(element, options.title, focusable);
     const marker: HandledMarker = new DecoratedMarker(location, decoration, {
+      zIndexOffset: options.raised ? 1000 : 0,
       icon: this.Leaflet!.divIcon({
         html: element,
         iconSize: options.size,
@@ -278,6 +280,7 @@ export class LeafletMapEngine implements MapEngine {
     const circle = this.Leaflet!.circle(center, {
       interactive: false,
       color: options.color,
+      stroke: options.outline !== false,
       radius: options.radius,
     }).addTo(this.leafletMap!);
     return {
@@ -285,7 +288,10 @@ export class LeafletMapEngine implements MapEngine {
         circle
           .setLatLng(newCenter)
           .setRadius(newOptions.radius)
-          .setStyle({ color: newOptions.color });
+          .setStyle({
+            color: newOptions.color,
+            stroke: newOptions.outline !== false,
+          });
       },
       remove: () => circle.remove(),
     };

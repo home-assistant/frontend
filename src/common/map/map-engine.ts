@@ -71,6 +71,8 @@ export interface MapMarkerOptions {
   size: [width: number, height: number];
   /** Point of the element placed on the coordinate, from its top left; defaults to the center */
   anchor?: [x: number, y: number];
+  /** Drawn above the other markers */
+  raised?: boolean;
   /** Takes pointer input; defaults to true */
   interactive?: boolean;
   /** A keyboard-focusable button, for markers that act on activation; defaults to interactive */
@@ -90,6 +92,8 @@ export interface MapCircleOptions {
   radius: number;
   /** Stroke color; the fill is derived from it, translucent */
   color: string;
+  /** Stroke the circle; defaults to true */
+  outline?: boolean;
 }
 
 export interface MapPathSegment {
