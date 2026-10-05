@@ -16,6 +16,18 @@ describe("createLoginFlow", () => {
       response_type: "code",
       state: "opaque state",
     },
+    {
+      code_challenge: "",
+      code_challenge_method: "S256",
+    },
+    {
+      code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+      code_challenge_method: "",
+    },
+    {
+      code_challenge: "",
+      code_challenge_method: "",
+    },
   ])("forwards the authorization request %j", async (parameters) => {
     const fetchMock = vi
       .spyOn(window, "fetch")
