@@ -6,6 +6,7 @@ import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/vi
 import {
   duplicateSection,
   moveCardToContainer,
+  moveSection,
   swapView,
 } from "../../../../src/panels/lovelace/editor/config-util";
 
@@ -142,6 +143,108 @@ describe("swapView", () => {
       ],
     };
     assert.deepEqual(expected, result);
+  });
+});
+
+describe("moveSection", () => {
+  it("moves a section to the top without changing the order of other sections", () => {
+    const sections: LovelaceSectionConfig[] = [
+      { type: "grid", cards: [{ type: "heading", heading: "First" }] },
+      { type: "grid", cards: [{ type: "heading", heading: "Second" }] },
+      { type: "grid", cards: [{ type: "heading", heading: "Third" }] },
+      { type: "grid", cards: [{ type: "heading", heading: "Fourth" }] },
+    ];
+    const config: LovelaceConfig = { views: [{ sections }] };
+
+    const result = moveSection(config, [0, 2], [0, 0]);
+
+    assert.deepEqual((result.views[0] as LovelaceViewConfig).sections, [
+      sections[2],
+      sections[0],
+      sections[1],
+      sections[3],
+    ]);
+  });
+
+  it("preserves section metadata, cards, view settings, and other views", () => {
+    const movedSection: LovelaceSectionConfig = {
+      type: "grid",
+      column_span: 2,
+      row_span: 3,
+      background: { color: "red", opacity: 30 },
+      theme: "Dark",
+      disabled: false,
+      visibility: [{ condition: "user", users: ["user-id"] }],
+      cards: [
+        { type: "heading", heading: "Alarm" },
+        {
+          type: "tile",
+          entity: "switch.alarm",
+          grid_options: { columns: 6, rows: 1 },
+          tap_action: { action: "toggle" },
+        },
+      ],
+    };
+    const otherSection: LovelaceSectionConfig = {
+      type: "grid",
+      cards: [{ type: "button", entity: "light.kitchen" }],
+    };
+    const view: LovelaceViewConfig = {
+      type: "sections",
+      title: "Home",
+      path: "home",
+      max_columns: 4,
+      dense_section_placement: false,
+      badges: [{ type: "entity", entity: "lock.front_door" }],
+      header: { badges_position: "top" },
+      sections: [otherSection, movedSection],
+    };
+    const config: LovelaceConfig = {
+      background: "blue",
+      views: [
+        { title: "Before", cards: [{ type: "button" }] },
+        view,
+        { title: "After", strategy: { type: "custom:test" } },
+      ],
+    };
+
+    const result = moveSection(config, [1, 1], [1, 0]);
+
+    assert.deepEqual(result, {
+      ...config,
+      views: [
+        config.views[0],
+        { ...view, sections: [movedSection, otherSection] },
+        config.views[2],
+      ],
+    });
+  });
+
+  it("does not mutate the original dashboard configuration", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          type: "sections",
+          sections: [
+            { type: "grid", cards: [{ type: "heading", heading: "First" }] },
+            {
+              type: "grid",
+              column_span: 2,
+              visibility: [{ condition: "user", users: ["user-id"] }],
+              cards: [{ type: "tile", entity: "switch.alarm" }],
+            },
+          ],
+        },
+      ],
+    };
+    const original = JSON.stringify(config);
+
+    const result = moveSection(config, [0, 1], [0, 0]);
+
+    assert.equal(JSON.stringify(config), original);
+    assert.notStrictEqual(result, config);
+    assert.notStrictEqual(result.views, config.views);
+    assert.notStrictEqual(result.views[0], config.views[0]);
   });
 });
 

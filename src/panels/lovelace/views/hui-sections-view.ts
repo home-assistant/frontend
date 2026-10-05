@@ -3,11 +3,12 @@ import { ContextProvider } from "@lit/context";
 import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { clamp } from "../../../common/number/clamp";
 import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
@@ -22,11 +23,13 @@ import {
   isStrategySection,
 } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../data/lovelace/config/view";
 import { DEFAULT_MAX_COLUMNS } from "./const";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-section-edit-mode";
+import type { HuiSectionEditMode } from "../components/hui-section-edit-mode";
 import { addSection, moveCard, moveSection } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
@@ -78,6 +81,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _sidebarTabActive = false;
 
   @state() private _sidebarVisible = true;
+
+  @queryAll("hui-section-edit-mode")
+  private _sectionEditModes?: NodeListOf<HuiSectionEditMode>;
+
+  private _pendingMoveToTopFocus?: {
+    sections: HuiSection[];
+    viewIndex: number;
+  };
 
   private _contentScrollTop = 0;
 
@@ -147,6 +158,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._pendingMoveToTopFocus = undefined;
     this.removeEventListener(
       "section-visibility-changed",
       this._sectionVisibilityChanged
@@ -158,6 +170,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._computeSectionsCount();
     }
     this._updateMaxColumnCount();
+  }
+
+  protected updated(): void {
+    const pendingFocus = this._pendingMoveToTopFocus;
+    if (!pendingFocus || this.sections === pendingFocus.sections) {
+      return;
+    }
+    this._pendingMoveToTopFocus = undefined;
+    if (
+      this.index === pendingFocus.viewIndex &&
+      this.lovelace?.editMode &&
+      !this.isStrategy
+    ) {
+      this._focusFirstSection();
+    }
   }
 
   private _updateMaxColumnCount(): void {
@@ -295,6 +322,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                                 .index=${idx}
                                 .viewIndex=${this.index}
                                 .isStrategy=${isStrategySection(section.config)}
+                                @section-move-to-top=${this._moveSectionToTop}
                               >
                                 ${this._renderSection(
                                   section,
@@ -493,6 +521,47 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       [this.index!, newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
+  }
+
+  private async _moveSectionToTop(
+    ev: HASSDomEvent<HASSDomEvents["section-move-to-top"]>
+  ): Promise<void> {
+    ev.stopPropagation();
+    const sectionIndex = ev.detail.index;
+    const viewIndex = this.index;
+    if (
+      !this.lovelace ||
+      viewIndex === undefined ||
+      sectionIndex === 0 ||
+      this.isStrategy ||
+      isStrategyView(this.lovelace.config.views[viewIndex])
+    ) {
+      return;
+    }
+
+    const sections = this.sections;
+    const newConfig = moveSection(
+      this.lovelace.config,
+      [viewIndex, sectionIndex],
+      [viewIndex, 0]
+    );
+    await this.lovelace.saveConfig(newConfig);
+    if (!this.isConnected || this.index !== viewIndex) {
+      return;
+    }
+    this._pendingMoveToTopFocus = { sections, viewIndex };
+    this.requestUpdate();
+  }
+
+  private async _focusFirstSection(): Promise<void> {
+    const firstSection = this._sectionEditModes?.[0];
+    if (!firstSection) {
+      return;
+    }
+    await firstSection.focusMenu();
+    if (firstSection.isConnected) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   }
 
   private _viewChanged(ev: CustomEvent) {
