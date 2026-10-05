@@ -46,6 +46,7 @@ class HassErrorScreen extends LitElement {
   }
 
   private _renderContent(): TemplateResult {
+    // Inline as this._localize once the custom panel iframe provides contexts
     const localize = this._localize ?? this.hass?.localize;
     return html`
       <div class="content">
