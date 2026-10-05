@@ -62,7 +62,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: ContextType<typeof configContext>;
 
-  // Only read by page filters, so changes alone don't rerender the table
+  @state()
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
 
@@ -244,7 +244,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   protected willUpdate(changedProperties: PropertyValues) {
-    if (changedProperties.has("tabs") || changedProperties.has("_hassConfig")) {
+    if (
+      changedProperties.has("tabs") ||
+      changedProperties.has("_hassConfig") ||
+      changedProperties.has("_entities")
+    ) {
       this.showTabs =
         this.tabs.filter((page) =>
           canShowPage({ ...this._hassConfig, entities: this._entities }, page)

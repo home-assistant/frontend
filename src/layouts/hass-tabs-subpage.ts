@@ -81,7 +81,7 @@ export class HassTabsSubpage extends LitElement {
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: ContextType<typeof configContext>;
 
-  // Only read by page filters, so changes alone don't rerender the tabs
+  @state()
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
 
@@ -123,10 +123,11 @@ export class HassTabsSubpage extends LitElement {
       _language,
       _userData,
       _narrow,
-      localizeFunc
+      localizeFunc,
+      entities: ContextType<typeof entitiesContext>
     ) => {
       const shownTabs = tabs.filter((page) =>
-        canShowPage({ ...this._hassConfig, entities: this._entities }, page)
+        canShowPage({ ...this._hassConfig, entities }, page)
       );
 
       if (shownTabs.length < 2) {
@@ -189,7 +190,8 @@ export class HassTabsSubpage extends LitElement {
       this._i18n.language,
       this._hassConfig.userData,
       this._narrow,
-      this.localizeFunc || this._i18n.localize
+      this.localizeFunc || this._i18n.localize,
+      this._entities
     );
     const backPath = sanitizeNavigationPath(this.backPath);
 
