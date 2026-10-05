@@ -103,6 +103,15 @@ class TestController extends ContextController {
   }
 }
 
+class TestTypedController extends ContextController {
+  @consumeContext({ context: testContext, transform: ({ a }) => a })
+  public a?: number;
+
+  // @ts-expect-error a number cannot be stored in a string field
+  @consumeContext({ context: testContext, transform: ({ a }) => a })
+  public label?: string;
+}
+
 @customElement("test-consume-controller")
 class TestConsumeController extends RenderCounter {
   public controller = new TestController(this);
@@ -221,6 +230,19 @@ describe("consumeContext", () => {
     provider.setValue({ a: 4, b: 4 });
 
     const controller = new TestController(el);
+    await Promise.resolve();
     expect(controller.a).toBe(4);
+    expect(controller.once).toEqual({ a: 4, b: 4 });
+    expect(controller.updates).toBe(2);
+  });
+
+  it("stores the transformed value in a typed public field", async () => {
+    const { el } = await mount<TestConsumeController>(
+      "test-consume-controller"
+    );
+
+    const controller = new TestTypedController(el);
+    await Promise.resolve();
+    expect(controller.a).toBe(1);
   });
 });

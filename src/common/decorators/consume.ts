@@ -157,6 +157,16 @@ export abstract class ContextController implements ReactiveController {
 
   constructor(host: ReactiveControllerHost & HTMLElement) {
     this.host = host;
+    // On a connected host, Lit calls hostConnected() from addController(),
+    // which would run before the subclass has initialized its own fields.
+    if (host.isConnected) {
+      queueMicrotask(() => this._consumeContexts());
+    } else {
+      this._consumeContexts();
+    }
+  }
+
+  private _consumeContexts(): void {
     const fields = this as unknown as Record<PropertyKey, unknown>;
     for (
       let proto = Object.getPrototypeOf(this);
@@ -167,7 +177,7 @@ export abstract class ContextController implements ReactiveController {
         .get(proto)
         ?.forEach(({ key, context, subscribe, transform }) => {
           new ContextSubscriptionController(
-            host,
+            this.host,
             context,
             (value) => {
               const next = transform ? transform(value) : value;
@@ -182,13 +192,26 @@ export abstract class ContextController implements ReactiveController {
         });
     }
     // Added after the context subscriptions, so values are fresh when it connects.
-    host.addController(this);
+    this.host.addController(this);
   }
 
   protected contextUpdated(): void {
     // Overridden by controllers that react to context changes.
   }
 }
+
+// The same check `@consume` gets from `@lit/context`: a public field must
+// accept the stored value. Private fields are not visible to it.
+type FieldMustAccept<Proto, Key extends PropertyKey, Value> =
+  Proto extends Partial<Record<Key, infer Field>>
+    ? [Value] extends [Field | undefined]
+      ? undefined
+      : {
+          message: "stored type not assignable to consuming field";
+          stored: Value;
+          consuming: Field;
+        }
+    : undefined;
 
 /**
  * `@consume` for fields of a {@link ContextController}. `transform` picks
@@ -205,7 +228,10 @@ export const consumeContext =
     subscribe?: boolean;
     transform?: (value: ValueType) => TransformedType;
   }) =>
-  (proto: ContextController, key: PropertyKey): void => {
+  <Proto extends ContextController, Key extends PropertyKey>(
+    proto: Proto,
+    key: Key
+  ): FieldMustAccept<Proto, Key, TransformedType> => {
     let consumptions = controllerConsumptions.get(proto);
     if (!consumptions) {
       consumptions = [];
@@ -217,4 +243,5 @@ export const consumeContext =
       subscribe,
       transform: transform as ControllerConsumption["transform"],
     });
+    return undefined as FieldMustAccept<Proto, Key, TransformedType>;
   };
