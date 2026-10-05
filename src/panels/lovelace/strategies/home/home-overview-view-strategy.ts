@@ -77,7 +77,7 @@ export const preloadHomeEnergyPreferences = (hass: HomeAssistant) => {
     return existing;
   }
 
-  const request = getEnergyPreferences(hass).catch(() => undefined);
+  const request = getEnergyPreferences(hass.callWS).catch(() => undefined);
   energyPreferencesPromises.set(hass.connection, request);
   return request;
 };

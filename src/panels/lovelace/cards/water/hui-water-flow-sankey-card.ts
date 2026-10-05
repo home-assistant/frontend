@@ -282,7 +282,8 @@ class HuiWaterFlowSankeyCard
     }
 
     const deviceLabels = computeEnergyDeviceLabels(
-      { states: this._states, formatEntityName: this._formatEntityName },
+      this._states,
+      this._formatEntityName,
       prefs.device_consumption_water,
       this._data.statsMetadata,
       "stat_rate"

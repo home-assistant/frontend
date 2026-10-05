@@ -118,7 +118,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       if (performFetch) {
         this._fetchInitialStatistics();
       }
-      this._energySub = getEnergyDataCollection(this.hass!, {
+      this._energySub = getEnergyDataCollection(this.hass!.connection, {
+        callWS: this.hass!.callWS,
+        entities: this.hass!.entities,
+        states: this.hass!.states,
+        locale: this.hass!.locale,
+        config: this.hass!.config,
+        panelUrl: this.hass!.panelUrl,
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._energyStart = data.start;
@@ -407,7 +413,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
     const statsMetadataArray = await getStatisticMetadata(
-      this.hass!,
+      this.hass!.callWS,
       statisticIds
     );
     const statisticsMetaData = {};
@@ -430,8 +436,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       if (this._config!.unit && this._metadata) {
         const metadata = Object.values(this._metadata).find(
           (metaData) =>
-            getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
-            this._config!.unit
+            getDisplayUnit(
+              this.hass!.states,
+              metaData?.statistic_id,
+              metaData
+            ) === this._config!.unit
         );
         if (metadata) {
           unitClass = metadata.unit_class;
@@ -442,13 +451,16 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         const metadata = this._metadata[this._entityIds[0]];
         unitClass = metadata?.unit_class;
         this._unit = unitClass
-          ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
-            undefined
+          ? getDisplayUnit(
+              this.hass!.states,
+              metadata.statistic_id,
+              metadata
+            ) || undefined
           : undefined;
       }
       const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
       const statistics = await fetchStatistics(
-        this.hass!,
+        this.hass!.callWS,
         startDate,
         endDate,
         this._entityIds,

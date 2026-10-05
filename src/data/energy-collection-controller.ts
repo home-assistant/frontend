@@ -1,5 +1,10 @@
 import type { Context } from "@lit/context";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassConfig,
+  HassEntities,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import { ContextSubscriptionController } from "../common/decorators/consume";
 import {
@@ -13,10 +18,10 @@ import {
 } from "./context";
 import type { EnergyCollection, EnergyData } from "./energy";
 import { getEnergyDataCollection } from "./energy";
+import type { FrontendLocaleData } from "./translation";
+import type { HomeAssistant } from "../types";
 
 type EnergyCollectionHost = ReactiveControllerHost & HTMLElement;
-
-type CollectionInputs = Parameters<typeof getEnergyDataCollection>[0];
 
 export interface EnergyCollectionControllerOptions {
   /** Subscribing waits until this returns a config. */
@@ -34,7 +39,19 @@ export class EnergyCollectionController implements ReactiveController {
 
   private _options: EnergyCollectionControllerOptions;
 
-  private _inputs: Partial<CollectionInputs> = {};
+  private _connection?: Connection;
+
+  private _panelUrl?: string;
+
+  private _callWS?: HomeAssistant["callWS"];
+
+  private _entities?: HomeAssistant["entities"];
+
+  private _states?: HassEntities;
+
+  private _locale?: FrontendLocaleData;
+
+  private _hassConfig?: HassConfig;
 
   private _connected = false;
 
@@ -52,13 +69,27 @@ export class EnergyCollectionController implements ReactiveController {
     this._options = options;
 
     // Added before this controller, so values are fresh when it connects.
-    this._consume(connectionContext, ({ connection }) => ({ connection }));
-    this._consume(uiContext, ({ panelUrl }) => ({ panelUrl }));
-    this._consume(apiContext, ({ callWS }) => ({ callWS }));
-    this._consume(entitiesContext, (entities) => ({ entities }));
-    this._consume(statesContext, (states) => ({ states }));
-    this._consume(internationalizationContext, ({ locale }) => ({ locale }));
-    this._consume(configContext, ({ config }) => ({ config }));
+    this._consume(connectionContext, ({ connection }) => {
+      this._connection = connection;
+    });
+    this._consume(uiContext, ({ panelUrl }) => {
+      this._panelUrl = panelUrl;
+    });
+    this._consume(apiContext, ({ callWS }) => {
+      this._callWS = callWS;
+    });
+    this._consume(entitiesContext, (entities) => {
+      this._entities = entities;
+    });
+    this._consume(statesContext, (states) => {
+      this._states = states;
+    });
+    this._consume(internationalizationContext, ({ locale }) => {
+      this._locale = locale;
+    });
+    this._consume(configContext, ({ config }) => {
+      this._hassConfig = config;
+    });
 
     host.addController(this);
   }
@@ -83,10 +114,10 @@ export class EnergyCollectionController implements ReactiveController {
 
   private _consume<T>(
     context: Context<unknown, T>,
-    pick: (value: T) => Partial<CollectionInputs>
+    assign: (value: T) => void
   ): void {
     new ContextSubscriptionController(this._host, context, (value) => {
-      Object.assign(this._inputs, pick(value));
+      assign(value);
       if (!this._unsub) {
         this._subscribe();
       }
@@ -95,16 +126,15 @@ export class EnergyCollectionController implements ReactiveController {
 
   private _subscribe(): void {
     const config = this._options.config();
-    const inputs = this._inputs;
     if (
       !this._connected ||
       !config ||
-      !inputs.connection ||
-      !inputs.callWS ||
-      !inputs.entities ||
-      !inputs.states ||
-      !inputs.locale ||
-      !inputs.config
+      !this._connection ||
+      !this._callWS ||
+      !this._entities ||
+      !this._states ||
+      !this._locale ||
+      !this._hassConfig
     ) {
       return;
     }
@@ -114,10 +144,15 @@ export class EnergyCollectionController implements ReactiveController {
     }
     this._unsubscribe();
     this._key = key;
-    this._collection = getEnergyDataCollection(
-      { ...inputs } as CollectionInputs,
-      { key }
-    );
+    this._collection = getEnergyDataCollection(this._connection, {
+      callWS: this._callWS,
+      entities: this._entities,
+      states: this._states,
+      locale: this._locale,
+      config: this._hassConfig,
+      panelUrl: this._panelUrl ?? "",
+      key,
+    });
     this._unsub = this._collection.subscribe(this._options.onData);
   }
 

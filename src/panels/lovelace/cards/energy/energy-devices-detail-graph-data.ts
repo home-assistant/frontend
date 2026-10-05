@@ -372,7 +372,8 @@ export function generateEnergyDevicesDetailGraphData(
     compareStart,
     untrackedOrder,
     deviceLabels: computeEnergyDeviceLabels(
-      { states, formatEntityName },
+      states,
+      formatEntityName,
       devices,
       energyData.statsMetadata
     ),

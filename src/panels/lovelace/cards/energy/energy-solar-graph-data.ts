@@ -246,7 +246,8 @@ function processDataSet(
           name:
             source.name ||
             getStatisticLabel(
-              { states, formatEntityName },
+              states,
+              formatEntityName,
               source.stat_energy_from,
               statisticsMetaData[source.stat_energy_from]
             ),
@@ -360,7 +361,8 @@ function processForecast(
                 name:
                   source.name ||
                   getStatisticLabel(
-                    { states, formatEntityName },
+                    states,
+                    formatEntityName,
                     source.stat_energy_from,
                     statisticsMetaData[source.stat_energy_from]
                   ),

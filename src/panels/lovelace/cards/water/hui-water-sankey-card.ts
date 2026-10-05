@@ -161,11 +161,6 @@ class HuiWaterSankeyCard
 
     const computedStyle = getComputedStyle(this);
 
-    const labelSources = {
-      states: this._states,
-      formatEntityName: this._formatEntityName,
-    };
-
     const nodes: Node[] = [];
     const links: Link[] = [];
 
@@ -237,7 +232,8 @@ class HuiWaterSankeyCard
         label:
           source.name ||
           getStatisticLabel(
-            labelSources,
+            this._states,
+            this._formatEntityName,
             source.stat_energy_from,
             this._data!.statsMetadata[source.stat_energy_from]
           ),
@@ -259,7 +255,8 @@ class HuiWaterSankeyCard
         : 0;
 
     const deviceLabels = computeEnergyDeviceLabels(
-      labelSources,
+      this._states,
+      this._formatEntityName,
       prefs.device_consumption_water,
       this._data!.statsMetadata
     );
@@ -267,7 +264,8 @@ class HuiWaterSankeyCard
     const deviceLabel = (statConsumption: string) =>
       deviceLabels[statConsumption] ||
       getStatisticLabel(
-        labelSources,
+        this._states,
+        this._formatEntityName,
         statConsumption,
         this._data!.statsMetadata[statConsumption]
       );

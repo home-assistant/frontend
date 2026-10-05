@@ -500,7 +500,7 @@ export class StatisticsChart extends LitElement {
   private _getStatisticsMetaData = memoizeOne(
     async (statisticIds: string[] | undefined) => {
       const statsMetadataArray = await getStatisticMetadata(
-        this.hass,
+        this.hass.callWS,
         statisticIds
       );
       const statisticsMetaData = {};

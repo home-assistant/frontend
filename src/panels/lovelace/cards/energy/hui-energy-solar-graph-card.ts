@@ -232,7 +232,7 @@ export class HuiEnergySolarGraphCard
       solarSources.some((source) => source.config_entry_solar_forecast?.length)
     ) {
       try {
-        forecasts = await getEnergySolarForecasts(this._api);
+        forecasts = await getEnergySolarForecasts(this._api.callWS);
       } catch (_e) {
         // ignore
       }

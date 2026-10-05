@@ -378,10 +378,8 @@ export class HuiEnergyWaterGraphCard
         name:
           source.name ||
           getStatisticLabel(
-            {
-              states: this._states,
-              formatEntityName: this._formatters.formatEntityName,
-            },
+            this._states,
+            this._formatters.formatEntityName,
             source.stat_energy_from,
             statisticsMetaData[source.stat_energy_from]
           ),

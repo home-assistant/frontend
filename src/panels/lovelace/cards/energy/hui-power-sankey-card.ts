@@ -321,7 +321,8 @@ class HuiPowerSankeyCard
     }
 
     const deviceLabels = computeEnergyDeviceLabels(
-      { states: this._states, formatEntityName: this._formatEntityName },
+      this._states,
+      this._formatEntityName,
       prefs.device_consumption,
       this._data.statsMetadata,
       "stat_rate"
@@ -401,7 +402,7 @@ class HuiPowerSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    formatPowerShort({ locale: this._locale }, value);
+    formatPowerShort(this._locale, value);
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

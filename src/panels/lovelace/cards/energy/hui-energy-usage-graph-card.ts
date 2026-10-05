@@ -701,10 +701,8 @@ export class HuiEnergyUsageGraphCard
               ? typeLabels[type]
               : statLabels[type]?.[statId] ||
                 getStatisticLabel(
-                  {
-                    states: this._states,
-                    formatEntityName: this._formatters.formatEntityName,
-                  },
+                  this._states,
+                  this._formatters.formatEntityName,
                   statId,
                   statisticsMetaData[statId]
                 ),

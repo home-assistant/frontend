@@ -310,13 +310,9 @@ class HuiEnergySankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    const labelSources = {
-      states: this._states,
-      formatEntityName: this._formatEntityName,
-    };
-
     const deviceLabels = computeEnergyDeviceLabels(
-      labelSources,
+      this._states,
+      this._formatEntityName,
       prefs.device_consumption,
       this._data.statsMetadata
     );
@@ -324,7 +320,8 @@ class HuiEnergySankeyCard
     const deviceLabel = (statConsumption: string) =>
       deviceLabels[statConsumption] ||
       getStatisticLabel(
-        labelSources,
+        this._states,
+        this._formatEntityName,
         statConsumption,
         this._data!.statsMetadata[statConsumption]
       );

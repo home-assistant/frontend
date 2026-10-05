@@ -213,7 +213,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     start.setHours(start.getHours() - this._hoursToShow - 1);
 
     const statistics = await fetchStatistics(
-      this.hass!,
+      this.hass!.callWS,
       start,
       now,
       this._entityIds,

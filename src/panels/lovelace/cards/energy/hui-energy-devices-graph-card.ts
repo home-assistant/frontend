@@ -321,10 +321,8 @@ export class HuiEnergyDevicesGraphCard
       // The untracked slice is not a statistic, so it has no label.
       (this._deviceLabels[statisticId] ||
         getStatisticLabel(
-          {
-            states: this._states,
-            formatEntityName: this._formatters.formatEntityName,
-          },
+          this._states,
+          this._formatters.formatEntityName,
           statisticId,
           this._data?.statsMetadata[statisticId]
         )) + suffix
@@ -403,10 +401,8 @@ export class HuiEnergyDevicesGraphCard
       .filter(Boolean) as string[];
 
     this._deviceLabels = computeEnergyDeviceLabels(
-      {
-        states: this._states,
-        formatEntityName: this._formatters.formatEntityName,
-      },
+      this._states,
+      this._formatters.formatEntityName,
       energyData.prefs.device_consumption,
       energyData.statsMetadata
     );

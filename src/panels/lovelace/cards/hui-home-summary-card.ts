@@ -65,7 +65,13 @@ export class HuiHomeSummaryCard
     if (this._config?.summary !== "energy") {
       return [];
     }
-    const collection = getEnergyDataCollection(this.hass!, {
+    const collection = getEnergyDataCollection(this.hass!.connection, {
+      callWS: this.hass!.callWS,
+      entities: this.hass!.entities,
+      states: this.hass!.states,
+      locale: this.hass!.locale,
+      config: this.hass!.config,
+      panelUrl: this.hass!.panelUrl,
       key: "energy_home_dashboard",
     });
     // Ensure we always show today's energy data
@@ -336,7 +342,11 @@ export class HuiHomeSummaryCard
         const { summedData } = getSummedData(this._energyData);
         const { consumption } = computeConsumptionData(summedData, undefined);
         const totalConsumption = consumption.total.used_total;
-        return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+        return formatConsumptionShort(
+          this.hass.locale,
+          totalConsumption,
+          "kWh"
+        );
       }
       case "persons": {
         const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>

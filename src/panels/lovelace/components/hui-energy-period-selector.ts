@@ -571,7 +571,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
 
   private _presetSelected(ev) {
     localStorage.setItem(
-      getEnergyDefaultPeriodStorageKey(this._ui, this.collectionKey),
+      getEnergyDefaultPeriodStorageKey(this._ui.panelUrl, this.collectionKey),
       RANGE_KEYS[ev.detail.index]
     );
   }
@@ -699,7 +699,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
     // "yesterday" is the only preset whose range never includes today, making
     // it the only remembered default that keeps reopening in the past.
     const storageKey = getEnergyDefaultPeriodStorageKey(
-      this._ui,
+      this._ui.panelUrl,
       this.collectionKey
     );
     if (localStorage.getItem(storageKey) === "yesterday") {

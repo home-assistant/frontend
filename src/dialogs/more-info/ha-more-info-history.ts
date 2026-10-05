@@ -193,7 +193,7 @@ export class MoreInfoHistory extends LitElement {
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
     const statsMetadataArray = await getStatisticMetadata(
-      this.hass,
+      this.hass.callWS,
       statisticIds
     );
     const statisticsMetaData = {};
@@ -209,7 +209,7 @@ export class MoreInfoHistory extends LitElement {
     // faster.
     const _metadata = this._getStatisticsMetaData([this.entityId]);
     const _statistics = fetchStatistics(
-      this.hass!,
+      this.hass!.callWS,
       subHours(new Date(), 24),
       undefined,
       [this.entityId],

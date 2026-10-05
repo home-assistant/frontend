@@ -204,7 +204,8 @@ export class HuiEnergySourcesTableCard
     const label =
       name ||
       getStatisticLabel(
-        { states: this._states, formatEntityName: this._formatEntityName },
+        this._states,
+        this._formatEntityName,
         statId,
         this._data?.statsMetadata[statId]
       );

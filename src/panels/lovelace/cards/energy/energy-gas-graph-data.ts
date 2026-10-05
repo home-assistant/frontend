@@ -223,7 +223,8 @@ function processDataSet(
       name:
         source.name ||
         getStatisticLabel(
-          { states, formatEntityName },
+          states,
+          formatEntityName,
           statId,
           statisticsMetaData[statId]
         ),

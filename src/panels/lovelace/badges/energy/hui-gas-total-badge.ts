@@ -54,7 +54,13 @@ export class HuiGasTotalBadge
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass, {
+      getEnergyDataCollection(this.hass.connection, {
+        callWS: this.hass.callWS,
+        entities: this.hass.entities,
+        states: this.hass.states,
+        locale: this.hass.locale,
+        config: this.hass.config,
+        panelUrl: this.hass.panelUrl,
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
