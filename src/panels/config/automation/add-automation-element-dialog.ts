@@ -2420,21 +2420,12 @@ class DialogAddAutomationElement
           display: none;
         }
 
-        .groups {
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--md-list-item-leading-space);
-          --md-list-item-bottom-space: var(--ha-space-1);
-          --md-list-item-top-space: var(--md-list-item-bottom-space);
-          --md-list-item-supporting-text-font: var(--ha-font-family-body);
-          --md-list-item-one-line-container-height: var(--ha-space-10);
-        }
         ha-bottom-sheet .groups,
         ha-bottom-sheet ha-automation-add-from-target {
           margin: var(--ha-space-3);
         }
         .groups .selected {
           background-color: var(--ha-color-fill-primary-normal-active);
-          --md-list-item-label-text-color: var(--ha-color-on-primary-normal);
           --icon-primary-color: var(--ha-color-on-primary-normal);
         }
         .groups .selected ha-svg-icon {
