@@ -1,7 +1,8 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import "../../components/ha-button";
@@ -215,22 +216,29 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
       `;
     }
 
-    if (!this._info.warning_accepted) {
-      return html`
-        <ha-marketplace-warning
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-marketplace-warning>
-      `;
-    }
+    const accepted = this._info.warning_accepted;
 
+    // The Marketplace shows behind the warning, which keeps it from being
+    // used. It starts over once accepted, so what it tried before, like
+    // adding a repository from a link, runs again.
     return html`
-      <ha-marketplace-router
-        .hass=${this.hass}
-        .marketplace=${this._marketplace(this._repositories, this._info)}
-        .route=${this.route}
-        .narrow=${this.narrow}
-      ></ha-marketplace-router>
+      ${keyed(
+        accepted,
+        html`<ha-marketplace-router
+          .hass=${this.hass}
+          .marketplace=${this._marketplace(this._repositories, this._info)}
+          .route=${this.route}
+          .narrow=${this.narrow}
+          ?inert=${!accepted}
+        ></ha-marketplace-router>`
+      )}
+      ${
+        accepted
+          ? nothing
+          : html`<ha-marketplace-warning
+              .hass=${this.hass}
+            ></ha-marketplace-warning>`
+      }
     `;
   }
 

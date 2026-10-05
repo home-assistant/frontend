@@ -12275,19 +12275,29 @@
         "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
-          "title": "Before you use the Marketplace",
-          "intro": "Everything in the Marketplace is made and published by the community. What you install runs inside Home\u00a0Assistant, with full access to your home, your data, and the system Home\u00a0Assistant runs on.",
-          "risks_title": "Serious risks are involved",
-          "risks": {
-            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home\u00a0Assistant project.",
-            "own_risk": "You use everything you install from the Marketplace at your own risk.",
-            "privacy": "It can violate your privacy, for example by sending your data to others.",
-            "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
-            "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
+          "title": "Welcome to the Marketplace",
+          "subtitle": "Discover and manage custom elements to further customize your Home\u00a0Assistant",
+          "points": {
+            "community": {
+              "title": "Built by the community",
+              "description": "Contributors create and maintain these items. The Home\u00a0Assistant project doesn't review or test them."
+            },
+            "behavior": {
+              "title": "They can change how your system behaves",
+              "description": "Like mods for any software, some connect to services outside your home, and a faulty one can slow down or crash Home\u00a0Assistant."
+            },
+            "read_first": {
+              "title": "Read first, uninstall if needed",
+              "description": "Check what each item does and what it changes before installing. If something goes wrong, uninstall it right away."
+            },
+            "data": {
+              "title": "Any item can affect your data and system",
+              "description": "Anything you install can potentially connect to the internet, share your data with others, or crash your Home\u00a0Assistant instance.\nRead all the documentation carefully."
+            }
           },
-          "understand": "I understand the risks",
-          "continue": "Continue",
-          "continue_in": "You can continue in {seconds, plural,\n  one {# second}\n  other {# seconds}\n}"
+          "understand": "I understand and agree",
+          "go_back": "Go back",
+          "continue": "Continue"
         },
         "common": {
           "install": "Install",
