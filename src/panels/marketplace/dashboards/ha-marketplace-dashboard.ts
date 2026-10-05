@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
+  mdiCheckAll,
   mdiCheckCircleOutline,
   mdiCompassOutline,
   mdiDotsVertical,
@@ -405,9 +406,14 @@ export class HaMarketplaceDashboard extends LitElement {
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
               <ha-dropdown-item value="documentation">
+                <ha-svg-icon
+                  .path=${mdiHelpCircleOutline}
+                  slot="icon"
+                ></ha-svg-icon>
                 ${this.hass.localize("ui.panel.marketplace.menu.documentation")}
               </ha-dropdown-item>
               <ha-dropdown-item value="dismiss_new">
+                <ha-svg-icon .path=${mdiCheckAll} slot="icon"></ha-svg-icon>
                 ${this.hass.localize("ui.panel.marketplace.menu.dismiss")}
               </ha-dropdown-item>
             </ha-dropdown>`
