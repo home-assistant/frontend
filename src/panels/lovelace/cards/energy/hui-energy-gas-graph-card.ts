@@ -6,10 +6,8 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { preserveUnchangedRecord } from "../../../../common/util/preserve-unchanged-record";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -81,15 +79,8 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
   @state() private _gasStatIds?: string[];
 
   @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
-  @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -204,7 +195,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
                       >
                         ${formatNumber(
                           this._total,
-                          this._locale,
+                          this._i18n.locale,
                           this._gasFormatOptions
                         )}
                         ${this._unit}
@@ -224,7 +215,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
             .options=${this._createOptions(
               this._start,
               this._end,
-              this._locale,
+              this._i18n.locale,
               this._hassConfig,
               this._unit,
               this._compareStart,
@@ -238,8 +229,10 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
-                      ? this._localize("ui.panel.lovelace.cards.energy.no_data")
-                      : this._localize(
+                      ? this._i18n.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data_period"
                         )
                   }
@@ -252,10 +245,10 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
   }
 
   private _formatTotal = (total: number) =>
-    this._localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
       {
-        num: formatNumber(total, this._locale, this._gasFormatOptions),
+        num: formatNumber(total, this._i18n.locale, this._gasFormatOptions),
         unit: this._unit,
       }
     );

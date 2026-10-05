@@ -3,9 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
@@ -17,7 +14,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantInternationalization,
@@ -51,14 +47,9 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
 
   @state() private _data?: EnergyData;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   constructor() {
     super();
@@ -87,7 +78,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
@@ -114,7 +105,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
                   .value=${value}
                   label="%"
                   .formatOptions=${FORMAT_OPTIONS}
-                  .locale=${this._locale}
+                  .locale=${this._i18n.locale}
                   style=${styleMap({
                     "--gauge-color": this._computeSeverity(value),
                   })}
@@ -124,25 +115,25 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <ha-tooltip for="info" placement="left">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
                   )}
                   <br /><br />
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
                   )}
                 </ha-tooltip>
                 <div class="name">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
                   )}
                 </div>
               `
             : productionReturnedToGrid !== null
-              ? this._localize(
+              ? this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
                 )
-              : this._localize(
+              : this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
                 )
         }

@@ -34,7 +34,6 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
-import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { transform } from "../../common/decorators/transform";
 import type {
   HASSDomCurrentTargetEvent,
@@ -44,13 +43,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
-import type { LocalizeFunc } from "../../common/translations/localize";
 import {
   configContext,
   internationalizationContext,
   uiContext,
 } from "../../data/context";
-import type { FrontendLocaleData } from "../../data/translation";
 import type { Themes } from "../../data/ws-themes";
 import type {
   ECOption,
@@ -172,14 +169,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _themes!: Themes;
 
   @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @consume({ context: configContext, subscribe: true })
   @transform<HomeAssistantConfig, HassConfig>({
@@ -576,7 +567,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             )}
             aria-label=${ifDefined(
               sonifiable
-                ? this._localize("ui.components.history_charts.chart")
+                ? this._i18n.localize("ui.components.history_charts.chart")
                 : undefined
             )}
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
@@ -599,7 +590,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                     class="zoom-reset"
                     .path=${mdiRestart}
                     @click=${this._handleZoomReset}
-                    title=${this._localize(
+                    title=${this._i18n.localize(
                       "ui.components.history_charts.zoom_reset"
                     )}
                   ></ha-icon-button>`
@@ -699,7 +690,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               class="legend-toggle"
               data-id=${id}
               aria-pressed=${!this._hiddenDatasets.has(id)}
-              .title=${this._localize(
+              .title=${this._i18n.localize(
                 "ui.components.history_charts.toggle_visibility"
               )}
               @click=${this._toggleDataset}
@@ -735,10 +726,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                   filled
                   label=${
                     this.expandLegend
-                      ? this._localize(
+                      ? this._i18n.localize(
                           "ui.components.history_charts.collapse_legend"
                         )
-                      : `${this._localize(
+                      : `${this._i18n.localize(
                           "ui.components.history_charts.expand_legend"
                         )} (${items.length - overflowLimit})`
                   }
@@ -780,8 +771,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     try {
       const sonification = await sonifyChart(this.chart, {
         cc: this._sonificationOutput!,
-        localize: this._localize,
-        locale: this._locale,
+        localize: this._i18n.localize,
+        locale: this._i18n.locale,
         config: this._hassConfig,
         formatLabel: this.sonificationLabelFormatter,
         onError: () => {
@@ -824,7 +815,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _formatTimeLabel = (value: number | Date) =>
     formatTimeLabel(
       value,
-      this._locale,
+      this._i18n.locale,
       this._hassConfig,
       this._minutesDifference * this._zoomRatio
     );

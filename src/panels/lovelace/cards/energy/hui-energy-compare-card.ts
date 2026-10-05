@@ -5,9 +5,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   configContext,
   internationalizationContext,
@@ -18,7 +16,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
@@ -59,14 +56,9 @@ export class HuiEnergyCompareCard extends LitElement implements LovelaceCard {
 
   @state() private _compareMode?: CompareMode;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -113,17 +105,17 @@ export class HuiEnergyCompareCard extends LitElement implements LovelaceCard {
     if (this.preview) {
       return html`
         <ha-alert>
-          ${this._localize(
+          ${this._i18n.localize(
             "ui.panel.lovelace.cards.energy.energy_compare.info",
             {
               start: html`<b
-                >${formatDate(new Date(), this._locale, this._hassConfig)}</b
+                >${formatDate(new Date(), this._i18n.locale, this._hassConfig)}</b
               >`,
               end: html`<b
-                  >${formatDate(new Date(), this._locale, this._hassConfig)}</b
+                  >${formatDate(new Date(), this._i18n.locale, this._hassConfig)}</b
                 >
                 <span
-                  >(${this._localize(
+                  >(${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.energy_compare.compare_preview"
                   )})</span
                 >`,
@@ -144,43 +136,46 @@ export class HuiEnergyCompareCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
-        ${this._localize("ui.panel.lovelace.cards.energy.energy_compare.info", {
-          start: html`<b
-            >${formatDate(this._start!, this._locale, this._hassConfig)}${
-              dayDifference > 0
-                ? ` -
-          ${formatDate(
-            this._end || endOfDay(new Date()),
-            this._locale,
-            this._hassConfig
-          )}`
-                : ""
-            }</b
-          >`,
-          end: html`<b
-              >${formatDate(
-                this._startCompare,
-                this._locale,
-                this._hassConfig
-              )}${
+        ${this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_compare.info",
+          {
+            start: html`<b
+              >${formatDate(this._start!, this._i18n.locale, this._hassConfig)}${
                 dayDifference > 0
                   ? ` -
-          ${formatDate(this._endCompare, this._locale, this._hassConfig)}`
+          ${formatDate(
+            this._end || endOfDay(new Date()),
+            this._i18n.locale,
+            this._hassConfig
+          )}`
                   : ""
               }</b
-            >
-            <button class="link" @click=${this._changeCompareMode}>
-              (${
-                this._compareMode === CompareMode.PREVIOUS
-                  ? this._localize(
-                      "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_year"
-                    )
-                  : this._localize(
-                      "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_period"
-                    )
-              })
-            </button>`,
-        })}
+            >`,
+            end: html`<b
+                >${formatDate(
+                  this._startCompare,
+                  this._i18n.locale,
+                  this._hassConfig
+                )}${
+                  dayDifference > 0
+                    ? ` -
+          ${formatDate(this._endCompare, this._i18n.locale, this._hassConfig)}`
+                    : ""
+                }</b
+              >
+              <button class="link" @click=${this._changeCompareMode}>
+                (${
+                  this._compareMode === CompareMode.PREVIOUS
+                    ? this._i18n.localize(
+                        "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_year"
+                      )
+                    : this._i18n.localize(
+                        "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_period"
+                      )
+                })
+              </button>`,
+          }
+        )}
       </ha-alert>
     `;
   }

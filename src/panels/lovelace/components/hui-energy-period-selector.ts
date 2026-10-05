@@ -47,11 +47,9 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { consume } from "../../../common/decorators/consume";
-import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/date-picker/ha-date-range-picker";
 import type {
@@ -76,7 +74,6 @@ import {
   getEnergyDefaultPeriodStorageKey,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistantConfig,
   HomeAssistantInternationalization,
@@ -125,14 +122,9 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @property({ attribute: "opening-direction" })
   public openingDirection?: OpeningDirection;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -203,17 +195,13 @@ export class HuiEnergyPeriodSelector extends LitElement {
       this._measure();
     }
 
-    if (
-      changedProps.has("_localize") ||
-      changedProps.has("_locale") ||
-      changedProps.has("_hassConfig")
-    ) {
+    if (changedProps.has("_i18n") || changedProps.has("_hassConfig")) {
       // pre defined date ranges
       this._ranges = {};
       RANGE_KEYS.forEach((key) => {
         this._ranges[
-          this._localize(`ui.components.date-range-picker.ranges.${key}`)
-        ] = calcDateRange(this._locale, this._hassConfig, key);
+          this._i18n.localize(`ui.components.date-range-picker.ranges.${key}`)
+        ] = calcDateRange(this._i18n.locale, this._hassConfig, key);
       });
     }
   }
@@ -226,7 +214,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
     const simpleRange = this._simpleRange(
       this._startDate,
       this._endDate,
-      this._locale,
+      this._i18n.locale,
       this._hassConfig
     );
 
@@ -236,7 +224,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
         today,
         this._startDate,
         differenceInCalendarYears,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig
       ) !== 0;
     const showBothYear =
@@ -245,7 +233,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
         this._endDate,
         this._startDate,
         differenceInCalendarYears,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig
       ) !== 0;
     const showSubtitleYear =
@@ -255,7 +243,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
       {
         path:
           mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft,
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.previous"
         ),
         action: () => this._pickPrevious(),
@@ -263,14 +251,14 @@ export class HuiEnergyPeriodSelector extends LitElement {
       {
         path:
           mainWindow.document.dir === "rtl" ? mdiChevronLeft : mdiChevronRight,
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.next"
         ),
         action: () => this._pickNext(),
       },
       {
         path: mdiHomeClock,
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.now"
         ),
         alwaysCollapse: true,
@@ -281,7 +269,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
         path: this._compare ? mdiCheckboxOutline : mdiCheckboxBlankOutline,
         disabled: !this.allowCompare,
         alwaysCollapse: true,
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.compare"
         ),
         action: () => this._toggleCompare(),
@@ -289,7 +277,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
       {
         path: mdiDownload,
         alwaysCollapse: true,
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.download_data"
         ),
         action: () => this._downloadData(),
@@ -328,7 +316,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
                 simpleRange === "year"
                   ? html`${formatDateYear(
                       this._startDate,
-                      this._locale,
+                      this._i18n.locale,
                       this._hassConfig
                     )}`
                   : html`${
@@ -337,33 +325,33 @@ export class HuiEnergyPeriodSelector extends LitElement {
                       simpleRange === "quarter"
                         ? html`${formatDateMonthShort(
                             this._startDate,
-                            this._locale,
+                            this._i18n.locale,
                             this._hassConfig
                           )}&ndash;${formatDateMonthShort(
                             this._endDate || new Date(),
-                            this._locale,
+                            this._i18n.locale,
                             this._hassConfig
                           )}`
                         : html`${
                             simpleRange === "month"
                               ? html`${formatDateMonth(
                                   this._startDate,
-                                  this._locale,
+                                  this._i18n.locale,
                                   this._hassConfig
                                 )}`
                               : simpleRange === "day"
                                 ? html`${formatDateVeryShort(
                                     this._startDate,
-                                    this._locale,
+                                    this._i18n.locale,
                                     this._hassConfig
                                   )}`
                                 : html`${formatDateVeryShort(
                                     this._startDate,
-                                    this._locale,
+                                    this._i18n.locale,
                                     this._hassConfig
                                   )}&ndash;${formatDateVeryShort(
                                     this._endDate || new Date(),
-                                    this._locale,
+                                    this._i18n.locale,
                                     this._hassConfig
                                   )}`
                           }`
@@ -375,13 +363,13 @@ export class HuiEnergyPeriodSelector extends LitElement {
                 ? html`<div class="header-subtitle">
                     ${formatDateYear(
                       this._startDate,
-                      this._locale,
+                      this._i18n.locale,
                       this._hassConfig
                     )}${
                       showBothYear
                         ? html`&ndash;${formatDateYear(
                             this._endDate || new Date(),
-                            this._locale,
+                            this._i18n.locale,
                             this._hassConfig
                           )}`
                         : ``
@@ -406,7 +394,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
                       size="s"
                       @click=${this._pickNow}
                     >
-                      ${this._localize(
+                      ${this._i18n.localize(
                         "ui.panel.lovelace.components.energy_period_selector.now"
                       )}
                     </ha-button>`
@@ -429,7 +417,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
                       @click=${stopPropagation}
                     >
                       <ha-icon-button
-                        .label=${this._localize("ui.common.overflow_menu")}
+                        .label=${this._i18n.localize("ui.common.overflow_menu")}
                         .path=${mdiDotsVertical}
                         slot="trigger"
                       ></ha-icon-button>
@@ -556,13 +544,13 @@ export class HuiEnergyPeriodSelector extends LitElement {
     this._startDate = calcDate(
       ev.detail.value.startDate,
       startOfDay,
-      this._locale,
+      this._i18n.locale,
       this._hassConfig
     );
     this._endDate = calcDate(
       ev.detail.value.endDate,
       endOfDay,
-      this._locale,
+      this._i18n.locale,
       this._hassConfig
     );
 
@@ -582,31 +570,31 @@ export class HuiEnergyPeriodSelector extends LitElement {
     const range = this._simpleRange(
       this._startDate,
       this._endDate,
-      this._locale,
+      this._i18n.locale,
       this._hassConfig
     );
     const today = new Date();
     if (range === "month") {
       [this._startDate, this._endDate] = calcDateRange(
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         "this_month"
       );
     } else if (range === "quarter") {
       [this._startDate, this._endDate] = calcDateRange(
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         "this_quarter"
       );
     } else if (range === "year") {
       [this._startDate, this._endDate] = calcDateRange(
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         "this_year"
       );
     } else if (range === "12month") {
       [this._startDate, this._endDate] = calcDateRange(
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         "now-12m"
       );
@@ -616,28 +604,28 @@ export class HuiEnergyPeriodSelector extends LitElement {
         this._endDate!,
         this._startDate,
         differenceInCalendarMonths,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig
       ) as number;
       this._startDate = calcDate(
-        calcDate(today, startOfMonth, this._locale, this._hassConfig),
+        calcDate(today, startOfMonth, this._i18n.locale, this._hassConfig),
         subMonths,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         difference
       );
       this._endDate = calcDate(
         today,
         endOfMonth,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig
       );
     } else {
-      const weekStartsOn = firstWeekdayIndex(this._locale);
+      const weekStartsOn = firstWeekdayIndex(this._i18n.locale);
       const weekStart = calcDate(
         this._endDate!,
         startOfWeek,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         {
           weekStartsOn,
@@ -646,7 +634,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
       const weekEnd = calcDate(
         this._endDate!,
         endOfWeek,
-        this._locale,
+        this._i18n.locale,
         this._hassConfig,
         {
           weekStartsOn,
@@ -660,7 +648,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
       ) {
         // Pick current week
         [this._startDate, this._endDate] = calcDateRange(
-          this._locale,
+          this._i18n.locale,
           this._hassConfig,
           "this_week"
         );
@@ -670,13 +658,19 @@ export class HuiEnergyPeriodSelector extends LitElement {
           this._endDate!,
           this._startDate,
           differenceInDays,
-          this._locale,
+          this._i18n.locale,
           this._hassConfig
         ) as number;
         this._startDate = calcDate(
-          calcDate(today, subDays, this._locale, this._hassConfig, difference),
+          calcDate(
+            today,
+            subDays,
+            this._i18n.locale,
+            this._hassConfig,
+            difference
+          ),
           startOfDay,
-          this._locale,
+          this._i18n.locale,
           this._hassConfig,
           {
             weekStartsOn,
@@ -685,7 +679,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
         this._endDate = calcDate(
           today,
           endOfDay,
-          this._locale,
+          this._i18n.locale,
           this._hassConfig,
           {
             weekStartsOn,
@@ -721,7 +715,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
       this._startDate,
       this._endDate!,
       forward,
-      this._locale,
+      this._i18n.locale,
       this._hassConfig
     );
     this._startDate = start;

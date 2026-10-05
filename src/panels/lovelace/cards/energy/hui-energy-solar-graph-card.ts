@@ -6,10 +6,8 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -84,15 +82,8 @@ export class HuiEnergySolarGraphCard
   @state() private _total?: number;
 
   @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
-  @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -148,7 +139,7 @@ export class HuiEnergySolarGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this._locale)} kWh
+                        ${formatNumber(this._total, this._i18n.locale)} kWh
                       </hui-energy-graph-chip>`
                     : nothing
                 }
@@ -165,7 +156,7 @@ export class HuiEnergySolarGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this._locale,
+              this._i18n.locale,
               this._hassConfig,
               this._compareStart,
               this._compareEnd,
@@ -178,8 +169,10 @@ export class HuiEnergySolarGraphCard
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
-                      ? this._localize("ui.panel.lovelace.cards.energy.no_data")
-                      : this._localize(
+                      ? this._i18n.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data_period"
                         )
                   }
@@ -192,9 +185,9 @@ export class HuiEnergySolarGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    this._localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_solar_graph.total_produced",
-      { num: formatNumber(total, this._locale) }
+      { num: formatNumber(total, this._i18n.locale) }
     );
 
   private _createOptions = memoizeOne(
@@ -239,7 +232,7 @@ export class HuiEnergySolarGraphCard
     }
 
     const result = generateEnergySolarGraphData({
-      localize: this._localize,
+      localize: this._i18n.localize,
       states: this._states,
       formatEntityName: this._formatters.formatEntityName,
       darkMode: this._ui.themes.darkMode,

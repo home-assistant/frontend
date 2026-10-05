@@ -16,13 +16,9 @@ import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
-import {
-  consumeLocalize,
-  preserveUnchangedEntityStatesRecord,
-} from "../../../../common/decorators/consume-context-entry";
+import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
 import { batteryLevelIconPath } from "../../../../common/entity/battery_icon";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { shallowEqual } from "../../../../common/util/shallow-equal";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -44,7 +40,6 @@ import {
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
@@ -90,14 +85,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
   @state() private _animate = true;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -215,7 +205,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -428,7 +418,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       totalBatteryOut || 0
     );
     const targetEnergyUnit = formatConsumptionShort(
-      this._locale,
+      this._i18n.locale,
       maxEnergy,
       "kWh"
     )
@@ -449,7 +439,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                       ? html`<div class="spacer"></div>`
                       : html`<div class="circle-container low-carbon">
                           <span class="label"
-                            >${this._localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.low_carbon"
                             )}</span
                           >
@@ -461,7 +451,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                           >
                             <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this._locale,
+                              this._i18n.locale,
                               lowCarbonEnergy,
                               "kWh",
                               targetEnergyUnit
@@ -476,14 +466,14 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                     hasSolarProduction
                       ? html`<div class="circle-container solar">
                           <span class="label"
-                            >${this._localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.solar"
                             )}</span
                           >
                           <div class="circle">
                             <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this._locale,
+                              this._i18n.locale,
                               totalSolarProduction,
                               "kWh",
                               targetEnergyUnit
@@ -498,14 +488,14 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                     hasGas
                       ? html`<div class="circle-container gas">
                           <span class="label"
-                            >${this._localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.gas"
                             )}</span
                           >
                           <div class="circle">
                             <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this._locale,
+                              this._i18n.locale,
                               gasUsage,
                               this._data.gasUnit,
                               undefined,
@@ -536,14 +526,14 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                       : hasWater
                         ? html`<div class="circle-container water">
                             <span class="label"
-                              >${this._localize(
+                              >${this._i18n.localize(
                                 "ui.panel.lovelace.cards.energy.energy_distribution.water"
                               )}</span
                             >
                             <div class="circle">
                               <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
                               ${formatConsumptionShort(
-                                this._locale,
+                                this._i18n.locale,
                                 waterUsage,
                                 this._data.waterUnit
                               )}
@@ -588,7 +578,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${mdiArrowLeft}
                               ></ha-svg-icon
                               >${formatConsumptionShort(
-                                this._locale,
+                                this._i18n.locale,
                                 returnedToGrid,
                                 "kWh",
                                 targetEnergyUnit
@@ -605,7 +595,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                               ></ha-svg-icon>`
                             : ""
                         }${formatConsumptionShort(
-                          this._locale,
+                          this._i18n.locale,
                           totalFromGrid,
                           "kWh",
                           targetEnergyUnit
@@ -613,7 +603,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                       </span>
                     </div>
                     <span class="label"
-                      >${this._localize(
+                      >${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_distribution.grid"
                       )}</span
                     >
@@ -630,7 +620,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
               >
                 <ha-svg-icon .path=${mdiHome}></ha-svg-icon>
                 ${formatConsumptionShort(
-                  this._locale,
+                  this._i18n.locale,
                   totalHomeConsumption,
                   "kWh",
                   targetEnergyUnit
@@ -738,7 +728,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                   ? html`<span
                                       >${formatNumber(
                                         averageBatterySoc,
-                                        this._locale,
+                                        this._i18n.locale,
                                         {
                                           maximumFractionDigits: 0,
                                         }
@@ -754,7 +744,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${mdiArrowDown}
                               ></ha-svg-icon
                               >${formatConsumptionShort(
-                                this._locale,
+                                this._i18n.locale,
                                 totalBatteryIn,
                                 "kWh",
                                 targetEnergyUnit
@@ -766,7 +756,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${mdiArrowUp}
                               ></ha-svg-icon
                               >${formatConsumptionShort(
-                                this._locale,
+                                this._i18n.locale,
                                 totalBatteryOut,
                                 "kWh",
                                 targetEnergyUnit
@@ -774,7 +764,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                             </span>
                           </div>
                           <span class="label"
-                            >${this._localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.battery"
                             )}</span
                           >
@@ -807,13 +797,13 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                           <div class="circle">
                             <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this._locale,
+                              this._i18n.locale,
                               waterUsage,
                               this._data.waterUnit
                             )}
                           </div>
                           <span class="label"
-                            >${this._localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.water"
                             )}</span
                           >
@@ -1033,7 +1023,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                     size="s"
                     href=${this._energyDashboardHref}
                   >
-                    ${this._localize(
+                    ${this._i18n.localize(
                       "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
                     )}
                   </ha-button>

@@ -3,12 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
-import {
-  consumeLocalize,
-  preserveUnchangedEntityStatesRecord,
-} from "../../../../common/decorators/consume-context-entry";
+import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import {
   configContext,
@@ -25,7 +21,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
@@ -103,14 +98,9 @@ class HuiWaterFlowSankeyCard
   })
   private _states: HassEntities = {};
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -169,7 +159,7 @@ class HuiWaterFlowSankeyCard
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -237,7 +227,7 @@ class HuiWaterFlowSankeyCard
           id: sourceNodeId,
           label:
             this._getEntityLabel(source.stat_rate) ||
-            this._localize(
+            this._i18n.localize(
               "ui.panel.lovelace.cards.energy.energy_distribution.water"
             ),
           value,
@@ -266,7 +256,7 @@ class HuiWaterFlowSankeyCard
           id: source.stat_rate,
           label:
             this._getEntityLabel(source.stat_rate) ||
-            this._localize(
+            this._i18n.localize(
               "ui.panel.lovelace.cards.energy.energy_distribution.water"
             ),
           value: Math.max(0, value),
@@ -297,7 +287,7 @@ class HuiWaterFlowSankeyCard
     } = buildSankeyDeviceNodes({
       devices: prefs.device_consumption_water,
       computedStyle,
-      localize: this._localize,
+      localize: this._i18n.localize,
       rootNodeId,
       minThreshold: minFlowThreshold,
       maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
@@ -316,7 +306,7 @@ class HuiWaterFlowSankeyCard
       states: this._states,
       registries: this._registries,
       computedStyle,
-      localize: this._localize,
+      localize: this._i18n.localize,
       deviceNodes,
       parentLinks,
       rootNodeId,
@@ -352,7 +342,7 @@ class HuiWaterFlowSankeyCard
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`
-              : html`${this._localize(
+              : html`${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.no_data"
                 )}`
           }
@@ -363,7 +353,7 @@ class HuiWaterFlowSankeyCard
 
   private _valueFormatter = (value: number) =>
     formatFlowRateShort(
-      this._locale,
+      this._i18n.locale,
       this._hassConfig.unit_system.length,
       value
     );

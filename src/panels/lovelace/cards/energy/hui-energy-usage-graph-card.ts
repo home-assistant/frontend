@@ -8,10 +8,8 @@ import type { BarSeriesOption } from "echarts/charts";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chart/ha-chart-base";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
@@ -118,14 +116,9 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _total?: number;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -178,9 +171,9 @@ export class HuiEnergyUsageGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${this._localize(
+                        ${this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
-                          { num: formatNumber(this._total, this._locale) }
+                          { num: formatNumber(this._total, this._i18n.locale) }
                         )}
                       </hui-energy-graph-chip>`
                     : nothing
@@ -198,7 +191,7 @@ export class HuiEnergyUsageGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this._locale,
+              this._i18n.locale,
               this._hassConfig,
               this._compareStart,
               this._compareEnd,
@@ -213,8 +206,10 @@ export class HuiEnergyUsageGraphCard
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
-                      ? this._localize("ui.panel.lovelace.cards.energy.no_data")
-                      : this._localize(
+                      ? this._i18n.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data_period"
                         )
                   }
@@ -227,9 +222,9 @@ export class HuiEnergyUsageGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    this._localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
-      { num: formatNumber(total, this._locale) }
+      { num: formatNumber(total, this._i18n.locale) }
     );
 
   private _createOptions = memoizeOne(
@@ -359,14 +354,15 @@ export class HuiEnergyUsageGraphCard
           statIds.from_battery = [source.stat_energy_from];
         }
         if (source.name) {
-          statLabels.to_battery[source.stat_energy_to] = this._localize(
+          statLabels.to_battery[source.stat_energy_to] = this._i18n.localize(
             "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
             { name: source.name }
           );
-          statLabels.from_battery[source.stat_energy_from] = this._localize(
-            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
-            { name: source.name }
-          );
+          statLabels.from_battery[source.stat_energy_from] =
+            this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+              { name: source.name }
+            );
         }
         continue;
       }
@@ -386,7 +382,7 @@ export class HuiEnergyUsageGraphCard
         if (gridSource.name) {
           statLabels.from_grid[gridSource.stat_energy_from] =
             gridSource.stat_energy_to
-              ? this._localize(
+              ? this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_consumed",
                   { name: gridSource.name }
                 )
@@ -403,7 +399,7 @@ export class HuiEnergyUsageGraphCard
         if (gridSource.name) {
           statLabels.to_grid[gridSource.stat_energy_to] =
             gridSource.stat_energy_from
-              ? this._localize(
+              ? this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_exported",
                   { name: gridSource.name }
                 )
@@ -433,13 +429,13 @@ export class HuiEnergyUsageGraphCard
     });
 
     const typeLabels = {
-      used_grid: this._localize(
+      used_grid: this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
       ),
-      used_solar: this._localize(
+      used_solar: this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_solar"
       ),
-      used_battery: this._localize(
+      used_battery: this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_battery"
       ),
     };

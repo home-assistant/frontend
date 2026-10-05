@@ -11,10 +11,7 @@ import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/chart/ha-chart-tooltip-marker";
 import {
@@ -37,7 +34,6 @@ import {
   getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantFormatters,
@@ -104,14 +100,9 @@ export class HuiEnergyDevicesGraphCard
 
   private _deviceLabels: Record<string, string> = {};
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @consume({ context: statesContext, subscribe: true })
   private _states!: HassEntities;
@@ -183,7 +174,7 @@ export class HuiEnergyDevicesGraphCard
                     .path=${
                       this._chartType === "pie" ? mdiChartBar : mdiChartDonut
                     }
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
                     )}
                     @click=${this._handleChartTypeChange}
@@ -223,7 +214,7 @@ export class HuiEnergyDevicesGraphCard
     const deviceName = this._getDeviceName(params.name);
     const value = `${formatNumber(
       params.value[0] as number,
-      this._locale,
+      this._i18n.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
     return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
@@ -315,7 +306,7 @@ export class HuiEnergyDevicesGraphCard
 
   private _getDeviceName(statisticId: string): string {
     const suffix = this._compoundStats.includes(statisticId)
-      ? ` (${this._localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
+      ? ` (${this._i18n.localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
       : "";
     return (
       // The untracked slice is not a statistic, so it has no label.
@@ -344,7 +335,7 @@ export class HuiEnergyDevicesGraphCard
         type: this._chartType,
         radius: [compareData ? "50%" : "40%", "70%"],
         universalTransition: true,
-        name: this._localize(
+        name: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.energy_usage"
         ),
         itemStyle: {
@@ -374,7 +365,7 @@ export class HuiEnergyDevicesGraphCard
         type: this._chartType,
         radius: ["30%", "50%"],
         universalTransition: true,
-        name: this._localize(
+        name: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.previous_energy_usage"
         ),
         itemStyle: {
@@ -508,7 +499,7 @@ export class HuiEnergyDevicesGraphCard
         pieChartData.push({
           id: "untracked",
           value: [untracked, "untracked"] as any,
-          name: this._localize(
+          name: this._i18n.localize(
             "ui.panel.lovelace.cards.energy.energy_devices_graph.untracked_consumption"
           ),
           itemStyle: {
@@ -527,7 +518,7 @@ export class HuiEnergyDevicesGraphCard
             chartDataCompare.push({
               id: "untracked",
               value: [compareUntracked, "untracked"] as any,
-              name: this._localize(
+              name: this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.energy_devices_graph.untracked_consumption"
               ),
               itemStyle: {
@@ -548,7 +539,7 @@ export class HuiEnergyDevicesGraphCard
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
-        name: this._localize(
+        name: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
         ),
         data: [totalChart],
@@ -559,7 +550,7 @@ export class HuiEnergyDevicesGraphCard
           fontSize: computedStyle.getPropertyValue("--ha-font-size-m"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalChart, this._locale)} kWh`,
+          formatter: `{a}\n${formatNumber(totalChart, this._i18n.locale)} kWh`,
         },
         cursor: "default",
         itemStyle: {
@@ -584,7 +575,7 @@ export class HuiEnergyDevicesGraphCard
       return {
         ...d,
         name: this._getDeviceName(d.name),
-        value: `${formatNumber(d.value[0], this._locale)} kWh`,
+        value: `${formatNumber(d.value[0], this._i18n.locale)} kWh`,
         // Untracked is synthetic and external statistics aren't real entities,
         // so their labels can't open more-info; fall back to toggling visibility.
         noLabelClick:

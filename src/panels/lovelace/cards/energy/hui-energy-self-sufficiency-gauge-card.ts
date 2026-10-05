@@ -3,9 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
@@ -18,7 +15,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantInternationalization,
@@ -55,14 +51,9 @@ class HuiEnergySelfSufficiencyGaugeCard
 
   @state() private _data?: EnergyData;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   constructor() {
     super();
@@ -91,7 +82,7 @@ class HuiEnergySelfSufficiencyGaugeCard
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     // The strategy only includes this card if we have a grid.
@@ -125,7 +116,7 @@ class HuiEnergySelfSufficiencyGaugeCard
                   .value=${value}
                   label="%"
                   .formatOptions=${FORMAT_OPTIONS}
-                  .locale=${this._locale}
+                  .locale=${this._i18n.locale}
                   style=${styleMap({
                     "--gauge-color": this._computeSeverity(value),
                   })}
@@ -135,17 +126,17 @@ class HuiEnergySelfSufficiencyGaugeCard
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <ha-tooltip for="info" placement="left">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
                   )}
                 </ha-tooltip>
                 <div class="name">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_quota"
                   )}
                 </div>
               `
-            : this._localize(
+            : this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_could_not_calc"
               )
         }

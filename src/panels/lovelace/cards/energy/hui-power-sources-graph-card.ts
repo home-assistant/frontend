@@ -6,9 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -68,14 +66,9 @@ export class HuiPowerSourcesGraphCard
 
   @state() private _compareEnd?: Date;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -128,7 +121,7 @@ export class HuiPowerSourcesGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this._locale,
+              this._i18n.locale,
               this._hassConfig,
               this._compareStart,
               this._compareEnd,
@@ -142,8 +135,10 @@ export class HuiPowerSourcesGraphCard
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
-                      ? this._localize("ui.panel.lovelace.cards.energy.no_data")
-                      : this._localize(
+                      ? this._i18n.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data_period"
                         )
                   }
@@ -192,7 +187,7 @@ export class HuiPowerSourcesGraphCard
     }
 
     const result = generatePowerSourcesGraphData({
-      localize: this._localize,
+      localize: this._i18n.localize,
       states: this._states,
       energyData,
       computedStyles: getComputedStyle(this),

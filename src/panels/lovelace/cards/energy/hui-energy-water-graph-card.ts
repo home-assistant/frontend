@@ -7,9 +7,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chart/ha-chart-base";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
@@ -92,14 +90,9 @@ export class HuiEnergyWaterGraphCard
 
   @state() private _total?: number;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -154,7 +147,8 @@ export class HuiEnergyWaterGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this._locale)} ${this._unit}
+                        ${formatNumber(this._total, this._i18n.locale)}
+                        ${this._unit}
                       </hui-energy-graph-chip>`
                     : nothing
                 }
@@ -171,7 +165,7 @@ export class HuiEnergyWaterGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this._locale,
+              this._i18n.locale,
               this._hassConfig,
               this._unit,
               this._compareStart,
@@ -185,8 +179,10 @@ export class HuiEnergyWaterGraphCard
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
-                      ? this._localize("ui.panel.lovelace.cards.energy.no_data")
-                      : this._localize(
+                      ? this._i18n.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data_period"
                         )
                   }
@@ -199,9 +195,9 @@ export class HuiEnergyWaterGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    this._localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_water_graph.total_consumed",
-      { num: formatNumber(total, this._locale), unit: this._unit }
+      { num: formatNumber(total, this._i18n.locale), unit: this._unit }
     );
 
   private _createOptions = memoizeOne(

@@ -4,13 +4,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
-import {
-  consumeEntityState,
-  consumeLocalize,
-} from "../../../../common/decorators/consume-context-entry";
+import { consumeEntityState } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
 import { round } from "../../../../common/number/round";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
@@ -25,7 +21,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
@@ -65,14 +60,9 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
   @consumeEntityState({ entityIdPath: ["_data", "co2SignalEntity"] })
   private _co2State?: HassEntity;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -108,7 +98,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     if (!this._data.co2SignalEntity) {
@@ -118,7 +108,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     if (!this._co2State) {
       return html`<hui-warning>
         ${createEntityNotFoundWarning(
-          { config: this._hassConfig, localize: this._localize },
+          { config: this._hassConfig, localize: this._i18n.localize },
           this._data.co2SignalEntity
         )}
       </hui-warning>`;
@@ -161,7 +151,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
                   max="100"
                   .value=${value}
                   .formatOptions=${FORMAT_OPTIONS}
-                  .locale=${this._locale}
+                  .locale=${this._i18n.locale}
                   label="%"
                   style=${styleMap({
                     "--gauge-color": this._computeSeverity(value),
@@ -173,17 +163,17 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <ha-tooltip for="info" placement="left">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
                   )}
                 </ha-tooltip>
                 <div class="name">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
                   )}
                 </div>
               `
-            : html`${this._localize(
+            : html`${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_not_calculated"
               )}`
         }

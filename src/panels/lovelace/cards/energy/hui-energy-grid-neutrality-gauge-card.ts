@@ -2,10 +2,7 @@ import { mdiInformationOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
@@ -18,7 +15,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantInternationalization,
@@ -52,14 +48,9 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
 
   @state() private _data?: EnergyData;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   constructor() {
     super();
@@ -88,7 +79,7 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
 
@@ -123,10 +114,10 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
                   .value=${value}
                   .valueText=${formatNumber(
                     Math.abs(returnedToGrid! - consumedFromGrid!),
-                    this._locale,
+                    this._i18n.locale,
                     { maximumFractionDigits: 2 }
                   )}
-                  .locale=${this._locale}
+                  .locale=${this._i18n.locale}
                   .levels=${LEVELS}
                   label="kWh"
                   needle
@@ -136,27 +127,27 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <ha-tooltip for="info" placement="left">
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
                   )}
                   <br /><br />
-                  ${this._localize(
+                  ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
                   )}
                 </ha-tooltip>
                 <div class="name">
                   ${
                     returnedToGrid! >= consumedFromGrid!
-                      ? this._localize(
+                      ? this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
                         )
-                      : this._localize(
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
                         )
                   }
                 </div>
               `
-            : this._localize(
+            : this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
               )
         }

@@ -3,9 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import {
@@ -29,7 +27,6 @@ import {
   getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
@@ -84,14 +81,9 @@ class HuiEnergySankeyCard
 
   @state() private _data?: EnergyData;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -154,7 +146,7 @@ class HuiEnergySankeyCard
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -188,7 +180,7 @@ class HuiEnergySankeyCard
       // Add battery source
       nodes.push({
         id: "battery",
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryOut,
@@ -206,7 +198,7 @@ class HuiEnergySankeyCard
       // Add battery sink
       nodes.push({
         id: "battery_in",
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryIn,
@@ -236,7 +228,7 @@ class HuiEnergySankeyCard
 
       nodes.push({
         id: "grid",
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalFromGrid,
@@ -259,7 +251,7 @@ class HuiEnergySankeyCard
 
       nodes.push({
         id: "solar",
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: totalSolarProduction,
@@ -280,7 +272,7 @@ class HuiEnergySankeyCard
 
       nodes.push({
         id: "grid_return",
-        label: this._localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalToGrid,
@@ -334,7 +326,7 @@ class HuiEnergySankeyCard
     } = buildSankeyDeviceNodes({
       devices: prefs.device_consumption,
       computedStyle,
-      localize: this._localize,
+      localize: this._i18n.localize,
       rootNodeId: "home",
       minThreshold: minEnergyThreshold,
       maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
@@ -353,7 +345,7 @@ class HuiEnergySankeyCard
       states: this._states,
       registries: this._registries,
       computedStyle,
-      localize: this._localize,
+      localize: this._i18n.localize,
       deviceNodes,
       parentLinks,
       rootNodeId: "home",
@@ -390,7 +382,7 @@ class HuiEnergySankeyCard
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`
-              : html`${this._localize(
+              : html`${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.no_data_period"
                 )}`
           }
@@ -400,7 +392,7 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this._locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
+    `${formatNumber(value, this._i18n.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

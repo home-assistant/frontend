@@ -7,9 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/chart/ha-chart-base";
 import {
@@ -92,14 +90,9 @@ export class HuiEnergyDevicesDetailGraphCard
   })
   private _hiddenStats: string[] = [];
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -166,7 +159,7 @@ export class HuiEnergyDevicesDetailGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this._locale,
+              this._i18n.locale,
               this._hassConfig,
               UNIT,
               this._compareStart,
@@ -186,9 +179,9 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    this._localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
-      { num: formatNumber(total, this._locale), unit: UNIT }
+      { num: formatNumber(total, this._i18n.locale), unit: UNIT }
     );
 
   // ha-chart-base will track hidden per ID (so it will have two entries for ID and compare-ID)
@@ -289,7 +282,7 @@ export class HuiEnergyDevicesDetailGraphCard
       compareStart,
       compareEnd,
     } = generateEnergyDevicesDetailGraphData({
-      localize: this._localize,
+      localize: this._i18n.localize,
       states: this._states,
       formatEntityName: this._formatters.formatEntityName,
       darkMode: this._ui.themes.darkMode,

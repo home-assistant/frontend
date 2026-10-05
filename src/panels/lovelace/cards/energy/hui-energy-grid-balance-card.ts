@@ -2,11 +2,8 @@ import { mdiTransmissionTower } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
@@ -19,7 +16,6 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantInternationalization,
@@ -48,14 +44,9 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
 
   @state() private _data?: EnergyData;
 
-  @state() @consumeLocalize() private _localize!: LocalizeFunc;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
+  private _i18n!: HomeAssistantInternationalization;
 
   constructor() {
     super();
@@ -84,7 +75,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const { summedData } = getSummedData(this._data);
@@ -96,7 +87,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
     const fmt = (value: number) =>
       formatNumber(
         value,
-        this._locale,
+        this._i18n.locale,
         Math.abs(value) < 0.01
           ? { maximumSignificantDigits: 2 }
           : { maximumFractionDigits: 2 }
@@ -121,7 +112,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
             <span slot="primary">
               ${
                 this._config.title ||
-                this._localize(
+                this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.title"
                 )
               }
@@ -131,7 +122,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                 ${fmt(imported)} kWh
               </span>
               <ha-tooltip for="eq-imported" placement="top">
-                ${this._localize(
+                ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.imported",
                   { value: fmt(imported) }
                 )}
@@ -141,7 +132,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                 ${fmt(exported)} kWh
               </span>
               <ha-tooltip for="eq-exported" placement="top">
-                ${this._localize(
+                ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.exported",
                   { value: fmt(exported) }
                 )}
@@ -154,7 +145,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                 ${fmt(net)} kWh
               </span>
               <ha-tooltip for="eq-net" placement="top">
-                ${this._localize(
+                ${this._i18n.localize(
                   `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"}`,
                   { value: fmt(Math.abs(net)) }
                 )}
@@ -170,7 +161,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               style="width: ${leftPercent}%"
             ></div>
             <ha-tooltip for="bar-exported" placement="top">
-              ${this._localize(
+              ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.exported",
                 { value: fmt(exported) }
               )}
@@ -183,7 +174,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                       style="width: ${netBarWidth}%"
                     ></div>
                     <ha-tooltip for="bar-net-left" placement="top">
-                      ${this._localize(
+                      ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_export",
                         {
                           value: fmt(Math.abs(net)),
@@ -201,7 +192,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               style="width: ${rightPercent}%"
             ></div>
             <ha-tooltip for="bar-imported" placement="top">
-              ${this._localize(
+              ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.imported",
                 { value: fmt(imported) }
               )}
@@ -214,7 +205,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                       style="width: ${netBarWidth}%"
                     ></div>
                     <ha-tooltip for="bar-net-right" placement="top">
-                      ${this._localize(
+                      ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_import",
                         {
                           value: fmt(Math.abs(net)),
