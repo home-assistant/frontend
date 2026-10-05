@@ -246,6 +246,10 @@ export class HuiEntityEditor extends LitElement {
       --ha-row-item-padding-block: 0;
       --ha-row-item-padding-inline: var(--ha-space-3) var(--ha-space-1);
     }
+    ha-list-item-base::part(start),
+    ha-list-item-base::part(end) {
+      color: var(--ha-color-text-secondary);
+    }
     .handle {
       cursor: move;
       padding: 8px;

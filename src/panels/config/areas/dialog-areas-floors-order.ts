@@ -477,6 +477,10 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
           color: var(--secondary-text-color);
         }
 
+        ha-list-item-base::part(start) {
+          color: var(--ha-color-text-secondary);
+        }
+
         ha-list-item-base.sortable-ghost {
           border-radius: calc(
             var(--ha-card-border-radius, var(--ha-border-radius-lg)) - 1px
