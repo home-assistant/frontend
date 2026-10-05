@@ -108,6 +108,9 @@ export class HaAutomationTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
+  // Numbers the trace list requests, so only the latest one updates the page.
+  private _traceListRequest = 0;
+
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
    * every label on every state event. The run already happened, so only the
@@ -516,10 +519,11 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    const automationId = this.automationId;
-    const traces = await loadTraces(this.hass, "automation", automationId);
-    // The page switched to another automation while this was loading.
-    if (automationId !== this.automationId) {
+    const request = ++this._traceListRequest;
+    const traces = await loadTraces(this.hass, "automation", this.automationId);
+    // A newer request replaced this one, for example after switching to
+    // another automation and back.
+    if (request !== this._traceListRequest) {
       return;
     }
     this._traces = traces;
@@ -550,7 +554,7 @@ export class HaAutomationTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
-      if (automationId !== this.automationId) {
+      if (request !== this._traceListRequest) {
         return;
       }
     }

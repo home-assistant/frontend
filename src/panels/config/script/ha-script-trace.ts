@@ -104,6 +104,9 @@ export class HaScriptTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
+  // Numbers the trace list requests, so only the latest one updates the page.
+  private _traceListRequest = 0;
+
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
    * every label on every state event. The run already happened, so only the
@@ -497,10 +500,11 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    const scriptId = this.scriptId;
-    const traces = await loadTraces(this.hass, "script", scriptId);
-    // The page switched to another script while this was loading.
-    if (scriptId !== this.scriptId) {
+    const request = ++this._traceListRequest;
+    const traces = await loadTraces(this.hass, "script", this.scriptId);
+    // A newer request replaced this one, for example after switching to
+    // another script and back.
+    if (request !== this._traceListRequest) {
       return;
     }
     this._traces = traces;
@@ -531,7 +535,7 @@ export class HaScriptTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
-      if (scriptId !== this.scriptId) {
+      if (request !== this._traceListRequest) {
         return;
       }
     }
