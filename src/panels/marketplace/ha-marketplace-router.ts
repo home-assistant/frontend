@@ -8,7 +8,6 @@ import type { MarketplaceData } from "../../data/marketplace/marketplace";
 import type { MarketplaceTab } from "./dashboards/ha-marketplace-dashboard";
 
 interface MarketplacePageElement extends HTMLElement {
-  hass: HomeAssistant;
   marketplace: MarketplaceData;
   route: Route;
   narrow: boolean;
@@ -66,7 +65,6 @@ class HaMarketplaceRouter extends HassRouterPage {
   protected updatePageEl(el: MarketplacePageElement) {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
-    el.hass = this.hass;
     el.marketplace = this.marketplace;
     el.route = this.routeTail;
     el.narrow = this.narrow;
