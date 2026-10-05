@@ -1525,18 +1525,21 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           animation: unset;
         }
         ha-list-base {
-          border: 1px solid var(--divider-color);
+          --list-border-color: var(--divider-color);
+          border: 1px solid var(--list-border-color);
           border-radius: var(--ha-border-radius-md);
           overflow: hidden;
         }
         ha-list-base.discovered {
-          background-color: rgba(var(--rgb-success-color), 0.2);
+          --list-border-color: var(--ha-color-border-success-normal);
+          background-color: var(--ha-color-fill-success-quiet-resting);
         }
         ha-list-base.attention {
-          background-color: rgba(var(--rgb-warning-color), 0.2);
+          --list-border-color: var(--ha-color-border-warning-normal);
+          background-color: var(--ha-color-fill-warning-quiet-resting);
         }
         ha-list-item-base + ha-list-item-base {
-          border-top: 1px solid var(--ha-color-border-neutral-quiet);
+          border-top: 1px solid var(--list-border-color);
         }
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
