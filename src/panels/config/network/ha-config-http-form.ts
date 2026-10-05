@@ -77,10 +77,15 @@ const SCHEMA = memoizeOne(
             name: "ssl_profile",
             selector: {
               select: {
+                mode: "box",
+                box_max_columns: 1,
                 options: SSL_PROFILES.map((profile) => ({
                   value: profile,
                   label: localize(
                     `ui.panel.config.network.http.ssl_profile_${profile}`
+                  ),
+                  description: localize(
+                    `ui.panel.config.network.http.ssl_profile_${profile}_description`
                   ),
                 })),
               },
