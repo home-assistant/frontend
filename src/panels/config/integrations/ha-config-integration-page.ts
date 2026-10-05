@@ -1530,10 +1530,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           border-radius: var(--ha-border-radius-md);
           overflow: hidden;
         }
-        ha-list-base.discovered {
-          --list-border-color: var(--ha-color-border-success-normal);
-          background-color: var(--ha-color-fill-success-quiet-resting);
-        }
+        ha-list-base.discovered,
         ha-list-base.attention {
           --list-border-color: var(--ha-color-border-warning-normal);
           background-color: var(--ha-color-fill-warning-quiet-resting);
