@@ -33,11 +33,11 @@ import type {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-resizable-bottom-sheet";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-relative-time";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-state-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
 import "../../../../components/ha-button";
@@ -144,7 +144,7 @@ export class HuiMapOverview extends LitElement {
 
   @query(".detail-name") private _detailName?: HTMLElement;
 
-  @queryAll("ha-md-list-item")
+  @queryAll("ha-list-item-button")
   private _listItems!: NodeListOf<HTMLElement>;
 
   private _peekObserver?: ResizeObserver;
@@ -728,13 +728,13 @@ export class HuiMapOverview extends LitElement {
         role="tabpanel"
         aria-labelledby="tab-${tab}"
       >
-        <ha-md-list>
+        <ha-list-base>
           ${items.map((stateObj) =>
             tab === "zones"
               ? this._renderZone(stateObj)
               : this._renderEntity(stateObj)
           )}
-        </ha-md-list>
+        </ha-list-base>
       </div>
     `;
   }
@@ -745,8 +745,7 @@ export class HuiMapOverview extends LitElement {
     const picture = stateObj.attributes.entity_picture;
 
     return html`
-      <ha-md-list-item
-        type="button"
+      <ha-list-item-button
         data-entity-id=${stateObj.entity_id}
         class=${classMap({ "no-location": !location })}
         @click=${this._handleItemClick}
@@ -774,7 +773,7 @@ export class HuiMapOverview extends LitElement {
             format="short"
           ></ha-relative-time>
         </span>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -789,8 +788,7 @@ export class HuiMapOverview extends LitElement {
     );
 
     return html`
-      <ha-md-list-item
-        type="button"
+      <ha-list-item-button
         data-entity-id=${stateObj.entity_id}
         @click=${this._handleItemClick}
       >
@@ -815,7 +813,7 @@ export class HuiMapOverview extends LitElement {
                 )
           }
         </span>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -989,30 +987,28 @@ export class HuiMapOverview extends LitElement {
       flex-direction: column;
     }
 
-    ha-md-list {
+    ha-list-base {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
-      padding: 0;
       margin-top: var(--ha-space-2);
-      background: none;
       margin-bottom: calc(-1 * var(--sheet-bottom-space, 0px));
       padding-bottom: var(--sheet-bottom-space, 0px);
-      --md-list-item-leading-space: var(--ha-space-2);
-      --md-list-item-trailing-space: var(--ha-space-2);
-      --md-list-item-one-line-container-height: 56px;
-      --md-list-item-two-line-container-height: 64px;
     }
 
-    ha-md-list-item {
+    ha-list-item-button {
       border-radius: var(--ha-border-radius-lg);
-      --md-list-item-supporting-text-size: var(--ha-font-size-s);
-      --md-list-item-label-text-weight: var(--ha-font-weight-medium);
-      --ha-md-list-item-gap: var(--ha-space-3);
+      --ha-list-item-focus-radius: var(--ha-border-radius-lg);
+      --ha-row-item-gap: var(--ha-space-3);
+      --ha-row-item-padding-inline: var(--ha-space-2);
     }
 
-    ha-md-list-item.no-location {
-      --md-sys-color-on-surface: var(--secondary-text-color);
+    ha-list-item-button::part(headline) {
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    ha-list-item-button.no-location {
+      color: var(--secondary-text-color);
     }
 
     .avatar {

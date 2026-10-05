@@ -16,10 +16,10 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
-import "./ha-md-list";
-import "./ha-md-list-item";
 import "./ha-sortable";
 import "./ha-svg-icon";
+import "./item/ha-list-item-button";
+import "./list/ha-list-base";
 
 export interface DisplayItem {
   icon?: string | Promise<string | undefined>;
@@ -92,7 +92,7 @@ export class HaItemDisplayEditor extends LitElement {
         handle-selector=".handle"
         @item-moved=${this._itemMoved}
       >
-        <ha-md-list>
+        <ha-list-base>
           ${repeat(
             allItems,
             (item) => item.value,
@@ -108,8 +108,7 @@ export class HaItemDisplayEditor extends LitElement {
                 disableHiding,
               } = item;
               return html`
-                <ha-md-list-item
-                  type="button"
+                <ha-list-item-button
                   @click=${
                     this.showNavigationButton ? this._navigate : undefined
                   }
@@ -207,11 +206,11 @@ export class HaItemDisplayEditor extends LitElement {
                         `
                       : html`<ha-svg-icon slot="end"></ha-svg-icon>`
                   }
-                </ha-md-list-item>
+                </ha-list-item-button>
               `;
             }
           )}
-        </ha-md-list>
+        </ha-list-base>
       </ha-sortable>
     `;
   }
@@ -335,7 +334,7 @@ export class HaItemDisplayEditor extends LitElement {
       await this.updateComplete;
       // eslint-disable-next-line lit/prefer-query-decorators
       const selectedElement = this.shadowRoot?.querySelector(
-        `ha-md-list-item:nth-child(${this._dragIndex! + 1})`
+        `ha-list-item-button:nth-child(${this._dragIndex! + 1})`
       ) as HTMLElement | null;
       selectedElement?.focus();
       if (clearDragIndex) {
@@ -406,19 +405,11 @@ export class HaItemDisplayEditor extends LitElement {
       height: 21px;
       margin: 0 -4px;
     }
-    ha-md-list {
-      padding: 0;
+    ha-list-item-button {
+      --ha-row-item-padding-block: 0;
+      --ha-row-item-padding-inline: var(--ha-space-2);
     }
-    ha-md-list-item {
-      --md-list-item-top-space: 0;
-      --md-list-item-bottom-space: 0;
-      --md-list-item-leading-space: 8px;
-      --md-list-item-trailing-space: 8px;
-      --md-list-item-two-line-container-height: 48px;
-      --md-list-item-one-line-container-height: 48px;
-    }
-    ha-md-list-item.drag-selected {
-      --md-focus-ring-color: rgba(var(--rgb-accent-color), 0.6);
+    ha-list-item-button.drag-selected {
       border-radius: var(--ha-border-radius-md);
       outline: solid;
       outline-color: rgba(var(--rgb-accent-color), 0.6);
@@ -426,15 +417,13 @@ export class HaItemDisplayEditor extends LitElement {
       outline-width: 2px;
       background-color: rgba(var(--rgb-accent-color), 0.08);
     }
-    ha-md-list-item ha-icon-button {
+    ha-list-item-button ha-icon-button {
       margin-left: -12px;
       margin-right: -12px;
     }
-    ha-md-list-item.hidden {
-      --md-list-item-label-text-color: var(--disabled-text-color);
-      --md-list-item-supporting-text-color: var(--disabled-text-color);
-    }
-    ha-md-list-item.hidden .icon {
+    ha-list-item-button.hidden,
+    ha-list-item-button.hidden::part(supporting-text),
+    ha-list-item-button.hidden .icon {
       color: var(--disabled-text-color);
     }
   `;

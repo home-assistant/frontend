@@ -14,11 +14,11 @@ import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-dialog";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   reorderAreaRegistryEntries,
@@ -169,13 +169,13 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
         </div>
         <ha-sortable
           handle-selector=".area-handle"
-          draggable-selector="ha-md-list-item"
+          draggable-selector="ha-list-item-base"
           @item-moved=${this._areaMoved}
           @item-added=${this._areaAdded}
           group="areas"
           .floor=${floor.id}
         >
-          <ha-md-list>
+          <ha-list-base>
             ${
               floor.areas.length > 0
                 ? floor.areas.map((areaId) => this._renderArea(areaId))
@@ -185,7 +185,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
                     )}
                   </p>`
             }
-          </ha-md-list>
+          </ha-list-base>
         </ha-sortable>
       </div>
     `;
@@ -209,13 +209,13 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
         }
         <ha-sortable
           handle-selector=".area-handle"
-          draggable-selector="ha-md-list-item"
+          draggable-selector="ha-list-item-base"
           @item-moved=${this._areaMoved}
           @item-added=${this._areaAdded}
           group="areas"
           .floor=${UNASSIGNED_FLOOR}
         >
-          <ha-md-list>
+          <ha-list-base>
             ${
               this._hierarchy!.areas.length > 0
                 ? this._hierarchy!.areas.map((areaId) =>
@@ -227,7 +227,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
                     )}
                   </p>`
             }
-          </ha-md-list>
+          </ha-list-base>
         </ha-sortable>
       </div>
     `;
@@ -240,7 +240,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
     }
 
     return html`
-      <ha-md-list-item .sortableData=${area}>
+      <ha-list-item-base .sortableData=${area}>
         ${
           area.icon
             ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
@@ -255,7 +255,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
           slot="end"
           .path=${mdiDragHorizontalVariant}
         ></ha-svg-icon>
-      </ha-md-list-item>
+      </ha-list-item-base>
     `;
   }
 
@@ -477,20 +477,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
           color: var(--secondary-text-color);
         }
 
-        ha-md-list {
-          padding: 0;
-          --md-list-item-leading-space: 16px;
-          --md-list-item-trailing-space: 16px;
-          display: flex;
-          flex-direction: column;
-        }
-
-        ha-md-list-item {
-          --md-list-item-one-line-container-height: 48px;
-          --md-list-item-container-shape: 0;
-        }
-
-        ha-md-list-item.sortable-ghost {
+        ha-list-item-base.sortable-ghost {
           border-radius: calc(
             var(--ha-card-border-radius, var(--ha-border-radius-lg)) - 1px
           );
@@ -511,7 +498,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
           order: 1;
         }
 
-        ha-md-list:has(ha-md-list-item) .empty {
+        ha-list-base:has(ha-list-item-base) .empty {
           display: none;
         }
 
