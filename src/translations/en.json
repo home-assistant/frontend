@@ -9238,7 +9238,7 @@
               "note": "Depending on your network setup, this address may not be reachable from this device."
             },
             "ssl_profile_modern_v6": "Modern v6",
-            "ssl_profile_modern_v6_description": "TLS 1.3 only. Recommended for most setups, browsers and apps have supported it since around 2018.",
+            "ssl_profile_modern_v6_description": "TLS 1.3 only. Recommended for most setups. Browsers and apps have supported it since around 2018.",
             "ssl_profile_intermediate_v6": "Intermediate v6",
             "ssl_profile_intermediate_v6_description": "TLS 1.2 and newer with current ciphers. Choose this if older devices or apps cannot connect.",
             "ssl_profile_modern_v4": "Modern v4 (outdated)",
