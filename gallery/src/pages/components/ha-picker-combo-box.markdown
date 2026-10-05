@@ -19,11 +19,11 @@ list changes need checking against both.
 
 | Items                         | Renderer          | Rows in the DOM       |
 | ----------------------------- | ----------------- | --------------------- |
-| 12 or fewer, no sections      | `repeat()`        | all of them           |
-| more than 12, or any sections | `lit-virtualizer` | only the visible ones |
+| 12 or fewer rendered rows, no sections | `repeat()`        | all of them           |
+| more than 12 rendered rows, or any sections | `lit-virtualizer` | only the visible ones |
 
-The threshold is `MAX_PLAIN_LIST_ITEMS`, counted against the full item set, so
-filtering does not switch renderers.
+The threshold is `MAX_PLAIN_LIST_ITEMS`, counted against the initial rendered
+row set, including additional items and dialog padding. Filtering does not switch renderers.
 
 ## Two highlights
 
@@ -44,7 +44,7 @@ The list has two row backgrounds.
 | <kbd>Home</kbd> <kbd>End</kbd>        | Jump to the first or last item |
 | <kbd>PageUp</kbd> <kbd>PageDown</kbd> | Move the cursor a page         |
 | <kbd>Enter</kbd>                      | Pick the row under the cursor  |
-| <kbd>Ctrl/⌘</kbd> + <kbd>Enter</kbd>  | Pick it, opening in a new tab  |
+| <kbd>Ctrl/⌘</kbd> + <kbd>Enter</kbd>  | Pick it and report `newTab: true` in `index-selected` |
 
 With no cursor yet, <kbd>↓</kbd> and <kbd>Enter</kbd> start from the `value`
 row, or from the top match while searching. With one item in the list,
@@ -52,8 +52,10 @@ row, or from the top match while searching. With one item in the list,
 
 ## Implementation
 
-The component filters the items from `getItems` itself as the user types, so
-`getItems` can ignore its search argument and return everything.
+Without `sections`, the component filters the items from `getItems` itself as the
+user types, so `getItems` can ignore its search argument. With sections,
+`getItems` receives the search string and selected section and must return the
+matching rows.
 
 The host is `display: flex` with `flex: 1` and expects a parent with a bounded
 height. In the app that bound comes from the popover; embedding it directly
@@ -70,6 +72,7 @@ means supplying one.
 | mode                 | "popover"/"dialog" | "popover" | Adjusts padding for the surface the list sits in.                                                                           |
 | shown                | Boolean            | true      | Whether the surface finished animating. `ha-generic-picker` sets it so the virtualizer does not measure rows mid-animation. |
 | sections             | Array              | -         | Filter chips. Section headers are plain strings returned by `getItems`.                                                     |
+| selectedSection      | String             | -         | Section filter selected when the list is initialized.                                                                       |
 | sectionTitleFunction | Function           | -         | Builds the sticky section title from the visible range.                                                                     |
 | searchKeys           | Array              | -         | Fuse weighted keys for fuzzy search.                                                                                        |
 | searchFn             | Function           | -         | Post-processes filtered results.                                                                                            |
