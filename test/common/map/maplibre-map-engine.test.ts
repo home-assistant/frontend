@@ -112,6 +112,36 @@ const fakes = vi.hoisted(() => {
     }
   }
 
+  class FakeAttributionControl {
+    static all: FakeAttributionControl[] = [];
+
+    element?: HTMLElement;
+
+    constructor(public options: { compact?: boolean }) {
+      FakeAttributionControl.all.push(this);
+    }
+
+    onAdd() {
+      const element = document.createElement("details");
+      element.className = "maplibregl-ctrl maplibregl-ctrl-attrib";
+      const button = document.createElement("summary");
+      button.className = "maplibregl-ctrl-attrib-button";
+      button.addEventListener("click", () =>
+        element.classList.toggle("maplibregl-compact-show")
+      );
+      element.append(button);
+      if (this.options.compact) {
+        element.classList.add("maplibregl-compact", "maplibregl-compact-show");
+      }
+      this.element = element;
+      return element;
+    }
+
+    onRemove() {
+      this.element?.remove();
+    }
+  }
+
   class FakeMap {
     static instances: FakeMap[] = [];
 
@@ -144,9 +174,16 @@ const fakes = vi.hoisted(() => {
 
     remove = vi.fn();
 
-    addControl = vi.fn();
+    addControl = vi.fn((control: { onAdd?: () => HTMLElement }) => {
+      const element = control.onAdd?.();
+      if (element) {
+        this._container.append(element);
+      }
+    });
 
-    removeControl = vi.fn();
+    removeControl = vi.fn((control: { onRemove?: () => void }) =>
+      control.onRemove?.()
+    );
 
     setStyle = vi.fn(
       (
@@ -321,13 +358,14 @@ const fakes = vi.hoisted(() => {
     }
   }
 
-  return { baseStyle, FakeMap, FakeMarker, FakePopup };
+  return { baseStyle, FakeMap, FakeMarker, FakePopup, FakeAttributionControl };
 });
 
 vi.mock("maplibre-gl", () => ({
   Map: fakes.FakeMap,
   Marker: fakes.FakeMarker,
   Popup: fakes.FakePopup,
+  AttributionControl: fakes.FakeAttributionControl,
   NavigationControl: vi.fn(),
   ScaleControl: vi.fn(),
   setRTLTextPlugin: vi.fn(),
@@ -364,6 +402,19 @@ const flush = () =>
     setTimeout(resolve, 0);
   });
 
+const fakeAttribution = fakes.FakeAttributionControl;
+
+const viewport = {
+  matches: false,
+  listeners: new Set<Listener>(),
+  addEventListener: (_type: string, listener: Listener) => {
+    viewport.listeners.add(listener);
+  },
+  removeEventListener: (_type: string, listener: Listener) => {
+    viewport.listeners.delete(listener);
+  },
+};
+
 const createEngine = async (events: Partial<MapEngineEvents> = {}) => {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -392,10 +443,71 @@ describe("MapLibreMapEngine", () => {
     fakeMap.startLoaded = true;
     fakeMap.failNextSetStyle = false;
     fakeMarker.all.length = 0;
+    fakeAttribution.all.length = 0;
+    viewport.matches = false;
+    viewport.listeners.clear();
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => viewport)
+    );
     tokenListeners.clear();
     refreshMapTilesToken.mockClear();
     loadStyle.mockReset();
     loadStyle.mockImplementation(async () => baseStyle());
+  });
+
+  describe("attribution", () => {
+    const attribution = (map: InstanceType<typeof fakeMap>) =>
+      map.getContainer().querySelector(".maplibregl-ctrl-attrib")!;
+    const shown = (map: InstanceType<typeof fakeMap>) =>
+      attribution(map).classList.contains("maplibregl-compact-show");
+
+    const narrowWithFakeTimers = async () => {
+      const created = await createEngine();
+      await created.ready;
+      vi.useFakeTimers();
+      viewport.matches = true;
+      viewport.listeners.forEach((listener) => listener());
+      return created.map;
+    };
+
+    it("collapses the opened compact attribution by itself", async () => {
+      const map = await narrowWithFakeTimers();
+      expect(shown(map)).toBe(true);
+
+      vi.advanceTimersByTime(4999);
+      expect(shown(map)).toBe(true);
+      vi.advanceTimersByTime(1);
+      expect(shown(map)).toBe(false);
+    });
+
+    it("leaves an attribution the user opened alone", async () => {
+      const map = await narrowWithFakeTimers();
+      vi.advanceTimersByTime(5000);
+      expect(shown(map)).toBe(false);
+
+      attribution(map)
+        .querySelector<HTMLElement>(".maplibregl-ctrl-attrib-button")!
+        .click();
+      await Promise.resolve();
+      expect(shown(map)).toBe(true);
+      vi.advanceTimersByTime(5000);
+      expect(shown(map)).toBe(true);
+    });
+
+    it("forces a compact attribution on a narrow viewport only", async () => {
+      const { map, ready } = await createEngine();
+      await ready;
+      expect(fakeAttribution.all).toHaveLength(1);
+      expect(fakeAttribution.all[0].options.compact).toBeUndefined();
+
+      viewport.matches = true;
+      viewport.listeners.forEach((listener) => listener());
+      expect(map.removeControl).toHaveBeenCalledWith(fakeAttribution.all[0]);
+      expect(fakeAttribution.all).toHaveLength(2);
+      expect(fakeAttribution.all[1].options.compact).toBe(true);
+      expect(attribution(map)).toBe(fakeAttribution.all[1].element);
+    });
   });
 
   afterEach(() => {

@@ -1828,6 +1828,23 @@ export class HaMap extends ReactiveElement {
     .dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
       filter: invert(1);
     }
+    /* Not inherited from the page, which may be in the other mode */
+    .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      color: #000000;
+    }
+    .dark .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      background-color: rgba(28, 28, 28, 0.6);
+      color: #ffffff;
+    }
+    .dark .maplibregl-ctrl-attrib.maplibregl-compact {
+      background-color: #1c1c1c;
+    }
+    .dark .maplibregl-ctrl-attrib a {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .dark .maplibregl-ctrl-attrib-button {
+      filter: invert(1);
+    }
     /* MapLibre's stylesheet, linked into this root, wins on equal specificity */
     .maplibregl-popup-content {
       padding: 8px !important;

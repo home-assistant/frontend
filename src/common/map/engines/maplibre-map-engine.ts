@@ -88,6 +88,11 @@ const WHEEL_ZOOM_RATE = 1 / 200;
 // Regroup clusters once continuous zooming settles, not on every wheel notch
 export const CLUSTER_REBUILD_DELAY = 120;
 
+const ATTRIBUTION_SHOW_DURATION = 5000;
+const ATTRIBUTION_SHOWN_CLASS = "maplibregl-compact-show";
+// The app's narrow-layout breakpoint (home-assistant-main)
+const NARROW_VIEWPORT_QUERY = "(max-width: 870px)";
+
 type GeoJSONSourceSpecification = Extract<
   Parameters<MapLibreMap["addSource"]>[1],
   { type: "geojson" }
@@ -232,6 +237,14 @@ export class MapLibreMapEngine implements MapEngine {
 
   private _scaleControl?: IControl;
 
+  private _attributionControl?: IControl;
+
+  private _attributionObserver?: MutationObserver;
+
+  private _attributionTimeout?: number;
+
+  private _narrowViewport = window.matchMedia(NARROW_VIEWPORT_QUERY);
+
   private _markers: ManagedMarker[] = [];
 
   private _clusterOptions: MapClusterOptions | null = null;
@@ -334,8 +347,7 @@ export class MapLibreMapEngine implements MapEngine {
       touchPitch: false,
       // Rendered with a device font, so these glyphs are never requested
       localIdeographFontFamily: "sans-serif",
-      // Inline on wide maps, collapsible (open by default) on narrow ones
-      attributionControl: {},
+      attributionControl: false,
       // Proxied by core behind a token; absolute so the worker can resolve them
       transformRequest: (url) => ({
         ...withMapTilesToken(url),
@@ -373,6 +385,8 @@ export class MapLibreMapEngine implements MapEngine {
 
     this._zoomControl = new maplibre.NavigationControl({ showCompass: false });
     map.addControl(this._zoomControl, POSITIONS[options.zoomControlPosition]);
+    this._setUpAttribution();
+    this._narrowViewport.addEventListener("change", this._setUpAttribution);
 
     map.on("click", (ev) => {
       // Clicks on path points (they have tooltips) are not map clicks
@@ -436,6 +450,62 @@ export class MapLibreMapEngine implements MapEngine {
     }
   };
 
+  // Compact on a narrow viewport too, not only on a narrow map
+  private _setUpAttribution = (): void => {
+    const map = this._map;
+    if (!map || !this._maplibre) {
+      return;
+    }
+    if (this._attributionControl) {
+      map.removeControl(this._attributionControl);
+    }
+    this._attributionControl = new this._maplibre.AttributionControl({
+      compact: this._narrowViewport.matches ? true : undefined,
+    });
+    map.addControl(this._attributionControl, "bottom-right");
+    const attribution = map
+      .getContainer()
+      .querySelector<HTMLElement>(".maplibregl-ctrl-attrib");
+    if (attribution) {
+      this._autoHideAttribution(attribution);
+    }
+  };
+
+  private _autoHideAttribution(attribution: HTMLElement): void {
+    clearTimeout(this._attributionTimeout);
+    this._attributionObserver?.disconnect();
+    let byUser = false;
+    attribution
+      .querySelector(".maplibregl-ctrl-attrib-button")
+      ?.addEventListener("click", () => {
+        // MapLibre's click handler already ran; the observer sees this flag
+        byUser = true;
+        queueMicrotask(() => {
+          byUser = false;
+        });
+      });
+    let shown = false;
+    const sync = () => {
+      const nowShown = attribution.classList.contains(ATTRIBUTION_SHOWN_CLASS);
+      if (nowShown === shown) {
+        return;
+      }
+      shown = nowShown;
+      clearTimeout(this._attributionTimeout);
+      if (shown && !byUser) {
+        this._attributionTimeout = window.setTimeout(() => {
+          attribution.classList.remove(ATTRIBUTION_SHOWN_CLASS);
+        }, ATTRIBUTION_SHOW_DURATION);
+      }
+    };
+    this._attributionObserver = new MutationObserver(sync);
+    this._attributionObserver.observe(attribution, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    sync();
+  }
+
   private _scheduleFatal(): void {
     clearTimeout(this._fallbackTimeout);
     // Backgrounding drops the context too, and there it comes back on return
@@ -454,6 +524,10 @@ export class MapLibreMapEngine implements MapEngine {
     this._unsubscribeToken?.();
     clearTimeout(this._fallbackTimeout);
     clearTimeout(this._clusterRebuildTimeout);
+    clearTimeout(this._attributionTimeout);
+    this._attributionObserver?.disconnect();
+    this._attributionObserver = undefined;
+    this._narrowViewport.removeEventListener("change", this._setUpAttribution);
     document.removeEventListener("visibilitychange", this._handleVisibility);
     this._revealEmerged(true);
     this._clusterGroups.forEach((group) => group.iconMarker?.remove());
