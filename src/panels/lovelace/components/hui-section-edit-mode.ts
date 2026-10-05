@@ -4,7 +4,7 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiDragHorizontalVariant,
-  mdiFormatVerticalAlignTop,
+  mdiSwapVertical,
   mdiPencil,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
@@ -48,6 +48,11 @@ export class HuiSectionEditMode extends LitElement {
     await this._menuButton?.updateComplete;
     if (this.isConnected) {
       this._menuButton?.focus({ preventScroll: true });
+      this._menuButton?.scrollIntoView({
+        block: "center",
+        inline: "nearest",
+        behavior: "instant",
+      });
     }
   }
 
@@ -100,18 +105,13 @@ export class HuiSectionEditMode extends LitElement {
               ${this.hass.localize("ui.common.duplicate")}
             </ha-dropdown-item>
             <ha-dropdown-item
-              value="move-to-top"
+              value="move"
               ?disabled=${isStrategyView(
                 this.lovelace.config.views[this.viewIndex]
               )}
             >
-              <ha-svg-icon
-                slot="icon"
-                .path=${mdiFormatVerticalAlignTop}
-              ></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.section.move_to_top"
-              )}
+              <ha-svg-icon slot="icon" .path=${mdiSwapVertical}></ha-svg-icon>
+              ${this.hass.localize("ui.common.move")}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
             <ha-dropdown-item value="delete" variant="danger">
@@ -155,8 +155,8 @@ export class HuiSectionEditMode extends LitElement {
       case "duplicate":
         this._duplicateSection();
         break;
-      case "move-to-top":
-        this._moveSectionToTop();
+      case "move":
+        this._moveSection();
         break;
       case "delete":
         this._deleteSection();
@@ -185,8 +185,8 @@ export class HuiSectionEditMode extends LitElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private _moveSectionToTop(): void {
-    fireEvent(this, "section-move-to-top", { index: this.index });
+  private _moveSection(): void {
+    fireEvent(this, "section-move", { index: this.index });
   }
 
   private async _deleteSection() {
@@ -343,7 +343,7 @@ export class HuiSectionEditMode extends LitElement {
 
 declare global {
   interface HASSDomEvents {
-    "section-move-to-top": { index: number };
+    "section-move": { index: number };
   }
 
   interface HTMLElementTagNameMap {

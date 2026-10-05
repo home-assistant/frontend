@@ -11,6 +11,7 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { clamp } from "../../../common/number/clamp";
 import { getHistoryState, updateHistoryState } from "../../../common/navigate";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
@@ -24,6 +25,7 @@ import {
 } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
+import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
 import { DEFAULT_MAX_COLUMNS } from "./const";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
@@ -85,10 +87,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @queryAll("hui-section-edit-mode")
   private _sectionEditModes?: NodeListOf<HuiSectionEditMode>;
 
-  private _pendingMoveToTopFocus?: {
+  private _pendingMoveFocus?: {
     sections: HuiSection[];
     viewIndex: number;
+    sectionIndex: number;
   };
+
+  private _moveDialogAbortController?: AbortController;
 
   private _contentScrollTop = 0;
 
@@ -158,7 +163,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._pendingMoveToTopFocus = undefined;
+    this._pendingMoveFocus = undefined;
+    this._moveDialogAbortController?.abort();
     this.removeEventListener(
       "section-visibility-changed",
       this._sectionVisibilityChanged
@@ -173,17 +179,17 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   protected updated(): void {
-    const pendingFocus = this._pendingMoveToTopFocus;
+    const pendingFocus = this._pendingMoveFocus;
     if (!pendingFocus || this.sections === pendingFocus.sections) {
       return;
     }
-    this._pendingMoveToTopFocus = undefined;
+    this._pendingMoveFocus = undefined;
     if (
       this.index === pendingFocus.viewIndex &&
       this.lovelace?.editMode &&
       !this.isStrategy
     ) {
-      this._focusFirstSection();
+      this._focusSection(pendingFocus.sectionIndex);
     }
   }
 
@@ -322,7 +328,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                                 .index=${idx}
                                 .viewIndex=${this.index}
                                 .isStrategy=${isStrategySection(section.config)}
-                                @section-move-to-top=${this._moveSectionToTop}
+                                @section-move=${this._moveSection}
                               >
                                 ${this._renderSection(
                                   section,
@@ -523,45 +529,116 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private async _moveSectionToTop(
-    ev: HASSDomEvent<HASSDomEvents["section-move-to-top"]>
+  private async _moveSection(
+    ev: HASSDomEvent<HASSDomEvents["section-move"]>
   ): Promise<void> {
     ev.stopPropagation();
+    // Let the dropdown close and return focus to its trigger first.
+    await nextRender();
     const sectionIndex = ev.detail.index;
     const viewIndex = this.index;
+    const lovelace = this.lovelace;
     if (
-      !this.lovelace ||
+      !this.isConnected ||
+      !lovelace?.editMode ||
       viewIndex === undefined ||
-      sectionIndex === 0 ||
       this.isStrategy ||
-      isStrategyView(this.lovelace.config.views[viewIndex])
+      isStrategyView(lovelace.config.views[viewIndex])
     ) {
       return;
     }
 
-    const sections = this.sections;
-    const newConfig = moveSection(
-      this.lovelace.config,
-      [viewIndex, sectionIndex],
-      [viewIndex, 0]
-    );
-    await this.lovelace.saveConfig(newConfig);
-    if (!this.isConnected || this.index !== viewIndex) {
+    const viewConfig = lovelace.config.views[viewIndex];
+    const sectionCount = viewConfig.sections?.length ?? 0;
+    if (!viewConfig.sections?.[sectionIndex]) {
       return;
     }
-    this._pendingMoveToTopFocus = { sections, viewIndex };
-    this.requestUpdate();
+
+    this._moveDialogAbortController?.abort();
+    const controller = new AbortController();
+    this._moveDialogAbortController = controller;
+    const dialogClosed = new Promise<void>((resolve) => {
+      this.ownerDocument.body.addEventListener(
+        "dialog-closed",
+        (event) => {
+          if (event.detail.dialog === "dialog-box") {
+            resolve();
+          }
+        },
+        { signal: controller.signal }
+      );
+      controller.signal.addEventListener("abort", () => resolve(), {
+        once: true,
+      });
+    });
+
+    try {
+      const positionString = await showPromptDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.lovelace.editor.change_section_position.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.change_section_position.text",
+          { count: sectionCount }
+        ),
+        inputLabel: this.hass.localize(
+          "ui.panel.lovelace.editor.change_section_position.position"
+        ),
+        inputType: "number",
+        inputMin: 1,
+        inputMax: sectionCount,
+        defaultValue: String(sectionIndex + 1),
+        confirmText: this.hass.localize("ui.common.move"),
+      });
+      if (!positionString) {
+        return;
+      }
+
+      // Let the dialog manager restore focus before focusing the moved section.
+      await dialogClosed;
+      if (controller.signal.aborted) {
+        return;
+      }
+      await nextRender();
+
+      const position = Number(positionString);
+      const newIndex = position - 1;
+      const currentLovelace = this.lovelace;
+      if (
+        !this.isConnected ||
+        this.index !== viewIndex ||
+        !currentLovelace?.editMode ||
+        currentLovelace.config.views[viewIndex] !== viewConfig ||
+        !Number.isInteger(position) ||
+        position < 1 ||
+        position > sectionCount ||
+        newIndex === sectionIndex
+      ) {
+        return;
+      }
+
+      const sections = this.sections;
+      const newConfig = moveSection(
+        currentLovelace.config,
+        [viewIndex, sectionIndex],
+        [viewIndex, newIndex]
+      );
+      await currentLovelace.saveConfig(newConfig);
+      if (!this.isConnected || this.index !== viewIndex) {
+        return;
+      }
+      this._pendingMoveFocus = { sections, viewIndex, sectionIndex: newIndex };
+      this.requestUpdate();
+    } finally {
+      controller.abort();
+      if (this._moveDialogAbortController === controller) {
+        this._moveDialogAbortController = undefined;
+      }
+    }
   }
 
-  private async _focusFirstSection(): Promise<void> {
-    const firstSection = this._sectionEditModes?.[0];
-    if (!firstSection) {
-      return;
-    }
-    await firstSection.focusMenu();
-    if (firstSection.isConnected) {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
+  private async _focusSection(sectionIndex: number): Promise<void> {
+    await this._sectionEditModes?.[sectionIndex]?.focusMenu();
   }
 
   private _viewChanged(ev: CustomEvent) {

@@ -10003,6 +10003,11 @@
             "title": "Change card position",
             "text": "What position do you want to move your card to?"
           },
+          "change_section_position": {
+            "title": "Change section position",
+            "text": "Choose a position from 1 to {count}.",
+            "position": "Position"
+          },
           "select_view": {
             "header": "Choose a view",
             "dashboard_label": "Dashboard",
@@ -10024,7 +10029,6 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
-            "move_to_top": "Move to top",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",

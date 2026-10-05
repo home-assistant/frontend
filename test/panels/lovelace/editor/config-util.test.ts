@@ -147,24 +147,50 @@ describe("swapView", () => {
 });
 
 describe("moveSection", () => {
-  it("moves a section to the top without changing the order of other sections", () => {
-    const sections: LovelaceSectionConfig[] = [
-      { type: "grid", cards: [{ type: "heading", heading: "First" }] },
-      { type: "grid", cards: [{ type: "heading", heading: "Second" }] },
-      { type: "grid", cards: [{ type: "heading", heading: "Third" }] },
-      { type: "grid", cards: [{ type: "heading", heading: "Fourth" }] },
-    ];
-    const config: LovelaceConfig = { views: [{ sections }] };
+  it.each([
+    {
+      destination: "the top",
+      fromIndex: 2,
+      toIndex: 0,
+      order: [2, 0, 1, 3],
+    },
+    {
+      destination: "the bottom",
+      fromIndex: 0,
+      toIndex: 3,
+      order: [1, 2, 3, 0],
+    },
+    {
+      destination: "an earlier intermediate position",
+      fromIndex: 3,
+      toIndex: 1,
+      order: [0, 3, 1, 2],
+    },
+    {
+      destination: "a later intermediate position",
+      fromIndex: 0,
+      toIndex: 2,
+      order: [1, 2, 0, 3],
+    },
+  ])(
+    "moves a section to $destination without changing the order of other sections",
+    ({ fromIndex, toIndex, order }) => {
+      const sections: LovelaceSectionConfig[] = [
+        { type: "grid", cards: [{ type: "heading", heading: "First" }] },
+        { type: "grid", cards: [{ type: "heading", heading: "Second" }] },
+        { type: "grid", cards: [{ type: "heading", heading: "Third" }] },
+        { type: "grid", cards: [{ type: "heading", heading: "Fourth" }] },
+      ];
+      const config: LovelaceConfig = { views: [{ sections }] };
 
-    const result = moveSection(config, [0, 2], [0, 0]);
+      const result = moveSection(config, [0, fromIndex], [0, toIndex]);
 
-    assert.deepEqual((result.views[0] as LovelaceViewConfig).sections, [
-      sections[2],
-      sections[0],
-      sections[1],
-      sections[3],
-    ]);
-  });
+      assert.deepEqual(
+        (result.views[0] as LovelaceViewConfig).sections,
+        order.map((index) => sections[index])
+      );
+    }
+  );
 
   it("preserves section metadata, cards, view settings, and other views", () => {
     const movedSection: LovelaceSectionConfig = {
