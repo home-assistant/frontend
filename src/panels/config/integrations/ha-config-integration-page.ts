@@ -1535,6 +1535,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-list-base.attention {
           background-color: rgba(var(--rgb-warning-color), 0.2);
         }
+        ha-list-item-base + ha-list-item-base {
+          border-top: 1px solid var(--ha-color-border-neutral-quiet);
+        }
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
         }
