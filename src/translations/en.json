@@ -208,6 +208,8 @@
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
+        "hue": "Hue",
+        "saturation": "Saturation",
         "white_value": "White brightness",
         "color_brightness": "Color brightness",
         "cold_white_value": "Cold white brightness",
@@ -3015,6 +3017,7 @@
         "mcp": {
           "header": "Model Context Protocol",
           "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "description_disabled": "See the {documentation_link} to learn how to connect your AI agent to Home Assistant.",
           "documentation": "documentation",
           "enable": "[%key:ui::common::enable%]",
           "disable": "[%key:ui::common::disable%]",
@@ -4047,8 +4050,7 @@
               },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
-                "description": "Select an entity to copy diagnostic details.",
-                "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+                "description": "Select an entity to view diagnostic details."
               },
               "viewport_environment": {
                 "title": "Device and browser environment",
@@ -11093,6 +11095,15 @@
               },
               "light-brightness": {
                 "label": "Light brightness"
+              },
+              "light-color": {
+                "label": "Light color",
+                "controls": "Controls",
+                "controls_list": {
+                  "hue": "Hue",
+                  "saturation": "Saturation",
+                  "hue_saturation": "Hue and saturation"
+                }
               },
               "light-color-favorites": {
                 "label": "Light color favorites",

@@ -22,6 +22,7 @@ import {
   isStrategySection,
 } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { DEFAULT_MAX_COLUMNS } from "./const";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
@@ -41,8 +42,6 @@ import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
-
-export const DEFAULT_MAX_COLUMNS = 4;
 
 const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
