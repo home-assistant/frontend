@@ -25,8 +25,9 @@ const RISKS = [
   "stability",
 ] as const;
 
-// Long enough to read the risks before they can be accepted
-const READ_SECONDS = 30;
+// Long enough to read the risks before they can be accepted, shorter in
+// development so it doesn't slow down testing
+const READ_SECONDS = __DEV__ ? 3 : 30;
 
 @customElement("ha-marketplace-warning")
 export class HaMarketplaceWarning extends LitElement {
