@@ -712,6 +712,8 @@ export class HaMarketplaceDashboard extends LitElement {
         .toolbar-actions {
           display: flex;
           align-items: center;
+        }
+        :host(:not([narrow])) .toolbar-actions {
           gap: var(--ha-space-2);
         }
         .empty {
