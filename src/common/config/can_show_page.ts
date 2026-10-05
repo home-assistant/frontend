@@ -1,9 +1,12 @@
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import type { HomeAssistantConfig } from "../../types";
+import type { HomeAssistant, HomeAssistantConfig } from "../../types";
 import { ensureArray } from "../array/ensure-array";
 import { isComponentLoaded } from "./is_component_loaded";
 
-export const canShowPage = (hass: HomeAssistantConfig, page: PageNavigation) =>
+export const canShowPage = (
+  hass: HomeAssistantConfig & Pick<HomeAssistant, "entities">,
+  page: PageNavigation
+) =>
   (isCore(page) || isLoadedIntegration(hass, page)) &&
   (!page.filter || page.filter(hass));
 

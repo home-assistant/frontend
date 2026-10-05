@@ -41,7 +41,11 @@ import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
 import "../components/input/ha-input-search";
 import type { HaInputSearch } from "../components/input/ha-input-search";
-import { configContext, internationalizationContext } from "../data/context";
+import {
+  configContext,
+  entitiesContext,
+  internationalizationContext,
+} from "../data/context";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
@@ -57,6 +61,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: ContextType<typeof configContext>;
+
+  // Only read by page filters, so changes alone don't rerender the table
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -238,8 +246,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("tabs") || changedProperties.has("_hassConfig")) {
       this.showTabs =
-        this.tabs.filter((page) => canShowPage(this._hassConfig, page)).length >
-        1;
+        this.tabs.filter((page) =>
+          canShowPage({ ...this._hassConfig, entities: this._entities }, page)
+        ).length > 1;
     }
 
     if (this.hasUpdated) {

@@ -25,11 +25,12 @@ import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import {
   configContext,
+  entitiesContext,
   internationalizationContext,
   narrowViewportContext,
 } from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant, HomeAssistantConfig, Route } from "../types";
+import type { HomeAssistant, Route } from "../types";
 
 const normalizePathname = (pathname: string): string =>
   pathname.endsWith("/") && pathname.length > 1
@@ -52,7 +53,7 @@ export interface PageNavigation {
   // Shown next to the name of the tab
   badge?: string;
   info?: any;
-  filter?: (hass: HomeAssistantConfig) => boolean;
+  filter?: (hass: Pick<HomeAssistant, "entities">) => boolean;
 }
 
 @customElement("hass-tabs-subpage")
@@ -79,6 +80,10 @@ export class HassTabsSubpage extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: ContextType<typeof configContext>;
+
+  // Only read by page filters, so changes alone don't rerender the tabs
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -121,7 +126,7 @@ export class HassTabsSubpage extends LitElement {
       localizeFunc
     ) => {
       const shownTabs = tabs.filter((page) =>
-        canShowPage(this._hassConfig, page)
+        canShowPage({ ...this._hassConfig, entities: this._entities }, page)
       );
 
       if (shownTabs.length < 2) {
