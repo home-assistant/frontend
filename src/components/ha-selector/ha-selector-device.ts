@@ -38,7 +38,18 @@ export class HaDeviceSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
+  private _deviceIntegrationLookup = memoizeOne(
+    (
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      configEntries?: ConfigEntry[]
+    ) =>
+      getDeviceIntegrationLookup(
+        Object.values(entities),
+        Object.values(devices),
+        configEntries
+      )
+  );
 
   private _hasIntegration(selector: DeviceSelector) {
     return (
@@ -114,11 +125,13 @@ export class HaDeviceSelector extends LitElement {
     if (!this.selector.device?.filter) {
       return true;
     }
-    const deviceIntegrations = this._deviceIntegrationLookup(
-      Object.values(this.hass.entities),
-      Object.values(this.hass.devices),
-      this._configEntries
-    );
+    const deviceIntegrations = this._hasIntegration(this.selector)
+      ? this._deviceIntegrationLookup(
+          this.hass.entities,
+          this.hass.devices,
+          this._configEntries
+        )
+      : undefined;
 
     return ensureArray(this.selector.device.filter).some((filter) =>
       filterSelectorDevices(filter, device, deviceIntegrations)

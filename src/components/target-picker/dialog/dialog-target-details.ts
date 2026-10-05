@@ -38,7 +38,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   @state() private _entitySourcesLoaded = false;
 
-  private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
+  private _deviceIntegrationLookup = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceIntegrationLookup(Object.values(entities))
+  );
 
   public showDialog(params: TargetDetailsDialogParams): void {
     this._params = params;
@@ -106,9 +109,9 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     if (!target?.device) {
       return true;
     }
-    const deviceIntegrations = this._deviceIntegrationLookup(
-      Object.values(this.hass.entities)
-    );
+    const deviceIntegrations = this._hasIntegration({ target })
+      ? this._deviceIntegrationLookup(this.hass.entities)
+      : undefined;
     return ensureArray(target.device).some((d) =>
       filterSelectorDevices(d, device, deviceIntegrations)
     );
