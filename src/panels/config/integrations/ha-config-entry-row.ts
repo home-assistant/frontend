@@ -865,6 +865,8 @@ export class HaConfigEntryRow extends LitElement {
         margin-right: -12px;
       }
       .devices {
+        border: 1px solid var(--divider-color);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         margin: 16px;
         margin-top: 0;
         background-color: var(--card-background-color);
