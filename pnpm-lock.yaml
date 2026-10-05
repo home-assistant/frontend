@@ -384,8 +384,8 @@ importers:
         specifier: 1.7.3
         version: 1.7.3
       home-assistant-js-websocket:
-        specifier: 9.7.0
-        version: 9.7.0
+        specifier: 9.7.1
+        version: 9.7.1
       idb-keyval:
         specifier: 6.3.0
         version: 6.3.0
@@ -5267,8 +5267,8 @@ packages:
   hls.js@1.7.3:
     resolution: {integrity: sha512-MsPlx6yVW4Qv4C7mEVou4/gk/5cN2dVxOTnrNjPSmyH2f0Ln+/UkG10Ax1PE6OvrmTVPKgQYozTtBaPOuCzq7A==}
 
-  home-assistant-js-websocket@9.7.0:
-    resolution: {integrity: sha512-AE/VtwY+sKi7B3934KuIgvj2g06QY9aFVdd2zh1r5ygbpMo2TZbvN9Zoma8L2wHNYFsngTRiZxYOnLlCysIOzA==}
+  home-assistant-js-websocket@9.7.1:
+    resolution: {integrity: sha512-zOAiyF+gUc/IsiswYdWKns6SCBbvWb8iJtMX9+Dk0wlbdfcp+I38T2Vx36krWeWMk/GPwoSiYwCs5hk/+Hsn7w==}
 
   homedir-polyfill@1.0.3:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
@@ -13073,7 +13073,7 @@ snapshots:
 
   hls.js@1.7.3: {}
 
-  home-assistant-js-websocket@9.7.0: {}
+  home-assistant-js-websocket@9.7.1: {}
 
   homedir-polyfill@1.0.3:
     dependencies:

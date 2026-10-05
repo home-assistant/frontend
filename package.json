@@ -107,7 +107,7 @@
     "element-internals-polyfill": "3.0.2",
     "fuse.js": "7.5.0",
     "hls.js": "1.7.3",
-    "home-assistant-js-websocket": "9.7.0",
+    "home-assistant-js-websocket": "9.7.1",
     "idb-keyval": "6.3.0",
     "intl-messageformat": "12.1.2",
     "js-yaml": "5.4.2",
