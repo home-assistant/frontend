@@ -100,7 +100,7 @@ export class HaNumberSelector extends LitElement {
                   labeled
                   .min=${this.selector.number!.min}
                   .max=${this.selector.number!.max}
-                  .value=${this.value}
+                  .value=${this.value ?? this.placeholder}
                   .step=${sliderStep}
                   .disabled=${this.disabled}
                   .required=${this.required}

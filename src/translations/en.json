@@ -223,6 +223,9 @@
         "open_door_confirm": "Really open?",
         "open_door_done": "Done"
       },
+      "logbook": {
+        "device_not_found": "{count, plural,\n one {A device used by this card no longer exists.}\n other {# devices used by this card no longer exist.}\n}"
+      },
       "home-summary": {
         "all_lights_off": "All off",
         "count_active_alerts": "{count} {count, plural,\n one {active alert}\n other {active alerts}\n}",
@@ -571,6 +574,20 @@
         "background": {
           "yaml_info": "Background image is set via YAML editor."
         },
+        "duration": {
+          "duration": "Duration",
+          "offset": {
+            "none": "No offset",
+            "before": "Before",
+            "after": "After"
+          },
+          "summary": {
+            "offset_negative": "{duration} before",
+            "offset_positive": "{duration} after",
+            "signed_negative": "-{duration}",
+            "signed_positive": "+{duration}"
+          }
+        },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
@@ -602,6 +619,14 @@
           "options": "Selector options",
           "type": "Type",
           "multiple": "Multiple",
+          "mode": "Mode",
+          "duration_mode": {
+            "options": {
+              "positive": "Positive only",
+              "signed": "Positive or negative",
+              "offset": "Before or after"
+            }
+          },
           "types": {
             "action": "Action",
             "area": "Area",
@@ -645,6 +670,12 @@
           "entity": "Entity",
           "from": "From",
           "to": "To",
+          "row_label": {
+            "above": "above {value}",
+            "below": "below {value}",
+            "between": "between {from} and {to}",
+            "outside": "outside {from} and {to}"
+          },
           "crossed": {
             "type": "Fire when the value goes",
             "above": "Above",
@@ -1433,7 +1464,8 @@
           },
           "summary": "Summary",
           "description": "Description",
-          "location": "Location"
+          "location": "Location",
+          "tentative": "Tentative"
         },
         "views": {
           "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
@@ -2077,8 +2109,8 @@
           "note": "Note: This might not work yet with all integrations.",
           "use_device_area": "Use device area",
           "use_device_area_confirm_title": "Use the area of the device?",
-          "use_device_area_confirm_text": "This entity is in {area}. Because it uses the device name, it will use the area of its device instead.",
-          "use_device_area_required": "An entity that uses the device name always uses the area of its device. You can {link} in the device settings.",
+          "use_device_area_confirm_text": "This entity is in {area}. Because it has no name of its own, it will use the area of its device instead.",
+          "use_device_area_required": "An entity without its own name always uses the area of its device. You can {link} in the device settings.",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
@@ -2335,7 +2367,7 @@
       "config_entry_system_options": {
         "title": "System options for {integration}",
         "enable_new_entities_label": "Enable newly added entities",
-        "enable_new_entities_description": "If newly discovered devices for {integration} should be automatically added.",
+        "enable_new_entities_description": "If newly discovered entities for {integration} should be automatically enabled.",
         "enable_polling_label": "Enable polling for changes",
         "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for state changes.",
         "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
@@ -2776,6 +2808,10 @@
             "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
+          "marketplace": {
+            "main": "Marketplace",
+            "secondary": "Install integrations, dashboard cards, themes, and templates shared by the community"
+          },
           "dashboards": {
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
@@ -2982,6 +3018,7 @@
         "mcp": {
           "header": "Model Context Protocol",
           "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "description_disabled": "See the {documentation_link} to learn how to connect your AI agent to Home Assistant.",
           "documentation": "documentation",
           "enable": "[%key:ui::common::enable%]",
           "disable": "[%key:ui::common::disable%]",
@@ -7126,7 +7163,63 @@
           "esphome": {
             "show_encryption_key": "Show encryption key",
             "encryption_key_title": "ESPHome Encryption Key",
-            "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances."
+            "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances.",
+            "setup_title": "Set up your ESPHome proxy",
+            "setup_continue_title": "Continue setup for {name}",
+            "setup_intro": "{count, plural,\n  one {This adapter unlocks one capability in Home Assistant. Set it up now, or come back to this checklist any time.}\n  other {This adapter unlocks {count} simultaneous capabilities in Home Assistant. Set them up now, or come back to this checklist any time.}\n}",
+            "setup_action": "Set up",
+            "setup_later": "Later",
+            "setup_learn_more": "Learn more",
+            "setup_reminder_remaining": "Set up {count} more {count, plural,\n  one {capability}\n  other {capabilities}\n}",
+            "setup_reminder_done": "Everything is set up",
+            "setup_reminder_intro": "{count, plural,\n  one {This adapter unlocks one capability in Home Assistant.}\n  other {This adapter unlocks {count} simultaneous capabilities in Home Assistant.}\n}",
+            "setup_reminder_done_intro": "{count, plural,\n  one {This capability is configured.}\n  other {All {count} simultaneous capabilities are configured.}\n}",
+            "setup_capability_bluetooth_title": "Bluetooth proxy",
+            "setup_capability_bluetooth_short": "Extend Bluetooth range",
+            "setup_capability_bluetooth_description": "Add nearby Bluetooth devices into Home Assistant. Adding multiple Bluetooth proxies allows for better connectivity with devices across your home.",
+            "setup_capability_audio_title": "Stream audio via Sendspin",
+            "setup_capability_audio_short": "Synchronized multi-room sound with Music Assistant",
+            "setup_capability_audio_description": "Turn the speaker on this device into a synchronized, multi-room player with Music Assistant, a free media library manager that works with Home Assistant. Stream your library, Spotify, and dozens of other sources in sync across every room.",
+            "setup_capability_connectivity_title": "Connect a Zigbee or Z-Wave adapter",
+            "setup_capability_connectivity_short": "Network connectivity for ZBT-2 or ZWA-2",
+            "setup_capability_connectivity_description": "Plug a Connect ZBT-2 or ZWA-2 into the USB port to enable Zigbee or Z-Wave connectivity over Ethernet or Wi-Fi. Get your antenna in an optimal location for better device responsiveness.",
+            "setup_capability_serial_title": "Control a device over serial",
+            "setup_capability_serial_short": "AV receivers, amplifiers, and more",
+            "setup_capability_serial_description": "Add serial devices into Home Assistant, allowing for control of A/V receivers and multi-zone amplifiers.",
+            "setup_audio_music_assistant": "Music Assistant",
+            "setup_audio_byline": "By the Open Home Foundation",
+            "setup_audio_offer_title": "Enhance your music experience",
+            "setup_audio_offer_body": "Music Assistant is a free media library manager that turns the speaker on this device into a synchronized, multi-room player. Sendspin streams through it.",
+            "setup_audio_skip": "Skip for now",
+            "setup_enable_stream_audio": "Enable stream audio",
+            "setup_audio_sendspin": "Sendspin",
+            "setup_enabling_sendspin": "Enabling Sendspin",
+            "setup_audio_benefit_multiroom": "Synchronized multi-room playback",
+            "setup_audio_benefit_lossless": "Lossless, high-resolution audio",
+            "setup_audio_benefit_album_art": "Album art on every screen",
+            "setup_install_music_assistant": "Install Music Assistant",
+            "setup_installing_music_assistant": "Installing Music Assistant",
+            "setup_starting_music_assistant": "Starting Music Assistant",
+            "setup_discovering_music_assistant": "Waiting for Music Assistant discovery",
+            "setup_error_music_assistant": "Couldn't install Music Assistant",
+            "setup_error_capabilities": "Couldn't load device capabilities",
+            "setup_error_defer": "Couldn't save setup for later",
+            "setup_error_zwave": "Z-Wave setup for this device isn't available right now. Try again in a moment.",
+            "setup_status_completed": "Completed",
+            "setup_zwave": "Set up Z-Wave",
+            "setup_zwave_configured": "Configured",
+            "setup_what_are_adapters": "What are these adapters?",
+            "setup_adapters_title": "Add Zigbee or Z-Wave",
+            "setup_adapters_intro": "Plug a Home Assistant Connect adapter into your proxy's USB port to add wireless radios:",
+            "setup_adapter_zbt2": "Connect ZBT-2",
+            "setup_adapter_zbt2_description": "Adds a Zigbee radio.",
+            "setup_adapter_zwa2": "Connect ZWA-2",
+            "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
+            "setup_serial_configured": "Configured",
+            "setup_serial_port_ttl": "TTL",
+            "setup_serial_port_rs232": "RS-232",
+            "setup_serial_port_rs485": "RS-485",
+            "setup_serial_port_usb_serial": "USB serial"
           }
         },
         "entities": {
@@ -7382,6 +7475,13 @@
             "reconfigure": "Reconfigure",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
+            "marketplace_uninstall": {
+              "title": "Also uninstall {name}?",
+              "text": "{name} came from the Marketplace. Its files stay on your system, and the Marketplace keeps checking for updates until you uninstall it.",
+              "confirm": "Uninstall",
+              "dismiss": "Keep",
+              "failed": "Uninstall failed. Check the Home Assistant logs for details."
+            },
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
@@ -9464,12 +9564,13 @@
               "people": "People",
               "devices": "Devices",
               "zones": "Zones",
-              "no_people": "No people",
-              "no_devices": "No devices with a location",
-              "no_zones": "No zones",
+              "me": "Me",
               "activity": "Activity",
+              "show_more": "Show more",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
+              "entered": "Entered",
+              "left": "Left",
               "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"
             }
           },
@@ -9832,6 +9933,7 @@
             "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
+            "edit_label": "Edit card",
             "clear": "Clear",
             "delete": "Delete",
             "copy": "Copy",
@@ -9873,6 +9975,7 @@
             "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add badge",
             "edit": "[%key:ui::panel::lovelace::editor::edit_card::edit%]",
+            "edit_label": "Edit badge",
             "clear": "[%key:ui::panel::lovelace::editor::edit_card::clear%]",
             "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
             "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
@@ -10608,6 +10711,16 @@
                 "auto": "Auto",
                 "light": "Light",
                 "dark": "Dark"
+              },
+              "map_style": "Map style",
+              "map_style_helper": "Each style has a light and a dark version. The theme mode picks which one is shown.",
+              "map_styles": {
+                "default": "Default",
+                "colorful": "Colorful",
+                "natural": "Natural",
+                "muted": "Muted",
+                "gray": "Gray",
+                "toner": "Toner"
               },
               "scale_ruler": "Scale ruler",
               "default_zoom": "Default zoom",
@@ -12149,6 +12262,232 @@
         "add_card": "Add current view as card",
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
+      },
+      "marketplace": {
+        "title": "Marketplace",
+        "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
+        "load_failed": "The Marketplace could not load its data: {error}",
+        "warning": {
+          "title": "Before you use the Marketplace",
+          "intro": "Everything in the Marketplace is made and published by the community. What you install runs inside Home\u00a0Assistant, with full access to your home, your data, and the system Home\u00a0Assistant runs on.",
+          "risks_title": "Serious risks are involved",
+          "risks": {
+            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home\u00a0Assistant project.",
+            "own_risk": "You use everything you install from the Marketplace at your own risk.",
+            "privacy": "It can violate your privacy, for example by sending your data to others.",
+            "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
+            "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
+          },
+          "understand": "I understand the risks",
+          "continue": "Continue",
+          "continue_in": "You can continue in {seconds, plural,\n  one {# second}\n  other {# seconds}\n}"
+        },
+        "common": {
+          "install": "Install",
+          "learn_more": "Learn more",
+          "reload": "Reload",
+          "repository": "Repository",
+          "retry": "Retry",
+          "show": "Show details",
+          "unknown_error": "Unknown error, check the Home Assistant logs",
+          "uninstall": "Uninstall",
+          "type": {
+            "integration": "Integration",
+            "plugin": "Dashboard",
+            "theme": "Theme",
+            "template": "Template"
+          }
+        },
+        "dashboard": {
+          "search": "Search {number} {number, plural,\n  one {repository}\n  other {repositories}\n}",
+          "empty_header": "Nothing in the Marketplace yet",
+          "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
+          "no_data": "No repositories matching search and filters",
+          "repository_not_found": "Repository not found"
+        },
+        "entry": {
+          "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
+          "open_integration": "Open integration page",
+          "failed": "The Marketplace could not be loaded, check the Home Assistant logs for more information.",
+          "failed_reason": "The Marketplace could not be loaded: {reason}",
+          "retrying": "The Marketplace could not start yet, retrying in a moment"
+        },
+        "github": {
+          "connect": "Connect GitHub",
+          "add_repository_needs_github": "Connect GitHub to add the custom repository {repository}, then open the link again.",
+          "rate_limited_title": "GitHub limit reached",
+          "rate_limited": "GitHub limits how often the Marketplace can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
+        },
+        "column": {
+          "name": "Repository name",
+          "downloads": "Downloads",
+          "stars": "Stars",
+          "icon": "Icon",
+          "installed_version": "Installed version",
+          "available_version": "Available version",
+          "status": "Status",
+          "type": "Type",
+          "last_updated": "Activity",
+          "actions": "Actions"
+        },
+        "my": {
+          "not_supported": "This redirect is not supported. Check the {link} for the supported redirects and the version they were introduced.",
+          "faq_link": "My Home Assistant FAQ",
+          "error": "An unknown error occurred",
+          "repository_not_found": "Repository {repository} not found",
+          "add_repository_title": "Add custom repository",
+          "add_repository_description": "Add the custom repository {repository} to the Marketplace?"
+        },
+        "filters": {
+          "status": "Status",
+          "type": "Type"
+        },
+        "dialog_custom_repositories": {
+          "title": "Add from a GitHub link",
+          "intro": "Add something that is not in the Marketplace yet, straight from its page on GitHub. Like everything in the Marketplace, it is made by the community and not tested or reviewed by the Home Assistant project.",
+          "link": "GitHub link",
+          "link_helper": "The address of its page on GitHub, like https://github.com/owner/name",
+          "type": "Type",
+          "type_helper": "What it adds to Home Assistant. Its documentation usually says which one it is.",
+          "type_unknown": "Could not tell what this adds to Home Assistant. Pick what it is.",
+          "type_several": "This holds more than one kind of thing. Pick the one to add.",
+          "added": "Added from links",
+          "no_repository": "Missing repository",
+          "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first.",
+          "remove_title": "Remove {name} from the list?",
+          "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
+          "remove_installed": "Uninstall it first"
+        },
+        "dialog_install": {
+          "loading": "Loading repository",
+          "already_installing": "This is already being installed, hold on.",
+          "install_failed": "Installation failed. Check the Home Assistant logs for details.",
+          "pre_release": "Pre-release",
+          "install_intro": "This installs {name} version {version} in Home Assistant.",
+          "update_intro": "This updates {name} from version {installed} to {version}.",
+          "reinstall_intro": "This installs version {version} of {name} again.",
+          "fetching_releases": "Loading versions…",
+          "no_releases": "There are no other versions to choose from.",
+          "release": "Version",
+          "release_warning": "To go back to an earlier version, restoring a backup is the safer way.",
+          "older_version_hint": "An earlier version may still work, select one below.",
+          "restart": "Home Assistant needs a restart to start using the new version.",
+          "lovelace_instruction": "Your dashboard resources are managed in YAML, so add this resource to your configuration after the installation:",
+          "releases_failed": "Could not load the versions.",
+          "new_install_title": "You install this at your own risk",
+          "new_install_warning": "{repository} is made by {authors}. It is not reviewed or supported by the Home Assistant project.",
+          "replaces_built_in_title": "This replaces the built-in {domain} integration",
+          "replaces_built_in_warning": "{repository} uses the {domain} domain, which belongs to an integration that comes with Home Assistant. After a restart, Home Assistant loads this one instead of the built-in integration, for everything you set up with it. Devices and services you already set up may stop working. Fixes and improvements to the built-in integration no longer reach you with Home Assistant updates, and the Home Assistant project cannot help with problems it causes. To go back to the built-in integration, uninstall it and restart Home Assistant.",
+          "replaces_built_in_confirm": "I understand this replaces the built-in integration",
+          "installed_title": "{name} is installed",
+          "installed_without_set_up": "{name} is not set up from the user interface. Its documentation explains how to set it up and use it. Home Assistant loads it after a restart.",
+          "view_documentation": "View documentation"
+        },
+        "discover": {
+          "title": "Make Home Assistant yours",
+          "intro": "Made by people in the community and shared with everyone. Here are some to start with, or browse everything.",
+          "popular": "Popular",
+          "updated": "Recently updated",
+          "see_all": "See all"
+        },
+        "tabs": {
+          "discover": "Discover",
+          "browse": "Browse",
+          "installed": "Installed",
+          "updates": "{count, plural,\n  one {# update}\n  other {# updates}\n}",
+          "add_from_link": "Add from link"
+        },
+        "repository": {
+          "status": {
+            "not_installed": "Not installed",
+            "available": "Version {version} is available to install.",
+            "update_available": "Update available",
+            "pending_restart": "Restart required"
+          },
+          "community": {
+            "title": "Made by the community",
+            "made_by": "Made by {authors}, {count, plural,\n  one {one of the many people}\n  other {some of the many people}\n} sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
+            "made_by_community": "Made by one of the many people sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
+            "last_change": "Last change on GitHub {time}",
+            "downloads": "{number, plural,\n  one {Downloaded {count} time}\n  other {Downloaded {count} times}\n}",
+            "stars": "{number, plural,\n  one {{count} star on GitHub}\n  other {{count} stars on GitHub}\n}",
+            "open_issues": "{number, plural,\n  one {{count} open issue on GitHub}\n  other {{count} open issues on GitHub}\n}",
+            "no_open_issues": "No open issues on GitHub"
+          },
+          "details": {
+            "requires": "Requires Home Assistant {version} or newer",
+            "source_code": "View source code",
+            "issue_tracker": "Issue tracker"
+          },
+          "next_step": {
+            "restart": "Home Assistant needs a restart to start using {name}.",
+            "restart_button": "Restart Home Assistant",
+            "integration_set_up": "{name} is installed and set up.",
+            "open_integration": "Open integration",
+            "integration_to_set_up": "{name} is installed. Set it up to start using it.",
+            "set_up": "Set up",
+            "integration_without_set_up": "{name} is installed. It is not set up from the user interface, its documentation explains how to set it up and use it.",
+            "plugin": "{name} is installed and added to your dashboard resources. Add it to a dashboard from the dashboard editor.",
+            "theme": "{name} is installed. Select it in your profile to use it.",
+            "open_profile": "Open profile",
+            "template": "{name} is installed. Its documentation explains how to use it in your templates."
+          },
+          "version_installed": "Version {version} installed",
+          "version_update": "Version {installed} installed, {version} available",
+          "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
+          "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
+          "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
+        },
+        "repository_menu": {
+          "dismiss_new": "Dismiss new",
+          "issue_tracker": "Issue tracker",
+          "install_other_version": "Install another version",
+          "reinstall": "Reinstall",
+          "update_information": "Refresh information"
+        },
+        "repository_status": {
+          "pending-restart": "Restart required",
+          "pending-upgrade": "Update available",
+          "installed": "Installed",
+          "new": "New",
+          "default": "Available"
+        },
+        "menu": {
+          "custom_repositories": "Custom repositories",
+          "dismiss": "Dismiss new repositories",
+          "documentation": "Documentation"
+        },
+        "dialog": {
+          "error": {
+            "title": "Error"
+          },
+          "reload": {
+            "description": "You need to reload your browser for the updated resources to be used.",
+            "confirm": "Do you want to do that now?"
+          },
+          "uninstall": {
+            "title": "Uninstall {name}?",
+            "message": "This removes the files the Marketplace installed for it."
+          },
+          "disabled": {
+            "title": "The Marketplace is disabled",
+            "reason": {
+              "invalid_token": "The GitHub connection no longer works. Reconfigure the Marketplace integration to connect GitHub again.",
+              "rate_limit": "The GitHub API rate limit has been reached. The Marketplace works again once the limit resets.",
+              "removed": "The Marketplace integration has been removed.",
+              "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."
+            }
+          },
+          "in_use": {
+            "title": "{name} is in use",
+            "message": "{name} is still set up, and that setup runs on the files the Marketplace installed. Without them it would fail to load and leave its devices and entities behind. Delete it first, or let the Marketplace delete it and uninstall {name} for you.",
+            "ignored": "Ignored",
+            "view_integration": "View integration",
+            "delete_and_uninstall": "Delete and uninstall",
+            "confirm_title": "Delete and uninstall {name}?",
+            "confirm_message": "This deletes {count, plural, one {its entry} other {its # entries}} with their devices and entities, and uninstalls {name}. This cannot be undone."
+          }
+        }
       },
       "logbook": {
         "sources": "[%key:ui::panel::history::sources%]",

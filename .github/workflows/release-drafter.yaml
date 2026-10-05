@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   update_release_draft:
+    if: github.repository == 'home-assistant/frontend'
     permissions:
       # write permission for contents is required to create a github release
       contents: write

@@ -296,7 +296,7 @@ export class HaConfigLogs extends LitElement {
   }
 
   private _providerRenderer = (item: LogProviderPickerItem) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${this._renderProviderIcon(item)}
       <span slot="headline">${item.primary}</span>
       ${
@@ -367,7 +367,7 @@ export class HaConfigLogs extends LitElement {
           direction: ltr;
         }
         ha-generic-picker {
-          --md-list-item-leading-icon-color: var(--ha-color-primary-50);
+          --ha-combo-box-item-start-color: var(--ha-color-primary-50);
           --mdc-icon-size: var(--ha-space-6);
         }
 

@@ -12,6 +12,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
+  DEFAULT_MAX_COLUMNS,
   MASONRY_VIEW_LAYOUT,
   SECTIONS_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
@@ -100,6 +101,7 @@ export class HuiViewEditor extends LitElement {
           schema: [
             {
               name: "max_columns",
+              default: DEFAULT_MAX_COLUMNS,
               selector: {
                 number: {
                   min: 1,
@@ -143,10 +145,6 @@ export class HuiViewEditor extends LitElement {
           ? undefined
           : this._config.theme,
     };
-
-    if (data.max_columns === undefined && this._type === SECTIONS_VIEW_LAYOUT) {
-      data.max_columns = 4;
-    }
 
     return html`
       <ha-form

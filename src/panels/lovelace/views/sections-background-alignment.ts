@@ -1,3 +1,4 @@
+import { DEFAULT_SECTION_COLUMN_SPAN } from "../../../data/lovelace/config/section";
 import type { HuiSection } from "../sections/hui-section";
 
 /**
@@ -27,7 +28,10 @@ export function computeSectionsBackgroundAlignment(
     const section = sections[idx];
     if (section.hidden) continue;
 
-    const span = Math.min(section.config.column_span || 1, columnCount);
+    const span = Math.min(
+      section.config.column_span || DEFAULT_SECTION_COLUMN_SPAN,
+      columnCount
+    );
 
     // Start a new row if this section doesn't fit
     if (columnsUsed + span > columnCount) {

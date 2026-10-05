@@ -1006,8 +1006,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       | PickerComboBoxItem
       | (FloorComboBoxItem & { last?: boolean | undefined })
       | EntityComboBoxItem
-      | DevicePickerItem,
-    index: number
+      | DevicePickerItem
   ) => {
     if (!item) {
       return nothing;
@@ -1034,14 +1033,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-combo-box-item
-        id=${`list-item-${index}`}
-        tabindex="-1"
-        .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
         style=${
           ((item as FloorComboBoxItem).type === "area" && hasFloor) ||
           isChildDeviceRow
-            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            ? "--ha-combo-box-item-padding-inline-start: var(--ha-space-12);"
             : ""
         }
       >

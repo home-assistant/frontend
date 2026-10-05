@@ -452,8 +452,17 @@ export const getMyRedirects = (): Redirects => ({
     },
   },
   hacs_repository: {
-    component: "hacs",
-    redirect: "/hacs/_my_redirect/hacs_repository",
+    component: "marketplace",
+    redirect: "/marketplace/_my_redirect/hacs_repository",
+    params: {
+      owner: "string",
+      repository: "string",
+      category: "string?",
+    },
+  },
+  marketplace_repository: {
+    component: "marketplace",
+    redirect: "/marketplace/_my_redirect/marketplace_repository",
     params: {
       owner: "string",
       repository: "string",
@@ -618,6 +627,14 @@ class HaPanelMy extends LitElement {
 
   private _createRedirectUrl(): string {
     const params = extractSearchParamsObject();
+
+    // The Marketplace took over HACS, links to its integration page still say hacs
+    if (
+      this._redirect!.redirect === "/config/integrations/integration" &&
+      params.domain === "hacs"
+    ) {
+      return `${this._redirect!.redirect}?${createSearchParam({ domain: "marketplace" })}`;
+    }
 
     // Special case for supervisor_app/supervisor_addon: use path-based URL
     // Support both "app" (new) and "addon" (legacy) parameters
