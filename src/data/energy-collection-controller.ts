@@ -1,12 +1,14 @@
-import type { Context } from "@lit/context";
 import type {
   Connection,
   HassConfig,
   HassEntities,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import type { ReactiveController, ReactiveControllerHost } from "lit";
-import { ContextSubscriptionController } from "../common/decorators/consume";
+import type { ReactiveControllerHost } from "lit";
+import {
+  consumeContext,
+  ContextController,
+} from "../common/decorators/consume";
 import {
   apiContext,
   configContext,
@@ -21,8 +23,6 @@ import { getEnergyDataCollection } from "./energy";
 import type { FrontendLocaleData } from "./translation";
 import type { HomeAssistant } from "../types";
 
-type EnergyCollectionHost = ReactiveControllerHost & HTMLElement;
-
 export interface EnergyCollectionControllerOptions {
   /** Subscribing waits until this returns a config. */
   config: () => { collection_key?: string } | undefined;
@@ -34,26 +34,51 @@ export interface EnergyCollectionControllerOptions {
  * may be the first subscriber, so this consumes everything needed to create
  * the collection.
  */
-export class EnergyCollectionController implements ReactiveController {
-  private _host: EnergyCollectionHost;
-
-  private _options: EnergyCollectionControllerOptions;
-
+export class EnergyCollectionController extends ContextController {
+  @consumeContext({
+    context: connectionContext,
+    subscribe: true,
+    transform: ({ connection }) => connection,
+  })
   private _connection?: Connection;
 
+  @consumeContext({
+    context: uiContext,
+    subscribe: true,
+    transform: ({ panelUrl }) => panelUrl,
+  })
   private _panelUrl?: string;
 
+  @consumeContext({
+    context: apiContext,
+    subscribe: true,
+    transform: ({ callWS }) => callWS,
+  })
   private _callWS?: HomeAssistant["callWS"];
 
+  @consumeContext({ context: entitiesContext, subscribe: true })
   private _entities?: HomeAssistant["entities"];
 
+  @consumeContext({ context: statesContext, subscribe: true })
   private _states?: HassEntities;
 
+  @consumeContext({
+    context: internationalizationContext,
+    subscribe: true,
+    transform: ({ locale }) => locale,
+  })
   private _locale?: FrontendLocaleData;
 
+  @consumeContext({
+    context: configContext,
+    subscribe: true,
+    transform: ({ config }) => config,
+  })
   private _hassConfig?: HassConfig;
 
-  private _connected = false;
+  private _options?: EnergyCollectionControllerOptions;
+
+  private _connected?: boolean;
 
   private _key?: string;
 
@@ -62,36 +87,12 @@ export class EnergyCollectionController implements ReactiveController {
   private _collection?: EnergyCollection;
 
   constructor(
-    host: EnergyCollectionHost,
+    host: ReactiveControllerHost & HTMLElement,
     options: EnergyCollectionControllerOptions
   ) {
-    this._host = host;
+    super(host);
     this._options = options;
-
-    // Added before this controller, so values are fresh when it connects.
-    this._consume(connectionContext, ({ connection }) => {
-      this._connection = connection;
-    });
-    this._consume(uiContext, ({ panelUrl }) => {
-      this._panelUrl = panelUrl;
-    });
-    this._consume(apiContext, ({ callWS }) => {
-      this._callWS = callWS;
-    });
-    this._consume(entitiesContext, (entities) => {
-      this._entities = entities;
-    });
-    this._consume(statesContext, (states) => {
-      this._states = states;
-    });
-    this._consume(internationalizationContext, ({ locale }) => {
-      this._locale = locale;
-    });
-    this._consume(configContext, ({ config }) => {
-      this._hassConfig = config;
-    });
-
-    host.addController(this);
+    this._subscribe();
   }
 
   get collection(): EnergyCollection | undefined {
@@ -112,23 +113,16 @@ export class EnergyCollectionController implements ReactiveController {
     this._unsubscribe();
   }
 
-  private _consume<T>(
-    context: Context<unknown, T>,
-    assign: (value: T) => void
-  ): void {
-    new ContextSubscriptionController(this._host, context, (value) => {
-      assign(value);
-      if (!this._unsub) {
-        this._subscribe();
-      }
-    });
+  protected contextUpdated(): void {
+    if (!this._unsub) {
+      this._subscribe();
+    }
   }
 
   private _subscribe(): void {
-    const config = this._options.config();
     if (
+      !this._options ||
       !this._connected ||
-      !config ||
       !this._connection ||
       !this._callWS ||
       !this._entities ||
@@ -136,6 +130,10 @@ export class EnergyCollectionController implements ReactiveController {
       !this._locale ||
       !this._hassConfig
     ) {
+      return;
+    }
+    const config = this._options.config();
+    if (!config) {
       return;
     }
     const key = config.collection_key;
