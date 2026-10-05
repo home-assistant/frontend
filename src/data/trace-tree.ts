@@ -73,7 +73,6 @@ const isDisabled = (config: unknown, parentDisabled: boolean): boolean =>
     "enabled" in config &&
     (config as { enabled?: boolean }).enabled === false);
 
-/** Configuration-shaped tree annotated with the execution tracked by Core. */
 /** The automation's triggers, flattened like the trace paths count them. */
 export const getTraceTriggers = (
   config: TraceExtended["config"]
@@ -84,6 +83,7 @@ export const getTraceTriggers = (
     : undefined;
 };
 
+/** Configuration-shaped tree annotated with the execution tracked by Core. */
 export class TraceTree {
   public readonly triggers?: TraceNode<Trigger>[];
 
