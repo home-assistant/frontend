@@ -135,20 +135,6 @@ export const webRtcOffer = (
     offer,
   });
 
-export const webRtcReOffer = (
-  hass: Pick<HomeAssistant, "connection">,
-  entity_id: string,
-  offer: string,
-  callback: (event: WebRtcOfferEvent) => void,
-  session_id: string
-) =>
-  hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
-    type: "camera/webrtc/re_offer",
-    entity_id,
-    offer,
-    session_id,
-  });
-
 export const addWebRtcCandidate = (
   hass: Pick<HomeAssistant, "callWS">,
   entity_id: string,

@@ -22,7 +22,6 @@ import {
   type WebRtcAnswer,
   type WebRTCClientConfiguration,
   webRtcOffer,
-  webRtcReOffer,
   type WebRtcOfferEvent,
 } from "../data/camera";
 import { apiContext, connectionContext } from "../data/context";
@@ -79,8 +78,6 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
-  private _localReturnTrackAdded = false;
-
   private _localReturnAudioTrack?: MediaStreamTrack;
 
   private _paused = false;
@@ -100,24 +97,11 @@ class HaWebRtcPlayer extends LitElement {
         tracks.length,
         "microphone(s) to use for audio return track"
       );
-      this._localReturnAudioTrack = tracks[0];
-
-      // The ice-ufrag and ice-pwd will change when changing from recvonly > sendrecv
-      // Therefore a ICE restart is required (firefox enforces, chrome accepts)
-      this._peerConnection!.restartIce();
-      this._candidatesList = [];
-
-      // Find the audio transceiver
-      // Transceiver are in the order they were added, audio should be first
-      for (const transceiver of this._peerConnection!.getTransceivers()) {
-        if (transceiver.receiver.track.kind === "audio") {
-          transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
-          transceiver!.direction = "sendrecv";
-
-          this._localReturnTrackAdded = true;
-          return;
-        }
-      }
+      // Renegotiating the existing connection is not supported by all providers
+      // (go2rtc answers with a new DTLS fingerprint, which Firefox rejects), so
+      // start a new connection and session with the microphone track instead.
+      await this._startWebRtc(tracks[0]);
+      return;
     }
 
     this._logEvent("unable to add audio send track");
@@ -126,7 +110,7 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   public async toggleMic() {
-    if (!this._localReturnTrackAdded) {
+    if (!this._localReturnAudioTrack) {
       await this._addLocalReturnAudio();
     } else {
       this._localReturnAudioTrack!.enabled =
@@ -259,10 +243,12 @@ class HaWebRtcPlayer extends LitElement {
               class="video-controls-right"
             >
               <ha-svg-icon
-                .path=${this._localReturnAudioTrack &&
-                this._localReturnAudioTrack!.enabled
-                  ? mdiMicrophone
-                  : mdiMicrophoneOff}
+                .path=${
+                  this._localReturnAudioTrack &&
+                  this._localReturnAudioTrack!.enabled
+                    ? mdiMicrophone
+                    : mdiMicrophoneOff
+                }
               ></ha-svg-icon>
             </ha-button>
           </div>
@@ -301,8 +287,14 @@ class HaWebRtcPlayer extends LitElement {
     this._startWebRtc();
   }
 
-  private async _startWebRtc(): Promise<void> {
+  private async _startWebRtc(
+    localReturnAudioTrack?: MediaStreamTrack
+  ): Promise<void> {
     this._cleanUp();
+
+    if (localReturnAudioTrack) {
+      this._localReturnAudioTrack = localReturnAudioTrack;
+    }
 
     // Browser support required for WebRTC
     if (typeof RTCPeerConnection === "undefined") {
@@ -347,7 +339,8 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection.onicecandidate = this._handleIceCandidate;
     this._peerConnection.oniceconnectionstatechange =
       this._iceConnectionStateChanged;
-    this._peerConnection.onicegatheringstatechange = this._iceGatheringStateChanged;
+    this._peerConnection.onicegatheringstatechange =
+      this._iceGatheringStateChanged;
 
     // just for debugging
     this._peerConnection.onsignalingstatechange = (ev) => {
@@ -367,7 +360,13 @@ class HaWebRtcPlayer extends LitElement {
     this._remoteStream = new MediaStream();
     this._peerConnection.ontrack = this._addTrack;
 
-    this._peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    if (this._localReturnAudioTrack) {
+      this._peerConnection.addTransceiver(this._localReturnAudioTrack, {
+        direction: "sendrecv",
+      });
+    } else {
+      this._peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    }
     this._peerConnection.addTransceiver("video", { direction: "recvonly" });
   }
 
@@ -416,22 +415,12 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
-      if (!this._sessionId) {
-        this._unsub = webRtcOffer(
-          this._connection,
-          this.entityid,
-          offer_sdp,
-          (event) => this._handleOfferEvent(event)
-        );
-      } else {
-        this._unsub = webRtcReOffer(
-          this._connection,
-          this.entityid,
-          offer_sdp,
-          (event) => this._handleOfferEvent(event),
-          this._sessionId
-        );
-      }
+      this._unsub = webRtcOffer(
+        this._connection,
+        this.entityid,
+        offer_sdp,
+        (event) => this._handleOfferEvent(event)
+      );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
       this._cleanUp();
@@ -592,6 +581,7 @@ class HaWebRtcPlayer extends LitElement {
     }
     if (this._localReturnAudioTrack) {
       this._localReturnAudioTrack.stop();
+      this._localReturnAudioTrack = undefined;
     }
     const videoEl = this._videoEl;
     if (videoEl) {
