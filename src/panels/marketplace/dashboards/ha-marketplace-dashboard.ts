@@ -396,27 +396,29 @@ export class HaMarketplaceDashboard extends LitElement {
               ${addFromLink}
             </ha-button>`
       }
-      <ha-icon-button
-        .href=${documentationUrl(this.hass, "/integrations/marketplace")}
-        target="_blank"
-        rel="noopener noreferrer"
-        .title=${this.hass.localize("ui.common.help")}
-        .label=${this.hass.localize("ui.common.help")}
-        .path=${mdiHelpCircleOutline}
-      ></ha-icon-button>
       ${
         repositoriesContainsNew
-          ? html`<ha-dropdown @wa-select=${this._dismissNew}>
+          ? html`<ha-dropdown @wa-select=${this._handleMenuAction}>
               <ha-icon-button
                 slot="trigger"
                 .label=${this.hass.localize("ui.common.menu")}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
+              <ha-dropdown-item value="documentation">
+                ${this.hass.localize("ui.panel.marketplace.menu.documentation")}
+              </ha-dropdown-item>
               <ha-dropdown-item value="dismiss_new">
                 ${this.hass.localize("ui.panel.marketplace.menu.dismiss")}
               </ha-dropdown-item>
             </ha-dropdown>`
-          : nothing
+          : html`<ha-icon-button
+              .href=${documentationUrl(this.hass, "/integrations/marketplace")}
+              target="_blank"
+              rel="noopener noreferrer"
+              .title=${this.hass.localize("ui.common.help")}
+              .label=${this.hass.localize("ui.common.help")}
+              .path=${mdiHelpCircleOutline}
+            ></ha-icon-button>`
       }
     </div>`;
   }
@@ -573,6 +575,17 @@ export class HaMarketplaceDashboard extends LitElement {
     this._repositoryOverflowMenu.open = true;
   };
 
+  private _handleMenuAction = (ev: HaDropdownSelectEvent) => {
+    switch (ev.detail.item.value) {
+      case "documentation":
+        this._openDocumentation();
+        break;
+      case "dismiss_new":
+        this._dismissNew();
+        break;
+    }
+  };
+
   private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
     if (!this._overflowMenuRepository) {
       return;
@@ -598,6 +611,14 @@ export class HaMarketplaceDashboard extends LitElement {
 
     this._repositoryOverflowMenu.anchorElement = undefined;
   };
+
+  private _openDocumentation() {
+    window.open(
+      documentationUrl(this.hass, "/integrations/marketplace"),
+      "_blank",
+      "noreferrer=true"
+    );
+  }
 
   private _showCustomRepositories() {
     const disabledReason = this.marketplace.info.disabled_reason;
