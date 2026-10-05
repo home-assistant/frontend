@@ -1,6 +1,7 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../../../../common/decorators/consume";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/animation/ha-fade-in";
 import "../../../../../components/ha-alert";
