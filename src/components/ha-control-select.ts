@@ -334,6 +334,22 @@ export class HaControlSelect extends LitElement {
       width: 100%;
       hyphens: auto;
     }
+    :host(:not([vertical])) .option {
+      min-width: 0;
+    }
+    :host(:not([vertical])) .option .content {
+      padding-inline: var(--ha-space-1);
+    }
+    :host(:not([vertical])) .option .content span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      hyphens: manual;
+      line-height: var(--ha-line-height-condensed);
+    }
     :host([vertical]) {
       width: var(--control-select-thickness);
       height: auto;
