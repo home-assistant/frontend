@@ -29,6 +29,8 @@ export class HatGraphBranch extends LitElement {
 
   @property({ type: Boolean }) short = false;
 
+  @property({ type: Boolean }) end = false;
+
   @state() _branches: BranchConfig[] = [];
 
   private _totalWidth = 0;
@@ -144,10 +146,16 @@ export class HatGraphBranch extends LitElement {
           : nothing
       }
       <div id="branches">
-        <svg id="lines" width=${this._totalWidth} height=${this._maxHeight}>
-          ${this._branches.map((branch) => {
-            if (branch.end) return "";
-            return svg`
+        ${
+          !this.end
+            ? html`<svg
+                id="lines"
+                width=${this._totalWidth}
+                height=${this._maxHeight}
+              >
+                ${this._branches.map((branch) => {
+                  if (branch.end) return "";
+                  return svg`
                     <path
                       class=${classMap({
                         track: branch.trackEnd,
@@ -157,13 +165,15 @@ export class HatGraphBranch extends LitElement {
                         v ${this._maxHeight - branch.height}
                         "/>
                   `;
-          })}
-        </svg>
+                })}
+              </svg>`
+            : nothing
+        }
         <slot @slotchange=${this._updateBranches}></slot>
       </div>
 
       ${
-        !this.short
+        !this.short && !this.end
           ? html`
               <svg id="bottom" width=${this._totalWidth}>
                 ${this._branches.map((branch) => {
