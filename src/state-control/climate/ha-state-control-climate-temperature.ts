@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus, mdiThermometer, mdiThermostat } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,6 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { UNIT_F } from "../../common/const";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";

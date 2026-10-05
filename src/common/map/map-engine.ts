@@ -7,6 +7,8 @@
  * Positions are [latitude, longitude]; zoom levels use Leaflet semantics.
  */
 
+import type { ResolvedMapStyle } from "./map-styles";
+
 export type MapLatLng = [latitude: number, longitude: number];
 
 export type MapControlPosition =
@@ -21,12 +23,18 @@ export interface MapEngineEvents {
   moveStart(): void;
   /** The engine can no longer render; the host switches to the fallback */
   fatal(): void;
+  /**
+   * The map has something to show: MapLibre's first complete view, or Leaflet's
+   * layer in place. The host keeps the container hidden until then.
+   */
+  drawn(): void;
 }
 
 export interface MapEngineOptions {
   center: MapLatLng;
   zoom: number;
-  darkMode: boolean;
+  /** Cartography to draw; the host resolves the config and theme mode into one */
+  mapStyle: ResolvedMapStyle;
   /** Token for core's tile proxy */
   token?: string;
   zoomControlPosition: MapControlPosition;
@@ -107,6 +115,16 @@ export interface MapMarkerHandle extends MapItemHandle {
   readonly clusterData?: unknown;
 }
 
+export interface MapCircleHandle extends MapItemHandle {
+  /** Move, resize or recolor without removing it first */
+  update(center: MapLatLng, options: MapCircleOptions): void;
+}
+
+export interface MapPathHandle extends MapItemHandle {
+  /** Replace the drawn trail without removing it first */
+  update(path: MapPath): void;
+}
+
 export interface MapDraggableMarkerOptions extends MapMarkerOptions {
   onDragEnd?(location: MapLatLng): void;
 }
@@ -178,8 +196,16 @@ export interface MapClusterOptions {
    */
   groupKey?(marker: MapMarkerHandle): string | undefined;
   groupRadius?: number;
-  /** Builds a cluster's element; called when its members change and on refreshClusters() */
-  iconBuilder(members: MapMarkerHandle[], location: MapLatLng): MapClusterIcon;
+  /**
+   * Builds a cluster's element; called when its members change and on
+   * refreshClusters(). An expanded cluster shows every member.
+   */
+  iconBuilder(
+    members: MapMarkerHandle[],
+    location: MapLatLng,
+    key?: string,
+    expanded?: boolean
+  ): MapClusterIcon;
 }
 
 export interface MapEngine {
@@ -195,7 +221,7 @@ export interface MapEngine {
   /** Whether the map has a non-zero size, re-measuring if needed */
   hasUsableSize(): boolean;
 
-  setDarkMode(darkMode: boolean): void;
+  setMapStyle(style: ResolvedMapStyle): void;
 
   setZoomControlPosition(position: MapControlPosition): void;
 
@@ -223,13 +249,13 @@ export interface MapEngine {
   ): MapMarkerHandle;
 
   /** Draw a meter-radius circle (zone radius) */
-  addCircle(center: MapLatLng, options: MapCircleOptions): MapItemHandle;
+  addCircle(center: MapLatLng, options: MapCircleOptions): MapCircleHandle;
 
   /** Editing support, MapLibre only; undefined on the Leaflet fallback */
   editing?: MapEditingSupport;
 
   /** Draw one history trail (points with tooltips, connecting segments) */
-  addPath(path: MapPath): MapItemHandle;
+  addPath(path: MapPath): MapPathHandle;
 
   /** Cluster the markers added with cluster: true; call after each batch of addMarker calls */
   setClustering(options: MapClusterOptions | null): void;

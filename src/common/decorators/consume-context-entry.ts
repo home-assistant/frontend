@@ -1,7 +1,5 @@
-import { ContextEvent } from "@lit/context";
-import type { Context, ContextCallback } from "@lit/context";
+import type { Context } from "@lit/context";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import type { ReactiveController, ReactiveElement } from "lit";
 import type {
   HomeAssistant,
   HomeAssistantInternationalization,
@@ -14,6 +12,7 @@ import {
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { LocalizeFunc } from "../translations/localize";
 import { ensureArray } from "../array/ensure-array";
+import { consume } from "./consume";
 import { transform } from "./transform";
 
 interface ConsumeEntryConfig {
@@ -52,82 +51,15 @@ export const preserveUnchangedEntityStatesRecord = <
 };
 
 /**
- * Reactive controller that subscribes to a Lit context and assigns each
- * delivered value to a host property — WITHOUT forcing a host update on every
- * delivery.
- *
- * `@lit/context`'s built-in `ContextConsumer` calls `host.requestUpdate()`
- * unconditionally on every provider notification. For a hot context such as
- * `statesContext` (replaced on every entity state change) that means every
- * consumer runs an (often empty) update/render cycle on every unrelated state
- * change, even when the value it actually reads is unchanged.
- *
- * This controller instead leaves update scheduling to the property's own
- * setter. Combined with {@link transform}, that setter only requests an update
- * when the *selected* value changes (Lit gates `requestUpdate(key, oldValue)`
- * with `hasChanged`), so unrelated context churn no longer triggers renders.
+ * `@consume({ subscribe: true })` without forced host updates — see
+ * {@link consume}. Pair with {@link transform} so an update is scheduled only
+ * when the derived value actually changes.
  */
-class ContextSubscriptionController<ValueType> implements ReactiveController {
-  private _unsubscribe?: () => void;
-
-  constructor(
-    private readonly _host: ReactiveElement,
-    private readonly _context: Context<unknown, ValueType>,
-    private readonly _assign: (value: ValueType) => void
-  ) {
-    this._host.addController(this);
-  }
-
-  public hostConnected(): void {
-    this._host.dispatchEvent(
-      new ContextEvent(this._context, this._host, this._callback, true)
-    );
-  }
-
-  public hostDisconnected(): void {
-    this._unsubscribe?.();
-    this._unsubscribe = undefined;
-  }
-
-  // Class field arrow function so the identity is stable per instance, which the
-  // provider's subscription bookkeeping and `ContextRoot` deduping rely on.
-  private readonly _callback: ContextCallback<ValueType> = (
-    value,
-    unsubscribe
-  ) => {
-    // A different provider answered (e.g. re-parenting); drop the stale one.
-    if (this._unsubscribe && this._unsubscribe !== unsubscribe) {
-      this._unsubscribe();
-    }
-    this._unsubscribe = unsubscribe;
-    // Assign through the property setter, which decides — via `hasChanged` —
-    // whether an update is actually needed. We intentionally never call
-    // `host.requestUpdate()` here.
-    this._assign(value);
-  };
-}
-
-/**
- * Like `@consume({ subscribe: true })` from `@lit/context`, but does not force a
- * host update on every provider notification — see
- * {@link ContextSubscriptionController}. Pair with {@link transform} so an
- * update is scheduled only when the derived value actually changes.
- */
-const subscribeContext =
-  <ValueType>(context: Context<unknown, ValueType>) =>
-  (proto: object, propertyKey: string): void => {
-    (proto.constructor as unknown as typeof ReactiveElement).addInitializer(
-      (host) => {
-        new ContextSubscriptionController<ValueType>(
-          host as ReactiveElement,
-          context,
-          (value) => {
-            (host as unknown as Record<string, unknown>)[propertyKey] = value;
-          }
-        );
-      }
-    );
-  };
+const subscribeContext = <ValueType>(context: Context<unknown, ValueType>) =>
+  consume({ context, subscribe: true }) as (
+    proto: object,
+    propertyKey: string
+  ) => void;
 
 const composeDecorator = <T, V>(
   context: Context<unknown, T>,

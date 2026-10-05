@@ -1,8 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAlertCircleCheck,
-  mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
   mdiCheckboxBlankOutline,
@@ -28,6 +26,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import "../trigger/ha-automation-trigger-references";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
@@ -56,8 +55,8 @@ import {
   ACTION_BUILDING_BLOCKS,
   ACTION_COMBINED_BLOCKS,
   ACTION_ICONS,
-  YAML_ONLY_ACTION_TYPES,
   getAutomationActionType,
+  YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
   ActionSidebarConfig,
@@ -115,6 +114,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -426,6 +426,16 @@ export default class HaAutomationActionRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${this.action.enabled === false && !this._running}
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._running}
         .variant=${this._runResult?.variant}
         slot="event"
@@ -496,17 +506,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.copy"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>C</span>
             </span>`
@@ -520,17 +520,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.cut"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>X</span>
             </span>`
@@ -550,17 +540,7 @@ export default class HaAutomationActionRow extends LitElement {
                       "ui.panel.config.automation.editor.actions.paste"
                     ),
                     html`<span class="shortcut">
-                      <span
-                        >${
-                          isMac
-                            ? html`<ha-svg-icon
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )
-                        }</span
-                      >
+                      <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                       <span>+</span>
                       <span>V</span>
                     </span>`
@@ -665,17 +645,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.actions.delete"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span
                 >${this.hass.localize(
@@ -732,17 +702,6 @@ export default class HaAutomationActionRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        ${
-          this.action.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row

@@ -196,7 +196,7 @@ const mapReferencedTriggerIds = (
   mapper: (id: string) => string | string[] | undefined
 ): TriggerCondition => {
   let changed = false;
-  const ids = ensureArray(condition.id).flatMap((id) => {
+  const ids = (ensureArray(condition.id) ?? []).flatMap((id) => {
     const mappedId = mapper(id);
     if (mappedId !== id) {
       changed = true;
@@ -259,8 +259,8 @@ class AutomationTriggerConditionMapper {
         [key]: this._mapConditions((expanded as LogicalCondition).conditions),
       };
     }
-    if (condition.condition === "trigger" && "id" in condition) {
-      return this._update(condition);
+    if (condition.condition === "trigger") {
+      return this._update(condition as TriggerCondition);
     }
     if (
       "conditions" in condition &&

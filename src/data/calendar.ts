@@ -26,6 +26,7 @@ export interface CalendarEvent {
   backgroundColor?: string;
   borderColor?: string;
   textColor?: string;
+  classNames?: string[];
   calendar: string;
   eventData: CalendarEventData;
   [key: string]: any;
@@ -41,6 +42,8 @@ export interface CalendarEventData {
   rrule?: string;
   description?: string;
   location?: string;
+  // No status means none was reported, which is not the same as confirmed
+  status?: "confirmed" | "tentative";
 }
 
 export interface CalendarEventMutableParams {
@@ -217,6 +220,8 @@ export interface CalendarEventApiData {
   uid?: string | null;
   recurrence_id?: string | null;
   rrule?: string | null;
+  status?: "confirmed" | "tentative" | null;
+  all_day?: boolean;
 }
 
 export interface CalendarEventSubscription {
@@ -278,6 +283,7 @@ export const normalizeSubscriptionEventData = (
     uid: eventData.uid ?? undefined,
     recurrence_id: eventData.recurrence_id ?? undefined,
     rrule: eventData.rrule ?? undefined,
+    status: eventData.status ?? undefined,
   };
 
   return {
@@ -287,6 +293,9 @@ export const normalizeSubscriptionEventData = (
     backgroundColor: calendar.backgroundColor,
     borderColor: calendar.backgroundColor,
     textColor: calendar.textColor,
+    // Only a tentative event is drawn differently. A confirmed event and one
+    // without a status look the same, as most integrations report none.
+    classNames: eventData.status === "tentative" ? ["tentative"] : undefined,
     calendar: calendar.entity_id,
     eventData: normalizedEventData,
   };

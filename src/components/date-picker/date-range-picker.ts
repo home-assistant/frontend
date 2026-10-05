@@ -1,11 +1,12 @@
 import { TZDate } from "@date-fns/tz";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCalendarToday } from "@mdi/js";
 import "cally";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import {
   formatCallyDateRange,
@@ -37,6 +38,28 @@ import "../ha-time-input";
 import type { HaTimeInput } from "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
 import { datePickerStyles, dateRangePickerStyles } from "./styles";
+
+// Without a time zone, or where TZDate is invalid because Intl lacks
+// "longOffset" (Chrome < 95, Safari < 15.4), both use the browser time zone.
+const zonedDate = (
+  day: string,
+  timeZone: string | undefined,
+  { hours, minutes }: { hours: number; minutes: number },
+  addDays = 0
+): Date => {
+  const [year, month, date] = day.split("-").map(Number);
+  const zoned =
+    timeZone &&
+    new TZDate(year, month - 1, date + addDays, hours, minutes, timeZone);
+  return zoned && !isNaN(zoned.getTime())
+    ? zoned
+    : new Date(year, month - 1, date + addDays, hours, minutes);
+};
+
+const inTimeZone = (date: Date, timeZone: string | undefined): Date => {
+  const zoned = timeZone && new TZDate(date, timeZone);
+  return zoned && !isNaN(zoned.getTime()) ? zoned : date;
+};
 
 @customElement("date-range-picker")
 export class DateRangePicker extends MobileAwareMixin(LitElement) {
@@ -102,17 +125,25 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     );
 
     if (this.timePicker && this.startDate && this.endDate) {
+      const startDate = inTimeZone(this.startDate, this._serverTimeZone);
+      const endDate = inTimeZone(this.endDate, this._serverTimeZone);
       this._timeValue = {
         from: {
-          hours: this.startDate.getHours(),
-          minutes: this.startDate.getMinutes(),
+          hours: startDate.getHours(),
+          minutes: startDate.getMinutes(),
         },
         to: {
-          hours: this.endDate.getHours(),
-          minutes: this.endDate.getMinutes(),
+          hours: endDate.getHours(),
+          minutes: endDate.getMinutes(),
         },
       };
     }
+  }
+
+  private get _serverTimeZone() {
+    return this._i18n.locale.time_zone === TimeZone.server
+      ? this._hassConfig.time_zone
+      : undefined;
   }
 
   private _renderRanges() {
@@ -245,10 +276,6 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
       return;
     }
 
-    const dates = this._dateValue.split("/");
-    let startDate = new Date(`${dates[0]}T00:00:00`);
-    let endDate = new Date(`${dates[1]}T23:59:00`);
-
     if (this.timePicker) {
       const timeInputs = this._timeInputs;
       if (
@@ -258,28 +285,14 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
         // If we have time inputs, and they don't all report valid, don't save
         return;
       }
-      startDate.setHours(this._timeValue.from.hours);
-      startDate.setMinutes(this._timeValue.from.minutes);
-      endDate.setHours(this._timeValue.to.hours);
-      endDate.setMinutes(this._timeValue.to.minutes);
-
-      startDate.setSeconds(0);
-      startDate.setMilliseconds(0);
-      endDate.setSeconds(0);
-      endDate.setMilliseconds(0);
-
-      if (endDate <= startDate) {
-        endDate.setDate(startDate.getDate() + 1);
-      }
     }
 
-    if (this._i18n.locale.time_zone === TimeZone.server) {
-      startDate = new Date(
-        new TZDate(startDate, this._hassConfig.time_zone).getTime()
-      );
-      endDate = new Date(
-        new TZDate(endDate, this._hassConfig.time_zone).getTime()
-      );
+    const [startDay, endDay] = this._dateValue.split("/");
+    const { from, to } = this._timeValue;
+    const startDate = zonedDate(startDay, this._serverTimeZone, from);
+    let endDate = zonedDate(endDay, this._serverTimeZone, to);
+    if (endDate <= startDate) {
+      endDate = zonedDate(endDay, this._serverTimeZone, to, 1);
     }
 
     if (
@@ -296,8 +309,8 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
 
     fireEvent(this, "value-changed", {
       value: {
-        startDate,
-        endDate,
+        startDate: new Date(startDate.getTime()),
+        endDate: new Date(endDate.getTime()),
       },
     });
   }

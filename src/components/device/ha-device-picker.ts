@@ -333,10 +333,9 @@ export class HaDevicePicker extends LitElement {
     );
     return html`
       <ha-combo-box-item
-        type="button"
         style=${
           item.is_child
-            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            ? "--ha-combo-box-item-padding-inline-start: var(--ha-space-12);"
             : ""
         }
       >

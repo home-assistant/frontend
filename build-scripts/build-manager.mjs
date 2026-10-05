@@ -78,9 +78,9 @@ const parseArgs = (argv) => {
 };
 
 const hints = () =>
-  "  Stop:   yarn build --stop\n" +
-  "  Status: yarn build --status\n" +
-  "  Logs:   yarn build --logs\n";
+  "  Stop:   pnpm build --stop\n" +
+  "  Status: pnpm build --status\n" +
+  "  Logs:   pnpm build --logs\n";
 
 const devCommand = (suite) => {
   switch (suite) {
@@ -103,9 +103,9 @@ const releaseBuild = (token) => releaseProcessRecord(lockFile, token);
 
 const stopCommandFor = (owner) =>
   owner?.kind === "build"
-    ? "yarn build --stop"
+    ? "pnpm build --stop"
     : owner?.kind === "dev"
-      ? `yarn ${devCommand(owner.suite)} --stop`
+      ? `pnpm ${devCommand(owner.suite)} --stop`
       : undefined;
 
 const acquireBuild = async (modern, foreground) => {
@@ -164,9 +164,9 @@ const reportExisting = (existing) => {
     process.stdout.write(
       `Dev server (${existing.suite}) already running` +
         `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n` +
-        `  Stop:   yarn ${command} --stop\n` +
-        `  Status: yarn ${command} --status\n` +
-        `  Logs:   yarn ${command} --logs\n`
+        `  Stop:   pnpm ${command} --stop\n` +
+        `  Status: pnpm ${command} --status\n` +
+        `  Logs:   pnpm ${command} --logs\n`
     );
     return;
   }

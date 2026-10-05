@@ -1,9 +1,9 @@
 import type { ContextType } from "@lit/context";
-import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";

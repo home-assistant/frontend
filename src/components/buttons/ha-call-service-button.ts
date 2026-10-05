@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { consume } from "../../common/decorators/consume";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "./ha-progress-button";
 import { apiContext } from "../../data/context";

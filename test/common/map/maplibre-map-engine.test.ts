@@ -6,7 +6,10 @@ import {
   distanceMeters,
   pointEastOf,
 } from "../../../src/common/map/map-engine";
-import { MapLibreMapEngine } from "../../../src/common/map/engines/maplibre-map-engine";
+import {
+  CLUSTER_REBUILD_DELAY,
+  MapLibreMapEngine,
+} from "../../../src/common/map/engines/maplibre-map-engine";
 import type {
   MapEngineEvents,
   MapLatLng,
@@ -125,6 +128,9 @@ const fakes = vi.hoisted(() => {
     listeners: Record<string, { layer?: string; handler: Listener }[]> = {};
 
     fitBounds = vi.fn();
+
+    // A fit towards the members lands at the maximum zoom
+    cameraForBounds = vi.fn(() => ({ zoom: this.getMaxZoom() }));
 
     easeTo = vi.fn();
 
@@ -319,14 +325,13 @@ const fakes = vi.hoisted(() => {
 });
 
 vi.mock("maplibre-gl", () => ({
-  default: {
-    Map: fakes.FakeMap,
-    Marker: fakes.FakeMarker,
-    Popup: fakes.FakePopup,
-    NavigationControl: vi.fn(),
-    ScaleControl: vi.fn(),
-    setRTLTextPlugin: vi.fn(),
-  },
+  Map: fakes.FakeMap,
+  Marker: fakes.FakeMarker,
+  Popup: fakes.FakePopup,
+  NavigationControl: vi.fn(),
+  ScaleControl: vi.fn(),
+  setRTLTextPlugin: vi.fn(),
+  setWorkerUrl: vi.fn(),
 }));
 
 const loadStyle = vi.hoisted(() => vi.fn());
@@ -334,6 +339,7 @@ vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   loadStyle,
   ensureRTLTextPlugin: vi.fn(),
+  ensureWorkerUrl: vi.fn(),
 }));
 
 const tokenListeners = vi.hoisted(() => new Set<(token: string) => void>());
@@ -341,7 +347,7 @@ const refreshMapTilesToken = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/data/map_tiles", () => ({
   MAP_TILES_PATH: "/api/map_tiles",
   mapTilesUrl: (path: string) => path,
-  withMapTilesToken: (url: string) => url,
+  withMapTilesToken: (url: string) => ({ url }),
   refreshMapTilesToken,
   subscribeMapTilesToken: (listener: (token: string) => void) => {
     tokenListeners.add(listener);
@@ -365,7 +371,7 @@ const createEngine = async (events: Partial<MapEngineEvents> = {}) => {
   const ready = engine.init(container, {
     center: [52, 4],
     zoom: 13,
-    darkMode: false,
+    mapStyle: { palette: "colorful" as const },
     zoomControlPosition: "topleft",
     events,
   });
@@ -433,7 +439,7 @@ describe("MapLibreMapEngine", () => {
       const { engine, map, ready } = await createEngine();
       await ready;
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledOnce();
       expect(map.isStyleLoaded()).toBe(false);
@@ -462,7 +468,7 @@ describe("MapLibreMapEngine", () => {
       const customLayers = layerIds(map).filter((id) => id.startsWith("ha-"));
       expect(customLayers).toHaveLength(2);
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       map.loadStyle();
 
@@ -480,10 +486,10 @@ describe("MapLibreMapEngine", () => {
       await ready;
       engine.addCircle([52, 4], { radius: 100, color: "red" });
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       // The dark style has not loaded, so this swap sees no previous style
-      engine.setDarkMode(false);
+      engine.setMapStyle({ palette: "colorful" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledTimes(2);
 
@@ -499,18 +505,18 @@ describe("MapLibreMapEngine", () => {
       await ready;
       expect(loadStyle).toHaveBeenCalledTimes(1);
 
-      engine.setDarkMode(false);
+      engine.setMapStyle({ palette: "colorful" });
       await flush();
       expect(loadStyle).toHaveBeenCalledTimes(1);
 
       // The dark style fails to fetch: the map stays light and dark can be
       // requested again
       loadStyle.mockRejectedValueOnce(new Error("offline"));
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).not.toHaveBeenCalled();
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(loadStyle).toHaveBeenCalledTimes(3);
       expect(map.setStyle).toHaveBeenCalledOnce();
@@ -521,13 +527,13 @@ describe("MapLibreMapEngine", () => {
       await ready;
 
       fakeMap.failNextSetStyle = true;
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledOnce();
       expect(map.isStyleLoaded()).toBe(true);
 
       // Dark was not applied, so asking for it again applies it
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledTimes(2);
       expect(map.isStyleLoaded()).toBe(false);
@@ -602,6 +608,17 @@ describe("MapLibreMapEngine", () => {
       map.fire("movestart");
       expect(moveStart).toHaveBeenCalledOnce();
     });
+
+    it("reports the map drawn on its first load only", async () => {
+      const drawn = vi.fn();
+      const { map, ready } = await createEngine({ drawn });
+      await ready;
+      expect(drawn).not.toHaveBeenCalled();
+
+      map.fire("load");
+      map.fire("load");
+      expect(drawn).toHaveBeenCalledOnce();
+    });
   });
 
   describe("fitting", () => {
@@ -622,6 +639,25 @@ describe("MapLibreMapEngine", () => {
         bottom: 200,
         left: 0,
       });
+    });
+
+    it("keeps padded bounds within the poles", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Points 150 degrees apart; half of that as padding would overshoot
+      engine.fitBounds(
+        [
+          [-75, -20],
+          [75, 20],
+        ],
+        { pad: 0.5 }
+      );
+      const [bounds] = map.fitBounds.mock.calls[0];
+      expect(bounds[0][1]).toBe(-90);
+      expect(bounds[1][1]).toBe(90);
+      expect(bounds[0][0]).toBe(-40);
+      expect(bounds[1][0]).toBe(40);
     });
   });
 
@@ -749,12 +785,26 @@ describe("MapLibreMapEngine", () => {
         clusterData,
       });
 
-    const iconBuilder = vi.fn((members: MapMarkerHandle[]) => ({
-      element: Object.assign(document.createElement("div"), {
-        textContent: String(members.length),
-      }),
-      size: [40, 40] as [number, number],
-    }));
+    const iconBuilder = vi.fn(
+      (
+        members: MapMarkerHandle[],
+        _location: MapLatLng,
+        _key?: string,
+        expanded?: boolean
+      ) => {
+        const element = document.createElement("div");
+        element.textContent = String(members.length);
+        if (expanded) {
+          // Like ha-map's expanded bubble: each avatar is a button
+          members.forEach(() =>
+            element.appendChild(
+              Object.assign(document.createElement("button"), { tabIndex: 0 })
+            )
+          );
+        }
+        return { element, size: [40, 40] as [number, number] };
+      }
+    );
 
     beforeEach(() => {
       iconBuilder.mockClear();
@@ -827,6 +877,71 @@ describe("MapLibreMapEngine", () => {
       expect(fakeMarker.all).toHaveLength(2);
     });
 
+    it("hands the icon builder the key of a zone group only", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.01], { zone: "home" });
+      // Two keyless markers 20px apart cluster by proximity
+      addMarker(engine, [52.01, 4.0]);
+      addMarker(engine, [52.01, 4.002]);
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(iconBuilder).toHaveBeenCalledTimes(2);
+      expect(iconBuilder.mock.calls[0][2]).toBe("home");
+      expect(iconBuilder.mock.calls[1][2]).toBeUndefined();
+    });
+
+    it("merges bubbles that would overlap on screen into one", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      // Two zone groups whose 40px icons sit 30px apart
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.001], { zone: "home" });
+      addMarker(engine, [52, 4.003], { zone: "work" });
+      addMarker(engine, [52, 4.004], { zone: "work" });
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(fakeMarker.all).toHaveLength(1);
+      const [members, , key] = iconBuilder.mock.lastCall!;
+      expect(members).toHaveLength(4);
+      expect(key).toBeUndefined();
+    });
+
+    it("keeps a zone's key when its bubble absorbs an overlapping plain one", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.001], { zone: "home" });
+      addMarker(engine, [52, 4.003]);
+      addMarker(engine, [52, 4.004]);
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(fakeMarker.all).toHaveLength(1);
+      expect(iconBuilder.mock.lastCall![2]).toBe("home");
+    });
+
     it("drops removed markers from their cluster on refresh", async () => {
       const { engine, ready } = await createEngine();
       await ready;
@@ -843,40 +958,355 @@ describe("MapLibreMapEngine", () => {
       expect(fakeMarker.all).toHaveLength(1);
     });
 
-    const openBubble = () => {
-      expect(fakeMarker.all).toHaveLength(1);
-      const [bubble] = fakeMarker.all;
-      expect(bubble.options.anchor).toBe("bottom");
-      return (bubble.options.element as HTMLElement).querySelectorAll(
-        ".cluster-open-members > *"
-      );
+    // The zoom towards the members has settled; the delayed regroup runs
+    const settle = (map: { fire: (type: string) => void }) => {
+      map.fire("moveend");
+      vi.advanceTimersByTime(CLUSTER_REBUILD_DELAY);
     };
 
-    it("opens a cluster whose members share a spot in a bubble", async () => {
+    // The one marker on the map is the bubble built expanded, with every member
+    const openBubble = () => {
+      expect(fakeMarker.all).toHaveLength(1);
+      const call = iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1];
+      expect(call[3]).toBe(true);
+      expect(fakeMarker.all[0].options.element).toBe(
+        iconBuilder.mock.results[iconBuilder.mock.results.length - 1].value
+          .element
+      );
+      return call[0];
+    };
+
+    it("opens a bubble right away when zooming could not pull it apart", async () => {
+      vi.useFakeTimers();
       const { engine, map, ready } = await createEngine();
       await ready;
 
       const elements = [
         addMarker(engine, [52, 4]),
         addMarker(engine, [52, 4]),
-        addMarker(engine, [52, 4]),
+        // 0.1px away now, under the radius even at the maximum zoom
+        addMarker(engine, [52, 4.00001]),
       ];
       engine.setClustering({ radius: 40, iconBuilder });
       expect(fakeMarker.all).toHaveLength(1);
 
+      // Opens at once and still zooms in on the spot
       (iconBuilder.mock.results[0].value.element as HTMLElement).click();
-      // Zooming would change nothing; the members themselves sit in a
-      // bubble pointing at the spot
-      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
       expect(openBubble()).toHaveLength(elements.length);
 
-      // A refresh keeps it open; regrouping after the map moves closes it
+      // Landing at maximum zoom keeps it open through the regroup
+      map.zoom = map.getMaxZoom();
+      settle(map);
+      expect(openBubble()).toHaveLength(elements.length);
+
+      // A refresh keeps it open; regrouping after zooming back out closes it
       engine.refreshClusters();
       expect(openBubble()).toHaveLength(elements.length);
+      map.zoom = 12;
       engine.setClustering({ radius: 40, iconBuilder });
+      expect(iconBuilder).toHaveBeenCalledTimes(5);
+      expect(iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1][3]).toBe(
+        false
+      );
+      expect(fakeMarker.all).toHaveLength(1);
+    });
+
+    it("keeps focus on the same avatar when an open bubble is rebuilt", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      // Like ha-map, the builder hands out the same avatar element per member
+      const avatars = new Map<MapMarkerHandle, HTMLButtonElement>();
+      const reusing = (members: MapMarkerHandle[]) => {
+        const element = document.createElement("div");
+        members.forEach((member) => {
+          let avatar = avatars.get(member);
+          if (!avatar) {
+            avatar = Object.assign(document.createElement("button"), {
+              tabIndex: 0,
+            });
+            avatars.set(member, avatar);
+          }
+          element.appendChild(avatar);
+        });
+        return { element, size: [40, 40] as [number, number] };
+      };
+      iconBuilder.mockImplementationOnce(reusing);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      const [, second] = avatars.values();
+      second.focus();
+      iconBuilder.mockImplementationOnce(reusing);
+      engine.refreshClusters();
+      expect(fakeMarker.all[0].options.element.contains(second)).toBe(true);
+      expect(document.activeElement).toBe(second);
+    });
+
+    it("moves keyboard focus off a member the split hides", async () => {
+      vi.useFakeTimers();
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      // The first member parts on its own and starts hidden
+      const first = document.createElement("div");
+      engine.addMarker(first, [52, 4.002], { size: [48, 48], cluster: true });
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      const icon = iconBuilder.mock.results[0].value.element as HTMLElement;
+
+      icon.focus();
+      icon.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      expect(first.style.visibility).toBe("hidden");
+      const staying = fakeMarker.all.find(
+        (marker) => marker.options.element !== first
+      )!.options.element as HTMLElement;
+      expect(staying.style.visibility).toBe("");
+      expect(staying.contains(document.activeElement)).toBe(true);
+    });
+
+    it("opens a chain of members each within the radius of the next", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // 38px apart at the maximum zoom, so 77px end to end: one chained
+      // cluster there, further apart than the radius as a whole
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.00003]);
+      addMarker(engine, [52, 4.00006]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      expect(openBubble()).toHaveLength(3);
+    });
+
+    it("splits off the members a zoom will part and opens the rest at once", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      // Leaves the bubble at the maximum zoom; the other two do not
+      const leaving = addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      // Its own marker already, next to the opened bubble of the other two
+      expect(fakeMarker.all).toHaveLength(2);
+      const call = iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1];
+      expect(call[3]).toBe(true);
+      expect(call[0]).toHaveLength(2);
+      expect(call[0]).not.toContain(leaving);
+
+      // Hidden while still under the bubble on screen: 20px between centres,
+      // under half the 40px bubble plus half the 48px marker
+      const element = fakeMarker.all.find(
+        (marker) =>
+          marker.options.element !== call[0] && marker.lngLat?.[0] === 4.002
+      )!.options.element as HTMLElement;
+      expect(element.style.visibility).toBe("hidden");
+      map.fire("move");
+      expect(element.style.visibility).toBe("hidden");
+      // 40px apart: past the marker's own half size but still under the bubble
+      map.project = ([lng, lat]) => ({ x: lng * 20000, y: -lat * 20000 });
+      map.fire("move");
+      expect(element.style.visibility).toBe("hidden");
+      // 200px apart: clear of it
+      map.project = ([lng, lat]) => ({ x: lng * 100000, y: -lat * 100000 });
+      map.fire("move");
+      expect(element.style.visibility).toBe("");
+    });
+
+    it("hides a second bubble that opens away from the activated one", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Two pairs the zoom parts, neither of which can be split further
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.002]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(fakeMarker.all).toHaveLength(2);
+      const expanded = iconBuilder.mock.calls.slice(1);
+      expect(expanded.map((call) => call[3])).toEqual([true, true]);
+      const visibilities = fakeMarker.all
+        .map(
+          (marker) => (marker.options.element as HTMLElement).style.visibility
+        )
+        .sort();
+      expect(visibilities).toEqual(["", "hidden"]);
+      // The parted bubble shows once the zoom has carried it clear
+      map.project = ([lng, lat]) => ({ x: lng * 100000, y: -lat * 100000 });
+      map.fire("move");
+      expect(
+        fakeMarker.all.every(
+          (marker) =>
+            (marker.options.element as HTMLElement).style.visibility === ""
+        )
+      ).toBe(true);
+    });
+
+    it("leaves clusters elsewhere on the map alone when one is activated", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.002]);
+      // Far away, and internally 20px apart just like the activated one
+      addMarker(engine, [52, 5]);
+      addMarker(engine, [52, 5.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(2);
+      const other = fakeMarker.all[1];
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      // The activated pair parted; the other bubble is the very same marker
+      expect(fakeMarker.all).toHaveLength(3);
+      expect(fakeMarker.all).toContain(other);
+      expect(other.onMap).toBe(true);
+      expect((other.options.element as HTMLElement).style.visibility).toBe("");
+      expect(iconBuilder).toHaveBeenCalledTimes(2);
+    });
+
+    it("hands a marker removed while hidden back visible", async () => {
+      vi.useFakeTimers();
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], { size: [48, 48], cluster: true });
+      engine.addMarker(element, [52, 4], { size: [48, 48], cluster: true });
+      const leaving = engine.addMarker(
+        document.createElement("div"),
+        [52, 4.002],
+        { size: [48, 48], cluster: true }
+      );
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      const parted = fakeMarker.all.find(
+        (marker) => marker.lngLat?.[0] === 4.002
+      )!.options.element as HTMLElement;
+      expect(parted.style.visibility).toBe("hidden");
+      leaving.remove();
+      expect(parted.style.visibility).toBe("");
+    });
+
+    it("keeps a bubble that stays closed after the split visible", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // 5px apart: one bubble at the zoom the fit lands on, parted further in
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.0005]);
+      const leaving = addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      map.cameraForBounds = vi.fn(() => ({ zoom: 15 }));
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(fakeMarker.all).toHaveLength(2);
+      const bubble = fakeMarker.all.find(
+        (marker) => marker.lngLat?.[0] !== 4.002
+      )!;
+      const single = fakeMarker.all.find(
+        (marker) => marker.lngLat?.[0] === 4.002
+      )!;
+      const call = iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1];
+      expect(call[3]).toBe(false);
+      expect(call[0]).not.toContain(leaving);
+      expect((bubble.options.element as HTMLElement).style.visibility).toBe("");
+      expect((single.options.element as HTMLElement).style.visibility).toBe(
+        "hidden"
+      );
+    });
+
+    it("merges expanded bubbles that would overlap at the maximum zoom", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      // Two pairs 30px apart: past the radius, but 40px bubbles centred on
+      // them overlap, so they share one expanded bubble
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.003]);
+      addMarker(engine, [52, 4.003]);
+      engine.setClustering({ radius: 20, iconBuilder });
+
+      expect(openBubble()).toHaveLength(4);
+      expect(fakeMarker.all).toHaveLength(1);
+    });
+
+    it("opens every bubble at the maximum zoom without being activated", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      expect(openBubble()).toHaveLength(2);
+    });
+
+    it("opens a bubble once a zoom towards it lands at maximum zoom", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // 20px apart: as far as the engine can tell before the zoom, zooming
+      // in would pull them apart
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      const icon = iconBuilder.mock.results[0].value.element as HTMLElement;
+
+      icon.click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      // Regrouped as parted already
+      expect(fakeMarker.all).toHaveLength(2);
+
+      // The zoom landed at maximum zoom with them still together after all
+      map.zoom = map.getMaxZoom();
+      settle(map);
+      expect(openBubble()).toHaveLength(2);
+    });
+
+    it("keeps a bubble closed when the zoom stops short of maximum zoom", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      settle(map);
+      // Rebuilt as a bubble, not opened
       expect(iconBuilder).toHaveBeenCalledTimes(2);
       expect(fakeMarker.all).toHaveLength(1);
-      expect(fakeMarker.all[0].options.anchor).toBeUndefined();
+      expect(fakeMarker.all[0].options.element).toBe(
+        iconBuilder.mock.results[1].value.element
+      );
     });
 
     it("moves keyboard focus into an opened cluster and back to its icon", async () => {
@@ -891,26 +1321,47 @@ describe("MapLibreMapEngine", () => {
 
       icon.focus();
       icon.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      expect(document.activeElement).toBe(first);
+      // Regrouped for the maximum zoom the fit lands on, so opened at once,
+      // with focus on its first member
+      const opened = iconBuilder.mock.results[1].value.element as HTMLElement;
+      expect(opened.getAttribute("role")).toBe("group");
+      expect(document.activeElement).toBe(opened.firstElementChild);
 
-      // The bubble closes on the next regroup; focus lands on the new icon
+      // The regroup after the zoom keeps it open, focus on a member again
       engine.setClustering({ radius: 40, iconBuilder });
-      const reopened = iconBuilder.mock.results[1].value.element as HTMLElement;
-      expect(document.activeElement).toBe(reopened);
+      const reopened = iconBuilder.mock.results[2].value.element as HTMLElement;
+      expect(document.activeElement).toBe(reopened.firstElementChild);
+
+      // A later regroup closes it; focus lands on the closed icon
+      engine.setClustering({ radius: 40, iconBuilder });
+      const closed = iconBuilder.mock.results[3].value.element as HTMLElement;
+      expect(closed.getAttribute("role")).toBe("button");
+      expect(document.activeElement).toBe(closed);
     });
 
-    it("opens a cluster at maximum zoom in a bubble", async () => {
+    it("places an opened bubble where its builder puts it, like a closed one", async () => {
       const { engine, map, ready } = await createEngine();
       await ready;
       map.zoom = map.getMaxZoom();
 
-      addMarker(engine, [52, 4.0]);
-      addMarker(engine, [52, 4.002]);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      // At maximum zoom the one build is the expanded bubble
+      iconBuilder.mockImplementationOnce((members) => ({
+        element: Object.assign(document.createElement("div"), {
+          textContent: String(members.length),
+        }),
+        size: [40, 40] as [number, number],
+        location: [52.001, 4.001] as MapLatLng,
+        anchor: [20, 60] as [number, number],
+      }));
       engine.setClustering({ radius: 40, iconBuilder });
 
-      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
-      expect(map.fitBounds).not.toHaveBeenCalled();
-      expect(openBubble()).toHaveLength(2);
+      expect(iconBuilder).toHaveBeenCalledOnce();
+      const [bubble] = fakeMarker.all;
+      expect(bubble.lngLat).toEqual([4.001, 52.001]);
+      expect(bubble.options.anchor).toBe("top-left");
+      expect(bubble.options.offset).toEqual([-20, -60]);
     });
 
     it("zooms in on a cluster's members when it is activated", async () => {
@@ -1161,7 +1612,7 @@ describe("MapLibreMapEngine", () => {
     it("keeps a circle moved while a swapped style was loading", async () => {
       const { engine, map, ready } = await createEngine();
       await ready;
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.isStyleLoaded()).toBe(false);
 

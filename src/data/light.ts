@@ -48,6 +48,10 @@ export const lightSupportsColor = (entity: LightEntity) =>
     modesSupportingColor.includes(mode)
   ) || false;
 
+export const lightIsInColorMode = (entity: LightEntity) =>
+  entity.attributes.color_mode != null &&
+  modesSupportingColor.includes(entity.attributes.color_mode);
+
 export const lightSupportsBrightness = (entity: LightEntity) =>
   entity.attributes.supported_color_modes?.some((mode) =>
     modesSupportingBrightness.includes(mode)
@@ -69,12 +73,9 @@ export const getLightCurrentModeRgbColor = (
 interface LightEntityAttributes extends HassEntityAttributeBase {
   min_color_temp_kelvin?: number;
   max_color_temp_kelvin?: number;
-  min_mireds?: number;
-  max_mireds?: number;
   brightness?: number;
   xy_color?: [number, number];
   hs_color?: [number, number];
-  color_temp?: number;
   color_temp_kelvin?: number;
   rgb_color?: [number, number, number];
   rgbw_color?: [number, number, number, number];

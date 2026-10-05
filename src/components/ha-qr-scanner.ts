@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiCamera } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,6 +9,7 @@ import { customElement, property, query, state } from "lit/decorators";
 // WebAssembly port of ZXing:
 import { prepareZXingModule } from "barcode-detector";
 import type QrScanner from "qr-scanner";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";

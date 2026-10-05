@@ -79,7 +79,7 @@ type SystemHealthEvent =
   | SystemHealthEventFinish;
 
 export const subscribeSystemHealthInfo = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callback: (info: SystemHealthInfo | undefined) => void
 ) => {
   let data = {};

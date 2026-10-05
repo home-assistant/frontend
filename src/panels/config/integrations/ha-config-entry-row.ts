@@ -24,6 +24,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -76,6 +77,7 @@ import {
   type ConfigEntryData,
 } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import { offerMarketplaceUninstall } from "./offer-marketplace-uninstall";
 
 @customElement("ha-config-entry-row")
 export class HaConfigEntryRow extends LitElement {
@@ -806,15 +808,30 @@ export class HaConfigEntryRow extends LitElement {
     }
     const result = await deleteConfigEntry(this.hass, entryId);
 
-    if (result.require_restart) {
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.restart_confirm"
-        ),
-      });
+    const restartAlert = result.require_restart
+      ? showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_entry.restart_confirm"
+          ),
+        })
+      : undefined;
+    const credentialPrompt = applicationCredentialsId
+      ? this._removeApplicationCredential(applicationCredentialsId)
+      : undefined;
+
+    // Only a custom integration can come from the Marketplace
+    if (this.manifest?.is_built_in) {
+      return;
     }
-    if (applicationCredentialsId) {
-      this._removeApplicationCredential(applicationCredentialsId);
+
+    // Asked after what deleting the entry asked, uninstalling can take this
+    // row away with the dialogs it opened
+    await Promise.all([restartAlert, credentialPrompt]);
+    if (
+      await offerMarketplaceUninstall(this, this.hass, this.data.entry.domain)
+    ) {
+      // Nothing of the integration is left to show on its page
+      navigate("/config/integrations/dashboard", { replace: true });
     }
   };
 
@@ -865,6 +882,8 @@ export class HaConfigEntryRow extends LitElement {
         margin-right: -12px;
       }
       .devices {
+        border: 1px solid var(--divider-color);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         margin: 16px;
         margin-top: 0;
         background-color: var(--card-background-color);

@@ -1,9 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";

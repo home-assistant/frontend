@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   sync:
+    if: github.repository == 'home-assistant/frontend'
     name: Sync
     runs-on: ubuntu-latest
     permissions:
@@ -33,16 +34,16 @@ jobs:
         run: ./script/gen_sensor_entity_constants
 
       - name: Format
-        run: yarn prettier --write src/data/sensor_numeric_device_classes.ts
+        run: pnpm exec prettier --write src/data/sensor_entity_constants.ts
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          branch: chore/sync-numeric-device-classes
-          commit-message: Update numeric sensor device classes
-          title: Update numeric sensor device classes
+          branch: chore/sync-sensor-entity-constants
+          commit-message: Update sensor entity constants
+          title: Update sensor entity constants
           body: |
-            Regenerated `SENSOR_NUMERIC_DEVICE_CLASSES` from Home Assistant Core's
-            `SensorDeviceClass`.
+            Regenerated the sensor entity constants from Home Assistant Core's
+            `homeassistant/generated/sensor.json`.
 
-            Automated by `.github/workflows/sync-numeric-device-classes.yaml`.
+            Automated by `.github/workflows/sync-sensor-entity-constants.yaml`.

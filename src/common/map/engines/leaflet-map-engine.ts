@@ -1,6 +1,7 @@
 import type {
   CircleMarker,
   Control,
+  DivIcon,
   Map,
   MarkerClusterGroup,
   Polyline,
@@ -12,17 +13,19 @@ import { DecoratedMarker } from "../decorated_marker";
 import { isTouch } from "../../../util/is_touch";
 import type {
   MapClusterOptions,
+  MapCircleHandle,
   MapCircleOptions,
   MapControlPosition,
   MapEngine,
   MapEngineOptions,
   MapFitOptions,
-  MapItemHandle,
   MapLatLng,
   MapMarkerHandle,
   MapMarkerOptions,
   MapPath,
+  MapPathHandle,
 } from "../map-engine";
+import type { ResolvedMapStyle } from "../map-styles";
 import { setMarkerAccessibility } from "../marker-accessibility";
 
 /** A leaflet marker that knows the engine handle it was created for */
@@ -84,7 +87,7 @@ export class LeafletMapEngine implements MapEngine {
     this._baseLayer = await createBaseLayer(
       Leaflet,
       map,
-      options.darkMode,
+      options.mapStyle,
       options.token,
       options.rasterOnly ?? false
     );
@@ -104,6 +107,9 @@ export class LeafletMapEngine implements MapEngine {
     if (events.moveStart) {
       map.on("movestart", () => events.moveStart!());
     }
+    // Leaflet draws its container as soon as the layer is on it, and fills the
+    // tiles in over an opaque background from there
+    events.drawn?.();
   }
 
   public destroy(): void {
@@ -137,8 +143,8 @@ export class LeafletMapEngine implements MapEngine {
     return false;
   }
 
-  public setDarkMode(darkMode: boolean): void {
-    this._baseLayer?.setDarkMode(darkMode);
+  public setMapStyle(style: ResolvedMapStyle): void {
+    this._baseLayer?.setMapStyle(style);
   }
 
   public setZoomControlPosition(position: MapControlPosition): void {
@@ -259,16 +265,35 @@ export class LeafletMapEngine implements MapEngine {
   public addCircle(
     center: MapLatLng,
     options: MapCircleOptions
-  ): MapItemHandle {
+  ): MapCircleHandle {
     const circle = this.Leaflet!.circle(center, {
       interactive: false,
       color: options.color,
       radius: options.radius,
     }).addTo(this.leafletMap!);
-    return { remove: () => circle.remove() };
+    return {
+      update: (newCenter, newOptions) => {
+        circle
+          .setLatLng(newCenter)
+          .setRadius(newOptions.radius)
+          .setStyle({ color: newOptions.color });
+      },
+      remove: () => circle.remove(),
+    };
   }
 
-  public addPath(path: MapPath): MapItemHandle {
+  public addPath(path: MapPath): MapPathHandle {
+    let items = this._drawPath(path);
+    return {
+      update: (next) => {
+        items.forEach((item) => item.remove());
+        items = this._drawPath(next);
+      },
+      remove: () => items.forEach((item) => item.remove()),
+    };
+  }
+
+  private _drawPath(path: MapPath): (Polyline | CircleMarker)[] {
     const items: (Polyline | CircleMarker)[] = [];
     for (const segment of path.segments) {
       items.push(
@@ -291,7 +316,7 @@ export class LeafletMapEngine implements MapEngine {
       );
     }
     items.forEach((item) => item.addTo(this.leafletMap!));
-    return { remove: () => items.forEach((item) => item.remove()) };
+    return items;
   }
 
   public setClustering(options: MapClusterOptions | null): void {
@@ -313,34 +338,44 @@ export class LeafletMapEngine implements MapEngine {
       removeOutsideVisibleBounds: false,
       maxClusterRadius: options.radius,
       iconCreateFunction: (cluster) => {
-        const members = (cluster.getAllChildMarkers() as HandledMarker[]).map(
-          (marker) => marker.engineHandle!
-        );
-        const latLng = cluster.getLatLng();
-        const icon = this._clusterOptions!.iconBuilder(members, [
-          latLng.lat,
-          latLng.lng,
-        ]);
-        // The element fills the divIcon wrapper, which gets the size
-        icon.element.style.width = `${icon.size[0]}px`;
-        icon.element.style.height = `${icon.size[1]}px`;
-        // markercluster pins icons to the cluster, so a location override becomes an anchor shift
-        let anchor = icon.anchor;
-        if (icon.location) {
-          const clusterPoint = this._project([latLng.lat, latLng.lng]);
-          const targetPoint = this._project(icon.location);
-          const base = anchor ?? [icon.size[0] / 2, icon.size[1] / 2];
-          anchor = [
-            base[0] - (targetPoint.x - clusterPoint.x),
-            base[1] - (targetPoint.y - clusterPoint.y),
-          ];
-        }
-        return this.Leaflet!.divIcon({
-          html: icon.element,
-          iconSize: icon.size,
-          iconAnchor: anchor,
-          className: "",
-        });
+        const build = () => {
+          const members = (cluster.getAllChildMarkers() as HandledMarker[]).map(
+            (marker) => marker.engineHandle!
+          );
+          const latLng = cluster.getLatLng();
+          const icon = this._clusterOptions!.iconBuilder(members, [
+            latLng.lat,
+            latLng.lng,
+          ]);
+          // The element fills the divIcon wrapper, which gets the size
+          icon.element.style.width = `${icon.size[0]}px`;
+          icon.element.style.height = `${icon.size[1]}px`;
+          // markercluster pins icons to the cluster, so a location override becomes an anchor shift
+          let anchor = icon.anchor;
+          if (icon.location) {
+            const clusterPoint = this._project([latLng.lat, latLng.lng]);
+            const targetPoint = this._project(icon.location);
+            const base = anchor ?? [icon.size[0] / 2, icon.size[1] / 2];
+            anchor = [
+              base[0] - (targetPoint.x - clusterPoint.x),
+              base[1] - (targetPoint.y - clusterPoint.y),
+            ];
+          }
+          return this.Leaflet!.divIcon({
+            html: icon.element,
+            iconSize: icon.size,
+            iconAnchor: anchor,
+            className: "",
+          });
+        };
+        // markercluster keeps a cluster's icon and re-adds it when zooming
+        // back out; building on every createIcon keeps reused avatars in the
+        // bubble that is shown
+        return {
+          options: {},
+          createIcon: () => build().createIcon(),
+          createShadow: () => null,
+        } as unknown as DivIcon;
       },
     });
     this._cluster.addLayers(this._clusterable);

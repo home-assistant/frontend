@@ -12,6 +12,7 @@ import { mockDeviceAutomation } from "./device_automation";
 import { mockEntityRegistrySettings } from "./entity_registry_settings";
 import { mockEntitySources } from "./entity_sources";
 import { mockExpose } from "./expose";
+import { mockMarketplace } from "./marketplace";
 import { mockNetwork } from "./network";
 import { mockPerson } from "./person";
 import { mockScene } from "./scene";
@@ -45,6 +46,7 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
   mockAssist(hass);
   mockEntityRegistrySettings(hass);
   mockSlugify(hass);
+  mockMarketplace(hass);
   hass.mockWS("llm/api/list", () => ({
     apis: [
       { id: "assist", name: "Assist" },
