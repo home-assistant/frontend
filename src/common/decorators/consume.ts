@@ -129,3 +129,92 @@ const consumeImpl =
 // Reuse the `@lit/context` signature so the consuming field is still
 // type-checked against the context value type.
 export const consume = consumeImpl as unknown as typeof litConsume;
+
+interface ControllerConsumption {
+  key: PropertyKey;
+  context: Context<unknown, unknown>;
+  subscribe: boolean;
+  transform?: (value: unknown) => unknown;
+}
+
+const controllerConsumptions = new WeakMap<object, ControllerConsumption[]>();
+
+/**
+ * Base class for reactive controllers whose fields use {@link consumeContext}.
+ * Each decorated field is kept current while the host is connected, and
+ * `contextUpdated()` runs whenever one of them changes.
+ */
+export abstract class ContextController implements ReactiveController {
+  protected readonly host: ReactiveControllerHost & HTMLElement;
+
+  hostConnected?(): void;
+
+  hostDisconnected?(): void;
+
+  hostUpdate?(): void;
+
+  hostUpdated?(): void;
+
+  constructor(host: ReactiveControllerHost & HTMLElement) {
+    this.host = host;
+    const fields = this as unknown as Record<PropertyKey, unknown>;
+    for (
+      let proto = Object.getPrototypeOf(this);
+      proto;
+      proto = Object.getPrototypeOf(proto)
+    ) {
+      controllerConsumptions
+        .get(proto)
+        ?.forEach(({ key, context, subscribe, transform }) => {
+          new ContextSubscriptionController(
+            host,
+            context,
+            (value) => {
+              const next = transform ? transform(value) : value;
+              if (Object.is(fields[key], next)) {
+                return;
+              }
+              fields[key] = next;
+              this.contextUpdated();
+            },
+            subscribe
+          );
+        });
+    }
+    // Added after the context subscriptions, so values are fresh when it connects.
+    host.addController(this);
+  }
+
+  protected contextUpdated(): void {
+    // Overridden by controllers that react to context changes.
+  }
+}
+
+/**
+ * `@consume` for fields of a {@link ContextController}. `transform` picks
+ * the part of the context value to store; `contextUpdated()` only runs when
+ * that part changes.
+ */
+export const consumeContext =
+  <ValueType, TransformedType = ValueType>({
+    context,
+    subscribe = false,
+    transform,
+  }: {
+    context: Context<unknown, ValueType>;
+    subscribe?: boolean;
+    transform?: (value: ValueType) => TransformedType;
+  }) =>
+  (proto: ContextController, key: PropertyKey): void => {
+    let consumptions = controllerConsumptions.get(proto);
+    if (!consumptions) {
+      consumptions = [];
+      controllerConsumptions.set(proto, consumptions);
+    }
+    consumptions.push({
+      key,
+      context: context as Context<unknown, unknown>,
+      subscribe,
+      transform: transform as ControllerConsumption["transform"],
+    });
+  };

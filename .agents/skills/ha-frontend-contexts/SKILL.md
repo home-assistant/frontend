@@ -16,7 +16,7 @@ Container components may keep `hass` when they own it and feed providers. Leaf c
 ## Core Files
 
 - Context definitions: `src/data/context/index.ts`
-- `consume` decorator and `ContextSubscriptionController`: `src/common/decorators/consume.ts` (use instead of `@lit/context`'s `consume` and `ContextConsumer`, enforced by ESLint)
+- `consume` decorator, `ContextSubscriptionController`, and `consumeContext` / `ContextController` for reactive controllers: `src/common/decorators/consume.ts` (use instead of `@lit/context`'s `consume` and `ContextConsumer`, enforced by ESLint)
 - Entity-scoped consume helpers: `src/common/decorators/consume-context-entry.ts`
 - Transform decorator: `src/common/decorators/transform.ts`
 - Canonical migration example: `src/panels/lovelace/cards/hui-button-card.ts`
@@ -50,7 +50,9 @@ Import `consume` from `src/common/decorators/consume`, not from `@lit/context`. 
 - `@state()` plus `@consume` plus `@transform`: rerenders only when the transformed value changes.
 - `@consume` alone: the field stays current but never triggers a render. Use this for values only read in event handlers or callbacks, such as `apiContext`, or for data read on demand, such as picker item callbacks.
 
-In controllers or for lazily created subscriptions, use `ContextSubscriptionController` from the same file instead of `@lit/context`'s `ContextConsumer`, which also forces a host update. Its callback must store the value in a reactive field or call `host.requestUpdate()` itself when the host needs to rerender.
+In reactive controllers, extend `ContextController` and decorate fields with `consumeContext({ context, subscribe, transform })` from the same file. `transform` stores one part of the context value, and `contextUpdated()` runs only when that part changes. `@state()` and `@transform` do not work on controller fields; call `host.requestUpdate()` when the host needs to rerender. Example: `src/data/service-info-controller.ts`.
+
+For lazily created subscriptions, use `ContextSubscriptionController` from the same file instead of `@lit/context`'s `ContextConsumer`, which also forces a host update. Its callback must store the value in a reactive field or call `host.requestUpdate()` itself when the host needs to rerender.
 
 Use entity-scoped helpers when the component watches an entity ID held on the host:
 
