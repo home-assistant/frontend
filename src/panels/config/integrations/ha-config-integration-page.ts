@@ -1525,7 +1525,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           animation: unset;
         }
         ha-list-base {
-          border: 1px solid var(--divider-color);
+          border: var(--ha-border-width-sm) solid var(--divider-color);
           border-radius: var(--ha-border-radius-md);
           overflow: hidden;
         }
@@ -1536,7 +1536,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           background-color: var(--ha-color-fill-warning-quiet-resting);
         }
         ha-list-item-base + ha-list-item-base {
-          border-top: 1px solid var(--divider-color);
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
         }
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
