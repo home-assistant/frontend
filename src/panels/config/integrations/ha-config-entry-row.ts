@@ -911,13 +911,61 @@ export class HaConfigEntryRow extends LitElement {
       ha-dropdown a {
         text-decoration: none;
       }
+      ha-row-item.config_entry {
+        position: relative;
+      }
+      ha-row-item.config_entry::after {
+        position: absolute;
+        inset: 0;
+        opacity: 0.12;
+        pointer-events: none;
+        content: "";
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      }
+      ha-row-item.config_entry.has-subentries::after {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      .state-error {
+        --state-message-color: var(--error-color);
+      }
+      .state-error::after {
+        background-color: var(--error-color);
+      }
+      .state-failed-unload,
+      .state-not-loaded {
+        --state-message-color: var(--primary-text-color);
+      }
+      .state-failed-unload::after,
+      .state-not-loaded::after {
+        background-color: var(--warning-color);
+      }
+      .state-setup {
+        --state-message-color: var(--secondary-text-color);
+      }
+      .state-disabled [slot="headline"],
+      .state-disabled [slot="supporting-text"] {
+        opacity: var(--md-list-item-disabled-opacity, 0.3);
+      }
       .message {
         display: flex;
         align-items: center;
         gap: var(--ha-space-2);
+        font-weight: var(--ha-font-weight-bold);
+      }
+      .message ha-svg-icon {
+        flex-shrink: 0;
+        color: var(--state-message-color);
       }
       .message div {
+        flex: 1;
         white-space: normal;
+        overflow-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 7;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     `,
   ];
