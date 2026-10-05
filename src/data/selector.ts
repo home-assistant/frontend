@@ -871,9 +871,14 @@ export const deviceMeetsTargetSelector = (
   targetSelector: TargetSelector
 ): boolean => {
   if (targetSelector.target?.device) {
-    const deviceIntegrationLookup = getDeviceIntegrationLookup(entityRegistry);
+    const filterDevices = ensureArray(targetSelector.target.device);
+    const deviceIntegrationLookup = filterDevices.some(
+      (filterDevice) => filterDevice.integration
+    )
+      ? getDeviceIntegrationLookup(entityRegistry)
+      : undefined;
     if (
-      !ensureArray(targetSelector.target.device).some((filterDevice) =>
+      !filterDevices.some((filterDevice) =>
         filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)
       )
     ) {
