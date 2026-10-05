@@ -188,8 +188,8 @@ export class DemoHaPickerComboBox extends LitElement {
                 <div class="card-content">
                   <p class="note">
                     A set <code>value</code> marks its row
-                    <code>selected</code>. That is a different highlight from
-                    the keyboard cursor, which <kbd>↓</kbd> starts from here.
+                    <code>selected</code>. The keyboard cursor is a separate
+                    highlight, and <kbd>↓</kbd> starts it on this row.
                   </p>
                   <div class="picker">
                     <ha-picker-combo-box

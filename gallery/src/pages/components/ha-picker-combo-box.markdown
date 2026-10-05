@@ -22,12 +22,12 @@ list changes need checking against both.
 | 12 or fewer, no sections      | `repeat()`        | all of them           |
 | more than 12, or any sections | `lit-virtualizer` | only the visible ones |
 
-The threshold is `MAX_PLAIN_LIST_ITEMS`. Filtering keeps the mode the list
-opened with — only the full item set decides it.
+The threshold is `MAX_PLAIN_LIST_ITEMS`, counted against the full item set, so
+filtering does not switch renderers.
 
 ## Two highlights
 
-The list has two distinct row backgrounds, and they mean different things.
+The list has two row backgrounds.
 
 - **`selected`** — the row matching the `value` property, rendered onto its
   `ha-list-item-option`.
