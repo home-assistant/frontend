@@ -497,16 +497,9 @@ export class HuiMapOverview extends LitElement {
           @click=${this._handleBack}
         ></ha-icon-button-prev>
         <div class="detail-title">
-          <button
-            type="button"
-            class="detail-name"
-            .title=${this._i18n.localize(
-              "ui.panel.lovelace.cards.show_more_info"
-            )}
-            @click=${this._handleMoreInfo}
-          >
+          <span class="detail-name" tabindex="-1">
             ${this._personName(stateObj)}
-          </button>
+          </span>
           <span class="detail-state">
             ${
               isZone
@@ -551,6 +544,15 @@ export class HuiMapOverview extends LitElement {
                 : this._renderTimeline(stateObj, this._activity)
           }
         </div>
+        <ha-button
+          appearance="filled"
+          class="more-info"
+          @click=${this._handleMoreInfo}
+        >
+          ${this._i18n.localize(
+            "ui.panel.lovelace.cards.map.overview.more_info"
+          )}
+        </ha-button>
       </div>
     `;
   }
@@ -1065,21 +1067,8 @@ export class HuiMapOverview extends LitElement {
     }
 
     .detail-name {
-      margin: 0;
-      padding: 0;
-      border: none;
-      background: none;
-      cursor: pointer;
-      text-align: start;
-      font-family: inherit;
-      color: inherit;
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-medium);
-    }
-
-    .detail-name:hover,
-    .detail-name:focus-visible {
-      text-decoration: underline;
     }
 
     .detail-state {
@@ -1175,6 +1164,12 @@ export class HuiMapOverview extends LitElement {
       margin-top: var(--ha-space-3);
       padding-top: var(--ha-space-2);
       border-top: 1px solid var(--divider-color);
+    }
+
+    .more-info {
+      flex: none;
+      width: 100%;
+      margin-top: var(--ha-space-3);
     }
   `;
 }
