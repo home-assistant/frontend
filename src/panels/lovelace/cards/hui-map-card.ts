@@ -3,7 +3,7 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -68,7 +68,7 @@ import {
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
-// GPS accuracy (meters) above which the selected person's circle is shown
+// GPS accuracy (meters) above which focusing fits the circle, not the point
 const IMPRECISE_GPS_ACCURACY = 100;
 
 // Margin around the overview (--ha-space-3), in pixels
@@ -458,9 +458,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._overviewEntities = this._decorateOverviewEntities(
         entities,
         this._overviewSelected,
-        this._overviewSelected
-          ? this.hass.states[this._overviewSelected]
-          : undefined,
         this.preview ||
           this._config?.show_zone_radius ||
           this._overviewTab === "zones"
@@ -523,29 +520,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   // In panel layout, only the selected zone shows its radius (all of them on
-  // the Zones tab, while editing, or when configured) and only an imprecise
-  // selected person its accuracy circle
+  // the Zones tab, while editing, or when configured) and only the selected
+  // person its accuracy circle
   private _decorateOverviewEntities = memoizeOne(
     (
       entities: HaMapEntity[],
       selectedId: string | undefined,
-      selectedStateObj: HassEntity | undefined,
       showRadii: boolean
-    ): HaMapEntity[] => {
-      const selectedLocation = selectedStateObj
-        ? getEntityLocation(selectedStateObj, this.hass.states)
-        : undefined;
-      const showSelectedAccuracy =
-        (selectedLocation?.gpsAccuracy ?? 0) > IMPRECISE_GPS_ACCURACY;
-      return entities.map((entity) => ({
+    ): HaMapEntity[] =>
+      entities.map((entity) => ({
         ...entity,
-        hide_accuracy: !(
-          showSelectedAccuracy && entity.entity_id === selectedId
-        ),
+        hide_accuracy: entity.entity_id !== selectedId,
         hide_radius: !showRadii && entity.entity_id !== selectedId,
         selected: entity.entity_id === selectedId,
-      }));
-    }
+      }))
   );
 
   private _filterByOverviewTab = memoizeOne(
