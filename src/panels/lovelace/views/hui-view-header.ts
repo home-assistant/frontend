@@ -423,6 +423,7 @@ export class HuiViewHeader extends LitElement {
     .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {
       --badges-wrap: nowrap;
       width: max-content;
+      flex-shrink: 0;
     }
 
     @media (min-width: 768px) {
