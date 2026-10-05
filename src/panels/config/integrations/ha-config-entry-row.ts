@@ -866,6 +866,7 @@ export class HaConfigEntryRow extends LitElement {
       }
       :host(.attention) .config-entry-wrapper {
         border-color: var(--warning-color);
+        background-color: var(--ha-color-fill-warning-quiet-resting);
       }
       .expand-button {
         margin: 0 -12px;
@@ -913,11 +914,13 @@ export class HaConfigEntryRow extends LitElement {
       .state-error {
         --state-message-color: var(--error-color);
         border-color: var(--error-color);
+        background-color: var(--ha-color-fill-danger-quiet-resting);
       }
       .state-failed-unload,
       .state-not-loaded {
         --state-message-color: var(--primary-text-color);
         border-color: var(--warning-color);
+        background-color: var(--ha-color-fill-warning-quiet-resting);
       }
       .state-setup {
         --state-message-color: var(--secondary-text-color);
