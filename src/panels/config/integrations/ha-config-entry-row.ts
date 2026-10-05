@@ -169,18 +169,17 @@ export class HaConfigEntryRow extends LitElement {
 
     const subEntries = this.data.subEntries;
 
-    return html` <div class="config-entry-wrapper">
-      <ha-row-item
-        class=${classMap({
-          config_entry: true,
-          "state-not-loaded": item!.state === "not_loaded",
-          "state-failed-unload": item!.state === "failed_unload",
-          "state-setup": item!.state === "setup_in_progress",
-          "state-error": ERROR_STATES.includes(item!.state),
-          "state-disabled": item.disabled_by !== null,
-          "has-subentries": this._expanded && subEntries.length > 0,
-        })}
-      >
+    return html` <div
+      class=${classMap({
+        "config-entry-wrapper": true,
+        "state-not-loaded": item!.state === "not_loaded",
+        "state-failed-unload": item!.state === "failed_unload",
+        "state-setup": item!.state === "setup_in_progress",
+        "state-error": ERROR_STATES.includes(item!.state),
+        "state-disabled": item.disabled_by !== null,
+      })}
+    >
+      <ha-row-item>
         ${
           subEntries.length || ownDevices.length
             ? html`<ha-icon-button
@@ -866,7 +865,7 @@ export class HaConfigEntryRow extends LitElement {
         content: "";
       }
       :host(.attention) .config-entry-wrapper {
-        background-color: rgba(var(--rgb-warning-color), 0.2);
+        border-color: var(--warning-color);
       }
       .expand-button {
         margin: 0 -12px;
@@ -911,34 +910,14 @@ export class HaConfigEntryRow extends LitElement {
       ha-dropdown a {
         text-decoration: none;
       }
-      ha-row-item.config_entry {
-        position: relative;
-      }
-      ha-row-item.config_entry::after {
-        position: absolute;
-        inset: 0;
-        opacity: 0.12;
-        pointer-events: none;
-        content: "";
-        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      }
-      ha-row-item.config_entry.has-subentries::after {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-      }
       .state-error {
         --state-message-color: var(--error-color);
-      }
-      .state-error::after {
-        background-color: var(--error-color);
+        border-color: var(--error-color);
       }
       .state-failed-unload,
       .state-not-loaded {
         --state-message-color: var(--primary-text-color);
-      }
-      .state-failed-unload::after,
-      .state-not-loaded::after {
-        background-color: var(--warning-color);
+        border-color: var(--warning-color);
       }
       .state-setup {
         --state-message-color: var(--secondary-text-color);
