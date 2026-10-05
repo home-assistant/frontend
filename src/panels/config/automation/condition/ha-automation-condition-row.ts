@@ -205,9 +205,7 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-automation-condition-summary
         slot="header"
         .label=${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg, {
-            hideTriggerIds: true,
-          })
+          describeCondition(this.condition, this.hass, this._entityReg)
         )}
         .condition=${this.condition}
         .description=${this.conditionDescriptions[this.condition.condition]}

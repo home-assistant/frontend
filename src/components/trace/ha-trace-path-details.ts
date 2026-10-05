@@ -357,16 +357,14 @@ export class HaTracePathDetails extends LitElement {
             this._entityReg
           )
         : selectedType === "condition"
-          ? describeCondition(currentDetail, this.hass, this._entityReg, {
-              hideTriggerIds: true,
-            })
+          ? describeCondition(currentDetail, this.hass, this._entityReg)
           : selectedType === "action"
             ? describeAction(
                 this.hass,
                 this._entityReg,
                 currentDetail,
                 undefined,
-                { hideTriggerIds: true },
+                undefined,
                 this._manifests
               )
             : selectedType === "chooseOption"
@@ -395,9 +393,7 @@ export class HaTracePathDetails extends LitElement {
     }
 
     return html`<div class="nested-condition">
-      ${describeCondition(currentDetail, this.hass, this._entityReg, {
-        hideTriggerIds: true,
-      })}
+      ${describeCondition(currentDetail, this.hass, this._entityReg)}
       ${this._renderTriggerReferences(currentDetail)}
       ${this._renderTargets(currentDetail, "condition", "s")}
     </div>`;
