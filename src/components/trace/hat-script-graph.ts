@@ -276,6 +276,21 @@ export class HatScriptGraph extends LitElement {
           nofocus
           aria-hidden="true"
         ></hat-graph-node>
+        <div
+          class="graph-container"
+          ?track=${thenBranch.hasTrace}
+          ?unfinished=${thenBranch.unfinished}
+        >
+          <hat-graph-node
+            .iconPath=${mdiCallReceived}
+            ?track=${thenBranch.hasTrace}
+            ?active=${this.selected === path}
+            .notEnabled=${thenBranch.disabled}
+            nofocus
+            aria-hidden="true"
+          ></hat-graph-node>
+          ${this._renderBranchActions(thenBranch.children, graphEnd)}
+        </div>
         ${
           config.else
             ? html`<div
@@ -300,21 +315,6 @@ export class HatScriptGraph extends LitElement {
                   ?track=${elseBranch.hasTrace}
                 ></hat-graph-spacer>`
         }
-        <div
-          class="graph-container"
-          ?track=${thenBranch.hasTrace}
-          ?unfinished=${thenBranch.unfinished}
-        >
-          <hat-graph-node
-            .iconPath=${mdiCallReceived}
-            ?track=${thenBranch.hasTrace}
-            ?active=${this.selected === path}
-            .notEnabled=${thenBranch.disabled}
-            nofocus
-            aria-hidden="true"
-          ></hat-graph-node>
-          ${this._renderBranchActions(thenBranch.children, graphEnd)}
-        </div>
       </hat-graph-branch>
     `;
   }
