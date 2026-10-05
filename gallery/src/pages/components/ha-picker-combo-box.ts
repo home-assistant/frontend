@@ -21,7 +21,6 @@ import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison"
 
 const LOCALIZE_KEYS: Record<string, string> = {
   "ui.common.search": "Search",
-  "ui.common.clear": "Clear",
   "ui.components.combo-box.no_match": "No matching items found",
   "ui.components.combo-box.no_items": "No items available",
 };
@@ -45,8 +44,6 @@ const DEMO_I18N: HomeAssistantInternationalization = {
   loadFragmentTranslation: async () => localize,
 };
 
-// Nine items, so the list stays under MAX_PLAIN_LIST_ITEMS and renders every
-// row into the DOM. One is disabled.
 const PLAIN_ITEMS: PickerComboBoxItem[] = [
   { id: "light.desk", primary: "Desk", secondary: "Office" },
   { id: "light.dining_table", primary: "Dining table", secondary: "Kitchen" },
@@ -61,8 +58,6 @@ const PLAIN_ITEMS: PickerComboBoxItem[] = [
   { id: "light.reading_lamp", primary: "Reading lamp", secondary: "Bedroom" },
   {
     id: "light.shed",
-    // Labelled so the row reads as disabled here. Nothing marks a disabled row
-    // in the component itself, so without this it looks like any other.
     primary: "Shed (disabled)",
     secondary: "Outside",
     disabled: true,
@@ -96,10 +91,6 @@ const FIXTURES = [
   "Wall sconce",
 ];
 
-// Well past MAX_PLAIN_LIST_ITEMS, so this list goes through lit-virtualizer and
-// only the visible rows exist in the DOM.
-// Each fixture is numbered across all areas, so every row has a distinct name
-// and a repeated row can only mean a rendering bug.
 const VIRTUALIZED_ITEMS: PickerComboBoxItem[] = AREAS.flatMap((area, a) =>
   FIXTURES.flatMap((fixture) =>
     [1, 2].map((offset) => {
@@ -123,8 +114,7 @@ export class DemoHaPickerComboBox extends LitElement {
 
   constructor() {
     super();
-    // ha-picker-combo-box takes no hass. It reads locale and translations from
-    // internationalizationContext, which ha-input-search needs as well.
+    // Provides internationalizationContext for ha-picker-combo-box and ha-input-search
     new ContextProvider(this, {
       context: internationalizationContext,
       initialValue: DEMO_I18N,
@@ -163,7 +153,7 @@ export class DemoHaPickerComboBox extends LitElement {
                   <p class="note">
                     Above 12 items the list switches to
                     <code>lit-virtualizer</code> and only the visible rows
-                    exist. This is the path every real entity picker takes.
+                    exist.
                   </p>
                   <div class="picker">
                     <ha-picker-combo-box
@@ -261,10 +251,6 @@ export class DemoHaPickerComboBox extends LitElement {
       color: var(--secondary-text-color);
       font-size: var(--ha-font-size-s);
     }
-    /* The combo box is display: flex with flex: 1 and expects a bounded parent.
-       In the app that bound comes from the popover, which is why embedding it
-       directly means supplying one. Short lists size to their content; the
-       virtualized ones fill the cap. */
     .picker {
       display: flex;
       flex-direction: column;

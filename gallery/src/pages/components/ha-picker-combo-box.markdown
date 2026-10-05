@@ -23,8 +23,7 @@ list changes need checking against both.
 | more than 12, or any sections | `lit-virtualizer` | only the visible ones |
 
 The threshold is `MAX_PLAIN_LIST_ITEMS`. Filtering keeps the mode the list
-opened with — only the full item set decides it. Every real entity picker is
-over the threshold, so the virtualized path is the one users meet.
+opened with — only the full item set decides it.
 
 ## Two highlights
 
@@ -53,29 +52,8 @@ row, or from the top match while searching. With one item in the list,
 
 ## Implementation
 
-### Example usage
-
-`getItems` and `value` are set as properties, not attributes. The component
-filters the returned list itself as the user types, so `getItems` can ignore its
-search argument and return everything.
-
-```ts
-const getItems = (): PickerComboBoxItem[] => [
-  { id: "light.desk", primary: "Desk", secondary: "Office" },
-  { id: "light.porch", primary: "Porch", secondary: "Outside" },
-];
-
-// in render(), inside a lit template:
-//   <ha-picker-combo-box
-//     .getItems=[getItems]
-//     .value=[this.value]
-//     @value-changed=[this._valueChanged]
-//   ></ha-picker-combo-box>
-```
-
-Gallery markdown is compiled into a lit template, so a literal dollar-brace
-sequence in a fenced block becomes a live substitution. Square brackets stand in
-for it above.
+The component filters the items from `getItems` itself as the user types, so
+`getItems` can ignore its search argument and return everything.
 
 The host is `display: flex` with `flex: 1` and expects a parent with a bounded
 height. In the app that bound comes from the popover; embedding it directly
@@ -87,7 +65,7 @@ means supplying one.
 | -------------------- | ------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------- |
 | getItems             | Function           | -         | Required. Returns the items, optionally filtered by search string and section.                                              |
 | getAdditionalItems   | Function           | -         | Extra items appended to search results, for example "add new".                                                              |
-| value                | String             | -         | Id of the current item. Marks its row `selected`.                                                                           |
+| value                | String             | -         | Id of the current item. Marks its row `selected`, and the virtualized list opens with that row in view.                     |
 | label                | String             | -         | Placeholder for the search field. Falls back to a localized "Search".                                                       |
 | mode                 | "popover"/"dialog" | "popover" | Adjusts padding for the surface the list sits in.                                                                           |
 | shown                | Boolean            | true      | Whether the surface finished animating. `ha-generic-picker` sets it so the virtualizer does not measure rows mid-animation. |
@@ -102,8 +80,6 @@ means supplying one.
 | emptyLabel           | String             | -         | Shown when there are no items at all.                                                                                       |
 | noSort               | Boolean            | false     | Keeps the order `getItems` returned.                                                                                        |
 | clearable            | Boolean            | false     | Adjusts search field padding for a clear affordance.                                                                        |
-| disabled             | Boolean            | false     | Disables the list.                                                                                                          |
-| required             | Boolean            | false     | Marks the field required.                                                                                                   |
 
 ### Events
 
