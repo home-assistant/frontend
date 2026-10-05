@@ -1,7 +1,9 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { getHistoryState, goBack } from "../common/navigate";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-top-app-bar-fixed";
 import type { HomeAssistant } from "../types";
@@ -10,7 +12,12 @@ import "../components/ha-alert";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Unread, kept for callers that still pass it until they move to contexts
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state()
+  @consumeLocalize()
+  private _localize?: LocalizeFunc;
 
   @property({ type: Boolean }) public toolbar = true;
 
@@ -51,13 +58,13 @@ class HassErrorScreen extends LitElement {
                     size="s"
                     @click=${this._handleReload}
                   >
-                    ${this.hass?.localize("ui.common.refresh")}
+                    ${this._localize?.("ui.common.refresh")}
                   </ha-button>
                 `
               : nothing
           }
           <ha-button appearance="plain" size="s" @click=${this._handleBack}>
-            ${this.hass?.localize("ui.common.back")}
+            ${this._localize?.("ui.common.back")}
           </ha-button>
         </slot>
       </div>

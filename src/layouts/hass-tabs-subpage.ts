@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -22,9 +23,13 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import { narrowViewportContext } from "../data/context";
+import {
+  configContext,
+  internationalizationContext,
+  narrowViewportContext,
+} from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant, Route } from "../types";
+import type { HomeAssistant, HomeAssistantConfig, Route } from "../types";
 
 const normalizePathname = (pathname: string): string =>
   pathname.endsWith("/") && pathname.length > 1
@@ -47,12 +52,13 @@ export interface PageNavigation {
   // Shown next to the name of the tab
   badge?: string;
   info?: any;
-  filter?: (hass: HomeAssistant) => boolean;
+  filter?: (hass: HomeAssistantConfig) => boolean;
 }
 
 @customElement("hass-tabs-subpage")
 export class HassTabsSubpage extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Unread, kept for callers that still pass it until they move to contexts
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
@@ -69,6 +75,14 @@ export class HassTabsSubpage extends LitElement {
   @state()
   @consume({ context: narrowViewportContext, subscribe: true })
   private _narrow = false;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean, reflect: true, attribute: "is-wide" })
   public isWide = false;
@@ -106,7 +120,9 @@ export class HassTabsSubpage extends LitElement {
       _narrow,
       localizeFunc
     ) => {
-      const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
+      const shownTabs = tabs.filter((page) =>
+        canShowPage(this._hassConfig, page)
+      );
 
       if (shownTabs.length < 2) {
         this.showTabs = false;
@@ -164,11 +180,11 @@ export class HassTabsSubpage extends LitElement {
     const tabs = this._getTabs(
       this.tabs,
       this._activeTab,
-      this.hass.config.components,
-      this.hass.language,
-      this.hass.userData,
+      this._hassConfig.config.components,
+      this._i18n.language,
+      this._hassConfig.userData,
       this._narrow,
-      this.localizeFunc || this.hass.localize
+      this.localizeFunc || this._i18n.localize
     );
     const backPath = sanitizeNavigationPath(this.backPath);
 
