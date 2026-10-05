@@ -12460,9 +12460,7 @@
           "default": "Available"
         },
         "menu": {
-          "custom_repositories": "Custom repositories",
-          "dismiss": "Dismiss new repositories",
-          "documentation": "Documentation"
+          "dismiss": "Dismiss new repositories"
         },
         "dialog": {
           "error": {
