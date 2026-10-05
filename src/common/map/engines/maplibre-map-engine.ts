@@ -31,6 +31,7 @@ import {
 import { deepEqual } from "../../util/deep-equal";
 import { isTouch } from "../../../util/is_touch";
 import type {
+  MapCircleHandle,
   MapCircleOptions,
   MapClusterIcon,
   MapClusterOptions,
@@ -49,6 +50,7 @@ import type {
   MapLatLng,
   MapMarkerOptions,
   MapPath,
+  MapPathHandle,
 } from "../map-engine";
 import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
@@ -120,6 +122,42 @@ const circlePolygon = (
     geometry: { type: "Polygon", coordinates: [ring] },
   };
 };
+
+const coloredCircle = (
+  center: MapLatLng,
+  options: MapCircleOptions
+): Feature<Polygon> => ({
+  ...circlePolygon(center, options.radius),
+  properties: { color: options.color },
+});
+
+const pathLines = (path: MapPath): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: path.segments.map((segment) => ({
+    type: "Feature",
+    properties: { color: path.color, opacity: segment.opacity ?? 1 },
+    geometry: {
+      type: "LineString",
+      coordinates: segment.points.map((point) => [point[1], point[0]]),
+    },
+  })),
+});
+
+const pathPoints = (path: MapPath): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: path.markers.map((pathMarker) => ({
+    type: "Feature",
+    properties: {
+      color: path.color,
+      opacity: pathMarker.opacity ?? 1,
+      tooltip: pathMarker.tooltipHtml,
+    },
+    geometry: {
+      type: "Point",
+      coordinates: [pathMarker.location[1], pathMarker.location[0]],
+    },
+  })),
+});
 
 interface ManagedMarker {
   element: HTMLElement;
@@ -774,25 +812,28 @@ export class MapLibreMapEngine implements MapEngine {
   public addCircle(
     center: MapLatLng,
     options: MapCircleOptions
-  ): MapItemHandle {
+  ): MapCircleHandle {
     if (!this._map) {
-      return { remove: () => undefined };
+      return { update: () => undefined, remove: () => undefined };
     }
     const id = `${CUSTOM_PREFIX}circle-${this._idCounter++}`;
-    this._addCustomSource(id, circlePolygon(center, options.radius));
+    this._addCustomSource(id, coloredCircle(center, options));
     this._addCustomLayer({
       id: `${id}-fill`,
       type: "fill",
       source: id,
-      paint: { "fill-color": options.color, "fill-opacity": 0.2 },
+      paint: { "fill-color": ["get", "color"], "fill-opacity": 0.2 },
     });
     this._addCustomLayer({
       id: `${id}-line`,
       type: "line",
       source: id,
-      paint: { "line-color": options.color, "line-width": 3 },
+      paint: { "line-color": ["get", "color"], "line-width": 3 },
     });
     return {
+      update: (newCenter, newOptions) => {
+        this._setCustomSourceData(id, coloredCircle(newCenter, newOptions));
+      },
       remove: () => {
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
@@ -1040,46 +1081,20 @@ export class MapLibreMapEngine implements MapEngine {
     };
   }
 
-  public addPath(path: MapPath): MapItemHandle {
+  public addPath(path: MapPath): MapPathHandle {
     if (!this._map || !this._maplibre) {
-      return { remove: () => undefined };
+      return { update: () => undefined, remove: () => undefined };
     }
     const id = `${CUSTOM_PREFIX}path-${this._idCounter++}`;
 
-    const lines: FeatureCollection = {
-      type: "FeatureCollection",
-      features: path.segments.map((segment) => ({
-        type: "Feature",
-        properties: { opacity: segment.opacity ?? 1 },
-        geometry: {
-          type: "LineString",
-          coordinates: segment.points.map((point) => [point[1], point[0]]),
-        },
-      })),
-    };
-    const points: FeatureCollection = {
-      type: "FeatureCollection",
-      features: path.markers.map((pathMarker) => ({
-        type: "Feature",
-        properties: {
-          opacity: pathMarker.opacity ?? 1,
-          tooltip: pathMarker.tooltipHtml,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [pathMarker.location[1], pathMarker.location[0]],
-        },
-      })),
-    };
-
-    this._addCustomSource(`${id}-lines`, lines);
-    this._addCustomSource(`${id}-points`, points);
+    this._addCustomSource(`${id}-lines`, pathLines(path));
+    this._addCustomSource(`${id}-points`, pathPoints(path));
     this._addCustomLayer({
       id: `${id}-lines`,
       type: "line",
       source: `${id}-lines`,
       paint: {
-        "line-color": path.color,
+        "line-color": ["get", "color"],
         "line-width": 3,
         "line-opacity": ["get", "opacity"],
       },
@@ -1090,10 +1105,10 @@ export class MapLibreMapEngine implements MapEngine {
       source: `${id}-points`,
       paint: {
         "circle-radius": isTouch ? 8 : 3,
-        "circle-color": path.color,
+        "circle-color": ["get", "color"],
         "circle-opacity": ["get", "opacity"],
         "circle-stroke-width": 2,
-        "circle-stroke-color": path.color,
+        "circle-stroke-color": ["get", "color"],
         "circle-stroke-opacity": ["get", "opacity"],
       },
     });
@@ -1136,6 +1151,10 @@ export class MapLibreMapEngine implements MapEngine {
     this._pathPointLayers.add(layerId);
 
     return {
+      update: (next) => {
+        this._setCustomSourceData(`${id}-lines`, pathLines(next));
+        this._setCustomSourceData(`${id}-points`, pathPoints(next));
+      },
       remove: () => {
         map.off("mouseenter", layerId, onEnter);
         map.off("mouseleave", layerId, onLeave);
