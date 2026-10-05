@@ -2,8 +2,8 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
-import "../../../../../../components/ha-md-list-item";
-import "../../../../../../components/ha-md-list";
+import "../../../../../../components/item/ha-list-item-button";
+import "../../../../../../components/list/ha-list-base";
 import type { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
@@ -18,14 +18,8 @@ class MatterAddDeviceMain extends LitElement {
           ${this.hass.localize(`ui.dialogs.matter-add-device.main.question`)}
         </p>
       </div>
-      <ha-md-list>
-        <ha-md-list-item
-          interactive
-          type="button"
-          .step=${"new"}
-          @click=${this._onItemClick}
-          @keydown=${this._onItemClick}
-        >
+      <ha-list-base>
+        <ha-list-item-button .step=${"new"} @click=${this._onItemClick}>
           <span slot="headline">
             ${this.hass.localize(
               `ui.dialogs.matter-add-device.main.answer_new`
@@ -37,14 +31,8 @@ class MatterAddDeviceMain extends LitElement {
             )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <ha-md-list-item
-          interactive
-          type="button"
-          .step=${"existing"}
-          @click=${this._onItemClick}
-          @keydown=${this._onItemClick}
-        >
+        </ha-list-item-button>
+        <ha-list-item-button .step=${"existing"} @click=${this._onItemClick}>
           <span slot="headline">
             ${this.hass.localize(
               `ui.dialogs.matter-add-device.main.answer_existing`
@@ -56,15 +44,12 @@ class MatterAddDeviceMain extends LitElement {
             )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-      </ha-md-list>
+        </ha-list-item-button>
+      </ha-list-base>
     `;
   }
 
   private _onItemClick(ev) {
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
-      return;
-    }
     const item = ev.currentTarget as any;
     const step = item.step as "new" | "existing";
     fireEvent(this, "step-selected", { step });

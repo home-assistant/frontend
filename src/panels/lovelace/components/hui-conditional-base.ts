@@ -5,11 +5,7 @@ import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HuiCard } from "../cards/hui-card";
 import type { ConditionalCardConfig } from "../cards/types";
-import type { Condition } from "../common/validate-condition";
-import {
-  checkConditionsMet,
-  validateConditionalConfig,
-} from "../common/validate-condition";
+import { validateConditionalConfig } from "../common/validate-condition";
 import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 
 declare global {
@@ -25,6 +21,10 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public preview = false;
+
+  // Stay mounted while hidden so a server condition can flip back to visible.
+  // If hui-card unmounts us, only client conditions can recover from the seed.
+  public connectedWhileHidden = true;
 
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
@@ -66,17 +66,11 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
   }
 
   protected setupConditionalListeners() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return;
     }
 
-    // Filter to supported conditions (those with 'condition' property)
-    const supportedConditions = this._config.conditions.filter(
-      (c) => "condition" in c
-    ) as Condition[];
-
-    // Pass filtered conditions to parent implementation
-    super.setupConditionalListeners(supportedConditions);
+    super.setupConditionalListeners(this._config.conditions);
   }
 
   protected update(changed: PropertyValues): void {
@@ -88,7 +82,6 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
       changed.has("hass") ||
       changed.has("preview")
     ) {
-      this.clearConditionalListeners();
       this.setupConditionalListeners();
       this._updateVisibility();
     }
@@ -101,13 +94,7 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
 
     this._element.preview = this.preview;
 
-    const conditionMet =
-      conditionsMet ??
-      checkConditionsMet(
-        this._config.conditions,
-        this.hass,
-        this._conditionContext
-      );
+    const conditionMet = conditionsMet ?? this._conditionsVisible();
 
     this.setVisibility(conditionMet);
   }

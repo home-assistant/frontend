@@ -6,6 +6,10 @@ import { consumeEntityState } from "../../common/decorators/consume-context-entr
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-state-icon";
 
+/**
+ * @csspart marker - The framed avatar.
+ * @csspart picture - The entity picture inside the frame.
+ */
 @customElement("ha-entity-marker")
 class HaEntityMarker extends LitElement {
   @property({ attribute: "entity-id", reflect: true }) public entityId?: string;
@@ -24,16 +28,20 @@ class HaEntityMarker extends LitElement {
 
   @property({ attribute: "show-icon", type: Boolean }) public showIcon = false;
 
+  @property({ type: Boolean, reflect: true }) public selected = false;
+
   protected render() {
     return html`
       <div
+        part="marker"
         class="marker ${this.entityPicture ? "picture" : ""}"
-        style=${styleMap({ "border-color": this.entityColor })}
+        style=${styleMap({ "--ha-marker-selected-color": this.entityColor })}
         @click=${this._badgeTap}
       >
         ${
           this.entityPicture
             ? html`<div
+                part="picture"
                 class="entity-picture"
                 style=${styleMap({
                   "background-image": `url(${this.entityPicture})`,
@@ -58,6 +66,24 @@ class HaEntityMarker extends LitElement {
     `;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("keydown", this._handleKeydown);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeydown);
+  }
+
+  // The map engines make the marker a focusable button
+  private _handleKeydown = (ev: KeyboardEvent) => {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._badgeTap(ev);
+    }
+  };
+
   private _badgeTap(ev: Event) {
     ev.stopPropagation();
     if (this.entityId) {
@@ -76,12 +102,21 @@ class HaEntityMarker extends LitElement {
       height: var(--ha-marker-size, 48px);
       font-size: var(--ha-marker-font-size, var(--ha-font-size-xl));
       border-radius: var(--ha-marker-border-radius, 50%);
-      border: 1px solid var(--ha-marker-color, var(--primary-color));
+      border: var(--ha-marker-border-width, 3px) solid
+        var(--ha-marker-color, var(--card-background-color, #fff));
+      box-shadow: var(--ha-marker-shadow, var(--ha-box-shadow-s));
       color: var(--primary-text-color);
-      background-color: var(--card-background-color);
+      background-color: var(
+        --ha-marker-background,
+        var(--card-background-color)
+      );
     }
     .marker.picture {
       overflow: hidden;
+    }
+    /* A ring in the entity color outside the frame marks the selected marker */
+    :host([selected]) .marker {
+      outline: 3px solid var(--ha-marker-selected-color, var(--primary-color));
     }
     .entity-picture {
       background-size: cover;

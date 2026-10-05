@@ -1,13 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  setupTimeListeners,
-  setupMediaQueryListeners,
-} from "../../../src/common/condition/listeners";
+import { observeConditionChanges } from "../../../src/common/condition/listeners";
 import * as timeCalculator from "../../../src/common/condition/time-calculator";
 import type {
   TimeCondition,
   ScreenCondition,
-  Condition,
+  VisibilityCondition,
 } from "../../../src/panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../../src/types";
 import * as mediaQuery from "../../../src/common/dom/media_query";
@@ -15,15 +12,15 @@ import * as mediaQuery from "../../../src/common/dom/media_query";
 // Maximum delay for setTimeout (2^31 - 1 milliseconds, ~24.8 days)
 const MAX_TIMEOUT_DELAY = 2147483647;
 
-describe("setupTimeListeners", () => {
+describe("observeConditionChanges – time boundaries", () => {
   let hass: HomeAssistant;
   let listeners: (() => void)[];
-  let onUpdateCallback: (conditionsMet: boolean) => void;
+  let onChangeCallback: () => void;
 
   beforeEach(() => {
     vi.useFakeTimers();
     listeners = [];
-    onUpdateCallback = vi.fn();
+    onChangeCallback = vi.fn();
 
     hass = {
       locale: {
@@ -56,11 +53,11 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Verify setTimeout was called with the capped delay
@@ -70,7 +67,7 @@ describe("setupTimeListeners", () => {
       );
     });
 
-    it("should not call onUpdate when hitting the cap", () => {
+    it("should not call onChange when hitting the cap", () => {
       // Mock calculateNextTimeUpdate to return delays that decrease over time
       // Both first and second delays exceed the cap
       const delays = [
@@ -91,33 +88,33 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Fast-forward to when the first timeout fires (at the cap)
       vi.advanceTimersByTime(MAX_TIMEOUT_DELAY);
 
-      // onUpdate should NOT have been called because we hit the cap
-      expect(onUpdateCallback).not.toHaveBeenCalled();
+      // onChange should NOT have been called because we hit the cap
+      expect(onChangeCallback).not.toHaveBeenCalled();
 
       // Fast-forward to the second timeout (still exceeds cap)
       vi.advanceTimersByTime(MAX_TIMEOUT_DELAY);
 
       // Still should not have been called
-      expect(onUpdateCallback).not.toHaveBeenCalled();
+      expect(onChangeCallback).not.toHaveBeenCalled();
 
       // Fast-forward to the third timeout (within cap)
       vi.advanceTimersByTime(1000);
 
-      // NOW onUpdate should have been called
-      expect(onUpdateCallback).toHaveBeenCalledTimes(1);
+      // NOW onChange should have been called
+      expect(onChangeCallback).toHaveBeenCalledTimes(1);
     });
 
-    it("should call onUpdate normally when delay is within cap", () => {
+    it("should call onChange normally when delay is within cap", () => {
       const normalDelay = 5000; // 5 seconds
 
       vi.spyOn(timeCalculator, "calculateNextTimeUpdate").mockReturnValue(
@@ -131,18 +128,18 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Fast-forward by the normal delay
       vi.advanceTimersByTime(normalDelay);
 
-      // onUpdate should have been called
-      expect(onUpdateCallback).toHaveBeenCalledTimes(1);
+      // onChange should have been called
+      expect(onChangeCallback).toHaveBeenCalledTimes(1);
     });
 
     it("should reschedule after hitting the cap", () => {
@@ -163,11 +160,11 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // First setTimeout call should use the capped delay
@@ -208,11 +205,11 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Should have registered 2 cleanup functions (one per time condition)
@@ -234,11 +231,11 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Call cleanup
@@ -250,14 +247,14 @@ describe("setupTimeListeners", () => {
   });
 
   describe("no time conditions", () => {
-    it("should not setup listeners when no time conditions exist", () => {
+    it("should not setup time listeners when no time conditions exist", () => {
       const setTimeoutSpy = vi.spyOn(global, "setTimeout");
 
-      setupTimeListeners(
+      observeConditionChanges(
         [],
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Should not have called setTimeout
@@ -281,11 +278,11 @@ describe("setupTimeListeners", () => {
         },
       ];
 
-      setupTimeListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Should not have called setTimeout
@@ -294,15 +291,15 @@ describe("setupTimeListeners", () => {
   });
 });
 
-describe("setupMediaQueryListeners", () => {
+describe("observeConditionChanges – media queries", () => {
   let hass: HomeAssistant;
   let listeners: (() => void)[];
-  let onUpdateCallback: (conditionsMet: boolean) => void;
+  let onChangeCallback: () => void;
   let listenMediaQuerySpy: any;
 
   beforeEach(() => {
     listeners = [];
-    onUpdateCallback = vi.fn();
+    onChangeCallback = vi.fn();
 
     hass = {
       locale: {
@@ -312,6 +309,12 @@ describe("setupMediaQueryListeners", () => {
         time_zone: "America/New_York",
       },
     } as HomeAssistant;
+
+    // Stop time conditions (present in some mixed cases below) from scheduling
+    // real timers — these tests only exercise the media-query path.
+    vi.spyOn(timeCalculator, "calculateNextTimeUpdate").mockReturnValue(
+      undefined
+    );
 
     // Mock matchMedia for screen condition checks
     global.matchMedia = vi.fn().mockImplementation((query) => ({
@@ -338,18 +341,18 @@ describe("setupMediaQueryListeners", () => {
 
   describe("single media query", () => {
     it("should setup listener for single screen condition", () => {
-      const conditions: Condition[] = [
+      const conditions: VisibilityCondition[] = [
         {
           condition: "screen",
           media_query: "(max-width: 600px)",
         } as ScreenCondition,
       ];
 
-      setupMediaQueryListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       expect(listenMediaQuerySpy).toHaveBeenCalledWith(
@@ -359,8 +362,8 @@ describe("setupMediaQueryListeners", () => {
       expect(listeners).toHaveLength(1);
     });
 
-    it("should call onUpdate with matches value for single screen condition", () => {
-      const conditions: Condition[] = [
+    it("should call onChange when the media query fires", () => {
+      const conditions: VisibilityCondition[] = [
         {
           condition: "screen",
           media_query: "(max-width: 600px)",
@@ -374,24 +377,25 @@ describe("setupMediaQueryListeners", () => {
         return vi.fn();
       });
 
-      setupMediaQueryListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Simulate media query match
       capturedCallback?.(true);
 
-      // Should call onUpdate directly with the matches value
-      expect(onUpdateCallback).toHaveBeenCalledWith(true);
+      // observeConditionChanges only signals a possible change; the caller
+      // recombines results, so onChange is invoked with no arguments.
+      expect(onChangeCallback).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("multiple media queries", () => {
     it("should setup listeners for multiple screen conditions", () => {
-      const conditions: Condition[] = [
+      const conditions: VisibilityCondition[] = [
         {
           condition: "screen",
           media_query: "(max-width: 600px)",
@@ -402,11 +406,11 @@ describe("setupMediaQueryListeners", () => {
         } as ScreenCondition,
       ];
 
-      setupMediaQueryListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       expect(listenMediaQuerySpy).toHaveBeenCalledWith(
@@ -420,8 +424,8 @@ describe("setupMediaQueryListeners", () => {
       expect(listeners).toHaveLength(2);
     });
 
-    it("should call onUpdate when media query changes with mixed conditions", () => {
-      const conditions: Condition[] = [
+    it("should call onChange when a media query changes with mixed conditions", () => {
+      const conditions: VisibilityCondition[] = [
         {
           condition: "screen",
           media_query: "(max-width: 600px)",
@@ -439,47 +443,45 @@ describe("setupMediaQueryListeners", () => {
         return vi.fn();
       });
 
-      setupMediaQueryListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       // Simulate media query change
       capturedCallback?.(true);
 
-      // Should call onUpdate (would check all conditions)
-      expect(onUpdateCallback).toHaveBeenCalled();
+      expect(onChangeCallback).toHaveBeenCalled();
     });
   });
 
   describe("no screen conditions", () => {
-    it("should not setup listeners when no screen conditions exist", () => {
-      const conditions: Condition[] = [
+    it("should not setup media listeners when no screen conditions exist", () => {
+      const conditions: VisibilityCondition[] = [
         {
           condition: "time",
           after: "08:00",
         } as TimeCondition,
       ];
 
-      setupMediaQueryListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       expect(listenMediaQuerySpy).not.toHaveBeenCalled();
-      expect(listeners).toHaveLength(0);
     });
 
     it("should handle empty conditions array", () => {
-      setupMediaQueryListeners(
+      observeConditionChanges(
         [],
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       expect(listenMediaQuerySpy).not.toHaveBeenCalled();
@@ -493,18 +495,18 @@ describe("setupMediaQueryListeners", () => {
 
       listenMediaQuerySpy.mockReturnValue(unsubFn);
 
-      const conditions: Condition[] = [
+      const conditions: VisibilityCondition[] = [
         {
           condition: "screen",
           media_query: "(max-width: 600px)",
         } as ScreenCondition,
       ];
 
-      setupMediaQueryListeners(
+      observeConditionChanges(
         conditions,
-        hass,
+        () => hass,
         (unsub) => listeners.push(unsub),
-        onUpdateCallback
+        onChangeCallback
       );
 
       expect(listeners).toHaveLength(1);

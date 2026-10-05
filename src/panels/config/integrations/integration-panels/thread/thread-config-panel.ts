@@ -9,6 +9,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
@@ -18,6 +19,9 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
@@ -269,25 +273,29 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 return html`<ha-list-item
                   class="router"
                   twoline
-                  graphic="avatar"
+                  graphic=${ifDefined(router.brand ? "avatar" : undefined)}
                   .hasMeta=${showOverflow}
                 >
-                  <img
-                    slot="graphic"
-                    .src=${brandsUrl(
-                      {
-                        domain: router.brand,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
-                    alt=${router.brand}
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    @error=${this._onImageError}
-                    @load=${this._onImageLoad}
-                  />
+                  ${
+                    router.brand
+                      ? html`<img
+                          slot="graphic"
+                          .src=${brandsUrl(
+                            {
+                              domain: router.brand,
+                              type: "icon",
+                              darkOptimized: this.hass.themes?.darkMode,
+                            },
+                            this.hass.auth.data.hassUrl
+                          )}
+                          alt=${router.brand}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          @error=${this._onImageError}
+                          @load=${this._onImageLoad}
+                        />`
+                      : nothing
+                  }
                   ${
                     router.instance_name ||
                     router.model_name ||
@@ -525,7 +533,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         }
         if (dataset.preferred) {
           preferred = {
-            name: dataset.network_name,
+            name: dataset.network_name || "",
             dataset: dataset,
             routers: networks[network]?.routers,
           };
@@ -535,7 +543,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (network in networks) {
           networks[network].dataset = dataset;
         } else {
-          networks[network] = { name: dataset.network_name, dataset: dataset };
+          networks[network] = {
+            name: dataset.network_name || "",
+            dataset: dataset,
+          };
         }
       }
       return {
@@ -705,7 +716,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.thread.confirm_delete_dataset",
-        { name: dataset.network_name }
+        { name: dataset.network_name || dataset.extended_pan_id }
       ),
       text: this.hass.localize(
         "ui.panel.config.thread.confirm_delete_dataset_text"

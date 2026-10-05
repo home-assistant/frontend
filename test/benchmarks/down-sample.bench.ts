@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { downSampleLineData } from "../../src/components/chart/down-sample";
 import { FIXED_EPOCH_MS, SCALES } from "../fixtures/history-states";
 import { createSeededRandom } from "../fixtures/random";
@@ -37,51 +37,45 @@ const largeMostlyGaps = withGaps(
 );
 
 describe("downSampleLineData", () => {
-  bench("min/max small (1k points)", () => {
-    downSampleLineData(small, MAX_DETAILS);
+  test("min/max small (1k points)", async ({ bench }) => {
+    await bench("min/max small (1k points)", () => {
+      downSampleLineData(small, MAX_DETAILS);
+    }).run();
   });
 
-  bench("min/max medium (10k points)", () => {
-    downSampleLineData(medium, MAX_DETAILS);
+  test("min/max medium (10k points)", async ({ bench }) => {
+    await bench("min/max medium (10k points)", () => {
+      downSampleLineData(medium, MAX_DETAILS);
+    }).run();
   });
 
-  bench(
-    "min/max large (100k points)",
-    () => {
+  test("min/max large (100k points)", async ({ bench }) => {
+    await bench("min/max large (100k points)", () => {
       downSampleLineData(large, MAX_DETAILS);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "mean large (100k points)",
-    () => {
+  test("mean large (100k points)", async ({ bench }) => {
+    await bench("mean large (100k points)", () => {
       downSampleLineData(large, MAX_DETAILS, undefined, undefined, true);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "min/max large object points (100k points)",
-    () => {
+  test("min/max large object points (100k points)", async ({ bench }) => {
+    await bench("min/max large object points (100k points)", () => {
       downSampleLineData(largeObjects, MAX_DETAILS);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "min/max large with a few gaps (100k points)",
-    () => {
+  test("min/max large with a few gaps (100k points)", async ({ bench }) => {
+    await bench("min/max large with a few gaps (100k points)", () => {
       downSampleLineData(largeFewGaps, MAX_DETAILS);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "min/max large mostly gaps (100k points)",
-    () => {
+  test("min/max large mostly gaps (100k points)", async ({ bench }) => {
+    await bench("min/max large mostly gaps (100k points)", () => {
       downSampleLineData(largeMostlyGaps, MAX_DETAILS);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

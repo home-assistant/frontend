@@ -23,10 +23,9 @@ export const sharedStyles = css`
     cursor: pointer;
     text-decoration: underline;
   }
-  ha-md-list {
+  ha-list-base {
     padding: 0;
-    --md-list-item-leading-space: var(--horizontal-padding, 16px);
-    --md-list-item-trailing-space: var(--horizontal-padding, 16px);
+    --ha-row-item-padding-inline: var(--horizontal-padding, 16px);
     margin-bottom: 16px;
   }
   ha-input {

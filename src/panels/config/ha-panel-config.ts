@@ -183,9 +183,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-labs",
         load: () => import("./labs/ha-config-labs"),
       },
-      "ai-tasks": {
-        tag: "ha-config-section-ai-tasks",
-        load: () => import("./core/ha-config-section-ai-tasks"),
+      ai: {
+        tag: "ha-config-section-ai",
+        load: () => import("./core/ha-config-section-ai"),
       },
       "entity-id-format": {
         tag: "ha-config-section-entity-id-format",
@@ -230,6 +230,12 @@ class HaPanelConfig extends HassRouterPage {
         tag: "serial-config-dashboard",
         load: () =>
           import("./integrations/integration-panels/serial/serial-config-dashboard"),
+        waitForReady: true,
+      },
+      modbus: {
+        tag: "modbus-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/modbus/modbus-config-dashboard"),
         waitForReady: true,
       },
       dhcp: {

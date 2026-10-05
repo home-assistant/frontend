@@ -1,8 +1,7 @@
-import { consume } from "@lit/context";
 import {
   mdiChevronDown,
-  mdiChevronRight,
   mdiChevronLeft,
+  mdiChevronRight,
   mdiMagnify,
   mdiTextureBox,
 } from "@mdi/js";
@@ -10,14 +9,18 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
+import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { mainWindow } from "../../../../common/dom/get_main_window";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { ignoreRepeatedActivation } from "../../../../common/keyboard/ignore-repeated-activation";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
-import { mainWindow } from "../../../../common/dom/get_main_window";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-domain-icon";
@@ -27,6 +30,11 @@ import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
+import type { HaListBase } from "../../../../components/list/ha-list-base";
+import "../../../../components/list/ha-list-virtualized";
+import type { HaListVirtualizedItem } from "../../../../components/list/ha-list-virtualized";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { configEntriesContext } from "../../../../data/context";
 import { haStyleScrollbar } from "../../../../resources/styles";
@@ -55,6 +63,19 @@ import {
   searchEntities,
   unassignedKey,
 } from "./entity-tree-builder";
+
+interface SearchRow extends HaListVirtualizedItem {
+  item: SearchableEntity;
+}
+
+// Search results render in the list's shadow root, out of reach of the
+// `.entity-item.selected` rule, so the selected row is styled inline.
+const SELECTED_SEARCH_ROW_STYLE = {
+  backgroundColor:
+    "var(--ha-color-fill-primary-quiet-resting, rgba(var(--rgb-primary-color, 33, 150, 243), 0.12))",
+  "--ha-combo-box-item-headline-color": "var(--primary-color)",
+  "--ha-combo-box-item-headline-font-weight": "var(--ha-font-weight-medium)",
+};
 
 @customElement("hui-suggestion-entity-tree")
 export class HuiSuggestionEntityTree extends LitElement {
@@ -87,6 +108,10 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   @query("ha-input-search") private _searchInput?: HaInputSearch;
 
+  @query(".list") private _list?: HaListBase;
+
+  private _removeKeyboardShortcuts?: () => void;
+
   public async focus(): Promise<void> {
     await this.updateComplete;
     // Wait for the input's inner wa-input to render so focus delegation works.
@@ -97,6 +122,20 @@ export class HuiSuggestionEntityTree extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._loadDomainTranslations();
+    this._removeKeyboardShortcuts = tinykeys(
+      this,
+      {
+        ArrowUp: this._selectPreviousItem,
+        ArrowDown: this._selectNextItem,
+        Home: this._selectFirstItem,
+        End: this._selectLastItem,
+        PageUp: this._selectPreviousPage,
+        PageDown: this._selectNextPage,
+        Enter: this._activateSelectedItem,
+      },
+      // Held arrow keys keep moving, like in lists.
+      { ignore: ignoreRepeatedActivation }
+    );
   }
 
   private async _loadDomainTranslations() {
@@ -107,6 +146,8 @@ export class HuiSuggestionEntityTree extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._setFilter.cancel();
+    this._removeKeyboardShortcuts?.();
+    this._removeKeyboardShortcuts = undefined;
   }
 
   private _deviceDomain(deviceId: string): string | undefined {
@@ -159,9 +200,15 @@ export class HuiSuggestionEntityTree extends LitElement {
         this._tree
           ? this._filter
             ? this._renderSearchResults()
-            : html`<div class="tree ha-scrollbar">
+            : html`<ha-list-base
+                class="list tree ha-scrollbar"
+                virtual-focus
+                tabindex="0"
+                @focus=${this._focusList}
+                @blur=${this._resetActiveItem}
+              >
                 ${this._renderTree(this._tree)}
-              </div>`
+              </ha-list-base>`
           : nothing
       }
     `;
@@ -234,7 +281,10 @@ export class HuiSuggestionEntityTree extends LitElement {
     `;
   }
 
-  private _searchKeyFunction = (item: SearchableEntity) => item.id;
+  private _getSearchRows = memoizeOne(
+    (results: SearchableEntity[]): SearchRow[] =>
+      results.map((item) => ({ id: item.id, interactive: true, item }))
+  );
 
   private _renderSearchResults(): TemplateResult {
     const results = this._searchMemo(
@@ -260,20 +310,22 @@ export class HuiSuggestionEntityTree extends LitElement {
       `;
     }
     return html`
-      <lit-virtualizer
-        scroller
-        class="search-results ha-scrollbar"
-        .items=${results}
-        .keyFunction=${this._searchKeyFunction}
-        .renderItem=${this._getSearchRowRenderer(this.selectedEntityId)}
-      ></lit-virtualizer>
+      <ha-list-virtualized
+        class="list search-results"
+        virtual-focus
+        tabindex="0"
+        .rows=${this._getSearchRows(results)}
+        .rowRenderer=${this._getSearchRowRenderer(this.selectedEntityId)}
+        @focus=${this._focusList}
+        @blur=${this._resetActiveItem}
+      ></ha-list-virtualized>
     `;
   }
 
   private _getSearchRowRenderer = memoizeOne(
     (_selectedEntityId: string | undefined) =>
-      (item: SearchableEntity, index: number) =>
-        this._renderSearchRow(item, index)
+      (row: HaListVirtualizedItem, index: number) =>
+        this._renderSearchRow((row as SearchRow).item, index)
   );
 
   private _renderSearchRow = (
@@ -287,39 +339,43 @@ export class HuiSuggestionEntityTree extends LitElement {
       this.hass.translationMetadata.translations
     );
     const separator = rtl ? " ◂ " : " ▸ ";
-    const secondary = [item.area, item.device].filter(Boolean).join(separator);
+    const secondary = [item.area, item.parentDevice, item.device]
+      .filter(Boolean)
+      .join(separator);
     return html`
-      <ha-combo-box-item
-        type="button"
-        compact
-        .borderTop=${index !== 0}
-        class="entity-item ${selected ? "selected" : ""}"
+      <ha-list-item-button
         aria-current=${selected ? "true" : "false"}
         data-entity-id=${item.id}
         @click=${this._pickEntity}
       >
-        ${
-          stateObj
-            ? html`<state-badge
-                slot="start"
-                .stateObj=${stateObj}
-              ></state-badge>`
-            : nothing
-        }
-        <span slot="headline">${item.name}</span>
-        ${
-          secondary
-            ? html`<span slot="supporting-text">${secondary}</span>`
-            : nothing
-        }
-        ${
-          item.domain
-            ? html`<div slot="trailing-supporting-text" class="domain">
-                ${item.domain}
-              </div>`
-            : nothing
-        }
-      </ha-combo-box-item>
+        <ha-combo-box-item
+          slot="content"
+          .borderTop=${index !== 0}
+          style=${styleMap(selected ? SELECTED_SEARCH_ROW_STYLE : {})}
+        >
+          ${
+            stateObj
+              ? html`<state-badge
+                  slot="start"
+                  .stateObj=${stateObj}
+                ></state-badge>`
+              : nothing
+          }
+          <span slot="headline">${item.name}</span>
+          ${
+            secondary
+              ? html`<span slot="supporting-text">${secondary}</span>`
+              : nothing
+          }
+          ${
+            item.domain
+              ? html`<div slot="trailing-supporting-text" class="domain">
+                  ${item.domain}
+                </div>`
+              : nothing
+          }
+        </ha-combo-box-item>
+      </ha-list-item-button>
     `;
   };
 
@@ -343,25 +399,25 @@ export class HuiSuggestionEntityTree extends LitElement {
     const key = floorKey(floor.id);
     const expanded = this._isExpanded(key);
     return html`
-      <ha-combo-box-item
-        type="button"
-        class="branch depth-root floor-item"
+      <ha-list-item-button
         aria-expanded=${expanded}
         data-node-key=${key}
         @click=${this._toggleNode}
       >
-        <div slot="start" class="leading">
-          ${this._renderChevron(expanded)}
-          ${
-            isUnassigned
-              ? html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
-              : html`<ha-floor-icon
-                  .floor=${{ icon: floor.icon, level: floor.level }}
-                ></ha-floor-icon>`
-          }
-        </div>
-        <span slot="headline">${floor.name}</span>
-      </ha-combo-box-item>
+        <ha-combo-box-item slot="content" class="branch depth-root floor-item">
+          <div slot="start" class="leading">
+            ${this._renderChevron(expanded)}
+            ${
+              isUnassigned
+                ? html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
+                : html`<ha-floor-icon
+                    .floor=${{ icon: floor.icon, level: floor.level }}
+                  ></ha-floor-icon>`
+            }
+          </div>
+          <span slot="headline">${floor.name}</span>
+        </ha-combo-box-item>
+      </ha-list-item-button>
       ${
         expanded
           ? repeat(
@@ -378,23 +434,23 @@ export class HuiSuggestionEntityTree extends LitElement {
     const key = areaKey(parentKey, area.id);
     const expanded = this._isExpanded(key);
     return html`
-      <ha-combo-box-item
-        type="button"
-        class="branch depth-area area-item"
+      <ha-list-item-button
         aria-expanded=${expanded}
         data-node-key=${key}
         @click=${this._toggleNode}
       >
-        <div slot="start" class="leading">
-          ${this._renderChevron(expanded)}
-          ${
-            area.icon
-              ? html`<ha-icon .icon=${area.icon}></ha-icon>`
-              : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
-          }
-        </div>
-        <span slot="headline">${area.name}</span>
-      </ha-combo-box-item>
+        <ha-combo-box-item slot="content" class="branch depth-area area-item">
+          <div slot="start" class="leading">
+            ${this._renderChevron(expanded)}
+            ${
+              area.icon
+                ? html`<ha-icon .icon=${area.icon}></ha-icon>`
+                : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
+            }
+          </div>
+          <span slot="headline">${area.name}</span>
+        </ha-combo-box-item>
+      </ha-list-item-button>
       ${
         expanded
           ? html`
@@ -414,39 +470,59 @@ export class HuiSuggestionEntityTree extends LitElement {
     `;
   }
 
-  private _renderDevice(device: DeviceNode, parentKey: string): TemplateResult {
+  private _renderDevice(
+    device: DeviceNode,
+    parentKey: string,
+    nested = false
+  ): TemplateResult {
     const key = deviceKey(parentKey, device.id);
     const expanded = this._isExpanded(key);
     const domain = this._deviceDomain(device.id);
     return html`
-      <ha-combo-box-item
-        type="button"
-        class="branch depth-device device-item"
+      <ha-list-item-button
         aria-expanded=${expanded}
         data-node-key=${key}
         @click=${this._toggleNode}
       >
-        <div slot="start" class="leading">
-          ${this._renderChevron(expanded)}
-          ${
-            domain
-              ? html`<ha-domain-icon
-                  .hass=${this.hass}
-                  .domain=${domain}
-                  brand-fallback
-                ></ha-domain-icon>`
-              : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
-          }
-        </div>
-        <span slot="headline">${device.name}</span>
-      </ha-combo-box-item>
+        <ha-combo-box-item
+          slot="content"
+          class="branch ${nested ? "depth-device-nested" : "depth-device"} device-item"
+        >
+          <div slot="start" class="leading">
+            ${this._renderChevron(expanded)}
+            ${
+              domain
+                ? html`<ha-domain-icon
+                    .hass=${this.hass}
+                    .domain=${domain}
+                    brand-fallback
+                  ></ha-domain-icon>`
+                : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
+            }
+          </div>
+          <span slot="headline">${device.name}</span>
+        </ha-combo-box-item>
+      </ha-list-item-button>
       ${
         expanded
-          ? repeat(
-              device.entityIds,
-              (id: string) => id,
-              (id: string) => this._renderEntity(id, "depth-entity-device")
-            )
+          ? html`
+              ${repeat(
+                device.children,
+                (child: DeviceNode) => child.id,
+                (child: DeviceNode) => this._renderDevice(child, key, true)
+              )}
+              ${repeat(
+                device.entityIds,
+                (id: string) => id,
+                (id: string) =>
+                  this._renderEntity(
+                    id,
+                    nested
+                      ? "depth-entity-device-nested"
+                      : "depth-entity-device"
+                  )
+              )}
+            `
           : nothing
       }
     `;
@@ -456,19 +532,19 @@ export class HuiSuggestionEntityTree extends LitElement {
     const key = unassignedKey(section.id);
     const expanded = this._isExpanded(key);
     return html`
-      <ha-combo-box-item
-        type="button"
-        class="branch depth-root floor-item"
+      <ha-list-item-button
         aria-expanded=${expanded}
         data-node-key=${key}
         @click=${this._toggleNode}
       >
-        <div slot="start" class="leading">
-          ${this._renderChevron(expanded)}
-          <ha-svg-icon .path=${section.iconPath}></ha-svg-icon>
-        </div>
-        <span slot="headline">${section.label}</span>
-      </ha-combo-box-item>
+        <ha-combo-box-item slot="content" class="branch depth-root floor-item">
+          <div slot="start" class="leading">
+            ${this._renderChevron(expanded)}
+            <ha-svg-icon .path=${section.iconPath}></ha-svg-icon>
+          </div>
+          <span slot="headline">${section.label}</span>
+        </ha-combo-box-item>
+      </ha-list-item-button>
       ${
         expanded
           ? html`
@@ -490,23 +566,26 @@ export class HuiSuggestionEntityTree extends LitElement {
                         const dKey = domainKey(key, g.domain);
                         const dExpanded = this._isExpanded(dKey);
                         return html`
-                          <ha-combo-box-item
-                            type="button"
-                            class="branch depth-area area-item"
+                          <ha-list-item-button
                             aria-expanded=${dExpanded}
                             data-node-key=${dKey}
                             @click=${this._toggleNode}
                           >
-                            <div slot="start" class="leading">
-                              ${this._renderChevron(dExpanded)}
-                              <ha-domain-icon
-                                .hass=${this.hass}
-                                .domain=${g.domain}
-                                brand-fallback
-                              ></ha-domain-icon>
-                            </div>
-                            <span slot="headline">${g.name}</span>
-                          </ha-combo-box-item>
+                            <ha-combo-box-item
+                              slot="content"
+                              class="branch depth-area area-item"
+                            >
+                              <div slot="start" class="leading">
+                                ${this._renderChevron(dExpanded)}
+                                <ha-domain-icon
+                                  .hass=${this.hass}
+                                  .domain=${g.domain}
+                                  brand-fallback
+                                ></ha-domain-icon>
+                              </div>
+                              <span slot="headline">${g.name}</span>
+                            </ha-combo-box-item>
+                          </ha-list-item-button>
                           ${
                             dExpanded
                               ? repeat(
@@ -539,23 +618,26 @@ export class HuiSuggestionEntityTree extends LitElement {
       (stateObj ? computeStateName(stateObj) : undefined) ||
       entityId;
     return html`
-      <ha-combo-box-item
-        type="button"
-        class="leaf ${depthClass} entity-item ${selected ? "selected" : ""}"
+      <ha-list-item-button
         aria-current=${selected ? "true" : "false"}
         data-entity-id=${entityId}
         @click=${this._pickEntity}
       >
-        <div slot="start" class="leading">
-          <span class="chevron-spacer"></span>
-          ${
-            stateObj
-              ? html`<state-badge .stateObj=${stateObj}></state-badge>`
-              : nothing
-          }
-        </div>
-        <span slot="headline">${name}</span>
-      </ha-combo-box-item>
+        <ha-combo-box-item
+          slot="content"
+          class="leaf ${depthClass} entity-item ${selected ? "selected" : ""}"
+        >
+          <div slot="start" class="leading">
+            <span class="chevron-spacer"></span>
+            ${
+              stateObj
+                ? html`<state-badge .stateObj=${stateObj}></state-badge>`
+                : nothing
+            }
+          </div>
+          <span slot="headline">${name}</span>
+        </ha-combo-box-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -599,6 +681,81 @@ export class HuiSuggestionEntityTree extends LitElement {
     if (changed) this._expanded = next;
   }
 
+  private _focusList() {
+    // A click focuses the list too. Only mark a row when the focus came from
+    // the keyboard, so the clicked row is not preceded by the first one.
+    if (!this._list?.matches(":focus-visible")) {
+      return;
+    }
+    if (this._list.getActiveItemIndex() === -1) {
+      this._list.moveActiveItem("next");
+    }
+  }
+
+  private _resetActiveItem() {
+    this._list?.clearActiveItem();
+  }
+
+  private _selectNextItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("next");
+  };
+
+  private _selectPreviousItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("previous");
+  };
+
+  private _selectFirstItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._list?.moveActiveItem("first");
+  };
+
+  private _selectLastItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._list?.moveActiveItem("last");
+  };
+
+  private _selectNextPage = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("next-page");
+  };
+
+  private _selectPreviousPage = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._list?.moveActiveItem("previous-page");
+  };
+
+  private _activateSelectedItem = (ev: KeyboardEvent) => {
+    const index = this._list?.getActiveItemIndex() ?? -1;
+    if (index === -1) {
+      return;
+    }
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (!this._filter) {
+      this._list!.items[index]?.activate();
+      return;
+    }
+
+    // Search rows are virtualized, so resolve the entity from the results.
+    const results = this._searchMemo(
+      this._tree!.searchableEntities,
+      this._fuseIndex!,
+      this._filter
+    );
+    const entityId = results[index]?.id;
+    if (entityId) {
+      this._expandToEntity(entityId);
+      fireEvent(this, "entity-picked", { entityId });
+    }
+  };
+
   private _handleFilterChange(ev: Event) {
     this._setFilter((ev.target as HaInputSearch).value ?? "");
   }
@@ -621,35 +778,42 @@ export class HuiSuggestionEntityTree extends LitElement {
           border-bottom: var(--ha-border-width-sm) solid var(--divider-color);
         }
         .tree {
-          flex: 1;
-          min-height: 0;
           overflow: auto;
-          padding-bottom: var(--ha-space-3);
         }
-        lit-virtualizer.search-results {
+        .list:focus-visible {
+          outline: none;
+        }
+        /* Search results render in the list's shadow root, so rows are
+           styled through inherited custom properties. */
+        .tree,
+        .search-results {
           flex: 1;
           min-height: 0;
           padding-bottom: var(--ha-space-3);
-        }
-        ha-combo-box-item {
-          --md-list-item-one-line-container-height: 40px;
-          --md-list-item-two-line-container-height: 48px;
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--ha-space-3);
-          --md-list-item-leading-element-leading-space: 0;
-          width: 100%;
+          --ha-row-item-padding-block: 0;
+          --ha-row-item-padding-inline: 0;
+          --ha-row-item-gap: 0;
+          --ha-row-item-min-height: 0;
+          --ha-combo-box-item-min-height: 40px;
+          --ha-combo-box-item-two-line-min-height: 48px;
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-3);
+          --ha-combo-box-item-padding-inline-end: var(--ha-space-3);
         }
         ha-combo-box-item.depth-area {
-          --md-list-item-leading-space: var(--ha-space-8);
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-8);
         }
         ha-combo-box-item.depth-device {
-          --md-list-item-leading-space: var(--ha-space-12);
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-12);
         }
         ha-combo-box-item.depth-entity-area {
-          --md-list-item-leading-space: var(--ha-space-12);
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-12);
         }
-        ha-combo-box-item.depth-entity-device {
-          --md-list-item-leading-space: var(--ha-space-16);
+        ha-combo-box-item.depth-entity-device,
+        ha-combo-box-item.depth-device-nested {
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-16);
+        }
+        ha-combo-box-item.depth-entity-device-nested {
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-20);
         }
         .leading {
           display: flex;
@@ -676,15 +840,19 @@ export class HuiSuggestionEntityTree extends LitElement {
           flex: 0 0 24px;
         }
         .floor-item {
-          --md-list-item-label-text-weight: var(--ha-font-weight-medium);
+          --ha-combo-box-item-headline-font-weight: var(
+            --ha-font-weight-medium
+          );
         }
         .entity-item.selected {
           background-color: var(
             --ha-color-fill-primary-quiet-resting,
             rgba(var(--rgb-primary-color, 33, 150, 243), 0.12)
           );
-          --md-list-item-label-text-color: var(--primary-color);
-          --md-list-item-label-text-weight: var(--ha-font-weight-medium);
+          --ha-combo-box-item-headline-color: var(--primary-color);
+          --ha-combo-box-item-headline-font-weight: var(
+            --ha-font-weight-medium
+          );
         }
         .entity-item.selected .leading state-badge {
           --state-icon-color: var(--primary-color);

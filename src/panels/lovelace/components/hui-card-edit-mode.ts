@@ -112,6 +112,10 @@ export class HuiCardEditMode extends LitElement {
             : html`
                 <div
                   class="control"
+                  role="button"
+                  aria-label=${this._localize(
+                    "ui.panel.lovelace.editor.edit_card.edit_label"
+                  )}
                   @click=${this._handleOverlayClick}
                   @keydown=${this._handleOverlayClick}
                   tabindex="0"

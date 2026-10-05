@@ -5,26 +5,26 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-language-picker";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-select";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textarea";
-import "../../../../components/ha-tip";
-import "../../../../components/voice-assistant-brand-icon";
 import type {
   HaSelectOption,
   HaSelectSelectEvent,
 } from "../../../../components/ha-select";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
+import "../../../../components/ha-tip";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/list/ha-list-base";
+import "../../../../components/voice-assistant-brand-icon";
 import { showAutomationEditor } from "../../../../data/automation";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import { updateCloudPref } from "../../../../data/cloud";
@@ -153,8 +153,8 @@ export class CloudTTSPref extends LitElement {
             )}
           >
             <div class="card-content">
-              <ha-md-list>
-                <ha-md-list-item>
+              <ha-list-base>
+                <ha-list-item-base>
                   <span slot="headline">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.tts.default_language"
@@ -176,8 +176,8 @@ export class CloudTTSPref extends LitElement {
                     @value-changed=${this._handleLanguageChange}
                   >
                   </ha-language-picker>
-                </ha-md-list-item>
-                <ha-md-list-item>
+                </ha-list-item-base>
+                <ha-list-item-base>
                   <span slot="headline">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.tts.default_voice"
@@ -199,8 +199,8 @@ export class CloudTTSPref extends LitElement {
                     }))}
                   >
                   </ha-select>
-                </ha-md-list-item>
-                <ha-md-list-item>
+                </ha-list-item-base>
+                <ha-list-item-base>
                   <span slot="headline">
                     ${this.hass.localize(
                       "ui.components.media-browser.tts.selected_voice_id"
@@ -215,8 +215,8 @@ export class CloudTTSPref extends LitElement {
                     )}
                     @click=${this._copyVoiceId}
                   ></ha-icon-button>
-                </ha-md-list-item>
-              </ha-md-list>
+                </ha-list-item-base>
+              </ha-list-base>
               <div class="try-tts">
                 <span class="try-heading">
                   ${this.hass.localize(
@@ -541,13 +541,8 @@ export class CloudTTSPref extends LitElement {
         gap: var(--ha-space-2);
         flex-wrap: wrap;
       }
-      ha-md-list {
-        background: none;
-        --md-list-item-leading-space: var(--ha-space-4);
-        --md-list-item-trailing-space: var(--ha-space-4);
-      }
-      ha-md-list-item {
-        --md-item-overflow: visible;
+      ha-list-base {
+        --ha-row-item-padding-inline: var(--ha-space-4);
       }
       ha-language-picker,
       ha-select {

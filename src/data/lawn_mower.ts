@@ -5,12 +5,13 @@ import type {
 import { UNAVAILABLE } from "./entity/entity";
 
 export type LawnMowerEntityState =
-  "paused" | "mowing" | "returning" | "docked" | "error";
+  "paused" | "mowing" | "returning" | "docked" | "idle" | "error";
 
 export enum LawnMowerEntityFeature {
   START_MOWING = 1,
   PAUSE = 2,
   DOCK = 4,
+  STOP = 8,
 }
 
 interface LawnMowerEntityAttributes
@@ -36,6 +37,13 @@ export function canPause(stateObj: LawnMowerEntity): boolean {
     return false;
   }
   return stateObj.state !== "paused";
+}
+
+export function canStop(stateObj: LawnMowerEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  return !["docked", "idle"].includes(stateObj.state);
 }
 
 export function canDock(stateObj: LawnMowerEntity): boolean {

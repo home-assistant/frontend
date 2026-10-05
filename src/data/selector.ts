@@ -3,6 +3,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { DurationUnits } from "../common/datetime/normalize_duration";
 import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -68,6 +69,7 @@ export type Selector =
   | QRCodeSelector
   | SelectSelector
   | SelectorSelector
+  | StateClassSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -265,14 +267,30 @@ export interface LegacyDeviceSelector {
   };
 }
 
+export type DurationSelectorMode = "positive" | "signed" | "offset";
+
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
     enable_second?: boolean;
+    mode?: DurationSelectorMode;
   } | null;
 }
+
+export const getDurationSelectorMode = (
+  config: DurationSelector["duration"]
+): DurationSelectorMode =>
+  config?.mode ?? (config?.allow_negative ? "signed" : "positive");
+
+export const getDurationSelectorUnits = (
+  config: DurationSelector["duration"]
+): DurationUnits => ({
+  enableDay: !!config?.enable_day,
+  enableSecond: config?.enable_second ?? true,
+  enableMillisecond: !!config?.enable_millisecond,
+});
 
 interface EntitySelectorFilter {
   integration?: string;
@@ -367,6 +385,10 @@ export interface LocationSelector {
     radius?: boolean;
     radius_readonly?: boolean;
     icon?: string;
+    /** Name whose initials the marker shows when there is no icon */
+    name?: string;
+    /** Marker and radius color; defaults to the theme's zone color */
+    color?: string;
   } | null;
 }
 
@@ -433,6 +455,7 @@ interface ObjectSelectorField {
   label?: string;
   description?: string;
   required?: boolean;
+  default?: unknown;
 }
 
 export interface ObjectSelector {
@@ -513,6 +536,13 @@ export interface SelectorSelector {
 export interface SerialPortSelector {
   serial_port: {
     extra_recommended_domains?: string[];
+  } | null;
+}
+
+export interface StateClassSelector {
+  state_class: {
+    multiple?: boolean;
+    state_classes?: string[];
   } | null;
 }
 
@@ -1019,7 +1049,8 @@ export const filterSelectorEntities = (
 
   if (
     filterIntegration &&
-    entitySources?.[entity.entity_id]?.domain !== filterIntegration
+    (entityRegistry?.[entity.entity_id]?.platform ??
+      entitySources?.[entity.entity_id]?.domain) !== filterIntegration
   ) {
     return false;
   }

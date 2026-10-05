@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -34,6 +34,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
+      <slot name="alerts"></slot>
       ${
         this.stateObj?.state === "off"
           ? html`

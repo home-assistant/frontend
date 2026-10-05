@@ -36,7 +36,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@a7c616ce81ccda50150bf1595786c71b1883fabb # master
+        uses: home-assistant/actions/helpers/verify-version@06749dd8c0b54f350bc69c8752456cee498808a3 # master
 
       - name: Setup Node and install
         uses: ./.github/actions/setup
@@ -136,7 +136,7 @@ jobs:
 
   release-landing-page:
     name: Release landing-page frontend
-    if: github.event.release.prerelease == false
+    if: github.repository == 'home-assistant/frontend' && github.event.release.prerelease == false
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to upload release assets

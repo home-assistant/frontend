@@ -39,6 +39,23 @@ export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
 
+export const LIGHT_COLOR_CONTROLS = [
+  "hue",
+  "saturation",
+  "hue_saturation",
+] as const;
+
+export type LightColorCardFeatureControls =
+  (typeof LIGHT_COLOR_CONTROLS)[number];
+
+export const DEFAULT_LIGHT_COLOR_CONTROLS: LightColorCardFeatureControls =
+  "hue";
+
+export interface LightColorCardFeatureConfig {
+  type: "light-color";
+  controls?: LightColorCardFeatureControls;
+}
+
 export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
@@ -186,6 +203,7 @@ export interface NumericInputCardFeatureConfig {
 
 export interface TargetHumidityCardFeatureConfig {
   type: "target-humidity";
+  style?: "buttons" | "slider";
 }
 
 export interface TargetTemperatureCardFeatureConfig {
@@ -264,7 +282,7 @@ export interface ValvePositionFavoriteCardFeatureConfig {
   type: "valve-position-favorite";
 }
 
-export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
+export const LAWN_MOWER_COMMANDS = ["start_pause", "stop", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
 
@@ -365,6 +383,7 @@ export type LovelaceCardFeatureConfig =
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
+  | LightColorCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | LightColorFavoritesCardFeatureConfig
   | LightEffectCardFeatureConfig

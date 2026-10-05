@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { computeHistory } from "../../src/data/history";
 import {
   generateMixedHistory,
@@ -22,39 +22,35 @@ for (let i = 0; i < 20; i++) {
 }
 
 describe("computeHistory", () => {
-  bench("mixed medium (10k states)", () => {
-    computeHistory(hass, medium, [], mockLocalize);
+  test("mixed medium (10k states)", async ({ bench }) => {
+    await bench("mixed medium (10k states)", () => {
+      computeHistory(hass, medium, [], mockLocalize);
+    }).run();
   });
 
-  bench(
-    "mixed large (100k states)",
-    () => {
+  test("mixed large (100k states)", async ({ bench }) => {
+    await bench("mixed large (100k states)", () => {
       computeHistory(hass, large, [], mockLocalize);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "mixed large with splitDeviceClasses (100k states)",
-    () => {
+  test("mixed large with splitDeviceClasses (100k states)", async ({
+    bench,
+  }) => {
+    await bench("mixed large with splitDeviceClasses (100k states)", () => {
       computeHistory(hass, large, [], mockLocalize, true);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "single dense sensor (100k states)",
-    () => {
+  test("single dense sensor (100k states)", async ({ bench }) => {
+    await bench("single dense sensor (100k states)", () => {
       computeHistory(hass, singleDense, [], mockLocalize);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "many entities (20 x 5k states)",
-    () => {
+  test("many entities (20 x 5k states)", async ({ bench }) => {
+    await bench("many entities (20 x 5k states)", () => {
       computeHistory(hass, manyEntities, [], mockLocalize);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

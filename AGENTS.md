@@ -5,15 +5,15 @@ You are helping develop the Home Assistant frontend. This repository is a TypeSc
 ## Essential Commands
 
 ```bash
-yarn lint          # ESLint + Prettier + TypeScript + Lit
-yarn format        # Auto-fix ESLint + Prettier
-yarn lint:types    # TypeScript compiler, run without file arguments
-yarn test          # Vitest
-yarn dev           # App dev server, supports --background/--status/--stop/--logs
-yarn dev:serve     # Local serving dev server, supports -c core URL, -p port, and dev flags
+pnpm lint          # ESLint + Prettier + TypeScript + Lit
+pnpm format        # Auto-fix ESLint + Prettier
+pnpm lint:types    # TypeScript compiler, run without file arguments
+pnpm test          # Vitest
+pnpm dev           # App dev server, supports --background/--status/--stop/--logs
+pnpm dev:serve     # Local serving dev server, supports -c core URL, -p port, and dev flags
 ```
 
-Never run `tsc` or `yarn lint:types` with file arguments. When `tsc` receives file arguments, it ignores `tsconfig.json` and can emit `.js` files into `src/`. Always run `yarn lint:types` without arguments. For individual file type checking, rely on editor diagnostics.
+Never run `tsc` or `pnpm lint:types` with file arguments. When `tsc` receives file arguments, it ignores `tsconfig.json` and can emit `.js` files into `src/`. Always run `pnpm lint:types` without arguments. For individual file type checking, rely on editor diagnostics.
 
 ## Architecture
 
@@ -37,7 +37,7 @@ Never run `tsc` or `yarn lint:types` with file arguments. When `tsc` receives fi
 
 ## Project Skills
 
-Detailed guidance lives in project skills under `.agents/skills/`. Load the matching skill before detailed implementation or review:
+Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching skill before detailed implementation or review. For reviews, load `ha-frontend-review` alongside all companions that apply to the changed code or behavior:
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
 - `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
@@ -47,7 +47,8 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 - `ha-frontend-styling`: theme variables, spacing tokens, responsive layout, RTL, and view transitions.
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
 - `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
-- `ha-frontend-review`: PR template use, review checklist, and recurring review issues.
+- `ha-frontend-review`: PR template use, existing review feedback, review checklist, recurring issues, and UI/UX evidence including gallery specifications.
+- `ha-frontend-ux-readiness`: UI/UX routing that complements frontend review for new user experiences.
 - `ha-frontend-gallery`: gallery pages, demos, sidebar structure, content, and verification.
 - `ha-frontend-demo`: standalone demo structure, configurations, navigation, shared stubs, and verification.
 

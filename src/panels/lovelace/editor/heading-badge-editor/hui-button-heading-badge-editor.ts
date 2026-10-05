@@ -11,7 +11,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
+import type { VisibilityCondition } from "../../common/validate-condition";
 import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
@@ -172,7 +172,7 @@ export class HuiButtonHeadingBadgeEditor
       return;
     }
 
-    const conditions = ev.detail.value as Condition[];
+    const conditions = ev.detail.value as VisibilityCondition[];
 
     const newConfig: ButtonHeadingBadgeConfig = {
       ...this._config,

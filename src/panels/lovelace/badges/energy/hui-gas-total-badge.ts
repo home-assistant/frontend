@@ -1,10 +1,10 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import { mdiFire } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
 import { formatNumber } from "../../../../common/number/format_number";

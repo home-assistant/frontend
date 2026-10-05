@@ -1,6 +1,10 @@
 import { IntlMessageFormat } from "intl-messageformat";
 import { describe, expect, it } from "vitest";
-import type { Condition, Trigger } from "../../src/data/automation";
+import type {
+  Condition,
+  Trigger,
+  TriggerCondition,
+} from "../../src/data/automation";
 import {
   describeCondition,
   describeTrigger,
@@ -12,6 +16,7 @@ import {
   TimeFormat,
   TimeZone,
 } from "../../src/data/translation";
+import { describeAction } from "../../src/data/script_i18n";
 import en from "../../src/translations/en.json";
 import type { HomeAssistant } from "../../src/types";
 
@@ -133,5 +138,43 @@ describe("describing numeric state triggers and conditions", () => {
         entity_id: "sensor.temperature",
       })
     ).toBe("Numeric state");
+  });
+});
+
+describe("standalone trigger-condition descriptions", () => {
+  it.each([
+    ["motion", "If triggered by motion"],
+    [["motion", "timer"], "If triggered by motion or timer"],
+  ] as const)("includes referenced IDs for %s", (id, expected) => {
+    const condition: TriggerCondition = {
+      condition: "trigger",
+      id: typeof id === "string" ? id : [...id],
+    };
+    expect(describeCondition(condition, hass, [])).toBe(expected);
+    expect(describeAction(hass, [], condition)).toBe(`Test: ${expected}`);
+    expect(
+      describeCondition({ ...condition, alias: "Custom label" }, hass, [])
+    ).toBe("Custom label");
+  });
+  it("omits IDs only when requested and preserves aliases", () => {
+    const condition: TriggerCondition = {
+      condition: "trigger",
+      id: ["motion", "timer"],
+    };
+    const options = { hideTriggerIds: true };
+    expect(describeCondition(condition, hass, [], options)).toBe(
+      "If triggered by"
+    );
+    expect(describeAction(hass, [], condition, undefined, options)).toBe(
+      "Test: If triggered by"
+    );
+    const aliased = { ...condition, alias: "Custom label" };
+    expect(describeCondition(aliased, hass, [], options)).toBe("Custom label");
+    expect(describeAction(hass, [], aliased, undefined, options)).toBe(
+      "Custom label"
+    );
+    expect(
+      describeAction(hass, [], aliased, undefined, { ignoreAlias: true })
+    ).toBe("Test: If triggered by motion or timer");
   });
 });

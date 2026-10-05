@@ -25,8 +25,6 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-container";
@@ -841,6 +839,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         align-items: center;
         justify-content: center;
         color: white;
+      }
+      ha-tile-info.twoline {
+        /* two wrapped lines inside the 32px ha-tile-container reserves */
+        --_tile-info-fixed-primary-line-height: var(--ha-space-4);
       }
       ha-tile-info.twoline::part(primary) {
         display: -webkit-box;

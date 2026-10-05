@@ -1,4 +1,6 @@
-import type { Context, HomeAssistant } from "../types";
+import { ensureArray } from "../common/array/ensure-array";
+import { isValidEntityId } from "../common/entity/valid_entity_id";
+import type { Context, HomeAssistant, ServiceCallRequest } from "../types";
 import type { Action } from "./script";
 
 export const callExecuteScript = (
@@ -22,3 +24,19 @@ export const serviceCallWillDisconnect = (
       "update.home_assistant_core_update",
       "update.home_assistant_operating_system_update",
     ].includes(serviceData?.entity_id));
+
+// Core merges the target into the service data, so a target entity_id
+// replaces the legacy service data one rather than adding to it. Its schema
+// also accepts comma separated ids and lowercases them.
+export const getServiceCallEntityIds = (
+  serviceData?: ServiceCallRequest["serviceData"],
+  target?: ServiceCallRequest["target"]
+): string[] => [
+  ...new Set(
+    (ensureArray(target?.entity_id ?? serviceData?.entity_id) ?? [])
+      .filter((id): id is string => typeof id === "string")
+      .flatMap((id) => id.split(","))
+      .map((id) => id.trim().toLowerCase())
+      .filter(isValidEntityId)
+  ),
+];

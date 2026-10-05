@@ -9,15 +9,16 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { round } from "../../../common/number/round";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { subscribeConfigEntries } from "../../../data/config_entries";
 import type {
@@ -213,7 +214,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     const dongles = this._hardwareInfo?.hardware.filter(
       (hw) =>
         hw.dongle !== null &&
-        (!hw.config_entries.length ||
+        (!hw.config_entries?.length ||
           hw.config_entries.some(
             (entryId) =>
               this._configEntries?.[entryId] &&
@@ -222,19 +223,19 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     );
 
     if (boardData) {
-      boardConfigEntries = boardData.config_entries
+      boardConfigEntries = (boardData.config_entries ?? [])
         .map((id) => this._configEntries?.[id])
         .filter(
           (entry) => entry?.supports_options && !entry.disabled_by
         ) as ConfigEntry[];
-      boardId = boardData.board!.hassio_board_id;
-      boardName = boardData.name;
+      boardId = boardData.board!.hassio_board_id ?? undefined;
+      boardName = boardData.name ?? undefined;
       documentationURL = sanitizeHttpUrl(boardData.url);
       imageURL = hardwareBrandsUrl(
         {
           category: "boards",
           manufacturer: boardData.board!.manufacturer,
-          model: boardData.board!.model,
+          model: boardData.board!.model ?? undefined,
           darkOptimized: this.hass.themes?.darkMode,
         },
         this.hass.auth.data.hassUrl
@@ -305,24 +306,29 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                     ${
                       documentationURL
                         ? html`
-                            <ha-md-list-item
-                              .href=${documentationURL}
-                              type="link"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <ha-list-nav
+                              .ariaLabel=${this.hass.localize(
+                                "ui.panel.config.hardware.documentation"
+                              )}
                             >
-                              <span
-                                >${this.hass.localize(
-                                  "ui.panel.config.hardware.documentation"
-                                )}</span
+                              <ha-list-item-button
+                                .href=${documentationURL}
+                                target="_blank"
+                                rel="noopener noreferrer"
                               >
-                              <span slot="supporting-text"
-                                >${this.hass.localize(
-                                  "ui.panel.config.hardware.documentation_description"
-                                )}</span
-                              >
-                              <ha-icon-next slot="end"></ha-icon-next>
-                            </ha-md-list-item>
+                                <span slot="headline"
+                                  >${this.hass.localize(
+                                    "ui.panel.config.hardware.documentation"
+                                  )}</span
+                                >
+                                <span slot="supporting-text"
+                                  >${this.hass.localize(
+                                    "ui.panel.config.hardware.documentation_description"
+                                  )}</span
+                                >
+                                <ha-icon-next slot="end"></ha-icon-next>
+                              </ha-list-item-button>
+                            </ha-list-nav>
                           `
                         : nothing
                     }
@@ -349,7 +355,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
             dongles?.length
               ? html`<ha-card outlined>
                   ${dongles.map((dongle) => {
-                    const configEntry = dongle.config_entries
+                    const configEntry = (dongle.config_entries ?? [])
                       .map((id) => this._configEntries?.[id])
                       .filter(
                         (entry) => entry?.supports_options && !entry.disabled_by

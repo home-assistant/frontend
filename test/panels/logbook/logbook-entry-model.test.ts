@@ -87,6 +87,7 @@ describe("entityDisplay", () => {
         entity_id: "sensor.allee_battery",
         name: "Battery state",
         device_id: "device_1",
+        next_name_part: "device",
       }),
     },
     devices: {
@@ -141,6 +142,7 @@ describe("entityDisplay", () => {
         "sensor.desk": mockEntity({
           entity_id: "sensor.desk",
           device_id: "device_1",
+          next_name_part: "device",
         }),
       },
       devices: {
@@ -156,6 +158,59 @@ describe("entityDisplay", () => {
     expect(entityDisplay(h, "sensor.desk")).toEqual({
       primary: "Desk",
       secondary: "Office",
+    });
+  });
+
+  describe("with a parent device", () => {
+    const h = baseHass({
+      states: {
+        "sensor.outlet_1_power": mockStateObj({
+          entity_id: "sensor.outlet_1_power",
+        }),
+      },
+      entities: {
+        "sensor.outlet_1_power": mockEntity({
+          entity_id: "sensor.outlet_1_power",
+          name: "Power",
+          device_id: "outlet_1",
+          next_name_part: "device",
+        }),
+      },
+      devices: {
+        outlet_1: mockDevice({
+          id: "outlet_1",
+          name: "Outlet 1",
+          parent_device_id: "strip",
+          next_name_part: "parent_device",
+        }),
+        strip: mockDevice({
+          id: "strip",
+          name: "Power strip",
+          area_id: "area_1",
+        }),
+      },
+      areas: { area_1: mockArea({ area_id: "area_1", name: "Garage" }) },
+    });
+
+    it("shows 'Area ▸ Parent ▸ Device' by default", () => {
+      expect(entityDisplay(h, "sensor.outlet_1_power")).toEqual({
+        primary: "Power",
+        secondary: "Garage ▸ Power strip ▸ Outlet 1",
+      });
+    });
+
+    it("shows 'Parent ▸ Device' for the 'device' name detail", () => {
+      expect(entityDisplay(h, "sensor.outlet_1_power", "device")).toEqual({
+        primary: "Power",
+        secondary: "Power strip ▸ Outlet 1",
+      });
+    });
+
+    it("shows no context for the 'entity' name detail", () => {
+      expect(entityDisplay(h, "sensor.outlet_1_power", "entity")).toEqual({
+        primary: "Power",
+        secondary: undefined,
+      });
     });
   });
 
@@ -314,6 +369,7 @@ describe("computeLogbookItem", () => {
           entity_id: "light.salon",
           name: "Spots Salon",
           device_id: "device_1",
+          next_name_part: "device",
         }),
       },
       devices: {

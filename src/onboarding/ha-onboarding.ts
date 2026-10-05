@@ -17,6 +17,7 @@ import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { navigate } from "../common/navigate";
+import { buildLiteInternationalization } from "../common/translations/lite-internationalization";
 import {
   addSearchParam,
   extractSearchParam,
@@ -24,8 +25,9 @@ import {
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
+import "../components/progress/ha-progress-bar";
 import type { AuthUrlSearchParams } from "../data/auth";
-import { hassUrl } from "../data/auth";
+import { hassUrl, redirectWithAuthCode } from "../data/auth";
 import { saveFrontendSystemData } from "../data/frontend";
 import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
@@ -40,7 +42,6 @@ import { HassElement } from "../state/hass-element";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
-import "../components/progress/ha-progress-bar";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
@@ -133,7 +134,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ${
         this._init && !this._restoring
           ? html`<onboarding-welcome-links
-              .localize=${this.localize}
               .mobileApp=${this._mobileApp}
             ></onboarding-welcome-links>`
           : nothing
@@ -149,7 +149,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           href="https://www.home-assistant.io/getting-started/onboarding/"
           target="_blank"
           rel="noreferrer noopener"
-          >${this.localize("ui.panel.page-onboarding.help")}</a
+          >${this.localize("ui.panel.page-onboarding.help") || "Help"}</a
         >
       </div>`;
   }
@@ -157,7 +157,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   private _renderStep() {
     if (this._restoring) {
       return html`<onboarding-restore-backup
-        .localize=${this.localize}
         .supervisor=${this._supervisor ?? false}
         .mode=${this._restoring}
       >
@@ -165,9 +164,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
 
     if (this._init) {
-      return html`<onboarding-welcome
-        .localize=${this.localize}
-      ></onboarding-welcome>`;
+      return html`<onboarding-welcome></onboarding-welcome>`;
     }
 
     const step = this._curStep()!;
@@ -176,34 +173,21 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`<onboarding-loading></onboarding-loading>`;
     }
     if (step.step === "user") {
-      return html`<onboarding-create-user
-        .localize=${this.localize}
-        .language=${this.language}
-      >
-      </onboarding-create-user>`;
+      return html`<onboarding-create-user></onboarding-create-user>`;
     }
     if (step.step === "core_config") {
       return html`
-        <onboarding-core-config
-          .hass=${this.hass}
-          .onboardingLocalize=${this.localize}
-        ></onboarding-core-config>
+        <onboarding-core-config .hass=${this.hass}></onboarding-core-config>
       `;
     }
     if (step.step === "analytics") {
       return html`
-        <onboarding-analytics
-          .hass=${this.hass}
-          .localize=${this.localize}
-        ></onboarding-analytics>
+        <onboarding-analytics .hass=${this.hass}></onboarding-analytics>
       `;
     }
     if (step.step === "integration") {
       return html`
-        <onboarding-integrations
-          .hass=${this.hass}
-          .onboardingLocalize=${this.localize}
-        ></onboarding-integrations>
+        <onboarding-integrations .hass=${this.hass}></onboarding-integrations>
       `;
     }
     return nothing;
@@ -228,6 +212,20 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
     makeDialogManager(this);
     import("../components/ha-language-picker");
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    // Before `hass` connects, feed the context providers from the lite localize
+    // state so context-consuming components render on the onboarding screens.
+    if (
+      !this.hass &&
+      (changedProps.has("localize") || changedProps.has("language"))
+    ) {
+      this._provideLiteInternationalization(
+        buildLiteInternationalization(this.language, this.localize)
+      );
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -315,7 +313,23 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           saveTokens,
           loadTokens: () => Promise.resolve(loadTokens()),
         });
-        history.replaceState(null, "", location.pathname);
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.has("auth_callback")) {
+          // HAWS appends its callback after the original authorization parameters.
+          const originalParams = new URLSearchParams();
+          for (const [key, value] of searchParams) {
+            if (key === "auth_callback") {
+              break;
+            }
+            originalParams.append(key, value);
+          }
+          const search = originalParams.toString();
+          history.replaceState(
+            null,
+            "",
+            `${location.pathname}${search ? `?${search}` : ""}`
+          );
+        }
         await this._connectHass(auth);
         const currentStep = steps.findIndex((stp) => !stp.done);
         const singelStepProgress = 100 / steps.length;
@@ -444,17 +458,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       // Revoke current auth token.
       await this.hass!.auth.revoke();
 
-      // Build up the url to redirect to
-      let redirectUrl = authParams.redirect_uri!;
-      redirectUrl +=
-        (redirectUrl.includes("?") ? "&" : "?") +
-        `code=${encodeURIComponent(result.auth_code)}&storeToken=true`;
-
-      if (authParams.state) {
-        redirectUrl += `&state=${encodeURIComponent(authParams.state)}`;
-      }
-
-      document.location.assign(redirectUrl);
+      redirectWithAuthCode(
+        authParams.redirect_uri!,
+        result.auth_code,
+        authParams.state,
+        true
+      );
     }
   }
 
@@ -476,7 +485,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       storeState(this.hass!);
     }
     // Load config strings for integrations
-    (this as any)._loadFragmentTranslations(this.hass!.language, "config");
+    this.hass!.loadFragmentTranslation("config");
+    // Load onboarding strings so hass can resolve them for the remaining steps.
+    await this.hass!.loadFragmentTranslation("page-onboarding");
     // Make sure hass is initialized + the config/user callbacks have called.
     await new Promise((resolve) => {
       setTimeout(resolve, 0);

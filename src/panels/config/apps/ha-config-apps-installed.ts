@@ -96,6 +96,10 @@ export class HaConfigAppsInstalled extends LitElement {
           <ha-input-search
             appearance="outlined"
             .value=${this._filter}
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.apps.installed.search",
+              { number: this._addonInfo.addons.length }
+            )}
             @input=${this._handleSearchChange}
           >
           </ha-input-search>
@@ -151,11 +155,8 @@ export class HaConfigAppsInstalled extends LitElement {
                                     "ui.panel.config.apps.installed.app_running"
                                   )
                           }
-                          .iconImage=${
-                            addon.icon
-                              ? `/api/hassio/addons/${addon.slug}/icon`
-                              : undefined
-                          }
+                          .appSlug=${addon.slug}
+                          .hasAppIcon=${addon.icon}
                         ></supervisor-apps-card-content>
                       </div>
                     </ha-card>

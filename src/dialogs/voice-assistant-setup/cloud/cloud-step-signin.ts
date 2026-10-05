@@ -24,7 +24,6 @@ export class CloudStepSignin extends LitElement {
         check-connection
         .hass=${this.hass}
         .email=${this.email}
-        .localize=${this.hass.localize}
         @cloud-forgot-password=${this._forgotPassword}
         @cloud-logged-in=${this._loggedIn}
       ></cloud-login>

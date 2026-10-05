@@ -1,7 +1,14 @@
+import type { ContextType } from "@lit/context";
 import { mdiImagePlus } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import {
+  apiContext,
+  connectionContext,
+  internationalizationContext,
+} from "../data/context";
 import type { MediaPickedEvent } from "../data/media-player";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
@@ -15,14 +22,21 @@ import {
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-file-upload";
 import { showMediaBrowserDialog } from "./media-player/show-media-browser-dialog";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
-  public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property() public value: string | null = null;
 
@@ -61,14 +75,14 @@ export class HaPictureUpload extends LitElement {
       const secondary =
         this.secondary ||
         (this.selectMedia
-          ? html`${this.hass.localize(
+          ? html`${this._i18n.localize(
               "ui.components.picture-upload.secondary",
               {
                 select_media: html`<button
                   class="link"
                   @click=${this._chooseMedia}
                 >
-                  ${this.hass.localize(
+                  ${this._i18n.localize(
                     "ui.components.picture-upload.select_media"
                   )}
                 </button>`,
@@ -81,12 +95,14 @@ export class HaPictureUpload extends LitElement {
           .icon=${mdiImagePlus}
           .label=${
             this.label ||
-            this.hass.localize("ui.components.picture-upload.label")
+            this._i18n.localize("ui.components.picture-upload.label")
           }
           .secondary=${secondary}
           .supports=${
             this.supports ||
-            this.hass.localize("ui.components.picture-upload.supported_formats")
+            this._i18n.localize(
+              "ui.components.picture-upload.supported_formats"
+            )
           }
           .uploading=${this._uploading}
           @file-picked=${this._handleFilePicked}
@@ -101,7 +117,9 @@ export class HaPictureUpload extends LitElement {
           .src=${this.value}
           alt=${
             this.currentImageAltText ||
-            this.hass.localize("ui.components.picture-upload.current_image_alt")
+            this._i18n.localize(
+              "ui.components.picture-upload.current_image_alt"
+            )
           }
         />
         <div>
@@ -111,7 +129,7 @@ export class HaPictureUpload extends LitElement {
             variant="danger"
             @click=${this._handleChangeClick}
           >
-            ${this.hass.localize("ui.components.picture-upload.clear_picture")}
+            ${this._i18n.localize("ui.components.picture-upload.clear_picture")}
           </ha-button>
         </div>
       </div>
@@ -139,7 +157,7 @@ export class HaPictureUpload extends LitElement {
   private async _cropFile(file: File, mediaId?: string) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
       showAlertDialog(this, {
-        text: this.hass.localize(
+        text: this._i18n.localize(
           "ui.components.picture-upload.unsupported_format"
         ),
       });
@@ -169,15 +187,20 @@ export class HaPictureUpload extends LitElement {
   private async _uploadFile(file: File) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
       showAlertDialog(this, {
-        text: this.hass.localize(
+        text: this._i18n.localize(
           "ui.components.picture-upload.unsupported_format"
         ),
       });
       return;
     }
     this._uploading = true;
+    fireEvent(this, "uploading-changed", { uploading: true });
     try {
-      const media = await createImage(this.hass, file);
+      const media = await createImage(
+        this._api.fetchWithAuth,
+        this._i18n.localize,
+        file
+      );
       if (this.fullMedia) {
         const item = {
           media_content_id: `${MEDIA_PREFIX}/${media.id}`,
@@ -211,6 +234,7 @@ export class HaPictureUpload extends LitElement {
       });
     } finally {
       this._uploading = false;
+      fireEvent(this, "uploading-changed", { uploading: false });
     }
   }
 
@@ -242,7 +266,7 @@ export class HaPictureUpload extends LitElement {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             let data;
             try {
-              data = await getImageData(this.hass, url);
+              data = await getImageData(this._connection.hassUrl, url);
             } catch (err: any) {
               showAlertDialog(this, {
                 text: err.toString(),
@@ -308,5 +332,8 @@ export class HaPictureUpload extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-picture-upload": HaPictureUpload;
+  }
+  interface HASSDomEvents {
+    "uploading-changed": { uploading: boolean };
   }
 }

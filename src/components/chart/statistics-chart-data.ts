@@ -53,6 +53,41 @@ export interface StatisticsChartData {
   yAxisFractionDigits: number;
 }
 
+// ECharts stacks a time axis by data index. Merge the sorted point lists so
+// every stacked line has the same x at every index, padding with null.
+function alignStackedLines(datasets: LineSeriesOption[]) {
+  const sources = datasets.map((d) => d.data as [number, number | null][]);
+  const cursors = sources.map(() => 0);
+  const counts = sources.map(() => 0);
+  const aligned = sources.map((): [number, number | null][] => []);
+  while (cursors.some((cursor, i) => cursor < sources[i].length)) {
+    let x = Infinity;
+    for (let i = 0; i < sources.length; i++) {
+      const point = sources[i][cursors[i]];
+      if (point && point[0] < x) x = point[0];
+    }
+    let slots = 1;
+    for (let i = 0; i < sources.length; i++) {
+      let count = 0;
+      while (sources[i][cursors[i] + count]?.[0] === x) count++;
+      counts[i] = count;
+      if (count > slots) slots = count;
+    }
+    for (let i = 0; i < sources.length; i++) {
+      const count = counts[i];
+      for (let slot = 0; slot < slots; slot++) {
+        aligned[i].push(
+          count ? sources[i][cursors[i] + Math.min(slot, count - 1)] : [x, null]
+        );
+      }
+      cursors[i] += count;
+    }
+  }
+  datasets.forEach((d, i) => {
+    d.data = aligned[i];
+  });
+}
+
 /**
  * Transforms raw statistics into ECharts series for `statistics-chart`.
  * Pure data processing: all environment inputs (current time, theme style,
@@ -263,8 +298,10 @@ export function generateStatisticsChartData(
               ),
           symbol: "none",
           // minmax sampling operates independently per series, breaking stacking alignment
+          // echarts stacks before it samples, so its lttb keeps stacks aligned
           // https://github.com/apache/echarts/issues/11879
-          sampling: band && drawBands ? "lttb" : "minmax",
+          sampling:
+            band || (chartStacked && chartType === "line") ? "lttb" : "minmax",
           animationDurationUpdate: 0,
           lineStyle: {
             width: 1.5,
@@ -438,6 +475,15 @@ export function generateStatisticsChartData(
     Array.prototype.push.apply(totalDataSets, statDataSets);
     Array.prototype.push.apply(legendData, statLegendData);
   });
+
+  if (chartType === "line" && chartStacked) {
+    const stacked = (totalDataSets as LineSeriesOption[]).filter(
+      (d) => d.data?.length
+    );
+    if (stacked.length > 1) {
+      alignStackedLines(stacked);
+    }
+  }
 
   if (chartType === "bar") {
     fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[], chartStacked);

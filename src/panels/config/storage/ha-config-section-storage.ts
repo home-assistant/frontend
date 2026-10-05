@@ -46,7 +46,6 @@ import "../../../layouts/hass-subpage";
 import { panelIsReady } from "../../../layouts/panel-ready";
 import type { HomeAssistant, Route } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
-import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
 import "./storage-breakdown-chart";

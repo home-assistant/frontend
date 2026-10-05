@@ -6,6 +6,7 @@ import {
   HAS_RESOLVED_IANA_TIME_ZONE,
   LOCAL_TIME_ZONE,
 } from "../common/datetime/resolve-time-zone";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
@@ -27,7 +28,9 @@ import "./onboarding-location";
 class OnboardingCoreConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _working = false;
 
@@ -79,7 +82,6 @@ class OnboardingCoreConfig extends LitElement {
     if (!this._location) {
       return html`<onboarding-location
         .hass=${this.hass}
-        .onboardingLocalize=${this.onboardingLocalize}
         @value-changed=${this._locationChanged}
       ></onboarding-location>`;
     }
@@ -96,9 +98,7 @@ class OnboardingCoreConfig extends LitElement {
       }
 
       <p>
-        ${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.country_intro"
-        )}
+        ${this._localize("ui.panel.page-onboarding.core-config.country_intro")}
       </p>
 
       <ha-form
@@ -115,9 +115,7 @@ class OnboardingCoreConfig extends LitElement {
 
       <div class="footer">
         <ha-button @click=${this._save} .disabled=${this._working}>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.core-config.finish"
-          )}
+          ${this._localize("ui.panel.page-onboarding.core-config.finish")}
         </ha-button>
       </div>
     `;
@@ -192,7 +190,7 @@ class OnboardingCoreConfig extends LitElement {
     this._working = true;
     try {
       await saveCoreConfig(this.hass, {
-        location_name: this.onboardingLocalize(
+        location_name: this._localize(
           "ui.panel.page-onboarding.core-config.location_name_default"
         ),
         latitude: this._location[0],

@@ -29,6 +29,10 @@ export class MockBaseEntity {
 
   public areaId?: string;
 
+  public deviceId?: string;
+
+  public platform?: string;
+
   public baseAttributes: EntityAttributes;
 
   public attributes: EntityAttributes;
@@ -50,8 +54,10 @@ export class MockBaseEntity {
     this.objectId = objectId;
     this.state = input.state;
     this.areaId = input.area_id;
-    this.lastChanged = randomTime();
-    this.lastUpdated = randomTime();
+    this.deviceId = input.device_id;
+    this.platform = input.platform;
+    this.lastChanged = input.last_changed ?? randomTime();
+    this.lastUpdated = input.last_changed ?? randomTime();
 
     const attributes: EntityAttributes = input.attributes || {};
 

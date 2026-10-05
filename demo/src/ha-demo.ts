@@ -7,6 +7,12 @@ import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
+import {
+  connectivityCommands,
+  connectivityComponents,
+  connectivityEntities,
+  connectivityEntityRegistryEntries,
+} from "./stubs/connectivity/fixtures";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
@@ -23,6 +29,7 @@ import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
+import { zoneRegistryEntries } from "./stubs/map";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockRecorder } from "./stubs/recorder";
@@ -60,6 +67,8 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
+  "marketplace/",
+  ...connectivityCommands,
 ];
 
 @customElement("ha-demo")
@@ -87,7 +96,20 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
+          "marketplace",
+          ...connectivityComponents,
         ],
+      },
+      panels: {
+        ...hass.panels,
+        // Opened from the settings page, not listed in the sidebar
+        marketplace: {
+          component_name: "marketplace",
+          icon: null,
+          title: null,
+          config: null,
+          url_path: "marketplace",
+        },
       },
     });
 
@@ -99,7 +121,7 @@ export class HaDemo extends HomeAssistantAppEl {
 
     mockLovelace(hass, localizePromise);
     mockAuth(hass);
-    mockTranslations(hass);
+    mockTranslations(hass, localizePromise);
     mockHistory(hass);
     mockRecorder(hass);
     mockTodo(hass);
@@ -172,9 +194,12 @@ export class HaDemo extends HomeAssistantAppEl {
         created_at: 0,
         modified_at: 0,
       },
+      ...connectivityEntityRegistryEntries,
+      ...zoneRegistryEntries,
     ]);
 
     hass.addEntities(energyEntities());
+    hass.addEntities(connectivityEntities());
 
     // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(

@@ -1,4 +1,4 @@
-import { mdiChevronLeft, mdiClose } from "@mdi/js";
+import { mdiChevronLeft, mdiChevronRight, mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -64,6 +64,7 @@ import "./zwave-js-add-node-loading";
 import "./zwave-js-add-node-searching-devices";
 import "./zwave-js-add-node-select-method";
 import "./zwave-js-add-node-select-security-strategy";
+import { mainWindow } from "../../../../../../common/dom/get_main_window";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
@@ -184,7 +185,8 @@ class DialogZWaveJSAddNode extends LitElement {
       (this._step && backButtonStages.includes(this._step)) ||
       (this._step === "search_devices" && this._supportsSmartStart)
     ) {
-      icon = mdiChevronLeft;
+      icon =
+        mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
     }
 
     let titleTranslationKey = "title";
@@ -530,7 +532,7 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         );
         this._controllerSupportsLongRange =
-          zwaveNetwork?.controller?.supports_long_range;
+          zwaveNetwork?.controller?.supports_long_range ?? undefined;
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -901,7 +903,7 @@ class DialogZWaveJSAddNode extends LitElement {
           this._deviceOptions.name,
           this._deviceOptions.area
         );
-        this._device.id = id;
+        this._device.id = id ?? undefined;
         this._subscribeNewDeviceSearch();
         this._step = "search_smart_start_device";
       } catch (err: any) {
@@ -945,8 +947,8 @@ class DialogZWaveJSAddNode extends LitElement {
                   (entity.name === oldDeviceName ||
                     entity.name === newDeviceName)
                 ) {
-                  // clear name if it matches the device name and it uses the device name (entity naming)
-                  newName = null;
+                  // Use the device name when the entity name matches it
+                  newName = "";
                 } else if (name && name.includes(oldDeviceName)) {
                   newName = name.replace(oldDeviceName, newDeviceName);
                 }
@@ -959,7 +961,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 }
 
                 return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                  name: newName || name,
+                  name: newName ?? name,
                   new_entity_id: newEntityId || undefined,
                 });
               })

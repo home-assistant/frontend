@@ -1,6 +1,8 @@
-import type { Condition } from "../../../panels/lovelace/common/validate-condition";
+import type { VisibilityCondition } from "../../../panels/lovelace/common/validate-condition";
 import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
+
+export const DEFAULT_SECTION_COLUMN_SPAN = 1;
 
 export const DEFAULT_SECTION_BACKGROUND_OPACITY = 50;
 
@@ -10,7 +12,7 @@ export interface LovelaceSectionBackgroundConfig {
 }
 
 export interface LovelaceBaseSectionConfig {
-  visibility?: Condition[];
+  visibility?: VisibilityCondition[];
   disabled?: boolean;
   column_span?: number;
   row_span?: number;

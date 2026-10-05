@@ -26,7 +26,7 @@ export class HaImagecropperDialog
 
   @state() private _open = false;
 
-  @query("img", true) private _image!: HTMLImageElement;
+  @query("img") private _image!: HTMLImageElement;
 
   private _cropper?: Cropper;
 

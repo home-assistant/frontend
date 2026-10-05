@@ -1,11 +1,11 @@
 import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface OTBRInfo {
-  active_dataset_tlvs: string;
+  active_dataset_tlvs: string | null;
   border_agent_id: string;
-  channel: number;
+  channel: number | null;
   extended_address: string;
-  extended_pan_id: string;
+  extended_pan_id: string | null;
   /** Missing on cores without credential sharing support */
   ephemeral_key_supported?: boolean;
   url: string;

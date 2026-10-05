@@ -4,14 +4,14 @@ import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   getEnergyDataCollection,
 } from "../../../data/energy";
+import type { BatterySourceTypeEnergyPreference } from "../../../data/energy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
   hasGasRateSource,
-  hasPowerDevices,
+  hasNowViewContent,
   hasPowerSources,
-  hasWaterRateDevices,
   hasWaterRateSource,
   isEnergyCardVisible,
 } from "./energy-cards";
@@ -54,20 +54,11 @@ export class PowerViewStrategy extends ReactiveElement {
     };
 
     const hasPowerSrc = !!prefs && hasPowerSources(prefs);
-    const hasPowerDev = !!prefs && hasPowerDevices(prefs);
-    const hasWaterDev = !!prefs && hasWaterRateDevices(prefs);
     const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
     const hasGasSrc = !!prefs && hasGasRateSource(prefs);
 
-    // No sources configured
-    if (
-      !prefs ||
-      (!hasPowerSrc &&
-        !hasPowerDev &&
-        !hasWaterDev &&
-        !hasWaterSrc &&
-        !hasGasSrc)
-    ) {
+    // No live power or flow-rate sources configured
+    if (!prefs || !hasNowViewContent(prefs)) {
       return view;
     }
 
@@ -103,13 +94,19 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    prefs.energy_sources.forEach((source) => {
-      if (source.type === "battery" && source.stat_soc) {
-        badges.push({
-          type: "entity",
-          entity: source.stat_soc,
-        });
-      }
+    const batterySources = prefs.energy_sources.filter(
+      (s): s is BatterySourceTypeEnergyPreference =>
+        s.type === "battery" && !!s.stat_soc
+    );
+    batterySources.forEach((source) => {
+      badges.push({
+        type: "entity",
+        entity: source.stat_soc!,
+        ...(batterySources.length > 1 && {
+          name: source.name,
+          show_name: true,
+        }),
+      });
     });
 
     if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {

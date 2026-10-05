@@ -78,7 +78,7 @@ class HaConfigEntryPicker extends LitElement {
   }
 
   private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-    <ha-combo-box-item type="button">
+    <ha-combo-box-item>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
       <ha-domain-icon

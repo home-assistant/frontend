@@ -4,8 +4,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
+import { afterNextRender } from "../../../../../common/util/render-status";
 import "../../../../../components/ha-checkbox";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
 import type { PlatformTrigger } from "../../../../../data/automation";
@@ -155,7 +156,8 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (oldValue?.target !== this.trigger?.target) {
-      this._updateResolvedTargetEntityCount(this.trigger?.target);
+      this._updateTargetEntityCount();
+      this._setDefaultBehavior();
     }
   }
 
@@ -466,39 +468,51 @@ export class HaPlatformTrigger extends LitElement {
     }
   }
 
-  private _updateResolvedTargetEntityCount(target: PlatformTrigger["target"]) {
+  private _updateTargetEntityCount() {
+    const target = this.trigger?.target;
     this._resolvedTargetEntityCount = getTargetEntityCount(target);
+  }
 
-    const behaviorFieldEntry = Object.entries(
-      this.description?.fields ?? {}
-    ).find(
-      ([, field]) => field.selector && "automation_behavior" in field.selector
-    );
-
-    if (!behaviorFieldEntry) {
-      return;
-    }
-
-    const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
-
-    if (
-      target &&
-      this._resolvedTargetEntityCount > 1 &&
-      this.trigger.options?.[behaviorFieldName] === undefined
-    ) {
-      const behaviorDefault = behaviorField.default;
-      if (behaviorDefault !== undefined) {
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.trigger,
-            options: {
-              ...this.trigger.options,
-              [behaviorFieldName]: behaviorDefault,
-            },
-          },
-        });
+  private _setDefaultBehavior() {
+    // set default behavior after next render to prevent race conditions with the initial render
+    afterNextRender(() => {
+      if (!this.isConnected) {
+        return;
       }
-    }
+
+      const behaviorFieldEntry = Object.entries(
+        this.description?.fields ?? {}
+      ).find(
+        ([, field]) => field.selector && "automation_behavior" in field.selector
+      );
+
+      if (
+        !behaviorFieldEntry ||
+        this._resolvedTargetEntityCount === undefined
+      ) {
+        return;
+      }
+
+      const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+      if (
+        this.trigger?.target &&
+        this._resolvedTargetEntityCount > 1 &&
+        this.trigger.options?.[behaviorFieldName] === undefined
+      ) {
+        const behaviorDefault = behaviorField.default;
+        if (behaviorDefault !== undefined) {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this.trigger,
+              options: {
+                ...this.trigger.options,
+                [behaviorFieldName]: behaviorDefault,
+              },
+            },
+          });
+        }
+      }
+    });
   }
 
   static styles = css`

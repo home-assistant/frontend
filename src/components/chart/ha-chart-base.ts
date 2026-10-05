@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { consume } from "@lit/context";
 import {
   mdiCheckCircle,
   mdiChevronDown,
@@ -12,6 +11,7 @@ import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
+  ElementEvent,
   LegendComponentOption,
   LineSeriesOption,
   TooltipOption,
@@ -20,10 +20,17 @@ import type {
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { transform } from "../../common/decorators/transform";
@@ -34,6 +41,7 @@ import type {
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
+import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
 import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type {
@@ -57,7 +65,19 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
-const DEFAULT_CHART_WIDTH = 500;
+// echarts' own default, restored when switching back from touch input
+const DEFAULT_TOOLTIP_TRIGGER_ON = "mousemove|click|mousewheel";
+export const DEFAULT_CHART_WIDTH = 500;
+// Slack so a chart is up to date before a scroll can reach it. A phone screen
+// is short enough for a whole screenful; on a desktop that would cover the page.
+const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
+const VISIBILITY_ROOT_MARGIN = "300px";
+const DEFERRED_PROPS = [
+  "options",
+  "data",
+  "_hiddenDatasets",
+  "_isZoomed",
+] as const;
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,
@@ -106,7 +126,7 @@ export type CustomLegendOption = ECOption["legend"] & {
 };
 
 @customElement("ha-chart-base")
-export class HaChartBase extends LitElement {
+export class HaChartBase extends MobileAwareMixin(LitElement) {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -169,7 +189,17 @@ export class HaChartBase extends LitElement {
 
   private _isTouchDevice = "ontouchstart" in window;
 
+  // Whether the chart was last used with touch rather than a mouse. With touch
+  // the tooltip only opens on a tap, like on mobile, while a mouse on the same
+  // device still shows it on hover.
+  private _touchInput = this._isTouchDevice;
+
   private _lastTapTime?: number;
+
+  // A mouse button is held on the chart, so zooming now is a drag that pans it
+  private _mouseDown = false;
+
+  private _tooltipHiddenWhilePanning = false;
 
   private _longPressTimer?: ReturnType<typeof setTimeout>;
 
@@ -183,19 +213,37 @@ export class HaChartBase extends LitElement {
 
   private _layoutTransitionActive = false;
 
+  // Both start visible so a chart on screen renders on its first update rather
+  // than waiting a frame for the observers. A chart that starts off screen is
+  // therefore still built once; only its later updates are gated.
+  private _intersecting = true;
+
+  private _hasSize = true;
+
+  // Reported by the ResizeObserver, so rendering and downsampling need not
+  // measure layout themselves once it has fired.
+  private _contentWidth?: number;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: () => {
+    callback: (entries) => {
+      // The controller also fires once with no entries when it starts observing.
+      const contentRect = entries[entries.length - 1]?.contentRect;
+      if (contentRect) {
+        this._contentWidth = contentRect.width;
+        this._hasSize = contentRect.width > 0 && contentRect.height > 0;
+      }
       if (this.chart) {
         if (this._suspendResize) {
           this._shouldResizeChart = true;
-          return;
-        }
-        if (!this.chart.getZr().animation.isFinished()) {
+        } else if (!this.chart.getZr().animation.isFinished()) {
           this._shouldResizeChart = true;
         } else {
           this.chart.resize();
         }
+      }
+      if (!this._suspendResize) {
+        this._applyDeferredWork();
       }
     },
   });
@@ -210,10 +258,27 @@ export class HaChartBase extends LitElement {
 
   private _pendingSetup = false;
 
+  private _pendingUpdate?: Set<PropertyKey>;
+
+  private _pendingOptions?: HaECOption;
+
+  private _pendingZoom?: [number, number, boolean];
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._removeOutsideTapListener();
     this._legendPointerCancel();
+    this._mouseDown = false;
+    this._tooltipHiddenWhilePanning = false;
     this._pendingSetup = false;
+    this._pendingUpdate = undefined;
+    this._pendingOptions = undefined;
+    this._pendingZoom = undefined;
+    // The observers are about to be torn down, so nothing would correct a stale
+    // value if this element is reattached inside a hidden container.
+    this._intersecting = false;
+    this._hasSize = false;
+    this._contentWidth = undefined;
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
@@ -227,13 +292,30 @@ export class HaChartBase extends LitElement {
     super.connectedCallback();
     if (this.hasUpdated) {
       this._pendingSetup = true;
-      afterNextRender(() => {
-        if (this.isConnected && this._pendingSetup) {
-          this._pendingSetup = false;
-          this._setupChart();
-        }
-      });
+      afterNextRender(() => this._applyDeferredWork());
     }
+
+    const handleVisibilityChange = () => this._applyDeferredWork();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    this._listeners.push(() =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    );
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        this._intersecting = entries[entries.length - 1].isIntersecting;
+        if (!this._suspendResize) {
+          this._applyDeferredWork();
+        }
+      },
+      {
+        rootMargin: this._isMobileSize
+          ? VISIBILITY_ROOT_MARGIN_NARROW
+          : VISIBILITY_ROOT_MARGIN,
+      }
+    );
+    intersectionObserver.observe(this);
+    this._listeners.push(() => intersectionObserver.disconnect());
 
     this._listeners.push(
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
@@ -300,6 +382,7 @@ export class HaChartBase extends LitElement {
       this._suspendResize = this._layoutTransitionActive;
       if (!this._suspendResize) {
         this._resizeChartIfNeeded();
+        this._applyDeferredWork();
       }
     };
     window.addEventListener("hass-layout-transition", handleLayoutTransition);
@@ -312,24 +395,105 @@ export class HaChartBase extends LitElement {
   }
 
   protected firstUpdated() {
-    if (this.isConnected) {
-      this._setupChart();
+    if (!this.isConnected) {
+      return;
     }
+    // The only measurement taken here: neither observer has reported yet, and a
+    // chart first rendered inside a hidden container has to defer its setup
+    // rather than build against a guessed width.
+    this._hasSize = this.clientWidth > 0 && this.clientHeight > 0;
+    if (this._isVisible()) {
+      this._setupChart();
+    } else {
+      this._pendingSetup = true;
+    }
+  }
+
+  private _isVisible() {
+    return (
+      document.visibilityState !== "hidden" &&
+      this._hasSize &&
+      this._intersecting
+    );
+  }
+
+  private _deferUpdate(changedProps: PropertyValues) {
+    for (const prop of DEFERRED_PROPS) {
+      if (!changedProps.has(prop)) {
+        continue;
+      }
+      if (!this._pendingUpdate) {
+        this._pendingUpdate = new Set();
+      }
+      if (prop === "options" && !this._pendingUpdate.has(prop)) {
+        // The one previous value a replay reads, and it has to stay the options
+        // the chart currently renders, not those of a later deferred change.
+        this._pendingOptions = changedProps.get(prop) as HaECOption | undefined;
+      }
+      this._pendingUpdate.add(prop);
+    }
+  }
+
+  private async _applyDeferredWork() {
+    if (!this._pendingSetup && !this._pendingUpdate) {
+      return;
+    }
+    if (!this.isConnected || !this._isVisible()) {
+      return;
+    }
+    if (this._pendingSetup) {
+      await this._setupChart();
+      return;
+    }
+    const pending = this._pendingUpdate!;
+    const previousOptions = this._pendingOptions;
+    this._pendingUpdate = undefined;
+    this._pendingOptions = undefined;
+    this._applyChartUpdate(pending, previousOptions);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     if (!this.chart) {
       return;
     }
-    if (changedProps.has("_themes") && this.hasUpdated) {
-      this._setupChart();
+    const themeChanged = changedProps.has("_themes") && this.hasUpdated;
+    if (!themeChanged && !DEFERRED_PROPS.some((p) => changedProps.has(p))) {
       return;
     }
-    let chartOptions: ECOption = {};
+    const invisible = !this._isVisible();
+    if (themeChanged) {
+      if (invisible) {
+        this._pendingSetup = true;
+        this._pendingUpdate = undefined;
+        this._pendingOptions = undefined;
+      } else {
+        this._setupChart();
+      }
+      return;
+    }
     if (changedProps.has("options")) {
-      // Separate 'if' from below since this must updated before _getSeries()
+      // Separate 'if' from below since this must be updated before _getSeries().
+      // It stays out of _applyChartUpdate so a replay cannot request another
+      // update and turn one catch-up render into two.
       this._updateHiddenStatsFromOptions(this.options);
     }
+    if (invisible) {
+      if (!this._pendingSetup) {
+        this._deferUpdate(changedProps);
+      }
+      return;
+    }
+    this._applyChartUpdate(
+      changedProps,
+      changedProps.get("options") as HaECOption | undefined
+    );
+  }
+
+  private _applyChartUpdate(
+    changedProps: { has: (prop: string) => boolean },
+    previousOptions: HaECOption | undefined
+  ) {
+    let chartOptions: ECOption = {};
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
       // New data, or a series shown again, may well be convertible where the
@@ -347,12 +511,7 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
-      if (
-        this._compareCustomLegendOptions(
-          changedProps.get("options"),
-          this.options
-        )
-      ) {
+      if (this._compareCustomLegendOptions(previousOptions, this.options)) {
         // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
         this._resizeAnimationDuration = 250;
@@ -397,6 +556,8 @@ export class HaChartBase extends LitElement {
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
+            @pointerdown=${this._handleChartPointer}
+            @pointermove=${this._handleChartPointer}
           ></div>
         </div>
         <div class="sonification-output"></div>
@@ -463,10 +624,7 @@ export class HaChartBase extends LitElement {
       }
     }
 
-    const isMobile = window.matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
-    const overflowLimit = isMobile
+    const overflowLimit = this._isMobileSize
       ? LEGEND_OVERFLOW_LIMIT_MOBILE
       : LEGEND_OVERFLOW_LIMIT;
     return html`<div
@@ -578,7 +736,18 @@ export class HaChartBase extends LitElement {
     // costs the user their place in the tab order, so stay programmatically
     // focusable for as long as we hold focus, however we stop being sonifiable.
     this._sonificationFocusHeld = true;
-    if (this._sonification || this._sonificationLoading || !this.chart) {
+    // Clicks and taps focus the chart too. Chart2Music only responds to the
+    // keyboard, and once connected it moves the tooltip to the first point, so
+    // pointer focus must not start it.
+    if (
+      this._sonification ||
+      this._sonificationLoading ||
+      !this._chartContainer?.matches(":focus-visible")
+    ) {
+      return;
+    }
+    await this._applyDeferredWork();
+    if (!this.chart) {
       return;
     }
     this._sonificationLoading = true;
@@ -635,14 +804,24 @@ export class HaChartBase extends LitElement {
     );
 
   private async _setupChart() {
-    if (this._loading) return;
+    if (this._loading) {
+      this._pendingSetup = true;
+      return;
+    }
     this._loading = true;
+    this._pendingSetup = false;
+    this._pendingUpdate = undefined;
+    this._pendingOptions = undefined;
     try {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
+      // the new chart starts with its handle hidden, so nothing would remove it
+      this._removeOutsideTapListener();
       if (this.chart) {
         this.chart.dispose();
+        this.chart = undefined;
+        this._originalZrFlush = undefined;
       }
       const echarts = (await import("../../resources/echarts/echarts")).default;
 
@@ -662,6 +841,17 @@ export class HaChartBase extends LitElement {
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
+      this.chart.getZr().on("mousedown", (e: ElementEvent) => {
+        // Only the primary button pans. zrender does not mark touch and pen as
+        // touch when it listens to pointer events, as on Edge, so check that too.
+        const ev = e.event;
+        const isMouse = !("pointerType" in ev) || ev.pointerType === "mouse";
+        if (!e.zrByTouch && isMouse && "button" in ev && ev.button === 0) {
+          this._mouseDown = true;
+        }
+      });
+      // zrender also fires this when a drag is released outside the chart
+      this.chart.getZr().on("mouseup", this._handleMouseUp);
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
@@ -702,34 +892,52 @@ export class HaChartBase extends LitElement {
         });
         // show axis pointer handle on touch devices
         let dragJustEnded = false;
+        let handleShown = false;
         let lastTipX: number | undefined;
         let lastTipY: number | undefined;
+        // showTip fires on every pointer move, so only touch the chart options
+        // when the handle state changes. The update is a partial xAxis merge
+        // built from this.options: getOption() would deep clone all series data.
+        const setAxisPointerHandle = (show: boolean) => {
+          handleShown = show;
+          // the tooltip only opens on a tap, so a tap anywhere else closes it
+          if (show) {
+            document.addEventListener("pointerdown", this._handleOutsideTap, {
+              capture: true,
+              passive: true,
+            });
+          } else {
+            this._removeOutsideTapListener();
+          }
+          this.chart?.setOption({
+            xAxis: ensureArray(this.options?.xAxis ?? []).map(
+              (axis: XAXisOption) =>
+                axis.show === false
+                  ? {}
+                  : {
+                      axisPointer: show
+                        ? {
+                            status: "show",
+                            handle: {
+                              color: style.getPropertyValue("--primary-color"),
+                              margin: 0,
+                              size: 20,
+                              ...axis.axisPointer?.handle,
+                              show: true,
+                            },
+                            label: { show: false },
+                          }
+                        : { status: "hide", handle: { show: false } },
+                    }
+            ),
+          });
+        };
         this.chart.on("showTip", (e: any) => {
           lastTipX = e.x;
           lastTipY = e.y;
-          this.chart?.setOption({
-            xAxis: ensureArray(
-              (this.chart?.getOption().xAxis as any) ?? []
-            ).map((axis: XAXisOption) =>
-              axis.show
-                ? {
-                    ...axis,
-                    axisPointer: {
-                      ...axis.axisPointer,
-                      status: "show",
-                      handle: {
-                        color: style.getPropertyValue("--primary-color"),
-                        margin: 0,
-                        size: 20,
-                        ...axis.axisPointer?.handle,
-                        show: true,
-                      },
-                      label: { show: false },
-                    },
-                  }
-                : axis
-            ),
-          });
+          if (!handleShown) {
+            setAxisPointerHandle(true);
+          }
         });
         this.chart.on("hideTip", (e: any) => {
           // the drag end event doesn't have a `from` property
@@ -739,25 +947,11 @@ export class HaChartBase extends LitElement {
               dragJustEnded = false;
               return;
             }
-            this.chart?.setOption({
-              xAxis: ensureArray(
-                (this.chart?.getOption().xAxis as any) ?? []
-              ).map((axis: XAXisOption) =>
-                axis.show
-                  ? {
-                      ...axis,
-                      axisPointer: {
-                        ...axis.axisPointer,
-                        handle: {
-                          ...axis.axisPointer?.handle,
-                          show: false,
-                        },
-                        status: "hide",
-                      },
-                    }
-                  : axis
-              ),
-            });
+            // hiding the handle makes echarts fire hideTip again from inside
+            // setOption; the flag is already cleared, so that one is skipped
+            if (handleShown) {
+              setAxisPointerHandle(false);
+            }
             this.chart?.dispatchAction({
               type: "downplay",
             });
@@ -780,8 +974,14 @@ export class HaChartBase extends LitElement {
         series: this._getSeries(),
       });
       this._updateSankeyRoam();
+      if (this._pendingZoom) {
+        const [start, end, silent] = this._pendingZoom;
+        this._pendingZoom = undefined;
+        this.chart.dispatchAction({ type: "dataZoom", start, end, silent });
+      }
     } finally {
       this._loading = false;
+      this._applyDeferredWork();
     }
   }
 
@@ -927,9 +1127,7 @@ export class HaChartBase extends LitElement {
     };
 
     if (options.tooltip) {
-      const isMobile = window.matchMedia(
-        "all and (max-width: 450px), all and (max-height: 500px)"
-      ).matches;
+      const isMobile = this._isMobileSize;
       // Shallow-copy each tooltip object so wrap/mobile mutations don't leak
       // back into the caller's options.tooltip reference (callers may cache the
       // options object via memoizeOne, in which case in-place mutation would
@@ -940,6 +1138,8 @@ export class HaChartBase extends LitElement {
           // mobile charts are full width so we need to confine the tooltip to the chart
           next.confine = true;
           next.appendTo = undefined;
+        }
+        if (isMobile || this._touchInput) {
           next.triggerOn = "click";
         }
         return next;
@@ -976,6 +1176,10 @@ export class HaChartBase extends LitElement {
       },
       line: {
         lineStyle: { width: 1.5 },
+        // At this size the symbols are invisible, but drawing one per data point
+        // makes every tooltip move repaint hundreds of them. ECharts still draws
+        // the symbol of the hovered point.
+        showSymbol: false,
         symbolSize: 1,
         symbol: "circle",
         smooth: false,
@@ -1166,8 +1370,8 @@ export class HaChartBase extends LitElement {
             data: downSampleLineData(
               data as LineSeriesOption["data"],
               // 0 while inside a hidden container, e.g. a section with a visibility condition
-              (this.clientWidth || DEFAULT_CHART_WIDTH) *
-                window.devicePixelRatio,
+              ((this._contentWidth ?? this.clientWidth) ||
+                DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
               minX,
               maxX
             ),
@@ -1180,7 +1384,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDefaultHeight() {
-    return Math.max(this.clientWidth / 2, 200);
+    return Math.max((this._contentWidth ?? this.clientWidth) / 2, 200);
   }
 
   private _setChartOptions(options: ECOption) {
@@ -1247,7 +1451,16 @@ export class HaChartBase extends LitElement {
   };
 
   public zoom(start: number, end: number, silent = false) {
-    this.chart?.dispatchAction({
+    if (!this.chart || this._pendingSetup) {
+      // Sibling charts sync their zoom imperatively, so a range that arrives
+      // before a deferred setup or rebuild has to be replayed rather than
+      // dropped. A reset to the full range is what a fresh chart is built with,
+      // so it just clears.
+      this._pendingZoom =
+        start === 0 && end === 100 ? undefined : [start, end, silent];
+      return;
+    }
+    this.chart.dispatchAction({
       type: "dataZoom",
       start,
       end,
@@ -1302,6 +1515,43 @@ export class HaChartBase extends LitElement {
     return "move";
   }
 
+  // Captured, so the trigger is switched before echarts handles the same event:
+  // before it acts on a tap, and before the first mouse move after touch input.
+  // Only on touch devices, which install the handle and outside tap handlers. A
+  // pen counts as touch, as it does for echarts.
+  @eventOptions({ capture: true })
+  private _handleChartPointer(ev: PointerEvent) {
+    const touchInput = this._isTouchDevice && ev.pointerType !== "mouse";
+    if (touchInput === this._touchInput) {
+      return;
+    }
+    this._touchInput = touchInput;
+    if (!this.chart || !this.options?.tooltip) {
+      return;
+    }
+    const tooltip = this._createOptions().tooltip;
+    this.chart.setOption({
+      tooltip: ensureArray(tooltip ?? []).map((t) => ({
+        triggerOn: t.triggerOn ?? DEFAULT_TOOLTIP_TRIGGER_ON,
+      })),
+    });
+  }
+
+  private _removeOutsideTapListener() {
+    document.removeEventListener("pointerdown", this._handleOutsideTap, {
+      capture: true,
+    });
+  }
+
+  // A pen does not reliably fire touch events, so this listens to pointer
+  // events. The mouse is left out: echarts already hides the tooltip when it
+  // leaves the chart, even when the tooltip only opens on click.
+  private _handleOutsideTap = (ev: PointerEvent) => {
+    if (ev.pointerType !== "mouse" && !ev.composedPath().includes(this)) {
+      this.chart?.dispatchAction({ type: "hideTip", from: "outside" });
+    }
+  };
+
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
     let start = typeof zoomData.start === "number" ? zoomData.start : 0;
@@ -1334,6 +1584,16 @@ export class HaChartBase extends LitElement {
 
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
+    // the tooltip would follow the pointer across the moving data; a modifier
+    // drag only zooms once, on release
+    if (
+      this._mouseDown &&
+      !this._modifierPressed &&
+      !this._tooltipHiddenWhilePanning
+    ) {
+      this._tooltipHiddenWhilePanning = true;
+      this._setPanTooltipsHidden(true);
+    }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
@@ -1341,6 +1601,27 @@ export class HaChartBase extends LitElement {
       });
     }
     fireEvent(this, "chart-zoom", { start, end });
+  }
+
+  private _handleMouseUp = () => {
+    this._mouseDown = false;
+    if (this._tooltipHiddenWhilePanning) {
+      this._tooltipHiddenWhilePanning = false;
+      this._setPanTooltipsHidden(false);
+    }
+  };
+
+  // Restores the configured visibility of each tooltip rather than forcing it
+  // on, so a chart without a tooltip, or with a hidden one, stays that way.
+  private _setPanTooltipsHidden(hidden: boolean) {
+    if (!this.options?.tooltip) {
+      return;
+    }
+    this.chart?.setOption({
+      tooltip: ensureArray(this.options.tooltip).map((tooltip) => ({
+        show: hidden ? false : (tooltip.show ?? true),
+      })),
+    });
   }
 
   // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
@@ -1746,10 +2027,11 @@ export class HaChartBase extends LitElement {
     }
     ha-assist-chip {
       height: 100%;
-      --_label-text-weight: 500;
-      --_leading-space: 8px;
-      --_trailing-space: 8px;
-      --_icon-label-space: 4px;
+      --ha-button-height: 24px;
+      --ha-chip-label-weight: 500;
+      --md-assist-chip-leading-space: var(--ha-space-2);
+      --md-assist-chip-trailing-space: var(--ha-space-2);
+      --md-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }

@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -42,6 +41,7 @@ import type {
   AutomationEntity,
   BlueprintAutomationConfig,
   Condition,
+  SidebarConfig,
   Trigger,
 } from "../../../data/automation";
 import {
@@ -88,6 +88,9 @@ import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
+import { AutomationTriggerController } from "./trigger/automation-trigger-controller";
+import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
+
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-editor": HaAutomationEditor;
@@ -131,6 +134,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   > = {};
 
   private _configSubscriptionsId = 1;
+
+  private _triggerController = new AutomationTriggerController(this, {
+    getConfig: () => this.config,
+    canEdit: () => !this.readOnly && !this.saving,
+    commit: (config) => {
+      this._manualEditor?.resetPastedConfig();
+      this._updateConfig(config);
+    },
+  });
 
   private _newAutomationId?: string;
 
@@ -206,9 +218,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       : undefined;
 
     const useBlueprint = "use_blueprint" in this.config;
-    const shortcutIcon = isMac
-      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
-      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+    const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
 
     return html`
       <hass-subpage
@@ -478,7 +488,18 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-automation=${this._handleSaveAutomation}
-                            ></blueprint-automation-editor>
+                            >
+                              ${
+                                this.errors
+                                  ? html`<ha-alert
+                                      alert-type="error"
+                                      slot="alerts"
+                                    >
+                                      ${this.errors}
+                                    </ha-alert>`
+                                  : nothing
+                              }
+                            </blueprint-automation-editor>
                           `
                         : html`
                             <manual-automation-editor
@@ -492,6 +513,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               @value-changed=${this._valueChanged}
                               @save-automation=${this._handleSaveAutomation}
                               @editor-save=${this._handleSaveAutomation}
+                              @sidebar-config-changed=${this._sidebarConfigChanged}
                             >
                               <div class="alert-wrapper" slot="alerts">
                                 ${this._renderDeprecatedMigratedAlert()}
@@ -769,12 +791,26 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
     ev.stopPropagation();
+    const config = ev.detail.value;
+    this._updateConfig(
+      "use_blueprint" in config
+        ? config
+        : this._triggerController.cleanupRemovedIds(config)
+    );
+  }
 
+  private _sidebarConfigChanged = (
+    ev: CustomEvent<{ value: SidebarConfig | undefined }>
+  ) => {
+    this._triggerController.checkShowIndices(ev.detail.value);
+  };
+
+  private _updateConfig(config: AutomationConfig) {
     if (this.config) {
       this._undoRedoController.commit(this.config);
     }
 
-    this.config = ev.detail.value;
+    this.config = config;
     if (this.readOnly) {
       return;
     }
@@ -869,13 +905,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this.errors = undefined;
   }
 
-  protected async confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
+        addHistory,
         config: this.config!,
         domain: "automation",
         updateConfig: async (config, entityRegistryUpdate) => {

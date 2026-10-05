@@ -34,7 +34,6 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
