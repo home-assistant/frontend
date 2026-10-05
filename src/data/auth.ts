@@ -101,7 +101,7 @@ export const redirectWithAuthCode = (
 
   url += `code=${encodeURIComponent(authCode)}`;
 
-  if (oauth2State) {
+  if (oauth2State !== undefined) {
     url += `&state=${encodeURIComponent(oauth2State)}`;
   }
   if (storeToken) {

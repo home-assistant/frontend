@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { createLoginFlow } from "../../src/data/auth";
+import { createLoginFlow, redirectWithAuthCode } from "../../src/data/auth";
 
 describe("createLoginFlow", () => {
   beforeEach(() => {
@@ -73,5 +73,64 @@ describe("createLoginFlow", () => {
         code_challenge_method: "",
       }),
     });
+  });
+});
+
+describe("redirectWithAuthCode", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+  it("preserves the browser client's complete state payload", () => {
+    const assign = vi.fn();
+    vi.stubGlobal("document", { location: { assign } });
+    const state = btoa(
+      JSON.stringify({
+        hassUrl: "https://home-assistant.example",
+        clientId: "https://client.example/",
+        pkce: "transaction-handle",
+      })
+    );
+
+    redirectWithAuthCode(
+      "https://client.example/callback?auth_callback=1",
+      "code",
+      state,
+      true
+    );
+
+    const callbackUrl = new URL(assign.mock.calls[0][0]);
+    expect(callbackUrl.searchParams.get("state")).toBe(state);
+  });
+
+  it("preserves an empty state", () => {
+    const assign = vi.fn();
+    vi.stubGlobal("document", { location: { assign } });
+
+    redirectWithAuthCode(
+      "https://client.example/callback?existing=value",
+      "authorization code",
+      "",
+      false
+    );
+
+    expect(assign).toHaveBeenCalledWith(
+      "https://client.example/callback?existing=value&code=authorization%20code&state="
+    );
+  });
+
+  it("keeps the legacy callback shape", () => {
+    const assign = vi.fn();
+    vi.stubGlobal("document", { location: { assign } });
+
+    redirectWithAuthCode(
+      "https://client.example/callback",
+      "code",
+      undefined,
+      true
+    );
+
+    expect(assign).toHaveBeenCalledWith(
+      "https://client.example/callback?code=code&storeToken=true"
+    );
   });
 });
