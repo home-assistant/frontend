@@ -53,7 +53,7 @@ export const fetchAuthProviders = () =>
   });
 
 export const createLoginFlow = (
-  request: AuthUrlSearchParams,
+  request: Omit<AuthUrlSearchParams, "state">,
   handler: (string | null)[]
 ) =>
   fetch("/auth/login_flow", {

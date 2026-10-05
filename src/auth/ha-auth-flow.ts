@@ -311,7 +311,6 @@ export class HaAuthFlow extends LitElement {
           code_challenge_method: this.codeChallengeMethod,
           redirect_uri: this.redirectUri,
           response_type: this.responseType,
-          state: this.oauth2State,
         },
         [newProvider.type, newProvider.id]
       );

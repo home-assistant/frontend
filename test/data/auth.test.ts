@@ -14,7 +14,6 @@ describe("createLoginFlow", () => {
       code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
       code_challenge_method: "S256",
       response_type: "code",
-      state: "opaque state",
     },
     {
       code_challenge: "",
