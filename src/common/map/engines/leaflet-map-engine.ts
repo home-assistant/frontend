@@ -24,6 +24,7 @@ import type {
   MapMarkerOptions,
   MapPath,
   MapPathHandle,
+  MapView,
 } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
 import { setMarkerAccessibility } from "../marker-accessibility";
@@ -167,8 +168,16 @@ export class LeafletMapEngine implements MapEngine {
     this._scaleControl.addTo(this.leafletMap!);
   }
 
-  public setView(center: MapLatLng, zoom?: number): void {
-    this.leafletMap?.setView(center, zoom);
+  public setView(center: MapLatLng, zoom?: number, animate = false): void {
+    this.leafletMap?.setView(center, zoom, { animate });
+  }
+
+  public getView(): MapView | undefined {
+    if (!this.leafletMap) {
+      return undefined;
+    }
+    const center = this.leafletMap.getCenter();
+    return { center: [center.lat, center.lng], zoom: this._getZoom() };
   }
 
   public setZoom(zoom: number): void {

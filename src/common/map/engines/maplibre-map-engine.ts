@@ -51,6 +51,7 @@ import type {
   MapMarkerOptions,
   MapPath,
   MapPathHandle,
+  MapView,
 } from "../map-engine";
 import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
@@ -647,11 +648,27 @@ export class MapLibreMapEngine implements MapEngine {
     this._map.addControl(this._scaleControl, "bottom-left");
   }
 
-  public setView(center: MapLatLng, zoom?: number): void {
-    this._map?.jumpTo({
-      center: [center[1], center[0]],
+  public setView(center: MapLatLng, zoom?: number, animate = false): void {
+    const camera = {
+      center: [center[1], center[0]] as [number, number],
       zoom: zoom !== undefined ? zoom - ZOOM_OFFSET : undefined,
-    });
+    };
+    if (animate) {
+      this._map?.easeTo(camera);
+    } else {
+      this._map?.jumpTo(camera);
+    }
+  }
+
+  public getView(): MapView | undefined {
+    if (!this._map) {
+      return undefined;
+    }
+    const center = this._map.getCenter();
+    return {
+      center: [center.lat, center.lng],
+      zoom: this._map.getZoom() + ZOOM_OFFSET,
+    };
   }
 
   public setZoom(zoom: number): void {

@@ -11,6 +11,11 @@ import type { ResolvedMapStyle } from "./map-styles";
 
 export type MapLatLng = [latitude: number, longitude: number];
 
+export interface MapView {
+  center: MapLatLng;
+  zoom: number;
+}
+
 export type MapControlPosition =
   "topleft" | "topright" | "bottomleft" | "bottomright";
 
@@ -228,7 +233,9 @@ export interface MapEngine {
   /** Show a scale ruler (bottom start); null hides it */
   setScaleRuler(options: { metric: boolean } | null): void;
 
-  setView(center: MapLatLng, zoom?: number): void;
+  setView(center: MapLatLng, zoom?: number, animate?: boolean): void;
+
+  getView(): MapView | undefined;
 
   setZoom(zoom: number): void;
 

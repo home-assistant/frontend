@@ -36,6 +36,7 @@ import type {
   MapEditableCircleHandle,
   MapEditableMarkerHandle,
   MapEditingSupport,
+  MapView,
 } from "../../common/map/map-engine";
 import {
   circleBoundsPoints,
@@ -92,6 +93,10 @@ const DRAWN_FALLBACK = 3000;
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
+
+export interface HaMapView extends MapView {
+  autoFit: boolean;
+}
 
 export interface HaMapPathPoint {
   point: MapLatLng;
@@ -954,13 +959,18 @@ export class HaMap extends ReactiveElement {
     return this._engine?.containsLocation(location) ?? false;
   }
 
-  public setView(center: MapLatLng, zoom?: number): void {
+  public setView(center: MapLatLng, zoom?: number, animate?: boolean): void {
     if (!this._engine) {
-      this._pendingFit = () => this.setView(center, zoom);
+      this._pendingFit = () => this.setView(center, zoom, animate);
       return;
     }
     this._pendingFit = undefined;
-    this._engine.setView(center, zoom);
+    this._engine.setView(center, zoom, animate);
+  }
+
+  public getView(): HaMapView | undefined {
+    const view = this._engine?.getView();
+    return view && { ...view, autoFit: this.autoFit && !this._pauseAutoFit };
   }
 
   public fitBounds(

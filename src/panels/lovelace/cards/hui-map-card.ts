@@ -33,6 +33,7 @@ import type {
   HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
+  HaMapView,
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
@@ -135,6 +136,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @state() private _clusterMarkers = true;
 
   @state() private _overviewSelected?: string;
+
+  // Restored by the overview's back button
+  private _viewBeforeFocus?: HaMapView | { entityId: string };
 
   @state() private _overviewTab: OverviewTab = "people";
 
@@ -651,9 +655,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _handleMapClicked() {
-    // A click on the map itself (not on a marker) deselects
+    // A click on the map itself (not on a marker) deselects, staying put
     if (this._overviewSelected) {
       this._overviewSelected = undefined;
+      this._viewBeforeFocus = undefined;
     }
   }
 
@@ -675,8 +680,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
     ev.stopPropagation();
-    this._overviewSelected = entityId;
-    this._focusEntity(entityId);
+    this._select(entityId);
   }
 
   private _handleOverviewResize(
@@ -699,9 +703,37 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
-    this._overviewSelected = ev.detail.entityId;
     if (ev.detail.entityId) {
-      this._focusEntity(ev.detail.entityId);
+      this._select(ev.detail.entityId);
+    } else {
+      this._overviewSelected = undefined;
+      this._restoreView();
+    }
+  }
+
+  private _select(entityId: string) {
+    const previous = this._overviewSelected;
+    if (previous && previous !== entityId) {
+      this._viewBeforeFocus = { entityId: previous };
+    } else if (!previous) {
+      this._viewBeforeFocus = this._map?.getView();
+    }
+    this._overviewSelected = entityId;
+    this._focusEntity(entityId);
+  }
+
+  private _restoreView() {
+    const view = this._viewBeforeFocus;
+    this._viewBeforeFocus = undefined;
+    if (!view) {
+      return;
+    }
+    if ("entityId" in view) {
+      this._focusEntity(view.entityId);
+    } else if (view.autoFit) {
+      this._map?.fitMap({ unpause_autofit: true });
+    } else {
+      this._map?.setView(view.center, view.zoom, true);
     }
   }
 
