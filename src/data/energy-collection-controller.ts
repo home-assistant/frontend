@@ -76,7 +76,7 @@ export class EnergyCollectionController extends ContextController {
   })
   private _hassConfig?: HassConfig;
 
-  private _options?: EnergyCollectionControllerOptions;
+  private _options: EnergyCollectionControllerOptions;
 
   private _connected?: boolean;
 
@@ -92,7 +92,6 @@ export class EnergyCollectionController extends ContextController {
   ) {
     super(host);
     this._options = options;
-    this._subscribe();
   }
 
   get collection(): EnergyCollection | undefined {
@@ -121,7 +120,6 @@ export class EnergyCollectionController extends ContextController {
 
   private _subscribe(): void {
     if (
-      !this._options ||
       !this._connected ||
       !this._connection ||
       !this._callWS ||
