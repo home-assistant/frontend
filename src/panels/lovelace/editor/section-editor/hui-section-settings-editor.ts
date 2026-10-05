@@ -17,6 +17,7 @@ import {
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { DEFAULT_MAX_COLUMNS } from "../../views/const";
 
 interface SettingsData {
   column_span?: number;
@@ -65,6 +66,7 @@ export class HuiDialogEditSection extends LitElement {
               name: "background_color",
               selector: {
                 ui_color: {
+                  default_color: "default",
                   extra_options: [
                     {
                       value: "default",
@@ -109,13 +111,13 @@ export class HuiDialogEditSection extends LitElement {
     const data: SettingsData = {
       column_span: this.config.column_span,
       background_enabled: backgroundEnabled,
-      background_color: background?.color ?? "default",
+      background_color: background?.color,
       background_opacity: background?.opacity,
       theme: this.config.theme,
     };
 
     const schema = this._schema(
-      this.viewConfig.max_columns || 4,
+      this.viewConfig.max_columns || DEFAULT_MAX_COLUMNS,
       this._localize
     );
 

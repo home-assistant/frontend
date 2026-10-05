@@ -106,6 +106,9 @@ export class LeafletMapEngine implements MapEngine {
     if (events.moveStart) {
       map.on("movestart", () => events.moveStart!());
     }
+    // Leaflet draws its container as soon as the layer is on it, and fills the
+    // tiles in over an opaque background from there
+    events.drawn?.();
   }
 
   public destroy(): void {

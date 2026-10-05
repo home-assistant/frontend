@@ -608,6 +608,17 @@ describe("MapLibreMapEngine", () => {
       map.fire("movestart");
       expect(moveStart).toHaveBeenCalledOnce();
     });
+
+    it("reports the map drawn on its first load only", async () => {
+      const drawn = vi.fn();
+      const { map, ready } = await createEngine({ drawn });
+      await ready;
+      expect(drawn).not.toHaveBeenCalled();
+
+      map.fire("load");
+      map.fire("load");
+      expect(drawn).toHaveBeenCalledOnce();
+    });
   });
 
   describe("fitting", () => {
@@ -628,6 +639,25 @@ describe("MapLibreMapEngine", () => {
         bottom: 200,
         left: 0,
       });
+    });
+
+    it("keeps padded bounds within the poles", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Points 150 degrees apart; half of that as padding would overshoot
+      engine.fitBounds(
+        [
+          [-75, -20],
+          [75, 20],
+        ],
+        { pad: 0.5 }
+      );
+      const [bounds] = map.fitBounds.mock.calls[0];
+      expect(bounds[0][1]).toBe(-90);
+      expect(bounds[1][1]).toBe(90);
+      expect(bounds[0][0]).toBe(-40);
+      expect(bounds[1][0]).toBe(40);
     });
   });
 

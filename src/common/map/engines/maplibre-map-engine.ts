@@ -345,6 +345,9 @@ export class MapLibreMapEngine implements MapEngine {
         this._events.click?.([ev.lngLat.lat, ev.lngLat.lng]);
       }
     });
+    // Everything the first view needs has been drawn; before this the canvas
+    // can still be blank, whatever the style says
+    map.once("load", () => this._events.drawn?.());
     map.on("zoomstart", () => this._events.zoomStart?.());
     map.on("movestart", () => {
       // resize() fires movestart even when nothing changed (see _resize)
@@ -621,10 +624,11 @@ export class MapLibreMapEngine implements MapEngine {
     const pad = options?.pad ?? 0.5;
     const latPad = (maxLat - minLat) * pad;
     const lngPad = (maxLng - minLng) * pad;
+    // MapLibre rejects a latitude beyond the poles
     return {
       bounds: [
-        [minLng - lngPad, minLat - latPad],
-        [maxLng + lngPad, maxLat + latPad],
+        [minLng - lngPad, Math.max(-90, minLat - latPad)],
+        [maxLng + lngPad, Math.min(90, maxLat + latPad)],
       ] as [[number, number], [number, number]],
       options: { maxZoom, padding },
     };

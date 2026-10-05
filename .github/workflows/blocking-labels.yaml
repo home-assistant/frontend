@@ -30,6 +30,6 @@ jobs:
         with:
           script: |
             const { default: checkBlockingLabels } = await import(
-              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-blocking-labels.mjs`
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-blocking-labels.mts`
             );
             await checkBlockingLabels({ github, context, core });

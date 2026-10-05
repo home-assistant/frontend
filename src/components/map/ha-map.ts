@@ -85,6 +85,9 @@ declare global {
 
 const PROGRAMMITIC_FIT_DELAY = 250;
 
+// An engine that never reports a drawn frame must not leave an empty card
+const DRAWN_FALLBACK = 3000;
+
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
@@ -259,7 +262,8 @@ const CLUSTER_BUBBLE_PADDING = 6;
 const CLUSTER_BUBBLE_GAP = 4;
 // Space an opened bubble keeps from the map edges
 const CLUSTER_BUBBLE_MARGIN = 12;
-const CLUSTER_MAX_AVATARS = 3;
+// Beyond this the last slot becomes a count
+const CLUSTER_MAX_AVATARS = 4;
 const CLUSTER_MORE_WIDTH = 28;
 const CLUSTER_MORE_MAX = 99;
 const CLUSTER_TAIL_SIZE = 10;
@@ -474,6 +478,7 @@ export class HaMap extends ReactiveElement {
     this._startingEngine?.destroy();
     this._startingEngine = undefined;
     this._loading = false;
+    clearTimeout(this._drawnFallback);
     this._entityHandles = [];
     this._entityMarkers.clear();
     this._clusterAvatars.clear();
@@ -646,12 +651,32 @@ export class HaMap extends ReactiveElement {
     // case and keeps the map on the style the build generated.
     this._readThemeColors();
 
-    const map = this._mapElement!;
+    const map = this._mapElement;
+    if (!map) {
+      return;
+    }
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("drawn", this._mapDrawn);
+    // The sky belongs behind a drawn globe; on a blank canvas it is just a
+    // gradient with a glow in it
+    map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
     this._engine?.setMapStyle(this._resolvedMapStyle);
+  }
+
+  private _mapDrawn = false;
+
+  private _drawnFallback?: number;
+
+  private _markDrawn(attempt: number): void {
+    if (attempt !== this._setupAttempt || this._mapDrawn) {
+      return;
+    }
+    clearTimeout(this._drawnFallback);
+    this._mapDrawn = true;
+    this._updateMapAppearance();
   }
 
   private _loading = false;
@@ -663,9 +688,14 @@ export class HaMap extends ReactiveElement {
 
   private _setupAttempt = 0;
 
+  /** Whether the next engine is the vector one: only it draws a globe */
+  private get _vectorEngine(): boolean {
+    return !this._forceLeaflet && supportsVectorMaps();
+  }
+
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this._forceLeaflet || !supportsVectorMaps()) {
+    if (!this._vectorEngine) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -699,8 +729,13 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.getElementById("map")?.remove();
     const map = document.createElement("div");
     map.id = "map";
+    // Which ground shows in the gap before the first frame; the rest of the
+    // classes wait for the engine (_updateMapAppearance)
+    map.classList.toggle("dark", this._darkMode);
     this.shadowRoot!.append(map);
     this._loading = true;
+    this._mapDrawn = false;
+    clearTimeout(this._drawnFallback);
     const attempt = ++this._setupAttempt;
     let engine: MapEngine | undefined;
     try {
@@ -718,6 +753,12 @@ export class HaMap extends ReactiveElement {
         return;
       }
       this._startingEngine = engine;
+      // Started here so the budget covers an engine that never reports a
+      // frame, not the token and the chunk it waited for
+      this._drawnFallback = window.setTimeout(
+        () => this._markDrawn(attempt),
+        DRAWN_FALLBACK
+      );
       await engine.init(map, {
         center: [
           this._config?.latitude ?? 52.3731339,
@@ -741,6 +782,7 @@ export class HaMap extends ReactiveElement {
             }
           },
           fatal: () => this._handleEngineFatal(),
+          drawn: () => this._markDrawn(attempt),
         },
       });
       // Disconnected while the style was loading, or superseded by a newer setup
@@ -836,9 +878,12 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
+    // Zones join the fit when asked, or when they are all there is
+    const zonePoints =
+      this.fitZones || !this._focusPoints.length ? this._focusZonePoints : [];
     if (
       !this._focusPoints.length &&
-      !this._focusZonePoints.length &&
+      !zonePoints.length &&
       !this.editableLocations?.length
     ) {
       this._withProgrammaticFit(() => {
@@ -851,7 +896,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    const points = [...this._focusPoints, ...this._focusZonePoints];
+    const points = [...this._focusPoints, ...zonePoints];
 
     // Editable locations contribute their bounds, radius included
     this.editableLocations?.forEach((editable) => {
@@ -1349,10 +1394,7 @@ export class HaMap extends ReactiveElement {
           })
         );
 
-        if (
-          this.fitZones &&
-          (typeof entity === "string" || entity.focus !== false)
-        ) {
+        if (typeof entity === "string" || entity.focus !== false) {
           if (!hideRadius && radius) {
             this._focusZonePoints.push(...circleBoundsPoints(position, radius));
           } else {
@@ -1493,7 +1535,10 @@ export class HaMap extends ReactiveElement {
     expanded = false
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
-    const shown = expanded ? data : data.slice(0, CLUSTER_MAX_AVATARS);
+    const shown =
+      expanded || data.length <= CLUSTER_MAX_AVATARS
+        ? data
+        : data.slice(0, CLUSTER_MAX_AVATARS - 1);
     const hidden = data.length - shown.length;
 
     // With history trails shown, colored borders match avatars to trails
@@ -1630,11 +1675,23 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
+      /* The map arrives in one piece: the container carries the cartography's
+         own ground, and fades in with the markers once a frame is drawn */
+      background-color: #f4efe6;
+      /* Hidden rather than transparent: the controls and markers in here are
+         not to be clicked or tabbed to before they are on screen */
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-in;
       /* A cluster bubble and its tail cast a single shadow around their
          combined silhouette (drop-shadow on the wrapper), so no shadow seam
          appears between the bubble and its tail. */
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
+    }
+    #map.drawn {
+      visibility: visible;
+      opacity: 1;
     }
     #map.clickable {
       cursor: pointer;
@@ -1653,7 +1710,7 @@ export class HaMap extends ReactiveElement {
       transition-delay: var(--ha-animation-duration-fast);
     }
     #map.dark {
-      background: #090909;
+      background: #191b2c;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
     }
@@ -1666,6 +1723,39 @@ export class HaMap extends ReactiveElement {
       background: #ffffff;
       color: #000000;
       --map-filter: invert(0);
+    }
+    /* Zoomed out the sky fades out and the globe is left on a transparent
+       canvas, so what surrounds it is this element. The same sky in both
+       themes, day or night: a glow where the sphere sits at the widest zoom
+       out -- MapLibre's own atmosphere carries the edge from there in -- over
+       a gradient that lightens towards the top. */
+    #map.space {
+      --ha-map-space-glow: rgba(255, 255, 255, 0.95);
+      --ha-map-space-haze: rgba(255, 255, 255, 0.45);
+      --ha-map-space-fade: rgba(255, 255, 255, 0);
+      --ha-map-space-high: #dbe8f8;
+      --ha-map-space-low: #7aa5d3;
+      background-color: var(--ha-map-space-low);
+      background-image:
+        radial-gradient(
+          circle at 50% 50%,
+          var(--ha-map-space-glow) 18%,
+          var(--ha-map-space-haze) 24%,
+          var(--ha-map-space-fade) 34%
+        ),
+        linear-gradient(
+          180deg,
+          var(--ha-map-space-high) 0%,
+          var(--ha-map-space-low) 100%
+        );
+      background-repeat: no-repeat;
+    }
+    #map.space.dark {
+      --ha-map-space-glow: rgba(126, 158, 224, 0.5);
+      --ha-map-space-haze: rgba(86, 110, 170, 0.22);
+      --ha-map-space-fade: rgba(86, 110, 170, 0);
+      --ha-map-space-high: #141a30;
+      --ha-map-space-low: #05060f;
     }
     #map.clickable:active,
     #map:active {

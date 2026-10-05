@@ -255,6 +255,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _noDeviceArea?: boolean;
 
+  @state() private _ownAreaWithoutName = false;
+
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
@@ -279,6 +281,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this.entry.device_class || this.entry.original_device_class;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
+    this._ownAreaWithoutName = this._useDeviceName && !!this.entry.area_id;
     this._labels = this.entry.labels;
     this._entityId = this.entry.entity_id;
     this._disabledBy = this.entry.disabled_by;
@@ -1233,7 +1236,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >
                 <span slot="supporting-text"
                   >${this.hass.localize(
-                    this._useDeviceArea
+                    !this._hasOwnName
                       ? "ui.dialogs.entity_registry.editor.use_device_area_required"
                       : "ui.dialogs.entity_registry.editor.change_device_settings",
                     {
@@ -1750,10 +1753,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _useDeviceNameChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
     this._useDeviceName = ev.currentTarget.checked;
+    this._ownAreaWithoutName = false;
+  }
+
+  private get _hasOwnName(): boolean {
+    return !!(this._computeName() ?? this._originalName);
   }
 
   private get _useDeviceArea(): boolean {
-    return !!this._device && this._useDeviceName;
+    return !!this._device && !this._hasOwnName && !this._ownAreaWithoutName;
   }
 
   private get _originalName(): string {

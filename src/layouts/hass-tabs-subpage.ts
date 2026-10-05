@@ -44,6 +44,8 @@ export interface PageNavigation {
   iconViewBox?: string;
   description?: string;
   iconColor?: string;
+  // Shown next to the name of the tab
+  badge?: string;
   info?: any;
   filter?: (hass: HomeAssistant) => boolean;
 }
@@ -124,6 +126,7 @@ export class HassTabsSubpage extends LitElement {
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
+              .badge=${page.badge}
               .name=${
                 page.translationKey
                   ? localizeFunc(page.translationKey)
