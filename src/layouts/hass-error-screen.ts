@@ -12,7 +12,7 @@ import "../components/ha-alert";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
-  // Unread, kept for callers that still pass it until they move to contexts
+  // Fallback for the custom panel iframe, which has no context provider
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state()
@@ -46,6 +46,7 @@ class HassErrorScreen extends LitElement {
   }
 
   private _renderContent(): TemplateResult {
+    const localize = this._localize ?? this.hass?.localize;
     return html`
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
@@ -58,13 +59,13 @@ class HassErrorScreen extends LitElement {
                     size="s"
                     @click=${this._handleReload}
                   >
-                    ${this._localize?.("ui.common.refresh")}
+                    ${localize?.("ui.common.refresh")}
                   </ha-button>
                 `
               : nothing
           }
           <ha-button appearance="plain" size="s" @click=${this._handleBack}>
-            ${this._localize?.("ui.common.back")}
+            ${localize?.("ui.common.back")}
           </ha-button>
         </slot>
       </div>
