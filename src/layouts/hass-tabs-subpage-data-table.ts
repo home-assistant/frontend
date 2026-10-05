@@ -977,8 +977,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .select-mode-chip {
-      --md-assist-chip-icon-label-space: 0;
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-icon-label-space: 0;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     ha-adaptive-dialog {
@@ -997,7 +997,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     ha-dropdown ha-assist-chip {
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     ha-dropdown-item.selected {

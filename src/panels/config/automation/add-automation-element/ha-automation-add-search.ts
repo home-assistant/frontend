@@ -1063,7 +1063,7 @@ export class HaAutomationAddSearch extends LitElement {
 
     .sections ha-filter-chip {
       flex-shrink: 0;
-      --md-filter-chip-selected-container-color: var(
+      --ha-filter-chip-selected-container-color: var(
         --ha-color-fill-primary-normal-hover
       );
       color: var(--primary-color);

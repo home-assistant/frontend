@@ -302,9 +302,6 @@ importers:
       '@material/mwc-list':
         specifier: 0.27.0
         version: 0.27.0(patch_hash=9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987)
-      '@material/web':
-        specifier: 2.5.0
-        version: 2.5.0
       '@mdi/js':
         specifier: 7.4.47
         version: 7.4.47
@@ -2358,9 +2355,6 @@ packages:
 
   '@material/typography@14.0.0-canary.53b3cad2f.0':
     resolution: {integrity: sha512-9J0k2fq7uyHsRzRqJDJLGmg3YzRpfRPtFDVeUH/xBcYoqpZE7wYw5Mb7s/l8eP626EtR7HhXhSPjvRTLA6NIJg==}
-
-  '@material/web@2.5.0':
-    resolution: {integrity: sha512-x2Uovyq8E/Zc1xHXd9s1eBMXF5pMHVAt70pISKd0fL3Ajj4L6zQaQUY/awcfR2RDAMKXC7i4+vr0arv1YaOR/g==}
 
   '@mdi/js@7.4.47':
     resolution: {integrity: sha512-KPnNOtm5i2pMabqZxpUz7iQf+mfrYZyKCZ8QNz85czgEt7cuHcGorWfdzUMWYA0SD+a6Hn4FmJ+YhzzzjkTZrQ==}
@@ -9978,12 +9972,6 @@ snapshots:
     dependencies:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
       '@material/theme': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
-
-  '@material/web@2.5.0':
-    dependencies:
-      '@lit/context': 1.1.6
-      lit: 3.3.3
       tslib: 2.8.1
 
   '@mdi/js@7.4.47': {}
