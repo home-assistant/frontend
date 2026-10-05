@@ -865,7 +865,7 @@ export class HaConfigEntryRow extends LitElement {
         content: "";
       }
       :host(.attention) .config-entry-wrapper {
-        border-color: var(--warning-color);
+        border-color: var(--ha-color-border-warning-normal);
         background-color: var(--ha-color-fill-warning-quiet-resting);
       }
       .expand-button {
@@ -912,14 +912,14 @@ export class HaConfigEntryRow extends LitElement {
         text-decoration: none;
       }
       .state-error {
-        --state-message-color: var(--error-color);
-        border-color: var(--error-color);
+        --state-message-color: var(--ha-color-on-danger-normal);
+        border-color: var(--ha-color-border-danger-normal);
         background-color: var(--ha-color-fill-danger-quiet-resting);
       }
       .state-failed-unload,
       .state-not-loaded {
         --state-message-color: var(--primary-text-color);
-        border-color: var(--warning-color);
+        border-color: var(--ha-color-border-warning-normal);
         background-color: var(--ha-color-fill-warning-quiet-resting);
       }
       .state-setup {
