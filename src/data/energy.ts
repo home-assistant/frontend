@@ -507,7 +507,10 @@ const getStatisticsRange = (
       ];
 
 const getEnergyData = async (
-  hass: Omit<EnergyCollectionHass, "connection" | "panelUrl">,
+  hass: Pick<
+    HomeAssistant,
+    "callWS" | "entities" | "states" | "locale" | "config"
+  >,
   prefs: EnergyPreferences,
   start: Date,
   end?: Date,
@@ -828,17 +831,6 @@ export interface EnergyCollection extends Collection<EnergyData> {
   _active: number;
 }
 
-export type EnergyCollectionHass = Pick<
-  HomeAssistant,
-  | "connection"
-  | "panelUrl"
-  | "callWS"
-  | "entities"
-  | "states"
-  | "locale"
-  | "config"
->;
-
 const clearEnergyCollectionPreferences = (
   hass: Pick<HomeAssistant, "connection" | "panelUrl">
 ) => {
@@ -1003,7 +995,16 @@ export const getNextEnergyPeriodStart = (
 };
 
 export const getEnergyDataCollection = (
-  hass: EnergyCollectionHass,
+  hass: Pick<
+    HomeAssistant,
+    | "connection"
+    | "panelUrl"
+    | "callWS"
+    | "entities"
+    | "states"
+    | "locale"
+    | "config"
+  >,
   options: {
     prefs?: EnergyPreferences;
     key?: string;

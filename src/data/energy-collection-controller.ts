@@ -11,14 +11,12 @@ import {
   statesContext,
   uiContext,
 } from "./context";
-import type {
-  EnergyCollection,
-  EnergyCollectionHass,
-  EnergyData,
-} from "./energy";
+import type { EnergyCollection, EnergyData } from "./energy";
 import { getEnergyDataCollection } from "./energy";
 
 type EnergyCollectionHost = ReactiveControllerHost & HTMLElement;
+
+type CollectionInputs = Parameters<typeof getEnergyDataCollection>[0];
 
 export interface EnergyCollectionControllerOptions {
   /** Subscribing waits until this returns a config. */
@@ -36,7 +34,7 @@ export class EnergyCollectionController implements ReactiveController {
 
   private _options: EnergyCollectionControllerOptions;
 
-  private _hass: Partial<EnergyCollectionHass> = {};
+  private _inputs: Partial<CollectionInputs> = {};
 
   private _connected = false;
 
@@ -85,10 +83,10 @@ export class EnergyCollectionController implements ReactiveController {
 
   private _consume<T>(
     context: Context<unknown, T>,
-    pick: (value: T) => Partial<EnergyCollectionHass>
+    pick: (value: T) => Partial<CollectionInputs>
   ): void {
     new ContextSubscriptionController(this._host, context, (value) => {
-      Object.assign(this._hass, pick(value));
+      Object.assign(this._inputs, pick(value));
       if (!this._unsub) {
         this._subscribe();
       }
@@ -97,16 +95,16 @@ export class EnergyCollectionController implements ReactiveController {
 
   private _subscribe(): void {
     const config = this._options.config();
-    const hass = this._hass;
+    const inputs = this._inputs;
     if (
       !this._connected ||
       !config ||
-      !hass.connection ||
-      !hass.callWS ||
-      !hass.entities ||
-      !hass.states ||
-      !hass.locale ||
-      !hass.config
+      !inputs.connection ||
+      !inputs.callWS ||
+      !inputs.entities ||
+      !inputs.states ||
+      !inputs.locale ||
+      !inputs.config
     ) {
       return;
     }
@@ -117,7 +115,7 @@ export class EnergyCollectionController implements ReactiveController {
     this._unsubscribe();
     this._key = key;
     this._collection = getEnergyDataCollection(
-      { ...hass } as EnergyCollectionHass,
+      { ...inputs } as CollectionInputs,
       { key }
     );
     this._unsub = this._collection.subscribe(this._options.onData);
