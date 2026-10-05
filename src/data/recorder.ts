@@ -161,7 +161,7 @@ export const getRecorderEntityOptions = (
   });
 
 export const getStatisticMetadata = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   statistic_ids?: string[]
 ) =>
   hass.callWS<StatisticsMetaData[]>({
@@ -170,7 +170,7 @@ export const getStatisticMetadata = (
   });
 
 export const fetchStatistics = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
@@ -342,7 +342,7 @@ export const adjustStatisticsSum = (
 };
 
 export const getStatisticLabel = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "formatEntityName">,
   statisticsId: string,
   statisticsMetaData: StatisticsMetaData | undefined
 ): string => {
@@ -355,7 +355,7 @@ export const getStatisticLabel = (
 };
 
 export const getDisplayUnit = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states">,
   statisticsId: string | undefined,
   statisticsMetaData: StatisticsMetaData | undefined
 ): string | null | undefined => {

@@ -204,7 +204,6 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}

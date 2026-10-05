@@ -1,35 +1,41 @@
 import { differenceInDays, endOfDay } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
+import { consume } from "../../../../common/decorators/consume";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
   CompareMode,
-  getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
+import type { FrontendLocaleData } from "../../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyCardBaseConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
 import "../../../../components/ha-alert";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { buttonLinkStyle } from "../../../../resources/styles";
 
 @customElement("hui-energy-compare-card")
-export class HuiEnergyCompareCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiEnergyCompareCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-graph-card-editor");
     return document.createElement("hui-energy-graph-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyCardBaseConfig;
 
@@ -53,6 +59,22 @@ export class HuiEnergyCompareCard
 
   @state() private _compareMode?: CompareMode;
 
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean, reflect: true }) hidden = true;
 
@@ -74,24 +96,10 @@ export class HuiEnergyCompareCard
     this._config = config;
   }
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config!.collection_key,
-      }).subscribe((data) => this._update(data)),
-    ];
-  }
-
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
-      hasConfigChanged(this, changedProps) ||
-      changedProps.has("preview") ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    );
-  }
+  private _energyCollection = new EnergyCollectionController(this, {
+    config: () => this._config,
+    onData: (data) => this._update(data),
+  });
 
   protected update(changedProps: PropertyValues<this>): void {
     super.update(changedProps);
@@ -105,25 +113,17 @@ export class HuiEnergyCompareCard
     if (this.preview) {
       return html`
         <ha-alert>
-          ${this.hass.localize(
+          ${this._localize(
             "ui.panel.lovelace.cards.energy.energy_compare.info",
             {
               start: html`<b
-                >${formatDate(
-                  new Date(),
-                  this.hass.locale,
-                  this.hass.config
-                )}</b
+                >${formatDate(new Date(), this._locale, this._hassConfig)}</b
               >`,
               end: html`<b
-                  >${formatDate(
-                    new Date(),
-                    this.hass.locale,
-                    this.hass.config
-                  )}</b
+                  >${formatDate(new Date(), this._locale, this._hassConfig)}</b
                 >
                 <span
-                  >(${this.hass.localize(
+                  >(${this._localize(
                     "ui.panel.lovelace.cards.energy.energy_compare.compare_preview"
                   )})</span
                 >`,
@@ -144,54 +144,52 @@ export class HuiEnergyCompareCard
 
     return html`
       <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
-        ${this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_compare.info",
-          {
-            start: html`<b
-              >${formatDate(this._start!, this.hass.locale, this.hass.config)}${
-                dayDifference > 0
-                  ? ` -
+        ${this._localize("ui.panel.lovelace.cards.energy.energy_compare.info", {
+          start: html`<b
+            >${formatDate(this._start!, this._locale, this._hassConfig)}${
+              dayDifference > 0
+                ? ` -
           ${formatDate(
             this._end || endOfDay(new Date()),
-            this.hass.locale,
-            this.hass.config
+            this._locale,
+            this._hassConfig
           )}`
+                : ""
+            }</b
+          >`,
+          end: html`<b
+              >${formatDate(
+                this._startCompare,
+                this._locale,
+                this._hassConfig
+              )}${
+                dayDifference > 0
+                  ? ` -
+          ${formatDate(this._endCompare, this._locale, this._hassConfig)}`
                   : ""
               }</b
-            >`,
-            end: html`<b
-                >${formatDate(
-                  this._startCompare,
-                  this.hass.locale,
-                  this.hass.config
-                )}${
-                  dayDifference > 0
-                    ? ` -
-          ${formatDate(this._endCompare, this.hass.locale, this.hass.config)}`
-                    : ""
-                }</b
-              >
-              <button class="link" @click=${this._changeCompareMode}>
-                (${
-                  this._compareMode === CompareMode.PREVIOUS
-                    ? this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_year"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_period"
-                      )
-                })
-              </button>`,
-          }
-        )}
+            >
+            <button class="link" @click=${this._changeCompareMode}>
+              (${
+                this._compareMode === CompareMode.PREVIOUS
+                  ? this._localize(
+                      "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_year"
+                    )
+                  : this._localize(
+                      "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_period"
+                    )
+              })
+            </button>`,
+        })}
       </ha-alert>
     `;
   }
 
   private _changeCompareMode() {
-    const collection = getEnergyDataCollection(this.hass, {
-      key: this._config!.collection_key,
-    });
+    const collection = this._energyCollection.collection;
+    if (!collection) {
+      return;
+    }
     collection.setCompare(
       this._compareMode === CompareMode.PREVIOUS
         ? CompareMode.YOY
@@ -218,9 +216,10 @@ export class HuiEnergyCompareCard
   }
 
   private _stopCompare(): void {
-    const energyCollection = getEnergyDataCollection(this.hass, {
-      key: this._config!.collection_key,
-    });
+    const energyCollection = this._energyCollection.collection;
+    if (!energyCollection) {
+      return;
+    }
     energyCollection.setCompare(CompareMode.NONE);
     energyCollection.refresh();
   }

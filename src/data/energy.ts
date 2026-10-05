@@ -254,7 +254,7 @@ export interface EnergyPreferencesValidation {
   device_consumption_water: EnergyValidationIssue[][];
 }
 
-export const getEnergyInfo = (hass: HomeAssistant) =>
+export const getEnergyInfo = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<EnergyInfo>({
     type: "energy/info",
   });
@@ -266,7 +266,7 @@ export const getEnergyPreferenceValidation = async (hass: HomeAssistant) => {
   });
 };
 
-export const getEnergyPreferences = (hass: HomeAssistant) =>
+export const getEnergyPreferences = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<EnergyPreferences>({
     type: "energy/get_prefs",
   });
@@ -286,7 +286,7 @@ export const saveEnergyPreferences = async (
 export type FossilEnergyConsumption = Record<string, number>;
 
 export const getFossilEnergyConsumption = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   startTime: Date,
   energy_statistic_ids: string[],
   co2_statistic_id: string,
@@ -320,7 +320,7 @@ export const energySourcesByType = (prefs: EnergyPreferences) =>
  * Statistics without an entity (external or removed) keep the statistic label.
  */
 export const computeEnergyLabel = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "formatEntityName">,
   statisticId: string,
   statisticsMetaData?: StatisticsMetaData,
   customName?: string
@@ -338,7 +338,7 @@ export const computeEnergyLabel = (
  * without the requested statistic are left out.
  */
 export const computeEnergyDeviceLabels = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "formatEntityName">,
   devices: DeviceConsumptionEnergyPreference[],
   statsMetadata?: Record<string, StatisticsMetaData>,
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
@@ -494,7 +494,7 @@ export const enum CompareMode {
 // Core groups days and months by the server's calendar. Ask for the picked
 // dates there, or a browser time zone ahead or behind adds a day at one end.
 const getStatisticsRange = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "locale" | "config">,
   period: StatisticPeriod,
   start: Date,
   end?: Date
@@ -507,7 +507,7 @@ const getStatisticsRange = (
       ];
 
 const getEnergyData = async (
-  hass: HomeAssistant,
+  hass: Omit<EnergyCollectionHass, "connection" | "panelUrl">,
   prefs: EnergyPreferences,
   start: Date,
   end?: Date,
@@ -828,7 +828,20 @@ export interface EnergyCollection extends Collection<EnergyData> {
   _active: number;
 }
 
-const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
+export type EnergyCollectionHass = Pick<
+  HomeAssistant,
+  | "connection"
+  | "panelUrl"
+  | "callWS"
+  | "entities"
+  | "states"
+  | "locale"
+  | "config"
+>;
+
+const clearEnergyCollectionPreferences = (
+  hass: Pick<HomeAssistant, "connection" | "panelUrl">
+) => {
   energyCollectionKeys.forEach((key) => {
     const energyCollection = findEnergyDataCollection(hass, key);
     if (energyCollection) {
@@ -863,7 +876,7 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
 };
 
 const convertCollectionKeyToConnection = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "panelUrl">,
   collectionKey: string | undefined
 ): [string, string | undefined] => {
   let key = "_energy";
@@ -879,7 +892,7 @@ const convertCollectionKeyToConnection = (
 };
 
 const findEnergyDataCollection = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection" | "panelUrl">,
   collectionKey: string | undefined
 ): EnergyCollection | undefined => {
   // Lookup the connection key and default key name
@@ -894,7 +907,7 @@ const findEnergyDataCollection = (
 // reopens on its own default period. Derived from the connection key so the read
 // and write sides cannot drift apart.
 export const getEnergyDefaultPeriodStorageKey = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "panelUrl">,
   collectionKey?: string
 ): string => {
   const [key] = convertCollectionKeyToConnection(hass, collectionKey);
@@ -990,7 +1003,7 @@ export const getNextEnergyPeriodStart = (
 };
 
 export const getEnergyDataCollection = (
-  hass: HomeAssistant,
+  hass: EnergyCollectionHass,
   options: {
     prefs?: EnergyPreferences;
     key?: string;
@@ -1184,7 +1197,7 @@ export const getEnergyDataCollection = (
   return collection;
 };
 
-export const getEnergySolarForecasts = (hass: HomeAssistant) =>
+export const getEnergySolarForecasts = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<EnergySolarForecasts>({
     type: "energy/solar_forecast",
   });
@@ -1217,7 +1230,7 @@ export const getEnergyGasUnitClass = (
 };
 
 const getEnergyGasUnit = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "config">,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
@@ -1249,7 +1262,7 @@ const getEnergyGasUnit = (
 };
 
 const getEnergyWaterUnit = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "config">,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData>
 ): (typeof VOLUME_UNITS)[number] => {
@@ -1593,7 +1606,7 @@ export const computeConsumptionSingle = (data: {
 };
 
 export const formatConsumptionShort = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "locale">,
   consumption: number | null,
   unit: string,
   targetUnit?: string,
@@ -1900,7 +1913,7 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
  * @returns A string with the formatted power value and unit
  */
 export const formatPowerShort = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "locale">,
   powerWatts: number
 ): string => {
   const units = ["W", "kW", "MW", "GW", "TW"];
@@ -1943,13 +1956,9 @@ export function getSuggestedPeriod(
 }
 
 export const downloadEnergyData = (
-  hass: HomeAssistant,
-  collectionKey?: string
+  energyData: EnergyCollection,
+  currency: string
 ) => {
-  const energyData = getEnergyDataCollection(hass, {
-    key: collectionKey,
-  });
-
   if (!energyData.prefs || !energyData.state.stats) {
     return;
   }
@@ -1986,8 +1995,6 @@ export const downloadEnergyData = (
 
     processCsvRow(stat, type, unit, stats[stat]);
   };
-
-  const currency = hass.config.currency;
 
   const printCategory = function (
     type: string,

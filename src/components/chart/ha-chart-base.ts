@@ -30,9 +30,11 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { transform } from "../../common/decorators/transform";
 import type {
   HASSDomCurrentTargetEvent,
@@ -42,7 +44,13 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
-import { uiContext } from "../../data/context";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import {
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../data/context";
+import type { FrontendLocaleData } from "../../data/translation";
 import type { Themes } from "../../data/ws-themes";
 import type {
   ECOption,
@@ -51,7 +59,11 @@ import type {
   HaECSeriesItem,
   HaTooltipOption,
 } from "../../resources/echarts/echarts";
-import type { HomeAssistant, HomeAssistantUI } from "../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
@@ -129,8 +141,6 @@ export type CustomLegendOption = ECOption["legend"] & {
 export class HaChartBase extends MobileAwareMixin(LitElement) {
   public chart?: EChartsType;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: HaECSeries = [];
 
   @property({ attribute: false }) public options?: HaECOption;
@@ -160,6 +170,22 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     transformer: ({ themes }) => themes,
   })
   private _themes!: Themes;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
 
   @property({ attribute: "click-label-for-more-info", type: Boolean })
   public clickLabelForMoreInfo = false;
@@ -550,7 +576,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             )}
             aria-label=${ifDefined(
               sonifiable
-                ? this.hass.localize("ui.components.history_charts.chart")
+                ? this._localize("ui.components.history_charts.chart")
                 : undefined
             )}
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
@@ -573,7 +599,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                     class="zoom-reset"
                     .path=${mdiRestart}
                     @click=${this._handleZoomReset}
-                    title=${this.hass.localize(
+                    title=${this._localize(
                       "ui.components.history_charts.zoom_reset"
                     )}
                   ></ha-icon-button>`
@@ -673,7 +699,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               class="legend-toggle"
               data-id=${id}
               aria-pressed=${!this._hiddenDatasets.has(id)}
-              .title=${this.hass.localize(
+              .title=${this._localize(
                 "ui.components.history_charts.toggle_visibility"
               )}
               @click=${this._toggleDataset}
@@ -709,10 +735,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                   filled
                   label=${
                     this.expandLegend
-                      ? this.hass.localize(
+                      ? this._localize(
                           "ui.components.history_charts.collapse_legend"
                         )
-                      : `${this.hass.localize(
+                      : `${this._localize(
                           "ui.components.history_charts.expand_legend"
                         )} (${items.length - overflowLimit})`
                   }
@@ -754,9 +780,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     try {
       const sonification = await sonifyChart(this.chart, {
         cc: this._sonificationOutput!,
-        localize: this.hass.localize,
-        locale: this.hass.locale,
-        config: this.hass.config,
+        localize: this._localize,
+        locale: this._locale,
+        config: this._hassConfig,
         formatLabel: this.sonificationLabelFormatter,
         onError: () => {
           // Charts the extension cannot describe stay silent rather than
@@ -798,8 +824,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _formatTimeLabel = (value: number | Date) =>
     formatTimeLabel(
       value,
-      this.hass.locale,
-      this.hass.config,
+      this._locale,
+      this._hassConfig,
       this._minutesDifference * this._zoomRatio
     );
 
