@@ -108,12 +108,9 @@ export class HaTargetSelector extends LitElement {
       return true;
     }
 
-    const deviceIntegrations = this._entitySources
-      ? this._deviceIntegrationLookup(
-          this._entitySources,
-          Object.values(this.hass.entities)
-        )
-      : undefined;
+    const deviceIntegrations = this._deviceIntegrationLookup(
+      Object.values(this.hass.entities)
+    );
 
     return ensureArray(this.selector.target.device).some((filter) =>
       filterSelectorDevices(filter, device, deviceIntegrations)

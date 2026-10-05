@@ -106,12 +106,9 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     if (!target?.device) {
       return true;
     }
-    const deviceIntegrations = this._entitySources
-      ? this._deviceIntegrationLookup(
-          this._entitySources,
-          Object.values(this.hass.entities)
-        )
-      : undefined;
+    const deviceIntegrations = this._deviceIntegrationLookup(
+      Object.values(this.hass.entities)
+    );
     return ensureArray(target.device).some((d) =>
       filterSelectorDevices(d, device, deviceIntegrations)
     );

@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -9,8 +9,6 @@ import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
-import type { EntitySources } from "../../data/entity/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { DeviceSelector } from "../../data/selector";
 import {
   filterSelectorDevices,
@@ -25,8 +23,6 @@ export class HaDeviceSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public selector!: DeviceSelector;
-
-  @state() private _entitySources?: EntitySources;
 
   @state() private _configEntries?: ConfigEntry[];
 
@@ -71,15 +67,6 @@ export class HaDeviceSelector extends LitElement {
 
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
-    if (
-      changedProperties.has("selector") &&
-      this._hasIntegration(this.selector) &&
-      !this._entitySources
-    ) {
-      fetchEntitySourcesWithCache(this.hass).then((sources) => {
-        this._entitySources = sources;
-      });
-    }
     if (!this._configEntries && this._hasIntegration(this.selector)) {
       this._configEntries = [];
       getConfigEntries(this.hass).then((entries) => {
@@ -89,10 +76,6 @@ export class HaDeviceSelector extends LitElement {
   }
 
   protected render() {
-    if (this._hasIntegration(this.selector) && !this._entitySources) {
-      return nothing;
-    }
-
     if (!this.selector.device?.multiple) {
       return html`
         <ha-device-picker
@@ -131,14 +114,11 @@ export class HaDeviceSelector extends LitElement {
     if (!this.selector.device?.filter) {
       return true;
     }
-    const deviceIntegrations = this._entitySources
-      ? this._deviceIntegrationLookup(
-          this._entitySources,
-          Object.values(this.hass.entities),
-          Object.values(this.hass.devices),
-          this._configEntries
-        )
-      : undefined;
+    const deviceIntegrations = this._deviceIntegrationLookup(
+      Object.values(this.hass.entities),
+      Object.values(this.hass.devices),
+      this._configEntries
+    );
 
     return ensureArray(this.selector.device.filter).some((filter) =>
       filterSelectorDevices(filter, device, deviceIntegrations)
@@ -150,7 +130,7 @@ export class HaDeviceSelector extends LitElement {
       filterSelectorEntities(
         filter,
         entity,
-        this._entitySources,
+        undefined,
         this.hass.entities,
         this.hass.devices
       )

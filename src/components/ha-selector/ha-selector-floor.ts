@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -9,8 +9,6 @@ import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
-import type { EntitySources } from "../../data/entity/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { FloorSelector } from "../../data/selector";
 import {
   filterSelectorDevices,
@@ -35,8 +33,6 @@ export class HaFloorSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
-
-  @state() private _entitySources?: EntitySources;
 
   @state() private _configEntries?: ConfigEntry[];
 
@@ -65,16 +61,7 @@ export class HaFloorSelector extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues<this>): void {
-    if (
-      changedProperties.has("selector") &&
-      this._hasIntegration(this.selector) &&
-      !this._entitySources
-    ) {
-      fetchEntitySourcesWithCache(this.hass).then((sources) => {
-        this._entitySources = sources;
-      });
-    }
+  protected updated(): void {
     if (!this._configEntries && this._hasIntegration(this.selector)) {
       this._configEntries = [];
       getConfigEntries(this.hass).then((entries) => {
@@ -84,10 +71,6 @@ export class HaFloorSelector extends LitElement {
   }
 
   protected render() {
-    if (this._hasIntegration(this.selector) && !this._entitySources) {
-      return nothing;
-    }
-
     if (!this.selector.floor?.multiple) {
       return html`
         <ha-floor-picker
@@ -136,7 +119,7 @@ export class HaFloorSelector extends LitElement {
       filterSelectorEntities(
         filter,
         entity,
-        this._entitySources,
+        undefined,
         this.hass.entities,
         this.hass.devices
       )
@@ -148,14 +131,11 @@ export class HaFloorSelector extends LitElement {
       return true;
     }
 
-    const deviceIntegrations = this._entitySources
-      ? this._deviceIntegrationLookup(
-          this._entitySources,
-          Object.values(this.hass.entities),
-          Object.values(this.hass.devices),
-          this._configEntries
-        )
-      : undefined;
+    const deviceIntegrations = this._deviceIntegrationLookup(
+      Object.values(this.hass.entities),
+      Object.values(this.hass.devices),
+      this._configEntries
+    );
 
     return ensureArray(this.selector.floor.device).some((filter) =>
       filterSelectorDevices(filter, device, deviceIntegrations)
