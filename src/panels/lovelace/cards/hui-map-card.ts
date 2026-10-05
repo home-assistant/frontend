@@ -457,7 +457,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         this._overviewSelected
           ? this.hass.states[this._overviewSelected]
           : undefined,
-        this.preview || this._overviewTab === "zones"
+        this.preview ||
+          this._config?.show_zone_radius ||
+          this._overviewTab === "zones"
       );
       // Without the overview, while editing, every marker shows
       this._filteredMapEntities = this.preview
@@ -517,8 +519,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   // In panel layout, only the selected zone shows its radius (all of them on
-  // the Zones tab and while editing) and only an imprecise selected person
-  // its accuracy circle
+  // the Zones tab, while editing, or when configured) and only an imprecise
+  // selected person its accuracy circle
   private _decorateOverviewEntities = memoizeOne(
     (
       entities: HaMapEntity[],

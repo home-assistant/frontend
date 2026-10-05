@@ -10724,6 +10724,8 @@
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",
               "fit_zones": "Fit zones",
+              "show_zone_radius": "Show zone radius",
+              "show_zone_radius_helper": "Always show the radius of every zone on the map, not only on the Zones tab",
               "cluster": "Cluster markers",
               "show_all": "Show all",
               "show_all_helper": "Automatically add all entities with coordinates",
