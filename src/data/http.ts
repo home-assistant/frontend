@@ -1,5 +1,16 @@
 import type { HomeAssistant } from "../types";
 
+// Mozilla server side TLS profiles, named after the guideline version they
+// follow (core: homeassistant.util.ssl.SSLProfile). Current profiles first.
+export const SSL_PROFILES = [
+  "modern_v6",
+  "intermediate_v6",
+  "modern_v4",
+  "intermediate_v4",
+] as const;
+
+export type SslProfile = (typeof SSL_PROFILES)[number];
+
 export interface HttpConfig {
   server_host?: string[];
   server_port?: number;
@@ -12,7 +23,7 @@ export interface HttpConfig {
   use_x_frame_options?: boolean;
   ip_ban_enabled?: boolean;
   login_attempts_threshold?: number;
-  ssl_profile?: "modern" | "intermediate";
+  ssl_profile?: SslProfile;
 }
 
 // The slot the running HTTP server was actually started with.

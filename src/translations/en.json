@@ -9237,8 +9237,10 @@
               "text": "The address changed. Once Home Assistant has restarted, you can reach it at:",
               "note": "Depending on your network setup, this address may not be reachable from this device."
             },
-            "ssl_profile_modern": "Modern",
-            "ssl_profile_intermediate": "Intermediate",
+            "ssl_profile_modern_v6": "Modern v6 (TLS 1.3 only)",
+            "ssl_profile_intermediate_v6": "Intermediate v6 (TLS 1.2 or newer)",
+            "ssl_profile_modern_v4": "Modern v4 (outdated, TLS 1.2 or newer)",
+            "ssl_profile_intermediate_v4": "Intermediate v4 (outdated, TLS 1.0 or newer)",
             "sections": {
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
@@ -9266,7 +9268,7 @@
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
               "ssl_peer_certificate": "Absolute path to a client certificate Home Assistant should require for secure connections.",
-              "ssl_profile": "Mozilla SSL profile. Use 'Intermediate' only if integrations have SSL handshake issues.",
+              "ssl_profile": "Mozilla server side TLS profile. Choose Intermediate if older devices or apps cannot connect.",
               "cors_allowed_origins": "Origins that may make cross-origin requests. Include the scheme, for example https://example.com.",
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
