@@ -56,18 +56,15 @@ export class HaEntitySelector extends LitElement {
       )
   );
 
-  // Which async data the current filter needs to be evaluated: a top-level or
-  // device `integration` filter needs entity sources, and a `device.integration`
-  // filter additionally needs config entries (the device integration lookup is
-  // built from both).
+  // Which async data the current filter needs to be evaluated: a top-level
+  // `integration` filter needs entity sources, and a `device.integration`
+  // filter needs config entries.
   private _dataNeeds = memoizeOne((selector: EntitySelector) => {
     const filters = selector.entity?.filter
       ? ensureArray(selector.entity.filter)
       : [];
     return {
-      entitySources: filters.some(
-        (f) => f.integration || f.device?.integration
-      ),
+      entitySources: filters.some((f) => f.integration),
       configEntries: filters.some((f) => f.device?.integration),
     };
   });
