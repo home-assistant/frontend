@@ -4,11 +4,11 @@ import type { RefreshTokenType } from "./refresh_token";
 
 export interface AuthUrlSearchParams {
   client_id?: string;
+  redirect_uri?: string;
+  state?: string;
   code_challenge?: string;
   code_challenge_method?: string;
-  redirect_uri?: string;
   response_type?: string;
-  state?: string;
 }
 
 export interface AuthProvider {
@@ -53,15 +53,23 @@ export const fetchAuthProviders = () =>
   });
 
 export const createLoginFlow = (
-  request: Omit<AuthUrlSearchParams, "state">,
-  handler: (string | null)[]
+  client_id: string | undefined,
+  redirect_uri: string | undefined,
+  handler: (string | null)[],
+  code_challenge?: string,
+  code_challenge_method?: string,
+  response_type?: string
 ) =>
   fetch("/auth/login_flow", {
     method: "POST",
     credentials: "same-origin",
     body: JSON.stringify({
-      ...request,
+      client_id,
       handler,
+      redirect_uri,
+      code_challenge,
+      code_challenge_method,
+      response_type,
     }),
   });
 

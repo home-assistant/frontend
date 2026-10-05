@@ -1,54 +1,76 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createLoginFlow } from "../../src/data/auth";
 
-afterEach(() => {
-  vi.restoreAllMocks();
-  vi.unstubAllGlobals();
-});
-
 describe("createLoginFlow", () => {
-  it.each([
-    {},
-    {
-      code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
-      code_challenge_method: "S256",
-      response_type: "code",
-    },
-    {
-      code_challenge: "",
-      code_challenge_method: "S256",
-    },
-    {
-      code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
-      code_challenge_method: "",
-    },
-    {
-      code_challenge: "",
-      code_challenge_method: "",
-    },
-  ])("forwards the authorization request %j", async (parameters) => {
-    const fetchMock = vi
-      .spyOn(window, "fetch")
-      .mockResolvedValue(new Response());
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
 
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetAllMocks();
+  });
+
+  it("posts basic login flow without PKCE parameters", async () => {
     await createLoginFlow(
-      {
-        client_id: "https://client.example/",
-        redirect_uri: "https://client.example/callback",
-        ...parameters,
-      },
+      "https://myclient.com",
+      "https://myclient.com/callback",
       ["homeassistant", null]
     );
 
-    expect(fetchMock).toHaveBeenCalledWith("/auth/login_flow", {
+    expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
       method: "POST",
       credentials: "same-origin",
       body: JSON.stringify({
-        client_id: "https://client.example/",
-        redirect_uri: "https://client.example/callback",
-        ...parameters,
+        client_id: "https://myclient.com",
         handler: ["homeassistant", null],
+        redirect_uri: "https://myclient.com/callback",
+      }),
+    });
+  });
+
+  it("posts login flow with code_challenge and code_challenge_method", async () => {
+    await createLoginFlow(
+      "https://myclient.com",
+      "https://myclient.com/callback",
+      ["homeassistant", null],
+      "E9Melhoa2OwvFrGMTJguCHaoeK1t8URWbuGJSstw-cM",
+      "S256",
+      "code"
+    );
+
+    expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
+      method: "POST",
+      credentials: "same-origin",
+      body: JSON.stringify({
+        client_id: "https://myclient.com",
+        handler: ["homeassistant", null],
+        redirect_uri: "https://myclient.com/callback",
+        code_challenge: "E9Melhoa2OwvFrGMTJguCHaoeK1t8URWbuGJSstw-cM",
+        code_challenge_method: "S256",
+        response_type: "code",
+      }),
+    });
+  });
+
+  it("posts empty PKCE parameters", async () => {
+    await createLoginFlow(
+      "https://myclient.com",
+      "https://myclient.com/callback",
+      ["homeassistant", null],
+      "",
+      ""
+    );
+
+    expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
+      method: "POST",
+      credentials: "same-origin",
+      body: JSON.stringify({
+        client_id: "https://myclient.com",
+        handler: ["homeassistant", null],
+        redirect_uri: "https://myclient.com/callback",
+        code_challenge: "",
+        code_challenge_method: "",
       }),
     });
   });
