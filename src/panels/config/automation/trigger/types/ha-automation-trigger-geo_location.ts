@@ -8,6 +8,25 @@ import type { HomeAssistant } from "../../../../../types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.triggers.type.geo_location.${fieldName}` as any
+  );
+
+export const YAML_SCHEMA = [
+  { name: "source", selector: { text: {} } },
+  { name: "zone", selector: { entity: { domain: "zone" } } },
+  {
+    name: "event",
+    type: "select" as const,
+    required: true,
+    options: [["enter", "enter"] as const, ["leave", "leave"] as const],
+  },
+] as const;
+
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -73,10 +92,7 @@ export class HaGeolocationTrigger extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {
