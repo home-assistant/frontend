@@ -73,6 +73,10 @@ class HaWebRtcPlayer extends LitElement {
 
   private _hiddenCleanupTimeout?: number;
 
+  // Incremented on every clean up, so a pending start can detect that it was
+  // superseded by a disconnect or a newer start while it was awaiting.
+  private _startId = 0;
+
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
       // video is playing in picture-in-picture mode, don't do anything
@@ -159,12 +163,20 @@ class HaWebRtcPlayer extends LitElement {
 
     this._startTimer();
 
+    const startId = this._startId;
+
     this._logEvent("start clientConfig");
 
-    this._clientConfig = await fetchWebRtcClientConfiguration(
+    const clientConfig = await fetchWebRtcClientConfiguration(
       this._api,
       this.entityid
     );
+
+    if (startId !== this._startId) {
+      return;
+    }
+
+    this._clientConfig = clientConfig;
 
     this._logEvent("end clientConfig", this._clientConfig);
 
@@ -207,7 +219,8 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _startNegotiation = async () => {
-    if (!this._peerConnection) {
+    const peerConnection = this._peerConnection;
+    if (!peerConnection) {
       return;
     }
 
@@ -219,9 +232,9 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start createOffer", offerOptions);
 
     const offer: RTCSessionDescriptionInit =
-      await this._peerConnection.createOffer(offerOptions);
+      await peerConnection.createOffer(offerOptions);
 
-    if (!this._peerConnection) {
+    if (this._peerConnection !== peerConnection) {
       return;
     }
 
@@ -229,9 +242,9 @@ class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("start setLocalDescription");
 
-    await this._peerConnection.setLocalDescription(offer);
+    await peerConnection.setLocalDescription(offer);
 
-    if (!this._peerConnection || !this.entityid) {
+    if (this._peerConnection !== peerConnection || !this.entityid) {
       return;
     }
 
@@ -384,6 +397,7 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _cleanUp() {
+    this._startId++;
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
         track.stop();
