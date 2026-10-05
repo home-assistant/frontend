@@ -911,9 +911,14 @@ export class HaConfigEntryRow extends LitElement {
         --state-message-color: var(--ha-color-on-danger-normal);
         background-color: var(--ha-color-fill-danger-quiet-resting);
       }
-      .state-failed-unload,
+      .state-failed-unload {
+        --state-message-color: var(--ha-color-on-warning-normal);
+      }
       .state-not-loaded {
         --state-message-color: var(--ha-color-text-primary);
+      }
+      .state-failed-unload,
+      .state-not-loaded {
         background-color: var(--ha-color-fill-warning-quiet-resting);
       }
       .state-setup {
