@@ -1273,7 +1273,7 @@ describe("MapLibreMapEngine", () => {
       ).toBe(true);
     });
 
-    it("leaves clusters elsewhere on the map alone when one is activated", async () => {
+    it("regroups clusters elsewhere on the map too when one is activated", async () => {
       vi.useFakeTimers();
       const { engine, map, ready } = await createEngine();
       await ready;
@@ -1289,11 +1289,17 @@ describe("MapLibreMapEngine", () => {
 
       (iconBuilder.mock.results[0].value.element as HTMLElement).click();
       expect(map.fitBounds).toHaveBeenCalledOnce();
-      // The activated pair parted; the other bubble is the very same marker
-      expect(fakeMarker.all).toHaveLength(3);
-      expect(fakeMarker.all).toContain(other);
-      expect(other.onMap).toBe(true);
-      expect((other.options.element as HTMLElement).style.visibility).toBe("");
+      // Both pairs part: the fit regroups everything for the landing zoom
+      expect(fakeMarker.all).toHaveLength(4);
+      expect(fakeMarker.all).not.toContain(other);
+      const far = fakeMarker.all.filter((marker) => marker.lngLat![0] >= 5);
+      expect(far).toHaveLength(2);
+      far.forEach((marker) => {
+        expect(marker.onMap).toBe(true);
+        expect((marker.options.element as HTMLElement).style.visibility).toBe(
+          ""
+        );
+      });
       expect(iconBuilder).toHaveBeenCalledTimes(2);
     });
 

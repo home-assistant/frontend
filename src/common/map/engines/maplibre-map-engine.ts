@@ -681,21 +681,26 @@ export class MapLibreMapEngine implements MapEngine {
 
   public fitBounds(points: MapLatLng[], options?: MapFitOptions): void {
     const fit = this._fitFor(points, options);
-    if (fit) {
-      this._map!.fitBounds(fit.bounds, {
-        ...fit.options,
-        animate: options?.animate,
-      });
+    if (!fit) {
+      return;
     }
-  }
-
-  // The zoom a fit would land on, without moving the map
-  private _zoomAfterFit(points: MapLatLng[], options?: MapFitOptions): number {
-    const fit = this._fitFor(points, options);
-    return (
-      (fit && this._map!.cameraForBounds(fit.bounds, fit.options)?.zoom) ??
-      this._map!.getZoom()
-    );
+    const map = this._map!;
+    // Regroup now for the zoom the fit lands on
+    const zoom = this._clusterOptions
+      ? map.cameraForBounds(fit.bounds, fit.options)?.zoom
+      : undefined;
+    if (zoom !== undefined) {
+      this._groupingZoom = zoom;
+      try {
+        this._rebuildClusters(true);
+      } finally {
+        this._groupingZoom = undefined;
+      }
+    }
+    map.fitBounds(fit.bounds, {
+      ...fit.options,
+      animate: options?.animate,
+    });
   }
 
   private _fitFor(points: MapLatLng[], options?: MapFitOptions) {
@@ -1552,21 +1557,14 @@ export class MapLibreMapEngine implements MapEngine {
       }
       const { icon } = group;
       this._placeIcon(group, icon);
-      // Zooms in on the members, regrouped up front as they will sit once the
-      // zoom lands: leavers part now and the bubble opens for the rest
       const zoomToMembers = () => {
         const { members } = group;
-        const locations = members.map((managed) => managed.location);
-        const fit = { pad: 0.3, maxZoom: this._getMaxZoom() };
         this._openAfterRegroup = members;
-        this._groupingZoom = this._zoomAfterFit(locations, fit);
-        try {
-          this._rebuildClusters(true, group);
-        } finally {
-          this._groupingZoom = undefined;
-        }
+        this.fitBounds(
+          members.map((managed) => managed.location),
+          { pad: 0.3, maxZoom: this._getMaxZoom() }
+        );
         this._hideEmerging(members);
-        this.fitBounds(locations, fit);
       };
       setMarkerAccessibility(icon.element, this._groupTitle(group), true);
       icon.element.addEventListener("click", (ev) => {
