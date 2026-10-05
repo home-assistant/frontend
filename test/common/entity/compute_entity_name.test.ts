@@ -147,6 +147,19 @@ describe("computeEntityEntryName", () => {
     );
   });
 
+  it("matches only a user-set name loosely against the device name", () => {
+    const devices = { dev1: mockDevice({ id: "dev1", name: "Kitchen" }) };
+    const entry = mockEntityEntry({ device_id: "dev1", name: "KITCHEN" });
+
+    expect(computeEntityEntryName(entry, devices)).toBeUndefined();
+    expect(
+      computeEntityEntryName(
+        { ...entry, name: null, original_name: "KITCHEN" },
+        devices
+      )
+    ).toBe("KITCHEN");
+  });
+
   it("returns undefined if no name, original_name, or device", () => {
     const entry = mockEntity({ entity_id: "light.kitchen" });
     const hass = {
