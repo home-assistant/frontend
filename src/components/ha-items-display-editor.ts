@@ -409,6 +409,13 @@ export class HaItemDisplayEditor extends LitElement {
       --ha-row-item-padding-block: 0;
       --ha-row-item-padding-inline: var(--ha-space-2);
     }
+    ha-list-item-button::part(start),
+    ha-list-item-button::part(end) {
+      color: var(--ha-color-text-secondary);
+    }
+    ha-list-item-button::part(end) {
+      gap: var(--ha-space-4);
+    }
     ha-list-item-button.drag-selected {
       border-radius: var(--ha-border-radius-md);
       outline: solid;
