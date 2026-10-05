@@ -84,9 +84,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private _hiddenCleanupTimeout?: number;
 
-  // Incremented on every clean up, so a pending start can detect that it was
-  // superseded by a disconnect or a newer start while it was awaiting.
-  private _startId = 0;
+  private _cleanUpCount = 0;
 
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
@@ -178,7 +176,7 @@ class HaWebRtcPlayer extends LitElement {
 
     this._startTimer();
 
-    const startId = this._startId;
+    const cleanUpCountAtStart = this._cleanUpCount;
 
     this._logEvent("start clientConfig");
 
@@ -189,14 +187,14 @@ class HaWebRtcPlayer extends LitElement {
         this.entityid
       );
     } catch (err: any) {
-      if (startId === this._startId) {
+      if (cleanUpCountAtStart === this._cleanUpCount) {
         this._error = { type: "start_failed", message: err.message };
         this._cleanUp();
       }
       return;
     }
 
-    if (startId !== this._startId) {
+    if (cleanUpCountAtStart !== this._cleanUpCount) {
       return;
     }
 
@@ -432,7 +430,7 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _cleanUp() {
-    this._startId++;
+    this._cleanUpCount++;
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
         track.stop();
