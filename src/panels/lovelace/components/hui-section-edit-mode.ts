@@ -19,7 +19,6 @@ import "../../../components/ha-icon-button";
 import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import { isStrategyView } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -49,13 +48,6 @@ export class HuiSectionEditMode extends LitElement {
     if (this.isConnected) {
       this._menuButton?.focus({ preventScroll: true });
     }
-  }
-
-  private get _canMoveToTop(): boolean {
-    return (
-      this.index > 0 &&
-      !isStrategyView(this.lovelace.config.views[this.viewIndex])
-    );
   }
 
   protected render(): TemplateResult {
@@ -106,10 +98,7 @@ export class HuiSectionEditMode extends LitElement {
               ></ha-svg-icon>
               ${this.hass.localize("ui.common.duplicate")}
             </ha-dropdown-item>
-            <ha-dropdown-item
-              value="move-to-top"
-              ?disabled=${!this._canMoveToTop}
-            >
+            <ha-dropdown-item value="move-to-top">
               <ha-svg-icon
                 slot="icon"
                 .path=${mdiFormatVerticalAlignTop}
@@ -191,10 +180,6 @@ export class HuiSectionEditMode extends LitElement {
   }
 
   private _moveSectionToTop(): void {
-    if (!this._canMoveToTop) {
-      return;
-    }
-
     fireEvent(this, "section-move-to-top", { index: this.index });
   }
 
