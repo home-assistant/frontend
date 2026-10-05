@@ -894,10 +894,7 @@ export class HaConfigEntryRow extends LitElement {
         color: var(--ha-color-fill-neutral-loud-resting);
       }
       ha-icon-button.link {
-        color: var(
-          --md-list-item-trailing-icon-color,
-          var(--md-sys-color-on-surface-variant, #49454f)
-        );
+        color: var(--ha-color-text-secondary);
       }
       .toggle-devices-row {
         overflow: hidden;
