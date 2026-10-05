@@ -51,8 +51,14 @@ export const computeEntityEntryName = (
 
   const deviceName = computeDeviceName(device);
 
+  // original_name comes unprefixed from core, only a user-set name needs the loose match
+  const isOnlyDeviceName =
+    entry.name != null && deviceName
+      ? isDeviceName(entry.name, deviceName)
+      : deviceName === name;
+
   // An empty entity name or one that is only the device name means the entity uses the device name
-  if (!name || (deviceName && isDeviceName(name, deviceName))) {
+  if (!name || isOnlyDeviceName) {
     return undefined;
   }
 

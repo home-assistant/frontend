@@ -278,8 +278,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._name = this.entry.name || this._originalName;
-    this._useDeviceName =
-      !!this._device && !this._isOwnName(this.entry.name ?? this._originalName);
+    this._useDeviceName = !!this._device && !this._isOwnName(this.entry.name);
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -1761,10 +1760,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _hasOwnName(): boolean {
-    return this._isOwnName(this._computeName() ?? this._originalName);
+    return this._isOwnName(this._computeName());
   }
 
+  // Only a user-set name needs the check, original_name is already unprefixed
   private _isOwnName(name: string | null): boolean {
+    if (name === null) {
+      return !!this._originalName;
+    }
     if (!name) {
       return false;
     }
@@ -1782,7 +1785,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _restoreName(): void {
     this._name = this._originalName;
-    if (this._device && !this._isOwnName(this._originalName)) {
+    if (this._device && !this._originalName) {
       this._useDeviceName = true;
     }
   }
@@ -1799,7 +1802,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return this.entry.name;
     }
     if (this._device && this._useDeviceName) {
-      if (!this._isOwnName(this.entry.name ?? this._originalName)) {
+      if (!this._isOwnName(this.entry.name)) {
         return this.entry.name;
       }
       return this._originalName ? "" : null;
