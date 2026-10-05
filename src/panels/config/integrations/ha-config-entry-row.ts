@@ -865,6 +865,9 @@ export class HaConfigEntryRow extends LitElement {
           0 0 12px rgba(var(--rgb-info-color), 0.28);
         content: "";
       }
+      :host(.attention) .config-entry-wrapper {
+        background-color: rgba(var(--rgb-warning-color), 0.2);
+      }
       .expand-button {
         margin: 0 -12px;
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
