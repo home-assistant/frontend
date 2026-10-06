@@ -238,6 +238,9 @@ export class LeafletMapEngine implements MapEngine {
     // activation handlers never hear a key; the element itself takes focus
     const interactive = options.interactive ?? true;
     const focusable = options.focusable ?? interactive;
+    if (options.title && options.nativeTitle !== false) {
+      element.title = options.title;
+    }
     setMarkerAccessibility(element, options.title, focusable);
     const marker: HandledMarker = new DecoratedMarker(location, decoration, {
       zIndexOffset: options.raised ? 1000 : 0,
@@ -249,7 +252,6 @@ export class LeafletMapEngine implements MapEngine {
       }),
       interactive,
       keyboard: false,
-      title: options.title,
     });
 
     const handle: LeafletMarkerHandle = {

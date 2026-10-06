@@ -81,6 +81,8 @@ export interface MapMarkerOptions {
   focusable?: boolean;
   /** Accessible name */
   title?: string;
+  /** Also show the title as the browser's tooltip; defaults to true */
+  nativeTitle?: boolean;
   /** A meter-radius circle sharing the marker's lifecycle (GPS accuracy) */
   decoration?: MapCircleOptions;
   /** Cluster this marker; it appears once setClustering is called */
@@ -149,6 +151,7 @@ export interface MapEditableCircleOptions {
   centerElement?: HTMLElement;
   centerSize?: [width: number, height: number];
   title?: string;
+  nativeTitle?: boolean;
   /** The center can be dragged */
   moveable?: boolean;
   /** A handle on the edge can be dragged to change the radius */
