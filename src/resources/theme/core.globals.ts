@@ -42,6 +42,14 @@ export const coreStyles = css`
     --ha-space-19: 76px;
     --ha-space-20: 80px;
 
+    /* Off-grid values from the OS design (Figma "Maps - MBB /ML") */
+    --ha-os-space-2: 2px;
+    --ha-os-space-18: 18px;
+    --ha-os-space-22: 22px;
+    --ha-os-space-34: 34px;
+    --ha-os-space-46: 46px;
+    --ha-os-border-radius-50: 50px;
+
     --ha-animation-duration-none: 1ms;
     --ha-animation-duration-instant: 75ms;
     --ha-animation-duration-fast: 150ms;
