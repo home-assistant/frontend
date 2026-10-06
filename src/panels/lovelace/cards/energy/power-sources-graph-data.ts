@@ -86,8 +86,8 @@ export function getPowerLegendValues(
   now: number
 ): Record<string, string> {
   if (
-    !isSameDay(now, energyData.start) ||
-    !isSameDay(now, energyData.end ?? now)
+    now < energyData.start.getTime() ||
+    (energyData.end && now > energyData.end.getTime())
   ) {
     return {};
   }
