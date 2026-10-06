@@ -109,11 +109,29 @@ export class HuiPowerSourcesGraphCard
     this._config = config;
   }
 
+  private _statRateIds = memoizeOne(
+    (energyData?: EnergyData) =>
+      energyData?.prefs.energy_sources.flatMap((s) =>
+        (s.type === "solar" || s.type === "grid" || s.type === "battery") &&
+        s.stat_rate
+          ? [s.stat_rate]
+          : []
+      ) ?? []
+  );
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.size > 1 || !changedProps.has("_states")) {
       return true;
     }
-    // Cambiato solo _states: ri-renderizza solo se cambia un valore in legenda
+    const oldStates = changedProps.get("_states") as HassEntities | undefined;
+    if (
+      oldStates &&
+      this._statRateIds(this._energyData).every(
+        (id) => oldStates[id] === this._states[id]
+      )
+    ) {
+      return false;
+    }
     return this._refreshLegendValues();
   }
 
