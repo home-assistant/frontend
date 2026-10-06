@@ -1,6 +1,7 @@
 import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { formatDurationDigital } from "../../../../../common/datetime/format_duration";
 import { consume } from "../../../../../common/decorators/consume";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/animation/ha-fade-in";
@@ -157,7 +158,10 @@ class DialogThreadEphemeralKey extends DialogMixin<DialogThreadEphemeralKeyParam
   }
 
   private _formatRemaining(seconds: number): string {
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+    return formatDurationDigital(this._i18n.locale, {
+      minutes: Math.floor(seconds / 60),
+      seconds: seconds % 60,
+    });
   }
 
   private _startCountdown(): void {
