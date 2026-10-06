@@ -3,7 +3,11 @@ import { html, LitElement } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators";
 import { afterEach, describe, expect, it } from "vitest";
-import { consume } from "../../../src/common/decorators/consume";
+import {
+  consume,
+  consumeContext,
+  ContextController,
+} from "../../../src/common/decorators/consume";
 import { transform } from "../../../src/common/decorators/transform";
 
 interface TestValue {
@@ -19,6 +23,7 @@ declare global {
     "test-consume-no-state": TestConsumeNoState;
     "test-consume-transform": TestConsumeTransform;
     "test-consume-once": TestConsumeOnce;
+    "test-consume-controller": TestConsumeController;
   }
 }
 
@@ -77,6 +82,42 @@ class TestConsumeOnce extends RenderCounter {
 
   protected render() {
     return html`${this.value?.a}`;
+  }
+}
+
+class TestController extends ContextController {
+  @consumeContext({
+    context: testContext,
+    subscribe: true,
+    transform: ({ a }) => a,
+  })
+  public a?: number;
+
+  @consumeContext({ context: testContext })
+  public once?: TestValue;
+
+  public updates = 0;
+
+  protected contextUpdated() {
+    this.updates += 1;
+  }
+}
+
+class TestTypedController extends ContextController {
+  @consumeContext({ context: testContext, transform: ({ a }) => a })
+  public a?: number;
+
+  // @ts-expect-error a number cannot be stored in a string field
+  @consumeContext({ context: testContext, transform: ({ a }) => a })
+  public label?: string;
+}
+
+@customElement("test-consume-controller")
+class TestConsumeController extends RenderCounter {
+  public controller = new TestController(this);
+
+  protected render() {
+    return html`static`;
   }
 }
 
@@ -150,5 +191,58 @@ describe("consume", () => {
     await el.updateComplete;
     expect(el.value).toEqual({ a: 1, b: 1 });
     expect(el.renderCount).toBe(1);
+  });
+});
+
+describe("consumeContext", () => {
+  it("stores the transformed value and reports only real changes", async () => {
+    const { el, provider } = await mount<TestConsumeController>(
+      "test-consume-controller"
+    );
+    const { controller } = el;
+    expect(controller.a).toBe(1);
+    const updates = controller.updates;
+
+    provider.setValue({ a: 1, b: 2 });
+    expect(controller.updates).toBe(updates);
+
+    provider.setValue({ a: 3, b: 2 });
+    expect(controller.a).toBe(3);
+    expect(controller.updates).toBe(updates + 1);
+
+    await el.updateComplete;
+    expect(el.renderCount).toBe(1);
+  });
+
+  it("takes only the first value without subscribe", async () => {
+    const { el, provider } = await mount<TestConsumeController>(
+      "test-consume-controller"
+    );
+
+    provider.setValue({ a: 2, b: 2 });
+    expect(el.controller.once).toEqual({ a: 1, b: 1 });
+  });
+
+  it("gets the current value when created on a connected host", async () => {
+    const { el, provider } = await mount<TestConsumeController>(
+      "test-consume-controller"
+    );
+    provider.setValue({ a: 4, b: 4 });
+
+    const controller = new TestController(el);
+    await Promise.resolve();
+    expect(controller.a).toBe(4);
+    expect(controller.once).toEqual({ a: 4, b: 4 });
+    expect(controller.updates).toBe(2);
+  });
+
+  it("stores the transformed value in a typed public field", async () => {
+    const { el } = await mount<TestConsumeController>(
+      "test-consume-controller"
+    );
+
+    const controller = new TestTypedController(el);
+    await Promise.resolve();
+    expect(controller.a).toBe(1);
   });
 });
