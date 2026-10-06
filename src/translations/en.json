@@ -9244,7 +9244,7 @@
             "ssl_profile_modern_v4": "Modern v4 (outdated)",
             "ssl_profile_modern_v4_description": "TLS 1.2 and newer with older ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
             "ssl_profile_intermediate_v4": "Intermediate v4 (outdated)",
-            "ssl_profile_intermediate_v4_description": "TLS 1.0 and newer with legacy ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
+            "ssl_profile_intermediate_v4_description": "TLS 1.2 and newer with legacy ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
             "sections": {
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
