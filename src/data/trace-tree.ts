@@ -73,6 +73,16 @@ const isDisabled = (config: unknown, parentDisabled: boolean): boolean =>
     "enabled" in config &&
     (config as { enabled?: boolean }).enabled === false);
 
+/** The automation's triggers, flattened like the trace paths count them. */
+export const getTraceTriggers = (
+  config: TraceExtended["config"]
+): Trigger[] | undefined => {
+  const triggerKey = "triggers" in config ? "triggers" : "trigger";
+  return triggerKey in config
+    ? flattenTriggers(ensureArray(config[triggerKey]))
+    : undefined;
+};
+
 /** Configuration-shaped tree annotated with the execution tracked by Core. */
 export class TraceTree {
   public readonly triggers?: TraceNode<Trigger>[];
@@ -97,15 +107,11 @@ export class TraceTree {
 
   constructor(public readonly trace: TraceExtended) {
     const config = trace.config;
-    const triggerKey = "triggers" in config ? "triggers" : "trigger";
     const conditionKey = "conditions" in config ? "conditions" : "condition";
     const actionKey = "actions" in config ? "actions" : "action";
-    this.triggers =
-      triggerKey in config
-        ? flattenTriggers(ensureArray(config[triggerKey])).map((trigger, i) =>
-            this._triggerNode(trigger, `trigger/${i}`)
-          )
-        : undefined;
+    this.triggers = getTraceTriggers(config)?.map((trigger, i) =>
+      this._triggerNode(trigger, `trigger/${i}`)
+    );
     this.conditions =
       conditionKey in config
         ? ensureArray<Condition>(config[conditionKey] ?? []).map(
