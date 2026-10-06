@@ -1,13 +1,12 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { LovelacePath } from "../lovelace-path";
 
 export interface EditBadgeDialogParams {
   lovelaceConfig: LovelaceConfig;
-  saveConfig: (config: LovelaceConfig) => void;
-  path: LovelacePath;
-  badgeConfig?: LovelaceBadgeConfig;
+  saveBadgeConfig: (config: LovelaceBadgeConfig) => void;
+  badgeConfig: LovelaceBadgeConfig;
+  isNew?: boolean;
 }
 
 export const importEditBadgeDialog = () => import("./hui-dialog-edit-badge");

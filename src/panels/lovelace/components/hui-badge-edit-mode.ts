@@ -28,7 +28,11 @@ import {
 import { haStyle } from "../../../resources/styles";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import type { LovelacePath } from "../editor/lovelace-path";
-import { getAtPath, getParentPath } from "../editor/lovelace-path";
+import {
+  appendAtPath,
+  getAtPath,
+  getParentPath,
+} from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 @customElement("hui-badge-edit-mode")
@@ -219,11 +223,19 @@ export class HuiBadgeEditMode extends LitElement {
   }
 
   private _duplicateBadge(): void {
+    const badgesPath = getParentPath(this.path);
     showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace.config,
-      saveConfig: this.lovelace.saveConfig,
-      path: getParentPath(this.path),
+      saveBadgeConfig: async (newBadgeConfig) => {
+        const newConfig = appendAtPath(
+          this.lovelace.config,
+          badgesPath,
+          newBadgeConfig
+        );
+        await this.lovelace.saveConfig(newConfig);
+      },
       badgeConfig: this._badgeConfig,
+      isNew: true,
     });
   }
 

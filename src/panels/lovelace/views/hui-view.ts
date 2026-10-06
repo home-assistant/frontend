@@ -229,10 +229,25 @@ export class HUIView extends ReactiveElement {
     this.addEventListener(
       "ll-edit-badge",
       (ev: HASSDomEvent<HASSDomEvents["ll-edit-badge"]>) => {
+        const path = ev.detail.path;
+        const badge = getAtPath<Partial<LovelaceBadgeConfig> | string>(
+          this.lovelace.config,
+          path
+        );
+        if (badge == null) {
+          return;
+        }
         showEditBadgeDialog(this, {
           lovelaceConfig: this.lovelace.config,
-          saveConfig: this.lovelace.saveConfig,
-          path: ev.detail.path,
+          saveBadgeConfig: async (newBadgeConfig) => {
+            const newConfig = setAtPath(
+              this.lovelace.config,
+              path,
+              newBadgeConfig
+            );
+            await this.lovelace.saveConfig(newConfig);
+          },
+          badgeConfig: ensureBadgeConfig(badge),
         });
       }
     );

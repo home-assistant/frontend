@@ -218,9 +218,9 @@ export class HuiCreateDialogBadge
   ): Promise<void> {
     const config = ev.detail.config;
     const lovelaceConfig = this._params!.lovelaceConfig;
-    const containerPath = this._params!.path;
+    const badgesPath = this._params!.path;
     const saveConfig = this._params!.saveConfig;
-    const newConfig = appendAtPath(lovelaceConfig, containerPath, config);
+    const newConfig = appendAtPath(lovelaceConfig, badgesPath, config);
     await saveConfig(newConfig);
     this.closeDialog();
   }
@@ -235,11 +235,21 @@ export class HuiCreateDialogBadge
       }
     }
 
+    const lovelaceConfig = this._params!.lovelaceConfig;
+    const badgesPath = this._params!.path;
+    const saveConfig = this._params!.saveConfig;
     showEditBadgeDialog(this, {
-      lovelaceConfig: this._params!.lovelaceConfig,
-      saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
+      lovelaceConfig,
+      saveBadgeConfig: async (newBadgeConfig) => {
+        const newConfig = appendAtPath(
+          lovelaceConfig,
+          badgesPath,
+          newBadgeConfig
+        );
+        await saveConfig(newConfig);
+      },
       badgeConfig: config,
+      isNew: true,
     });
 
     this.closeDialog();
