@@ -145,7 +145,6 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       this._highlightedNodes && this._highlightedNodes.size > 0;
 
     return html`<ha-chart-base
-      .hass=${this.hass}
       .data=${this._getSeries(
         this.data,
         this._physicsEnabled ?? false,

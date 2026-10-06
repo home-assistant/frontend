@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { acceptMarketplaceWarning } from "../../../src/data/marketplace/websocket";
-import type { HomeAssistant } from "../../../src/types";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../../../src/panels/marketplace/components/ha-marketplace-warning";
 
 const stubElement = vi.hoisted(() => (tag: string) => {
@@ -25,10 +26,14 @@ vi.mock("../../../src/data/marketplace/websocket", async (importOriginal) => ({
   acceptMarketplaceWarning: vi.fn(async () => undefined),
 }));
 
+let hass: MockHomeAssistant;
+
 const openWarning = async () => {
+  const host = document.createElement("div");
+  hass = provideHass(host, { localize: (key: string) => key });
+  document.body.append(host);
   const warning = document.createElement("ha-marketplace-warning");
-  warning.hass = { localize: (key: string) => key } as HomeAssistant;
-  document.body.append(warning);
+  host.append(warning);
   await warning.updateComplete;
   return warning;
 };
@@ -83,7 +88,9 @@ it("sends the acceptance, and can be continued again after it", async () => {
   internals._understood = true;
 
   const accepting = internals._accept();
-  expect(acceptMarketplaceWarning).toHaveBeenCalledWith(warning.hass);
+  expect(acceptMarketplaceWarning).toHaveBeenCalledWith(
+    expect.objectContaining({ callWS: hass.callWS })
+  );
   expect(internals._accepting).toBe(true);
 
   accepted();

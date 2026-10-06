@@ -257,12 +257,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       sensorClasses: string[],
       excludeEntities?: string[]
     ): Map<string, string[]> => {
-      const sensorFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "sensor",
-        device_class: sensorClasses,
-      });
+      const sensorFilter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: "sensor",
+          device_class: sensorClasses,
+        }
+      );
       const entityIds = Object.keys(entities).filter(
         (id) => sensorFilter(id) && !excludeEntities?.includes(id)
       );
@@ -278,12 +285,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       binarySensorClasses: string[],
       excludeEntities?: string[]
     ): Map<string, string[]> => {
-      const binarySensorFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "binary_sensor",
-        device_class: binarySensorClasses,
-      });
+      const binarySensorFilter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: "binary_sensor",
+          device_class: binarySensorClasses,
+        }
+      );
 
       const entityIds = Object.keys(entities).filter(
         (id) => binarySensorFilter(id) && !excludeEntities?.includes(id)
@@ -298,11 +312,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       entities: HomeAssistant["entities"],
       areaId: string
     ): string | undefined => {
-      const cameraFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "camera",
-      });
+      const cameraFilter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: "camera",
+        }
+      );
       const cameraEntities = Object.keys(entities).filter(cameraFilter);
       return cameraEntities.length > 0 ? cameraEntities[0] : undefined;
     }
@@ -315,11 +336,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       domains: string[],
       excludeEntities?: string[]
     ): string[] => {
-      const filter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: domains,
-      });
+      const filter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: domains,
+        }
+      );
       return Object.keys(entities).filter(
         (id) => filter(id) && !excludeEntities?.includes(id)
       );

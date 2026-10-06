@@ -144,6 +144,14 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
   fireEvent(element, "value-changed", { value: newAction });
 };
 
+const getWaitTemplateCondition = (template: unknown): Condition | undefined =>
+  typeof template === "string" && template.trim()
+    ? {
+        condition: "template",
+        value_template: template,
+      }
+    : undefined;
+
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -308,6 +316,11 @@ export default class HaAutomationActionRow extends LitElement {
           ? this._extractConditionTarget(this.action as Condition)
           : undefined;
 
+    const waitTemplateCondition =
+      type === "wait_template" && "wait_template" in this.action
+        ? this._waitTemplateCondition(this.action.wait_template)
+        : undefined;
+
     const serviceTargetSpec =
       type === "condition"
         ? this._conditionDescriptions?.[(this.action as Condition).condition]
@@ -334,27 +347,39 @@ export default class HaAutomationActionRow extends LitElement {
                 .service=${this.action.action}
               ></ha-service-icon>
             `
-          : type === "condition" &&
-              this.optionsInSidebar &&
-              (this.action as Condition).condition !== "trigger"
+          : waitTemplateCondition && this.optionsInSidebar
             ? html`<ha-automation-condition-live-test
                 id="condition-icon"
                 slot="leading-icon"
                 .hass=${this.hass}
-                .condition=${this.action as Condition}
+                .condition=${waitTemplateCondition}
               >
                 <ha-svg-icon
                   class="action-icon"
-                  .path=${ACTION_ICONS[type]}
-                ></ha-svg-icon>
-              </ha-automation-condition-live-test>`
-            : html`
-                <ha-svg-icon
-                  slot="leading-icon"
-                  class="action-icon"
                   .path=${ACTION_ICONS[type!]}
                 ></ha-svg-icon>
-              `
+              </ha-automation-condition-live-test>`
+            : type === "condition" &&
+                this.optionsInSidebar &&
+                (this.action as Condition).condition !== "trigger"
+              ? html`<ha-automation-condition-live-test
+                  id="condition-icon"
+                  slot="leading-icon"
+                  .hass=${this.hass}
+                  .condition=${this.action as Condition}
+                >
+                  <ha-svg-icon
+                    class="action-icon"
+                    .path=${ACTION_ICONS[type]}
+                  ></ha-svg-icon>
+                </ha-automation-condition-live-test>`
+              : html`
+                  <ha-svg-icon
+                    slot="leading-icon"
+                    class="action-icon"
+                    .path=${ACTION_ICONS[type!]}
+                  ></ha-svg-icon>
+                `
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
@@ -363,7 +388,7 @@ export default class HaAutomationActionRow extends LitElement {
             this._entityReg,
             this.action,
             undefined,
-            { hideTriggerIds: true },
+            undefined,
             this._manifests
           )
         )}
@@ -833,6 +858,8 @@ export default class HaAutomationActionRow extends LitElement {
     copyToClipboard(dump(action));
   }
 
+  private _waitTemplateCondition = memoizeOne(getWaitTemplateCondition);
+
   private _onDisable = () => {
     const enabled = !(this.action.enabled ?? true);
     const value = { ...this.action, enabled };
@@ -1091,7 +1118,13 @@ export default class HaAutomationActionRow extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.cut_to_clipboard"
       ),
-      duration: 2000,
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
     });
   };
 

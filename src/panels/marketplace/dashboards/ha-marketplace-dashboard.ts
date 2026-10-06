@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import type { ContextType } from "@lit/context";
 import {
   mdiCheckCircleOutline,
   mdiCompassOutline,
@@ -15,7 +16,9 @@ import { keyed } from "lit/directives/keyed";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
+import { transform } from "../../../common/decorators/transform";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { navigate, updateHistoryState } from "../../../common/navigate";
 import type {
@@ -39,8 +42,8 @@ import type { HaIconButton } from "../../../components/ha-icon-button";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant, Route } from "../../../types";
-import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace-custom-repositories";
+import type { HomeAssistantUI, Route } from "../../../types";
+import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 import "../components/ha-marketplace-discover";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import {
@@ -48,6 +51,12 @@ import {
   repositoryMenuItems,
 } from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../../data/context";
 import type {
   RepositoryBase,
   RepositoryType,
@@ -72,15 +81,6 @@ const defaultKeyData = {
   filterable: true,
   hidden: true,
 };
-
-// The backend reports why the Marketplace is disabled, mapped so it can be shown
-// as a translated sentence.
-const DISABLED_REASONS = ["invalid_token", "rate_limit", "removed"] as const;
-
-type DisabledReason = (typeof DISABLED_REASONS)[number];
-
-const isKnownDisabledReason = (reason: string): reason is DisabledReason =>
-  DISABLED_REASONS.includes(reason as DisabledReason);
 
 // From the Marketplace translations, a direct visit does not load those of Settings
 export type MarketplaceTab = "discover" | "browse" | "installed";
@@ -128,8 +128,6 @@ const repositoriesOfTab = (
 export class HaMarketplaceDashboard extends LitElement {
   @property({ attribute: false }) public marketplace!: MarketplaceData;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public tab: MarketplaceTab = "browse";
 
   @property({ attribute: false }) public route!: Route;
@@ -138,6 +136,24 @@ export class HaMarketplaceDashboard extends LitElement {
   public narrow!: boolean;
 
   @property({ attribute: false }) public isWide!: boolean;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @storage({
     storage: "sessionStorage",
@@ -234,7 +250,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
   protected render(): TemplateResult {
     const tabs = this._tabs(
-      this.hass.localize,
+      this._i18n.localize,
       this.marketplace.repositories.filter(
         (repository) => repository.pending_upgrade
       ).length
@@ -243,15 +259,13 @@ export class HaMarketplaceDashboard extends LitElement {
     if (this.tab === "discover") {
       return html`<hass-tabs-subpage
         .tabs=${tabs}
-        .hass=${this.hass}
-        .localizeFunc=${this.hass.localize}
+        .localizeFunc=${this._i18n.localize}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
       >
         ${this._renderToolbar()}
         <ha-marketplace-discover
-          .hass=${this.hass}
           .marketplace=${this.marketplace}
         ></ha-marketplace-discover>
       </hass-tabs-subpage>`;
@@ -259,7 +273,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
     const repositories = this._filterRepositories(
       this._repositoriesOfTab(this.marketplace.repositories, this.tab),
-      this.hass.localize,
+      this._i18n.localize,
       this._filters
     );
 
@@ -268,20 +282,19 @@ export class HaMarketplaceDashboard extends LitElement {
         html`<hass-tabs-subpage-data-table
           .tabs=${tabs}
           .columns=${this._columns(
-            this.hass.localize,
+            this._i18n.localize,
             this.narrow,
-            this.hass.themes?.darkMode,
+            this._darkMode,
             // Everything on the installed tab is, a mark would say nothing
             this.tab !== "installed"
           )}
           .data=${repositories}
-          .searchLabel=${this.hass.localize(
+          .searchLabel=${this._i18n.localize(
             "ui.panel.marketplace.dashboard.search",
             { number: repositories.length }
           )}
-          .hass=${this.hass}
           .isWide=${this.isWide}
-          .localizeFunc=${this.hass.localize}
+          .localizeFunc=${this._i18n.localize}
           .narrow=${this.narrow}
           .route=${this.route}
           back-path="/config"
@@ -292,7 +305,7 @@ export class HaMarketplaceDashboard extends LitElement {
             Object.values(this._filters).filter((values) => values?.length)
               .length
           }
-          .noDataText=${this.hass.localize("ui.panel.marketplace.dashboard.no_data")}
+          .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
           .empty=${!this.marketplace.repositories.length}
           .initialSorting=${this._activeSorting}
           .columnOrder=${this._orderTableColumns}
@@ -310,37 +323,37 @@ export class HaMarketplaceDashboard extends LitElement {
               : html`<div class="empty" slot="empty">
                   <ha-svg-icon .path=${mdiStore}></ha-svg-icon>
                   <h1>
-                    ${this.hass.localize("ui.panel.marketplace.dashboard.empty_header")}
+                    ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_header")}
                   </h1>
                   <p>
-                    ${this.hass.localize("ui.panel.marketplace.dashboard.empty_text")}
+                    ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_text")}
                   </p>
                   <ha-button
-                    href=${documentationUrl(this.hass, "/integrations/marketplace")}
+                    href=${documentationUrl(this._config, "/integrations/marketplace")}
                     target="_blank"
                     appearance="plain"
                     rel="noreferrer"
                     size="s"
                   >
-                    ${this.hass.localize("ui.panel.marketplace.common.learn_more")}
+                    ${this._i18n.localize("ui.panel.marketplace.common.learn_more")}
                     <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                   </ha-button>
                 </div>`
           }
           <ha-filter-states
             slot="filter-pane"
-            .label=${this.hass.localize("ui.panel.marketplace.filters.status")}
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
             .value=${this._filters[STATUS_FILTER]}
-            .states=${this._statusStates(this.hass.localize)}
+            .states=${this._statusStates(this._i18n.localize)}
             .narrow=${this.narrow}
             @data-table-filter-changed=${this._statusFilterChanged}
           ></ha-filter-states>
           <ha-filter-states
             slot="filter-pane"
-            .label=${this.hass.localize("ui.panel.marketplace.filters.type")}
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.type")}
             .value=${this._filters[TYPE_FILTER]}
             .states=${this._typeStates(
-              this.hass.localize,
+              this._i18n.localize,
               this.marketplace.info.categories
             )}
             .narrow=${this.narrow}
@@ -358,8 +371,9 @@ export class HaMarketplaceDashboard extends LitElement {
           this._overflowMenuRepository
             ? repositoryMenuItems(
                 this,
+                this._api,
                 this._overflowMenuRepository,
-                this.hass.localize
+                this._i18n.localize
               ).map(renderRepositoryMenuEntry)
             : nothing
         }
@@ -371,7 +385,8 @@ export class HaMarketplaceDashboard extends LitElement {
     const repositoriesContainsNew = this.marketplace.repositories.some(
       (repository) => repository.new
     );
-    const addFromLink = this.hass.localize(
+
+    const addFromLink = this._i18n.localize(
       "ui.panel.marketplace.tabs.add_from_link"
     );
 
@@ -383,13 +398,13 @@ export class HaMarketplaceDashboard extends LitElement {
               class="add-from-link"
               .label=${addFromLink}
               .path=${mdiLinkPlus}
-              @click=${this._showCustomRepositories}
+              @click=${this._addFromLink}
             ></ha-icon-button>`
           : html`<ha-button
               class="add-from-link"
               appearance="outlined"
               size="s"
-              @click=${this._showCustomRepositories}
+              @click=${this._addFromLink}
             >
               <ha-svg-icon slot="start" .path=${mdiLinkPlus}></ha-svg-icon>
               ${addFromLink}
@@ -398,19 +413,19 @@ export class HaMarketplaceDashboard extends LitElement {
       <ha-dropdown @wa-select=${this._handleMenuAction}>
         <ha-icon-button
           slot="trigger"
-          .label=${this.hass.localize("ui.common.menu")}
+          .label=${this._i18n.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         <ha-dropdown-item value="documentation">
-          ${this.hass.localize("ui.panel.marketplace.menu.documentation")}
+          ${this._i18n.localize("ui.panel.marketplace.menu.documentation")}
         </ha-dropdown-item>
         <ha-dropdown-item value="custom_repositories">
-          ${this.hass.localize("ui.panel.marketplace.menu.custom_repositories")}
+          ${this._i18n.localize("ui.panel.marketplace.menu.custom_repositories")}
         </ha-dropdown-item>
         ${
           repositoriesContainsNew
             ? html`<ha-dropdown-item value="dismiss_new">
-                ${this.hass.localize("ui.panel.marketplace.menu.dismiss")}
+                ${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
               </ha-dropdown-item>`
             : nothing
         }
@@ -441,7 +456,7 @@ export class HaMarketplaceDashboard extends LitElement {
         template: (repository: RepositoryBase) =>
           renderRepositoryIcon(repository, {
             darkMode,
-            hassUrl: this.hass.auth.data.hassUrl,
+            hassUrl: this._config.auth.data.hassUrl,
             installedLabel: markInstalled
               ? localizeFunc("ui.panel.marketplace.repository_status.installed")
               : undefined,
@@ -490,7 +505,7 @@ export class HaMarketplaceDashboard extends LitElement {
           try {
             return relativeTime(
               new Date(repository.last_updated),
-              this.hass.locale
+              this._i18n.locale
             );
           } catch {
             return "-";
@@ -545,7 +560,7 @@ export class HaMarketplaceDashboard extends LitElement {
         template: (repository: RepositoryBase) => html`
           <ha-icon-button
             data-repository-id=${repository.id}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .label=${this._i18n.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._showOverflowRepositoryMenu}
           ></ha-icon-button>
@@ -576,7 +591,7 @@ export class HaMarketplaceDashboard extends LitElement {
         this._openDocumentation();
         break;
       case "custom_repositories":
-        this._showCustomRepositories();
+        navigate("/marketplace/repositories");
         break;
       case "dismiss_new":
         this._dismissNew();
@@ -589,7 +604,12 @@ export class HaMarketplaceDashboard extends LitElement {
       return;
     }
 
-    repositoryMenuItems(this, this._overflowMenuRepository, this.hass.localize)
+    repositoryMenuItems(
+      this,
+      this._api,
+      this._overflowMenuRepository,
+      this._i18n.localize
+    )
       .filter(
         (entry): entry is MarketplaceRepositoryMenuItem => "value" in entry
       )
@@ -612,43 +632,26 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _openDocumentation() {
     window.open(
-      documentationUrl(this.hass, "/integrations/marketplace"),
+      documentationUrl(this._config, "/integrations/marketplace"),
       "_blank",
       "noreferrer=true"
     );
   }
 
-  private _showCustomRepositories() {
-    const disabledReason = this.marketplace.info.disabled_reason;
-    if (disabledReason) {
-      showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.marketplace.dialog.disabled.title"),
-        text: isKnownDisabledReason(disabledReason)
-          ? this.hass.localize(
-              `ui.panel.marketplace.dialog.disabled.reason.${disabledReason}`
-            )
-          : this.hass.localize(
-              "ui.panel.marketplace.dialog.disabled.reason.unknown"
-            ),
-      });
-      return;
-    }
-
-    showMarketplaceCustomRepositoriesDialog(this, {
-      marketplace: this.marketplace,
-    });
+  private _addFromLink() {
+    showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
   private async _dismissNew() {
     try {
       await dismissNewMarketplaceRepositories(
-        this.hass,
+        this._api,
         this.marketplace.info.categories
       );
     } catch (err: unknown) {
       showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.marketplace.dialog.error.title"),
-        text: marketplaceErrorMessage(err, this.hass.localize),
+        title: this._i18n.localize("ui.panel.marketplace.dialog.error.title"),
+        text: marketplaceErrorMessage(err, this._i18n.localize),
       });
     }
   }

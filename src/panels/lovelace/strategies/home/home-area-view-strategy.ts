@@ -77,9 +77,16 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
     const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
-    const areaFilter = generateEntityFilter(hass, {
-      area: config.area,
-    });
+    const areaFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        area: config.area,
+      }
+    );
 
     const allEntities = Object.keys(hass.states);
     const areaEntities = allEntities.filter(areaFilter);
@@ -88,7 +95,14 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       (acc, summary) => {
         const summariesFilters = HOME_SUMMARIES_FILTERS[summary];
         const filterFunctions = summariesFilters.map((filter) =>
-          generateEntityFilter(hass, filter)
+          generateEntityFilter(
+            hass.states,
+            hass.entities,
+            hass.devices,
+            hass.areas,
+            hass.floors,
+            filter
+          )
         );
         acc[summary] = findEntities(areaEntities, filterFunctions);
         return acc;
@@ -229,10 +243,17 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     const summaryEntities = Object.values(partialEntitiesBySummary).flat();
 
     // Scenes section
-    const sceneFilter = generateEntityFilter(hass, {
-      domain: "scene",
-      entity_category: "none",
-    });
+    const sceneFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        domain: "scene",
+        entity_category: "none",
+      }
+    );
     const scenes = areaEntities.filter(sceneFilter);
 
     if (scenes.length > 0) {
@@ -256,10 +277,17 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     }
 
     // Automations section
-    const automationFilter = generateEntityFilter(hass, {
-      domain: "automation",
-      entity_category: "none",
-    });
+    const automationFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        domain: "automation",
+        entity_category: "none",
+      }
+    );
     const automations = areaEntities.filter(automationFilter);
 
     // Rest of entities grouped by device
@@ -306,14 +334,28 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       });
     }
 
-    const batteryFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: "battery",
-    });
+    const batteryFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        domain: "sensor",
+        device_class: "battery",
+      }
+    );
 
-    const primaryFilter = generateEntityFilter(hass, {
-      entity_category: "none",
-    });
+    const primaryFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        entity_category: "none",
+      }
+    );
 
     for (const deviceEntities of otherDeviceEntities) {
       if (deviceEntities.entities.length === 0) continue;

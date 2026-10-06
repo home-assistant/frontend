@@ -80,7 +80,8 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
         id: statisticId,
         // Match the label shown in the device list and the graphs.
         primary: computeEnergyLabel(
-          this.hass,
+          this.hass.states,
+          this.hass.formatEntityName,
           statisticId,
           this.statsMetadata?.[statisticId],
           name
@@ -98,7 +99,8 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     }
 
     const label = getStatisticLabel(
-      this.hass,
+      this.hass.states,
+      this.hass.formatEntityName,
       statisticId,
       this.statsMetadata?.[statisticId]
     );

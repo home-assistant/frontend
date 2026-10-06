@@ -115,6 +115,16 @@ export interface MapMarkerHandle extends MapItemHandle {
   readonly clusterData?: unknown;
 }
 
+export interface MapCircleHandle extends MapItemHandle {
+  /** Move, resize or recolor without removing it first */
+  update(center: MapLatLng, options: MapCircleOptions): void;
+}
+
+export interface MapPathHandle extends MapItemHandle {
+  /** Replace the drawn trail without removing it first */
+  update(path: MapPath): void;
+}
+
 export interface MapDraggableMarkerOptions extends MapMarkerOptions {
   onDragEnd?(location: MapLatLng): void;
 }
@@ -239,13 +249,13 @@ export interface MapEngine {
   ): MapMarkerHandle;
 
   /** Draw a meter-radius circle (zone radius) */
-  addCircle(center: MapLatLng, options: MapCircleOptions): MapItemHandle;
+  addCircle(center: MapLatLng, options: MapCircleOptions): MapCircleHandle;
 
   /** Editing support, MapLibre only; undefined on the Leaflet fallback */
   editing?: MapEditingSupport;
 
   /** Draw one history trail (points with tooltips, connecting segments) */
-  addPath(path: MapPath): MapItemHandle;
+  addPath(path: MapPath): MapPathHandle;
 
   /** Cluster the markers added with cluster: true; call after each batch of addMarker calls */
   setClustering(options: MapClusterOptions | null): void;
