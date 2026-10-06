@@ -424,21 +424,27 @@ export default class HaAutomationAddFromTarget extends LitElement {
           id,
         ]);
 
-      if (targets.length) {
-        return {
-          titleKey: "ui.panel.config.automation.editor.suggested_targets",
-          targets: targets.slice(0, MAX_SUGGESTED_TARGETS),
-        };
-      }
-
+      const suggested = targets.slice(0, MAX_SUGGESTED_TARGETS);
+      const suggestedDevices = new Set(
+        suggested.filter(([type]) => type === "device").map(([, id]) => id)
+      );
       const since = Date.now() / 1000 - NEW_DEVICE_MAX_AGE;
+      const newDevices = Object.values(registries.devices)
+        .filter(
+          (device) =>
+            !device.disabled_by &&
+            device.created_at > since &&
+            !suggestedDevices.has(device.id)
+        )
+        .sort((a, b) => b.created_at - a.created_at)
+        .slice(0, MAX_SUGGESTED_TARGETS - suggested.length)
+        .map((device): [TargetType, string] => ["device", device.id]);
+
       return {
-        titleKey: "ui.panel.config.automation.editor.new_devices",
-        targets: Object.values(registries.devices)
-          .filter((device) => !device.disabled_by && device.created_at > since)
-          .sort((a, b) => b.created_at - a.created_at)
-          .slice(0, MAX_SUGGESTED_TARGETS)
-          .map((device): [TargetType, string] => ["device", device.id]),
+        titleKey: suggested.length
+          ? "ui.panel.config.automation.editor.suggested_targets"
+          : "ui.panel.config.automation.editor.new_devices",
+        targets: [...suggested, ...newDevices],
       };
     }
   );
