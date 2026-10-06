@@ -34,7 +34,15 @@ import "../../components/demo-black-white-row";
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
     name: "State",
-    triggers: [{ ...HaStateTrigger.defaultConfig }],
+    triggers: [
+      { ...HaStateTrigger.defaultConfig },
+      {
+        trigger: "state",
+        entity_id: "light.kitchen",
+        not_from: ["unavailable", "unknown"],
+        to: "on",
+      },
+    ],
   },
 
   {
