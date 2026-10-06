@@ -199,19 +199,13 @@ export const duplicateSection = (
   return insertAtPath(config, [...sectionsPath, index + 1], deepClone(section));
 };
 
-export const addBadge = (
-  config: LovelaceConfig,
-  containerPath: LovelacePath,
-  badgeConfig: LovelaceBadgeConfig
-): LovelaceConfig =>
-  appendAtPath(config, [...containerPath, "badges"], badgeConfig);
-
 export const addBadges = (
   config: LovelaceConfig,
   containerPath: LovelacePath,
   badgeConfigs: LovelaceBadgeConfig[]
-): LovelaceConfig =>
-  badgeConfigs.reduce(
-    (newConfig, badgeConfig) => addBadge(newConfig, containerPath, badgeConfig),
-    config
-  );
+): LovelaceConfig => {
+  const badgesPath = [...containerPath, "badges"];
+  const badges = getAtPath<LovelaceBadgeConfig[]>(config, badgesPath);
+  const existingBadges = Array.isArray(badges) ? badges : [];
+  return setAtPath(config, badgesPath, [...existingBadges, ...badgeConfigs]);
+};
