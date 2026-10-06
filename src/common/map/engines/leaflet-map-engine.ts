@@ -168,8 +168,8 @@ export class LeafletMapEngine implements MapEngine {
     this._scaleControl.addTo(this.leafletMap!);
   }
 
-  public setView(center: MapLatLng, zoom?: number, animate = false): void {
-    this.leafletMap?.setView(center, zoom, { animate });
+  public setView(center: MapLatLng, zoom?: number): void {
+    this.leafletMap?.setView(center, zoom);
   }
 
   public getView(): MapView | undefined {

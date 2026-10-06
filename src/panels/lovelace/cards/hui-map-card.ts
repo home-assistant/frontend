@@ -33,7 +33,6 @@ import type {
   HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
-  HaMapView,
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
@@ -52,6 +51,15 @@ import type { HomeAssistant } from "../../../types";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { OverviewTab } from "./map/hui-map-overview";
 import { PANEL_VIEW_LAYOUT } from "../views/const";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import { currentPath } from "../../../common/url/current-path";
+import {
+  addSearchParam,
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
 import { findEntities } from "../common/find-entities";
 import {
   hasConfigChanged,
@@ -76,6 +84,8 @@ const OVERVIEW_GAP = 12;
 
 const FOCUS_PERSON_ZOOM = 19;
 const FOCUS_ZONE_MAX_ZOOM = 18;
+const SELECTED_ENTITY_PARAM = "entity_id";
+const SELECTABLE_DOMAINS = ["person", "device_tracker", "zone"];
 
 interface GeoEntity {
   entity_id: string;
@@ -137,8 +147,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _overviewSelected?: string;
 
-  // Restored by the overview's back button
-  private _viewBeforeFocus?: HaMapView | { entityId: string };
+  private _path?: string;
 
   @state() private _overviewTab: OverviewTab = "people";
 
@@ -406,6 +415,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+    if (changedProps.has("layout")) {
+      this._syncSelection();
+    }
     if (changedProps.has("preview") && this.preview) {
       this._overviewSize = { width: 0, height: 0 };
     }
@@ -465,7 +477,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       // Without the overview, while editing, every marker shows
       this._filteredMapEntities = this.preview
         ? this._overviewEntities
-        : this._filterByOverviewTab(this._overviewEntities, this._overviewTab);
+        : this._filterByOverviewTab(
+            this._overviewEntities,
+            this._overviewTab,
+            this._overviewSelected
+          );
     }
   }
 
@@ -537,8 +553,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   );
 
   private _filterByOverviewTab = memoizeOne(
-    (entities: HaMapEntity[], tab: OverviewTab): HaMapEntity[] =>
+    (
+      entities: HaMapEntity[],
+      tab: OverviewTab,
+      selected?: string
+    ): HaMapEntity[] =>
       entities.filter((entity) => {
+        if (entity.entity_id === selected) {
+          return true;
+        }
         const domain = computeDomain(entity.entity_id);
         if (domain === "person") {
           return tab === "people";
@@ -552,6 +575,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._path = currentPath();
+    mainWindow.addEventListener("popstate", this._syncSelection);
+    mainWindow.addEventListener("location-changed", this._syncSelection);
+    this._syncSelection();
     if (this.hasUpdated && this._configEntities?.length) {
       this._subscribeHistory();
     }
@@ -559,8 +586,25 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    mainWindow.removeEventListener("popstate", this._syncSelection);
+    mainWindow.removeEventListener("location-changed", this._syncSelection);
     this._unsubscribeHistory();
   }
+
+  private _syncSelection = () => {
+    if (this.layout !== PANEL_VIEW_LAYOUT || currentPath() !== this._path) {
+      return;
+    }
+    const entityId = extractSearchParam(SELECTED_ENTITY_PARAM);
+    const selectable =
+      !!entityId && SELECTABLE_DOMAINS.includes(computeDomain(entityId));
+    if (entityId && !selectable) {
+      replaceCurrentUrl(
+        constructUrlCurrentPath(removeSearchParam(SELECTED_ENTITY_PARAM))
+      );
+    }
+    this._overviewSelected = selectable ? entityId : undefined;
+  };
 
   private _subscribeHistory() {
     if (
@@ -613,6 +657,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._computePadding();
     }
+    if (
+      changedProps.has("_overviewSelected") &&
+      this._overviewSelected &&
+      this.layout === PANEL_VIEW_LAYOUT
+    ) {
+      this._focusEntity(this._overviewSelected);
+    }
   }
 
   private _computePadding(): void {
@@ -643,10 +694,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _handleMapClicked() {
-    // A click on the map itself (not on a marker) deselects, staying put
     if (this._overviewSelected) {
-      this._overviewSelected = undefined;
-      this._viewBeforeFocus = undefined;
+      this._deselect();
     }
   }
 
@@ -659,7 +708,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (
       this.layout !== PANEL_VIEW_LAYOUT ||
       !entityId ||
-      !["person", "device_tracker", "zone"].includes(computeDomain(entityId)) ||
+      !SELECTABLE_DOMAINS.includes(computeDomain(entityId)) ||
       (computeDomain(entityId) !== "zone" &&
         !this._filteredMapEntities.some(
           (entity) => entity.entity_id === entityId
@@ -694,35 +743,26 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (ev.detail.entityId) {
       this._select(ev.detail.entityId);
     } else {
-      this._overviewSelected = undefined;
-      this._restoreView();
+      this._deselect();
     }
+  }
+
+  private _deselect() {
+    this._navigateSelection(removeSearchParam(SELECTED_ENTITY_PARAM));
   }
 
   private _select(entityId: string) {
-    const previous = this._overviewSelected;
-    if (previous && previous !== entityId) {
-      this._viewBeforeFocus = { entityId: previous };
-    } else if (!previous) {
-      this._viewBeforeFocus = this._map?.getView();
-    }
-    this._overviewSelected = entityId;
-    this._focusEntity(entityId);
-  }
-
-  private _restoreView() {
-    const view = this._viewBeforeFocus;
-    this._viewBeforeFocus = undefined;
-    if (!view) {
+    if (entityId === this._overviewSelected) {
+      this._focusEntity(entityId);
       return;
     }
-    if ("entityId" in view) {
-      this._focusEntity(view.entityId);
-    } else if (view.autoFit) {
-      this._map?.fitMap({ unpause_autofit: true });
-    } else {
-      this._map?.setView(view.center, view.zoom, true);
-    }
+    this._navigateSelection(
+      addSearchParam({ [SELECTED_ENTITY_PARAM]: entityId })
+    );
+  }
+
+  private _navigateSelection(searchParams: string) {
+    navigate(constructUrlCurrentPath(searchParams));
   }
 
   private _focusEntity(entityId: string) {

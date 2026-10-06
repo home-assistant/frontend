@@ -94,10 +94,6 @@ const DRAWN_FALLBACK = 3000;
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
-export interface HaMapView extends MapView {
-  autoFit: boolean;
-}
-
 export interface HaMapPathPoint {
   point: MapLatLng;
   timestamp: Date;
@@ -963,18 +959,17 @@ export class HaMap extends ReactiveElement {
     return this._engine?.containsLocation(location) ?? false;
   }
 
-  public setView(center: MapLatLng, zoom?: number, animate?: boolean): void {
+  public setView(center: MapLatLng, zoom?: number): void {
     if (!this._engine) {
-      this._pendingFit = () => this.setView(center, zoom, animate);
+      this._pendingFit = () => this.setView(center, zoom);
       return;
     }
     this._pendingFit = undefined;
-    this._engine.setView(center, zoom, animate);
+    this._engine.setView(center, zoom);
   }
 
-  public getView(): HaMapView | undefined {
-    const view = this._engine?.getView();
-    return view && { ...view, autoFit: this.autoFit && !this._pauseAutoFit };
+  public getView(): MapView | undefined {
+    return this._engine?.getView();
   }
 
   public fitBounds(

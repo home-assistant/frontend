@@ -653,16 +653,11 @@ export class MapLibreMapEngine implements MapEngine {
     this._map.addControl(this._scaleControl, "bottom-left");
   }
 
-  public setView(center: MapLatLng, zoom?: number, animate = false): void {
-    const camera = {
-      center: [center[1], center[0]] as [number, number],
+  public setView(center: MapLatLng, zoom?: number): void {
+    this._map?.jumpTo({
+      center: [center[1], center[0]],
       zoom: zoom !== undefined ? zoom - ZOOM_OFFSET : undefined,
-    };
-    if (animate) {
-      this._map?.easeTo(camera);
-    } else {
-      this._map?.jumpTo(camera);
-    }
+    });
   }
 
   public getView(): MapView | undefined {
