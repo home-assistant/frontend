@@ -4,8 +4,9 @@ autoInstallPeers: false
 # Supply-chain protection
 minimumReleaseAge: 4320 # 3 days, in minutes
 minimumReleaseAgeExclude:
-  # Our own packages, published from our own CI
+  # Our own packages, published from our own CI. Keep in sync with renovate.json
   - home-assistant-js-websocket
+  - "@home-assistant/*"
 trustPolicy: no-downgrade
 trustPolicyExclude:
   # Backports published after provenance-signed 7.x releases
