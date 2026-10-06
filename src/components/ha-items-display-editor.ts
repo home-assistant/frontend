@@ -13,6 +13,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { afterNextRender } from "../common/util/render-status";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
@@ -35,6 +36,9 @@ export interface DisplayValue {
   order: string[];
   hidden: string[];
 }
+
+// Rows and drag handles get their index set as `.idx` in the template
+type IndexedElement = HTMLElement & { idx: number };
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -182,6 +186,7 @@ export class HaItemDisplayEditor extends LitElement {
                           )}
                           .value=${value}
                           @click=${this._toggle}
+                          @keydown=${stopPropagation}
                           .disabled=${disableHiding || false}
                         ></ha-icon-button>`
                       : nothing
@@ -218,6 +223,7 @@ export class HaItemDisplayEditor extends LitElement {
   private _toggle(ev) {
     ev.stopPropagation();
     this._dragIndex = null;
+    const row = ev.currentTarget.closest("ha-list-item-button");
     const value = ev.currentTarget.value;
 
     const hiddenItems = this._hiddenItems(this.items, this.value.hidden);
@@ -242,6 +248,10 @@ export class HaItemDisplayEditor extends LitElement {
       order: newOrder,
     };
     fireEvent(this, "value-changed", { value: this.value });
+
+    // Hiding or showing moves the row, which can drop focus. Wait for the
+    // parent to pass the new value back before refocusing.
+    afterNextRender(() => row?.focus());
   }
 
   private _itemMoved(ev: CustomEvent): void {
@@ -316,30 +326,26 @@ export class HaItemDisplayEditor extends LitElement {
       ).length - 1
   );
 
-  private _keyActivatedMove = (ev: KeyboardEvent, clearDragIndex = false) => {
-    const oldIndex = this._dragIndex;
-
-    if (ev.key === "ArrowUp") {
-      this._dragIndex = Math.max(0, this._dragIndex! - 1);
-    } else {
-      this._dragIndex = Math.min(
-        this._maxSortableIndex(this.items, this.value.hidden),
-        this._dragIndex! + 1
-      );
+  private _keyActivatedMove = (ev: KeyboardEvent, oldIndex: number) => {
+    const newIndex =
+      ev.key === "ArrowUp"
+        ? Math.max(0, oldIndex - 1)
+        : Math.min(
+            this._maxSortableIndex(this.items, this.value.hidden),
+            oldIndex + 1
+          );
+    this._moveItem(oldIndex, newIndex);
+    if (this._dragIndex !== null) {
+      this._dragIndex = newIndex;
     }
-    this._moveItem(oldIndex, this._dragIndex);
 
     // refocus the item after the sort
-    setTimeout(async () => {
-      await this.updateComplete;
+    afterNextRender(() => {
       // eslint-disable-next-line lit/prefer-query-decorators
       const selectedElement = this.shadowRoot?.querySelector(
-        `ha-list-item-button:nth-child(${this._dragIndex! + 1})`
+        `ha-list-item-button:nth-child(${newIndex + 1})`
       ) as HTMLElement | null;
       selectedElement?.focus();
-      if (clearDragIndex) {
-        this._dragIndex = null;
-      }
     });
   };
 
@@ -349,7 +355,7 @@ export class HaItemDisplayEditor extends LitElement {
       (ev.key === "ArrowUp" || ev.key === "ArrowDown")
     ) {
       ev.preventDefault();
-      this._keyActivatedMove(ev);
+      this._keyActivatedMove(ev, this._dragIndex);
     } else if (this._dragIndex !== null && ev.key === "Escape") {
       ev.preventDefault();
       ev.stopPropagation();
@@ -361,8 +367,7 @@ export class HaItemDisplayEditor extends LitElement {
   private _listElementKeydown = (ev: KeyboardEvent) => {
     if (ev.altKey && (ev.key === "ArrowUp" || ev.key === "ArrowDown")) {
       ev.preventDefault();
-      this._dragIndex = (ev.target as any).idx;
-      this._keyActivatedMove(ev, true);
+      this._keyActivatedMove(ev, (ev.currentTarget as IndexedElement).idx);
     } else if (
       (!this.showNavigationButton && ev.key === "Enter") ||
       ev.key === " "
@@ -376,7 +381,7 @@ export class HaItemDisplayEditor extends LitElement {
       ev.preventDefault();
       ev.stopPropagation();
       if (this._dragIndex === null) {
-        this._dragIndex = (ev.target as any).idx;
+        this._dragIndex = (ev.target as IndexedElement).idx;
         this.addEventListener("keydown", this._sortKeydown);
       } else {
         this.removeEventListener("keydown", this._sortKeydown);
@@ -416,12 +421,8 @@ export class HaItemDisplayEditor extends LitElement {
     ha-list-item-button::part(end) {
       gap: var(--ha-space-4);
     }
-    ha-list-item-button.drag-selected {
-      border-radius: var(--ha-border-radius-md);
-      outline: solid;
+    ha-list-item-button.drag-selected::part(base) {
       outline-color: rgba(var(--rgb-accent-color), 0.6);
-      outline-offset: -2px;
-      outline-width: 2px;
       background-color: rgba(var(--rgb-accent-color), 0.08);
     }
     ha-list-item-button ha-icon-button {

@@ -67,6 +67,8 @@ export class HaListBase extends LitElement {
 
   protected hasFocusableItem = false;
 
+  private _activeItem?: HaListItemBase;
+
   private _unbindKeys?: () => void;
 
   public connectedCallback() {
@@ -151,6 +153,7 @@ export class HaListBase extends LitElement {
   /** Clear the active row, so no row is marked `active`. */
   public clearActiveItem() {
     this.activeItemIndex = -1;
+    this._activeItem = undefined;
     this.applyActive(false);
   }
 
@@ -163,6 +166,7 @@ export class HaListBase extends LitElement {
     if (!this.isFocusable(this.activeItemIndex)) {
       this.activeItemIndex = this.firstFocusableIndex;
     }
+    this._activeItem = this.items[this.activeItemIndex];
     this.applyActive(focusItem);
   }
 
@@ -172,6 +176,13 @@ export class HaListBase extends LitElement {
    */
   public updateListItems() {
     this.recomputeFocusableIndexes();
+    // Follow the active row when rows are added, removed or reordered
+    const activeIndex = this._activeItem
+      ? this.items.indexOf(this._activeItem)
+      : -1;
+    if (activeIndex !== -1) {
+      this.activeItemIndex = activeIndex;
+    }
     if (this.virtualFocus) {
       // Nothing is active until the owner starts navigating.
       if (
@@ -278,6 +289,7 @@ export class HaListBase extends LitElement {
     const path = ev.composedPath();
     for (let i = 0; i < this.items.length; i++) {
       if (path.includes(this.items[i])) {
+        this._activeItem = this.items[i];
         if (i !== this.activeItemIndex) {
           this.activeItemIndex = i;
           this.applyActive(false);
@@ -385,6 +397,7 @@ export class HaListBase extends LitElement {
       return;
     }
     this.activeItemIndex = next;
+    this._activeItem = this.items[next];
     this.applyActive(true);
   }
 
