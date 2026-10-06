@@ -11,6 +11,7 @@ import {
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { sortWeekdays } from "../common/datetime/sort_weekdays";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
@@ -468,7 +469,10 @@ const describeLegacyTrigger = (
     // Handle weekday information if present
     let weekdays: string[] = [];
     if (trigger.weekday) {
-      const weekdayArray = ensureArray(trigger.weekday);
+      const weekdayArray = sortWeekdays(
+        hass.locale,
+        ensureArray(trigger.weekday)
+      );
       if (weekdayArray.length > 0) {
         weekdays = weekdayArray.map((day) =>
           hass.localize(
@@ -1165,7 +1169,7 @@ const describeLegacyCondition = (
 
       let localizedDays: string[] = [];
       if (validWeekdays) {
-        localizedDays = weekdaysArray.map((d) =>
+        localizedDays = sortWeekdays(hass.locale, weekdaysArray).map((d) =>
           hass.localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
