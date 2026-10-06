@@ -5,6 +5,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
@@ -25,6 +26,10 @@ import {
 } from "../show-add-automation-element-dialog";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
+import {
+  automationTargetSuggestionsContext,
+  type AutomationTargetSuggestions,
+} from "../target/automation-target-suggestions";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import "./ha-automation-action-row";
 
@@ -42,6 +47,9 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 
   @queryAll("ha-automation-action-row")
   private _actionRowElements?: HaAutomationActionRow[];
+
+  @consume({ context: automationTargetSuggestionsContext })
+  private _targetSuggestions?: AutomationTargetSuggestions;
 
   private _openedAddDialogFromQuery = false;
 
@@ -233,10 +241,14 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
       clipboardPasteToastBottomOffset: this.editorDirty
         ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
+      suggestedTargets: this._targetSuggestions?.getSuggestedTargets("action"),
     });
   }
 
   private _addAction = (action: string, target?: HassServiceTarget) => {
+    if (target) {
+      this._targetSuggestions?.rememberTarget("action", target);
+    }
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action!));

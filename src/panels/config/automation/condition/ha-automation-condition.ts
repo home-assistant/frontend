@@ -27,6 +27,10 @@ import {
 } from "../show-add-automation-element-dialog";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
+import {
+  automationTargetSuggestionsContext,
+  type AutomationTargetSuggestions,
+} from "../target/automation-target-suggestions";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
@@ -48,6 +52,9 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
   @queryAll("ha-automation-condition-row")
   private _conditionRowElements?: HaAutomationConditionRow[];
+
+  @consume({ context: automationTargetSuggestionsContext })
+  private _targetSuggestions?: AutomationTargetSuggestions;
 
   private _openedAddDialogFromQuery = false;
 
@@ -268,10 +275,15 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
       clipboardPasteToastBottomOffset: this.editorDirty
         ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
+      suggestedTargets:
+        this._targetSuggestions?.getSuggestedTargets("condition"),
     });
   }
 
   private _addCondition = (value: string, target?: HassServiceTarget) => {
+    if (target) {
+      this._targetSuggestions?.rememberTarget("condition", target);
+    }
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(

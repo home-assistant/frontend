@@ -88,6 +88,7 @@ import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
+import { AutomationTargetSuggestionsController } from "./target/automation-target-suggestions";
 import { AutomationTriggerController } from "./trigger/automation-trigger-controller";
 import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
 
@@ -160,6 +161,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   public override get isDirtyState(): boolean {
     return super.isDirtyState || !!this.yamlErrors;
+  }
+
+  constructor() {
+    super();
+    new AutomationTargetSuggestionsController(this, () => this.config);
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {

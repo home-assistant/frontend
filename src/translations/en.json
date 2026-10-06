@@ -5414,6 +5414,8 @@
             "del": "Del",
             "targets": "Targets",
             "select_target": "Select a target",
+            "suggested_targets": "Suggested",
+            "new_devices": "New devices",
             "home": "Home",
             "unassigned": "Unassigned",
             "time_sun": "Time and sun",

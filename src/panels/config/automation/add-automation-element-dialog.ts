@@ -721,6 +721,7 @@ class DialogAddAutomationElement
                   })}
                   .manifests=${this._manifests}
                   .clipboardItem=${this._params!.clipboardItem}
+                  .suggestedTargets=${this._params!.suggestedTargets}
                   .automationElementType=${automationElementType}
                   @paste-element=${this._paste}
                 ></ha-automation-add-from-target>`

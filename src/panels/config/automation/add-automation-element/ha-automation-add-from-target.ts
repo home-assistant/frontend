@@ -23,6 +23,7 @@ import { computeDeviceName } from "../../../../common/entity/compute_device_name
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
@@ -63,12 +64,19 @@ import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,
+  type TargetType,
 } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+import { getTargetIcon } from "../target/get_target_icon";
+import { getTargetText } from "../target/get_target_text";
 import "./ha-automation-add-element-paste";
+
+const MAX_SUGGESTED_TARGETS = 3;
+
+const NEW_DEVICE_MAX_AGE = 7 * 24 * 60 * 60;
 
 interface Level1Entries {
   open: boolean;
@@ -111,6 +119,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @property({ attribute: false }) public selectedGroup?: string;
 
   @property({ attribute: false }) public clipboardItem?: string;
+
+  @property({ attribute: false })
+  public suggestedTargets?: SingleHassServiceTarget[];
 
   @property({ attribute: "automation-element-type" })
   public automationElementType!: AddAutomationElementDialogParams["type"];
@@ -211,6 +222,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   .clipboardItem=${this.clipboardItem}
                 ></ha-automation-add-element-paste>
               </ha-list-base>
+              ${this._renderSuggestions()}
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
@@ -386,6 +398,111 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }`;
     }
   );
+
+  private _getSuggestions = memoizeOne(
+    (
+      suggestedTargets: SingleHassServiceTarget[],
+      states: ContextType<typeof statesContext>,
+      registries: ContextType<typeof registriesContext>,
+      labelRegistry: LabelRegistryEntry[]
+    ): { titleKey: LocalizeKeys; targets: [TargetType, string][] } => {
+      const targets = suggestedTargets
+        .map((target) => Object.entries(target)[0])
+        .filter(([key, id]) =>
+          key === "entity_id"
+            ? !!states[id]
+            : key === "device_id"
+              ? !!registries.devices[id] && !registries.devices[id].disabled_by
+              : key === "area_id"
+                ? !!registries.areas[id]
+                : key === "floor_id"
+                  ? !!registries.floors[id]
+                  : labelRegistry.some((label) => label.label_id === id)
+        )
+        .map(([key, id]): [TargetType, string] => [
+          key.replace("_id", "") as TargetType,
+          id,
+        ]);
+
+      if (targets.length) {
+        return {
+          titleKey: "ui.panel.config.automation.editor.suggested_targets",
+          targets: targets.slice(0, MAX_SUGGESTED_TARGETS),
+        };
+      }
+
+      const since = Date.now() / 1000 - NEW_DEVICE_MAX_AGE;
+      return {
+        titleKey: "ui.panel.config.automation.editor.new_devices",
+        targets: Object.values(registries.devices)
+          .filter((device) => !device.disabled_by && device.created_at > since)
+          .sort((a, b) => b.created_at - a.created_at)
+          .slice(0, MAX_SUGGESTED_TARGETS)
+          .map((device): [TargetType, string] => ["device", device.id]),
+      };
+    }
+  );
+
+  private _renderSuggestions() {
+    if (!this.suggestedTargets) {
+      return nothing;
+    }
+
+    const { titleKey, targets } = this._getSuggestions(
+      this.suggestedTargets,
+      this.states,
+      this._registries,
+      this._labelRegistry
+    );
+
+    if (!targets.length) {
+      return nothing;
+    }
+
+    const selectedTargetId = this._getSelectedTargetId(this.value);
+
+    return html`<ha-section-title
+        >${this._i18n.localize(titleKey)}</ha-section-title
+      >
+      <ha-list-base>
+        ${targets.map(([type, id]) => {
+          const target = `${type}${TARGET_SEPARATOR}${id}`;
+          return html`<ha-list-item-button
+            .target=${target}
+            @click=${this._selectSuggestion}
+            class=${selectedTargetId === target ? "selected" : ""}
+          >
+            ${getTargetIcon(
+              this._registries,
+              this.states,
+              type,
+              id,
+              this._configEntryLookup,
+              this._getLabel,
+              "start"
+            )}
+            <div slot="headline">
+              ${getTargetText(
+                this._registries,
+                this.states,
+                this._i18n.localize,
+                type,
+                id,
+                this._getLabel
+              )}
+            </div>
+            ${
+              this.narrow
+                ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                : nothing
+            }
+          </ha-list-item-button>`;
+        })}
+      </ha-list-base>`;
+  }
+
+  private _getLabel = (id: string) =>
+    this._labelRegistry.find((label) => label.label_id === id);
 
   private _renderTimeLocation = memoizeOne(
     (
@@ -1354,6 +1471,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     if (target) {
       this._valueChanged(target);
+    }
+  }
+
+  private _selectSuggestion(ev: CustomEvent) {
+    const target = (ev.currentTarget as any).target;
+
+    if (target) {
+      this._valueChanged(target, !this.narrow);
     }
   }
 

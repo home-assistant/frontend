@@ -29,6 +29,10 @@ import {
 } from "../show-add-automation-element-dialog";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
+import {
+  automationTargetSuggestionsContext,
+  type AutomationTargetSuggestions,
+} from "../target/automation-target-suggestions";
 import { stripGeneratedTriggerIds } from "./automation-trigger-id";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
@@ -48,6 +52,9 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   @state()
   @consume({ context: triggerDescriptionsContext, subscribe: true })
   private _triggerDescriptions: TriggerDescriptions = {};
+
+  @consume({ context: automationTargetSuggestionsContext })
+  private _targetSuggestions?: AutomationTargetSuggestions;
 
   private _openedAddDialogFromQuery = false;
 
@@ -162,10 +169,14 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       clipboardPasteToastBottomOffset: this.editorDirty
         ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
+      suggestedTargets: this._targetSuggestions?.getSuggestedTargets("trigger"),
     });
   }
 
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
+    if (target) {
+      this._targetSuggestions?.rememberTarget("trigger", target);
+    }
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(
