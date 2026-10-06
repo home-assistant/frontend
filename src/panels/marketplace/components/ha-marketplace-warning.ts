@@ -1,7 +1,9 @@
+import type { ContextType } from "@lit/context";
 import { mdiAlert } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -9,9 +11,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-svg-icon";
+import { apiContext, internationalizationContext } from "../../../data/context";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import {
   acceptMarketplaceWarning,
   marketplaceErrorMessage,
@@ -25,14 +27,20 @@ const RISKS = [
   "stability",
 ] as const;
 
-// Long enough to read the risks before they can be accepted
-const READ_SECONDS = 30;
+// Long enough to read the risks before they can be accepted, shorter in
+// development so it doesn't slow down testing
+const READ_SECONDS = __DEV__ ? 5 : 30;
 
 @customElement("ha-marketplace-warning")
 export class HaMarketplaceWarning extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean }) public narrow = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() private _understood = false;
 
@@ -71,9 +79,8 @@ export class HaMarketplaceWarning extends LitElement {
   protected render() {
     return html`
       <hass-subpage
-        .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.marketplace.title")}
+        .header=${this._i18n.localize("ui.panel.marketplace.title")}
         back-path="/config"
       >
         <div class="content">
@@ -87,16 +94,16 @@ export class HaMarketplaceWarning extends LitElement {
               <div class="heading">
                 <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
                 <h1>
-                  ${this.hass.localize("ui.panel.marketplace.warning.title")}
+                  ${this._i18n.localize("ui.panel.marketplace.warning.title")}
                 </h1>
               </div>
               <p class="intro">
-                ${this.hass.localize("ui.panel.marketplace.warning.intro")}
+                ${this._i18n.localize("ui.panel.marketplace.warning.intro")}
               </p>
               <ha-alert
                 class="risks"
                 alert-type="warning"
-                .title=${this.hass.localize(
+                .title=${this._i18n.localize(
                   "ui.panel.marketplace.warning.risks_title"
                 )}
               >
@@ -105,7 +112,7 @@ export class HaMarketplaceWarning extends LitElement {
                   ${RISKS.map(
                     (risk) =>
                       html`<li>
-                        ${this.hass.localize(
+                        ${this._i18n.localize(
                           `ui.panel.marketplace.warning.risks.${risk}`
                         )}
                       </li>`
@@ -117,14 +124,14 @@ export class HaMarketplaceWarning extends LitElement {
                 .disabled=${this._accepting}
                 @change=${this._understoodChanged}
               >
-                ${this.hass.localize("ui.panel.marketplace.warning.understand")}
+                ${this._i18n.localize("ui.panel.marketplace.warning.understand")}
               </ha-checkbox>
             </div>
             <div class="card-actions">
               ${
                 this._secondsLeft > 0
                   ? html`<span class="countdown">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.marketplace.warning.continue_in",
                         { seconds: this._secondsLeft }
                       )}
@@ -137,7 +144,7 @@ export class HaMarketplaceWarning extends LitElement {
                 .loading=${this._accepting}
                 @click=${this._accept}
               >
-                ${this.hass.localize("ui.panel.marketplace.warning.continue")}
+                ${this._i18n.localize("ui.panel.marketplace.warning.continue")}
               </ha-button>
             </div>
           </ha-card>
@@ -159,9 +166,9 @@ export class HaMarketplaceWarning extends LitElement {
     this._error = undefined;
 
     try {
-      await acceptMarketplaceWarning(this.hass);
+      await acceptMarketplaceWarning(this._api);
     } catch (err: unknown) {
-      this._error = marketplaceErrorMessage(err, this.hass.localize);
+      this._error = marketplaceErrorMessage(err, this._i18n.localize);
       return;
     } finally {
       // The panel swaps this screen once the backend reports the acceptance,

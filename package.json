@@ -107,7 +107,7 @@
     "element-internals-polyfill": "3.0.2",
     "fuse.js": "7.5.0",
     "hls.js": "1.7.3",
-    "home-assistant-js-websocket": "9.7.0",
+    "home-assistant-js-websocket": "9.7.1",
     "idb-keyval": "6.3.0",
     "intl-messageformat": "12.1.2",
     "js-yaml": "5.4.2",
@@ -184,7 +184,7 @@
     "browserslist-useragent-regexp": "4.1.4",
     "core-js-compat": "3.50.0",
     "del": "8.0.1",
-    "eslint": "10.11.0",
+    "eslint": "10.12.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-webpack": "0.13.11",
     "eslint-plugin-import-x": "4.17.1",
@@ -229,7 +229,7 @@
     "webpackbar": "7.0.0",
     "workbox-build": "7.4.1"
   },
-  "packageManager": "pnpm@12.8.2",
+  "packageManager": "pnpm@12.9.0",
   "volta": {
     "node": "24.21.0"
   }

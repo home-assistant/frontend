@@ -51,6 +51,7 @@ import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humi
 import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
+import { supportsLightColorCardFeature } from "../../card-features/hui-light-color-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsLightEffectCardFeature } from "../../card-features/hui-light-effect-card-feature";
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
@@ -115,6 +116,7 @@ const UI_FEATURE_TYPES = [
   "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
+  "light-color",
   "light-color-temp",
   "light-color-favorites",
   "light-effect",
@@ -165,6 +167,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "temperature-forecast",
   "lawn-mower-commands",
   "media-player-playback",
+  "light-color",
   "light-color-favorites",
   "light-effect",
   "media-player-sound-mode",
@@ -214,6 +217,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "humidifier-toggle": supportsHumidifierToggleCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
+  "light-color": supportsLightColorCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "light-color-favorites": supportsLightColorFavoritesCardFeature,
   "light-effect": supportsLightEffectCardFeature,

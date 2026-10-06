@@ -1,6 +1,7 @@
 import { render } from "lit";
 import { afterEach, expect, it, vi } from "vitest";
-import type { HomeAssistant } from "../../../src/types";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
 import "../../../src/panels/marketplace/dashboards/ha-marketplace-dashboard";
 
@@ -48,22 +49,24 @@ vi.mock(
   () => ({ repositoryMenuItems: () => [], renderRepositoryMenuEntry: vi.fn() })
 );
 
+let host: HTMLDivElement;
+
+let hass: MockHomeAssistant;
+
 const openDashboard = async (
   repositories: unknown[] = [],
   tab: "discover" | "browse" | "installed" = "browse"
 ) => {
+  host = document.createElement("div");
+  hass = provideHass(host, { localize: (key: string) => key });
+  document.body.append(host);
   const dashboard = document.createElement("ha-marketplace-dashboard");
   dashboard.tab = tab;
-  dashboard.hass = {
-    localize: (key: string) => key,
-    config: { version: "2026.11.0" },
-    auth: { data: { hassUrl: "http://localhost:8123" } },
-  } as unknown as HomeAssistant;
   dashboard.marketplace = {
     repositories,
     info: { categories: [] },
   } as unknown as MarketplaceData;
-  document.body.append(dashboard);
+  host.append(dashboard);
   await dashboard.updateComplete;
   return dashboard;
 };
@@ -112,7 +115,7 @@ it("counts what the search looks through, on the tab it is on", async () => {
   ];
   const dashboard = await openDashboard(repositories, "installed");
   const localize = vi.fn((key: string) => key);
-  dashboard.hass = { ...dashboard.hass, localize } as unknown as HomeAssistant;
+  hass.updateHass({ localize });
   await dashboard.updateComplete;
 
   expect(localize).toHaveBeenCalledWith(
@@ -295,7 +298,7 @@ it("browses the way the link says, also when the tab was open before", async () 
     "",
     "/marketplace/browse?sort=stars&direction=desc"
   );
-  document.body.append(dashboard);
+  host.append(dashboard);
   await dashboard.updateComplete;
   const table = () =>
     dashboard.shadowRoot!.querySelector(
@@ -364,7 +367,7 @@ it.each([
   dashboard.remove();
   window.history.pushState(null, "", "/marketplace/repository/1");
   await returnToLink();
-  document.body.append(dashboard);
+  host.append(dashboard);
   await dashboard.updateComplete;
   window.history.replaceState(null, "", "/");
 
@@ -447,12 +450,6 @@ it.each([
   },
 ])("shows $name for an integration", async ({ domain, tag }) => {
   const dashboard = await openDashboard();
-  dashboard.hass = {
-    localize: (key: string) => key,
-    config: { version: "2026.11.0" },
-    auth: { data: { hassUrl: "http://localhost:8123" } },
-  } as unknown as HomeAssistant;
-  await dashboard.updateComplete;
   const table = dashboard.shadowRoot!.querySelector(
     "hass-tabs-subpage-data-table"
   ) as unknown as {
