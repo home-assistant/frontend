@@ -70,11 +70,18 @@ export const getAreaControlEntities = (
   controls.reduce(
     (acc, control) => {
       const controlButton = AREA_CONTROLS_BUTTONS[control];
-      const filter = generateEntityFilter(hass, {
-        area: areaId,
-        entity_category: "none",
-        ...controlButton.filter,
-      });
+      const filter = generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          ...controlButton.filter,
+        }
+      );
 
       acc[control] = Object.keys(hass.entities).filter(
         (entityId) => filter(entityId) && !excludeEntities?.includes(entityId)
