@@ -40,11 +40,12 @@ const _deviceEntityLookup = memoizeOne((entities: HomeAssistant["entities"]) =>
 );
 
 export const filterLowBatteryEntities = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
   entityIds: string[]
 ): string[] => {
   return entityIds.filter((entityId) => {
-    const state = hass.states[entityId]?.state ?? "";
+    const state = states[entityId]?.state ?? "";
 
     if (computeDomain(entityId) === "binary_sensor") {
       return state === BINARY_STATE_ON;
@@ -55,17 +56,17 @@ export const filterLowBatteryEntities = (
       return false;
     }
 
-    const deviceId = hass.entities[entityId]?.device_id;
+    const deviceId = entities[entityId]?.device_id;
     if (!deviceId) {
       return true;
     }
 
     const batteryChargingEntity = findBatteryChargingEntity(
-      hass.states,
-      _deviceEntityLookup(hass.entities)[deviceId] ?? []
+      states,
+      _deviceEntityLookup(entities)[deviceId] ?? []
     );
     const batteryCharging = batteryChargingEntity
-      ? hass.states[batteryChargingEntity.entity_id]
+      ? states[batteryChargingEntity.entity_id]
       : undefined;
 
     return batteryCharging?.state !== "on";
@@ -73,11 +74,11 @@ export const filterLowBatteryEntities = (
 };
 
 export const filterUnavailableBatteryEntities = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityIds: string[]
 ): string[] =>
   entityIds.filter((entityId) => {
-    return hass.states[entityId]?.state === "unavailable";
+    return states[entityId]?.state === "unavailable";
   });
 
 const computeBatteryTileCard = (
