@@ -8,7 +8,7 @@ import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { MAP_MAX_ZOOM } from "../../common/map/base-layer";
-import type { MapLatLng } from "../../common/map/map-engine";
+import type { MapLatLng, MapView } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
 import { internationalizationContext, uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
@@ -92,6 +92,16 @@ export class HaLocationsEditor extends LitElement {
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {
     this.map.fitMap(options);
+  }
+
+  public getView(): MapView | undefined {
+    const view = this.map.getView();
+    return (
+      view && {
+        ...view,
+        center: [view.center[0], this._normalizeLongitude(view.center[1])],
+      }
+    );
   }
 
   public fitBounds(

@@ -722,6 +722,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _openDialog(entry?: Zone) {
     showZoneDetailDialog(this, {
       entry,
+      location: entry ? undefined : this._map?.getView()?.center,
       createEntry: (values) => this._createEntry(values),
       updateEntry: entry
         ? (values) => this._updateEntry(entry, values, true)
