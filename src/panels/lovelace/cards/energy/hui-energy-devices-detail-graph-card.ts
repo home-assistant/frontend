@@ -283,6 +283,7 @@ export class HuiEnergyDevicesDetailGraphCard
       compareEnd,
     } = generateEnergyDevicesDetailGraphData({
       localize: this._i18n.localize,
+      locale: this._i18n.locale,
       states: this._states,
       formatEntityName: this._formatters.formatEntityName,
       darkMode: this._ui.themes.darkMode,
