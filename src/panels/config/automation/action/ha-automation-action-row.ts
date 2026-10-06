@@ -363,7 +363,7 @@ export default class HaAutomationActionRow extends LitElement {
             this._entityReg,
             this.action,
             undefined,
-            { hideTriggerIds: true },
+            undefined,
             this._manifests
           )
         )}

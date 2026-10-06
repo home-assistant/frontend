@@ -149,8 +149,6 @@ const formatNumericLimitValue = (
 export interface DescribeOptions {
   // Skip the user defined alias and describe the underlying config.
   ignoreAlias?: boolean;
-  // Rows with trigger-reference chips render the IDs separately.
-  hideTriggerIds?: boolean;
 }
 
 export const describeTrigger = (
@@ -925,7 +923,7 @@ const tryDescribeCondition = (
     return condition.alias;
   }
 
-  if (condition.condition === "trigger" && options?.hideTriggerIds) {
+  if (condition.condition === "trigger") {
     return hass.localize(
       `${conditionsTranslationBaseKey}.trigger.description.summary`
     );
@@ -1302,18 +1300,6 @@ const describeLegacyCondition = (
   if (condition.condition === "template") {
     return hass.localize(
       `${conditionsTranslationBaseKey}.template.description.full`
-    );
-  }
-
-  if (condition.condition === "trigger" && condition.id != null) {
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.trigger.description.full`,
-      {
-        id: formatListWithOrs(
-          hass.locale,
-          ensureArray(condition.id).map((id) => id.toString())
-        ),
-      }
     );
   }
 
