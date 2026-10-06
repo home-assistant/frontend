@@ -43,7 +43,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistantUI, Route } from "../../../types";
-import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace-custom-repositories";
+import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 import "../components/ha-marketplace-discover";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import {
@@ -81,15 +81,6 @@ const defaultKeyData = {
   filterable: true,
   hidden: true,
 };
-
-// The backend reports why the Marketplace is disabled, mapped so it can be shown
-// as a translated sentence.
-const DISABLED_REASONS = ["invalid_token", "rate_limit", "removed"] as const;
-
-type DisabledReason = (typeof DISABLED_REASONS)[number];
-
-const isKnownDisabledReason = (reason: string): reason is DisabledReason =>
-  DISABLED_REASONS.includes(reason as DisabledReason);
 
 // From the Marketplace translations, a direct visit does not load those of Settings
 export type MarketplaceTab = "discover" | "browse" | "installed";
@@ -407,13 +398,13 @@ export class HaMarketplaceDashboard extends LitElement {
               class="add-from-link"
               .label=${addFromLink}
               .path=${mdiLinkPlus}
-              @click=${this._showCustomRepositories}
+              @click=${this._addFromLink}
             ></ha-icon-button>`
           : html`<ha-button
               class="add-from-link"
               appearance="outlined"
               size="s"
-              @click=${this._showCustomRepositories}
+              @click=${this._addFromLink}
             >
               <ha-svg-icon slot="start" .path=${mdiLinkPlus}></ha-svg-icon>
               ${addFromLink}
@@ -600,7 +591,7 @@ export class HaMarketplaceDashboard extends LitElement {
         this._openDocumentation();
         break;
       case "custom_repositories":
-        this._showCustomRepositories();
+        navigate("/marketplace/repositories");
         break;
       case "dismiss_new":
         this._dismissNew();
@@ -647,27 +638,8 @@ export class HaMarketplaceDashboard extends LitElement {
     );
   }
 
-  private _showCustomRepositories() {
-    const disabledReason = this.marketplace.info.disabled_reason;
-    if (disabledReason) {
-      showAlertDialog(this, {
-        title: this._i18n.localize(
-          "ui.panel.marketplace.dialog.disabled.title"
-        ),
-        text: isKnownDisabledReason(disabledReason)
-          ? this._i18n.localize(
-              `ui.panel.marketplace.dialog.disabled.reason.${disabledReason}`
-            )
-          : this._i18n.localize(
-              "ui.panel.marketplace.dialog.disabled.reason.unknown"
-            ),
-      });
-      return;
-    }
-
-    showMarketplaceCustomRepositoriesDialog(this, {
-      marketplace: this.marketplace,
-    });
+  private _addFromLink() {
+    showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
   private async _dismissNew() {
