@@ -479,7 +479,8 @@ export class HuiDialogEditSection
       Array.isArray(ev.detail.value) ||
       ("strategy" in ev.detail.value &&
         (!ev.detail.value.strategy ||
-          typeof ev.detail.value.strategy !== "object"));
+          typeof ev.detail.value.strategy !== "object" ||
+          Array.isArray(ev.detail.value.strategy)));
     if (this._yamlError) {
       return;
     }
