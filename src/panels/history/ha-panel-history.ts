@@ -372,6 +372,11 @@ class HaPanelHistory extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
+    // On narrow screens, the sources sheet covers the results, so only fetch
+    // once it is closed instead of on every source change.
+    if (this.narrow && this._sourcesShown()) {
+      return;
+    }
     if (
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
