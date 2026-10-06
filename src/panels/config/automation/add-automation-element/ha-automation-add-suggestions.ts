@@ -150,6 +150,7 @@ export class HaAutomationAddSuggestions extends LitElement {
     .chips {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: var(--ha-space-2);
       padding: var(--ha-space-3) var(--ha-space-4);
       border-top: var(--ha-border-width-sm) solid
@@ -167,9 +168,10 @@ export class HaAutomationAddSuggestions extends LitElement {
       flex-shrink: 0;
       align-items: center;
       gap: var(--ha-space-1);
-      height: 32px;
+      min-height: 32px;
       box-sizing: border-box;
-      padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-1)
+        var(--ha-space-1);
       border-radius: var(--ha-border-radius-md);
       border: var(--ha-border-width-sm) solid
         var(--ha-color-border-primary-quiet);
@@ -187,12 +189,12 @@ export class HaAutomationAddSuggestions extends LitElement {
     }
 
     .paste-hint {
-      font-size: var(--ha-font-size-xs);
+      font-size: var(--ha-font-size-s);
       color: var(--ha-color-on-neutral-quiet);
     }
 
     .paste-label {
-      font-size: var(--ha-font-size-s);
+      font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-medium);
       white-space: nowrap;
     }
