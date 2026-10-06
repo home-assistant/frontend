@@ -65,6 +65,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
   @state() private _amount?: number;
 
+  private _showingOutliers = false;
+
+  // Adjustments made while the dialog is open, keyed by period. The recorder
+  // processes adjustments asynchronously, so a fetch right after adjusting can
+  // still return the old values.
+  private _adjustedChanges = new Map<string, number>();
+
   private _dateTimeSelector: DateTimeSelector = {
     datetime: {},
   };
@@ -92,6 +99,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     const now = new Date();
     now.setMinutes(now.getMinutes() - (now.getMinutes() % 5), 0);
     this._moment = formatISO9075(now);
+    this._showingOutliers = false;
+    this._adjustedChanges.clear();
     this._fetchStats();
 
     const entry = this.hass.entities[params.statistic.statistic_id];
@@ -112,6 +121,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._amount = undefined;
     this._chosenStat = undefined;
     this._busy = false;
+    this._showingOutliers = false;
+    this._adjustedChanges.clear();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -129,7 +140,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         <ha-button
           slot="secondaryAction"
           appearance="plain"
-          @click=${this._fetchOutliers}
+          @click=${this._showOutliers}
         >
           ${this.hass.localize(
             "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.outliers"
@@ -276,7 +287,31 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
   private _dateTimeSelectorChanged(ev) {
     this._moment = ev.detail.value;
+    this._showingOutliers = false;
     this._fetchStats();
+  }
+
+  private _showOutliers() {
+    this._showingOutliers = true;
+    this._fetchOutliers();
+  }
+
+  private _refreshStats() {
+    if (this._showingOutliers) {
+      this._fetchOutliers();
+    } else {
+      this._fetchStats();
+    }
+  }
+
+  private _applyAdjustedChanges(stats: StatisticValue[]): StatisticValue[] {
+    if (!this._adjustedChanges.size) {
+      return stats;
+    }
+    return stats.map((stat) => {
+      const change = this._adjustedChanges.get(`${stat.start}-${stat.end}`);
+      return change === undefined ? stat : { ...stat, change };
+    });
   }
 
   private _renderAdjustStat() {
@@ -366,7 +401,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "hour"
     );
     this._statsHour =
-      statId in statsHourData ? statsHourData[statId].slice(0, 5) : [];
+      statId in statsHourData
+        ? this._applyAdjustedChanges(statsHourData[statId].slice(0, 5))
+        : [];
 
     // Can't have 5 min data if no hourly data
     if (this._statsHour.length === 0) {
@@ -389,7 +426,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     );
 
     this._stats5min =
-      statId in stats5MinData ? stats5MinData[statId].slice(0, 5) : [];
+      statId in stats5MinData
+        ? this._applyAdjustedChanges(stats5MinData[statId].slice(0, 5))
+        : [];
   }
 
   private async _fetchOutliers(): Promise<void> {
@@ -409,7 +448,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "hour"
     );
 
-    const statsHour = statId in statsHourData ? statsHourData[statId] : [];
+    const statsHour =
+      statId in statsHourData
+        ? this._applyAdjustedChanges(statsHourData[statId])
+        : [];
     if (statsHour.length === 0) {
       return;
     }
@@ -422,7 +464,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "5minute"
     );
 
-    const stats5Min = statId in stats5MinData ? stats5MinData[statId] : [];
+    const stats5Min =
+      statId in stats5MinData
+        ? this._applyAdjustedChanges(stats5MinData[statId])
+        : [];
     // First datapoint of 5 minute data in the history is always junk since it counts the entire sum
     // as the change, which we don't want here.
     stats5Min.shift();
@@ -517,8 +562,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
-    this._markDirtyStateClean();
-    this.closeDialog();
+    this._adjustedChanges.set(
+      `${this._chosenStat!.start}-${this._chosenStat!.end}`,
+      this._amount!
+    );
+    this._busy = false;
+    this._clearChosenStatistic();
+    this._refreshStats();
   }
 
   static get styles(): CSSResultGroup {
