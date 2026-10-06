@@ -14,9 +14,12 @@ const FLOATING_GAP = 4;
 const FLOATING_DOT_SIZE = 10;
 
 export const floatingMarkerFootprint = (
-  markerSize: number
+  markerSize: number,
+  selected: boolean
 ): { size: [number, number]; anchor: [number, number] } => {
-  const frame = Math.round(markerSize * SELECTED_MARKER_SCALE);
+  const frame = selected
+    ? Math.round(markerSize * SELECTED_MARKER_SCALE)
+    : markerSize;
   const height = frame + FLOATING_TAIL_REACH + FLOATING_GAP + FLOATING_DOT_SIZE;
   return {
     size: [frame, height],
@@ -129,10 +132,16 @@ class HaEntityMarker extends LitElement {
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12))
       );
     }
+    :host([floating]) {
+      pointer-events: none;
+    }
+    :host([floating]) .marker,
+    :host([floating]) .tail {
+      pointer-events: auto;
+    }
     :host([floating]) .marker {
       position: relative;
       z-index: 1;
-      box-shadow: none;
     }
     .marker {
       display: flex;
@@ -146,7 +155,6 @@ class HaEntityMarker extends LitElement {
       border-radius: var(--ha-marker-border-radius, 50%);
       border: var(--ha-marker-border-width, 3px) solid
         var(--ha-marker-color, var(--card-background-color, #fff));
-      box-shadow: var(--ha-marker-shadow, var(--ha-box-shadow-s));
       color: var(--primary-text-color);
       background-color: var(
         --ha-marker-background,
@@ -185,6 +193,9 @@ class HaEntityMarker extends LitElement {
       margin-top: ${FLOATING_GAP}px;
       border-radius: 50%;
       background: var(--ha-marker-color, var(--card-background-color, #fff));
+    }
+    :host(:not([selected])) .dot {
+      visibility: hidden;
     }
     .entity-picture {
       background-size: cover;

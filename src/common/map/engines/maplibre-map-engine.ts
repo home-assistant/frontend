@@ -198,10 +198,15 @@ const iconFootprint = (icon: MapClusterIcon, center: MapLatLng): Footprint => ({
   half: Math.max(...icon.size) / 2,
 });
 
-const markerFootprint = (managed: ManagedMarker): Footprint => ({
-  location: managed.location,
-  offset: [0, 0],
-  half: Math.max(...managed.options.size) / 2,
+const markerFootprint = ({ location, options }: ManagedMarker): Footprint => ({
+  location,
+  offset: options.anchor
+    ? [
+        options.size[0] / 2 - options.anchor[0],
+        options.size[1] / 2 - options.anchor[1],
+      ]
+    : [0, 0],
+  half: Math.max(...options.size) / 2,
 });
 
 interface ClusterGroup {

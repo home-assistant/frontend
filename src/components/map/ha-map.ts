@@ -1484,7 +1484,7 @@ export class HaMap extends ReactiveElement {
       entityMarker.entityColor = entityColor;
       entityMarker.selected =
         typeof entity !== "string" && (entity.selected ?? false);
-      entityMarker.floating = entityMarker.selected;
+      entityMarker.floating = true;
 
       const clusterData: ClusterData = {
         entityId,
@@ -1507,13 +1507,12 @@ export class HaMap extends ReactiveElement {
       const showAccuracy =
         accuracy > 0 && !(typeof entity !== "string" && entity.hide_accuracy);
 
-      const markerSize = this._getMarkerSize(computedStyles);
-      const footprint = entityMarker.floating
-        ? floatingMarkerFootprint(markerSize)
-        : { size: [markerSize, markerSize] as [number, number] };
       this._entityHandles.push(
         engine.addMarker(entityMarker, position, {
-          ...footprint,
+          ...floatingMarkerFootprint(
+            this._getMarkerSize(computedStyles),
+            entityMarker.selected
+          ),
           title,
           // Selected, it leaves its bubble
           cluster: !entityMarker.selected,
@@ -1946,7 +1945,6 @@ export class HaMap extends ReactiveElement {
       --ha-marker-selected-scale: 1;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
-      --ha-marker-shadow: none;
       --ha-marker-font-size: var(--ha-font-size-s);
       /* distinguish letter tiles from the bubble background */
       --ha-marker-background: var(--ha-color-fill-neutral-quiet-resting);
