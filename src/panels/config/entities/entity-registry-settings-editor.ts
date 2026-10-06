@@ -1757,6 +1757,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _hasOwnName(): boolean {
+    if (this._device && this._useDeviceName) {
+      return false;
+    }
     return !!(this._computeName() ?? this._originalName);
   }
 
