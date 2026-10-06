@@ -3,7 +3,7 @@ import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-ite
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import type { ContextType } from "@lit/context";
-import { mdiTextureBox } from "@mdi/js";
+import { mdiContentPaste, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,13 +17,15 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
-import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
@@ -64,17 +66,16 @@ import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,
-  type TargetType,
 } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
-import { getTargetIcon } from "../target/get_target_icon";
-import { getTargetText } from "../target/get_target_text";
-import "./ha-automation-add-element-paste";
+import "../target/ha-automation-row-targets";
 
-const MAX_SUGGESTED_TARGETS = 3;
+const MAX_SUGGESTED_TARGETS = 10;
+
+const MAX_NEW_DEVICES = 3;
 
 const NEW_DEVICE_MAX_AGE = 7 * 24 * 60 * 60;
 
@@ -212,34 +213,30 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return html`
-      ${
-        this.narrow && this.value
-          ? this._renderNarrow(this._entries, this.value)
-          : html`
-              <ha-list-base>
-                <ha-automation-add-element-paste
-                  .automationElementType=${this.automationElementType}
-                  .clipboardItem=${this.clipboardItem}
-                ></ha-automation-add-element-paste>
-              </ha-list-base>
-              ${this._renderSuggestions()}
-              ${this._renderFloors(this.narrow, this._entries, this.value)}
-              ${this._renderTimeLocation(
-                this.narrow,
-                this.timeLocationLabel,
-                this.timeLocationGroups,
-                this.selectedGroup
-              )}
-              ${this._renderUnassigned(this.narrow, this._entries, this.value)}
-              ${this._renderLabels(
-                this.narrow,
-                this.states,
-                this._registries,
-                this._labelRegistry,
-                this.value
-              )}
-            `
-      }
+      <div class="tree">
+        ${
+          this.narrow && this.value
+            ? this._renderNarrow(this._entries, this.value)
+            : html`
+                ${this._renderFloors(this.narrow, this._entries, this.value)}
+                ${this._renderTimeLocation(
+                  this.narrow,
+                  this.timeLocationLabel,
+                  this.timeLocationGroups,
+                  this.selectedGroup
+                )}
+                ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+                ${this._renderLabels(
+                  this.narrow,
+                  this.states,
+                  this._registries,
+                  this._labelRegistry,
+                  this.value
+                )}
+              `
+        }
+      </div>
+      ${this.narrow && this.value ? nothing : this._renderFooter()}
       ${
         this.narrow && this._showShowMoreButton && !this._fullHeight
           ? html`
@@ -405,110 +402,81 @@ export default class HaAutomationAddFromTarget extends LitElement {
       states: ContextType<typeof statesContext>,
       registries: ContextType<typeof registriesContext>,
       labelRegistry: LabelRegistryEntry[]
-    ): { titleKey: LocalizeKeys; targets: [TargetType, string][] } => {
-      const targets = suggestedTargets
-        .map((target) => Object.entries(target)[0])
-        .filter(([key, id]) =>
-          key === "entity_id"
+    ): SingleHassServiceTarget[] => {
+      const since = Date.now() / 1000 - NEW_DEVICE_MAX_AGE;
+      const newDevices = Object.values(registries.devices)
+        .filter((device) => !device.disabled_by && device.created_at > since)
+        .sort((a, b) => b.created_at - a.created_at)
+        .slice(0, MAX_NEW_DEVICES)
+        .map((device) => device.id);
+
+      const suggested = suggestedTargets
+        .filter((target) => {
+          const [key, id] = Object.entries(target)[0];
+          return key === "entity_id"
             ? !!states[id]
             : key === "device_id"
-              ? !!registries.devices[id] && !registries.devices[id].disabled_by
+              ? !!registries.devices[id] &&
+                !registries.devices[id].disabled_by &&
+                !newDevices.includes(id)
               : key === "area_id"
                 ? !!registries.areas[id]
                 : key === "floor_id"
                   ? !!registries.floors[id]
-                  : labelRegistry.some((label) => label.label_id === id)
-        )
-        .map(([key, id]): [TargetType, string] => [
-          key.replace("_id", "") as TargetType,
-          id,
-        ]);
+                  : labelRegistry.some((label) => label.label_id === id);
+        })
+        .slice(0, MAX_SUGGESTED_TARGETS - newDevices.length);
 
-      const suggested = targets.slice(0, MAX_SUGGESTED_TARGETS);
-      const suggestedDevices = new Set(
-        suggested.filter(([type]) => type === "device").map(([, id]) => id)
-      );
-      const since = Date.now() / 1000 - NEW_DEVICE_MAX_AGE;
-      const newDevices = Object.values(registries.devices)
-        .filter(
-          (device) =>
-            !device.disabled_by &&
-            device.created_at > since &&
-            !suggestedDevices.has(device.id)
-        )
-        .sort((a, b) => b.created_at - a.created_at)
-        .slice(0, MAX_SUGGESTED_TARGETS - suggested.length)
-        .map((device): [TargetType, string] => ["device", device.id]);
-
-      return {
-        titleKey: suggested.length
-          ? "ui.panel.config.automation.editor.suggested_targets"
-          : "ui.panel.config.automation.editor.new_devices",
-        targets: [...suggested, ...newDevices],
-      };
+      return [
+        ...suggested,
+        ...newDevices.map((id): SingleHassServiceTarget => ({ device_id: id })),
+      ];
     }
   );
 
-  private _renderSuggestions() {
-    if (!this.suggestedTargets) {
-      return nothing;
-    }
-
-    const { titleKey, targets } = this._getSuggestions(
-      this.suggestedTargets,
+  private _renderFooter() {
+    const targets = this._getSuggestions(
+      this.suggestedTargets ?? [],
       this.states,
       this._registries,
       this._labelRegistry
     );
 
-    if (!targets.length) {
+    if (!this.clipboardItem && !targets.length) {
       return nothing;
     }
 
-    const selectedTargetId = this._getSelectedTargetId(this.value);
-
-    return html`<ha-section-title
-        >${this._i18n.localize(titleKey)}</ha-section-title
-      >
-      <ha-list-base>
-        ${targets.map(([type, id]) => {
-          const target = `${type}${TARGET_SEPARATOR}${id}`;
-          return html`<ha-list-item-button
-            .target=${target}
-            @click=${this._selectSuggestion}
-            class=${selectedTargetId === target ? "selected" : ""}
-          >
-            ${getTargetIcon(
-              this._registries,
-              this.states,
-              type,
-              id,
-              this._configEntryLookup,
-              this._getLabel,
-              "start"
-            )}
-            <div slot="headline">
-              ${getTargetText(
-                this._registries,
-                this.states,
-                this._i18n.localize,
-                type,
-                id,
-                this._getLabel
-              )}
-            </div>
-            ${
-              this.narrow
-                ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                : nothing
-            }
-          </ha-list-item-button>`;
-        })}
-      </ha-list-base>`;
+    return html`<div
+      class="footer"
+      role="group"
+      aria-label=${this._i18n.localize(
+        "ui.panel.config.automation.editor.suggestions"
+      )}
+    >
+      ${
+        this.clipboardItem
+          ? html`<button class="paste" @click=${this._paste}>
+              <ha-svg-icon .path=${mdiContentPaste}></ha-svg-icon>
+              <span
+                >${this._i18n.localize(
+                  `ui.panel.config.automation.editor.${this.automationElementType}s.paste`
+                )}</span
+              >
+            </button>`
+          : nothing
+      }
+      ${targets.map(
+        (target) =>
+          html`<span class="chip"
+            ><ha-automation-row-targets
+              .target=${target}
+              selectable
+              @automation-target-picked=${this._selectSuggestion}
+            ></ha-automation-row-targets
+          ></span>`
+      )}
+    </div>`;
   }
-
-  private _getLabel = (id: string) =>
-    this._labelRegistry.find((label) => label.label_id === id);
 
   private _renderTimeLocation = memoizeOne(
     (
@@ -1480,12 +1448,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
-  private _selectSuggestion(ev: CustomEvent) {
-    const target = (ev.currentTarget as any).target;
+  private _selectSuggestion(
+    ev: HASSDomEvent<HASSDomEvents["automation-target-picked"]>
+  ) {
+    this._valueChanged(
+      `${ev.detail.type}${TARGET_SEPARATOR}${ev.detail.id}`,
+      !this.narrow
+    );
+  }
 
-    if (target) {
-      this._valueChanged(target, !this.narrow);
-    }
+  private _paste() {
+    fireEvent(this, "paste-element");
   }
 
   private _selectTimeLocationGroup(ev: CustomEvent) {
@@ -1688,6 +1661,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
     :host {
       --wa-color-neutral-fill-quiet: var(--ha-color-fill-primary-normal-active);
       position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tree {
+      flex: 1 0 auto;
     }
 
     ha-section-title {
@@ -1784,6 +1763,51 @@ export default class HaAutomationAddFromTarget extends LitElement {
       color: var(--ha-color-on-primary-normal);
     }
 
+    .footer {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ha-space-2);
+      padding: var(--ha-space-2) var(--ha-space-3);
+      background-color: var(--card-background-color);
+      border-top: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
+    }
+
+    .chip {
+      display: inline-flex;
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+
+    .paste {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: var(--ha-space-1);
+      height: 32px;
+      box-sizing: border-box;
+      padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      border-radius: var(--ha-border-radius-md);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-primary-quiet);
+      background: var(--ha-color-fill-primary-quiet-resting);
+      color: var(--ha-color-on-primary-normal);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .paste:hover {
+      background: var(--ha-color-fill-primary-quiet-hover);
+    }
+
+    .paste ha-svg-icon {
+      padding: var(--ha-space-1) 0;
+      color: inherit;
+    }
+
     .targets-show-more {
       display: flex;
       justify-content: center;
@@ -1799,6 +1823,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
       :host {
         max-height: var(--max-height, 50%);
         overflow: hidden;
+      }
+      .footer {
+        flex-wrap: nowrap;
+        overflow-x: auto;
       }
     }
   `;

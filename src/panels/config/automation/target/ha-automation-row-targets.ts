@@ -24,6 +24,7 @@ import { until } from "lit/directives/until";
 import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { isTemplate } from "../../../../common/string/has-template";
 import "../../../../components/ha-dropdown";
@@ -69,6 +70,10 @@ export class HaAutomationRowTargets extends LitElement {
 
   @property({ type: Boolean })
   public interactive = false;
+
+  /** Chips fire `automation-target-picked` instead of showing target details. */
+  @property({ type: Boolean })
+  public selectable = false;
 
   @property({ reflect: true })
   public size: "s" | "m" = "m";
@@ -411,7 +416,7 @@ export class HaAutomationRowTargets extends LitElement {
     countTemplate: unknown = nothing,
     title?: string
   ) {
-    if (!this.interactive || !targetId || !targetType) {
+    if ((!this.interactive && !this.selectable) || !targetId || !targetType) {
       return html`<div
         class=${classMap({
           target: true,
@@ -574,6 +579,14 @@ export class HaAutomationRowTargets extends LitElement {
       return;
     }
 
+    if (this.selectable) {
+      fireEvent(this, "automation-target-picked", {
+        type: target.targetType,
+        id: target.targetId,
+      });
+      return;
+    }
+
     this._showTargetInfo(target.targetId, target.targetType, target.label, ev);
   }
 
@@ -719,5 +732,9 @@ export class HaAutomationRowTargets extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-row-targets": HaAutomationRowTargets;
+  }
+
+  interface HASSDomEvents {
+    "automation-target-picked": { type: TargetType; id: string };
   }
 }
