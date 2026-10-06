@@ -800,7 +800,7 @@ export class MapLibreMapEngine implements MapEngine {
   ): MapEditableMarkerHandle {
     element.style.width = `${options.size[0]}px`;
     element.style.height = `${options.size[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       element.title = options.title;
     }
     const interactive = options.interactive ?? true;
@@ -999,7 +999,7 @@ export class MapLibreMapEngine implements MapEngine {
     }
     centerEl.style.width = `${centerSize[0]}px`;
     centerEl.style.height = `${centerSize[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       centerEl.title = options.title;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
