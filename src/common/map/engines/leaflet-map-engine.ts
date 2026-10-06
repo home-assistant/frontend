@@ -198,7 +198,10 @@ export class LeafletMapEngine implements MapEngine {
       return;
     }
     const bounds = this.Leaflet.latLngBounds(points).pad(options?.pad ?? 0.5);
-    this.leafletMap.fitBounds(bounds, {
+    const fit = options?.fly
+      ? this.leafletMap.flyToBounds
+      : this.leafletMap.fitBounds;
+    fit.call(this.leafletMap, bounds, {
       maxZoom: options?.maxZoom,
       animate: options?.animate,
       paddingTopLeft: [options?.padding?.left ?? 0, options?.padding?.top ?? 0],

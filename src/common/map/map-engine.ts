@@ -55,6 +55,8 @@ export interface MapFitOptions {
   pad?: number;
   /** Ease the camera to the bounds instead of jumping; defaults to true */
   animate?: boolean;
+  /** Fly in an arc instead of easing straight there; defaults to false */
+  fly?: boolean;
   /** Viewport pixels covered by overlays; the bounds fit inside the rest */
   padding?: MapFitPadding;
 }
@@ -345,4 +347,28 @@ export const circleBoundsPoints = (
     [latMin, center[1] - dLng],
     [latMax, center[1] + dLng],
   ];
+};
+
+const MERCATOR_MAX_LAT = 85.051129;
+
+const projectMercator = ([lat, lng]: MapLatLng, scale: number) => {
+  const sinLat = Math.sin(
+    toRadians(Math.max(-MERCATOR_MAX_LAT, Math.min(MERCATOR_MAX_LAT, lat)))
+  );
+  return {
+    x: (lng / 360 + 0.5) * scale,
+    y: (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale,
+  };
+};
+
+export const pixelDistance = (
+  a: MapLatLng,
+  b: MapLatLng,
+  zoom: number
+): number => {
+  const scale = 256 * 2 ** zoom;
+  const pa = projectMercator(a, scale);
+  const pb = projectMercator(b, scale);
+  const dx = Math.abs(pa.x - pb.x);
+  return Math.hypot(Math.min(dx, scale - dx), pa.y - pb.y);
 };

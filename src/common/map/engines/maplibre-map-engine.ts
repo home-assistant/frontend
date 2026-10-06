@@ -717,6 +717,7 @@ export class MapLibreMapEngine implements MapEngine {
     map.fitBounds(fit.bounds, {
       ...fit.options,
       animate: options?.animate,
+      linear: !options?.fly,
     });
   }
 

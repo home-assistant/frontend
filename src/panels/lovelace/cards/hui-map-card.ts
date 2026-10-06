@@ -36,7 +36,10 @@ import type {
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
-import { circleBoundsPoints } from "../../../common/map/map-engine";
+import {
+  circleBoundsPoints,
+  pixelDistance,
+} from "../../../common/map/map-engine";
 import {
   entityMapColor,
   zoneColor,
@@ -76,14 +79,11 @@ import {
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
-// GPS accuracy (meters) above which focusing fits the circle, not the point
-const IMPRECISE_GPS_ACCURACY = 100;
-
 // Margin around the overview (--ha-space-3), in pixels
 const OVERVIEW_GAP = 12;
 
-const FOCUS_PERSON_ZOOM = 19;
-const FOCUS_ZONE_MAX_ZOOM = 18;
+const FOCUS_MAX_ZOOM = 17;
+const FOCUS_CLEARANCE_PX = 80;
 const SELECTED_ENTITY_PARAM = "entity_id";
 const SELECTABLE_DOMAINS = ["person", "device_tracker", "zone"];
 
@@ -767,40 +767,44 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _focusEntity(entityId: string) {
     const stateObj = this.hass.states[entityId];
-    if (!stateObj) {
+    const center = this._entityCenter(entityId);
+    if (!stateObj || !center) {
       return;
     }
-    if (computeStateDomain(stateObj) === "zone") {
-      const { latitude, longitude, radius } = stateObj.attributes;
-      this._map?.fitBounds(
-        circleBoundsPoints([latitude, longitude], radius ?? 100),
-        {
-          pad: 0.2,
-          zoom: FOCUS_ZONE_MAX_ZOOM,
-          padding: this._overviewPadding(),
-        }
-      );
-      return;
-    }
-    const location = getEntityLocation(stateObj, this.hass.states);
-    if (!location) {
-      return;
-    }
-    const center: MapLatLng = [location.latitude, location.longitude];
-    const accuracy = location.gpsAccuracy ?? 0;
-    // Fit the accuracy circle so it is not mostly off-screen, capping the zoom
-    if (accuracy > IMPRECISE_GPS_ACCURACY) {
-      this._map?.fitBounds(circleBoundsPoints(center, accuracy), {
+    const zoom = this._map?.getView()?.zoom;
+    const zone = computeStateDomain(stateObj) === "zone";
+    this._map?.fitBounds(
+      zone
+        ? circleBoundsPoints(center, stateObj.attributes.radius ?? 100)
+        : [center],
+      {
         pad: 0.2,
-        zoom: FOCUS_PERSON_ZOOM,
+        zoom: zoom === undefined || zone ? zoom : this._focusZoom(center, zoom),
         padding: this._overviewPadding(),
-      });
-      return;
+        fly: !this._map.containsLocation(center),
+      }
+    );
+  }
+
+  private _entityCenter(entityId: string): MapLatLng | undefined {
+    const stateObj = this.hass.states[entityId];
+    const location = stateObj && getEntityLocation(stateObj, this.hass.states);
+    return location && [location.latitude, location.longitude];
+  }
+
+  // Zoom in only as far as it takes to clear the nearest other marker
+  private _focusZoom(center: MapLatLng, zoom: number): number {
+    let nearest = Infinity;
+    for (const entity of this._filteredMapEntities) {
+      const other = this._entityCenter(entity.entity_id);
+      if (other && (other[0] !== center[0] || other[1] !== center[1])) {
+        nearest = Math.min(nearest, pixelDistance(center, other, zoom));
+      }
     }
-    this._map?.fitBounds([center], {
-      zoom: FOCUS_PERSON_ZOOM,
-      padding: this._overviewPadding(),
-    });
+    return Math.max(
+      zoom,
+      Math.min(FOCUS_MAX_ZOOM, zoom + Math.log2(FOCUS_CLEARANCE_PX / nearest))
+    );
   }
 
   // The part of the map the overview covers, so fitted markers land next to
