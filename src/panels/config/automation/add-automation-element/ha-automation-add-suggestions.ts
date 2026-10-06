@@ -110,11 +110,19 @@ export class HaAutomationAddSuggestions extends LitElement {
         this.clipboardItem
           ? html`<button class="paste" @click=${this._paste}>
               <ha-svg-icon .path=${mdiContentPaste}></ha-svg-icon>
-              <span
-                >${this._i18n.localize(
-                  `ui.panel.config.automation.editor.${this.automationElementType}s.paste`
-                )}</span
-              >
+              <span class="paste-text">
+                <span class="paste-hint"
+                  >${this._i18n.localize(
+                    `ui.panel.config.automation.editor.${this.automationElementType}s.paste`
+                  )}</span
+                >
+                <span class="paste-label"
+                  >${this._i18n.localize(
+                    // @ts-ignore
+                    `ui.panel.config.automation.editor.${this.automationElementType}s.type.${this.clipboardItem}.label`
+                  )}</span
+                >
+              </span>
             </button>`
           : nothing
       }
@@ -169,6 +177,24 @@ export class HaAutomationAddSuggestions extends LitElement {
       color: var(--ha-color-on-primary-normal);
       font: inherit;
       cursor: pointer;
+    }
+
+    .paste-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.2;
+    }
+
+    .paste-hint {
+      font-size: var(--ha-font-size-xs);
+      color: var(--ha-color-on-neutral-quiet);
+    }
+
+    .paste-label {
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      white-space: nowrap;
     }
 
     .paste:hover {
