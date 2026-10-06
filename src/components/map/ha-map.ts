@@ -129,6 +129,8 @@ export interface HaMapEditableLocation {
   radiusEditable?: boolean;
   /** Activating the marker fires editable-location-clicked; otherwise it is not a button */
   activatable?: boolean;
+  /** Counts toward the map fit; defaults to true */
+  fit?: boolean;
 }
 
 // Geometry is updated in place; a change to anything else rebuilds the marker
@@ -909,8 +911,10 @@ export class HaMap extends ReactiveElement {
 
     const points = [...this._focusPoints, ...zonePoints];
 
-    // Editable locations contribute their bounds, radius included
-    this.editableLocations?.forEach((editable) => {
+    // Opted-out locations only count when nothing else would be fitted
+    const editables = this.editableLocations ?? [];
+    const fitted = editables.filter((editable) => editable.fit !== false);
+    (fitted.length ? fitted : editables).forEach((editable) => {
       if (editable.radius) {
         points.push(...circleBoundsPoints(editable.location, editable.radius));
       } else {
