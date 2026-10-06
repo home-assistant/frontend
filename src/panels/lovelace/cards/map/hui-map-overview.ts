@@ -14,6 +14,7 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
@@ -517,17 +518,20 @@ export class HuiMapOverview extends LitElement {
             }
           </span>
         </div>
+        ${isZone ? nothing : this._renderAvatar(stateObj)}
       </div>
       <div class="list">
         <div class="activity">
-          <span class="activity-icon">
-            <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
-          </span>
-          <span class="activity-title">
-            ${this._i18n.localize(
-              "ui.panel.lovelace.cards.map.overview.activity"
-            )}
-          </span>
+          <div class="activity-header">
+            <span class="activity-icon">
+              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+            </span>
+            <span class="activity-title">
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.activity"
+              )}
+            </span>
+          </div>
           ${
             !this._activity
               ? html`<div class="activity-loading">
@@ -557,22 +561,22 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
-  // The color of the zone a person's state names; undefined when away or unknown
-  private _zoneColorForState(entityState: string): string | undefined {
+  // The zone a person's state names; undefined when away or unknown
+  private _zoneForState(entityState: string): HassEntity | undefined {
     if (entityState === "not_home" || entityState === "unknown") {
       return undefined;
     }
-    const zone =
-      entityState === "home"
-        ? this._states[HOME_ZONE_ENTITY_ID]
-        : Object.values(this._states).find(
-            (candidate) =>
-              computeStateDomain(candidate) === "zone" &&
-              computeStateName(candidate) === entityState
-          );
-    if (!zone) {
-      return undefined;
-    }
+    return entityState === "home"
+      ? this._states[HOME_ZONE_ENTITY_ID]
+      : Object.values(this._states).find(
+          (candidate) =>
+            computeStateDomain(candidate) === "zone" &&
+            computeStateName(candidate) === entityState
+        );
+  }
+
+  // The same color as the zone's marker on the map
+  private _zoneColor(zone: HassEntity): string {
     return zoneColor(
       zone.entity_id,
       !!zone.attributes.passive,
@@ -587,9 +591,7 @@ export class HuiMapOverview extends LitElement {
       : activity.slice(0, ACTIVITY_INITIAL_ENTRIES);
     return html`
       <div class="timeline">
-        ${shown.map((entry, index) =>
-          this._renderActivityEntry(stateObj, entry, index === shown.length - 1)
-        )}
+        ${shown.map((entry) => this._renderActivityEntry(stateObj, entry))}
       </div>
       ${
         activity.length > shown.length
@@ -608,43 +610,41 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
-  private _renderActivityEntry(
-    stateObj: HassEntity,
-    entry: ActivityEntry,
-    last: boolean
-  ) {
+  private _renderActivityEntry(stateObj: HassEntity, entry: ActivityEntry) {
     const person = entry.personId ? this._states[entry.personId] : undefined;
     const headline = entry.personId
       ? person
         ? this._personName(person)
         : entry.personId
       : this._formatters.formatEntityState(stateObj, entry.state);
-    const color =
-      entry.personId && !entry.arrived
-        ? undefined
-        : this._zoneColorForState(entry.state);
+    // Being somewhere shows as a tile (the place, or who arrived); being
+    // nowhere, or having left, as a plain line
+    const zone = entry.personId ? undefined : this._zoneForState(entry.state);
+    const tile = zone
+      ? this._renderZoneAvatar(zone)
+      : entry.arrived && person
+        ? this._renderAvatar(person)
+        : html`<span class="rail" aria-hidden="true"></span>`;
     return html`
-      <div class=${classMap({ entry: true, last })}>
-        <span
-          class="dot"
-          style=${styleMap({ "--dot-color": color })}
-          aria-hidden="true"
-        ></span>
-        <span class="entry-headline">${headline}</span>
-        <span class="entry-when">
-          ${
-            entry.personId
-              ? html`${this._i18n.localize(
-                  entry.arrived
-                    ? "ui.panel.lovelace.cards.map.overview.entered"
-                    : "ui.panel.lovelace.cards.map.overview.left"
-                )}
-                · `
-              : nothing
-          }
-          ${formatTime(entry.when, this._i18n.locale, this._config)} ·
-          <ha-relative-time .datetime=${entry.when}></ha-relative-time>
-        </span>
+      <div class="entry">
+        ${tile}
+        <div class="entry-text">
+          <span class="entry-headline">${headline}</span>
+          <span class="entry-when">
+            ${
+              entry.personId
+                ? html`${this._i18n.localize(
+                    entry.arrived
+                      ? "ui.panel.lovelace.cards.map.overview.entered"
+                      : "ui.panel.lovelace.cards.map.overview.left"
+                  )}
+                  · `
+                : nothing
+            }
+            ${formatTime(entry.when, this._i18n.locale, this._config)} ·
+            <ha-relative-time .datetime=${entry.when}></ha-relative-time>
+          </span>
+        </div>
       </div>
     `;
   }
@@ -742,7 +742,6 @@ export class HuiMapOverview extends LitElement {
   private _renderEntity(stateObj: HassEntity) {
     const name = this._personName(stateObj);
     const location = getEntityLocation(stateObj, this._states);
-    const picture = stateObj.attributes.entity_picture;
 
     return html`
       <ha-md-list-item
@@ -751,21 +750,7 @@ export class HuiMapOverview extends LitElement {
         class=${classMap({ "no-location": !location })}
         @click=${this._handleItemClick}
       >
-        <div slot="start" class="avatar">
-          ${
-            picture
-              ? html`<img
-                  src=${this._connection.hassUrl(picture)}
-                  alt=""
-                  loading="lazy"
-                />`
-              : computeStateDomain(stateObj) === "person"
-                ? html`<span class="initials"
-                    >${computeUserInitials(computeStateName(stateObj))}</span
-                  >`
-                : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
-          }
-        </div>
+        ${this._renderAvatar(stateObj, "start")}
         <span slot="headline">${name}</span>
         <span slot="supporting-text">
           ${this._formatters.formatEntityState(stateObj)} ·
@@ -780,13 +765,6 @@ export class HuiMapOverview extends LitElement {
 
   private _renderZone(stateObj: HassEntity) {
     const count = Number(stateObj.state);
-    // The same color as the zone's marker on the map
-    const color = zoneColor(
-      stateObj.entity_id,
-      !!stateObj.attributes.passive,
-      this._entityReg,
-      getComputedStyle(this)
-    );
 
     return html`
       <ha-md-list-item
@@ -794,16 +772,7 @@ export class HuiMapOverview extends LitElement {
         data-entity-id=${stateObj.entity_id}
         @click=${this._handleItemClick}
       >
-        <div
-          slot="start"
-          class="avatar zone"
-          style=${styleMap({
-            background: color,
-            color: contrastingZoneContent(color),
-          })}
-        >
-          <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
-        </div>
+        ${this._renderZoneAvatar(stateObj, "start")}
         <span slot="headline">${computeStateName(stateObj)}</span>
         <span slot="supporting-text">
           ${
@@ -816,6 +785,43 @@ export class HuiMapOverview extends LitElement {
           }
         </span>
       </ha-md-list-item>
+    `;
+  }
+
+  private _renderAvatar(stateObj: HassEntity, slot?: string) {
+    const picture = stateObj.attributes.entity_picture;
+    return html`
+      <div class="avatar" slot=${ifDefined(slot)}>
+        ${
+          picture
+            ? html`<img
+                src=${this._connection.hassUrl(picture)}
+                alt=""
+                loading="lazy"
+              />`
+            : computeStateDomain(stateObj) === "person"
+              ? html`<span class="initials"
+                  >${computeUserInitials(computeStateName(stateObj))}</span
+                >`
+              : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
+        }
+      </div>
+    `;
+  }
+
+  private _renderZoneAvatar(zone: HassEntity, slot?: string) {
+    const color = this._zoneColor(zone);
+    return html`
+      <div
+        class="avatar zone"
+        slot=${ifDefined(slot)}
+        style=${styleMap({
+          background: color,
+          color: contrastingZoneContent(color),
+        })}
+      >
+        <ha-state-icon .stateObj=${zone}></ha-state-icon>
+      </div>
     `;
   }
 
@@ -877,8 +883,8 @@ export class HuiMapOverview extends LitElement {
       max-height: 100%;
       display: flex;
       flex-direction: column;
-      padding: var(--ha-space-3);
-      border-radius: var(--ha-border-radius-xl);
+      padding: var(--ha-os-space-22) var(--ha-space-6) var(--ha-space-6);
+      border-radius: var(--ha-os-border-radius-50);
       background: var(--card-background-color);
       color: var(--primary-text-color);
       /* Floats over the map, so it keeps its shadow where cards lose theirs */
@@ -920,7 +926,7 @@ export class HuiMapOverview extends LitElement {
       position: relative;
       flex: none;
       padding: var(--ha-space-1);
-      border-radius: var(--ha-border-radius-lg);
+      border-radius: var(--ha-border-radius-6xl);
       background: var(--ha-color-fill-neutral-quiet-resting);
     }
 
@@ -940,7 +946,7 @@ export class HuiMapOverview extends LitElement {
           (var(--segment-width) + var(--ha-space-1))
       );
       width: var(--segment-width);
-      border-radius: calc(var(--ha-border-radius-lg) - var(--ha-space-1));
+      border-radius: var(--ha-border-radius-5xl);
       background: var(--card-background-color);
       box-shadow: var(--ha-box-shadow-s);
       transition: inset-inline-start 200ms ease;
@@ -949,20 +955,17 @@ export class HuiMapOverview extends LitElement {
     .tabs button {
       position: relative;
       flex: 1;
+      height: var(--ha-space-15);
       border: none;
       margin: 0;
-      padding: var(--ha-space-2) var(--ha-space-3);
-      border-radius: calc(var(--ha-border-radius-lg) - var(--ha-space-1));
+      padding: 0 var(--ha-space-5);
+      border-radius: var(--ha-border-radius-5xl);
       background: none;
       cursor: pointer;
       font-family: inherit;
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-medium);
-      color: var(--secondary-text-color);
-      transition: color 180ms ease-in-out;
-    }
-
-    .tabs button[aria-selected="true"] {
+      /* The sliding pill alone marks the selected tab */
       color: var(--primary-text-color);
     }
 
@@ -994,40 +997,53 @@ export class HuiMapOverview extends LitElement {
       min-height: 0;
       overflow-y: auto;
       padding: 0;
-      margin-top: var(--ha-space-2);
+      margin-top: var(--ha-os-space-22);
       background: none;
       margin-bottom: calc(-1 * var(--sheet-bottom-space, 0px));
       padding-bottom: var(--sheet-bottom-space, 0px);
-      --md-list-item-leading-space: var(--ha-space-2);
-      --md-list-item-trailing-space: var(--ha-space-2);
-      --md-list-item-one-line-container-height: 56px;
-      --md-list-item-two-line-container-height: 64px;
+      --row-height: calc(var(--ha-os-space-46) + 2 * var(--ha-os-space-22));
+      --md-list-item-leading-space: var(--ha-space-6);
+      --md-list-item-trailing-space: var(--ha-space-6);
+      --md-list-item-one-line-container-height: var(--row-height);
+      --md-list-item-two-line-container-height: var(--row-height);
     }
 
     ha-md-list-item {
-      border-radius: var(--ha-border-radius-lg);
+      border-radius: var(--ha-border-radius-6xl);
       --md-list-item-supporting-text-size: var(--ha-font-size-s);
+      --md-list-item-supporting-text-color: var(--primary-text-color);
       --md-list-item-label-text-weight: var(--ha-font-weight-medium);
       --ha-md-list-item-gap: var(--ha-space-3);
+      /* Grey marks hover and focus only, never a resting row. It goes on the
+         row itself: the ripple's hover layer sits above the content */
+      --ha-ripple-hover-opacity: 0;
+    }
+
+    ha-md-list-item:hover,
+    ha-md-list-item:focus-within {
+      background: var(--ha-color-fill-neutral-quiet-resting);
     }
 
     ha-md-list-item.no-location {
       --md-sys-color-on-surface: var(--secondary-text-color);
+      --md-list-item-supporting-text-color: var(--secondary-text-color);
     }
 
     .avatar {
       position: relative;
-      width: 48px;
-      height: 48px;
-      border-radius: var(--ha-border-radius-lg);
+      flex: none;
+      width: var(--ha-os-space-46);
+      height: var(--ha-os-space-46);
+      border-radius: var(--ha-border-radius-xl);
       overflow: visible;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--ha-color-fill-neutral-quiet-resting);
-      color: var(--secondary-text-color);
+      background: var(--ha-color-fill-neutral-loud-resting);
+      color: var(--text-primary-color);
       font-weight: var(--ha-font-weight-medium);
       box-sizing: border-box;
+      --mdc-icon-size: var(--ha-os-space-34);
     }
 
     .avatar img {
@@ -1038,7 +1054,6 @@ export class HuiMapOverview extends LitElement {
     }
 
     .avatar.zone {
-      border-radius: 50%;
       border: none;
       background: var(--accent-color);
       color: #fff;
@@ -1054,15 +1069,27 @@ export class HuiMapOverview extends LitElement {
 
     .detail-header {
       flex: none;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
+      height: var(--ha-space-17);
+      /* The avatar on the end sits as far from the edge as from top and bottom */
+      padding: var(--ha-space-1) var(--ha-space-3);
       gap: var(--ha-space-1);
+      border-radius: var(--ha-border-radius-6xl);
+      background: var(--ha-color-fill-neutral-quiet-resting);
       color: var(--primary-text-color);
     }
 
+    .detail-header ha-icon-button-prev {
+      --ha-icon-button-size: var(--ha-space-11);
+    }
+
     .detail-title {
+      flex: 1;
       display: flex;
       flex-direction: column;
+      gap: var(--ha-os-space-2);
       min-width: 0;
     }
 
@@ -1072,35 +1099,40 @@ export class HuiMapOverview extends LitElement {
     }
 
     .detail-state {
-      color: var(--secondary-text-color);
+      color: var(--primary-text-color);
       font-size: var(--ha-font-size-s);
     }
 
     .activity {
-      margin-top: var(--ha-space-2);
-      padding: var(--ha-space-3);
-      border-radius: var(--ha-border-radius-lg);
+      margin-top: var(--ha-os-space-22);
+      padding: var(--ha-os-space-22) var(--ha-space-6);
+      border-radius: var(--ha-border-radius-6xl);
       background: var(--ha-color-fill-neutral-quiet-resting);
       /* Scrolls within the drawer's height instead of being clipped by it */
       min-height: 0;
       overflow-y: auto;
     }
 
+    .activity-header {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
+    }
+
     .activity-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: var(--ha-border-radius-md);
-      background: var(--primary-color);
-      color: var(--text-primary-color);
-      --mdc-icon-size: 20px;
+      flex: none;
+      width: var(--ha-os-space-46);
+      height: var(--ha-os-space-46);
+      border-radius: var(--ha-border-radius-xl);
+      background: var(--card-background-color);
+      color: var(--primary-color);
+      --mdc-icon-size: var(--ha-os-space-34);
     }
 
     .activity-title {
-      display: block;
-      margin: var(--ha-space-2) 0;
       font-weight: var(--ha-font-weight-medium);
     }
 
@@ -1111,54 +1143,54 @@ export class HuiMapOverview extends LitElement {
     }
 
     .activity-empty {
+      display: block;
+      margin-top: var(--ha-os-space-18);
       color: var(--secondary-text-color);
       font-size: var(--ha-font-size-s);
     }
 
     .timeline {
-      margin-top: var(--ha-space-2);
-      --rail-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-os-space-18);
+      margin-top: var(--ha-os-space-18);
     }
 
     .entry {
-      position: relative;
       display: flex;
-      flex-direction: column;
-      padding-inline-start: calc(var(--rail-size) + var(--ha-space-3));
-      padding-bottom: var(--ha-space-4);
+      align-items: center;
+      gap: var(--ha-space-3);
     }
-    .entry.last {
-      padding-bottom: 0;
-    }
-    .entry::before {
-      content: "";
-      position: absolute;
-      inset-inline-start: calc(var(--rail-size) / 2 - 1px);
-      top: var(--rail-size);
-      bottom: 0;
-      width: 2px;
+
+    /* Stands in for a tile, centered under the tiles around it */
+    .rail {
+      flex: none;
+      align-self: stretch;
+      width: var(--ha-border-width-md);
+      margin-inline: calc(
+        (var(--ha-os-space-46) - var(--ha-border-width-md)) / 2
+      );
+      border-radius: var(--ha-border-radius-pill);
       background: var(--divider-color);
     }
-    .entry.last::before {
-      display: none;
+
+    .entry-text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-os-space-2);
+      min-width: 0;
     }
-    .dot {
-      position: absolute;
-      inset-inline-start: 0;
-      top: 4px;
-      width: var(--rail-size);
-      height: var(--rail-size);
-      border-radius: var(--ha-border-radius-circle);
-      background: var(--dot-color, var(--secondary-text-color));
-    }
+
     .entry-headline {
       font-weight: var(--ha-font-weight-medium);
       color: var(--primary-text-color);
     }
+
     .entry-when {
-      color: var(--secondary-text-color);
+      color: var(--primary-text-color);
       font-size: var(--ha-font-size-s);
     }
+
     .show-more {
       display: block;
       margin-top: var(--ha-space-3);
@@ -1169,7 +1201,8 @@ export class HuiMapOverview extends LitElement {
     .more-info {
       flex: none;
       width: 100%;
-      margin-top: var(--ha-space-3);
+      margin-top: var(--ha-os-space-22);
+      --ha-button-height: var(--ha-os-space-46);
     }
   `;
 }
