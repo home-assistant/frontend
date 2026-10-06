@@ -30,10 +30,10 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import {
@@ -68,7 +68,6 @@ import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { multiTermSearch } from "../../../resources/fuseMultiTerm";
@@ -755,11 +754,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         "ui.panel.config.integrations.discovered"
                       )}
                     </h3>
-                    <ha-md-list class="discovered">
+                    <ha-list-base class="discovered">
                       ${filteredDiscoveryData.map(
                         (flow) =>
-                          html`<ha-md-list-item class="discovered">
-                            ${flow.localized_title}
+                          html`<ha-list-item-base class="discovered">
+                            <span slot="headline">${flow.localized_title}</span>
                             <ha-button
                               slot="end"
                               variant="success"
@@ -769,9 +768,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             >
                               ${this.hass.localize("ui.common.add")}
                             </ha-button>
-                          </ha-md-list-item>`
+                          </ha-list-item-base>`
                       )}
-                    </ha-md-list>
+                    </ha-list-base>
                   </div>
                 `
               : nothing
@@ -787,15 +786,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     </h3>
                     ${
                       filteredAttentionFlows.length
-                        ? html`<ha-md-list class="attention">
+                        ? html`<ha-list-base class="attention">
                             ${filteredAttentionFlows.map((flow) => {
                               const attention = ATTENTION_SOURCES.includes(
                                 flow.context.source
                               );
-                              return html`<ha-md-list-item
+                              return html`<ha-list-item-base
                                 class="config_entry ${attention ? "attention" : ""}"
                               >
-                                ${flow.localized_title}
+                                <span slot="headline"
+                                  >${flow.localized_title}</span
+                                >
                                 <span slot="supporting-text"
                                   >${this.hass.localize(
                                     `ui.panel.config.integrations.${
@@ -814,9 +815,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                                     }`
                                   )}</ha-button
                                 >
-                              </ha-md-list-item>`;
+                              </ha-list-item-base>`;
                             })}
-                          </ha-md-list>`
+                          </ha-list-base>`
                         : nothing
                     }
                     ${filteredAttentionData.map(
@@ -1339,7 +1340,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const configEntries = this._domainConfigEntries(
       this.domain,
       this._extraConfigEntries || this.configEntries
-    ).filter((entry) => entry.source !== "ignore");
+    ).filter(
+      (entry) =>
+        entry.source !== "ignore" &&
+        Object.prototype.hasOwnProperty.call(
+          entry.supported_subentry_types,
+          flowType
+        )
+    );
 
     if (!configEntries.length) {
       return;
@@ -1516,26 +1524,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           color: var(--mdc-theme-text-icon-on-background, rgba(0, 0, 0, 0.38));
           animation: unset;
         }
-        ha-md-list {
-          border: 1px solid var(--divider-color);
+        ha-list-base {
+          border: var(--ha-border-width-sm) solid var(--divider-color);
           border-radius: var(--ha-border-radius-md);
-          padding: 0;
+          overflow: hidden;
         }
-        .discovered {
-          --md-list-container-color: rgba(var(--rgb-success-color), 0.2);
+        ha-list-base.discovered {
+          background-color: var(--ha-color-fill-success-quiet-resting);
         }
-        .attention {
-          --md-list-container-color: rgba(var(--rgb-warning-color), 0.2);
+        ha-list-base.attention {
+          background-color: var(--ha-color-fill-warning-quiet-resting);
         }
-        ha-md-list-item {
-          --md-list-item-top-space: 4px;
-          --md-list-item-bottom-space: 4px;
+        ha-list-item-base + ha-list-item-base {
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
+        }
+        ha-list-item-base.discovered {
+          --ha-row-item-min-height: 72px;
+        }
+        ha-list-item-base.config_entry {
           position: relative;
         }
-        ha-md-list-item.discovered {
-          height: 72px;
-        }
-        ha-md-list-item.config_entry::after {
+        ha-list-item-base.config_entry::after {
           position: absolute;
           top: 0;
           right: 0;
@@ -1556,48 +1565,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .warning {
           color: var(--error-color);
         }
-        .state-failed-unload {
-          --state-message-color: var(--warning-color);
-          --text-on-state-color: var(--primary-text-color);
-        }
-        .state-failed::after {
-          background-color: var(--warning-color);
-        }
-        .state-not-loaded {
-          --state-message-color: var(--primary-text-color);
-        }
-        .state-setup {
-          --state-message-color: var(--secondary-text-color);
-        }
-        .message {
-          font-weight: var(--ha-font-weight-bold);
-          display: flex;
-          align-items: center;
-        }
-        .message ha-svg-icon {
-          color: var(--state-message-color);
-        }
-        .message div {
-          flex: 1;
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
-          padding-top: 2px;
-          padding-right: 2px;
-          padding-inline-end: 2px;
-          padding-inline-start: initial;
-          overflow-wrap: break-word;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 7;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .state-disabled [slot="headline"],
-        .state-disabled [slot="supporting-text"] {
-          opacity: var(--md-list-item-disabled-opacity, 0.3);
-        }
-        ha-md-list {
+        ha-list-base {
           margin-top: 8px;
           margin-bottom: 8px;
         }

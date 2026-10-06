@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -23,6 +22,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -54,7 +54,6 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
@@ -951,8 +950,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -993,8 +992,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1202,8 +1201,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }

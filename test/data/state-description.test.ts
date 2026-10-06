@@ -1,6 +1,10 @@
 import { IntlMessageFormat } from "intl-messageformat";
 import { describe, expect, it } from "vitest";
-import type { Condition, Trigger } from "../../src/data/automation";
+import type {
+  Condition,
+  Trigger,
+  TriggerCondition,
+} from "../../src/data/automation";
 import {
   describeCondition,
   describeTrigger,
@@ -12,6 +16,7 @@ import {
   TimeFormat,
   TimeZone,
 } from "../../src/data/translation";
+import { describeAction } from "../../src/data/script_i18n";
 import en from "../../src/translations/en.json";
 import type { HomeAssistant } from "../../src/types";
 
@@ -133,5 +138,22 @@ describe("describing numeric state triggers and conditions", () => {
         entity_id: "sensor.temperature",
       })
     ).toBe("Numeric state");
+  });
+});
+
+describe("standalone trigger-condition descriptions", () => {
+  it("leaves the IDs out and preserves aliases", () => {
+    const condition: TriggerCondition = {
+      condition: "trigger",
+      id: ["motion", "timer"],
+    };
+    expect(describeCondition(condition, hass, [])).toBe("If triggered by");
+    expect(describeAction(hass, [], condition)).toBe("Test: If triggered by");
+    const aliased = { ...condition, alias: "Custom label" };
+    expect(describeCondition(aliased, hass, [])).toBe("Custom label");
+    expect(describeAction(hass, [], aliased)).toBe("Custom label");
+    expect(
+      describeAction(hass, [], aliased, undefined, { ignoreAlias: true })
+    ).toBe("Test: If triggered by");
   });
 });

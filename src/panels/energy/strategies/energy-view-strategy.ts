@@ -45,7 +45,13 @@ export class EnergyViewStrategy extends ReactiveElement {
       },
     };
 
-    const energyCollection = getEnergyDataCollection(hass, {
+    const energyCollection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
       key: collectionKey,
     });
     if (!energyCollection.prefs) {

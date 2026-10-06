@@ -47,7 +47,7 @@ export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
   next_automatic_backup: string | null;
-  next_automatic_backup_additional?: boolean;
+  next_automatic_backup_additional: boolean;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -60,7 +60,7 @@ export interface BackupConfig {
   retention: Retention;
   schedule: {
     recurrence: BackupScheduleRecurrence;
-    time?: string | null;
+    time: string | null;
     days: BackupDay[];
   };
   agents: BackupAgentsConfig;
@@ -79,9 +79,9 @@ export interface BackupMutableConfig {
   };
   retention?: Retention;
   schedule?: {
-    recurrence: BackupScheduleRecurrence;
+    recurrence?: BackupScheduleRecurrence;
     time?: string | null;
-    days?: BackupDay[] | null;
+    days?: BackupDay[];
   };
   agents?: BackupAgentsConfig;
 }
@@ -114,21 +114,22 @@ export interface BackupContent {
   date: string;
   name: string;
   agents: Record<string, BackupContentAgent>;
-  failed_agent_ids?: string[];
-  failed_addons?: AddonInfo[];
-  failed_folders?: string[];
-  extra_metadata?: {
+  failed_agent_ids: string[];
+  failed_addons: AddonInfo[];
+  failed_folders: string[];
+  extra_metadata: {
     "supervisor.addon_update"?: string;
     "supervisor.app_update"?: string;
+    [key: string]: string | boolean | undefined;
   };
-  with_automatic_settings: boolean;
+  with_automatic_settings: boolean | null;
 }
 
 export interface BackupData {
   addons: BackupAddon[];
   database_included: boolean;
   folders: string[];
-  homeassistant_version: string;
+  homeassistant_version: string | null;
   homeassistant_included: boolean;
 }
 
@@ -141,7 +142,7 @@ export interface BackupAddon {
 export interface BackupContentExtended extends BackupContent, BackupData {}
 
 export interface BackupInfo {
-  backups: BackupContent[];
+  backups: BackupContentExtended[];
   agent_errors: Record<string, string>;
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
@@ -152,6 +153,7 @@ export interface BackupInfo {
 }
 
 export interface BackupDetails {
+  agent_errors: Record<string, string>;
   backup: BackupContentExtended;
 }
 
@@ -232,7 +234,10 @@ export const fetchBackupAgentsInfo = (
     type: "backup/agents/info",
   });
 
-export const deleteBackup = (hass: HomeAssistant, id: string): Promise<void> =>
+export const deleteBackup = (
+  hass: HomeAssistant,
+  id: string
+): Promise<{ agent_errors: Record<string, string> }> =>
   hass.callWS({
     type: "backup/delete",
     backup_id: id,
@@ -241,7 +246,7 @@ export const deleteBackup = (hass: HomeAssistant, id: string): Promise<void> =>
 export const generateBackup = (
   hass: HomeAssistant,
   params: GenerateBackupParams
-): Promise<{ backup_id: string }> =>
+): Promise<{ backup_job_id: string }> =>
   hass.callWS({
     type: "backup/generate",
     ...params,
@@ -249,7 +254,7 @@ export const generateBackup = (
 
 export const generateBackupWithAutomaticSettings = (
   hass: HomeAssistant
-): Promise<void> =>
+): Promise<{ backup_job_id: string }> =>
   hass.callWS({
     type: "backup/generate_with_automatic_settings",
   });
@@ -257,7 +262,7 @@ export const generateBackupWithAutomaticSettings = (
 export const restoreBackup = (
   hass: HomeAssistant,
   params: RestoreBackupParams
-): Promise<{ backup_id: string }> =>
+): Promise<void> =>
   hass.callWS({
     type: "backup/restore",
     ...params,

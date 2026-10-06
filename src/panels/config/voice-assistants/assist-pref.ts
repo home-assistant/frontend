@@ -21,14 +21,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-list-item";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/item/ha-row-item";
+import "../../../components/list/ha-list-base";
 import "../../../components/voice-assistant-brand-icon";
 import type { AssistPipeline } from "../../../data/assist_pipeline";
 import {
@@ -52,7 +53,6 @@ import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/sh
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -123,17 +123,14 @@ export class AssistPref extends LitElement {
             class="icon-link"
           ></ha-icon-button>
         </div>
-        <ha-list>
+        <ha-list-base>
           ${this._pipelines.map(
             (pipeline) => html`
-              <ha-list-item
-                twoline
-                hasMeta
-                role="button"
+              <ha-list-item-button
                 .id=${pipeline.id}
                 @click=${this._editPipeline}
               >
-                <span>
+                <span slot="headline">
                   ${pipeline.name}
                   ${
                     this._preferred === pipeline.id
@@ -141,13 +138,14 @@ export class AssistPref extends LitElement {
                       : ""
                   }
                 </span>
-                <span slot="secondary">
+                <span slot="supporting-text">
                   ${formatLanguageCode(pipeline.language, this.hass.locale)}
                 </span>
                 <ha-dropdown
-                  slot="meta"
+                  slot="end"
                   placement="bottom-end"
                   @click=${stopPropagation}
+                  @keydown=${this._handleDropdownKeydown}
                   @wa-select=${this._handlePipelineMenuAction}
                 >
                   <ha-icon-button
@@ -199,10 +197,10 @@ export class AssistPref extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiTrashCan}></ha-svg-icon>
                   </ha-dropdown-item>
                 </ha-dropdown>
-              </ha-list-item>
+              </ha-list-item-button>
             `
           )}
-        </ha-list>
+        </ha-list-base>
         <ha-button
           appearance="filled"
           @click=${this._addPipeline}
@@ -214,7 +212,7 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-md-list-item>
+        <ha-row-item>
           <span slot="headline"
             >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities"
@@ -231,7 +229,7 @@ export class AssistPref extends LitElement {
             .disabled=${this._exposeNew === undefined}
             @change=${this._exposeNewToggleChanged}
           ></ha-switch>
-        </ha-md-list-item>
+        </ha-row-item>
         <div class="card-actions">
           <ha-button
             appearance="plain"
@@ -407,6 +405,12 @@ export class AssistPref extends LitElement {
     });
   }
 
+  private _handleDropdownKeydown(ev: KeyboardEvent) {
+    if (ev.key === " " || ev.key === "Enter") {
+      ev.stopPropagation();
+    }
+  }
+
   static styles = css`
     a {
       color: var(--primary-color);
@@ -428,14 +432,7 @@ export class AssistPref extends LitElement {
       direction: var(--direction);
       color: var(--secondary-text-color);
     }
-    ha-list-item {
-      --mdc-list-item-meta-size: auto;
-      --mdc-list-item-meta-display: flex;
-      --mdc-list-side-padding-right: 8px;
-      --mdc-list-side-padding-left: 16px;
-    }
-
-    ha-list-item span ha-svg-icon {
+    ha-list-item-button span ha-svg-icon {
       color: currentColor;
       width: 16px;
     }

@@ -16,6 +16,7 @@ Container components may keep `hass` when they own it and feed providers. Leaf c
 ## Core Files
 
 - Context definitions: `src/data/context/index.ts`
+- `consume` decorator, `ContextSubscriptionController`, and `consumeContext` / `ContextController` for reactive controllers: `src/common/decorators/consume.ts` (use instead of `@lit/context`'s `consume` and `ContextConsumer`, enforced by ESLint)
 - Entity-scoped consume helpers: `src/common/decorators/consume-context-entry.ts`
 - Transform decorator: `src/common/decorators/transform.ts`
 - Canonical migration example: `src/panels/lovelace/cards/hui-button-card.ts`
@@ -42,6 +43,16 @@ Lazy contexts subscribe on first consumer and tear down after the last consumer:
 The single-field contexts such as `localizeContext`, `themesContext`, and `userContext` are deprecated. Use grouped contexts instead.
 
 ## Consumption Patterns
+
+Import `consume` from `src/common/decorators/consume`, not from `@lit/context`. The `@lit/context` version forces a host update on every context change, so every consumed field rerenders the component, even without `@state()`, and `@transform` cannot skip anything. Our `consume` leaves update scheduling to the field:
+
+- `@state()` plus `@consume`: rerenders when the context value changes.
+- `@state()` plus `@consume` plus `@transform`: rerenders only when the transformed value changes.
+- `@consume` alone: the field stays current but never triggers a render. Use this for values only read in event handlers or callbacks, such as `apiContext`, or for data read on demand, such as picker item callbacks.
+
+In reactive controllers, extend `ContextController` and decorate fields with `consumeContext({ context, subscribe, transform })` from the same file. `transform` stores one part of the context value, and `contextUpdated()` runs only when that part changes. `@state()` and `@transform` do not work on controller fields; call `host.requestUpdate()` when the host needs to rerender. Example: `src/data/service-info-controller.ts`.
+
+For lazily created subscriptions, use `ContextSubscriptionController` from the same file instead of `@lit/context`'s `ContextConsumer`, which also forces a host update. Its callback must store the value in a reactive field or call `host.requestUpdate()` itself when the host needs to rerender.
 
 Use entity-scoped helpers when the component watches an entity ID held on the host:
 
@@ -81,5 +92,5 @@ To consume a whole group untransformed, omit `@transform` and type the field as 
 - The component consumes the narrowest context needed for the data it reads.
 - A broad `hass` property is kept only when the component is a container or external API requires it.
 - Entity-scoped reads use the consume helpers rather than ad hoc context transforms.
-- Context fields are marked `@state()` so updates trigger rendering.
+- Context fields read during render or `willUpdate` are marked `@state()` so updates trigger rendering. Fields only read outside the render cycle are left without `@state()`.
 - Tests and mocks only provide the data the component actually consumes.

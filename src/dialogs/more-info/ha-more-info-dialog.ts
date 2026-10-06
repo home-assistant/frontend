@@ -29,17 +29,12 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { mainWindow } from "../../common/dom/get_main_window";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/context/get_entity_context";
+  computeEntityEntryNameList,
+  computeEntityNameList,
+  type EntityNameItem,
+} from "../../common/entity/compute_entity_name_display";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import {
   getHistoryState,
@@ -129,6 +124,13 @@ declare global {
 }
 
 const DEFAULT_VIEW: MoreInfoView = "info";
+
+const BREADCRUMB_NAME: EntityNameItem[] = [
+  { type: "area" },
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+];
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends DirtyStateProviderMixin<
@@ -356,6 +358,24 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._setView("settings");
   }
 
+  private _computeViewTitle(): string | undefined {
+    switch (this._currView) {
+      case "details":
+        return this.hass.localize("ui.dialogs.more_info_control.details");
+      case "related":
+        return this.hass.localize("ui.dialogs.more_info_control.related");
+      case "add_to":
+        return this.hass.localize("ui.dialogs.more_info_control.add_to.item");
+      case "settings":
+        return (
+          this._childView?.viewTitle ||
+          this.hass.localize("ui.dialogs.more_info_control.settings")
+        );
+      default:
+        return this._childView?.viewTitle;
+    }
+  }
+
   private _showChildView(ev: CustomEvent): void {
     this._pushChildView(ev.detail as ChildView);
   }
@@ -564,49 +584,31 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const showCloseIcon =
       isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
 
-    const context = stateObj
-      ? getEntityContext(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        )
-      : this._entry
-        ? getEntityEntryContext(
-            this._entry,
+    const breadcrumb = (
+      stateObj
+        ? computeEntityNameList(
+            stateObj,
+            BREADCRUMB_NAME,
             this.hass.entities,
             this.hass.devices,
             this.hass.areas,
             this.hass.floors
           )
-        : undefined;
-
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass.devices)
-        : entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
-
-    const breadcrumb = [areaName, deviceName, entityName].filter(
-      (v): v is string => Boolean(v)
-    );
+        : this._entry
+          ? computeEntityEntryNameList(
+              this._entry,
+              BREADCRUMB_NAME,
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            )
+          : [entityId]
+    ).filter((v): v is string => Boolean(v));
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
-    const viewTitle =
-      this._currView === "details"
-        ? this.hass.localize("ui.dialogs.more_info_control.details")
-        : this._currView === "related"
-          ? this.hass.localize("ui.dialogs.more_info_control.related")
-          : this._currView === "add_to"
-            ? addToMenuItem
-            : this._childView?.viewTitle;
+    const viewTitle = this._computeViewTitle();
     const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
     if (!viewTitle) {
       breadcrumb.pop();
@@ -1024,6 +1026,32 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     if (changedProps.has("_currView")) {
       this._infoEditMode = false;
       this._detailsYamlMode = false;
+    }
+
+    if (changedProps.has("_entityId")) {
+      this._reportShownEntityToExternalApp(
+        changedProps.get("_entityId") as string | null | undefined
+      );
+    }
+  }
+
+  private _reportShownEntityToExternalApp(
+    previousEntityId: string | null | undefined
+  ) {
+    const external = this.hass.auth.external;
+    if (!external) {
+      return;
+    }
+    if (this._entityId) {
+      external.fireMessage({
+        type: "more_info/opened",
+        payload: { entity_id: this._entityId },
+      });
+    } else if (previousEntityId) {
+      external.fireMessage({
+        type: "more_info/closed",
+        payload: { entity_id: previousEntityId },
+      });
     }
   }
 

@@ -82,6 +82,9 @@ export class HAFullCalendar extends LitElement {
 
   @property({ attribute: "add-fab-style" }) public addFabStyle = "on_top";
 
+  @property({ attribute: "auto-height", type: Boolean }) public autoHeight =
+    false;
+
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
   @property({ attribute: false }) public calendars: CalendarData[] = [];
@@ -314,6 +317,10 @@ export class HAFullCalendar extends LitElement {
       this.calendar!.setOption("eventDisplay", this.eventDisplay);
     }
 
+    if (changedProps.has("autoHeight")) {
+      this.calendar.setOption("height", this._height);
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant;
 
     if (oldHass && oldHass.language !== this.hass.language) {
@@ -345,6 +352,7 @@ export class HAFullCalendar extends LitElement {
           : this.hass.config.time_zone,
       firstDay: firstWeekdayIndex(this.hass.locale),
       initialView,
+      height: this._height,
       eventDisplay: this.eventDisplay,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
@@ -355,6 +363,11 @@ export class HAFullCalendar extends LitElement {
 
     config.dateClick = (info) => this._handleDateClick(info);
     config.eventClick = (info) => this._handleEventClick(info);
+    // fullcalendar sets the event colors only inline, where styles cannot mix them
+    config.eventDidMount = ({ el, event }) => {
+      el.style.setProperty("--event-color", event.borderColor);
+      el.style.setProperty("--event-text-color", event.textColor);
+    };
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
@@ -362,6 +375,10 @@ export class HAFullCalendar extends LitElement {
     );
     this.calendar!.render();
     this._fireViewChanged();
+  }
+
+  private get _height(): CalendarOptions["height"] {
+    return this.autoHeight ? "auto" : defaultFullCalendarConfig.height;
   }
 
   // Return if there are calendars that support creating events
@@ -464,6 +481,13 @@ export class HAFullCalendar extends LitElement {
     const wasShowingToday = this._isShowingToday();
     const nextMidnight = new TZDate(new Date(), this._calendarTimeZone());
     nextMidnight.setHours(24, 0, 0, 0);
+    const delay = nextMidnight.getTime() - Date.now();
+
+    // Guard against a NaN/negative delay (e.g. Intl longOffset unsupported on
+    // Chromium < 95) so the midnight refresh can't fire in a tight loop (#54182).
+    if (!Number.isFinite(delay) || delay <= 0) {
+      return;
+    }
 
     this._midnightRefreshTimeout = window.setTimeout(() => {
       if (wasShowingToday) {
@@ -473,7 +497,7 @@ export class HAFullCalendar extends LitElement {
       }
 
       this._scheduleMidnightRefresh();
-    }, nextMidnight.getTime() - Date.now());
+    }, delay);
   }
 
   private _clearMidnightRefreshTimeout(): void {
@@ -747,6 +771,92 @@ export class HAFullCalendar extends LitElement {
 
         .fc-daygrid-block-event .fc-event-main {
           padding: 0 1px;
+        }
+
+        .tentative {
+          --tentative-tint: color-mix(
+            in srgb,
+            var(--event-color) 25%,
+            transparent
+          );
+          /* In the text color, so the stripes show on every calendar color */
+          --tentative-stripe: color-mix(
+            in srgb,
+            var(--primary-text-color) 12%,
+            transparent
+          );
+        }
+
+        /* A dot keeps its size and color and gets stripes in the color that
+           contrasts with it, 1.5px wide every 4px */
+        .tentative .fc-daygrid-event-dot,
+        .tentative .fc-list-event-dot {
+          --tentative-dot-stripe: color-mix(
+            in srgb,
+            var(--event-text-color, #fff) 80%,
+            transparent
+          );
+          border: none;
+          border-radius: 50%;
+          background-color: var(--event-color);
+          background-image: linear-gradient(
+            45deg,
+            var(--tentative-dot-stripe) 0 9.375%,
+            transparent 9.375% 40.625%,
+            var(--tentative-dot-stripe) 40.625% 59.375%,
+            transparent 59.375% 90.625%,
+            var(--tentative-dot-stripe) 90.625%
+          );
+          background-size: 4px 4px;
+          /* Half a tile, so no stripe runs through the middle like a slash */
+          background-position: 2px 0;
+        }
+
+        .tentative .fc-daygrid-event-dot {
+          /* A long title would otherwise squeeze the dot into an oval */
+          flex-shrink: 0;
+          width: var(--fc-daygrid-event-dot-width, 8px);
+          height: var(--fc-daygrid-event-dot-width, 8px);
+        }
+
+        .tentative .fc-list-event-dot {
+          width: var(--fc-list-event-dot-width, 10px);
+          height: var(--fc-list-event-dot-width, 10px);
+        }
+
+        /* fullcalendar sets the colors as inline styles */
+        .fc-h-event.tentative {
+          background-color: var(--tentative-tint) !important;
+          /* A tile of whole pixels puts every stripe on the same pixels,
+             2.8px wide every 14px */
+          background-image: linear-gradient(
+            45deg,
+            var(--tentative-stripe) 0 5%,
+            transparent 5% 45%,
+            var(--tentative-stripe) 45% 55%,
+            transparent 55% 95%,
+            var(--tentative-stripe) 95%
+          );
+          background-size: 14px 14px;
+        }
+
+        .fc-h-event.tentative .fc-event-main {
+          color: var(--primary-text-color) !important;
+        }
+
+        /* Forced colors drop the stripes and the fill of a dot, so a tentative
+           event falls back to its outline */
+        @media (forced-colors: active) {
+          .fc-h-event.tentative {
+            border-style: dashed;
+          }
+
+          .tentative .fc-daygrid-event-dot,
+          .tentative .fc-list-event-dot {
+            box-sizing: border-box;
+            border-style: solid;
+            border-width: 2px;
+          }
         }
 
         .fc-day-past .fc-daygrid-day-events {

@@ -1,8 +1,9 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
@@ -448,6 +449,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           max-width: var(--ha-bottom-sheet-max-width);
           width: 100%;
           position: relative;
+          display: flex;
+          flex-direction: column;
           border-top-left-radius: var(
             --ha-bottom-sheet-border-radius,
             var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
@@ -472,10 +475,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
             0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
               var(--safe-area-inset-left)
           );
-        }
-        :host([flexcontent]) wa-drawer::part(body) {
-          display: flex;
-          flex-direction: column;
         }
         :host([prevent-scrim-close]) .handle-wrapper {
           display: none;

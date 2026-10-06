@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../common/decorators/consume";
 import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import {
   fireEvent,

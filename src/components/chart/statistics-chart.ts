@@ -2,12 +2,15 @@ import type {
   BarSeriesOption,
   LineSeriesOption,
 } from "echarts/types/dist/shared";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 
@@ -19,15 +22,32 @@ import {
   getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { bidiIsolate } from "../../common/bidi";
+import {
+  apiContext,
+  configContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+  uiContext,
+} from "../../data/context";
 import type {
   Statistics,
   StatisticsMetaData,
   StatisticType,
 } from "../../data/recorder";
 import { getStatisticMetadata, isExternalStatistic } from "../../data/recorder";
+import type { Themes } from "../../data/ws-themes";
 import type { HaECOption } from "../../resources/echarts/echarts";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
@@ -54,8 +74,6 @@ const STAT_TYPE_SUFFIXES = (
 
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public statisticsData?: Statistics;
 
   @property({ attribute: false }) public metadata?: Record<
@@ -120,13 +138,49 @@ export class StatisticsChart extends LitElement {
 
   @state() private _hiddenStats = new Set<string>();
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  // Series names are cached in _chartData, so a formatters swap (registries
+  // changed) has to regenerate them.
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  // @ts-ignore regeneration trigger only, its value is never read
+  private _themes!: Themes;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   private _computedStyle?: CSSStyleDeclaration;
 
   private _yAxisFractionDigits = 1;
-
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return changedProps.size > 1 || !changedProps.has("hass");
-  }
 
   public willUpdate(changedProps: PropertyValues) {
     if (
@@ -135,7 +189,9 @@ export class StatisticsChart extends LitElement {
       changedProps.has("chartType") ||
       changedProps.has("hideLegend") ||
       changedProps.has("_hiddenStats") ||
-      changedProps.has("names")
+      changedProps.has("names") ||
+      changedProps.has("_formatEntityName") ||
+      (changedProps.has("_themes") && this.hasUpdated)
     ) {
       this._generateData();
     }
@@ -163,15 +219,15 @@ export class StatisticsChart extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!isComponentLoaded(this.hass.config, "history")) {
+    if (!isComponentLoaded(this._hassConfig, "history")) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.history_disabled")}
+        ${this._i18n.localize("ui.components.history_charts.history_disabled")}
       </div>`;
     }
 
     if (this.isLoadingData && !this.statisticsData) {
       return html`<div class="info">
-        ${this.hass.localize(
+        ${this._i18n.localize(
           "ui.components.statistics_charts.loading_statistics"
         )}
       </div>`;
@@ -179,7 +235,7 @@ export class StatisticsChart extends LitElement {
 
     if (!this.statisticsData || !Object.keys(this.statisticsData).length) {
       return html`<div class="info">
-        ${this.hass.localize(
+        ${this._i18n.localize(
           "ui.components.statistics_charts.no_statistics_found"
         )}
       </div>`;
@@ -187,7 +243,6 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}
@@ -225,7 +280,7 @@ export class StatisticsChart extends LitElement {
       return;
     }
     let entityId = id;
-    if (!this.hass.states[entityId]) {
+    if (!this._states[entityId]) {
       for (const suffix of STAT_TYPE_SUFFIXES) {
         if (id.endsWith(suffix)) {
           entityId = id.slice(0, -suffix.length);
@@ -233,7 +288,7 @@ export class StatisticsChart extends LitElement {
         }
       }
     }
-    if (this.hass.states[entityId]) {
+    if (this._states[entityId]) {
       fireEvent(this, "hass-more-info", { entityId });
     }
   }
@@ -243,7 +298,7 @@ export class StatisticsChart extends LitElement {
     const chartIsBar = this.chartType.startsWith("bar");
     const period = this.period;
     const unit = this.unit
-      ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
+      ? `${blankBeforeUnit(this.unit, this._i18n.locale)}${this.unit}`
       : "";
     const rows: {
       time?: string;
@@ -253,11 +308,13 @@ export class StatisticsChart extends LitElement {
     }[] = [];
     for (const param of params) {
       if (rendered[param.seriesIndex]) continue;
+      // stacked lines are padded with null where a statistic has no data
+      if (!chartIsBar && param.value[1] === null) continue;
       rendered[param.seriesIndex] = true;
 
       const statisticId = this._statisticIds[param.seriesIndex];
-      const stateObj = this.hass.states[statisticId];
-      const entry = this.hass.entities[statisticId];
+      const stateObj = this._states[statisticId];
+      const entry = this._entities[statisticId];
       let rawValue: string;
       let rawTime: string;
       if (chartIsBar) {
@@ -282,9 +339,9 @@ export class StatisticsChart extends LitElement {
         ) {
           // For year/month/day periods, show only the date
           rawTime =
-            formatDate(startTime, this.hass.locale, this.hass.config) +
+            formatDate(startTime, this._i18n.locale, this._hassConfig) +
             (endTime && period !== "day"
-              ? ` – ${formatDate(endTime, this.hass.locale, this.hass.config)}`
+              ? ` – ${formatDate(endTime, this._i18n.locale, this._hassConfig)}`
               : "");
         } else {
           // For other time periods, include time in render, and optionally show range
@@ -292,14 +349,14 @@ export class StatisticsChart extends LitElement {
           rawTime =
             formatDateTimeWithSeconds(
               startTime,
-              this.hass.locale,
-              this.hass.config
+              this._i18n.locale,
+              this._hassConfig
             ) +
             (endTime
               ? ` – ${formatTimeWithSeconds(
                   endTime,
-                  this.hass.locale,
-                  this.hass.config
+                  this._i18n.locale,
+                  this._hassConfig
                 )}`
               : "");
         }
@@ -309,8 +366,8 @@ export class StatisticsChart extends LitElement {
         // Time value is always first value
         rawTime = formatDateTimeWithSeconds(
           new Date(param.value[0]),
-          this.hass.locale,
-          this.hass.config
+          this._i18n.locale,
+          this._hassConfig
         );
       }
 
@@ -318,7 +375,7 @@ export class StatisticsChart extends LitElement {
         maximumFractionDigits: 2,
       };
 
-      const value = `${formatNumber(rawValue, this.hass.locale, options)}${unit}`;
+      const value = `${formatNumber(rawValue, this._i18n.locale, options)}${unit}`;
 
       rows.push({
         time: rows.length === 0 ? rawTime : undefined,
@@ -338,7 +395,8 @@ export class StatisticsChart extends LitElement {
             .color=${row.color}
           ></ha-chart-tooltip-marker>
           ${row.seriesName}:
-          ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
+          <span dir="ltr">${row.value}</span
+          >${i < rows.length - 1 ? html`<br />` : nothing}`
     )}`;
   };
 
@@ -410,16 +468,16 @@ export class StatisticsChart extends LitElement {
             minInterval: 28 * 24 * 3600 * 1000,
             axisLabel: getPeriodicAxisLabelConfig(
               "month",
-              this.hass.locale,
-              this.hass.config
+              this._i18n.locale,
+              this._hassConfig
             ),
           }),
           ...(this.period === "year" && {
             minInterval: 365 * 24 * 3600 * 1000,
             axisLabel: getPeriodicAxisLabelConfig(
               "year",
-              this.hass.locale,
-              this.hass.config
+              this._i18n.locale,
+              this._hassConfig
             ),
           }),
         },
@@ -431,17 +489,12 @@ export class StatisticsChart extends LitElement {
       ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
-        name: this.unit,
+        name: bidiIsolate(this.unit),
         nameGap: 2,
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(
-          this.hass.language,
-          this.hass.translationMetadata.translations
-        )
-          ? "right"
-          : "left",
+        position: "left",
         scale: yAxisScale,
         ...createYAxisPrecisionBounds({
           min: this._clampYAxis(minYAxis),
@@ -486,7 +539,7 @@ export class StatisticsChart extends LitElement {
   private _getStatisticsMetaData = memoizeOne(
     async (statisticIds: string[] | undefined) => {
       const statsMetadataArray = await getStatisticMetadata(
-        this.hass,
+        this._api.callWS,
         statisticIds
       );
       const statisticsMetaData = {};
@@ -507,7 +560,9 @@ export class StatisticsChart extends LitElement {
       (await this._getStatisticsMetaData(Object.keys(this.statisticsData)));
 
     const data = generateStatisticsChartData({
-      hass: this.hass,
+      states: this._states,
+      formatEntityName: this._formatEntityName,
+      localize: this._i18n.localize,
       statisticsData: this.statisticsData,
       statisticsMetaData,
       names: this.names,
@@ -530,17 +585,26 @@ export class StatisticsChart extends LitElement {
     this.unit = data.unit;
     this._yAxisFractionDigits = data.yAxisFractionDigits;
     this._chartData = data.datasets;
-    if (data.legendData.length !== this._legendData?.length) {
+    const legendData =
+      data.legendData.length > 1
+        ? data.legendData.map(({ id, name, noLabelClick }) => ({
+            id,
+            name,
+            noLabelClick,
+          }))
+        : // if there is only one entity, let the base chart handle the legend
+          undefined;
+    if (
+      legendData?.length !== this._legendData?.length ||
+      legendData?.some(
+        (item, index) =>
+          item.id !== this._legendData?.[index]?.id ||
+          item.name !== this._legendData?.[index]?.name ||
+          item.noLabelClick !== this._legendData?.[index]?.noLabelClick
+      )
+    ) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData =
-        data.legendData.length > 1
-          ? data.legendData.map(({ id, name, noLabelClick }) => ({
-              id,
-              name,
-              noLabelClick,
-            }))
-          : // if there is only one entity, let the base chart handle the legend
-            undefined;
+      this._legendData = legendData;
     }
     this._statisticIds = data.statisticIds;
   }
@@ -563,7 +627,7 @@ export class StatisticsChart extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) =>
-    formatNumber(value, this.hass.locale, {
+    formatNumber(value, this._i18n.locale, {
       minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });

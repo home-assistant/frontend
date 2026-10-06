@@ -51,6 +51,9 @@ export interface HaListVirtualizedItem {
  * `center` (default), `end`, or `nearest`.
  *
  * @fires ha-list-activated - Fired when a row is activated via Enter/Space. `detail: { index, item }`.
+ * @cssprop --ha-list-scroll-padding-block-start - Space at the top of the scroll area that revealed rows stay below, like for an overlaid header. Defaults to `0px`.
+ *
+ * @fires ha-list-visibility-changed - Fired when the range of visible rows changes. `detail: { first, last }`.
  */
 @customElement("ha-list-virtualized")
 export class HaListVirtualized extends HaListBase {
@@ -91,8 +94,21 @@ export class HaListVirtualized extends HaListBase {
 
     if (changedProps.has("rows")) {
       this.recomputeFocusableIndexes();
-      this.activeItemIndex = this.firstFocusableIndex;
+      this.activeItemIndex = this.virtualFocus ? -1 : this.firstFocusableIndex;
     }
+  }
+
+  /** The element that scrolls the rows, once the virtualizer has rendered. */
+  public get scrollElement(): HTMLElement | undefined {
+    return this.virtualizerElement ?? undefined;
+  }
+
+  /** Scroll the row at `index` into view. */
+  public scrollToIndex(
+    index: number,
+    block: ScrollLogicalPosition = "nearest"
+  ) {
+    this.virtualizerElement?.element(index)?.scrollIntoView({ block });
   }
 
   private async _loadVirtualizer() {
@@ -105,8 +121,9 @@ export class HaListVirtualized extends HaListBase {
       return nothing;
     }
 
-    return html`<div part="base" class="base ha-scrollbar">
+    return html`<div part="base" class="base">
       <lit-virtualizer
+        class="ha-scrollbar"
         .keyFunction=${this._keyFunction}
         tabindex="-1"
         scroller
@@ -125,6 +142,7 @@ export class HaListVirtualized extends HaListBase {
         }
         @unpinned=${this._handleUnpinned}
         @rangeChanged=${this._handleRangeChanged}
+        @visibilityChanged=${this._handleVisibilityChanged}
       >
       </lit-virtualizer>
     </div>`;
@@ -172,6 +190,10 @@ export class HaListVirtualized extends HaListBase {
   }
 
   protected override applyActive(focusItem: boolean) {
+    if (this.virtualFocus) {
+      this._applyVirtualActive(focusItem);
+      return;
+    }
     if (this.virtualizerElement && this.rangeStart > -1) {
       Array.from(this.virtualizerElement.children).forEach((child, index) => {
         const el = child as HTMLElement;
@@ -187,12 +209,41 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
+  private _applyVirtualActive(reveal: boolean) {
+    if (!this.virtualizerElement || this.rangeStart < 0) {
+      return;
+    }
+    Array.from(this.virtualizerElement.children).forEach((child, index) => {
+      const el = child as HTMLElement;
+      const active = index + this.rangeStart === this.activeItemIndex;
+      el.removeAttribute("tabindex");
+      el.toggleAttribute("active", active);
+      if (active && reveal) {
+        el.scrollIntoView({ block: "nearest" });
+      }
+    });
+  }
+
+  @eventOptions({ passive: true })
+  private _handleVisibilityChanged(ev: { first: number; last: number }) {
+    fireEvent(this, "ha-list-visibility-changed", {
+      first: ev.first,
+      last: ev.last,
+    });
+  }
+
   @eventOptions({ passive: true })
   private async _handleRangeChanged(ev: { first: number; last: number }) {
     this.rangeStart = ev.first;
     this.rangeEnd = ev.last;
 
-    await this.virtualizerElement?.layoutComplete;
+    try {
+      await this.virtualizerElement?.layoutComplete;
+    } catch (_err) {
+      // The virtualizer was removed before it finished the layout, like when
+      // a picker closes right after a pick.
+      return;
+    }
     this._applySetSize();
 
     if (!this.virtualizerElement) {
@@ -225,6 +276,7 @@ export class HaListVirtualized extends HaListBase {
 
   protected onFocusIn = (ev: FocusEvent) => {
     if (
+      this.virtualFocus ||
       !this.virtualizerElement ||
       this.rangeStart === -1 ||
       this.rangeEnd === -1
@@ -288,11 +340,7 @@ export class HaListVirtualized extends HaListBase {
     return this.rows?.length ?? 0;
   }
 
-  protected override moveFocus(ev: KeyboardEvent, next: number) {
-    if (!this.hasFocusableItem) {
-      return;
-    }
-    ev.preventDefault();
+  protected override moveActiveTo(next: number) {
     if (next < 0 || next === this.activeItemIndex) {
       return;
     }
@@ -338,10 +386,27 @@ export class HaListVirtualized extends HaListBase {
   static styles = [
     ...HaListBase.styles,
     css`
+      /* Fill the host through flex layout too, so the list also gets a
+         height when the host is sized by a flex container. */
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
       .base {
         height: 100%;
+        flex: 1;
+        min-height: 0;
       }
-      [ha-list-item] {
+      lit-virtualizer {
+        flex: 1;
+        scroll-padding-block-start: var(
+          --ha-list-scroll-padding-block-start,
+          0px
+        );
+      }
+      /* The virtualizer positions rows absolutely, so they would otherwise
+         shrink to their content. */
+      lit-virtualizer > :not([virtualizer-sizer]) {
         width: 100%;
       }
     `,

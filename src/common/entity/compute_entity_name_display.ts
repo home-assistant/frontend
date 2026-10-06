@@ -1,33 +1,66 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { ensureArray } from "../array/ensure-array";
 import { computeRTL } from "../util/compute_rtl";
 import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
-import { computeEntityName, entityUseDeviceName } from "./compute_entity_name";
+import {
+  computeEntityEntryName,
+  entityUseDeviceName,
+} from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
 import { computeStateName } from "./compute_state_name";
-import { getEntityContext } from "./context/get_entity_context";
+import { getEntityEntryContext } from "./context/get_entity_context";
+import type { EntityNameItem, EntityNameOptions } from "./entity_name_config";
 
 const DEFAULT_SEPARATOR = " ";
 
-export const DEFAULT_ENTITY_NAME = [
-  { type: "device" },
-  { type: "entity" },
-] satisfies EntityNameItem[];
+export { DEFAULT_ENTITY_NAME, ENTITY_NAME_TYPES } from "./entity_name_config";
+export type {
+  EntityNameItem,
+  EntityNameOptions,
+  EntityNameType,
+} from "./entity_name_config";
 
-export type EntityNameItem =
-  | {
-      type: "entity" | "device" | "area" | "floor";
-    }
-  | {
-      type: "text";
-      text: string;
-    };
+// Joins items that need no entity context. Returns undefined as soon as one
+// item references the registries (device, area, ...).
+const computeTextOnlyName = (
+  items: EntityNameItem[],
+  options?: EntityNameOptions
+): string | undefined =>
+  items.every((n) => n.type === "text")
+    ? items
+        .map((item) => item.text)
+        .join(options?.separator ?? DEFAULT_SEPARATOR)
+    : undefined;
 
-export interface EntityNameOptions {
-  separator?: string;
-}
+/**
+ * Name formatter used before the registry-aware one is installed
+ * (see state/connection-mixin and state/state-display-mixin). It honours a
+ * configured string or text-only name and falls back to the friendly name for
+ * anything that needs entity context, so a configured name is never dropped
+ * while the real formatter is still loading.
+ */
+export const computeEntityNameDisplayWithoutContext = (
+  stateObj: HassEntity,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
+  options?: EntityNameOptions
+): string => {
+  if (typeof name === "string") {
+    return name;
+  }
+  if (!name) {
+    return computeStateName(stateObj);
+  }
+  return (
+    computeTextOnlyName(ensureArray(name), options) ??
+    computeStateName(stateObj)
+  );
+};
 
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
@@ -52,8 +85,9 @@ export const computeEntityNameDisplay = (
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
   // If all items are text, just join them
-  if (items.every((n) => n.type === "text")) {
-    return items.map((item) => item.text).join(separator);
+  const textOnlyName = computeTextOnlyName(items, options);
+  if (textOnlyName !== undefined) {
+    return textOnlyName;
   }
 
   const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
@@ -72,7 +106,8 @@ export const computeEntityNameDisplay = (
     entities,
     devices,
     areas,
-    floors
+    floors,
+    { keepAllParts: true }
   );
 
   // If after processing there is only one name, return that
@@ -83,28 +118,87 @@ export const computeEntityNameDisplay = (
   return names.filter((n) => n).join(separator);
 };
 
+export interface EntityNameListOptions {
+  keepAllParts?: boolean;
+}
+
 export const computeEntityNameList = (
   stateObj: HassEntity,
   name: EntityNameItem[],
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
+  floors: HomeAssistant["floors"],
+  options?: EntityNameListOptions
 ): (string | undefined)[] => {
-  const { device, area, floor } = getEntityContext(
-    stateObj,
+  const entry = entities[stateObj.entity_id] as
+    EntityRegistryDisplayEntry | undefined;
+
+  if (!entry) {
+    return name.map((item) =>
+      item.type === "entity"
+        ? computeStateName(stateObj)
+        : item.type === "text"
+          ? item.text
+          : undefined
+    );
+  }
+
+  return computeEntityEntryNameList(
+    entry,
+    name,
+    entities,
+    devices,
+    areas,
+    floors,
+    options
+  );
+};
+
+export const computeEntityEntryNameList = (
+  entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
+  name: EntityNameItem[],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"],
+  options?: EntityNameListOptions
+): (string | undefined)[] => {
+  const { device, parentDevice, area, floor } = getEntityEntryContext(
+    entry,
     entities,
     devices,
     areas,
     floors
   );
+  const entityName = computeEntityEntryName(entry, devices);
+  const keepAllParts = options?.keepAllParts ?? false;
 
-  const names = name.map((item) => {
+  // Same rule as the backend: an owner only adds its name part while the
+  // next_name_part links reach it, so owners above the first node with its own
+  // area are left out. An entity without a name of its own is still named
+  // after its device.
+  const nameDevice =
+    keepAllParts || entry.next_name_part === "device" || !entityName
+      ? device
+      : null;
+  const nameParentDevice =
+    keepAllParts ||
+    (entry.next_name_part === "device" &&
+      device?.next_name_part === "parent_device")
+      ? parentDevice
+      : null;
+
+  return name.map((item) => {
     switch (item.type) {
       case "entity":
-        return computeEntityName(stateObj, entities, devices);
+        return entityName;
       case "device":
-        return device ? computeDeviceName(device) : undefined;
+        return nameDevice ? computeDeviceName(nameDevice) : undefined;
+      case "parent_device":
+        return nameParentDevice
+          ? computeDeviceName(nameParentDevice)
+          : undefined;
       case "area":
         return area ? computeAreaName(area) : undefined;
       case "floor":
@@ -115,8 +209,37 @@ export const computeEntityNameList = (
         return "";
     }
   });
+};
 
-  return names;
+export const computeEntitySearchLabels = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+) => {
+  const [entityName, deviceName, parentDeviceName, areaName] =
+    computeEntityNameList(
+      stateObj,
+      [
+        { type: "entity" },
+        { type: "device" },
+        { type: "parent_device" },
+        { type: "area" },
+      ],
+      entities,
+      devices,
+      areas,
+      floors,
+      { keepAllParts: true }
+    );
+  return {
+    entityName: entityName || null,
+    friendlyName: computeStateName(stateObj) || null,
+    deviceName: deviceName || null,
+    parentDeviceName: parentDeviceName || null,
+    areaName: areaName || null,
+  };
 };
 
 export interface EntityPickerDisplay {
@@ -136,14 +259,20 @@ export const computeEntityPickerDisplay = (
   >,
   stateObj: HassEntity
 ): EntityPickerDisplay => {
-  const [entityName, deviceName, areaName] = computeEntityNameList(
-    stateObj,
-    [{ type: "entity" }, { type: "device" }, { type: "area" }],
-    hass.entities,
-    hass.devices,
-    hass.areas,
-    hass.floors
-  );
+  const [entityName, deviceName, parentDeviceName, areaName] =
+    computeEntityNameList(
+      stateObj,
+      [
+        { type: "entity" },
+        { type: "device" },
+        { type: "parent_device" },
+        { type: "area" },
+      ],
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
   const isRTL = computeRTL(
     hass.language,
@@ -152,7 +281,7 @@ export const computeEntityPickerDisplay = (
 
   const primary = entityName || deviceName || stateObj.entity_id;
   const secondary =
-    [areaName, entityName ? deviceName : undefined]
+    [areaName, parentDeviceName, entityName ? deviceName : undefined]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ") || undefined;
 

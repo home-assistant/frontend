@@ -12,6 +12,7 @@ import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 import html from "@html-eslint/eslint-plugin";
 import importX from "eslint-plugin-import-x";
+import ha from "./build-scripts/eslint-rules/index.mjs";
 
 const rspackConfigPath = fileURLToPath(
   new URL("./rspack.config.cjs", import.meta.url)
@@ -33,6 +34,7 @@ export default tseslint.config(
   {
     plugins: {
       "unused-imports": unusedImports,
+      ha,
     },
 
     languageOptions: {
@@ -114,6 +116,25 @@ export default tseslint.config(
       "no-bitwise": "error",
       "no-console": "error",
       "no-restricted-globals": [2, "event"],
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@lit/context",
+              importNames: ["consume"],
+              message:
+                "Use consume from src/common/decorators/consume. The @lit/context version forces a host update on every context change, even for fields without @state().",
+            },
+            {
+              name: "@lit/context",
+              importNames: ["ContextConsumer"],
+              message:
+                "Use ContextSubscriptionController from src/common/decorators/consume. The @lit/context ContextConsumer forces a host update on every context change.",
+            },
+          ],
+        },
+      ],
       "no-restricted-syntax": [
         "error",
         ...restrictedSyntax,
@@ -212,6 +233,10 @@ export default tseslint.config(
       ],
 
       "unused-imports/no-unused-imports": "error",
+      // Off because the existing backlog would fail lint:eslint's
+      // --max-warnings=0; run lint:element-imports to see it. Disable
+      // comments for it would be reported as unused, so none until it is on.
+      "ha/no-unused-element-import": "off",
       "lit/attribute-names": "error",
       "lit/attribute-value-entities": "off",
       "lit/no-template-map": "off",
@@ -271,7 +296,7 @@ export default tseslint.config(
     },
   },
   {
-    files: [".github/scripts/*.mjs"],
+    files: [".github/scripts/*.mts"],
     languageOptions: {
       globals: globals.node,
     },

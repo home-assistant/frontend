@@ -14,7 +14,8 @@ export interface ConfigEntry {
     | "setup_retry"
     | "not_loaded"
     | "failed_unload"
-    | "setup_in_progress";
+    | "setup_in_progress"
+    | "unload_in_progress";
   supports_options: boolean;
   supports_remove_device: boolean;
   supports_unload: boolean;
@@ -34,7 +35,7 @@ export interface SubEntry {
   subentry_id: string;
   subentry_type: string;
   title: string;
-  unique_id: string;
+  unique_id: string | null;
 }
 
 export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>
@@ -102,7 +103,6 @@ export const subscribeConfigEntries = (
   callbackFunction: (message: ConfigEntryUpdate[]) => void,
   filters?: {
     type?: IntegrationType[];
-    domain?: string;
   }
 ): Promise<UnsubscribeFunc> => {
   const params: any = {
@@ -117,7 +117,7 @@ export const subscribeConfigEntries = (
 };
 
 export const getConfigEntries = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   filters?: {
     type?: IntegrationType[];
     domain?: string;
@@ -155,7 +155,10 @@ export const updateConfigEntry = (
     ...updatedValues,
   });
 
-export const deleteConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+export const deleteConfigEntry = (
+  hass: Pick<HomeAssistant, "callApi">,
+  configEntryId: string
+) =>
   hass.callApi<{
     require_restart: boolean;
   }>("DELETE", `config/config_entries/entry/${configEntryId}`);

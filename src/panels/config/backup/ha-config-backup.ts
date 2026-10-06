@@ -22,7 +22,6 @@ import type { CloudStatus } from "../../../data/cloud";
 import { subscribeConfigEntries } from "../../../data/config_entries";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";

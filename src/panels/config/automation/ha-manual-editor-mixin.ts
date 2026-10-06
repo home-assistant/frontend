@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
@@ -9,6 +8,7 @@ import {
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { replaceCurrentUrl } from "../../../common/navigate";
@@ -181,6 +181,13 @@ export const ManualEditorMixin = <TConfig>(
       // deselect previous selected row
       this.sidebarConfig?.close?.();
       this.sidebarConfig = ev.detail;
+      this.dispatchEvent(
+        new CustomEvent("sidebar-config-changed", {
+          detail: { value: this.sidebarConfig },
+          bubbles: true,
+          composed: true,
+        })
+      );
 
       // be sure the sidebar editor is recreated
       this.sidebarKey++;
@@ -199,6 +206,13 @@ export const ManualEditorMixin = <TConfig>(
         ...this.sidebarConfig,
         ...ev.detail.value,
       };
+      this.dispatchEvent(
+        new CustomEvent("sidebar-config-changed", {
+          detail: { value: this.sidebarConfig },
+          bubbles: true,
+          composed: true,
+        })
+      );
     }
 
     public triggerCloseSidebar() {
@@ -214,6 +228,13 @@ export const ManualEditorMixin = <TConfig>(
 
     protected handleCloseSidebar() {
       this.sidebarConfig = undefined;
+      this.dispatchEvent(
+        new CustomEvent("sidebar-config-changed", {
+          detail: { value: undefined },
+          bubbles: true,
+          composed: true,
+        })
+      );
     }
 
     protected replaceExistingConfig(config: TConfig) {

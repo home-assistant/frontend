@@ -11,23 +11,28 @@ import {
   isLastDayOfMonth,
   startOfDay,
 } from "date-fns";
-import type { Collection, HassEntity } from "home-assistant-js-websocket";
+import type {
+  Collection,
+  Connection,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
   calcDate,
   calcDateDifferenceProperty,
   calcDateProperty,
+  shiftToServerTimeZone,
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
-import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
+  StatisticPeriod,
   Statistics,
   StatisticsMetaData,
   StatisticsUnitConfiguration,
@@ -243,8 +248,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  affected_entities: [string, unknown][];
-  translation_placeholders: Record<string, string>;
+  affected_entities: [string, string | number | null][];
+  translation_placeholders: Record<string, string> | null;
 }
 
 export interface EnergyPreferencesValidation {
@@ -253,8 +258,8 @@ export interface EnergyPreferencesValidation {
   device_consumption_water: EnergyValidationIssue[][];
 }
 
-export const getEnergyInfo = (hass: HomeAssistant) =>
-  hass.callWS<EnergyInfo>({
+export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
+  callWS<EnergyInfo>({
     type: "energy/info",
   });
 
@@ -265,8 +270,8 @@ export const getEnergyPreferenceValidation = async (hass: HomeAssistant) => {
   });
 };
 
-export const getEnergyPreferences = (hass: HomeAssistant) =>
-  hass.callWS<EnergyPreferences>({
+export const getEnergyPreferences = (callWS: HomeAssistant["callWS"]) =>
+  callWS<EnergyPreferences>({
     type: "energy/get_prefs",
   });
 
@@ -278,21 +283,21 @@ export const saveEnergyPreferences = async (
     type: "energy/save_prefs",
     ...prefs,
   });
-  clearEnergyCollectionPreferences(hass);
+  clearEnergyCollectionPreferences(hass.connection, hass.panelUrl);
   return newPrefs;
 };
 
 export type FossilEnergyConsumption = Record<string, number>;
 
 export const getFossilEnergyConsumption = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   startTime: Date,
   energy_statistic_ids: string[],
   co2_statistic_id: string,
   endTime?: Date,
   period: "5minute" | "hour" | "day" | "month" = "hour"
 ) =>
-  hass.callWS<FossilEnergyConsumption>({
+  callWS<FossilEnergyConsumption>({
     type: "energy/fossil_energy_consumption",
     start_time: startTime.toISOString(),
     end_time: endTime?.toISOString(),
@@ -319,7 +324,8 @@ export const energySourcesByType = (prefs: EnergyPreferences) =>
  * Statistics without an entity (external or removed) keep the statistic label.
  */
 export const computeEnergyLabel = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
   statisticId: string,
   statisticsMetaData?: StatisticsMetaData,
   customName?: string
@@ -328,13 +334,12 @@ export const computeEnergyLabel = (
     return customName;
   }
 
-  const stateObj = hass.states[statisticId];
-
-  if (stateObj) {
-    return hass.formatEntityName(stateObj, DEFAULT_ENTITY_NAME);
-  }
-
-  return getStatisticLabel(hass, statisticId, statisticsMetaData);
+  return getStatisticLabel(
+    states,
+    formatEntityName,
+    statisticId,
+    statisticsMetaData
+  );
 };
 
 /**
@@ -343,7 +348,8 @@ export const computeEnergyLabel = (
  * without the requested statistic are left out.
  */
 export const computeEnergyDeviceLabels = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
   devices: DeviceConsumptionEnergyPreference[],
   statsMetadata?: Record<string, StatisticsMetaData>,
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
@@ -354,7 +360,8 @@ export const computeEnergyDeviceLabels = (
     const statisticId = device[statisticKey];
     if (statisticId) {
       labels[statisticId] = computeEnergyLabel(
-        hass,
+        states,
+        formatEntityName,
         statisticId,
         statsMetadata?.[statisticId],
         device.name
@@ -496,23 +503,40 @@ export const enum CompareMode {
   YOY = "yoy",
 }
 
+// Core groups days and months by the server's calendar. Ask for the picked
+// dates there, or a browser time zone ahead or behind adds a day at one end.
+const getStatisticsRange = (
+  locale: HomeAssistant["locale"],
+  config: HomeAssistant["config"],
+  period: StatisticPeriod,
+  start: Date,
+  end?: Date
+): [Date, Date | undefined] =>
+  period === "5minute" || period === "hour"
+    ? [start, end]
+    : [
+        shiftToServerTimeZone(start, locale, config),
+        end && shiftToServerTimeZone(end, locale, config),
+      ];
+
 const getEnergyData = async (
-  hass: HomeAssistant,
+  options: EnergyCollectionOptions,
   prefs: EnergyPreferences,
   start: Date,
   end?: Date,
   compare?: CompareMode
 ): Promise<EnergyData> => {
-  const info = await getEnergyInfo(hass);
+  const { callWS, entities, states, locale, config } = options;
+  const info = await getEnergyInfo(callWS);
 
   let co2SignalEntity: string | undefined;
-  for (const entity of Object.values(hass.entities)) {
+  for (const entity of Object.values(entities)) {
     if (entity.platform !== "co2signal") {
       continue;
     }
 
     // The integration offers 2 entities. We want the % one.
-    const co2State = hass.states[entity.entity_id];
+    const co2State = states[entity.entity_id];
     if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
       continue;
     }
@@ -543,10 +567,24 @@ const getEnergyData = async (
 
   const period = getSuggestedPeriod(start, end);
   const finePeriod = getSuggestedPeriod(start, end, true);
+  const [periodStart, periodEnd] = getStatisticsRange(
+    locale,
+    config,
+    period,
+    start,
+    end
+  );
+  const [finePeriodStart, finePeriodEnd] = getStatisticsRange(
+    locale,
+    config,
+    finePeriod,
+    start,
+    end
+  );
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
-    ? await getStatisticMetadata(hass, allStatIDs)
+    ? await getStatisticMetadata(callWS, allStatIDs)
     : [];
 
   if (allStatIDs.length) {
@@ -555,7 +593,7 @@ const getEnergyData = async (
     });
   }
 
-  const gasUnit = getEnergyGasUnit(hass, prefs, statsMetadata);
+  const gasUnit = getEnergyGasUnit(states, config, prefs, statsMetadata);
   const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
 
   const energyUnits: StatisticsUnitConfiguration = {
@@ -567,40 +605,60 @@ const getEnergyData = async (
   const powerUnits: StatisticsUnitConfiguration = {
     power: "kW",
   };
-  const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
+  const waterUnit = getEnergyWaterUnit(states, config, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
-    ? fetchStatistics(hass!, start, end, energyStatIds, period, energyUnits, [
-        "change",
-      ])
+    ? fetchStatistics(
+        callWS,
+        periodStart,
+        periodEnd,
+        energyStatIds,
+        period,
+        energyUnits,
+        ["change"]
+      )
     : {};
   const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
-    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
-        "mean",
-      ])
+    ? fetchStatistics(
+        callWS,
+        finePeriodStart,
+        finePeriodEnd,
+        powerStatIds,
+        finePeriod,
+        powerUnits,
+        ["mean"]
+      )
     : {};
   // If power stats 5 minute data is selected, then also fetch hourly data which
   // will be used to back-fill any missing data points in the 5 minute data when
   // the requested range is beyond the limit of short term statistics.
   const _powerStatsHour: Statistics | Promise<Statistics> =
     powerStatIds.length && finePeriod === "5minute"
-      ? fetchStatistics(hass!, start, end, powerStatIds, "hour", powerUnits, [
+      ? fetchStatistics(callWS, start, end, powerStatIds, "hour", powerUnits, [
           "mean",
         ])
       : {};
 
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
-    ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
-        "change",
-      ])
+    ? fetchStatistics(
+        callWS,
+        periodStart,
+        periodEnd,
+        waterStatIds,
+        period,
+        waterUnits,
+        ["change"]
+      )
     : {};
 
   let statsCompare;
   let startCompare;
   let endCompare;
+  let periodStartCompare;
+  let periodEndCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
@@ -609,49 +667,56 @@ const getEnergyData = async (
         (calcDateProperty(
           start,
           isFirstDayOfMonth,
-          hass.locale,
-          hass.config
+          locale,
+          config
         ) as boolean) &&
         (calcDateProperty(
           end || new Date(),
           isLastDayOfMonth,
-          hass.locale,
-          hass.config
+          locale,
+          config
         ) as boolean)
       ) {
         // When comparing a month (or multiple), we want to start at the beginning of the month
         startCompare = calcDate(
           start,
           addMonths,
-          hass.locale,
-          hass.config,
+          locale,
+          config,
           -(calcDateDifferenceProperty(
             end || new Date(),
             start,
             differenceInMonths,
-            hass.locale,
-            hass.config
+            locale,
+            config
           ) as number) - 1
         );
       } else {
         startCompare = calcDate(
           start,
           addDays,
-          hass.locale,
-          hass.config,
+          locale,
+          config,
           (dayDifference + 1) * -1
         );
       }
       endCompare = addMilliseconds(start, -1);
     } else if (compare === CompareMode.YOY) {
-      startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
-      endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
+      startCompare = calcDate(start, addYears, locale, config, -1);
+      endCompare = calcDate(end!, addYears, locale, config, -1);
     }
+    [periodStartCompare, periodEndCompare] = getStatisticsRange(
+      locale,
+      config,
+      period,
+      startCompare,
+      endCompare
+    );
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
-        hass!,
-        startCompare,
-        endCompare,
+        callWS,
+        periodStartCompare,
+        periodEndCompare,
         energyStatIds,
         period,
         energyUnits,
@@ -660,9 +725,9 @@ const getEnergyData = async (
     }
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
-        hass!,
-        startCompare,
-        endCompare,
+        callWS,
+        periodStartCompare,
+        periodEndCompare,
         waterStatIds,
         period,
         waterUnits,
@@ -676,20 +741,20 @@ const getEnergyData = async (
     undefined | Promise<FossilEnergyConsumption>;
   if (co2SignalEntity !== undefined) {
     _fossilEnergyConsumption = getFossilEnergyConsumption(
-      hass!,
-      start,
+      callWS,
+      periodStart,
       consumptionStatIDs,
       co2SignalEntity,
-      end,
+      periodEnd,
       period
     );
     if (compare) {
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
-        hass!,
-        startCompare,
+        callWS,
+        periodStartCompare,
         consumptionStatIDs,
         co2SignalEntity,
-        endCompare,
+        periodEndCompare,
         period
       );
     }
@@ -785,9 +850,16 @@ export interface EnergyCollection extends Collection<EnergyData> {
   _active: number;
 }
 
-const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
+const clearEnergyCollectionPreferences = (
+  connection: Connection,
+  panelUrl: string
+) => {
   energyCollectionKeys.forEach((key) => {
-    const energyCollection = findEnergyDataCollection(hass, key);
+    const energyCollection = findEnergyDataCollection(
+      connection,
+      panelUrl,
+      key
+    );
     if (energyCollection) {
       energyCollection.clearPrefs();
       if (energyCollection.isActive()) {
@@ -820,15 +892,15 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
 };
 
 const convertCollectionKeyToConnection = (
-  hass: HomeAssistant,
+  panelUrl: string,
   collectionKey: string | undefined
 ): [string, string | undefined] => {
   let key = "_energy";
   if (collectionKey) {
     validateEnergyCollectionKey(collectionKey);
     key = `_${collectionKey}`;
-  } else if (hass.panelUrl) {
-    const defaultKey = ENERGY_COLLECTION_KEY_PREFIX + hass.panelUrl;
+  } else if (panelUrl) {
+    const defaultKey = ENERGY_COLLECTION_KEY_PREFIX + panelUrl;
     key = `_${defaultKey}`;
     collectionKey = defaultKey;
   }
@@ -836,25 +908,26 @@ const convertCollectionKeyToConnection = (
 };
 
 const findEnergyDataCollection = (
-  hass: HomeAssistant,
+  connection: Connection,
+  panelUrl: string,
   collectionKey: string | undefined
 ): EnergyCollection | undefined => {
   // Lookup the connection key and default key name
   const [key, _collectionKey] = convertCollectionKeyToConnection(
-    hass,
+    panelUrl,
     collectionKey
   );
-  return (hass.connection as any)[key];
+  return (connection as any)[key];
 };
 
 // The last-picked preset is remembered per energy collection, so each dashboard
 // reopens on its own default period. Derived from the connection key so the read
 // and write sides cannot drift apart.
 export const getEnergyDefaultPeriodStorageKey = (
-  hass: HomeAssistant,
+  panelUrl: string,
   collectionKey?: string
 ): string => {
-  const [key] = convertCollectionKeyToConnection(hass, collectionKey);
+  const [key] = convertCollectionKeyToConnection(panelUrl, collectionKey);
   return `energy-default-period-${key}`;
 };
 
@@ -946,61 +1019,67 @@ export const getNextEnergyPeriodStart = (
   return midnightRollover ? nextMidnight : addHours(nextMidnight, 1);
 };
 
+export interface EnergyCollectionOptions {
+  callWS: HomeAssistant["callWS"];
+  entities: HomeAssistant["entities"];
+  states: HomeAssistant["states"];
+  locale: HomeAssistant["locale"];
+  config: HomeAssistant["config"];
+  // Picks the default collection when `key` is not set.
+  panelUrl: string;
+  key?: string;
+  prefs?: EnergyPreferences;
+  // The real-time "Now" view opts in to rolling its day period over at
+  // midnight rather than an hour later (it shows live data, so it always
+  // tracks today and never falls back to yesterday in the first hour).
+  midnightRollover?: boolean;
+}
+
 export const getEnergyDataCollection = (
-  hass: HomeAssistant,
-  options: {
-    prefs?: EnergyPreferences;
-    key?: string;
-    // The real-time "Now" view opts in to rolling its day period over at
-    // midnight rather than an hour later (it shows live data, so it always
-    // tracks today and never falls back to yesterday in the first hour).
-    midnightRollover?: boolean;
-  } = {}
+  connection: Connection,
+  options: EnergyCollectionOptions
 ): EnergyCollection => {
+  const { callWS, locale, config, panelUrl } = options;
   const [key, collectionKey] = convertCollectionKeyToConnection(
-    hass,
+    panelUrl,
     options.key
   );
-  if ((hass.connection as any)[key]) {
-    return (hass.connection as any)[key];
+  if ((connection as any)[key]) {
+    return (connection as any)[key];
   }
 
   const midnightRollover = options.midnightRollover ?? false;
 
   energyCollectionKeys.add(collectionKey);
 
-  const collection = getCollection<EnergyData>(
-    hass.connection,
-    key,
-    async () => {
-      if (!collection.prefs) {
-        // This will raise if not found.
-        // Detect by checking `e.code === "not_found"
-        try {
-          collection.prefs = await getEnergyPreferences(hass);
-        } catch (err: any) {
-          if (err.code === "not_found") {
-            return {
-              prefs: EMPTY_PREFERENCES,
-              start: collection.start,
-              end: collection.end,
-            } as EnergyData;
-          }
-          throw err;
+  const collection = getCollection<EnergyData>(connection, key, async () => {
+    if (!collection.prefs) {
+      // This will raise if not found.
+      // Detect by checking `e.code === "not_found"
+      try {
+        collection.prefs = await getEnergyPreferences(callWS);
+      } catch (err: any) {
+        if (err.code === "not_found") {
+          return {
+            prefs: EMPTY_PREFERENCES,
+            start: collection.start,
+            end: collection.end,
+          } as EnergyData;
         }
+        throw err;
       }
-
-      scheduleHourlyRefresh(collection);
-
-      return getEnergyData(
-        hass,
-        collection.prefs,
-        collection.start,
-        collection.end,
-        collection.compare
-      );
     }
-  ) as EnergyCollection;
+
+    scheduleHourlyRefresh(collection);
+
+    return getEnergyData(
+      options,
+      collection.prefs,
+      collection.start,
+      collection.end,
+      collection.compare
+    );
+  }) as EnergyCollection;
 
   collection._active = 0;
   collection.prefs = options.prefs;
@@ -1013,8 +1092,8 @@ export const getEnergyDataCollection = (
     const live = getEnergyLiveDayPeriod(
       midnightRollover,
       now,
-      hass.locale,
-      hass.config,
+      locale,
+      config,
       collection.start
     );
     const changed =
@@ -1047,8 +1126,8 @@ export const getEnergyDataCollection = (
         getNextEnergyPeriodStart(
           midnightRollover,
           scheduledAt,
-          hass.locale,
-          hass.config,
+          locale,
+          config,
           collection.start
         ).getTime() - scheduledAt.getTime()
       )
@@ -1099,22 +1178,17 @@ export const getEnergyDataCollection = (
   const now = new Date();
   const preferredPeriod =
     (localStorage.getItem(
-      getEnergyDefaultPeriodStorageKey(hass, options.key)
+      getEnergyDefaultPeriodStorageKey(panelUrl, options.key)
     ) as DateRange) || "today";
   const period =
     preferredPeriod === "today" &&
-    shouldFallbackEnergyPeriodToYesterday(
-      midnightRollover,
-      now,
-      hass.locale,
-      hass.config
-    )
+    shouldFallbackEnergyPeriodToYesterday(midnightRollover, now, locale, config)
       ? "yesterday"
       : preferredPeriod;
 
-  const [start, end] = calcDateRange(hass.locale, hass.config, period);
-  collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
-  collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
+  const [start, end] = calcDateRange(locale, config, period);
+  collection.start = calcDate(start, startOfDay, locale, config);
+  collection.end = calcDate(end, endOfDay, locale, config);
   followLiveDay = preferredPeriod === "today";
 
   collection.isActive = () => !!collection._active;
@@ -1128,9 +1202,9 @@ export const getEnergyDataCollection = (
     const periodNow = new Date();
     followLiveDay =
       collection.start.getTime() ===
-        calcDate(periodNow, startOfDay, hass.locale, hass.config).getTime() &&
+        calcDate(periodNow, startOfDay, locale, config).getTime() &&
       collection.end?.getTime() ===
-        calcDate(periodNow, endOfDay, hass.locale, hass.config).getTime();
+        calcDate(periodNow, endOfDay, locale, config).getTime();
     if (followLiveDay) {
       scheduleUpdatePeriod();
     }
@@ -1141,8 +1215,8 @@ export const getEnergyDataCollection = (
   return collection;
 };
 
-export const getEnergySolarForecasts = (hass: HomeAssistant) =>
-  hass.callWS<EnergySolarForecasts>({
+export const getEnergySolarForecasts = (callWS: HomeAssistant["callWS"]) =>
+  callWS<EnergySolarForecasts>({
     type: "energy/solar_forecast",
   });
 
@@ -1174,7 +1248,8 @@ export const getEnergyGasUnitClass = (
 };
 
 const getEnergyGasUnit = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  config: HomeAssistant["config"],
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
@@ -1187,7 +1262,7 @@ const getEnergyGasUnit = (
     .filter((s) => s.type === "gas")
     .map((s) =>
       getDisplayUnit(
-        hass,
+        states,
         s.stat_energy_from,
         statisticsMetaData[s.stat_energy_from]
       )
@@ -1202,11 +1277,12 @@ const getEnergyGasUnit = (
     }
   }
 
-  return hass.config.unit_system.length === "km" ? "m³" : "ft³";
+  return config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
 const getEnergyWaterUnit = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  config: HomeAssistant["config"],
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData>
 ): (typeof VOLUME_UNITS)[number] => {
@@ -1214,7 +1290,7 @@ const getEnergyWaterUnit = (
     .filter((s) => s.type === "water")
     .map((s) =>
       getDisplayUnit(
-        hass,
+        states,
         s.stat_energy_from,
         statisticsMetaData[s.stat_energy_from]
       )
@@ -1229,7 +1305,7 @@ const getEnergyWaterUnit = (
     }
   }
 
-  return hass.config.unit_system.length === "km" ? "L" : "gal";
+  return config.unit_system.length === "km" ? "L" : "gal";
 };
 
 export const energyStatisticHelpUrl =
@@ -1550,7 +1626,7 @@ export const computeConsumptionSingle = (data: {
 };
 
 export const formatConsumptionShort = (
-  hass: HomeAssistant,
+  locale: HomeAssistant["locale"],
   consumption: number | null,
   unit: string,
   targetUnit?: string,
@@ -1586,7 +1662,7 @@ export const formatConsumptionShort = (
   return (
     formatNumber(
       val,
-      hass.locale,
+      locale,
       displayPrecision !== undefined && pickedUnit === unit
         ? {
             minimumFractionDigits: displayPrecision,
@@ -1751,11 +1827,8 @@ export const getFlowRateFromState = (
 export const computeTotalFlowRate = (
   sourceType: "gas" | "water",
   prefs: EnergyPreferences,
-  states: HomeAssistant["states"],
-  entities: Set<string>
+  states: HomeAssistant["states"]
 ): { value: number; unit: string } => {
-  entities.clear();
-
   let targetUnit: string | undefined;
   let totalFlow = 0;
 
@@ -1764,10 +1837,7 @@ export const computeTotalFlowRate = (
       return;
     }
 
-    const entityId = source.stat_rate;
-    entities.add(entityId);
-
-    const stateObj = states[entityId];
+    const stateObj = states[source.stat_rate];
     if (!stateObj) {
       return;
     }
@@ -1852,12 +1922,12 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
 
 /**
  * Format power value in watts (W) to a short string with the appropriate unit
- * @param hass - The HomeAssistant instance
+ * @param locale - The locale to format the number with
  * @param powerWatts - The power value in watts (W)
  * @returns A string with the formatted power value and unit
  */
 export const formatPowerShort = (
-  hass: HomeAssistant,
+  locale: HomeAssistant["locale"],
   powerWatts: number
 ): string => {
   const units = ["W", "kW", "MW", "GW", "TW"];
@@ -1871,7 +1941,7 @@ export const formatPowerShort = (
   }
 
   return (
-    formatNumber(value, hass.locale, {
+    formatNumber(value, locale, {
       // For watts, show no decimals. For kW and above, always show 3 decimals.
       maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
     }) +
@@ -1900,13 +1970,9 @@ export function getSuggestedPeriod(
 }
 
 export const downloadEnergyData = (
-  hass: HomeAssistant,
-  collectionKey?: string
+  energyData: EnergyCollection,
+  currency: string
 ) => {
-  const energyData = getEnergyDataCollection(hass, {
-    key: collectionKey,
-  });
-
   if (!energyData.prefs || !energyData.state.stats) {
     return;
   }
@@ -1943,8 +2009,6 @@ export const downloadEnergyData = (
 
     processCsvRow(stat, type, unit, stats[stat]);
   };
-
-  const currency = hass.config.currency;
 
   const printCategory = function (
     type: string,

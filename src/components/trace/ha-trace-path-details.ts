@@ -1,11 +1,12 @@
-import { consume } from "@lit/context";
+import { ContextProvider } from "@lit/context";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import type { Trigger } from "../../data/automation";
+import type { Trigger, TriggerCondition } from "../../data/automation";
 import { migrateAutomationTrigger } from "../../data/automation";
 import { describeCondition, describeTrigger } from "../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../data/condition";
@@ -28,10 +29,16 @@ import type {
 } from "../../data/trace";
 import type { TargetSelector } from "../../data/selector";
 import { getDataFromPath, isTriggerPath } from "../../data/trace";
+import { getTraceTriggers } from "../../data/trace-tree";
 import type { TriggerDescriptions } from "../../data/trigger";
 import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
 import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
 import "../../panels/config/automation/target/ha-automation-row-targets";
+import {
+  automationTriggerContext,
+  getTriggerIdOptions,
+} from "../../panels/config/automation/trigger/automation-trigger-id";
+import "../../panels/config/automation/trigger/ha-automation-trigger-references";
 import "../../panels/logbook/ha-logbook-renderer";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
@@ -69,7 +76,10 @@ export class HaTracePathDetails extends LitElement {
   @property({ attribute: false })
   public renderedNodes: Record<string, any> = {};
 
-  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<
+    string,
+    NodeInfo
+  >;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
@@ -92,6 +102,26 @@ export class HaTracePathDetails extends LitElement {
   @state()
   @consume({ context: conditionDescriptionsContext, subscribe: true })
   private _conditionDescriptions?: ConditionDescriptions;
+
+  private _triggerProvider = new ContextProvider(this, {
+    context: automationTriggerContext,
+    initialValue: {
+      options: [],
+      showIndices: false,
+      select: () => undefined,
+      fixDuplicateIds: async () => undefined,
+    },
+  });
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("trace")) {
+      this._triggerProvider.setValue({
+        ...this._triggerProvider.value,
+        options: getTriggerIdOptions(getTraceTriggers(this.trace.config)),
+      });
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -192,11 +222,16 @@ export class HaTracePathDetails extends LitElement {
       const nestPath = curPath
         .substring(this.selected.path.length + 1)
         .split("/");
-      let currentDetail = this.selected.config;
+      let currentDetail: unknown = this.selected.config;
       for (const part of nestPath) {
-        if (!["undefined", "string"].includes(typeof currentDetail[part])) {
-          currentDetail = currentDetail[part];
+        if (typeof currentDetail !== "object" || currentDetail === null) {
+          break;
         }
+        const child = (currentDetail as Record<string, unknown>)[part];
+        if (child === undefined || typeof child === "string") {
+          break;
+        }
+        currentDetail = child;
       }
 
       parts.push(
@@ -282,6 +317,9 @@ export class HaTracePathDetails extends LitElement {
                 : html`<pre>${dump(rest)}</pre>`
             }
             ${
+              typeof currentDetail === "object" &&
+              currentDetail !== null &&
+              "entity_id" in currentDetail &&
               currentDetail.entity_id &&
               curPath
                 .substring(this.selected.path.length + 1)
@@ -326,7 +364,7 @@ export class HaTracePathDetails extends LitElement {
                 this._entityReg,
                 currentDetail,
                 undefined,
-                false,
+                undefined,
                 this._manifests
               )
             : selectedType === "chooseOption"
@@ -342,6 +380,7 @@ export class HaTracePathDetails extends LitElement {
 
     return html`<div class="heading">
       <h2>${description}</h2>
+      ${this._renderTriggerReferences(currentDetail)}
       ${this._renderTargets(currentDetail, selectedType)}
     </div>`;
   }
@@ -355,8 +394,19 @@ export class HaTracePathDetails extends LitElement {
 
     return html`<div class="nested-condition">
       ${describeCondition(currentDetail, this.hass, this._entityReg)}
+      ${this._renderTriggerReferences(currentDetail)}
       ${this._renderTargets(currentDetail, "condition", "s")}
     </div>`;
+  }
+
+  private _renderTriggerReferences(config: any) {
+    if (config?.condition !== "trigger") {
+      return nothing;
+    }
+    return html`<ha-automation-trigger-references
+      .condition=${config as TriggerCondition}
+      .hass=${this.hass}
+    ></ha-automation-trigger-references>`;
   }
 
   private _renderTargets(
@@ -486,7 +536,9 @@ export class HaTracePathDetails extends LitElement {
     const trackedPaths = Object.keys(this.trackedNodes);
     const index = trackedPaths.indexOf(this.selected.path);
 
-    if (index === -1) {
+    // Synthetic choose-option nodes have no direct trace records, so there is
+    // no start timestamp to slice the logbook with.
+    if (index === -1 || !startTrace) {
       return html`<div class="padded-box">
         ${this.hass!.localize(
           "ui.panel.config.automation.trace.path.step_not_executed"
@@ -496,7 +548,11 @@ export class HaTracePathDetails extends LitElement {
 
     let entries: LogbookEntry[];
 
-    if (index === trackedPaths.length - 1) {
+    const nextTrace =
+      index < trackedPaths.length - 1
+        ? paths[trackedPaths[index + 1]]
+        : undefined;
+    if (!nextTrace) {
       // it's the last entry. Find all logbook entries after start.
       const startTime = new Date(startTrace[0].timestamp);
       const idx = this.logbookEntries.findIndex(
@@ -508,8 +564,6 @@ export class HaTracePathDetails extends LitElement {
         entries = this.logbookEntries.slice(idx);
       }
     } else {
-      const nextTrace = paths[trackedPaths[index + 1]];
-
       const startTime = new Date(startTrace[0].timestamp);
       const endTime = new Date(nextTrace[0].timestamp);
 

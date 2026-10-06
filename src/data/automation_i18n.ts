@@ -827,7 +827,7 @@ const describeLegacyTrigger = (
 
     let offsetChoice = "other";
     let offset = "";
-    if (trigger.offset) {
+    if (typeof trigger.offset === "string" && trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
       const parts = trigger.offset.startsWith("-")
         ? trigger.offset.substring(1).split(":")
@@ -921,6 +921,12 @@ const tryDescribeCondition = (
 
   if (condition.alias && !options?.ignoreAlias) {
     return condition.alias;
+  }
+
+  if (condition.condition === "trigger") {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.trigger.description.summary`
+    );
   }
 
   if (!condition.condition) {
@@ -1294,18 +1300,6 @@ const describeLegacyCondition = (
   if (condition.condition === "template") {
     return hass.localize(
       `${conditionsTranslationBaseKey}.template.description.full`
-    );
-  }
-
-  if (condition.condition === "trigger" && condition.id != null) {
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.trigger.description.full`,
-      {
-        id: formatListWithOrs(
-          hass.locale,
-          ensureArray(condition.id).map((id) => id.toString())
-        ),
-      }
     );
   }
 

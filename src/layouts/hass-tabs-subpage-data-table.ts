@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { ContextType } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -17,6 +18,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { canShowPage } from "../common/config/can_show_page";
+import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
@@ -39,6 +41,11 @@ import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
 import "../components/input/ha-input-search";
 import type { HaInputSearch } from "../components/input/ha-input-search";
+import {
+  configContext,
+  entitiesContext,
+  internationalizationContext,
+} from "../data/context";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
@@ -46,9 +53,22 @@ import type { PageNavigation } from "./hass-tabs-subpage";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Unread, kept for callers that still pass it until they move to contexts
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
@@ -154,6 +174,18 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Boolean }) public empty = false;
 
+  /**
+   * Show a loading state instead of the empty message until data is ready.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public loading = false;
+
+  /**
+   * Error to show below the column headings, with a retry action, when loading the table's data failed.
+   * Pass `true` to show the default message.
+   */
+  @property({ attribute: false }) public loadError?: boolean | string;
+
   @property({ attribute: false }) public route!: Route;
 
   /**
@@ -211,15 +243,16 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>) {
+  protected willUpdate(changedProperties: PropertyValues) {
     if (
       changedProperties.has("tabs") ||
-      (changedProperties.has("hass") &&
-        this.hass?.config.components !==
-          changedProperties.get("hass")?.config.components)
+      changedProperties.has("_hassConfig") ||
+      changedProperties.has("_entities")
     ) {
       this.showTabs =
-        this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;
+        this.tabs.filter((page) =>
+          canShowPage({ ...this._hassConfig, entities: this._entities }, page)
+        ).length > 1;
     }
 
     if (this.hasUpdated) {
@@ -235,7 +268,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    const localize = this.localizeFunc || this.hass.localize;
+    const localize = this.localizeFunc || this._i18n.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
       ? html`<ha-filter-pane-chip
@@ -389,7 +422,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage
-        .hass=${this.hass}
         .localizeFunc=${this.localizeFunc}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
@@ -492,7 +524,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this.empty
+          this.empty && !this.loading
             ? html`<div class="center">
                 <slot name="empty">${this.noDataText}</slot>
               </div>`
@@ -514,7 +546,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .narrow=${this.narrow}
                   .columns=${this.columns}
                   .data=${this.data}
+                  .loading=${this.loading}
                   .noDataText=${this.noDataText}
+                  .loadError=${this.loadError}
                   .filter=${this.filter}
                   .selectable=${this._selectMode}
                   .id=${this.id}
@@ -877,19 +911,32 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .narrow-header-row {
+      --header-row-inset-start: var(--safe-area-inset-left, 0px);
+      --header-row-inset-end: var(--safe-area-inset-right, 0px);
       display: flex;
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0 16px;
+      padding: 0;
+      padding-inline-start: calc(16px + var(--header-row-inset-start));
       box-sizing: border-box;
       overflow-x: scroll;
       scrollbar-width: none;
     }
 
+    .narrow-header-row:dir(rtl) {
+      --header-row-inset-start: var(--safe-area-inset-right, 0px);
+      --header-row-inset-end: var(--safe-area-inset-left, 0px);
+    }
+
+    .narrow-header-row::after {
+      content: "";
+      flex: 0 0 var(--header-row-inset-end);
+    }
+
     .narrow-header-row .flex {
       flex: 1;
-      margin-left: -16px;
+      margin-inline-start: -16px;
     }
 
     .selection-bar {

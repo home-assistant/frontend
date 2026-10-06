@@ -5,6 +5,7 @@ import {
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeEntityNameDisplayWithoutContext } from "../common/entity/compute_entity_name_display";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
 import {
@@ -604,10 +605,7 @@ export const provideHass = (
         value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
       },
     ],
-    formatEntityName: (stateObj, type) =>
-      typeof type === "string"
-        ? type
-        : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
+    formatEntityName: computeEntityNameDisplayWithoutContext,
     ...overrideData,
   };
 

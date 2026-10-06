@@ -47,7 +47,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       hass.loadBackendTranslation("title"),
       isComponentLoaded(hass.config, "energy")
         ? // It raises if not configured, just swallow that.
-          getEnergyPreferences(hass).catch(() => undefined)
+          getEnergyPreferences(hass.callWS).catch(() => undefined)
         : undefined,
     ]);
 

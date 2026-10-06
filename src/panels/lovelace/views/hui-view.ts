@@ -1,13 +1,12 @@
 import deepClone from "deep-clone-simple";
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";

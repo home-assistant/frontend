@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/device/ha-device-picker";
@@ -66,9 +66,9 @@ export class HaDeviceTrigger extends LitElement {
   private _extraFieldsData = memoizeOne(
     (trigger: DeviceTrigger, capabilities: DeviceCapabilities) => {
       const extraFieldsData = computeInitialHaFormData(
-        capabilities.extra_fields
+        capabilities.extra_fields ?? []
       );
-      capabilities.extra_fields.forEach((item) => {
+      capabilities.extra_fields?.forEach((item) => {
         if (trigger[item.name] !== undefined) {
           extraFieldsData![item.name] = trigger[item.name];
         }

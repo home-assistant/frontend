@@ -1,6 +1,8 @@
-import { ContextConsumer, type Context } from "@lit/context";
 import type { Connection, HassConfig } from "home-assistant-js-websocket";
-import type { ReactiveController, ReactiveControllerHost } from "lit";
+import {
+  consumeContext,
+  ContextController,
+} from "../common/decorators/consume";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
   computeServiceLabel,
@@ -23,8 +25,6 @@ import type {
   HomeAssistantInternationalization,
 } from "../types";
 
-type ServiceInfoHost = ReactiveControllerHost & HTMLElement;
-
 /**
  * Reactive controller that prepares display data for a service action
  * (e.g. `light.turn_on`): loads service translations, resolves the localized
@@ -34,15 +34,25 @@ type ServiceInfoHost = ReactiveControllerHost & HTMLElement;
  * Pulls connection, config, services, and i18n from Lit context, so the
  * caller only needs to feed in the service ID via `updateService()`.
  */
-export class ServiceInfoController implements ReactiveController {
-  private _host: ServiceInfoHost;
-
+export class ServiceInfoController extends ContextController {
+  @consumeContext({
+    context: connectionContext,
+    subscribe: true,
+    transform: ({ connection }) => connection,
+  })
   private _connection?: Connection;
 
+  @consumeContext({
+    context: configContext,
+    subscribe: true,
+    transform: ({ config }) => config,
+  })
   private _config?: HassConfig;
 
+  @consumeContext({ context: servicesContext, subscribe: true })
   private _services?: HomeAssistant["services"];
 
+  @consumeContext({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 
   private _service?: string;
@@ -53,43 +63,16 @@ export class ServiceInfoController implements ReactiveController {
 
   private _info: ServiceInfo = DEFAULT_SERVICE_INFO;
 
-  constructor(host: ServiceInfoHost) {
-    this._host = host;
-    host.addController(this);
-
-    this._consume(connectionContext, (value) => {
-      this._connection = value.connection;
-    });
-    this._consume(configContext, (value) => {
-      this._config = value.config;
-    });
-    this._consume(servicesContext, (value) => {
-      this._services = value;
-    });
-    this._consume(internationalizationContext, (value) => {
-      this._i18n = value;
-    });
-  }
-
-  private _consume<T>(
-    context: Context<unknown, T>,
-    assign: (value: T) => void
-  ): void {
-    new ContextConsumer(this._host, {
-      context,
-      subscribe: true,
-      callback: (value) => {
-        assign(value);
-        this._resolve();
-      },
-    });
-  }
-
   get info(): ServiceInfo {
     return this._info;
   }
 
   hostConnected(): void {
+    this._resolve();
+  }
+
+  // `_resolve` requests a host update only when the resolved info changes.
+  protected contextUpdated(): void {
     this._resolve();
   }
 
@@ -117,7 +100,7 @@ export class ServiceInfoController implements ReactiveController {
 
     if (!service) {
       this._info = DEFAULT_SERVICE_INFO;
-      this._host.requestUpdate();
+      this.host.requestUpdate();
       return;
     }
 
@@ -129,7 +112,7 @@ export class ServiceInfoController implements ReactiveController {
         : this._info.iconPath,
       icon: serviceChanged ? undefined : this._info.icon,
     };
-    this._host.requestUpdate();
+    this.host.requestUpdate();
 
     this._i18n.loadBackendTranslation("services", domain).then((localize) => {
       if (
@@ -143,14 +126,14 @@ export class ServiceInfoController implements ReactiveController {
         ...this._info,
         label: computeServiceLabel(localize, this._services, service),
       };
-      this._host.requestUpdate();
+      this.host.requestUpdate();
     });
 
     if (serviceChanged) {
       serviceIcon(this._connection, this._config, service).then((icon) => {
         if (this._resolvedService !== service) return;
         this._info = { ...this._info, icon };
-        this._host.requestUpdate();
+        this.host.requestUpdate();
       });
     }
   }

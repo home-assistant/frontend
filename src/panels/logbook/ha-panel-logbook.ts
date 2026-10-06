@@ -195,6 +195,7 @@ export class HaPanelLogbook extends LitElement {
                   .startDate=${this._time.range[0]}
                   .endDate=${this._time.range[1]}
                   @value-changed=${this._dateRangeChanged}
+                  extended-presets
                   time-picker
                 ></ha-date-range-nav>
               </div>
@@ -202,7 +203,7 @@ export class HaPanelLogbook extends LitElement {
               <ha-logbook
                 .hass=${this.hass}
                 .time=${this._time}
-                .entityIds=${entityIds}
+                .entityIds=${this._shownEntityIds}
                 .narrow=${this.narrow}
                 show-cause
                 virtualize
@@ -279,11 +280,15 @@ export class HaPanelLogbook extends LitElement {
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (this.hasUpdated) {
-      return;
+    if (!this.hasUpdated) {
+      this._applyURLParams();
     }
 
-    this._applyURLParams();
+    // On narrow screens, the sources sheet covers the results, so only apply
+    // the sources once it is closed instead of on every source change.
+    if (!this.narrow || !this._sourcesShown()) {
+      this._shownEntityIds = this._getEntityIds();
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -396,6 +401,8 @@ export class HaPanelLogbook extends LitElement {
   private __filterEntityIds = memoizeOne(applySourceFilters);
 
   private _lastEntityIds?: string[];
+
+  private _shownEntityIds?: string[];
 
   // A list keyed on the states must keep its identity or ha-logbook resubscribes.
   private _stableEntityIds(entityIds: string[]): string[] {

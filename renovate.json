@@ -10,9 +10,9 @@
     "group:monorepos",
     "group:recommended"
   ],
-  "enabledManagers": ["npm", "nvm", "custom.regex"],
+  "enabledManagers": ["npm", "nvm", "custom.regex", "github-actions"],
   "minimumReleaseAge": "3 days",
-  "postUpdateOptions": ["yarnDedupeHighest"],
+  "postUpdateOptions": ["pnpmDedupe"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
     "enabled": true,
@@ -108,6 +108,42 @@
       "groupName": "Playwright",
       "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"],
       "minimumGroupSize": 5
+    },
+    {
+      "description": "MCR returns no release timestamps, so the minimum release age would keep the Playwright container pending forever. The npm package still gates the group.",
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "GitHub Actions: weekly, with a 7 day cooldown, like Dependabot did",
+      "matchManagers": ["github-actions"],
+      "addLabels": ["GitHub Actions"],
+      "schedule": ["before 8am on monday"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Leave runner labels and action version inputs alone, Dependabot never updated those",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["github-runner", "uses-with"],
+      "enabled": false
+    },
+    {
+      "description": "The Playwright container is already managed by the custom regex manager. Extracting it twice would break the minimumGroupSize count of the Playwright group.",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "enabled": false
+    },
+    {
+      "description": "Group the github/codeql-action subactions into one PR (they share a release)",
+      "matchPackageNames": ["/^github\\/codeql-action(?:\\/|$)/"],
+      "groupName": "github/codeql-action",
+      "groupSlug": "codeql-action"
+    },
+    {
+      "description": "Group the actions/cache subactions into one PR (they share a release)",
+      "matchPackageNames": ["/^actions\\/cache(?:\\/|$)/"],
+      "groupName": "actions/cache",
+      "groupSlug": "actions-cache"
     }
   ]
 }

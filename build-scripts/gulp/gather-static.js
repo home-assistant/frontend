@@ -81,6 +81,8 @@ async function copyMapPanel(staticDir) {
     npmPath("@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js"),
     staticPath("map/")
   );
+  // Controls and popups of the native MapLibre engine
+  copyFileDir(npmPath("maplibre-gl/dist/maplibre-gl.css"), staticPath("map/"));
 }
 
 function copyZXingWasm(staticDir) {
@@ -175,6 +177,7 @@ gulp.task("copy-static-landing-page", async () => {
 
   copyFonts(paths.landingPage_output_static);
   copyTranslations(paths.landingPage_output_static);
+  copyLocaleData(paths.landingPage_output_static);
 });
 
 gulp.task("copy-static-e2e-test-app", async () => {

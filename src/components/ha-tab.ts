@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "./ha-ripple";
@@ -12,6 +12,9 @@ export class HaTab extends LitElement {
 
   @property() public name?: string;
 
+  // A short note next to the name, like how many updates wait there
+  @property() public badge?: string;
+
   protected render(): TemplateResult {
     return html`
       <div
@@ -19,10 +22,16 @@ export class HaTab extends LitElement {
         role="tab"
         aria-selected=${this.active}
         aria-label=${ifDefined(this.name)}
+        aria-describedby=${ifDefined(this.badge ? "badge" : undefined)}
         @keydown=${this._handleKeyDown}
       >
         <slot name="icon"></slot>
         <span class="name">${this.name}</span>
+        ${
+          this.badge
+            ? html`<span class="badge" id="badge">${this.badge}</span>`
+            : nothing
+        }
         <ha-ripple></ha-ripple>
       </div>
     `;
@@ -53,6 +62,16 @@ export class HaTab extends LitElement {
     :host(:not([narrow])) div {
       flex-direction: row;
       gap: var(--ha-space-2);
+    }
+
+    .badge {
+      padding: 0 var(--ha-space-2);
+      border-radius: var(--ha-border-radius-pill);
+      font-size: var(--ha-font-size-s);
+      line-height: var(--ha-line-height-normal);
+      white-space: nowrap;
+      color: var(--text-primary-color);
+      background-color: var(--warning-color);
     }
 
     .name {

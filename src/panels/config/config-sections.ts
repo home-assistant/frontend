@@ -31,8 +31,10 @@ import {
   mdiShape,
   mdiSofa,
   mdiStarFourPoints,
+  mdiStore,
   mdiTextBoxOutline,
   mdiTools,
+  mdiTransitConnectionVariant,
   mdiUpdate,
   mdiViewDashboard,
   mdiZigbee,
@@ -48,7 +50,9 @@ const getHasDomainCheck = (domain: string) => {
   const checkRegistry = memoizeOne((entries: HomeAssistant["entities"]) =>
     Object.values(entries).some((entry) => entry.entity_id.startsWith(prefix))
   );
-  return (hass: HomeAssistant) => checkRegistry(hass.entities);
+
+  return (hass: Pick<HomeAssistant, "entities">) =>
+    checkRegistry(hass.entities);
 };
 
 export const configSections: Record<string, PageNavigation[]> = {
@@ -83,6 +87,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
       core: true,
+      adminOnly: true,
+    },
+    {
+      path: "/marketplace",
+      translationKey: "marketplace",
+      iconPath: mdiStore,
+      iconColor: "#7C4DFF",
+      component: "marketplace",
       adminOnly: true,
     },
     {
@@ -186,6 +198,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#607D8B",
       component: "usb",
       translationKey: "serial",
+      adminOnly: true,
+    },
+    {
+      path: "/config/modbus",
+      iconPath: mdiTransitConnectionVariant,
+      iconColor: "#00897B",
+      component: "modbus",
+      translationKey: "modbus",
       adminOnly: true,
     },
     {

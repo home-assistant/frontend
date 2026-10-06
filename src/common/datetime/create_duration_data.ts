@@ -9,36 +9,34 @@ export const createDurationData = (
   }
   if (typeof duration !== "object") {
     if (typeof duration === "string" || isNaN(duration)) {
-      const parts = duration?.toString().split(":") || [];
+      const durationString = duration.toString().trim();
+      // A leading "-" negates the whole period, matching
+      // `cv.time_period_str` in core.
+      const negative = durationString[0] === "-";
+      const parts = durationString
+        .split(":")
+        .map((part) =>
+          negative && part ? -Math.abs(Number(part)) : Number(part)
+        );
+
       if (parts.length === 1) {
-        return { seconds: Number(parts[0]) };
+        return { seconds: parts[0] };
       }
       if (parts.length > 3) {
         return undefined;
       }
-      const seconds = Number(parts[2]) || 0;
-      const seconds_whole = Math.floor(seconds);
+      const seconds = parts[2] || 0;
+      const secondsWhole = Math.trunc(seconds);
       return {
-        hours: Number(parts[0]) || 0,
-        minutes: Number(parts[1]) || 0,
-        seconds: seconds_whole,
-        milliseconds: Math.floor(
-          Number((seconds - seconds_whole).toFixed(4)) * 1000
+        hours: parts[0] || 0,
+        minutes: parts[1] || 0,
+        seconds: secondsWhole,
+        milliseconds: Math.trunc(
+          Number((seconds - secondsWhole).toFixed(4)) * 1000
         ),
       };
     }
     return { seconds: duration };
   }
-  if (!("days" in duration)) {
-    return duration;
-  }
-  const { days, minutes, seconds, milliseconds } = duration;
-  let hours = duration.hours || 0;
-  hours = (hours || 0) + (days || 0) * 24;
-  return {
-    hours,
-    minutes,
-    seconds,
-    milliseconds,
-  };
+  return duration;
 };

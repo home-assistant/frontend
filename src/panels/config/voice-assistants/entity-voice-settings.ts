@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeEntityEntryNameList } from "../../../common/entity/compute_entity_name_display";
 import type {
   EntityDomainFilter,
   EntityDomainFilterFunc,
@@ -17,8 +17,8 @@ import {
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import "../../../components/voice-assistant-brand-icon";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
@@ -190,7 +190,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     const exposedToAssist = this.exposed.conversation;
 
     return html`
-      <ha-md-list-item>
+      <ha-row-item>
         <h3 slot="headline">
           ${this.hass.localize("ui.dialogs.voice-settings.expose_header")}
         </h3>
@@ -200,7 +200,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           .assistants=${uiAssistants}
           .checked=${anyExposed}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
       ${
         anyExposed
           ? showAssistants.map((key) => {
@@ -224,7 +224,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 this._googleEntity?.might_2fa;
 
               return html`
-                <ha-md-list-item>
+                <ha-row-item>
                   <voice-assistant-brand-icon
                     slot="start"
                     .voiceAssistantId=${key}
@@ -274,7 +274,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                     .disabled=${manualConfig || (!exposed && !supported)}
                     .checked=${exposed}
                   ></ha-switch>
-                </ha-md-list-item>
+                </ha-row-item>
               `;
             })
           : nothing
@@ -321,14 +321,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               )}
             </ha-alert>`
           : html`
-              <ha-md-list-item>
-                <span slot="headline">
-                  ${
-                    this.hass.states[this.entityId]
-                      ? computeStateName(this.hass.states[this.entityId])
-                      : this.entityId
-                  }
-                </span>
+              <ha-row-item>
+                <span slot="headline">${this._computedName(this.entry)}</span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
                     "ui.dialogs.voice-settings.entity_name_alias_description"
@@ -339,7 +333,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   .checked=${(this._aliases ?? this.entry.aliases).includes(null)}
                   @change=${this._toggleEntityNameAlias}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-row-item>
               <ha-aliases-editor
                 .aliases=${(this._aliases ?? this.entry.aliases).filter(
                   (a): a is string => a !== null
@@ -350,6 +344,23 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
             `
       }
     `;
+  }
+
+  // Same composition as the backend's computed name alias
+  private _computedName(entry: ExtEntityRegistryEntry): string {
+    if (entry.name) {
+      return entry.name;
+    }
+    return computeEntityEntryNameList(
+      entry,
+      [{ type: "parent_device" }, { type: "device" }, { type: "entity" }],
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    )
+      .filter(Boolean)
+      .join(" ");
   }
 
   private async _toggleEntityNameAlias(ev) {
@@ -445,10 +456,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           margin: 32px;
           margin-top: 0;
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         img {
           height: 32px;

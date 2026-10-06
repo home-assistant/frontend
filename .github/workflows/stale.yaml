@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   stale:
+    if: github.repository == 'home-assistant/frontend'
     runs-on: ubuntu-latest
     steps:
       - name: 90 days stale policy

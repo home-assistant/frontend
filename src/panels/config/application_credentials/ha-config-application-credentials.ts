@@ -37,6 +37,10 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
 
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
+
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
@@ -154,10 +158,19 @@ export class HaConfigApplicationCredentials extends LitElement {
         back-path="/config"
         .tabs=${configSections.devices}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._getApplicationCredentials(
           this._applicationCredentials,
           this.hass.localize
         )}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize(
+                "ui.panel.config.application_credentials.picker.load_failed"
+              )
+            : undefined
+        }
+        @retry-load=${this._retryFetchApplicationCredentials}
         has-fab
         selectable
         .selected=${this._selected.length}
@@ -278,7 +291,21 @@ export class HaConfigApplicationCredentials extends LitElement {
   }
 
   private async _fetchApplicationCredentials() {
-    this._applicationCredentials = await fetchApplicationCredentials(this.hass);
+    try {
+      this._applicationCredentials = await fetchApplicationCredentials(
+        this.hass
+      );
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryFetchApplicationCredentials() {
+    this._loading = true;
+    this._fetchApplicationCredentials();
   }
 
   private _addApplicationCredential() {

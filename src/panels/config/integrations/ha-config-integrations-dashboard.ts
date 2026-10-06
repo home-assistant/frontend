@@ -1,5 +1,4 @@
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -8,6 +7,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { deepActiveElement } from "../../../common/dom/deep-active-element";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
@@ -678,7 +678,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                   ([domain, items]) =>
                     html`<ha-integration-card
                       data-domain=${domain}
-                      .hass=${this.hass}
                       .domain=${domain}
                       .items=${items}
                       .manifest=${this._manifests[domain]}

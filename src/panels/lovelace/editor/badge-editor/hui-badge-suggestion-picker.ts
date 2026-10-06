@@ -11,7 +11,6 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-ripple";
 import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -170,7 +169,7 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           "ui.panel.lovelace.editor.badge_picker.selected_entity"
         )}
       </ha-section-title>
-      <ha-combo-box-item compact class="selected-entity">
+      <ha-combo-box-item class="selected-entity">
         ${
           stateObj
             ? html`<state-badge

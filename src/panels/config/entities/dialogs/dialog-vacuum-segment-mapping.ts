@@ -2,16 +2,11 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeAreaName } from "../../../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../../../common/entity/compute_entity_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../../../common/entity/context/get_entity_context";
+  computeEntityEntryNameList,
+  computeEntityNameList,
+  type EntityNameItem,
+} from "../../../../common/entity/compute_entity_name_display";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
@@ -31,6 +26,13 @@ import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { VacuumSegmentMappingDialogParams } from "./show-dialog-vacuum-segment-mapping";
+
+const BREADCRUMB_NAME: EntityNameItem[] = [
+  { type: "area" },
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+];
 
 interface VacuumSegmentMappingState {
   areaMapping: Record<string, string[]>;
@@ -133,38 +135,27 @@ export class DialogVacuumSegmentMapping
 
     const stateObj = this.hass.states[this._params.entityId];
 
-    const context = stateObj
-      ? getEntityContext(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        )
-      : this._entry
-        ? getEntityEntryContext(
-            this._entry,
+    const breadcrumb = (
+      stateObj
+        ? computeEntityNameList(
+            stateObj,
+            BREADCRUMB_NAME,
             this.hass.entities,
             this.hass.devices,
             this.hass.areas,
             this.hass.floors
           )
-        : undefined;
-
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass.devices)
-        : this._params.entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
-
-    const breadcrumb = [areaName, deviceName, entityName].filter(
-      (v): v is string => Boolean(v)
-    );
+        : this._entry
+          ? computeEntityEntryNameList(
+              this._entry,
+              BREADCRUMB_NAME,
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            )
+          : [this._params.entityId]
+    ).filter((v): v is string => Boolean(v));
 
     return html`
       <ha-dialog

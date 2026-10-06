@@ -42,8 +42,8 @@ export class HaCard extends LitElement {
       font-family: var(--ha-card-header-font-family, inherit);
       font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
       letter-spacing: -0.012em;
-      line-height: var(--ha-line-height-expanded);
-      padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4);
+      line-height: var(--ha-line-height-condensed);
+      padding: var(--ha-space-5) var(--ha-space-4) var(--ha-space-6);
       display: block;
       margin-block-start: 0;
       margin-block-end: 0;

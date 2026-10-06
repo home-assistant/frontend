@@ -3,13 +3,14 @@ import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
 } from "@mdi/js";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
@@ -216,7 +217,7 @@ class HaPanelDevStateRenderer extends LitElement {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <span class="secondary">
-                  ${displayName ?? deviceName ?? item.attributes.friendly_name}
+                  ${displayName || deviceName || item.attributes.friendly_name}
                 </span>
               </div>
             </div>
@@ -226,10 +227,10 @@ class HaPanelDevStateRenderer extends LitElement {
           <span class="padded">${item.state}</span>
         </div>
         <div class="cell" role="cell">
-          <span class="padded">${deviceName ?? "\u2014"}</span>
+          <span class="padded">${deviceName || "\u2014"}</span>
         </div>
         <div class="cell" role="cell">
-          <span class="padded">${areaName ?? "\u2014"}</span>
+          <span class="padded">${areaName || "\u2014"}</span>
         </div>
         <div class="cell" role="cell">
           <span class="padded">${this._attributeString(item)}</span>

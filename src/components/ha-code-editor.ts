@@ -28,7 +28,7 @@ import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { ContextType } from "@lit/context";
-import { consume } from "@lit/context";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
@@ -761,6 +761,9 @@ export class HaCodeEditor extends ReactiveElement {
     const deviceName = context.device
       ? computeDeviceName(context.device)
       : undefined;
+    const parentDeviceName = context.parentDevice
+      ? computeDeviceName(context.parentDevice)
+      : undefined;
     const areaName = context.area ? computeAreaName(context.area) : undefined;
     const floorName = context.floor
       ? computeFloorName(context.floor)
@@ -792,6 +795,15 @@ export class HaCodeEditor extends ReactiveElement {
       completionItems.push({
         label: this._i18n!.localize("ui.components.device-picker.device"),
         value: deviceName,
+      });
+    }
+
+    if (parentDeviceName) {
+      completionItems.push({
+        label: this._i18n!.localize(
+          "ui.components.device-picker.parent_device"
+        ),
+        value: parentDeviceName,
       });
     }
 

@@ -7,7 +7,6 @@ import { describe, expect, it } from "vitest";
 import type { BarSeriesOption } from "echarts/charts";
 import { generateEnergyGasGraphData } from "../../../../../src/panels/lovelace/cards/energy/energy-gas-graph-data";
 import type { EnergyPreferences } from "../../../../../src/data/energy";
-import type { HomeAssistant } from "../../../../../src/types";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
 import {
@@ -25,14 +24,8 @@ const computedStyles = createMockComputedStyle({
   "--energy-gas-color": "#1b7ea0",
 });
 
-// The transform reads hass.themes.darkMode and hass.states (via
-// getStatisticLabel). createMockHass covers states; layer themes on top.
-const makeHass = (overrides: Partial<HomeAssistant> = {}): HomeAssistant =>
-  ({
-    ...createMockHass(),
-    themes: { darkMode: false },
-    ...overrides,
-  }) as unknown as HomeAssistant;
+const { states, formatEntityName } = createMockHass();
+const baseParams = { states, formatEntityName, darkMode: false };
 
 // Energy preferences with only gas sources (the card filters to type "gas").
 const gasOnlyPrefs = (sources: number): EnergyPreferences => ({
@@ -59,7 +52,7 @@ describe("generateEnergyGasGraphData", () => {
     });
     expect(
       generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -75,7 +68,7 @@ describe("generateEnergyGasGraphData", () => {
     });
     expect(
       generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -92,7 +85,7 @@ describe("generateEnergyGasGraphData", () => {
     });
     expect(
       generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -108,9 +101,8 @@ describe("generateEnergyGasGraphData", () => {
     });
     expect(
       generateEnergyGasGraphData({
-        hass: makeHass({
-          themes: { darkMode: true } as HomeAssistant["themes"],
-        }),
+        ...baseParams,
+        darkMode: true,
         energyData,
         computedStyles,
         now,
@@ -145,17 +137,20 @@ describe("generateEnergyGasGraphData", () => {
       period: "hour",
       prefs,
     });
-    const hass = makeHass({
-      states: {
-        "sensor.gas_from_state": createMockEntityState(
-          "sensor.gas_from_state",
-          "42",
-          { friendly_name: "Kitchen gas" }
-        ),
-      } as HomeAssistant["states"],
-    });
     expect(
-      generateEnergyGasGraphData({ hass, energyData, computedStyles, now })
+      generateEnergyGasGraphData({
+        ...baseParams,
+        states: {
+          "sensor.gas_from_state": createMockEntityState(
+            "sensor.gas_from_state",
+            "42",
+            { friendly_name: "Kitchen gas" }
+          ),
+        },
+        energyData,
+        computedStyles,
+        now,
+      })
     ).toMatchSnapshot();
   });
 
@@ -167,7 +162,7 @@ describe("generateEnergyGasGraphData", () => {
     });
     expect(
       generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -184,7 +179,7 @@ describe("generateEnergyGasGraphData", () => {
     // Force the missing-end branch.
     (energyData as { end?: Date }).end = undefined;
     const result = generateEnergyGasGraphData({
-      hass: makeHass(),
+      ...baseParams,
       energyData,
       computedStyles,
       now,
@@ -202,7 +197,7 @@ describe("generateEnergyGasGraphData", () => {
     expect(
       digestResult(
         generateEnergyGasGraphData({
-          hass: makeHass(),
+          ...baseParams,
           energyData,
           computedStyles,
           now,
@@ -249,7 +244,7 @@ describe("generateEnergyGasGraphData", () => {
         [10]
       );
       const result = generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -280,7 +275,7 @@ describe("generateEnergyGasGraphData", () => {
         [2, 14]
       );
       const result = generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -303,7 +298,7 @@ describe("generateEnergyGasGraphData", () => {
         []
       );
       const result = generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,
@@ -330,7 +325,7 @@ describe("generateEnergyGasGraphData", () => {
         endCompare: new Date(base.start.getTime()),
       };
       const result = generateEnergyGasGraphData({
-        hass: makeHass(),
+        ...baseParams,
         energyData,
         computedStyles,
         now,

@@ -12,6 +12,7 @@ import {
   number,
   object,
   optional,
+  record,
   string,
   union,
 } from "superstruct";
@@ -28,9 +29,14 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
+import {
+  DEFAULT_MAP_STYLE,
+  isCustomMapStyle,
+  withMapStyleBase,
+  MAP_STYLES,
+} from "../../../../common/map/map-styles";
 import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
@@ -66,6 +72,19 @@ export const mapEntitiesConfigStruct = union([
   string(),
 ]);
 
+const mapStyleConfigStruct = union([
+  string(),
+  object({
+    base: optional(string()),
+    colors: optional(record(string(), string())),
+    colors_dark: optional(record(string(), string())),
+    recolor: optional(record(string(), any())),
+    text: optional(record(string(), any())),
+    icon: optional(record(string(), any())),
+    layers: optional(any()),
+  }),
+]);
+
 const geoSourcesConfigStruct = union([
   object({
     source: string(),
@@ -92,6 +111,7 @@ const cardConfigStruct = assign(
     cluster: optional(boolean()),
     dark_mode: optional(boolean()), // legacy option
     theme_mode: optional(string()),
+    map_style: optional(mapStyleConfigStruct),
     conditions: optional(any()),
     scale_ruler: optional(boolean()),
   })
@@ -154,6 +174,21 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                         value: themeMode,
                         label: localize(
                           `ui.panel.lovelace.editor.card.map.theme_modes.${themeMode}`
+                        ),
+                      })),
+                    },
+                  },
+                },
+                {
+                  name: "map_style",
+                  default: DEFAULT_MAP_STYLE,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: MAP_STYLES.map((mapStyle) => ({
+                        value: mapStyle,
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.map.map_styles.${mapStyle}`
                         ),
                       })),
                     },
@@ -247,6 +282,18 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     })
   );
 
+  // `map_style` is a preset name or an object; the form only picks the
+  // cartography, so an object is reduced to its base here and put back
+  // together by withMapStyleBase.
+  private _formData = memoizeOne((config: MapCardConfig) => {
+    const style = config.map_style;
+    const custom = isCustomMapStyle(style) ? style : undefined;
+    return {
+      ...config,
+      map_style: (custom ? custom.base : style) ?? DEFAULT_MAP_STYLE,
+    };
+  });
+
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
 
@@ -316,7 +363,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._formData(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -496,6 +543,13 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (config.show_all && config.entities?.length === 0) {
       delete config.entities;
     }
+    config.map_style = withMapStyleBase(
+      this._config?.map_style,
+      config.map_style
+    );
+    if (config.map_style === undefined) {
+      delete config.map_style;
+    }
     config = this._orderProperties(config);
     fireEvent(this, "config-changed", { config });
   }
@@ -530,6 +584,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   ) => {
     switch (schema.name) {
       case "theme_mode":
+      case "map_style":
       case "default_zoom":
       case "scale_ruler":
       case "auto_fit":
@@ -550,6 +605,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "map_style":
       case "show_all":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}_helper`

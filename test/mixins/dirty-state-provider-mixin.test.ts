@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import { LitElement } from "lit";
 import { state } from "lit/decorators";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { consume } from "../../src/common/decorators/consume";
 import {
   dirtyStateContext,
   type DirtyStateContext,

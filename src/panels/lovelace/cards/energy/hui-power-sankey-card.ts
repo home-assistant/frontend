@@ -1,20 +1,34 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
+import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import {
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
   formatPowerShort,
-  getEnergyDataCollection,
   getPowerFromState,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { PowerSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
@@ -51,15 +65,13 @@ interface PowerData {
 
 @customElement("hui-power-sankey-card")
 class HuiPowerSankeyCard
-  extends SubscribeMixin(MobileAwareMixin(LitElement))
+  extends MobileAwareMixin(LitElement)
   implements LovelaceCard
 {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-sankey-card-editor");
     return document.createElement("hui-energy-sankey-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
@@ -79,25 +91,72 @@ class HuiPowerSankeyCard
 
   @state() private _data?: EnergyData;
 
-  private _entities = new Set<string>();
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, HassEntities>({
+    transformer: function (this: HuiPowerSankeyCard, states) {
+      const tracked: HassEntities = {};
+      const prefs = this._data?.prefs;
+      if (states && prefs) {
+        [
+          ...prefs.energy_sources.map((source) =>
+            source.type === "gas" || source.type === "water"
+              ? undefined
+              : source.stat_rate
+          ),
+          ...prefs.device_consumption.map((device) => device.stat_rate),
+        ].forEach((entityId) => {
+          if (entityId && states[entityId]) {
+            tracked[entityId] = states[entityId];
+          }
+        });
+      }
+      return preserveUnchangedEntityStatesRecord(this._states, tracked);
+    },
+    watch: ["_data"],
+  })
+  private _states: HassEntities = {};
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: HomeAssistantRegistries;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
+        this._data = data;
+      },
+    });
+  }
 
   public setConfig(config: PowerSankeyCardConfig): void {
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = { ...DEFAULT_CONFIG, ...config };
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._data = data;
-      }),
-    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -113,42 +172,13 @@ class HuiPowerSankeyCard
     };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (
-      changedProps.has("_config") ||
-      changedProps.has("_data") ||
-      changedProps.has("_isMobileSize")
-    ) {
-      return true;
-    }
-
-    // Check if any of the tracked entity states have changed
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || !this._entities.size) {
-        return true;
-      }
-
-      // Only update if one of our tracked entities changed
-      for (const entityId of this._entities) {
-        if (oldHass.states[entityId] !== this.hass.states[entityId]) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
   protected render() {
     if (!this._config) {
       return nothing;
     }
 
     if (!this._data) {
-      return html`${this.hass.localize(
-        "ui.panel.lovelace.cards.energy.loading"
-      )}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -165,7 +195,7 @@ class HuiPowerSankeyCard
     // Create home node
     const homeNode: Node = {
       id: "home",
-      label: this.hass.config.location_name,
+      label: this._hassConfig.location_name,
       value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -176,7 +206,7 @@ class HuiPowerSankeyCard
     if (powerData.from_battery > 0) {
       nodes.push({
         id: "battery",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: powerData.from_battery,
@@ -194,7 +224,7 @@ class HuiPowerSankeyCard
     if (powerData.to_battery > 0) {
       nodes.push({
         id: "battery_in",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: powerData.to_battery,
@@ -221,7 +251,7 @@ class HuiPowerSankeyCard
     if (powerData.from_grid > 0) {
       nodes.push({
         id: "grid",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: powerData.from_grid,
@@ -240,7 +270,7 @@ class HuiPowerSankeyCard
     if (powerData.solar > 0) {
       nodes.push({
         id: "solar",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: powerData.solar,
@@ -257,7 +287,7 @@ class HuiPowerSankeyCard
     if (powerData.to_grid > 0) {
       nodes.push({
         id: "grid_return",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: powerData.to_grid,
@@ -281,7 +311,8 @@ class HuiPowerSankeyCard
     }
 
     const deviceLabels = computeEnergyDeviceLabels(
-      this.hass,
+      this._states,
+      this._formatEntityName,
       prefs.device_consumption,
       this._data.statsMetadata,
       "stat_rate"
@@ -295,7 +326,7 @@ class HuiPowerSankeyCard
     } = buildSankeyDeviceNodes({
       devices: prefs.device_consumption,
       computedStyle,
-      localize: this.hass.localize,
+      localize: this._i18n.localize,
       rootNodeId: "home",
       minThreshold: minPowerThreshold,
       maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
@@ -311,9 +342,10 @@ class HuiPowerSankeyCard
 
     const { group_by_area, group_by_floor } = this._config;
     const layout = buildSankeyLayout({
-      hass: this.hass,
+      states: this._states,
+      registries: this._registries,
       computedStyle,
-      localize: this.hass.localize,
+      localize: this._i18n.localize,
       deviceNodes,
       parentLinks,
       rootNodeId: "home",
@@ -344,13 +376,13 @@ class HuiPowerSankeyCard
           ${
             hasData
               ? html`<ha-sankey-chart
-                  .hass=${this.hass}
                   .data=${{ nodes, links }}
                   .vertical=${vertical}
+                  .showValues=${this._config.show_values === true}
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`
-              : html`${this.hass.localize(
+              : html`${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.no_data"
                 )}`
           }
@@ -360,7 +392,7 @@ class HuiPowerSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    formatPowerShort(this.hass, value);
+    formatPowerShort(this._i18n.locale, value);
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);
@@ -371,9 +403,6 @@ class HuiPowerSankeyCard
    * Similar to computeConsumptionData but for instantaneous power.
    */
   private _computePowerData(prefs: EnergyPreferences): PowerData {
-    // Clear tracked entities and rebuild the set
-    this._entities.clear();
-
     let solar = 0;
     let from_grid = 0;
     let to_grid = 0;
@@ -501,11 +530,8 @@ class HuiPowerSankeyCard
    * @returns Power value in W, or 0 if entity not found or invalid
    */
   private _getCurrentPower(entityId: string): number {
-    // Track this entity for state change detection
-    this._entities.add(entityId);
-
     // getPowerFromState returns power in W
-    return getPowerFromState(this.hass.states[entityId]) ?? 0;
+    return getPowerFromState(this._states[entityId]) ?? 0;
   }
 
   /**
@@ -514,7 +540,7 @@ class HuiPowerSankeyCard
    * @returns Friendly name if available, otherwise the entity ID
    */
   private _getEntityLabel(entityId: string): string {
-    const stateObj = this.hass.states[entityId];
+    const stateObj = this._states[entityId];
     if (!stateObj) {
       return entityId;
     }

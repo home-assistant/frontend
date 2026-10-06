@@ -1,26 +1,39 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import {
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
   computeEnergyDeviceLabels,
   energySourcesByType,
-  getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
@@ -42,15 +55,13 @@ const DEFAULT_CONFIG: Partial<EnergySankeyCardConfig> = {
 
 @customElement("hui-energy-sankey-card")
 class HuiEnergySankeyCard
-  extends SubscribeMixin(MobileAwareMixin(LitElement))
+  extends MobileAwareMixin(LitElement)
   implements LovelaceCard
 {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-sankey-card-editor");
     return document.createElement("hui-energy-sankey-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
@@ -70,23 +81,50 @@ class HuiEnergySankeyCard
 
   @state() private _data?: EnergyData;
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: HomeAssistantRegistries;
+
+  // Not @state: labels and area grouping refresh with _data, not per state.
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
+        this._data = data;
+      },
+    });
+  }
 
   public setConfig(config: EnergySankeyCardConfig): void {
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = { ...DEFAULT_CONFIG, ...config };
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._data = data;
-      }),
-    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -102,23 +140,13 @@ class HuiEnergySankeyCard
     };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return (
-      changedProps.has("_config") ||
-      changedProps.has("_data") ||
-      changedProps.has("_isMobileSize")
-    );
-  }
-
   protected render() {
     if (!this._config) {
       return nothing;
     }
 
     if (!this._data) {
-      return html`${this.hass.localize(
-        "ui.panel.lovelace.cards.energy.loading"
-      )}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -136,7 +164,7 @@ class HuiEnergySankeyCard
 
     const homeNode: Node = {
       id: "home",
-      label: this.hass.config.location_name,
+      label: this._hassConfig.location_name,
       value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -152,7 +180,7 @@ class HuiEnergySankeyCard
       // Add battery source
       nodes.push({
         id: "battery",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryOut,
@@ -170,7 +198,7 @@ class HuiEnergySankeyCard
       // Add battery sink
       nodes.push({
         id: "battery_in",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryIn,
@@ -200,7 +228,7 @@ class HuiEnergySankeyCard
 
       nodes.push({
         id: "grid",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalFromGrid,
@@ -223,7 +251,7 @@ class HuiEnergySankeyCard
 
       nodes.push({
         id: "solar",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: totalSolarProduction,
@@ -244,7 +272,7 @@ class HuiEnergySankeyCard
 
       nodes.push({
         id: "grid_return",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalToGrid,
@@ -275,7 +303,8 @@ class HuiEnergySankeyCard
         : 0;
 
     const deviceLabels = computeEnergyDeviceLabels(
-      this.hass,
+      this._states,
+      this._formatEntityName,
       prefs.device_consumption,
       this._data.statsMetadata
     );
@@ -283,7 +312,8 @@ class HuiEnergySankeyCard
     const deviceLabel = (statConsumption: string) =>
       deviceLabels[statConsumption] ||
       getStatisticLabel(
-        this.hass,
+        this._states,
+        this._formatEntityName,
         statConsumption,
         this._data!.statsMetadata[statConsumption]
       );
@@ -296,7 +326,7 @@ class HuiEnergySankeyCard
     } = buildSankeyDeviceNodes({
       devices: prefs.device_consumption,
       computedStyle,
-      localize: this.hass.localize,
+      localize: this._i18n.localize,
       rootNodeId: "home",
       minThreshold: minEnergyThreshold,
       maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
@@ -312,9 +342,10 @@ class HuiEnergySankeyCard
 
     const { group_by_area, group_by_floor } = this._config;
     const layout = buildSankeyLayout({
-      hass: this.hass,
+      states: this._states,
+      registries: this._registries,
       computedStyle,
-      localize: this.hass.localize,
+      localize: this._i18n.localize,
       deviceNodes,
       parentLinks,
       rootNodeId: "home",
@@ -345,13 +376,13 @@ class HuiEnergySankeyCard
           ${
             hasData
               ? html`<ha-sankey-chart
-                  .hass=${this.hass}
                   .data=${{ nodes, links }}
                   .vertical=${vertical}
+                  .showValues=${this._config.show_values === true}
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`
-              : html`${this.hass.localize(
+              : html`${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.no_data_period"
                 )}`
           }
@@ -361,7 +392,7 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
+    `${formatNumber(value, this._i18n.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);
