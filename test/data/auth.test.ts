@@ -35,7 +35,8 @@ describe("createLoginFlow", () => {
       "https://myclient.com/callback",
       ["homeassistant", null],
       "E9Melhoa2OwvFrGMTJguCHaoeK1t8URWbuGJSstw-cM",
-      "S256"
+      "S256",
+      "code"
     );
 
     expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
@@ -47,6 +48,29 @@ describe("createLoginFlow", () => {
         redirect_uri: "https://myclient.com/callback",
         code_challenge: "E9Melhoa2OwvFrGMTJguCHaoeK1t8URWbuGJSstw-cM",
         code_challenge_method: "S256",
+        response_type: "code",
+      }),
+    });
+  });
+
+  it("posts empty PKCE parameters", async () => {
+    await createLoginFlow(
+      "https://myclient.com",
+      "https://myclient.com/callback",
+      ["homeassistant", null],
+      "",
+      ""
+    );
+
+    expect(fetch).toHaveBeenCalledWith("/auth/login_flow", {
+      method: "POST",
+      credentials: "same-origin",
+      body: JSON.stringify({
+        client_id: "https://myclient.com",
+        handler: ["homeassistant", null],
+        redirect_uri: "https://myclient.com/callback",
+        code_challenge: "",
+        code_challenge_method: "",
       }),
     });
   });
