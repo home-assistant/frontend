@@ -612,7 +612,11 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   ) => {
     switch (schema.name) {
       case "map_style":
+      case "scale_ruler":
+      case "auto_fit":
+      case "fit_zones":
       case "show_zone_radius":
+      case "cluster":
       case "show_all":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}_helper`
