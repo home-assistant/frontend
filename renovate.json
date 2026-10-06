@@ -153,6 +153,12 @@
         "home-assistant/**"
       ],
       "minimumReleaseAge": null
+    },
+    {
+      "description": "Follow webawesome fork releases (X.Y.Z-ha.N) across upstream versions, and skip the plain upstream syncs",
+      "matchPackageNames": ["@home-assistant/webawesome"],
+      "allowedVersions": "/-ha\\.\\d+$/",
+      "ignoreUnstable": false
     }
   ]
 }
