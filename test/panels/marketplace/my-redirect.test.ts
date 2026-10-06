@@ -3,7 +3,7 @@ import { navigate } from "../../../src/common/navigate";
 import type * as NavigateModule from "../../../src/common/navigate";
 import "../../../src/panels/marketplace/ha-marketplace-my-redirect";
 import { getMyRedirects } from "../../../src/panels/my/ha-panel-my";
-import type { HomeAssistant } from "../../../src/types";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 
 vi.mock("../../../src/common/navigate", async (importOriginal) => ({
   ...(await importOriginal<typeof NavigateModule>()),
@@ -31,13 +31,15 @@ const openRedirect = async (redirect: string, search: string) => {
     "",
     `/marketplace/_my_redirect/${redirect}${search}`
   );
+  const host = document.createElement("div");
+  provideHass(host, { localize: (key: string) => key });
+  document.body.appendChild(host);
   const element = document.createElement("ha-marketplace-my-redirect");
-  element.hass = { localize: (key: string) => key } as unknown as HomeAssistant;
   element.route = {
     prefix: "/marketplace/_my_redirect",
     path: `/${redirect}`,
   };
-  document.body.appendChild(element);
+  host.appendChild(element);
   await element.updateComplete;
   return element;
 };

@@ -20,6 +20,7 @@ import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import type { MarketplaceRepositoryMenuEntry } from "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu";
 import { repositoryMenuItems } from "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu";
 import type { HaMarketplaceRepositoryDashboard } from "../../../src/panels/marketplace/dashboards/ha-marketplace-repository-dashboard";
+import type { MarketplaceApi } from "../../../src/panels/marketplace/tools/connect-github";
 
 vi.mock(
   "../../../src/panels/marketplace/dialogs/show-dialog-marketplace-install",
@@ -49,6 +50,8 @@ vi.mock("../../../src/data/marketplace/repository", async (importOriginal) => ({
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
+const API: MarketplaceApi = { callApi: vi.fn(), callWS: vi.fn() };
+
 const PAGE = {
   nodeName: "HA-MARKETPLACE-REPOSITORY-DASHBOARD",
 } as unknown as HaMarketplaceRepositoryDashboard;
@@ -70,6 +73,7 @@ describe("repositoryMenuItems", () => {
   it("links the issue tracker, and not the resource file of a card", () => {
     const entries = repositoryMenuItems(
       PAGE,
+      API,
       repository({ category: "plugin", installed_version: "1.0.0" }),
       localize
     ).filter((entry) => "value" in entry);
@@ -89,7 +93,7 @@ describe("repositoryMenuItems", () => {
     ["a reinstall", { installed_version: "1.0.0" }],
   ])("offers %s when Home Assistant is new enough", (_offer, extra) => {
     expect(
-      menuValues(repositoryMenuItems(PAGE, repository(extra), localize))
+      menuValues(repositoryMenuItems(PAGE, API, repository(extra), localize))
     ).toContain("install");
   });
 
@@ -104,6 +108,7 @@ describe("repositoryMenuItems", () => {
         menuValues(
           repositoryMenuItems(
             PAGE,
+            API,
             repository({ ...extra, can_install: false }),
             localize
           )
@@ -115,6 +120,7 @@ describe("repositoryMenuItems", () => {
   it("reinstalls the installed version", () => {
     const entry = repositoryMenuItems(
       PAGE,
+      API,
       repository({ installed_version: "1.0.0" }),
       localize
     ).find((item) => "value" in item && item.value === "install") as {
@@ -130,7 +136,7 @@ describe("repositoryMenuItems", () => {
   });
 
   it("opens the versions to choose from for another version", () => {
-    const entry = repositoryMenuItems(PAGE, repository({}), localize).find(
+    const entry = repositoryMenuItems(PAGE, API, repository({}), localize).find(
       (item) => "value" in item && item.value === "install_other_version"
     ) as { action: () => void };
 
@@ -143,7 +149,7 @@ describe("repositoryMenuItems", () => {
   });
 
   const updateInformation = async (page: HaMarketplaceRepositoryDashboard) => {
-    const entry = repositoryMenuItems(page, repository({}), localize).find(
+    const entry = repositoryMenuItems(page, API, repository({}), localize).find(
       (item) => "value" in item && item.value === "update_information"
     ) as unknown as { action: () => Promise<void> };
     await entry.action();
@@ -157,7 +163,7 @@ describe("repositoryMenuItems", () => {
 
     await updateInformation(page);
 
-    expect(refreshMarketplaceRepository).toHaveBeenCalledWith(page.hass, "1");
+    expect(refreshMarketplaceRepository).toHaveBeenCalledWith(API, "1");
     expect(page.reloadRepository).toHaveBeenCalledTimes(1);
   });
 
@@ -179,6 +185,7 @@ describe("repositoryMenuItems", () => {
   const confirmUninstall = async () => {
     const entry = repositoryMenuItems(
       PAGE,
+      API,
       repository({ installed_version: "1.0.0", category: "theme" }),
       localize
     ).find(
@@ -196,7 +203,7 @@ describe("repositoryMenuItems", () => {
     await params.action!();
 
     expect(params.destructive).toBe(true);
-    expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(PAGE.hass, "1");
+    expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(API, "1");
     expect(showAlertDialog).not.toHaveBeenCalled();
   });
 
@@ -218,6 +225,7 @@ describe("repositoryMenuItems", () => {
     const uninstallIntegration = async () => {
       const entry = repositoryMenuItems(
         PAGE,
+        API,
         repository({ installed_version: "1.0.0", domain: "example" }),
         localize
       ).find(
@@ -231,7 +239,7 @@ describe("repositoryMenuItems", () => {
 
       await uninstallIntegration();
 
-      expect(getConfigEntries).toHaveBeenCalledWith(PAGE.hass, {
+      expect(getConfigEntries).toHaveBeenCalledWith(API, {
         domain: "example",
       });
       expect(showMarketplaceInUseDialog).toHaveBeenCalledWith(
@@ -277,10 +285,7 @@ describe("repositoryMenuItems", () => {
       expect(
         vi.mocked(deleteConfigEntry).mock.calls.map(([, entryId]) => entryId)
       ).toEqual(["a", "b"]);
-      expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(
-        PAGE.hass,
-        "1"
-      );
+      expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(API, "1");
       vi.mocked(deleteConfigEntry).mockReset();
     });
 
