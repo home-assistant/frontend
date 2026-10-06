@@ -101,7 +101,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._moment = formatISO9075(now);
     this._showingOutliers = false;
     this._adjustedChanges.clear();
-    this._fetchStats();
+    this._refreshStats();
 
     const entry = this.hass.entities[params.statistic.statistic_id];
     this._precision = Math.max(entry?.display_precision ?? 0, 2);
@@ -288,19 +288,30 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
   private _dateTimeSelectorChanged(ev) {
     this._moment = ev.detail.value;
     this._showingOutliers = false;
-    this._fetchStats();
+    this._refreshStats();
   }
 
   private _showOutliers() {
     this._showingOutliers = true;
-    this._fetchOutliers();
+    this._refreshStats();
   }
 
-  private _refreshStats() {
-    if (this._showingOutliers) {
-      this._fetchOutliers();
-    } else {
-      this._fetchStats();
+  private async _refreshStats(): Promise<void> {
+    try {
+      if (this._showingOutliers) {
+        await this._fetchOutliers();
+      } else {
+        await this._fetchStats();
+      }
+    } catch (err: any) {
+      this._stats5min = [];
+      this._statsHour = [];
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.error_loading_statistics",
+          { message: err.message || err }
+        ),
+      });
     }
   }
 
@@ -453,6 +464,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         ? this._applyAdjustedChanges(statsHourData[statId])
         : [];
     if (statsHour.length === 0) {
+      this._statsHour = [];
+      this._stats5min = [];
       return;
     }
 
@@ -533,18 +546,21 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
   }
 
   private async _fixIssue(): Promise<void> {
+    const params = this._params!;
+    const chosenStat = this._chosenStat!;
+    const amount = this._amount!;
     const unit = getDisplayUnit(
       this.hass.states,
-      this._params!.statistic.statistic_id,
-      this._params!.statistic
+      params.statistic.statistic_id,
+      params.statistic
     );
     this._busy = true;
     try {
       await adjustStatisticsSum(
         this.hass,
-        this._params!.statistic.statistic_id,
-        this._chosenStat!.start,
-        this._amount! - this._origAmount!,
+        params.statistic.statistic_id,
+        chosenStat.start,
+        amount - this._origAmount!,
         unit || null
       );
     } catch (err: any) {
@@ -562,10 +578,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
-    this._adjustedChanges.set(
-      `${this._chosenStat!.start}-${this._chosenStat!.end}`,
-      this._amount!
-    );
+    // The dialog was closed or reopened while adjusting
+    if (this._params !== params) {
+      return;
+    }
+    this._adjustedChanges.set(`${chosenStat.start}-${chosenStat.end}`, amount);
     this._busy = false;
     this._clearChosenStatistic();
     this._refreshStats();
