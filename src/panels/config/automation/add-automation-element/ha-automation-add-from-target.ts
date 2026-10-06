@@ -3,7 +3,7 @@ import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-ite
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import type { ContextType } from "@lit/context";
-import { mdiContentPaste, mdiTextureBox } from "@mdi/js";
+import { mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,10 +17,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
-import {
-  fireEvent,
-  type HASSDomEvent,
-} from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
@@ -70,14 +67,6 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
-import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
-import "../target/ha-automation-row-targets";
-
-const MAX_SUGGESTED_TARGETS = 10;
-
-const MAX_NEW_DEVICES = 3;
-
-const NEW_DEVICE_MAX_AGE = 7 * 24 * 60 * 60;
 
 interface Level1Entries {
   open: boolean;
@@ -118,14 +107,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public timeLocationGroups?: AddAutomationElementListItem[];
 
   @property({ attribute: false }) public selectedGroup?: string;
-
-  @property({ attribute: false }) public clipboardItem?: string;
-
-  @property({ attribute: false })
-  public suggestedTargets?: SingleHassServiceTarget[];
-
-  @property({ attribute: "automation-element-type" })
-  public automationElementType!: AddAutomationElementDialogParams["type"];
 
   // #endregion properties
 
@@ -213,30 +194,27 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return html`
-      <div class="tree">
-        ${
-          this.narrow && this.value
-            ? this._renderNarrow(this._entries, this.value)
-            : html`
-                ${this._renderFloors(this.narrow, this._entries, this.value)}
-                ${this._renderTimeLocation(
-                  this.narrow,
-                  this.timeLocationLabel,
-                  this.timeLocationGroups,
-                  this.selectedGroup
-                )}
-                ${this._renderUnassigned(this.narrow, this._entries, this.value)}
-                ${this._renderLabels(
-                  this.narrow,
-                  this.states,
-                  this._registries,
-                  this._labelRegistry,
-                  this.value
-                )}
-              `
-        }
-      </div>
-      ${this.narrow && this.value ? nothing : this._renderFooter()}
+      ${
+        this.narrow && this.value
+          ? this._renderNarrow(this._entries, this.value)
+          : html`
+              ${this._renderFloors(this.narrow, this._entries, this.value)}
+              ${this._renderTimeLocation(
+                this.narrow,
+                this.timeLocationLabel,
+                this.timeLocationGroups,
+                this.selectedGroup
+              )}
+              ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+              ${this._renderLabels(
+                this.narrow,
+                this.states,
+                this._registries,
+                this._labelRegistry,
+                this.value
+              )}
+            `
+      }
       ${
         this.narrow && this._showShowMoreButton && !this._fullHeight
           ? html`
@@ -395,88 +373,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }`;
     }
   );
-
-  private _getSuggestions = memoizeOne(
-    (
-      suggestedTargets: SingleHassServiceTarget[],
-      states: ContextType<typeof statesContext>,
-      registries: ContextType<typeof registriesContext>,
-      labelRegistry: LabelRegistryEntry[]
-    ): SingleHassServiceTarget[] => {
-      const since = Date.now() / 1000 - NEW_DEVICE_MAX_AGE;
-      const newDevices = Object.values(registries.devices)
-        .filter((device) => !device.disabled_by && device.created_at > since)
-        .sort((a, b) => b.created_at - a.created_at)
-        .slice(0, MAX_NEW_DEVICES)
-        .map((device) => device.id);
-
-      const suggested = suggestedTargets
-        .filter((target) => {
-          const [key, id] = Object.entries(target)[0];
-          return key === "entity_id"
-            ? !!states[id]
-            : key === "device_id"
-              ? !!registries.devices[id] &&
-                !registries.devices[id].disabled_by &&
-                !newDevices.includes(id)
-              : key === "area_id"
-                ? !!registries.areas[id]
-                : key === "floor_id"
-                  ? !!registries.floors[id]
-                  : labelRegistry.some((label) => label.label_id === id);
-        })
-        .slice(0, MAX_SUGGESTED_TARGETS - newDevices.length);
-
-      return [
-        ...suggested,
-        ...newDevices.map((id): SingleHassServiceTarget => ({ device_id: id })),
-      ];
-    }
-  );
-
-  private _renderFooter() {
-    const targets = this._getSuggestions(
-      this.suggestedTargets ?? [],
-      this.states,
-      this._registries,
-      this._labelRegistry
-    );
-
-    if (!this.clipboardItem && !targets.length) {
-      return nothing;
-    }
-
-    return html`<div
-      class="footer"
-      role="group"
-      aria-label=${this._i18n.localize(
-        "ui.panel.config.automation.editor.suggestions"
-      )}
-    >
-      ${
-        this.clipboardItem
-          ? html`<button class="paste" @click=${this._paste}>
-              <ha-svg-icon .path=${mdiContentPaste}></ha-svg-icon>
-              <span
-                >${this._i18n.localize(
-                  `ui.panel.config.automation.editor.${this.automationElementType}s.paste`
-                )}</span
-              >
-            </button>`
-          : nothing
-      }
-      ${targets.map(
-        (target) =>
-          html`<span class="chip"
-            ><ha-automation-row-targets
-              .target=${target}
-              selectable
-              @automation-target-picked=${this._selectSuggestion}
-            ></ha-automation-row-targets
-          ></span>`
-      )}
-    </div>`;
-  }
 
   private _renderTimeLocation = memoizeOne(
     (
@@ -1431,6 +1327,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #region interactions
 
+  /** Select a target from outside the tree and reveal it. */
+  public selectTarget(itemId: string) {
+    this._valueChanged(itemId, !this.narrow);
+  }
+
   private _handleSelectionChange(ev: WaSelectionChangeEvent) {
     const treeItem = ev.detail.selection[0] as unknown as
       { target?: string } | undefined;
@@ -1446,19 +1347,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (target) {
       this._valueChanged(target);
     }
-  }
-
-  private _selectSuggestion(
-    ev: HASSDomEvent<HASSDomEvents["automation-target-picked"]>
-  ) {
-    this._valueChanged(
-      `${ev.detail.type}${TARGET_SEPARATOR}${ev.detail.id}`,
-      !this.narrow
-    );
-  }
-
-  private _paste() {
-    fireEvent(this, "paste-element");
   }
 
   private _selectTimeLocationGroup(ev: CustomEvent) {
@@ -1661,12 +1549,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     :host {
       --wa-color-neutral-fill-quiet: var(--ha-color-fill-primary-normal-active);
       position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .tree {
-      flex: 1 0 auto;
     }
 
     ha-section-title {
@@ -1763,51 +1645,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       color: var(--ha-color-on-primary-normal);
     }
 
-    .footer {
-      position: sticky;
-      bottom: 0;
-      z-index: 2;
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-2) var(--ha-space-3);
-      background-color: var(--card-background-color);
-      border-top: var(--ha-border-width-sm) solid
-        var(--ha-color-border-neutral-quiet);
-    }
-
-    .chip {
-      display: inline-flex;
-      flex-shrink: 0;
-      max-width: 100%;
-    }
-
-    .paste {
-      display: inline-flex;
-      flex-shrink: 0;
-      align-items: center;
-      gap: var(--ha-space-1);
-      height: 32px;
-      box-sizing: border-box;
-      padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
-      border-radius: var(--ha-border-radius-md);
-      border: var(--ha-border-width-sm) solid
-        var(--ha-color-border-primary-quiet);
-      background: var(--ha-color-fill-primary-quiet-resting);
-      color: var(--ha-color-on-primary-normal);
-      font: inherit;
-      cursor: pointer;
-    }
-
-    .paste:hover {
-      background: var(--ha-color-fill-primary-quiet-hover);
-    }
-
-    .paste ha-svg-icon {
-      padding: var(--ha-space-1) 0;
-      color: inherit;
-    }
-
     .targets-show-more {
       display: flex;
       justify-content: center;
@@ -1823,10 +1660,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       :host {
         max-height: var(--max-height, 50%);
         overflow: hidden;
-      }
-      .footer {
-        flex-wrap: nowrap;
-        overflow-x: auto;
       }
     }
   `;

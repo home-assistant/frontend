@@ -9,7 +9,10 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { ensureArray } from "../../../common/array/ensure-array";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -121,6 +124,8 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-element-paste";
 import "./add-automation-element/ha-automation-add-from-target";
+import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
+import "./add-automation-element/ha-automation-add-suggestions";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
@@ -257,6 +262,9 @@ class DialogAddAutomationElement
 
   @query(".content")
   private _contentElement?: HTMLDivElement;
+
+  @query("ha-automation-add-from-target")
+  private _fromTargetElement?: HaAutomationAddFromTarget;
 
   // #endregion queries
 
@@ -720,10 +728,6 @@ class DialogAddAutomationElement
                       (this._narrow && !!this._selectedGroup),
                   })}
                   .manifests=${this._manifests}
-                  .clipboardItem=${this._params!.clipboardItem}
-                  .suggestedTargets=${this._params!.suggestedTargets}
-                  .automationElementType=${automationElementType}
-                  @paste-element=${this._paste}
                 ></ha-automation-add-from-target>`
               : html`
                   <ha-list-base
@@ -841,6 +845,20 @@ class DialogAddAutomationElement
             : nothing
         }
       </div>
+      ${
+        this._tab === "targets" &&
+        !this._filter &&
+        (!this._narrow || (!this._selectedGroup && !this._selectedTarget))
+          ? html`<ha-automation-add-suggestions
+              slot="footer"
+              .suggestedTargets=${this._params!.suggestedTargets}
+              .clipboardItem=${this._params!.clipboardItem}
+              .automationElementType=${automationElementType}
+              @paste-element=${this._paste}
+              @automation-target-picked=${this._suggestionPicked}
+            ></ha-automation-add-suggestions>`
+          : nothing
+      }
     `;
   }
 
@@ -1933,6 +1951,14 @@ class DialogAddAutomationElement
     this.closeDialog();
   }
 
+  private _suggestionPicked(
+    ev: HASSDomEvent<HASSDomEvents["automation-target-picked"]>
+  ) {
+    this._fromTargetElement?.selectTarget(
+      `${ev.detail.type}${TARGET_SEPARATOR}${ev.detail.id}`
+    );
+  }
+
   private _handleTargetSelected = (
     ev: ValueChangedEvent<SingleHassServiceTarget>
   ) => {
@@ -2415,6 +2441,11 @@ class DialogAddAutomationElement
           .groups {
             flex: 1 1 auto;
           }
+        }
+
+        ha-automation-add-suggestions {
+          display: block;
+          padding: 0;
         }
 
         ha-automation-add-from-target.hidden {
