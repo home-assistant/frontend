@@ -17,9 +17,9 @@ It takes no `hass`. Items come from a `getItems` callback and locale comes from
 The item count picks the renderer, and the two behave differently enough that
 list changes need checking against both.
 
-| Items                         | Renderer          | Rows in the DOM       |
-| ----------------------------- | ----------------- | --------------------- |
-| 12 or fewer rendered rows, no sections | `repeat()`        | all of them           |
+| Items                                       | Renderer          | Rows in the DOM       |
+| ------------------------------------------- | ----------------- | --------------------- |
+| 12 or fewer rendered rows, no sections      | `repeat()`        | all of them           |
 | more than 12 rendered rows, or any sections | `lit-virtualizer` | only the visible ones |
 
 The threshold is `MAX_PLAIN_LIST_ITEMS`, counted against the initial rendered
@@ -38,12 +38,12 @@ The list has two row backgrounds.
 
 ## Keyboard
 
-| Key                                   | Behavior                       |
-| ------------------------------------- | ------------------------------ |
-| <kbd>↑</kbd> <kbd>↓</kbd>             | Move the cursor                |
-| <kbd>Home</kbd> <kbd>End</kbd>        | Jump to the first or last item |
-| <kbd>PageUp</kbd> <kbd>PageDown</kbd> | Move the cursor a page         |
-| <kbd>Enter</kbd>                      | Pick the row under the cursor  |
+| Key                                   | Behavior                                              |
+| ------------------------------------- | ----------------------------------------------------- |
+| <kbd>↑</kbd> <kbd>↓</kbd>             | Move the cursor                                       |
+| <kbd>Home</kbd> <kbd>End</kbd>        | Jump to the first or last item                        |
+| <kbd>PageUp</kbd> <kbd>PageDown</kbd> | Move the cursor a page                                |
+| <kbd>Enter</kbd>                      | Pick the row under the cursor                         |
 | <kbd>Ctrl/⌘</kbd> + <kbd>Enter</kbd>  | Pick it and report `newTab: true` in `index-selected` |
 
 With no cursor yet, <kbd>↓</kbd> and <kbd>Enter</kbd> start from the `value`
