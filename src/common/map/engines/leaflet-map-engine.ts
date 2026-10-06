@@ -13,16 +13,17 @@ import { DecoratedMarker } from "../decorated_marker";
 import { isTouch } from "../../../util/is_touch";
 import type {
   MapClusterOptions,
+  MapCircleHandle,
   MapCircleOptions,
   MapControlPosition,
   MapEngine,
   MapEngineOptions,
   MapFitOptions,
-  MapItemHandle,
   MapLatLng,
   MapMarkerHandle,
   MapMarkerOptions,
   MapPath,
+  MapPathHandle,
 } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
 import { setMarkerAccessibility } from "../marker-accessibility";
@@ -264,16 +265,35 @@ export class LeafletMapEngine implements MapEngine {
   public addCircle(
     center: MapLatLng,
     options: MapCircleOptions
-  ): MapItemHandle {
+  ): MapCircleHandle {
     const circle = this.Leaflet!.circle(center, {
       interactive: false,
       color: options.color,
       radius: options.radius,
     }).addTo(this.leafletMap!);
-    return { remove: () => circle.remove() };
+    return {
+      update: (newCenter, newOptions) => {
+        circle
+          .setLatLng(newCenter)
+          .setRadius(newOptions.radius)
+          .setStyle({ color: newOptions.color });
+      },
+      remove: () => circle.remove(),
+    };
   }
 
-  public addPath(path: MapPath): MapItemHandle {
+  public addPath(path: MapPath): MapPathHandle {
+    let items = this._drawPath(path);
+    return {
+      update: (next) => {
+        items.forEach((item) => item.remove());
+        items = this._drawPath(next);
+      },
+      remove: () => items.forEach((item) => item.remove()),
+    };
+  }
+
+  private _drawPath(path: MapPath): (Polyline | CircleMarker)[] {
     const items: (Polyline | CircleMarker)[] = [];
     for (const segment of path.segments) {
       items.push(
@@ -296,7 +316,7 @@ export class LeafletMapEngine implements MapEngine {
       );
     }
     items.forEach((item) => item.addTo(this.leafletMap!));
-    return { remove: () => items.forEach((item) => item.remove()) };
+    return items;
   }
 
   public setClustering(options: MapClusterOptions | null): void {

@@ -60,9 +60,7 @@ export class HaAuthorize extends provideLiteI18nMixin(
     if (query.redirect_uri) {
       this.redirectUri = query.redirect_uri;
     }
-    if (query.state) {
-      this.oauth2State = query.state;
-    }
+    this.oauth2State = query.state;
     if (query.code_challenge) {
       this.codeChallenge = query.code_challenge;
     }

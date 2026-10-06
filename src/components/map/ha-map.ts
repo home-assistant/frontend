@@ -21,6 +21,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
+  MapCircleHandle,
   MapClusterIcon,
   MapControlPosition,
   MapEngine,
@@ -29,6 +30,7 @@ import type {
   MapLatLng,
   MapMarkerHandle,
   MapPath,
+  MapPathHandle,
   MapPathMarker,
   MapPathSegment,
   MapEditableCircleHandle,
@@ -419,7 +421,9 @@ export class HaMap extends ReactiveElement {
 
   private _zoneHandles: MapItemHandle[] = [];
 
-  private _pathHandles: MapItemHandle[] = [];
+  private _zoneCircleHandles: MapCircleHandle[] = [];
+
+  private _pathHandles: MapPathHandle[] = [];
 
   private _focusPoints: MapLatLng[] = [];
 
@@ -483,6 +487,7 @@ export class HaMap extends ReactiveElement {
     this._entityMarkers.clear();
     this._clusterAvatars.clear();
     this._zoneHandles = [];
+    this._zoneCircleHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
     this._focusPoints = [];
@@ -827,6 +832,7 @@ export class HaMap extends ReactiveElement {
     this._engine = undefined;
     this._entityHandles = [];
     this._zoneHandles = [];
+    this._zoneCircleHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
     this._focusPoints = [];
@@ -1153,11 +1159,9 @@ export class HaMap extends ReactiveElement {
     if (!this._i18n || !this._config || !this._engine) {
       return;
     }
-    if (this._pathHandles.length) {
-      this._pathHandles.forEach((handle) => handle.remove());
-      this._pathHandles = [];
-    }
-    if (!this.paths) {
+    const paths = this.paths ?? [];
+    this._pathHandles.splice(paths.length).forEach((handle) => handle.remove());
+    if (!paths.length) {
       return;
     }
 
@@ -1165,7 +1169,7 @@ export class HaMap extends ReactiveElement {
       "--dark-primary-color"
     );
 
-    this.paths.forEach((path) => {
+    paths.forEach((path, index) => {
       let opacityStep: number;
       let baseOpacity: number;
       if (path.gradualOpacity) {
@@ -1257,7 +1261,12 @@ export class HaMap extends ReactiveElement {
         segments,
         markers,
       };
-      this._pathHandles.push(this._engine!.addPath(enginePath));
+      const handle = this._pathHandles[index];
+      if (handle) {
+        handle.update(enginePath);
+      } else {
+        this._pathHandles.push(this._engine!.addPath(enginePath));
+      }
     });
   }
 
@@ -1276,8 +1285,10 @@ export class HaMap extends ReactiveElement {
     this._zoneHandles.forEach((handle) => handle.remove());
     this._zoneHandles = [];
     this._focusZonePoints = [];
+    let zoneCircleCount = 0;
 
     if (!this.entities) {
+      this._zoneCircleHandles.splice(0).forEach((handle) => handle.remove());
       this._entityMarkers.clear();
       this._clusterAvatars.clear();
       engine.setClustering(null);
@@ -1359,9 +1370,16 @@ export class HaMap extends ReactiveElement {
               );
 
         if (!hideRadius && radius) {
-          this._zoneHandles.push(
-            engine.addCircle(position, { radius, color: markerColor })
-          );
+          const circleOptions = { radius, color: markerColor };
+          const circle = this._zoneCircleHandles[zoneCircleCount];
+          if (circle) {
+            circle.update(position, circleOptions);
+          } else {
+            this._zoneCircleHandles.push(
+              engine.addCircle(position, circleOptions)
+            );
+          }
+          zoneCircleCount++;
         }
 
         const circleEl = createZoneMarkerElement({
@@ -1489,6 +1507,10 @@ export class HaMap extends ReactiveElement {
         this._focusPoints.push(position);
       }
     }
+
+    this._zoneCircleHandles
+      .splice(zoneCircleCount)
+      .forEach((handle) => handle.remove());
 
     const shownIds = new Set(this.entities.map(getEntityId));
     for (const cache of [this._entityMarkers, this._clusterAvatars]) {
