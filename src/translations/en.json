@@ -5946,7 +5946,6 @@
                   "assign_unique_ids_description": "Triggers that share a used ID get a unique ID, and conditions using it are updated to match. IDs that nothing uses are removed. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
-                    "full": "If triggered by {id}",
                     "summary": "If triggered by"
                   }
                 },
@@ -12358,9 +12357,13 @@
           "type_helper": "What it adds to Home Assistant. Its documentation usually says which one it is.",
           "type_unknown": "Could not tell what this adds to Home Assistant. Pick what it is.",
           "type_several": "This holds more than one kind of thing. Pick the one to add.",
-          "added": "Added from links",
           "no_repository": "Missing repository",
-          "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first.",
+          "github_needed": "Adding a repository needs a GitHub connection. When you select Add, you are asked to connect GitHub first."
+        },
+        "custom_repositories": {
+          "title": "Custom repositories",
+          "github": "GitHub repository",
+          "no_repositories": "You have not added any repositories from a link yet.",
           "remove_title": "Remove {name} from the list?",
           "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
           "remove_installed": "Uninstall it first"

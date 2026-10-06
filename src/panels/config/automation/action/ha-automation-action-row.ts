@@ -363,7 +363,7 @@ export default class HaAutomationActionRow extends LitElement {
             this._entityReg,
             this.action,
             undefined,
-            { hideTriggerIds: true },
+            undefined,
             this._manifests
           )
         )}
@@ -1091,7 +1091,13 @@ export default class HaAutomationActionRow extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.cut_to_clipboard"
       ),
-      duration: 2000,
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
     });
   };
 

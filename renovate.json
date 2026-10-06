@@ -144,6 +144,15 @@
       "matchPackageNames": ["/^actions\\/cache(?:\\/|$)/"],
       "groupName": "actions/cache",
       "groupSlug": "actions-cache"
+    },
+    {
+      "description": "First-party packages and actions are reviewed and published by us, so skip the release delay. Keep in sync with minimumReleaseAgeExclude in pnpm-workspace.yaml",
+      "matchPackageNames": [
+        "home-assistant-js-websocket",
+        "@home-assistant/**",
+        "home-assistant/**"
+      ],
+      "minimumReleaseAge": null
     }
   ]
 }

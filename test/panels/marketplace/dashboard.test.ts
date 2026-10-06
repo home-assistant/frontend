@@ -388,6 +388,23 @@ it("adds a repository from a link", async () => {
   expect(fired).toHaveBeenCalledWith("dialog-marketplace-custom-repositories");
 });
 
+it("lists the custom repositories on their own page from the menu", async () => {
+  const dashboard = await openDashboard();
+
+  dashboard
+    .shadowRoot!.querySelector(".toolbar-actions ha-dropdown")!
+    .dispatchEvent(
+      new CustomEvent("wa-select", {
+        detail: { item: { value: "custom_repositories" } },
+      })
+    );
+
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe("/marketplace/repositories")
+  );
+  window.history.replaceState(null, "", "/");
+});
+
 it("offers dismissing new repositories the filter hides", async () => {
   const dashboard = await openDashboard([
     {
