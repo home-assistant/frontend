@@ -12,6 +12,7 @@ const FLOATING_TAIL_SIZE = 12;
 const FLOATING_TAIL_REACH = Math.round((FLOATING_TAIL_SIZE * Math.SQRT2) / 2);
 const FLOATING_GAP = 4;
 const FLOATING_DOT_SIZE = 10;
+export const FLOATING_LIFT = FLOATING_GAP + FLOATING_DOT_SIZE / 2;
 
 export const floatingMarkerFootprint = (
   markerSize: number,

@@ -77,7 +77,7 @@ import type {
   HomeAssistantUI,
   ThemeMode,
 } from "../../types";
-import { floatingMarkerFootprint } from "./ha-entity-marker";
+import { FLOATING_LIFT, floatingMarkerFootprint } from "./ha-entity-marker";
 
 declare global {
   // for fire event
@@ -1657,37 +1657,30 @@ export class HaMap extends ReactiveElement {
       width += CLUSTER_MORE_WIDTH + CLUSTER_BUBBLE_GAP;
     }
 
-    // A cluster of one zone's occupants attaches to that zone's marker
-    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
-    const atZone = !!zonePosition;
-
-    let height =
+    const height =
       rows * CLUSTER_AVATAR_SIZE +
       (rows - 1) * CLUSTER_BUBBLE_GAP +
-      2 * CLUSTER_BUBBLE_PADDING;
-    let root: HTMLElement = bubble;
-    if (atZone) {
-      root = document.createElement("div");
-      root.className = "cluster-marker";
-      const tail = document.createElement("div");
-      tail.className = "cluster-bubble-tail";
-      root.append(bubble, tail);
-      height += CLUSTER_TAIL_HEIGHT;
-    }
+      2 * CLUSTER_BUBBLE_PADDING +
+      CLUSTER_TAIL_HEIGHT;
+    const root = document.createElement("div");
+    root.className = "cluster-marker";
+    const tail = document.createElement("div");
+    tail.className = "cluster-bubble-tail";
+    root.append(bubble, tail);
 
+    // A cluster of one zone's occupants floats above that zone's circle
+    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     return {
       element: root,
       size: [width, height],
-      // Float above the zone circle, tail pointing at it
-      ...(atZone && zonePosition
-        ? {
-            location: zonePosition,
-            anchor: [
-              width / 2,
-              height + ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING,
-            ] as [number, number],
-          }
-        : {}),
+      location: zonePosition,
+      anchor: [
+        width / 2,
+        height +
+          (zonePosition
+            ? ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING
+            : FLOATING_LIFT),
+      ],
     };
   };
 
