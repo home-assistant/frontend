@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import {
   mdiAccountGroup,
   mdiAlertCircleOutline,
@@ -17,6 +18,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { formatNumber } from "../../../common/number/format_number";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
@@ -32,13 +35,24 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { getConfigEntries } from "../../../data/config_entries";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+  statesContext,
+  uiContext,
+} from "../../../data/context";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantUI,
+  Route,
+} from "../../../types";
 import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import {
@@ -108,11 +122,33 @@ const findRepository = (
 export class HaMarketplaceRepositoryDashboard extends LitElement {
   @property({ attribute: false }) public marketplace!: MarketplaceData;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string>({
+    transformer: ({ auth }) => auth.data.hassUrl,
+  })
+  private _hassUrl!: string;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @state() private _repository?: RepositoryInfo;
 
@@ -166,12 +202,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       if (
         !ensureGitHubConnected(
           this,
-          this.hass,
-          this.hass.localize,
+          this._api,
+          this._i18n.localize,
           this.marketplace.info
         )
       ) {
-        this._error = this.hass.localize(
+        this._error = this._i18n.localize(
           "ui.panel.marketplace.github.add_repository_needs_github",
           { repository: requestedRepository }
         );
@@ -179,21 +215,21 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       }
 
       const confirmed = await showConfirmationDialog(this, {
-        title: this.hass.localize(
+        title: this._i18n.localize(
           "ui.panel.marketplace.my.add_repository_title"
         ),
-        text: this.hass.localize(
+        text: this._i18n.localize(
           "ui.panel.marketplace.my.add_repository_description",
           { repository: requestedRepository }
         ),
-        confirmText: this.hass.localize("ui.common.add"),
-        dismissText: this.hass.localize("ui.common.cancel"),
+        confirmText: this._i18n.localize("ui.common.add"),
+        dismissText: this._i18n.localize("ui.common.cancel"),
       });
       if (!this._isCurrentRequest(request)) {
         return;
       }
       if (!confirmed) {
-        this._error = this.hass.localize(
+        this._error = this._i18n.localize(
           "ui.panel.marketplace.my.repository_not_found",
           { repository: requestedRepository }
         );
@@ -202,12 +238,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
       try {
         await addMarketplaceRepository(
-          this.hass,
+          this._api,
           requestedRepository,
           category
         );
         existing = findRepository(
-          await fetchMarketplaceRepositories(this.hass),
+          await fetchMarketplaceRepositories(this._api),
           requestedRepository
         );
       } catch (err: unknown) {
@@ -224,15 +260,15 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
         this._error = handleGitHubNotConnected(
           this,
-          this.hass,
-          this.hass.localize,
+          this._api,
+          this._i18n.localize,
           err
         )
-          ? this.hass.localize(
+          ? this._i18n.localize(
               "ui.panel.marketplace.github.add_repository_needs_github",
               { repository: requestedRepository }
             )
-          : marketplaceErrorMessage(err, this.hass.localize);
+          : marketplaceErrorMessage(err, this._i18n.localize);
         return;
       }
     }
@@ -242,7 +278,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
 
     if (!existing) {
-      this._error = this.hass.localize(
+      this._error = this._i18n.localize(
         "ui.panel.marketplace.my.repository_not_found",
         { repository: requestedRepository }
       );
@@ -303,7 +339,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     const repositoryId = repositoryIdFromRoute(this.route);
     if (!repositoryId) {
       this._request++;
-      this._error = this.hass.localize(
+      this._error = this._i18n.localize(
         "ui.panel.marketplace.dashboard.repository_not_found"
       );
       return;
@@ -321,7 +357,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
     try {
       const repository = await fetchMarketplaceRepository(
-        this.hass,
+        this._api,
         requestedRepositoryId
       );
       if (!this._isCurrentRequest(request)) {
@@ -340,10 +376,10 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       // what they asked for may open the dialog to connect GitHub
       const rateLimited = background
         ? isWebSocketError(err, ERROR_GITHUB_RATE_LIMITED)
-        : handleGitHubRateLimited(this, this.hass, this.hass.localize, err);
+        : handleGitHubRateLimited(this, this._api, this._i18n.localize, err);
       const message = rateLimited
-        ? this.hass.localize("ui.panel.marketplace.github.rate_limited")
-        : marketplaceErrorMessage(err, this.hass.localize);
+        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
+        : marketplaceErrorMessage(err, this._i18n.localize);
 
       if (this._repository?.id === requestedRepositoryId) {
         this._refreshError = message;
@@ -365,7 +401,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
     let count = 0;
     try {
-      count = (await getConfigEntries(this.hass, { domain: repository.domain }))
+      count = (await getConfigEntries(this._api, { domain: repository.domain }))
         .length;
     } catch (_err: unknown) {
       // Counted as none, the setup flow tells when it is set up already
@@ -384,7 +420,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._loadRepository();
   }
 
-  // Every change of an entity renders the page, the README stays the same
+  // Most renders of the page leave the README as it was
   private _readme = memoizeOne(markdownWithRepositoryContext);
 
   // The same function while the repository stays, a new one renders it again
@@ -399,19 +435,17 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   protected render(): TemplateResult {
     if (this._error) {
       return html`<hass-error-screen
-        .hass=${this.hass}
         .narrow=${this.narrow}
         .error=${this._error}
       >
         <ha-button appearance="filled" size="s" @click=${this._retry}>
-          ${this.hass.localize("ui.panel.marketplace.common.retry")}
+          ${this._i18n.localize("ui.panel.marketplace.common.retry")}
         </ha-button>
       </hass-error-screen>`;
     }
 
     if (!this._repository) {
       return html`<hass-loading-screen
-        .hass=${this.hass}
         .narrow=${this.narrow}
       ></hass-loading-screen>`;
     }
@@ -421,10 +455,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
     return html`
       <hass-subpage
-        .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${this.hass.localize("ui.panel.marketplace.title")}
+        .header=${this._i18n.localize("ui.panel.marketplace.title")}
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -432,12 +465,15 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         >
           <ha-icon-button
             slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
+            .label=${this._i18n.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          ${repositoryMenuItems(this, repository, this.hass.localize).map(
-            renderRepositoryMenuEntry
-          )}
+          ${repositoryMenuItems(
+            this,
+            this._api,
+            repository,
+            this._i18n.localize
+          ).map(renderRepositoryMenuEntry)}
         </ha-dropdown>
         <div class="content">
           ${
@@ -451,8 +487,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
             repository.can_install
               ? nothing
               : html`<ha-alert alert-type="warning">
-                  ${installBlockedReason(this.hass.localize, repository)}
-                  ${this.hass.localize(
+                  ${installBlockedReason(this._i18n.localize, repository)}
+                  ${this._i18n.localize(
                     "ui.panel.marketplace.repository.earlier_version_hint"
                   )}
                 </ha-alert>`
@@ -491,9 +527,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
             {
               domain: repository.domain,
               type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
+              darkOptimized: this._darkMode,
             },
-            this.hass.auth.data.hassUrl
+            this._hassUrl
           )}
         />`
       : html`<ha-svg-icon
@@ -510,7 +546,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           <div class="title">
             <h1>${repository.name}</h1>
             <div class="type">
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 `ui.panel.marketplace.common.type.${repository.category}`
               )}
             </div>
@@ -546,7 +582,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   }
 
   private _status(repository: RepositoryInfo): RepositoryStatus {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     const name = repository.name;
 
     if (!repository.installed) {
@@ -623,7 +659,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   // Once it is installed, what to do with it depends on what it is
   private _nextStep(repository: RepositoryInfo): NextStep {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     const name = repository.name;
 
     switch (repository.category) {
@@ -670,7 +706,7 @@ type: module</pre>`,
   }
 
   private _integrationNextStep(repository: RepositoryInfo): NextStep {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     const name = repository.name;
 
     if (!repository.config_flow) {
@@ -715,7 +751,7 @@ type: module</pre>`,
 
   // Who made it, not Home Assistant, and where its code and issues are
   private _renderCommunity(repository: RepositoryInfo) {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     const authors = this._getAuthors(repository);
     const github = `https://github.com/${repository.full_name}`;
 
@@ -767,7 +803,7 @@ type: module</pre>`,
 
   // Authors are GitHub accounts, listed the way the language lists names
   private _authorLinks(authors: string[]) {
-    return html`${new Intl.ListFormat(this.hass.locale.language, {
+    return html`${new Intl.ListFormat(this._i18n.locale.language, {
       style: "long",
       type: "conjunction",
     })
@@ -804,8 +840,8 @@ type: module</pre>`,
   private _signals(
     repository: RepositoryInfo
   ): { icon: string; text: string }[] {
-    const localize = this.hass.localize;
-    const locale = this.hass.locale;
+    const localize = this._i18n.localize;
+    const locale = this._i18n.locale;
     const signals: { icon: string; text: string }[] = [];
 
     if (repository.homeassistant) {
@@ -876,7 +912,7 @@ type: module</pre>`,
       return undefined;
     }
     try {
-      return relativeTime(new Date(value), this.hass.locale);
+      return relativeTime(new Date(value), this._i18n.locale);
     } catch {
       return undefined;
     }
@@ -886,7 +922,8 @@ type: module</pre>`,
   // install dialog is for when there is none
   private _update() {
     const entityId = this._repository!.update_entity_id;
-    if (entityId && this.hass.states[entityId]) {
+
+    if (entityId && this._states[entityId]) {
       fireEvent(this, "hass-more-info", { entityId });
       return;
     }
@@ -910,7 +947,7 @@ type: module</pre>`,
       return;
     }
 
-    repositoryMenuItems(this, this._repository, this.hass.localize)
+    repositoryMenuItems(this, this._api, this._repository, this._i18n.localize)
       .filter(
         (entry): entry is MarketplaceRepositoryMenuItem => "value" in entry
       )

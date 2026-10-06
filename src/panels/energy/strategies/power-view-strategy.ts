@@ -32,7 +32,13 @@ export class PowerViewStrategy extends ReactiveElement {
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
     const hidden = _config.hidden_cards;
 
-    const energyCollection = getEnergyDataCollection(hass, {
+    const energyCollection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
       key: collectionKey,
       // The "Now" view is real-time; roll its day period over at midnight.
       midnightRollover: true,

@@ -205,9 +205,7 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-automation-condition-summary
         slot="header"
         .label=${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg, {
-            hideTriggerIds: true,
-          })
+          describeCondition(this.condition, this.hass, this._entityReg)
         )}
         .condition=${this.condition}
         .description=${this.conditionDescriptions[this.condition.condition]}
@@ -797,7 +795,13 @@ export default class HaAutomationConditionRow extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.cut_to_clipboard"
       ),
-      duration: 2000,
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
     });
   };
 

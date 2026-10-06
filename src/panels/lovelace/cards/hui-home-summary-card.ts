@@ -65,7 +65,13 @@ export class HuiHomeSummaryCard
     if (this._config?.summary !== "energy") {
       return [];
     }
-    const collection = getEnergyDataCollection(this.hass!, {
+    const collection = getEnergyDataCollection(this.hass!.connection, {
+      callWS: this.hass!.callWS,
+      entities: this.hass!.entities,
+      states: this.hass!.states,
+      locale: this.hass!.locale,
+      config: this.hass!.config,
+      panelUrl: this.hass!.panelUrl,
       key: "energy_home_dashboard",
     });
     // Ensure we always show today's energy data
@@ -134,7 +140,14 @@ export class HuiHomeSummaryCard
       case "light": {
         // Number of lights on
         const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
-          generateEntityFilter(this.hass!, filter)
+          generateEntityFilter(
+            this.hass!.states,
+            this.hass!.entities,
+            this.hass!.devices,
+            this.hass!.areas,
+            this.hass!.floors,
+            filter
+          )
         );
 
         const lightEntities = findEntities(allEntities, lightsFilters);
@@ -197,7 +210,14 @@ export class HuiHomeSummaryCard
       case "security": {
         // Alarm and lock status
         const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
-          generateEntityFilter(this.hass!, filter)
+          generateEntityFilter(
+            this.hass!.states,
+            this.hass!.entities,
+            this.hass!.devices,
+            this.hass!.areas,
+            this.hass!.floors,
+            filter
+          )
         );
 
         const securityEntities = findEntities(allEntities, securityFilters);
@@ -256,7 +276,15 @@ export class HuiHomeSummaryCard
       case "media_players": {
         // Playing media
         const mediaPlayerFilters = HOME_SUMMARIES_FILTERS.media_players.map(
-          (filter) => generateEntityFilter(this.hass!, filter)
+          (filter) =>
+            generateEntityFilter(
+              this.hass!.states,
+              this.hass!.entities,
+              this.hass!.devices,
+              this.hass!.areas,
+              this.hass!.floors,
+              filter
+            )
         );
 
         const mediaPlayerEntities = findEntities(
@@ -277,7 +305,15 @@ export class HuiHomeSummaryCard
       }
       case "maintenance": {
         const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
-          (filter) => generateEntityFilter(this.hass!, filter)
+          (filter) =>
+            generateEntityFilter(
+              this.hass!.states,
+              this.hass!.entities,
+              this.hass!.devices,
+              this.hass!.areas,
+              this.hass!.floors,
+              filter
+            )
         );
 
         const maintenanceEntities = findEntities(
@@ -336,11 +372,22 @@ export class HuiHomeSummaryCard
         const { summedData } = getSummedData(this._energyData);
         const { consumption } = computeConsumptionData(summedData, undefined);
         const totalConsumption = consumption.total.used_total;
-        return formatConsumptionShort(this.hass, totalConsumption, "kWh");
+        return formatConsumptionShort(
+          this.hass.locale,
+          totalConsumption,
+          "kWh"
+        );
       }
       case "persons": {
         const personsFilters = HOME_SUMMARIES_FILTERS.persons.map((filter) =>
-          generateEntityFilter(this.hass!, filter)
+          generateEntityFilter(
+            this.hass!.states,
+            this.hass!.entities,
+            this.hass!.devices,
+            this.hass!.areas,
+            this.hass!.floors,
+            filter
+          )
         );
         const personEntities = findEntities(allEntities, personsFilters);
         const personsHome = personEntities.filter((entityId) => {
