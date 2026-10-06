@@ -400,7 +400,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                     </div>
                     <div class="card-content loading-container">
                       <ha-chart-base
-                        .hass=${this.hass}
                         .data=${this._getChartData(this._cpuEntries)}
                         .options=${this._chartOptions}
                       ></ha-chart-base>
@@ -442,7 +441,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                     </div>
                     <div class="card-content loading-container">
                       <ha-chart-base
-                        .hass=${this.hass}
                         .data=${this._getChartData(this._memoryEntries)}
                         .options=${this._chartOptions}
                       ></ha-chart-base>

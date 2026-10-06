@@ -147,7 +147,7 @@ export function generateStatisticsChartData(
     let inferredUnit: string | undefined | null;
     statisticsData.forEach(([statistic_id, _stats]) => {
       const meta = statisticsMetaData?.[statistic_id];
-      const statisticUnit = getDisplayUnit(hass, statistic_id, meta);
+      const statisticUnit = getDisplayUnit(hass.states, statistic_id, meta);
       if (inferredUnit === undefined) {
         inferredUnit = statisticUnit;
       } else if (inferredUnit !== null && inferredUnit !== statisticUnit) {
@@ -166,7 +166,12 @@ export function generateStatisticsChartData(
     const meta = statisticsMetaData?.[statistic_id];
     let name = names[statistic_id];
     if (name === undefined) {
-      name = getStatisticLabel(hass, statistic_id, meta);
+      name = getStatisticLabel(
+        hass.states,
+        hass.formatEntityName,
+        statistic_id,
+        meta
+      );
     }
 
     // array containing [value1, value2, etc]
@@ -432,7 +437,7 @@ export function generateStatisticsChartData(
     }
 
     // Show current state if required, and units match (or are unknown)
-    const statisticUnit = getDisplayUnit(hass, statistic_id, meta);
+    const statisticUnit = getDisplayUnit(hass.states, statistic_id, meta);
     if (
       displayCurrentState &&
       !chartStacked &&

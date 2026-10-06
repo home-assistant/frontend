@@ -435,7 +435,7 @@ class HaPanelHistory extends LitElement {
     let statistics;
     try {
       statistics = await fetchStatistics(
-        this.hass!,
+        this.hass!.callWS,
         statsStartDate,
         this._endDate,
         statisticIds,

@@ -201,7 +201,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       const data =
         this._stats5min.length >= 1 ? this._stats5min : this._statsHour;
       const unit = getDisplayUnit(
-        this.hass,
+        this.hass.states,
         this._params!.statistic.statistic_id,
         this._params!.statistic
       );
@@ -281,7 +281,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
   private _renderAdjustStat() {
     const unit = getDisplayUnit(
-      this.hass,
+      this.hass.states,
       this._params!.statistic.statistic_id,
       this._params!.statistic
     );
@@ -359,7 +359,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     hourStatEnd.setTime(hourStatEnd.getTime() + 3 * 3600 * 1000);
 
     const statsHourData = await fetchStatistics(
-      this.hass,
+      this.hass.callWS,
       hourStatStart,
       hourStatEnd,
       [statId],
@@ -381,7 +381,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     minStatEnd.setTime(minStatEnd.getTime() + 15 * 60 * 1000);
 
     const stats5MinData = await fetchStatistics(
-      this.hass,
+      this.hass.callWS,
       minStatStart,
       minStatEnd,
       [statId],
@@ -402,7 +402,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     const end = new Date();
 
     const statsHourData = await fetchStatistics(
-      this.hass,
+      this.hass.callWS,
       start,
       end,
       [statId],
@@ -415,7 +415,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     }
 
     const stats5MinData = await fetchStatistics(
-      this.hass,
+      this.hass.callWS,
       start,
       end,
       [statId],
@@ -489,7 +489,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
   private async _fixIssue(): Promise<void> {
     const unit = getDisplayUnit(
-      this.hass,
+      this.hass.states,
       this._params!.statistic.statistic_id,
       this._params!.statistic
     );

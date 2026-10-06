@@ -204,7 +204,6 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}
@@ -501,7 +500,7 @@ export class StatisticsChart extends LitElement {
   private _getStatisticsMetaData = memoizeOne(
     async (statisticIds: string[] | undefined) => {
       const statsMetadataArray = await getStatisticMetadata(
-        this.hass,
+        this.hass.callWS,
         statisticIds
       );
       const statisticsMetaData = {};

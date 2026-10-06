@@ -4,7 +4,6 @@ import type {
   EnergyData,
   EnergyPreferences,
 } from "../../src/data/energy";
-import type { HomeAssistant } from "../../src/types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../../src/panels/lovelace/cards/types";
 import { generateEnergyDevicesDetailGraphData } from "../../src/panels/lovelace/cards/energy/energy-devices-detail-graph-data";
 import { createMockComputedStyle } from "../fixtures/computed-style";
@@ -18,10 +17,7 @@ import { generateStatistics } from "../fixtures/statistics";
 const computedStyles = createMockComputedStyle({
   "--history-unknown-color": "#888888",
 });
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as unknown as HomeAssistant;
+const { localize, states, formatEntityName } = createMockHass();
 const now = new Date("2024-02-01T00:00:00Z");
 const config: EnergyDevicesDetailGraphCardConfig = {
   type: "energy-devices-detail-graph",
@@ -110,7 +106,10 @@ const monthFiveMinute = generateEnergyData(3, {
 // benchmark measures the real computation, not a cache hit.
 const run = (data: EnergyData) =>
   generateEnergyDevicesDetailGraphData({
-    hass,
+    localize,
+    states,
+    formatEntityName,
+    darkMode: false,
     energyData: { ...data },
     config,
     computedStyles,
