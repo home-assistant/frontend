@@ -853,6 +853,17 @@ class DialogAddAutomationElement
               slot="footer"
               .suggestedTargets=${this._params!.suggestedTargets}
               .clipboardItem=${this._params!.clipboardItem}
+              .clipboardLabel=${this._getClipboardLabel(
+                this._params!.clipboardItem,
+                this._items(
+                  automationElementType,
+                  this.hass.localize,
+                  this.hass.services,
+                  this._triggerDescriptions,
+                  this._conditionDescriptions,
+                  this._manifests
+                )
+              )}
               .automationElementType=${automationElementType}
               @paste-element=${this._paste}
               @automation-target-picked=${this._suggestionPicked}
@@ -1950,6 +1961,24 @@ class DialogAddAutomationElement
     this._params!.add(ev.detail.value, target);
     this.closeDialog();
   }
+
+  private _getClipboardLabel = memoizeOne(
+    (
+      clipboardItem: string | undefined,
+      items: AddAutomationElementListItem[]
+    ): string | undefined =>
+      clipboardItem
+        ? (items.find(
+            ({ key }) =>
+              key === clipboardItem ||
+              key === `${DYNAMIC_PREFIX}${clipboardItem}`
+          )?.name ??
+          this.hass.localize(
+            // @ts-ignore
+            `ui.panel.config.automation.editor.${this._params!.type}s.type.${clipboardItem}.label`
+          ))
+        : undefined
+  );
 
   private _suggestionPicked(
     ev: HASSDomEvent<HASSDomEvents["automation-target-picked"]>

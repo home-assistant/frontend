@@ -30,6 +30,8 @@ export class HaAutomationAddSuggestions extends LitElement {
 
   @property({ attribute: false }) public clipboardItem?: string;
 
+  @property({ attribute: false }) public clipboardLabel?: string;
+
   @property({ attribute: false })
   public automationElementType!: AddAutomationElementDialogParams["type"];
 
@@ -116,12 +118,13 @@ export class HaAutomationAddSuggestions extends LitElement {
                     `ui.panel.config.automation.editor.${this.automationElementType}s.paste`
                   )}</span
                 >
-                <span class="paste-label"
-                  >${this._i18n.localize(
-                    // @ts-ignore
-                    `ui.panel.config.automation.editor.${this.automationElementType}s.type.${this.clipboardItem}.label`
-                  )}</span
-                >
+                ${
+                  this.clipboardLabel
+                    ? html`<span class="paste-label"
+                        >${this.clipboardLabel}</span
+                      >`
+                    : nothing
+                }
               </span>
             </button>`
           : nothing

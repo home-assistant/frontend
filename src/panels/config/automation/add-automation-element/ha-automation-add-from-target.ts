@@ -1373,13 +1373,38 @@ export default class HaAutomationAddFromTarget extends LitElement {
           block: "center",
         });
       } else {
-        this.shadowRoot!.querySelector(
-          "wa-tree-item[selected]"
-        )?.scrollIntoView({
-          block: "center",
-        });
+        this._scrollToTreeItem(itemId);
       }
     }
+  }
+
+  private async _scrollToTreeItem(itemId: string) {
+    const item = Array.from(
+      this.shadowRoot!.querySelectorAll<WaTreeItem & { target: string }>(
+        "wa-tree-item"
+      )
+    ).find((treeItem) => treeItem.target === itemId);
+    if (!item) {
+      return;
+    }
+    const ancestors: WaTreeItem[] = [];
+    for (
+      let parent = item.parentElement?.closest<WaTreeItem>("wa-tree-item");
+      parent;
+      parent = parent.parentElement?.closest<WaTreeItem>("wa-tree-item")
+    ) {
+      ancestors.push(parent);
+    }
+    await Promise.all([item, ...ancestors].map((el) => el.updateComplete));
+    // Positions are only final once the ancestors finished their expand animation.
+    await Promise.all(
+      ancestors.flatMap((ancestor) =>
+        (ancestor.shadowRoot?.getAnimations() ?? []).map((animation) =>
+          animation.finished.catch(() => undefined)
+        )
+      )
+    );
+    item.scrollIntoView({ block: "center" });
   }
 
   private _toggleItem(targetId: string, open: boolean) {
