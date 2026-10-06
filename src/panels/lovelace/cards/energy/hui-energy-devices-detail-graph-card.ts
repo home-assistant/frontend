@@ -132,7 +132,11 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_config") || changedProps.has("_data")) {
+    if (
+      changedProps.has("_config") ||
+      changedProps.has("_data") ||
+      changedProps.has("_i18n")
+    ) {
       this._processStatistics();
     }
   }
