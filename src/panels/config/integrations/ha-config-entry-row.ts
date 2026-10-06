@@ -172,7 +172,7 @@ export class HaConfigEntryRow extends LitElement {
     return html` <div
       class=${classMap({
         "config-entry-wrapper": true,
-        "state-not-loaded": item!.state === "not_loaded",
+        "state-not-loaded": !item.disabled_by && item.state === "not_loaded",
         "state-failed-unload": item!.state === "failed_unload",
         "state-setup": item!.state === "setup_in_progress",
         "state-error": ERROR_STATES.includes(item!.state),
@@ -863,9 +863,6 @@ export class HaConfigEntryRow extends LitElement {
           0 0 0 1px rgba(var(--rgb-info-color), 0.5),
           0 0 12px rgba(var(--rgb-info-color), 0.28);
         content: "";
-      }
-      :host(.attention) .config-entry-wrapper {
-        background-color: var(--ha-color-fill-warning-quiet-resting);
       }
       .expand-button {
         margin: 0 -12px;
