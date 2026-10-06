@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../../types";
+import type { HostDisk, HostDiskPartition } from "../hassio/host";
 
 export enum SupervisorMountType {
   BIND = "bind",
@@ -84,8 +85,8 @@ interface SupervisorDiskMountRequestParamsBase {
 }
 
 // At least one identifier is required. Both may be sent together, as a
-// candidate carries both; Supervisor then resolves by uuid and checks the
-// device agrees with it.
+// listed partition carries both; Supervisor then resolves by uuid and checks
+// the device agrees with it.
 export type SupervisorDiskMountRequestParams =
   | (SupervisorDiskMountRequestParamsBase & { device: string; uuid?: string })
   | (SupervisorDiskMountRequestParamsBase & { uuid: string; device?: string });
@@ -100,32 +101,20 @@ export interface SupervisorMounts {
   mounts: SupervisorMount[];
 }
 
-// Null when UDisks2 cannot attribute the device to a drive.
-export interface SupervisorMountCandidateDrive {
-  vendor: string;
-  model: string;
-  serial: string;
-  id: string;
-  size: number;
-  connection_bus: string;
-  removable: boolean;
-  ejectable: boolean;
+export interface MountableDiskPartition {
+  disk: HostDisk;
+  partition: HostDiskPartition;
 }
 
-export interface SupervisorMountCandidate {
-  type: SupervisorMountType.DISK;
-  device: string;
-  uuid: string;
-  label: string;
-  filesystem: string;
-  size: number;
-  read_only: boolean;
-  drive: SupervisorMountCandidateDrive | null;
-}
-
-export interface SupervisorMountCandidates {
-  candidates: SupervisorMountCandidate[];
-}
+// Supervisor may also list partitions it cannot mount.
+export const mountableDiskPartitions = (
+  disks: HostDisk[]
+): MountableDiskPartition[] =>
+  disks.flatMap((disk) =>
+    disk.partitions
+      .filter((partition) => partition.mountable === true)
+      .map((partition) => ({ disk, partition }))
+  );
 
 // Disk mounts have no server/share/path, so describe them by filesystem and uuid.
 export const supervisorMountDescription = (mount: SupervisorMount): string => {
@@ -143,17 +132,6 @@ export const fetchSupervisorMounts = async (
   hass.callWS({
     type: "supervisor/api",
     endpoint: `/mounts`,
-    method: "get",
-    timeout: null,
-  });
-
-// Empty list without UDisks2. Older Supervisors return 404; hide the feature.
-export const fetchSupervisorMountCandidates = async (
-  hass: HomeAssistant
-): Promise<SupervisorMountCandidates> =>
-  hass.callWS({
-    type: "supervisor/api",
-    endpoint: `/mounts/candidates`,
     method: "get",
     timeout: null,
   });

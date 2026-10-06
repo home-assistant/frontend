@@ -14,14 +14,15 @@ import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
+import { fetchHostDisks } from "../../../data/hassio/host";
 import type {
   CIFSVersion,
-  SupervisorMountCandidate,
+  MountableDiskPartition,
   SupervisorMountRequestParams,
 } from "../../../data/supervisor/mounts";
 import {
   createSupervisorMount,
-  fetchSupervisorMountCandidates,
+  mountableDiskPartitions,
   removeSupervisorMount,
   SupervisorMountType,
   SupervisorMountUsage,
@@ -34,7 +35,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { MountViewDialogParams } from "./show-dialog-view-mount";
 
-type MountFormData = {
+interface MountFormData {
   name: string;
   type: SupervisorMountType;
   usage?: SupervisorMountUsage | null;
@@ -48,15 +49,16 @@ type MountFormData = {
   uuid?: string;
   username?: string;
   password?: string;
-};
+}
 
-// Drive vendor/model, then label or device path, then size.
-const mountCandidateLabel = (candidate: SupervisorMountCandidate): string => {
-  const drive = [candidate.drive?.vendor, candidate.drive?.model]
-    .filter(Boolean)
-    .join(" ");
-  const identity = candidate.label || candidate.device;
-  const size = bytesToString(candidate.size);
+// Disk vendor/model, then partition label or device path, then size.
+const mountPartitionLabel = ({
+  disk,
+  partition,
+}: MountableDiskPartition): string => {
+  const drive = [disk.vendor, disk.model].filter(Boolean).join(" ");
+  const identity = partition.label || partition.device;
+  const size = bytesToString(partition.size);
   return drive ? `${drive} — ${identity}, ${size}` : `${identity}, ${size}`;
 };
 
@@ -67,7 +69,7 @@ const mountSchema = memoizeOne(
     mountType?: SupervisorMountType,
     showCIFSVersion?: boolean,
     showDisk?: boolean,
-    candidates?: SupervisorMountCandidate[],
+    partitions?: MountableDiskPartition[],
     diskIdentity?: string,
     readOnlyForced?: boolean,
     allowBackupUsage = true
@@ -206,7 +208,7 @@ const mountSchema = memoizeOne(
             ] as const)
           : mountType === SupervisorMountType.DISK
             ? existing
-              ? // Mounted devices are not candidates; show what was resolved.
+              ? // Mounted partitions are not listed; show what was resolved.
                 ([
                   {
                     name: "device_identity",
@@ -224,9 +226,9 @@ const mountSchema = memoizeOne(
                     required: true,
                     selector: {
                       select: {
-                        options: (candidates ?? []).map((candidate) => ({
-                          value: candidate.device,
-                          label: mountCandidateLabel(candidate),
+                        options: (partitions ?? []).map((entry) => ({
+                          value: entry.partition.device,
+                          label: mountPartitionLabel(entry),
                         })),
                         mode: "dropdown",
                       },
@@ -263,13 +265,13 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 
   @state() private _showCIFSVersion?: boolean;
 
-  @state() private _candidates?: SupervisorMountCandidate[];
+  @state() private _partitions?: MountableDiskPartition[];
 
   @state() private _diskSupported = false;
 
   private _originalType?: SupervisorMountType;
 
-  private _candidatesRequest = 0;
+  private _disksRequest = 0;
 
   @state() private _diskIdentity?: string;
 
@@ -304,9 +306,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       { type: "deep" },
       (this._data ?? {}) as Partial<SupervisorMountRequestParams>
     );
-    // Candidates only matter when picking a disk for a new mount.
+    // Disks only matter when picking one for a new mount.
     if (!this._existing) {
-      this._loadCandidates();
+      this._loadDisks();
     }
   }
 
@@ -316,31 +318,24 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 
   // The dialog element is reused, so a slow response must not land in a
   // later session.
-  private async _loadCandidates(): Promise<void> {
-    const request = ++this._candidatesRequest;
+  private async _loadDisks(): Promise<void> {
+    const request = ++this._disksRequest;
     try {
-      const { candidates } = await fetchSupervisorMountCandidates(this.hass);
-      if (request !== this._candidatesRequest) {
+      const { disks } = await fetchHostDisks(this.hass);
+      if (request !== this._disksRequest) {
         return;
       }
-      this._candidates = candidates;
+      this._partitions = mountableDiskPartitions(disks);
       this._diskSupported = true;
-    } catch (err: any) {
-      if (request !== this._candidatesRequest) {
+    } catch (_err: any) {
+      if (request !== this._disksRequest) {
         return;
       }
-      if (err?.status_code === 404) {
-        // Older Supervisors have no candidates endpoint. Hide the option
-        // rather than show it broken.
-        this._candidates = [];
-        this._diskSupported = false;
-        return;
-      }
-      // Any other failure is transient or a real error: keep the option and
-      // report it instead of pretending there are no disks.
-      this._candidates = undefined;
-      this._diskSupported = true;
-      this._error = extractApiErrorMessage(err);
+      // Older Supervisors lack the endpoint, and the relayed error carries no
+      // status to tell that apart. Hide the option rather than block network
+      // storage with an error.
+      this._partitions = [];
+      this._diskSupported = false;
     }
   }
 
@@ -353,8 +348,8 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._existing = undefined;
     this._originalType = undefined;
     this._showCIFSVersion = undefined;
-    this._candidatesRequest++;
-    this._candidates = undefined;
+    this._disksRequest++;
+    this._partitions = undefined;
     this._diskSupported = false;
     this._diskIdentity = undefined;
     this._reloadMounts = undefined;
@@ -402,10 +397,10 @@ class ViewMountDialog extends DirtyStateProviderMixin<
             : nothing
         }
         ${
-          this._showNoCandidates
+          this._showNoPartitions
             ? html`<ha-alert alert-type="info">
                 ${this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.no_disk_candidates"
+                  "ui.panel.config.storage.network_mounts.no_disks"
                 )}
               </ha-alert>`
             : nothing
@@ -419,7 +414,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
             this._data?.type,
             this._showCIFSVersion,
             this._diskSupported,
-            this._candidates,
+            this._partitions,
             this._diskIdentity,
             this._readOnlyForced,
             this._allowBackupUsage
@@ -474,12 +469,12 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     `;
   }
 
-  // Empty candidate list is only relevant while creating a mount.
-  private get _showNoCandidates(): boolean {
+  // An empty partition list is only relevant while creating a mount.
+  private get _showNoPartitions(): boolean {
     return (
       !this._existing &&
       this._data?.type === SupervisorMountType.DISK &&
-      this._candidates?.length === 0
+      this._partitions?.length === 0
     );
   }
 
@@ -488,8 +483,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       return false;
     }
     const { device } = this._data;
-    return !!this._candidates?.find((candidate) => candidate.device === device)
-      ?.read_only;
+    return !!this._partitions?.find(
+      (entry) => entry.partition.device === device
+    )?.partition.read_only;
   }
 
   // Backup usage is impossible for a read-only mount.
@@ -574,14 +570,14 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     if (mountData.type === "cifs" && mountData.version === "auto") {
       mountData.version = undefined;
     }
-    // Send the candidate's uuid alongside its device path: Supervisor resolves
+    // Send the partition's uuid alongside its device path: Supervisor resolves
     // by uuid and rejects the request if the path now names a different disk.
     if (mountData.type === SupervisorMountType.DISK && !this._existing) {
-      const candidate = this._candidates?.find(
-        (c) => c.device === mountData.device
-      );
-      if (candidate) {
-        mountData.uuid = candidate.uuid;
+      const partition = this._partitions?.find(
+        (entry) => entry.partition.device === mountData.device
+      )?.partition;
+      if (partition) {
+        mountData.uuid = partition.uuid;
       }
     }
     try {

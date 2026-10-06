@@ -42,6 +42,29 @@ export interface DatadiskList {
   disks: Datadisk[];
 }
 
+export interface HostDiskPartition {
+  device: string;
+  uuid: string;
+  label: string;
+  filesystem: string;
+  size: number;
+  read_only: boolean;
+  mountable: boolean;
+}
+
+// Without a UDisks2 drive, name and id are dev_path and the drive fields are
+// empty or false.
+export interface HostDisk extends Datadisk {
+  connection_bus: string;
+  removable: boolean;
+  ejectable: boolean;
+  partitions: HostDiskPartition[];
+}
+
+export interface HostDisks {
+  disks: HostDisk[];
+}
+
 export interface HostDisksUsage {
   total_bytes?: number;
   used_bytes: number;
@@ -123,6 +146,15 @@ export const listDatadisks = async (
   hass.callWS<DatadiskList>({
     type: "supervisor/api",
     endpoint: "/os/datadisk/list",
+    method: "get",
+    timeout: null,
+  });
+
+// Empty list without UDisks2.
+export const fetchHostDisks = async (hass: HomeAssistant): Promise<HostDisks> =>
+  hass.callWS<HostDisks>({
+    type: "supervisor/api",
+    endpoint: "/host/disks",
     method: "get",
     timeout: null,
   });

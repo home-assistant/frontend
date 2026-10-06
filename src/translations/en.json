@@ -9213,7 +9213,7 @@
             "add_title": "Add storage",
             "update_title": "Update storage",
             "no_mounts": "No additional storage configured",
-            "no_disk_candidates": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
+            "no_disks": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
             "documentation": "Documentation",
             "not_supported": {
               "title": "The operating system does not support additional storage",

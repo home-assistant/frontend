@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import type { HostDisk, HostDiskPartition } from "../../src/data/hassio/host";
 import type {
   SupervisorCIFSMount,
   SupervisorDiskMount,
   SupervisorNFSMount,
 } from "../../src/data/supervisor/mounts";
 import {
+  mountableDiskPartitions,
   SupervisorMountState,
   SupervisorMountType,
   SupervisorMountUsage,
@@ -88,5 +90,42 @@ describe("supervisorMountDescription", () => {
   it("never describes a disk mount using network fields", () => {
     // A disk mount has no server, share, or path.
     expect(supervisorMountDescription(diskMount())).not.toContain("undefined");
+  });
+});
+
+const partition = (device: string, mountable: boolean): HostDiskPartition => ({
+  device,
+  uuid: `uuid-${device}`,
+  label: "",
+  filesystem: "ext4",
+  size: 1000,
+  read_only: false,
+  mountable,
+});
+
+const disk = (devPath: string, partitions: HostDiskPartition[]): HostDisk => ({
+  name: devPath,
+  vendor: "",
+  model: "",
+  serial: "",
+  size: 2000,
+  id: devPath,
+  dev_path: devPath,
+  connection_bus: "",
+  removable: false,
+  ejectable: false,
+  partitions,
+});
+
+describe("mountableDiskPartitions", () => {
+  it("keeps only mountable partitions, each with its disk", () => {
+    const sdb = disk("/dev/sdb", [partition("/dev/sdb1", false)]);
+    const sdc = disk("/dev/sdc", [
+      partition("/dev/sdc1", true),
+      partition("/dev/sdc2", false),
+    ]);
+    expect(mountableDiskPartitions([sdb, sdc])).toEqual([
+      { disk: sdc, partition: sdc.partitions[0] },
+    ]);
   });
 });
