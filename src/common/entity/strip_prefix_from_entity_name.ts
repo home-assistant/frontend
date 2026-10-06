@@ -30,4 +30,19 @@ export const stripPrefixFromEntityName = (
   return undefined;
 };
 
+/**
+ * Whether an entity name is only the device name, which core treats as no name of its own.
+ */
+export const isDeviceName = (entityName: string, deviceName: string) => {
+  if (!deviceName) {
+    return false;
+  }
+  const lowerCasedEntityName = entityName.toLowerCase();
+  const lowerCasedDeviceName = deviceName.toLowerCase();
+  return (
+    lowerCasedEntityName.startsWith(lowerCasedDeviceName) &&
+    /^[ :-]*$/.test(lowerCasedEntityName.slice(lowerCasedDeviceName.length))
+  );
+};
+
 const hasUpperCase = (str: string): boolean => str.toLowerCase() !== str;
