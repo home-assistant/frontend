@@ -24,7 +24,7 @@ import type { FrontendLocaleData } from "./translation";
 import type { HomeAssistant } from "../types";
 
 export interface EnergyCollectionControllerOptions {
-  /** Subscribing waits until this returns a config. */
+  /** Subscribed only while this returns a config. */
   config: () => { collection_key?: string } | undefined;
   onData: (data: EnergyData) => void;
 }
@@ -132,6 +132,7 @@ export class EnergyCollectionController extends ContextController {
     }
     const config = this._options.config();
     if (!config) {
+      this._unsubscribe();
       return;
     }
     const key = config.collection_key;

@@ -1827,11 +1827,8 @@ export const getFlowRateFromState = (
 export const computeTotalFlowRate = (
   sourceType: "gas" | "water",
   prefs: EnergyPreferences,
-  states: HomeAssistant["states"],
-  entities: Set<string>
+  states: HomeAssistant["states"]
 ): { value: number; unit: string } => {
-  entities.clear();
-
   let targetUnit: string | undefined;
   let totalFlow = 0;
 
@@ -1840,10 +1837,7 @@ export const computeTotalFlowRate = (
       return;
     }
 
-    const entityId = source.stat_rate;
-    entities.add(entityId);
-
-    const stateObj = states[entityId];
+    const stateObj = states[source.stat_rate];
     if (!stateObj) {
       return;
     }

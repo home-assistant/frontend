@@ -92,7 +92,6 @@ export class MoreInfoHistory extends LitElement {
                   </ha-alert>`
                 : this._statistics
                   ? html`<statistics-chart
-                      .hass=${this.hass}
                       .isLoadingData=${!this._statistics}
                       .statisticsData=${this._statistics}
                       .metadata=${this._metadata}
