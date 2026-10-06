@@ -2,7 +2,6 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiFilterRemove,
-  mdiRefresh,
   mdiTextBoxOutline,
   mdiTuneVariant,
 } from "@mdi/js";
@@ -133,11 +132,6 @@ export class HaPanelLogbook extends LitElement {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-
-          <ha-dropdown-item value="refresh">
-            ${this.hass.localize("ui.common.refresh")}
-            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-dropdown-item>
 
           <ha-dropdown-item value="download">
             ${this.hass.localize("ui.panel.logbook.download_data")}
@@ -516,18 +510,11 @@ export class HaPanelLogbook extends LitElement {
     navigate("/logbook", { replace: true });
   }
 
-  private _refreshLogbook() {
-    this.shadowRoot!.querySelector("ha-logbook")?.refresh();
-  }
-
   private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "download":
         this._downloadData();
-        break;
-      case "refresh":
-        this._refreshLogbook();
         break;
       case "reset":
         this._resetLogbook();
