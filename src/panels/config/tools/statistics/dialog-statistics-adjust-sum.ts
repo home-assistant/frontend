@@ -37,6 +37,11 @@ interface CombinedStat {
   fiveMin: StatisticValue[];
 }
 
+interface FetchedStats {
+  hour: StatisticValue[];
+  fiveMin: StatisticValue[];
+}
+
 interface AdjustState {
   amount: number | undefined;
 }
@@ -71,6 +76,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
   // processes adjustments asynchronously, so a fetch right after adjusting can
   // still return the old values.
   private _adjustedChanges = new Map<string, number>();
+
+  // Incremented for every fetch, so results of outdated fetches are ignored
+  private _fetchId = 0;
 
   private _dateTimeSelector: DateTimeSelector = {
     datetime: {},
@@ -123,6 +131,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._busy = false;
     this._showingOutliers = false;
     this._adjustedChanges.clear();
+    this._fetchId++;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -297,13 +306,22 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
   }
 
   private async _refreshStats(): Promise<void> {
+    const fetchId = ++this._fetchId;
+    this._stats5min = undefined;
+    this._statsHour = undefined;
     try {
-      if (this._showingOutliers) {
-        await this._fetchOutliers();
-      } else {
-        await this._fetchStats();
+      const stats = this._showingOutliers
+        ? await this._fetchOutliers()
+        : await this._fetchStats();
+      if (fetchId !== this._fetchId) {
+        return;
       }
+      this._statsHour = stats.hour;
+      this._stats5min = stats.fiveMin;
     } catch (err: any) {
+      if (fetchId !== this._fetchId) {
+        return;
+      }
       this._stats5min = [];
       this._statsHour = [];
       showAlertDialog(this, {
@@ -389,9 +407,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._updateDirtyState({ amount: this._amount });
   }
 
-  private async _fetchStats(): Promise<void> {
-    this._stats5min = undefined;
-    this._statsHour = undefined;
+  private async _fetchStats(): Promise<FetchedStats> {
     const statId = this._params!.statistic.statistic_id;
 
     // moment is in format YYYY-MM-DD HH:mm:ss because of selector
@@ -411,15 +427,14 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       [statId],
       "hour"
     );
-    this._statsHour =
+    const statsHour =
       statId in statsHourData
         ? this._applyAdjustedChanges(statsHourData[statId].slice(0, 5))
         : [];
 
     // Can't have 5 min data if no hourly data
-    if (this._statsHour.length === 0) {
-      this._stats5min = [];
-      return;
+    if (statsHour.length === 0) {
+      return { hour: [], fiveMin: [] };
     }
 
     // Search 10 minutes before and 15 minutes after chosen time
@@ -436,15 +451,16 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "5minute"
     );
 
-    this._stats5min =
-      statId in stats5MinData
-        ? this._applyAdjustedChanges(stats5MinData[statId].slice(0, 5))
-        : [];
+    return {
+      hour: statsHour,
+      fiveMin:
+        statId in stats5MinData
+          ? this._applyAdjustedChanges(stats5MinData[statId].slice(0, 5))
+          : [],
+    };
   }
 
-  private async _fetchOutliers(): Promise<void> {
-    this._stats5min = undefined;
-    this._statsHour = undefined;
+  private async _fetchOutliers(): Promise<FetchedStats> {
     const statId = this._params!.statistic.statistic_id;
 
     // Get all the data
@@ -464,9 +480,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         ? this._applyAdjustedChanges(statsHourData[statId])
         : [];
     if (statsHour.length === 0) {
-      this._statsHour = [];
-      this._stats5min = [];
-      return;
+      return { hour: [], fiveMin: [] };
     }
 
     const stats5MinData = await fetchStatistics(
@@ -541,8 +555,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
     // Outliers are a possible mix of hour/5minute data, but the distinction
     // is not relevant here, as long as only one array is populated.
-    this._statsHour = statsOutliers;
-    this._stats5min = [];
+    return { hour: statsOutliers, fiveMin: [] };
   }
 
   private async _fixIssue(): Promise<void> {
