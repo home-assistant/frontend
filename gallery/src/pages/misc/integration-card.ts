@@ -110,6 +110,30 @@ const disabledFailedUnloadEntry = createConfigEntry(
   }
 );
 
+// Other brands to compare how status badges look on different icons.
+const brandEntries: ConfigEntryExtended[] = (
+  [
+    ["hue", "Philips Hue", "loaded"],
+    ["hue", "Philips Hue", "setup_error"],
+    ["mqtt", "MQTT", "setup_retry"],
+    ["zha", "Zigbee Home Automation", "not_loaded"],
+    ["sonos", "Sonos", "setup_error"],
+    ["shelly", "Shelly", "failed_unload"],
+    ["spotify", "Spotify", "setup_retry"],
+    ["tuya", "Tuya", "setup_error"],
+    ["unifi", "UniFi Network", "not_loaded"],
+    ["met", "Meteorologisk institutt (Met.no)", "setup_error"],
+    ["google_assistant", "Google Assistant", "not_loaded"],
+    ["homekit_controller", "HomeKit Device", "setup_retry"],
+  ] as [string, string, ConfigEntryExtended["state"]][]
+).map(([domain, name, entryState]) =>
+  createConfigEntry(`${name} ${entryState}`, {
+    domain,
+    localized_domain_name: name,
+    state: entryState,
+  })
+);
+
 const configFlows: DataEntryFlowProgressExtended[] = [
   {
     flow_id: "adbb401329d8439ebb78ef29837826a8",
@@ -329,6 +353,21 @@ export class DemoIntegrationCard extends LitElement {
           .entityRegistryEntries=${createEntityRegistryEntries(loadedEntry)}
           .deviceRegistryEntries=${createDeviceRegistryEntries(loadedEntry)}
         ></ha-integration-card>
+      </div>
+      <div class="container">
+        ${brandEntries.map(
+          (entry) => html`
+            <ha-integration-card
+              .domain=${entry.domain}
+              .items=${[entry]}
+              .manifest=${createManifest(
+                this.isCustomIntegration,
+                this.isCloud
+              )}
+              .entityRegistryEntries=${createEntityRegistryEntries(entry)}
+            ></ha-integration-card>
+          `
+        )}
       </div>
     `;
   }
