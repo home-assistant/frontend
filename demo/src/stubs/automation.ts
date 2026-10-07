@@ -14,6 +14,7 @@ import type { DemoAutomation } from "../configs/types";
 import { mockAutomationPlatforms } from "./automation_platforms";
 import {
   addEntityRegistryEntry,
+  getEntityRegistryEntry,
   removeEntityRegistryEntry,
 } from "./entity_registry";
 
@@ -110,8 +111,10 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
         // Adding the entity resets its display entry, keep what the registry
         // holds
         if (display) {
+          const registryName = getEntityRegistryEntry(entityId)?.name;
           currentHass.entities[entityId] = {
             ...currentHass.entities[entityId],
+            ...(registryName && { name: registryName }),
             area_id: display.area_id,
             labels: display.labels,
             icon: display.icon,

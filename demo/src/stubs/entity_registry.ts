@@ -131,6 +131,9 @@ export const setPlatformEntityRegistryEntries = (
   hass.mockEvent("entity_registry_updated");
 };
 
+export const getEntityRegistryEntry = (entityId: string) =>
+  entries.find((e) => e.entity_id === entityId);
+
 export const removeEntityRegistryEntry = (
   hass: MockHomeAssistant,
   entityId: string
