@@ -75,6 +75,8 @@ const fakeEngine = vi.hoisted(() => {
 
     setView = vi.fn();
 
+    getView = () => undefined;
+
     setZoom = vi.fn();
 
     fitBounds = vi.fn();

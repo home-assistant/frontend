@@ -11,6 +11,11 @@ import type { ResolvedMapStyle } from "./map-styles";
 
 export type MapLatLng = [latitude: number, longitude: number];
 
+export interface MapView {
+  center: MapLatLng;
+  zoom: number;
+}
+
 export type MapControlPosition =
   "topleft" | "topright" | "bottomleft" | "bottomright";
 
@@ -45,6 +50,8 @@ export interface MapFitOptions {
   pad?: number;
   /** Ease the camera to the bounds instead of jumping; defaults to true */
   animate?: boolean;
+  /** Fly in an arc instead of easing straight there; defaults to false */
+  fly?: boolean;
   /** Viewport pixels covered by overlays; the bounds fit inside the rest */
   padding?: MapFitPadding;
 }
@@ -61,6 +68,8 @@ export interface MapMarkerOptions {
   size: [width: number, height: number];
   /** Point of the element placed on the coordinate, from its top left; defaults to the center */
   anchor?: [x: number, y: number];
+  /** Drawn above the other markers */
+  raised?: boolean;
   /** Takes pointer input; defaults to true */
   interactive?: boolean;
   /** A keyboard-focusable button, for markers that act on activation; defaults to interactive */
@@ -80,6 +89,8 @@ export interface MapCircleOptions {
   radius: number;
   /** Stroke color; the fill is derived from it, translucent */
   color: string;
+  /** Stroke the circle; defaults to true */
+  outline?: boolean;
 }
 
 export interface MapPathSegment {
@@ -225,6 +236,8 @@ export interface MapEngine {
 
   setView(center: MapLatLng, zoom?: number): void;
 
+  getView(): MapView | undefined;
+
   setZoom(zoom: number): void;
 
   /** Fit the given points into view; a single point centers on it */
@@ -329,4 +342,28 @@ export const circleBoundsPoints = (
     [latMin, center[1] - dLng],
     [latMax, center[1] + dLng],
   ];
+};
+
+const MERCATOR_MAX_LAT = 85.051129;
+
+const projectMercator = ([lat, lng]: MapLatLng, scale: number) => {
+  const sinLat = Math.sin(
+    toRadians(Math.max(-MERCATOR_MAX_LAT, Math.min(MERCATOR_MAX_LAT, lat)))
+  );
+  return {
+    x: (lng / 360 + 0.5) * scale,
+    y: (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale,
+  };
+};
+
+export const pixelDistance = (
+  a: MapLatLng,
+  b: MapLatLng,
+  zoom: number
+): number => {
+  const scale = 256 * 2 ** zoom;
+  const pa = projectMercator(a, scale);
+  const pb = projectMercator(b, scale);
+  const dx = Math.abs(pa.x - pb.x);
+  return Math.hypot(Math.min(dx, scale - dx), pa.y - pb.y);
 };
