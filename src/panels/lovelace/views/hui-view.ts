@@ -140,7 +140,9 @@ export class HUIView extends ReactiveElement {
           path,
           suggestedCards: detail?.suggested,
         });
-      }
+      },
+      // Temporary compatibility: custom view layouts dispatch it without bubbling
+      { capture: true }
     );
     this.addEventListener(
       "ll-edit-card",
