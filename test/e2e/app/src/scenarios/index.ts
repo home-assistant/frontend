@@ -37,12 +37,15 @@ const defaultScenario: Scenario = async (_hass) => {
 };
 
 const nonAdminScenario: Scenario = async (hass) => {
+  const user = {
+    ...hass.user!,
+    is_admin: false,
+    is_owner: false,
+  };
+  // Authentication refreshes must preserve the scenario's permissions.
+  hass.mockWS("auth/current_user", () => user);
   hass.updateHass({
-    user: {
-      ...hass.user!,
-      is_admin: false,
-      is_owner: false,
-    },
+    user,
   });
 };
 
