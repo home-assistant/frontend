@@ -2340,20 +2340,6 @@ export const demoServices = {
     turn_off: { fields: {}, target: { entity: { domain: "water_heater" } } },
   },
   weather: {
-    get_forecast: {
-      fields: {
-        type: {
-          required: true,
-          selector: {
-            select: {
-              options: ["daily", "hourly", "twice_daily"],
-              translation_key: "forecast_type",
-            },
-          },
-        },
-      },
-      target: { entity: { domain: "weather", supported_features: [1, 2, 4] } },
-    },
     get_forecasts: {
       fields: {
         type: {

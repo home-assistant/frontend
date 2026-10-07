@@ -79,6 +79,9 @@ const RESPONSE_SERVICES = {
   "weather.get_forecasts": false,
 };
 
+// Services that are still in services.yaml, but that core no longer registers
+const UNREGISTERED_SERVICES = ["weather.get_forecast"];
+
 // Integrations that provide the new style triggers and conditions
 const AUTOMATION_PLATFORM_DOMAINS = [
   "air_quality",
@@ -270,7 +273,11 @@ const serviceDescriptions = (yamls, { resolveFields, resolveTarget }) =>
         throw new Error(`No services.yaml found for ${domain}`);
       }
       const services = Object.entries(yamls[domain])
-        .filter(([service]) => !service.startsWith("."))
+        .filter(
+          ([service]) =>
+            !service.startsWith(".") &&
+            !UNREGISTERED_SERVICES.includes(`${domain}.${service}`)
+        )
         .map(([service, value]) => {
           const description = { fields: resolveFields(value?.fields) };
           for (const item of ["description", "name"]) {
@@ -355,6 +362,12 @@ gulp.task("gen-demo-core-data", async () => {
   const resolvers = createResolvers(
     await enumResolver([servicesYamls, triggersYamls, conditionsYamls])
   );
+  for (const key of UNREGISTERED_SERVICES) {
+    const [domain, service] = key.split(".");
+    if (!(service in (servicesYamls[domain] ?? {}))) {
+      throw new Error(`Remove ${key} from UNREGISTERED_SERVICES, it is gone`);
+    }
+  }
   const services = serviceDescriptions(servicesYamls, resolvers);
   for (const key of Object.keys(RESPONSE_SERVICES)) {
     const [domain, service] = key.split(".");
