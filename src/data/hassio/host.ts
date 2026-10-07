@@ -151,8 +151,10 @@ export const listDatadisks = async (
   });
 
 // Empty list without UDisks2.
-export const fetchHostDisks = async (hass: HomeAssistant): Promise<HostDisks> =>
-  hass.callWS<HostDisks>({
+export const fetchHostDisks = async (
+  callWS: HomeAssistant["callWS"]
+): Promise<HostDisks> =>
+  callWS<HostDisks>({
     type: "supervisor/api",
     endpoint: "/host/disks",
     method: "get",

@@ -137,10 +137,10 @@ export const fetchSupervisorMounts = async (
   });
 
 export const createSupervisorMount = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   data: SupervisorMountRequestParams
 ): Promise<void> =>
-  hass.callWS({
+  callWS({
     type: "supervisor/api",
     endpoint: `/mounts`,
     method: "post",
@@ -149,10 +149,10 @@ export const createSupervisorMount = async (
   });
 
 export const updateSupervisorMount = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   data: Partial<SupervisorMountRequestParams>
 ): Promise<void> =>
-  hass.callWS({
+  callWS({
     type: "supervisor/api",
     endpoint: `/mounts/${data.name}`,
     method: "put",
@@ -161,10 +161,10 @@ export const updateSupervisorMount = async (
   });
 
 export const removeSupervisorMount = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   name: string
 ): Promise<void> =>
-  hass.callWS({
+  callWS({
     type: "supervisor/api",
     endpoint: `/mounts/${name}`,
     method: "delete",

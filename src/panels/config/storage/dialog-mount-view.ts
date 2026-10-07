@@ -1,11 +1,11 @@
+import type { ContextType } from "@lit/context";
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { consume } from "../../../common/decorators/consume";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-dialog-footer";
@@ -13,6 +13,11 @@ import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHostDisks } from "../../../data/hassio/host";
 import type {
@@ -29,9 +34,9 @@ import {
   updateSupervisorMount,
 } from "../../../data/supervisor/mounts";
 import { bytesToString } from "../../../util/bytes-to-string";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { MountViewDialogParams } from "./show-dialog-view-mount";
 
@@ -252,8 +257,18 @@ const mountSchema = memoizeOne(
 @customElement("dialog-mount-view")
 class ViewMountDialog extends DirtyStateProviderMixin<
   Partial<SupervisorMountRequestParams>
->()(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+>()(DialogMixin<MountViewDialogParams>(LitElement)) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @state() private _data?: MountFormData;
 
@@ -275,34 +290,22 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 
   private _originalType?: SupervisorMountType;
 
-  private _disksRequest = 0;
-
   @state() private _diskIdentity?: string;
 
-  @state() private _reloadMounts?: () => void;
-
-  @state() private _open = false;
-
-  public async showDialog(
-    dialogParams: MountViewDialogParams
-  ): Promise<Promise<void>> {
-    this._data = dialogParams.mount;
-    this._existing = dialogParams.mount !== undefined;
-    this._originalType = dialogParams.mount?.type;
-    this._reloadMounts = dialogParams.reloadMounts;
-    this._open = true;
-    if (
-      dialogParams.mount?.type === "cifs" &&
-      dialogParams.mount.version &&
-      dialogParams.mount.version !== "auto"
-    ) {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.params) {
+      return;
+    }
+    const { mount } = this.params;
+    this._data = mount;
+    this._existing = mount !== undefined;
+    this._originalType = mount?.type;
+    if (mount?.type === "cifs" && mount.version && mount.version !== "auto") {
       this._showCIFSVersion = true;
     }
-    if (dialogParams.mount?.type === SupervisorMountType.DISK) {
-      this._diskIdentity = [
-        dialogParams.mount.filesystem,
-        dialogParams.mount.uuid,
-      ]
+    if (mount?.type === SupervisorMountType.DISK) {
+      this._diskIdentity = [mount.filesystem, mount.uuid]
         .filter(Boolean)
         .join(" • ");
     }
@@ -310,29 +313,26 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       { type: "deep" },
       (this._data ?? {}) as Partial<SupervisorMountRequestParams>
     );
+  }
+
+  protected firstUpdated(): void {
     // Disks only matter when picking one for a new mount.
-    if (!this._existing) {
+    if (this.params && !this._existing) {
       this._loadDisks();
     }
   }
 
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  // The dialog element is reused, so a slow response must not land in a
-  // later session.
   private async _loadDisks(): Promise<void> {
-    const request = ++this._disksRequest;
     try {
-      const { disks } = await fetchHostDisks(this.hass);
-      if (request !== this._disksRequest) {
+      const { disks } = await fetchHostDisks(this._api.callWS);
+      // The dialog can be closed while waiting for the backend.
+      if (!this.isConnected) {
         return;
       }
       this._partitions = mountableDiskPartitions(disks);
       this._diskSupported = true;
     } catch (_err: any) {
-      if (request !== this._disksRequest) {
+      if (!this.isConnected) {
         return;
       }
       // Older Supervisors lack the endpoint, and the relayed error carries no
@@ -343,55 +343,36 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     }
   }
 
-  private _dialogClosed(): void {
-    this._data = undefined;
-    this._waiting = undefined;
-    this._error = undefined;
-    this._validationError = undefined;
-    this._validationWarning = undefined;
-    this._existing = undefined;
-    this._originalType = undefined;
-    this._showCIFSVersion = undefined;
-    this._disksRequest++;
-    this._partitions = undefined;
-    this._diskSupported = false;
-    this._diskIdentity = undefined;
-    this._reloadMounts = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   protected render() {
-    if (this._existing === undefined) {
+    if (!this.params) {
       return nothing;
     }
     return html`
       <ha-dialog
-        .open=${this._open}
+        open
         header-title=${
           this._existing
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.panel.config.storage.network_mounts.update_title"
               )
-            : this.hass.localize(
+            : this._i18n.localize(
                 "ui.panel.config.storage.network_mounts.add_title"
               )
         }
         .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
       >
         <a
           slot="headerActionItems"
           class="header_button"
           href=${documentationUrl(
-            this.hass,
+            this._config,
             "/common-tasks/os#network-storage"
           )}
-          title=${this.hass.localize(
+          title=${this._i18n.localize(
             "ui.panel.config.storage.network_mounts.documentation"
           )}
           target="_blank"
           rel="noreferrer"
-          dir=${computeRTLDirection(this.hass)}
         >
           <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
         </a>
@@ -403,7 +384,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
         ${
           this._showNoPartitions
             ? html`<ha-alert alert-type="info">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.config.storage.network_mounts.no_disks"
                 )}
               </ha-alert>`
@@ -413,7 +394,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
           autofocus
           .data=${this._data}
           .schema=${mountSchema(
-            this.hass.localize,
+            this._i18n.localize,
             this._existing,
             this._data?.type,
             this._showCIFSVersion,
@@ -441,7 +422,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
                   slot="secondaryAction"
                   appearance="plain"
                 >
-                  ${this.hass.localize("ui.common.delete")}
+                  ${this._i18n.localize("ui.common.delete")}
                 </ha-button>`
               : nothing
           }
@@ -450,7 +431,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-progress-button
             slot="primaryAction"
@@ -460,10 +441,10 @@ class ViewMountDialog extends DirtyStateProviderMixin<
           >
             ${
               this._existing
-                ? this.hass.localize(
+                ? this._i18n.localize(
                     "ui.panel.config.storage.network_mounts.update"
                   )
-                : this.hass.localize(
+                : this._i18n.localize(
                     "ui.panel.config.storage.network_mounts.connect"
                   )
             }
@@ -503,7 +484,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     // @ts-ignore
     schema: SchemaUnion<ReturnType<typeof mountSchema>>
   ): string =>
-    this.hass.localize(
+    this._i18n.localize(
       `ui.panel.config.storage.network_mounts.options.${schema.name}.title`
     );
 
@@ -511,18 +492,18 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     // @ts-ignore
     schema: SchemaUnion<ReturnType<typeof mountSchema>>
   ): string =>
-    this.hass.localize(
+    this._i18n.localize(
       `ui.panel.config.storage.network_mounts.options.${schema.name}.description`
     );
 
   private _computeErrorCallback = (error: string): string =>
-    this.hass.localize(
+    this._i18n.localize(
       // @ts-ignore
       `ui.panel.config.storage.network_mounts.errors.${error}`
     ) || error;
 
   private _computeWarningCallback = (warning: string): string =>
-    this.hass.localize(
+    this._i18n.localize(
       // @ts-ignore
       `ui.panel.config.storage.network_mounts.warnings.${warning}`
     ) || warning;
@@ -587,16 +568,19 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     try {
       if (this._existing) {
         await updateSupervisorMount(
-          this.hass,
+          this._api.callWS,
           mountData as Partial<SupervisorMountRequestParams>
         );
       } else {
         await createSupervisorMount(
-          this.hass,
+          this._api.callWS,
           mountData as SupervisorMountRequestParams
         );
       }
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       this._error = extractApiErrorMessage(err);
       this._waiting = false;
       progressButton.actionError();
@@ -605,8 +589,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       }
       return;
     }
-    if (this._reloadMounts) {
-      this._reloadMounts();
+    this.params?.reloadMounts();
+    if (!this.isConnected) {
+      return;
     }
     this._markDirtyStateClean();
     this.closeDialog();
@@ -616,14 +601,18 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._error = undefined;
     this._waiting = true;
     try {
-      await removeSupervisorMount(this.hass, this._data!.name);
+      await removeSupervisorMount(this._api.callWS, this._data!.name);
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       this._error = extractApiErrorMessage(err);
       this._waiting = false;
       return;
     }
-    if (this._reloadMounts) {
-      this._reloadMounts();
+    this.params?.reloadMounts();
+    if (!this.isConnected) {
+      return;
     }
     this.closeDialog();
   }
