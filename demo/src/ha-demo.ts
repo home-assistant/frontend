@@ -10,6 +10,7 @@ import {
   applyDemoTheme,
   demoConfigEntities,
   registerDemoAutomations,
+  selectedDemo,
   selectedDemoConfig,
 } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
@@ -225,8 +226,8 @@ export class HaDemo extends HomeAssistantAppEl {
       ([conf, localize]) => {
         setDemoFloors(hass, conf.floors);
         setDemoAreas(hass, conf.areas);
-        hass.addEntities(demoConfigEntities(conf, localize));
-        registerDemoAutomations(hass, conf);
+        hass.addEntities(demoConfigEntities(selectedDemo, conf, localize));
+        registerDemoAutomations(hass, selectedDemo, conf);
         applyDemoTheme(hass, conf.theme);
       }
     );

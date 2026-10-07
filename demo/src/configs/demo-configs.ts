@@ -22,11 +22,12 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
 
 export const automationEntity = ({
   config: automation,
+  entityId,
   state = "on",
   icon,
   lastTriggered,
 }: DemoAutomation): EntityInput => ({
-  entity_id: `automation.${slugify(automation.alias)}`,
+  entity_id: entityId ?? `automation.${slugify(automation.alias)}`,
   platform: "automation",
   state,
   attributes: {
@@ -42,25 +43,55 @@ export const automationEntity = ({
   },
 });
 
+// Automations saved in the editor during this session, per demo
+const savedAutomations: Record<string, Record<string, DemoAutomation>> = {};
+
+export const saveDemoAutomation = (automation: DemoAutomation) => {
+  savedAutomations[selectedDemo] = {
+    ...savedAutomations[selectedDemo],
+    [automation.config.id]: automation,
+  };
+};
+
+// The automations of a demo config, with the ones saved in the editor
+export const demoAutomations = (
+  demo: string,
+  config: DemoConfig
+): DemoAutomation[] => {
+  const saved = savedAutomations[demo] ?? {};
+  const automations = (config.automations ?? []).map(
+    (automation) => saved[automation.config.id] ?? automation
+  );
+  const ids = new Set(automations.map((automation) => automation.config.id));
+  return [
+    ...automations,
+    ...Object.values(saved).filter(
+      (automation) => !ids.has(automation.config.id)
+    ),
+  ];
+};
+
 // The automation entities are derived from the configs the editor shows, so
 // their names and IDs always match.
 export const demoConfigEntities = (
+  demo: string,
   config: DemoConfig,
   localize: LocalizeFunc
 ): EntityInput[] => [
   ...config.entities(localize),
-  ...(config.automations ?? []).map(automationEntity),
+  ...demoAutomations(demo, config).map(automationEntity),
 ];
 
 // Like core, the automations of a demo config are in the entity registry
 export const registerDemoAutomations = (
   hass: MockHomeAssistant,
+  demo: string,
   config: DemoConfig
 ) =>
   setPlatformEntityRegistryEntries(
     hass,
     "automation",
-    (config.automations ?? []).map((automation) => ({
+    demoAutomations(demo, config).map((automation) => ({
       entity_id: automationEntity(automation).entity_id,
       unique_id: automation.config.id,
     }))
@@ -102,8 +133,8 @@ export const setDemoConfig = async (
 
   setDemoFloors(hass, config.floors);
   setDemoAreas(hass, config.areas);
-  hass.addEntities(demoConfigEntities(config, hass.localize), true);
-  registerDemoAutomations(hass, config);
+  hass.addEntities(demoConfigEntities(demo, config, hass.localize), true);
+  registerDemoAutomations(hass, demo, config);
   hass.addEntities(energyEntities());
   // Replaced the whole state map above, so the entities that do not belong to a
   // demo config have to be added back.

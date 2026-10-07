@@ -11,6 +11,8 @@ export type DemoTheme = ThemeSettings | (() => Record<string, string> | null);
 
 export interface DemoAutomation {
   config: ManualAutomationConfig & { id: string; alias: string };
+  /** Defaults to the alias as slug */
+  entityId?: string;
   state?: "on" | "off";
   icon?: string;
   /** Minutes ago */
