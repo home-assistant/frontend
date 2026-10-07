@@ -841,22 +841,40 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           flex-grow: 1;
           --data-table-border-width: 0;
         }
+        :host(:not([narrow])) ha-data-table {
+          --data-table-safe-area-inset-right: var(--safe-area-inset-right, 0px);
+        }
 
         :host([narrow]) {
           --expansion-panel-summary-padding: 0 16px;
         }
         .table-header {
+          --table-header-inset-start: 0px;
+          --table-header-inset-end: var(--safe-area-inset-right, 0px);
           display: flex;
           align-items: center;
           --mdc-shape-small: 0;
           height: 56px;
           width: 100%;
           justify-content: space-between;
-          padding: 0 var(--ha-space-4);
+          padding: 0;
+          padding-inline-start: calc(
+            var(--ha-space-4) + var(--table-header-inset-start)
+          );
           gap: var(--ha-space-4);
           box-sizing: border-box;
           background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+        .table-header:dir(rtl) {
+          --table-header-inset-start: var(--safe-area-inset-right, 0px);
+          --table-header-inset-end: 0px;
+        }
+        .table-header::after {
+          content: "";
+          flex: 0 0 var(--table-header-inset-end);
         }
         ha-input-search {
           flex: 1;

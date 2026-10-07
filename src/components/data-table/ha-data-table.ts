@@ -1341,6 +1341,16 @@ export class HaDataTable extends LitElement {
           overflow: visible;
         }
 
+        :host(:not([narrow])) .mdc-data-table {
+          width: calc(100% + var(--data-table-safe-area-inset-right, 0px));
+          margin-right: calc(-1 * var(--data-table-safe-area-inset-right, 0px));
+        }
+
+        :host(:not([narrow])) .mdc-data-table__header-row::after {
+          content: "";
+          flex: 0 0 var(--data-table-safe-area-inset-right, 0px);
+        }
+
         /* Hide scrollbar for Chrome, Safari and Opera */
         .mdc-data-table__header-row::-webkit-scrollbar {
           display: none;
@@ -1658,7 +1668,12 @@ export class HaDataTable extends LitElement {
           padding-right: var(--safe-area-inset-right, 0px);
         }
 
-        :host([narrow]) .mdc-data-table__row:has(.group-header) {
+        :host(:not([narrow])) .mdc-data-table__row {
+          box-sizing: border-box;
+          padding-right: var(--data-table-safe-area-inset-right, 0px);
+        }
+
+        .mdc-data-table__row:has(.group-header) {
           background-color: var(--primary-background-color);
         }
 
