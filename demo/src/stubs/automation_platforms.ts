@@ -21,7 +21,11 @@ interface EntityFilter {
 }
 
 // Expands a target to its areas, devices and entities, like core does
-const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
+const expandTarget = (
+  hass: MockHomeAssistant,
+  target: HassServiceTarget,
+  primaryEntitiesOnly = true
+) => {
   const missing = {
     floors: [] as string[],
     areas: [] as string[],
@@ -81,27 +85,31 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
         : undefined)
     );
   };
+  const areaDeviceIds = new Set<string>();
   for (const device of Object.values(hass.devices)) {
     const areaId = deviceArea(device.id);
     if (areaId && areaIds.has(areaId)) {
-      deviceIds.add(device.id);
+      areaDeviceIds.add(device.id);
     }
   }
 
   const entityIds = new Set(ensureArray(target.entity_id ?? []));
   for (const entity of Object.values(hass.entities)) {
-    // The display registry keeps the entities of a previous demo
-    if (!(entity.entity_id in hass.states)) {
+    // The display registry keeps the entities of a previous demo, and like
+    // core, hidden entities are never included indirectly
+    if (!(entity.entity_id in hass.states) || entity.hidden) {
       continue;
     }
-    // An entity is in the area of its device, unless it has its own area
-    const areaId =
-      entity.area_id ??
-      (entity.device_id ? deviceArea(entity.device_id) : undefined);
+    const primary = !primaryEntitiesOnly || !entity.entity_category;
     if (
-      (entity.device_id && deviceIds.has(entity.device_id)) ||
-      (areaId && areaIds.has(areaId)) ||
-      (!entity.hidden && hasLabel(entity.labels))
+      hasLabel(entity.labels) ||
+      (primary &&
+        ((entity.device_id && deviceIds.has(entity.device_id)) ||
+          (entity.area_id && areaIds.has(entity.area_id)) ||
+          // An entity with its own area is not in the area of its device
+          (!entity.area_id &&
+            entity.device_id &&
+            areaDeviceIds.has(entity.device_id))))
     ) {
       entityIds.add(entity.entity_id);
     }
@@ -109,7 +117,7 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
 
   return {
     areas: [...areaIds],
-    devices: [...deviceIds],
+    devices: [...new Set([...deviceIds, ...areaDeviceIds])],
     entities: [...entityIds],
     missing,
   };
@@ -213,12 +221,13 @@ export const mockAutomationPlatforms = (hass: MockHomeAssistant) => {
   hass.mockWS(
     "extract_from_target",
     (
-      msg: { target: HassServiceTarget },
+      msg: { target: HassServiceTarget; primary_entities_only?: boolean },
       currentHass: MockHomeAssistant
     ): ExtractFromTargetResult => {
       const { areas, devices, entities, missing } = expandTarget(
         currentHass,
-        msg.target
+        msg.target,
+        msg.primary_entities_only ?? true
       );
       return {
         missing_areas: missing.areas,
