@@ -12,7 +12,10 @@ import {
 } from "../configs/demo-configs";
 import type { DemoAutomation } from "../configs/types";
 import { mockAutomationPlatforms } from "./automation_platforms";
-import { addEntityRegistryEntry } from "./entity_registry";
+import {
+  addEntityRegistryEntry,
+  removeEntityRegistryEntry,
+} from "./entity_registry";
 
 const automationConfig = async (
   id: string | undefined
@@ -58,6 +61,24 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
     /config\/automation\/config\/.+/,
     (currentHass, method, path, parameters) => {
       const id = decodeURIComponent(path.split("/").pop()!);
+      const existing = Object.values(currentHass.states).find(
+        (stateObj) =>
+          computeDomain(stateObj.entity_id) === "automation" &&
+          stateObj.attributes.id === id
+      );
+      if (method === "DELETE") {
+        // Like core, remove the automation with its entity
+        saveDemoAutomation(id, null);
+        if (existing) {
+          const { [existing.entity_id]: _state, ...states } =
+            currentHass.states;
+          const { [existing.entity_id]: _entity, ...entities } =
+            currentHass.entities;
+          currentHass.updateHass({ states, entities });
+          removeEntityRegistryEntry(currentHass, existing.entity_id);
+        }
+        return { result: "ok" };
+      }
       if (method === "POST") {
         // Core stores the ID in the config
         const config = {
@@ -66,11 +87,6 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
         };
         config.alias ||= id;
         // Like core, update the automation entity, or add it for a new one
-        const existing = Object.values(currentHass.states).find(
-          (stateObj) =>
-            computeDomain(stateObj.entity_id) === "automation" &&
-            stateObj.attributes.id === id
-        );
         // A new automation gets a free entity ID, like core
         const slug = `automation.${slugify(config.alias)}`;
         let entityId = existing?.entity_id ?? slug;
@@ -88,8 +104,20 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
             : undefined,
         };
         // Kept per demo, so it is still there after switching demos
-        saveDemoAutomation(automation);
+        saveDemoAutomation(id, automation);
+        const display = currentHass.entities[entityId];
         currentHass.addEntities(automationEntity(automation));
+        // Adding the entity resets its display entry, keep what the registry
+        // holds
+        if (display) {
+          currentHass.entities[entityId] = {
+            ...currentHass.entities[entityId],
+            area_id: display.area_id,
+            labels: display.labels,
+            icon: display.icon,
+            hidden: display.hidden,
+          };
+        }
         if (!existing) {
           addEntityRegistryEntry(currentHass, {
             entity_id: entityId,

@@ -58,6 +58,10 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
 
   const entityIds = new Set(ensureArray(target.entity_id ?? []));
   for (const entity of Object.values(hass.entities)) {
+    // The display registry keeps the entities of a previous demo
+    if (!(entity.entity_id in hass.states)) {
+      continue;
+    }
     // An entity is in the area of its device, unless it has its own area
     const areaId =
       entity.area_id ??

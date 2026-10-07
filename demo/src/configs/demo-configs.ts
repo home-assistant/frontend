@@ -44,12 +44,20 @@ export const automationEntity = ({
 });
 
 // Automations saved in the editor during this session, per demo
-const savedAutomations: Record<string, Record<string, DemoAutomation>> = {};
+// Automations saved in the editor during this session, per demo. A deleted
+// automation is null.
+const savedAutomations: Record<
+  string,
+  Record<string, DemoAutomation | null>
+> = {};
 
-export const saveDemoAutomation = (automation: DemoAutomation) => {
+export const saveDemoAutomation = (
+  id: string,
+  automation: DemoAutomation | null
+) => {
   savedAutomations[selectedDemo] = {
     ...savedAutomations[selectedDemo],
-    [automation.config.id]: automation,
+    [id]: automation,
   };
 };
 
@@ -59,16 +67,16 @@ export const demoAutomations = (
   config: DemoConfig
 ): DemoAutomation[] => {
   const saved = savedAutomations[demo] ?? {};
-  const automations = (config.automations ?? []).map(
-    (automation) => saved[automation.config.id] ?? automation
-  );
-  const ids = new Set(automations.map((automation) => automation.config.id));
+  const configured = config.automations ?? [];
+  const ids = new Set(configured.map((automation) => automation.config.id));
   return [
-    ...automations,
-    ...Object.values(saved).filter(
-      (automation) => !ids.has(automation.config.id)
+    ...configured.map((automation) =>
+      automation.config.id in saved ? saved[automation.config.id] : automation
     ),
-  ];
+    ...Object.values(saved).filter(
+      (automation) => automation && !ids.has(automation.config.id)
+    ),
+  ].filter((automation): automation is DemoAutomation => automation !== null);
 };
 
 // The automation entities are derived from the configs the editor shows, so

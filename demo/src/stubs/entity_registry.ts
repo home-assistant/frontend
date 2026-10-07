@@ -1,4 +1,5 @@
 import type {
+  EntityRegistryDisplayEntryResponse,
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
@@ -130,6 +131,14 @@ export const setPlatformEntityRegistryEntries = (
   hass.mockEvent("entity_registry_updated");
 };
 
+export const removeEntityRegistryEntry = (
+  hass: MockHomeAssistant,
+  entityId: string
+) => {
+  entries = entries.filter((e) => e.entity_id !== entityId);
+  hass.mockEvent("entity_registry_updated");
+};
+
 // Adds an entry like core does when an integration creates an entity
 export const addEntityRegistryEntry = (
   hass: MockHomeAssistant,
@@ -141,3 +150,44 @@ export const addEntityRegistryEntry = (
   ];
   hass.mockEvent("entity_registry_updated");
 };
+
+// The app refetches the display registry on entity_registry_updated events.
+// Answer with the current display registry, which the demo keeps in hass.
+export const mockEntityRegistryDisplay = (hass: MockHomeAssistant) =>
+  hass.mockWS(
+    "config/entity_registry/list_for_display",
+    (
+      _msg,
+      currentHass: MockHomeAssistant
+    ): EntityRegistryDisplayEntryResponse => {
+      const categories = [
+        ...new Set(
+          Object.values(currentHass.entities)
+            .map((entity) => entity.entity_category)
+            .filter((category) => category !== undefined)
+        ),
+      ];
+      return {
+        entities: Object.values(currentHass.entities).map((entity) => ({
+          ei: entity.entity_id,
+          di: entity.device_id,
+          ai: entity.area_id,
+          np: entity.next_name_part,
+          lb: entity.labels,
+          ec: entity.entity_category
+            ? categories.indexOf(entity.entity_category)
+            : undefined,
+          en: entity.name,
+          ic: entity.icon,
+          pl: entity.platform ?? "demo",
+          tk: entity.translation_key,
+          hb: entity.hidden,
+          dp: entity.display_precision,
+          hn: entity.has_entity_name,
+        })),
+        entity_categories: Object.fromEntries(
+          categories.map((category, index) => [index, category])
+        ),
+      };
+    }
+  );
