@@ -82,10 +82,19 @@ export const mockEntityRegistry = (
         | "categories"
         | "hidden_by"
         | "disabled_by"
-      >,
+      > & { new_entity_id?: string },
       currentHass: MockHomeAssistant
     ): UpdateEntityRegistryEntryResult => {
-      const { entity_id: entityId, ...updates } = msg;
+      const {
+        entity_id: entityId,
+        new_entity_id: newEntityId,
+        ...updates
+      } = msg;
+      // Renaming would have to move the entity in every mock, so refuse it
+      // instead of reporting a rename that did not happen
+      if (newEntityId && newEntityId !== entityId) {
+        throw new Error("Changing the entity ID is not supported in the demo");
+      }
       // The demo entities without an entry get one, like any core entity has
       const entry = {
         ...(entries.find((e) => e.entity_id === entityId) ??
