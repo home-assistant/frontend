@@ -884,11 +884,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.currentEntityId = undefined;
       showScriptEditor({
         ...this.config,
-        alias: this.readOnly
-          ? this.config?.alias
-          : `${this.config?.alias} (${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate"
-            )})`,
+        alias: this.readOnly ? this.config?.alias : undefined,
       });
     }
   }
