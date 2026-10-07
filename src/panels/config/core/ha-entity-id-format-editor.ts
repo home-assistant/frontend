@@ -26,7 +26,7 @@ import type { ValueChangedEvent } from "../../../types";
 const REQUIRED_TYPES: readonly EntityIdPart[] = ["device", "entity"];
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item type="button" compact>
+  <ha-combo-box-item>
     <span slot="headline">${item.primary}</span>
   </ha-combo-box-item>
 `;

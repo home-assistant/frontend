@@ -1,5 +1,6 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
+import type { MapStyleConfig } from "../../../common/map/map-styles";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
 import type { EnergySourceByType } from "../../../data/energy";
@@ -428,6 +429,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   auto_fit?: boolean;
   fit_zones?: boolean;
+  show_zone_radius?: boolean;
   default_zoom?: number;
   show_all?: boolean;
   entities?: (MapEntityConfig | string)[];
@@ -435,6 +437,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
+  map_style?: MapStyleConfig;
   cluster?: boolean;
   conditions?: Condition[];
   scale_ruler?: boolean;

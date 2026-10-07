@@ -27,6 +27,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -77,7 +78,6 @@ import { handleBackClick } from "../../layouts/back-navigation";
 import { ChildPanelReady } from "../../layouts/panel-ready";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import { isMac } from "../../util/is_mac";
 import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
@@ -211,14 +211,7 @@ class HUIRoot extends LitElement {
             @click=${this._editModeDisable}
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
-          </ha-button>
-          <ha-icon-button
-            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-            .path=${mdiHelpCircleOutline}
-            href=${documentationUrl(this.hass, "/dashboards/")}
-            rel="noreferrer"
-            target="_blank"
-          ></ha-icon-button>`
+          </ha-button>`
       );
     }
 
@@ -250,6 +243,13 @@ class HUIRoot extends LitElement {
         icon: mdiFileMultiple,
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
+        visible: this._editMode,
+        overflow: true,
+      },
+      {
+        icon: mdiHelpCircleOutline,
+        key: "ui.panel.lovelace.menu.help",
+        overflowAction: this._handleHelp,
         visible: this._editMode,
         overflow: true,
       },
@@ -296,9 +296,7 @@ class HUIRoot extends LitElement {
         overflowAction: this._showQuickBar,
         suffix:
           this.hass.enableShortcuts && !isMobileClient
-            ? isMac
-              ? "(⌘ + K)"
-              : "(Ctrl + K)"
+            ? `(${ctrlOrCmdLabel(this.hass.localize)} + K)`
             : undefined,
         visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
@@ -1052,6 +1050,14 @@ class HUIRoot extends LitElement {
       return;
     }
     this.lovelace!.setEditMode(true);
+  };
+
+  private _handleHelp = () => {
+    window.open(
+      documentationUrl(this.hass, "/dashboards/"),
+      "_blank",
+      "noreferrer"
+    );
   };
 
   private _editModeDisable(): void {

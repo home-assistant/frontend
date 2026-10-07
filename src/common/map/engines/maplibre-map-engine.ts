@@ -9,7 +9,7 @@ import type {
   Marker as MapLibreMarker,
   StyleSpecification,
 } from "maplibre-gl";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import {
   clearMarkerAccessibility,
   setMarkerAccessibility,
@@ -17,19 +17,21 @@ import {
 import {
   CONTEXT_RESTORE_GRACE,
   ensureRTLTextPlugin,
+  ensureWorkerUrl,
   loadStyle,
   MAP_MAX_ZOOM,
   MAP_MIN_ZOOM,
   RECOVERY_THROTTLE,
-  VECTOR_STYLES,
 } from "../base-layer";
 import {
   refreshMapTilesToken,
   subscribeMapTilesToken,
   withMapTilesToken,
 } from "../../../data/map_tiles";
+import { deepEqual } from "../../util/deep-equal";
 import { isTouch } from "../../../util/is_touch";
 import type {
+  MapCircleHandle,
   MapCircleOptions,
   MapClusterIcon,
   MapClusterOptions,
@@ -48,8 +50,11 @@ import type {
   MapLatLng,
   MapMarkerOptions,
   MapPath,
+  MapPathHandle,
+  MapView,
 } from "../map-engine";
 import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
+import type { ResolvedMapStyle } from "../map-styles";
 import {
   createResizeHandleElement,
   RADIUS_ARIA_MAX,
@@ -75,12 +80,19 @@ const POSITIONS: Record<
 };
 
 const MAPLIBRE_CSS_URL = "/static/map/maplibre-gl.css";
+// Fully hidden behind the globe, not MapLibre's faint ghost
+const MARKER_OPTIONS = { opacityWhenCovered: 0 };
 
 // Roughly one zoom level per two wheel notches (MapLibre's default is 1/450)
 const WHEEL_ZOOM_RATE = 1 / 200;
 
 // Regroup clusters once continuous zooming settles, not on every wheel notch
-const CLUSTER_REBUILD_DELAY = 120;
+export const CLUSTER_REBUILD_DELAY = 120;
+
+const ATTRIBUTION_SHOW_DURATION = 5000;
+const ATTRIBUTION_SHOWN_CLASS = "maplibregl-compact-show";
+// The app's narrow-layout breakpoint (home-assistant-main)
+const NARROW_VIEWPORT_QUERY = "(max-width: 870px)";
 
 type GeoJSONSourceSpecification = Extract<
   Parameters<MapLibreMap["addSource"]>[1],
@@ -96,6 +108,7 @@ const resetMarkerElement = (element: HTMLElement): void => {
   element.style.opacity = "";
   element.style.pointerEvents = "";
   element.style.cursor = "";
+  element.style.visibility = "";
 };
 
 // A meter-radius circle as a polygon (spherical approximation)
@@ -116,6 +129,42 @@ const circlePolygon = (
   };
 };
 
+const coloredCircle = (
+  center: MapLatLng,
+  options: MapCircleOptions
+): Feature<Polygon> => ({
+  ...circlePolygon(center, options.radius),
+  properties: { color: options.color, outline: options.outline !== false },
+});
+
+const pathLines = (path: MapPath): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: path.segments.map((segment) => ({
+    type: "Feature",
+    properties: { color: path.color, opacity: segment.opacity ?? 1 },
+    geometry: {
+      type: "LineString",
+      coordinates: segment.points.map((point) => [point[1], point[0]]),
+    },
+  })),
+});
+
+const pathPoints = (path: MapPath): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: path.markers.map((pathMarker) => ({
+    type: "Feature",
+    properties: {
+      color: path.color,
+      opacity: pathMarker.opacity ?? 1,
+      tooltip: pathMarker.tooltipHtml,
+    },
+    geometry: {
+      type: "Point",
+      coordinates: [pathMarker.location[1], pathMarker.location[0]],
+    },
+  })),
+});
+
 interface ManagedMarker {
   element: HTMLElement;
   location: MapLatLng;
@@ -129,14 +178,48 @@ interface ManagedMarker {
   removed?: boolean;
 }
 
+// Something on the map by its visual centre: a location, the pixel offset
+// from that location to the centre, and half its larger dimension
+interface Footprint {
+  location: MapLatLng;
+  offset: [x: number, y: number];
+  half: number;
+}
+
+interface EmergingEntry extends Footprint {
+  element: HTMLElement;
+}
+
+const iconFootprint = (icon: MapClusterIcon, center: MapLatLng): Footprint => ({
+  location: icon.location ?? center,
+  offset: icon.anchor
+    ? [icon.size[0] / 2 - icon.anchor[0], icon.size[1] / 2 - icon.anchor[1]]
+    : [0, 0],
+  half: Math.max(...icon.size) / 2,
+});
+
+const markerFootprint = ({ location, options }: ManagedMarker): Footprint => ({
+  location,
+  offset: options.anchor
+    ? [
+        options.size[0] / 2 - options.anchor[0],
+        options.size[1] / 2 - options.anchor[1],
+      ]
+    : [0, 0],
+  half: Math.max(...options.size) / 2,
+});
+
 interface ClusterGroup {
-  /** Members are shown in a bubble at their spot instead of an icon */
+  /** The bubble shows every member instead of a few and a count */
   open?: boolean;
   /** Grouped by key (a zone), so it bubbles even with a single member */
   key?: string;
   members: ManagedMarker[];
   center: MapLatLng;
+  /** The bubble to place: closed, or expanded when open */
   icon?: MapClusterIcon;
+  /** Whichever icon is on the map, closed or expanded */
+  placed?: MapClusterIcon;
   iconMarker?: MapLibreMarker;
 }
 
@@ -160,6 +243,14 @@ export class MapLibreMapEngine implements MapEngine {
 
   private _scaleControl?: IControl;
 
+  private _attributionControl?: IControl;
+
+  private _attributionObserver?: MutationObserver;
+
+  private _attributionTimeout?: number;
+
+  private _narrowViewport = window.matchMedia(NARROW_VIEWPORT_QUERY);
+
   private _markers: ManagedMarker[] = [];
 
   private _clusterOptions: MapClusterOptions | null = null;
@@ -167,6 +258,15 @@ export class MapLibreMapEngine implements MapEngine {
   private _clusterGroups: ClusterGroup[] = [];
 
   private _clusterRebuildTimeout?: number;
+
+  // Members whose bubble reopens after the zoom towards them
+  private _openAfterRegroup?: ManagedMarker[];
+
+  // Regroup as the map will be at this zoom rather than as it is
+  private _groupingZoom?: number;
+
+  // Parted from a bubble by a zoom, hidden until clear of it
+  private _emerging?: { from: Footprint; entries: EmergingEntry[] };
 
   private _idCounter = 0;
 
@@ -184,10 +284,10 @@ export class MapLibreMapEngine implements MapEngine {
   // until the next frame and throws on mutation; layer work queues until then
   private _pendingStyleOps: (() => void)[] = [];
 
-  // A failed style request rolls back to the applied mode, not the requested one
-  private _appliedDarkMode = false;
+  // A failed style request rolls back to the applied style, not the requested one
+  private _appliedStyle!: ResolvedMapStyle;
 
-  private _requestedDarkMode = false;
+  private _requestedStyle!: ResolvedMapStyle;
 
   private _latestStyleRequest = 0;
 
@@ -216,8 +316,10 @@ export class MapLibreMapEngine implements MapEngine {
     if (options.rasterOnly) {
       throw new Error("The MapLibre engine cannot render without WebGL");
     }
-    const maplibre = (await import("maplibre-gl")).default;
+    // MapLibre 6 has no default export.
+    const maplibre = await import("maplibre-gl");
     this._maplibre = maplibre;
+    ensureWorkerUrl(maplibre.setWorkerUrl);
     ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
 
     // MapLibre's stylesheet for controls and popups; one link per root
@@ -229,13 +331,11 @@ export class MapLibreMapEngine implements MapEngine {
       root.appendChild(style);
     }
 
-    this._appliedDarkMode = options.darkMode;
-    this._requestedDarkMode = options.darkMode;
+    this._appliedStyle = options.mapStyle;
+    this._requestedStyle = options.mapStyle;
     this._events = options.events;
 
-    const style = await loadStyle(
-      VECTOR_STYLES[options.darkMode ? "dark" : "light"]
-    );
+    const style = await loadStyle(options.mapStyle);
     if (this._destroyed) {
       return;
     }
@@ -253,11 +353,10 @@ export class MapLibreMapEngine implements MapEngine {
       touchPitch: false,
       // Rendered with a device font, so these glyphs are never requested
       localIdeographFontFamily: "sans-serif",
-      // Inline on wide maps, collapsible (open by default) on narrow ones
-      attributionControl: {},
+      attributionControl: false,
       // Proxied by core behind a token; absolute so the worker can resolve them
       transformRequest: (url) => ({
-        url: withMapTilesToken(url),
+        ...withMapTilesToken(url),
         referrerPolicy: __DEMO__ ? "origin" : undefined,
       }),
     });
@@ -282,16 +381,18 @@ export class MapLibreMapEngine implements MapEngine {
       this._refused = true;
       refreshMapTilesToken();
     });
-    // Only a new token clears a refusal; a theme change in between is refused too
+    // Only a new token clears a refusal; a style change in between is refused too
     this._unsubscribeToken = subscribeMapTilesToken(() => {
       if (this._refused) {
         this._refused = false;
-        this._applyStyle(this._requestedDarkMode);
+        this._applyStyle(this._requestedStyle);
       }
     });
 
     this._zoomControl = new maplibre.NavigationControl({ showCompass: false });
     map.addControl(this._zoomControl, POSITIONS[options.zoomControlPosition]);
+    this._setUpAttribution();
+    this._narrowViewport.addEventListener("change", this._setUpAttribution);
 
     map.on("click", (ev) => {
       // Clicks on path points (they have tooltips) are not map clicks
@@ -302,6 +403,9 @@ export class MapLibreMapEngine implements MapEngine {
         this._events.click?.([ev.lngLat.lat, ev.lngLat.lng]);
       }
     });
+    // Everything the first view needs has been drawn; before this the canvas
+    // can still be blank, whatever the style says
+    map.once("load", () => this._events.drawn?.());
     map.on("zoomstart", () => this._events.zoomStart?.());
     map.on("movestart", () => {
       // resize() fires movestart even when nothing changed (see _resize)
@@ -309,6 +413,7 @@ export class MapLibreMapEngine implements MapEngine {
         this._events.moveStart?.();
       }
     });
+    map.on("move", () => this._revealEmerged());
     // Grouping depends on screen distances; regroup when the camera settles
     map.on("moveend", () => {
       if (this._clusterOptions) {
@@ -351,6 +456,62 @@ export class MapLibreMapEngine implements MapEngine {
     }
   };
 
+  // Compact on a narrow viewport too, not only on a narrow map
+  private _setUpAttribution = (): void => {
+    const map = this._map;
+    if (!map || !this._maplibre) {
+      return;
+    }
+    if (this._attributionControl) {
+      map.removeControl(this._attributionControl);
+    }
+    this._attributionControl = new this._maplibre.AttributionControl({
+      compact: this._narrowViewport.matches ? true : undefined,
+    });
+    map.addControl(this._attributionControl, "bottom-right");
+    const attribution = map
+      .getContainer()
+      .querySelector<HTMLElement>(".maplibregl-ctrl-attrib");
+    if (attribution) {
+      this._autoHideAttribution(attribution);
+    }
+  };
+
+  private _autoHideAttribution(attribution: HTMLElement): void {
+    clearTimeout(this._attributionTimeout);
+    this._attributionObserver?.disconnect();
+    let byUser = false;
+    attribution
+      .querySelector(".maplibregl-ctrl-attrib-button")
+      ?.addEventListener("click", () => {
+        // MapLibre's click handler already ran; the observer sees this flag
+        byUser = true;
+        queueMicrotask(() => {
+          byUser = false;
+        });
+      });
+    let shown = false;
+    const sync = () => {
+      const nowShown = attribution.classList.contains(ATTRIBUTION_SHOWN_CLASS);
+      if (nowShown === shown) {
+        return;
+      }
+      shown = nowShown;
+      clearTimeout(this._attributionTimeout);
+      if (shown && !byUser) {
+        this._attributionTimeout = window.setTimeout(() => {
+          attribution.classList.remove(ATTRIBUTION_SHOWN_CLASS);
+        }, ATTRIBUTION_SHOW_DURATION);
+      }
+    };
+    this._attributionObserver = new MutationObserver(sync);
+    this._attributionObserver.observe(attribution, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    sync();
+  }
+
   private _scheduleFatal(): void {
     clearTimeout(this._fallbackTimeout);
     // Backgrounding drops the context too, and there it comes back on return
@@ -369,7 +530,12 @@ export class MapLibreMapEngine implements MapEngine {
     this._unsubscribeToken?.();
     clearTimeout(this._fallbackTimeout);
     clearTimeout(this._clusterRebuildTimeout);
+    clearTimeout(this._attributionTimeout);
+    this._attributionObserver?.disconnect();
+    this._attributionObserver = undefined;
+    this._narrowViewport.removeEventListener("change", this._setUpAttribution);
     document.removeEventListener("visibilitychange", this._handleVisibility);
+    this._revealEmerged(true);
     this._clusterGroups.forEach((group) => group.iconMarker?.remove());
     this._clusterGroups = [];
     this._markers = [];
@@ -413,30 +579,30 @@ export class MapLibreMapEngine implements MapEngine {
     }
   }
 
-  public setDarkMode(darkMode: boolean): void {
-    if (!this._map || darkMode === this._requestedDarkMode) {
+  public setMapStyle(mapStyle: ResolvedMapStyle): void {
+    if (!this._map || deepEqual(mapStyle, this._requestedStyle)) {
       return;
     }
-    this._requestedDarkMode = darkMode;
-    this._applyStyle(darkMode);
+    this._requestedStyle = mapStyle;
+    this._applyStyle(mapStyle);
   }
 
-  private _applyStyle(darkMode: boolean): void {
+  private _applyStyle(mapStyle: ResolvedMapStyle): void {
     const request = ++this._latestStyleRequest;
 
-    loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"])
+    loadStyle(mapStyle)
       .then((style) => {
         if (request === this._latestStyleRequest && this._map) {
           this._map.setStyle(style, {
             transformStyle: (previous, next) =>
               this._carryCustomLayers(previous, next),
           });
-          this._appliedDarkMode = darkMode;
+          this._appliedStyle = mapStyle;
         }
       })
       .catch(() => {
         if (request === this._latestStyleRequest) {
-          this._requestedDarkMode = this._appliedDarkMode;
+          this._requestedStyle = this._appliedStyle;
         }
       });
   }
@@ -494,6 +660,17 @@ export class MapLibreMapEngine implements MapEngine {
     });
   }
 
+  public getView(): MapView | undefined {
+    if (!this._map) {
+      return undefined;
+    }
+    const center = this._map.getCenter();
+    return {
+      center: [center.lat, center.lng],
+      zoom: this._map.getZoom() + ZOOM_OFFSET,
+    };
+  }
+
   public setZoom(zoom: number): void {
     this._map?.easeTo({ zoom: zoom - ZOOM_OFFSET });
   }
@@ -503,13 +680,50 @@ export class MapLibreMapEngine implements MapEngine {
   }
 
   private _project(location: MapLatLng): { x: number; y: number } {
-    const point = this._map!.project([location[1], location[0]]);
-    return { x: point.x, y: point.y };
+    return this._projectAt(
+      location,
+      this._groupingZoom ?? this._map!.getZoom()
+    );
+  }
+
+  private _projectAt(
+    location: MapLatLng,
+    zoom: number
+  ): { x: number; y: number } {
+    const map = this._map!;
+    const point = map.project([location[1], location[0]]);
+    const scale = 2 ** (zoom - map.getZoom());
+    return { x: point.x * scale, y: point.y * scale };
   }
 
   public fitBounds(points: MapLatLng[], options?: MapFitOptions): void {
-    if (!this._map || !this._maplibre || !points.length) {
+    const fit = this._fitFor(points, options);
+    if (!fit) {
       return;
+    }
+    const map = this._map!;
+    // Regroup now for the zoom the fit lands on
+    const zoom = this._clusterOptions
+      ? map.cameraForBounds(fit.bounds, fit.options)?.zoom
+      : undefined;
+    if (zoom !== undefined) {
+      this._groupingZoom = zoom;
+      try {
+        this._rebuildClusters(true);
+      } finally {
+        this._groupingZoom = undefined;
+      }
+    }
+    map.fitBounds(fit.bounds, {
+      ...fit.options,
+      animate: options?.animate,
+      linear: !options?.fly,
+    });
+  }
+
+  private _fitFor(points: MapLatLng[], options?: MapFitOptions) {
+    if (!this._map || !this._maplibre || !points.length) {
+      return undefined;
     }
     let minLat = points[0][0];
     let maxLat = points[0][0];
@@ -534,29 +748,25 @@ export class MapLibreMapEngine implements MapEngine {
     };
     if (minLat === maxLat && minLng === maxLng) {
       // Zero-area bounds: center on the point, keeping the zoom unless given
-      this._map.fitBounds(
-        [
+      return {
+        bounds: [
           [minLng, minLat],
           [minLng, minLat],
-        ],
-        {
-          maxZoom: maxZoom ?? this._map.getZoom(),
-          animate: options?.animate,
-          padding,
-        }
-      );
-      return;
+        ] as [[number, number], [number, number]],
+        options: { maxZoom: maxZoom ?? this._map.getZoom(), padding },
+      };
     }
     const pad = options?.pad ?? 0.5;
     const latPad = (maxLat - minLat) * pad;
     const lngPad = (maxLng - minLng) * pad;
-    this._map.fitBounds(
-      [
-        [minLng - lngPad, minLat - latPad],
-        [maxLng + lngPad, maxLat + latPad],
-      ],
-      { maxZoom, animate: options?.animate, padding }
-    );
+    // MapLibre rejects a latitude beyond the poles
+    return {
+      bounds: [
+        [minLng - lngPad, Math.max(-90, minLat - latPad)],
+        [maxLng + lngPad, Math.min(90, maxLat + latPad)],
+      ] as [[number, number], [number, number]],
+      options: { maxZoom, padding },
+    };
   }
 
   public panTo(location: MapLatLng): void {
@@ -590,7 +800,7 @@ export class MapLibreMapEngine implements MapEngine {
   ): MapEditableMarkerHandle {
     element.style.width = `${options.size[0]}px`;
     element.style.height = `${options.size[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       element.title = options.title;
     }
     const interactive = options.interactive ?? true;
@@ -600,6 +810,7 @@ export class MapLibreMapEngine implements MapEngine {
       element.style.pointerEvents = "none";
     }
     setMarkerAccessibility(element, options.title, focusable);
+    element.style.zIndex = options.raised ? "1" : "";
     if (draggable) {
       // The engine, not the host, knows whether this element really drags
       element.style.cursor = "move";
@@ -657,6 +868,7 @@ export class MapLibreMapEngine implements MapEngine {
     if (!managed.mlMarker) {
       const { options } = managed;
       managed.mlMarker = new this._maplibre.Marker({
+        ...MARKER_OPTIONS,
         element: managed.element,
         draggable: managed.draggable ?? false,
         ...(options.anchor
@@ -701,25 +913,31 @@ export class MapLibreMapEngine implements MapEngine {
   public addCircle(
     center: MapLatLng,
     options: MapCircleOptions
-  ): MapItemHandle {
+  ): MapCircleHandle {
     if (!this._map) {
-      return { remove: () => undefined };
+      return { update: () => undefined, remove: () => undefined };
     }
     const id = `${CUSTOM_PREFIX}circle-${this._idCounter++}`;
-    this._addCustomSource(id, circlePolygon(center, options.radius));
+    this._addCustomSource(id, coloredCircle(center, options));
     this._addCustomLayer({
       id: `${id}-fill`,
       type: "fill",
       source: id,
-      paint: { "fill-color": options.color, "fill-opacity": 0.2 },
+      paint: { "fill-color": ["get", "color"], "fill-opacity": 0.2 },
     });
     this._addCustomLayer({
       id: `${id}-line`,
       type: "line",
       source: id,
-      paint: { "line-color": options.color, "line-width": 3 },
+      paint: {
+        "line-color": ["get", "color"],
+        "line-width": ["case", ["get", "outline"], 3, 0],
+      },
     });
     return {
+      update: (newCenter, newOptions) => {
+        this._setCustomSourceData(id, coloredCircle(newCenter, newOptions));
+      },
       remove: () => {
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
@@ -781,7 +999,7 @@ export class MapLibreMapEngine implements MapEngine {
     }
     centerEl.style.width = `${centerSize[0]}px`;
     centerEl.style.height = `${centerSize[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       centerEl.title = options.title;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
@@ -790,6 +1008,7 @@ export class MapLibreMapEngine implements MapEngine {
     }
     this._placedElements.add(centerEl);
     const centerMarker = new maplibre.Marker({
+      ...MARKER_OPTIONS,
       element: centerEl,
       draggable: options.moveable ?? false,
     })
@@ -798,9 +1017,26 @@ export class MapLibreMapEngine implements MapEngine {
 
     let resizeMarker: MapLibreMarker | undefined;
     let resizeHandle: HTMLElement | undefined;
+    // The user's hand wins while dragging; the host is the truth otherwise
+    let dragging = false;
+    // Hidden while the circle is under the center element
+    const syncResizeHandleVisibility = () => {
+      if (!resizeHandle || dragging) {
+        return;
+      }
+      const east = pointEastOf(currentCenter, currentRadius);
+      const centerPoint = map.project([currentCenter[1], currentCenter[0]]);
+      const eastPoint = map.project([east[1], east[0]]);
+      const covered =
+        Math.hypot(eastPoint.x - centerPoint.x, eastPoint.y - centerPoint.y) <
+        centerSize[0] / 2;
+      resizeHandle.style.display =
+        covered && !resizeHandle.matches(":focus-visible") ? "none" : "";
+    };
     const placeResizeHandle = () => {
       const east = pointEastOf(currentCenter, currentRadius);
       resizeMarker?.setLngLat([east[1], east[0]]);
+      syncResizeHandleVisibility();
       const radiusText = String(Math.round(currentRadius));
       resizeHandle?.setAttribute(
         "aria-valuemax",
@@ -811,13 +1047,12 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
     };
 
-    // The user's hand wins while dragging; the host is the truth otherwise
-    let dragging = false;
-
     if (options.resizable) {
+      map.on("zoom", syncResizeHandleVisibility);
       const east = pointEastOf(center, options.radius);
       resizeHandle = createResizeHandleElement(options.resizeLabel);
       resizeMarker = new maplibre.Marker({
+        ...MARKER_OPTIONS,
         element: resizeHandle,
         draggable: true,
       })
@@ -873,7 +1108,10 @@ export class MapLibreMapEngine implements MapEngine {
       };
       resizeHandle.addEventListener("keyup", commitKeyboardResize);
       // Focus can leave while a key is still held
-      resizeHandle.addEventListener("blur", commitKeyboardResize);
+      resizeHandle.addEventListener("blur", () => {
+        commitKeyboardResize();
+        syncResizeHandleVisibility();
+      });
       // Like the other markers: a click on the handle is not a map click
       resizeHandle.addEventListener("click", (ev) => ev.stopPropagation());
     }
@@ -884,6 +1122,7 @@ export class MapLibreMapEngine implements MapEngine {
       });
       handleMarker?.on("dragend", () => {
         dragging = false;
+        syncResizeHandleVisibility();
       });
     });
 
@@ -957,6 +1196,7 @@ export class MapLibreMapEngine implements MapEngine {
         resetMarkerElement(centerEl);
         clearMarkerAccessibility(centerEl);
         this._placedElements.delete(centerEl);
+        map.off("zoom", syncResizeHandleVisibility);
         resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
@@ -965,46 +1205,20 @@ export class MapLibreMapEngine implements MapEngine {
     };
   }
 
-  public addPath(path: MapPath): MapItemHandle {
+  public addPath(path: MapPath): MapPathHandle {
     if (!this._map || !this._maplibre) {
-      return { remove: () => undefined };
+      return { update: () => undefined, remove: () => undefined };
     }
     const id = `${CUSTOM_PREFIX}path-${this._idCounter++}`;
 
-    const lines: FeatureCollection = {
-      type: "FeatureCollection",
-      features: path.segments.map((segment) => ({
-        type: "Feature",
-        properties: { opacity: segment.opacity ?? 1 },
-        geometry: {
-          type: "LineString",
-          coordinates: segment.points.map((point) => [point[1], point[0]]),
-        },
-      })),
-    };
-    const points: FeatureCollection = {
-      type: "FeatureCollection",
-      features: path.markers.map((pathMarker) => ({
-        type: "Feature",
-        properties: {
-          opacity: pathMarker.opacity ?? 1,
-          tooltip: pathMarker.tooltipHtml,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [pathMarker.location[1], pathMarker.location[0]],
-        },
-      })),
-    };
-
-    this._addCustomSource(`${id}-lines`, lines);
-    this._addCustomSource(`${id}-points`, points);
+    this._addCustomSource(`${id}-lines`, pathLines(path));
+    this._addCustomSource(`${id}-points`, pathPoints(path));
     this._addCustomLayer({
       id: `${id}-lines`,
       type: "line",
       source: `${id}-lines`,
       paint: {
-        "line-color": path.color,
+        "line-color": ["get", "color"],
         "line-width": 3,
         "line-opacity": ["get", "opacity"],
       },
@@ -1015,10 +1229,10 @@ export class MapLibreMapEngine implements MapEngine {
       source: `${id}-points`,
       paint: {
         "circle-radius": isTouch ? 8 : 3,
-        "circle-color": path.color,
+        "circle-color": ["get", "color"],
         "circle-opacity": ["get", "opacity"],
         "circle-stroke-width": 2,
-        "circle-stroke-color": path.color,
+        "circle-stroke-color": ["get", "color"],
         "circle-stroke-opacity": ["get", "opacity"],
       },
     });
@@ -1061,6 +1275,10 @@ export class MapLibreMapEngine implements MapEngine {
     this._pathPointLayers.add(layerId);
 
     return {
+      update: (next) => {
+        this._setCustomSourceData(`${id}-lines`, pathLines(next));
+        this._setCustomSourceData(`${id}-points`, pathPoints(next));
+      },
       remove: () => {
         map.off("mouseenter", layerId, onEnter);
         map.off("mouseleave", layerId, onLeave);
@@ -1165,64 +1383,168 @@ export class MapLibreMapEngine implements MapEngine {
     this._rebuildClusters(false);
   }
 
-  // Zooming separates members unless they share a spot or the map is already
-  // at its maximum zoom
-  private _canSeparate(members: ManagedMarker[]): boolean {
-    const map = this._map!;
-    if (map.getZoom() >= map.getMaxZoom() - 0.01) {
-      return false;
+  // The bubble with every member in it, placed like the closed one
+  private _openGroup(group: ClusterGroup): void {
+    const icon = group.icon!;
+    this._placeIcon(group, icon);
+    // The members inside are the buttons; the bubble only names the set
+    icon.element.setAttribute("role", "group");
+    const title = this._groupTitle(group);
+    if (title) {
+      icon.element.setAttribute("aria-label", title);
     }
-    const [first] = members;
-    return members.some(
-      (managed) =>
-        managed.location[0] !== first.location[0] ||
-        managed.location[1] !== first.location[1]
+  }
+
+  // The avatar that had focus if the rebuilt bubble kept it, else the first
+  // member of an open bubble, the bubble icon or the member itself
+  private _focusGroup(
+    group: ClusterGroup,
+    fallback: HTMLElement,
+    previous?: Element | null
+  ): void {
+    const element = group.iconMarker?.getElement();
+    (
+      (group.open &&
+        ((previous instanceof HTMLElement &&
+          element?.contains(previous) &&
+          previous) ||
+          element?.querySelector<HTMLElement>("[tabindex]"))) ||
+      element ||
+      fallback
+    ).focus();
+  }
+
+  private _activeElement(): Element | null {
+    return (this._map!.getContainer().getRootNode() as Document | ShadowRoot)
+      .activeElement;
+  }
+
+  private _groupTitle(group: ClusterGroup): string | undefined {
+    return (
+      group.members
+        .map((managed) => managed.options.title)
+        .filter(Boolean)
+        .join(", ") || undefined
     );
   }
 
-  // Shows the members themselves in a bubble whose tail points at their
-  // spot, each reachable on its own; the next regroup closes it
-  private _openGroup(group: ClusterGroup): void {
-    const members = document.createElement("div");
-    members.className = "cluster-open-members";
-    for (const managed of group.members) {
-      this._hideMarker(managed);
-      resetMarkerElement(managed.element);
-      members.appendChild(managed.element);
-    }
-    const tail = document.createElement("div");
-    tail.className = "cluster-open-tail";
-    const root = document.createElement("div");
-    root.className = "cluster-open";
-    root.append(members, tail);
+  private _placeIcon(group: ClusterGroup, icon: MapClusterIcon): void {
+    group.members.forEach((managed) => this._hideMarker(managed));
+    group.placed = icon;
+    icon.element.style.width = `${icon.size[0]}px`;
+    icon.element.style.height = `${icon.size[1]}px`;
+    const location = icon.location ?? group.center;
     group.iconMarker = new this._maplibre!.Marker({
-      element: root,
-      anchor: "bottom",
+      ...MARKER_OPTIONS,
+      element: icon.element,
+      ...(icon.anchor
+        ? {
+            anchor: "top-left" as const,
+            offset: [-icon.anchor[0], -icon.anchor[1]] as [number, number],
+          }
+        : {}),
     })
-      .setLngLat([group.center[1], group.center[0]])
+      .setLngLat([location[1], location[0]])
       .addTo(this._map!);
   }
 
-  // Groups clusterable markers by screen distance
-  private _rebuildClusters(regroup = true): void {
+  // Whatever the parted members now show as starts hidden, so nothing pops
+  // out from under the bubble before the zoom has carried it clear
+  private _hideEmerging(members: ManagedMarker[]): void {
+    const entries: EmergingEntry[] = [];
+    const kept = (group: ClusterGroup) =>
+      group.members.filter((managed) => members.includes(managed)).length;
+    const staying = this._clusterGroups.reduce((best, group) =>
+      kept(group) > kept(best) ? group : best
+    );
+    for (const group of this._clusterGroups) {
+      if (group === staying || !kept(group)) {
+        continue;
+      }
+      if (group.iconMarker && group.placed) {
+        entries.push({
+          ...iconFootprint(group.placed, group.center),
+          element: group.iconMarker.getElement(),
+        });
+      } else {
+        for (const managed of group.members) {
+          if (managed.mlMarker) {
+            entries.push({
+              ...markerFootprint(managed),
+              element: managed.element,
+            });
+          }
+        }
+      }
+    }
+    entries.forEach((entry) => {
+      entry.element.style.visibility = "hidden";
+    });
+    const from = staying.placed
+      ? iconFootprint(staying.placed, staying.center)
+      : markerFootprint(staying.members[0]);
+    this._emerging = entries.length ? { from, entries } : undefined;
+    // Focus does not stay on something hidden
+    const active = this._activeElement();
+    if (active && entries.some((entry) => entry.element.contains(active))) {
+      this._focusGroup(staying, staying.members[0].element);
+    }
+  }
+
+  private _centerOf(footprint: Footprint): { x: number; y: number } {
+    const point = this._project(footprint.location);
+    return {
+      x: point.x + footprint.offset[0],
+      y: point.y + footprint.offset[1],
+    };
+  }
+
+  // Shows each entry once its footprint no longer overlaps the bubble's
+  private _revealEmerged(all = false): void {
+    if (!this._emerging) {
+      return;
+    }
+    const { from } = this._emerging;
+    const origin = this._centerOf(from);
+    this._emerging.entries = this._emerging.entries.filter((entry) => {
+      const point = this._centerOf(entry);
+      if (
+        !all &&
+        Math.hypot(point.x - origin.x, point.y - origin.y) <=
+          entry.half + from.half
+      ) {
+        return true;
+      }
+      entry.element.style.visibility = "";
+      return false;
+    });
+    if (!this._emerging.entries.length) {
+      this._emerging = undefined;
+    }
+  }
+
+  // Groups clusterable markers by screen distance. With a scope only that
+  // group's members regroup; the rest of the map stays as it is
+  private _rebuildClusters(regroup = true, scope?: ClusterGroup): void {
     if (!this._map) {
       return;
     }
-    const clusterable = this._markers.filter(
+    this._revealEmerged(true);
+    const clusterable = (scope?.members ?? this._markers).filter(
       (managed) => managed.options.cluster && !managed.removed
     );
     // A member or bubble that had focus hands it to the icon replacing it;
     // read before the bubble holding it is removed
-    const active = (
-      this._map.getContainer().getRootNode() as Document | ShadowRoot
-    ).activeElement;
+    const active = this._activeElement();
     const focusedMember = active
       ? (clusterable.find((managed) => managed.element.contains(active)) ??
         this._clusterGroups.find((group) =>
           group.iconMarker?.getElement().contains(active)
         )?.members[0])
       : undefined;
-    this._clusterGroups.forEach((group) => group.iconMarker?.remove());
+    (scope ? [scope] : this._clusterGroups).forEach((group) =>
+      group.iconMarker?.remove()
+    );
 
     if (!this._clusterOptions) {
       this._clusterGroups = [];
@@ -1240,117 +1562,53 @@ export class MapLibreMapEngine implements MapEngine {
         .filter((group) => group.members.length);
     }
 
-    if (regroup || !this._clusterGroups.length) {
-      const { radius, groupKey, groupRadius } = this._clusterOptions;
-      const groups: {
-        points: { x: number; y: number }[];
-        members: ManagedMarker[];
-        key?: string;
-      }[] = [];
+    const groups =
+      regroup || !this._clusterGroups.length
+        ? this._groupMarkers(clusterable)
+        : this._clusterGroups;
+    this._clusterGroups = scope
+      ? this._clusterGroups.filter((group) => group !== scope).concat(groups)
+      : groups;
 
-      // Keyed groups first; one spread too wide falls through to proximity
-      const ungrouped: ManagedMarker[] = [];
-      if (groupKey) {
-        const byKey: Record<string, ManagedMarker[]> = {};
-        for (const managed of clusterable) {
-          const key = groupKey(managed.handle);
-          if (key === undefined) {
-            ungrouped.push(managed);
-          } else {
-            (byKey[key] ??= []).push(managed);
-          }
-        }
-        for (const [key, members] of Object.entries(byKey)) {
-          const points = members.map((m) => this._project(m.location));
-          const xs = points.map((p) => p.x);
-          const ys = points.map((p) => p.y);
-          const spread = Math.hypot(
-            Math.max(...xs) - Math.min(...xs),
-            Math.max(...ys) - Math.min(...ys)
-          );
-          // A keyed group (a zone) bubbles even with a single member, so a lone
-          // person or device in a zone still shows in a bubble pinned to it.
-          if (members.length === 1 || spread <= (groupRadius ?? radius)) {
-            groups.push({ points, members, key });
-          } else {
-            ungrouped.push(...members);
-          }
-        }
-      } else {
-        ungrouped.push(...clusterable);
-      }
-
-      for (const managed of ungrouped) {
-        const point = this._project(managed.location);
-        const group = groups.find((candidate) =>
-          candidate.points.some(
-            (member) =>
-              Math.hypot(member.x - point.x, member.y - point.y) <= radius
-          )
-        );
-        if (group) {
-          group.members.push(managed);
-          group.points.push(point);
-        } else {
-          groups.push({ points: [point], members: [managed] });
-        }
-      }
-      this._clusterGroups = groups.map((group) => ({
-        members: group.members,
-        key: group.key,
-        center: centerOf(group.members),
-      }));
-    }
-
-    for (const group of this._clusterGroups) {
+    const pending = regroup ? this._openAfterRegroup : undefined;
+    for (const group of groups) {
       group.iconMarker = undefined;
-      // A lone non-keyed marker shows plainly; a lone zone occupant falls
-      // through to the bubble path so it renders in a bubble at its zone.
-      group.icon =
-        (group.members.length > 1 || group.key !== undefined) && !group.open
-          ? this._buildIcon(group)
-          : undefined;
+      group.placed = undefined;
+      this._prepareGroup(group, pending);
     }
     if (regroup) {
-      this._mergeOverlappingBubbles();
+      // A regroup for a coming zoom leaves it for the one after that zoom
+      if (this._groupingZoom === undefined) {
+        this._openAfterRegroup = undefined;
+      }
+      this._mergeOverlappingBubbles(pending);
     }
 
     for (const group of this._clusterGroups) {
-      if (!group.icon) {
-        if (group.open) {
-          this._openGroup(group);
-        } else {
-          this._showMarker(group.members[0]);
-        }
+      if (group.iconMarker) {
+        // Untouched by this rebuild
         continue;
       }
-      group.members.forEach((managed) => this._hideMarker(managed));
-
-      const { icon } = group;
-      icon.element.style.width = `${icon.size[0]}px`;
-      icon.element.style.height = `${icon.size[1]}px`;
-      // Clicking a bubble zooms in on its members; when zooming cannot
-      // separate them, they open in a bubble pointing at their spot instead
-      const zoomToMembers = () => {
-        if (this._canSeparate(group.members)) {
-          this.fitBounds(
-            group.members.map((managed) => managed.location),
-            { pad: 0.3, maxZoom: this._getMaxZoom() }
-          );
-          return;
-        }
-        group.open = true;
-        group.iconMarker?.remove();
+      if (!group.icon) {
+        this._showMarker(group.members[0]);
+        continue;
+      }
+      if (group.open) {
         this._openGroup(group);
+        continue;
+      }
+      const { icon } = group;
+      this._placeIcon(group, icon);
+      const zoomToMembers = () => {
+        const { members } = group;
+        this._openAfterRegroup = members;
+        this.fitBounds(
+          members.map((managed) => managed.location),
+          { pad: 0.3, maxZoom: this._getMaxZoom() }
+        );
+        this._hideEmerging(members);
       };
-      setMarkerAccessibility(
-        icon.element,
-        group.members
-          .map((managed) => managed.options.title)
-          .filter(Boolean)
-          .join(", ") || undefined,
-        true
-      );
+      setMarkerAccessibility(icon.element, this._groupTitle(group), true);
       icon.element.addEventListener("click", (ev) => {
         ev.stopPropagation();
         zoomToMembers();
@@ -1359,42 +1617,131 @@ export class MapLibreMapEngine implements MapEngine {
         if (ev.key === "Enter" || ev.key === " ") {
           ev.preventDefault();
           zoomToMembers();
-          // Keyboard focus follows into the opened bubble
-          if (group.open) {
-            group.members[0]?.element.focus();
-          }
         }
       });
-      const location = icon.location ?? group.center;
-      group.iconMarker = new this._maplibre!.Marker({
-        element: icon.element,
-        ...(icon.anchor
-          ? {
-              anchor: "top-left" as const,
-              offset: [-icon.anchor[0], -icon.anchor[1]] as [number, number],
-            }
-          : {}),
-      })
-        .setLngLat([location[1], location[0]])
-        .addTo(this._map);
     }
     if (focusedMember) {
       const group = this._clusterGroups.find((candidate) =>
         candidate.members.includes(focusedMember)
       );
-      if (group && !group.open) {
+      if (group) {
         // A singleton group has no bubble icon; the member shows on its own,
         // so send focus back to that member rather than to the document.
-        (group.iconMarker?.getElement() ?? focusedMember.element).focus();
+        this._focusGroup(group, focusedMember.element, active);
       }
     }
   }
 
-  private _buildIcon(group: ClusterGroup): MapClusterIcon {
+  private _groupMarkers(clusterable: ManagedMarker[]): ClusterGroup[] {
+    const { radius, groupKey, groupRadius } = this._clusterOptions!;
+    const groups: {
+      points: { x: number; y: number }[];
+      members: ManagedMarker[];
+      key?: string;
+    }[] = [];
+
+    // Keyed groups first; one spread too wide falls through to proximity
+    const ungrouped: ManagedMarker[] = [];
+    if (groupKey) {
+      const byKey: Record<string, ManagedMarker[]> = {};
+      for (const managed of clusterable) {
+        const key = groupKey(managed.handle);
+        if (key === undefined) {
+          ungrouped.push(managed);
+        } else {
+          (byKey[key] ??= []).push(managed);
+        }
+      }
+      for (const [key, members] of Object.entries(byKey)) {
+        const points = members.map((m) => this._project(m.location));
+        const xs = points.map((p) => p.x);
+        const ys = points.map((p) => p.y);
+        const spread = Math.hypot(
+          Math.max(...xs) - Math.min(...xs),
+          Math.max(...ys) - Math.min(...ys)
+        );
+        // A keyed group (a zone) bubbles even with a single member, so a lone
+        // person or device in a zone still shows in a bubble pinned to it.
+        if (members.length === 1 || spread <= (groupRadius ?? radius)) {
+          groups.push({ points, members, key });
+        } else {
+          ungrouped.push(...members);
+        }
+      }
+    } else {
+      ungrouped.push(...clusterable);
+    }
+
+    for (const managed of ungrouped) {
+      const point = this._project(managed.location);
+      const group = groups.find((candidate) =>
+        candidate.points.some(
+          (member) =>
+            Math.hypot(member.x - point.x, member.y - point.y) <= radius
+        )
+      );
+      if (group) {
+        group.members.push(managed);
+        group.points.push(point);
+      } else {
+        groups.push({ points: [point], members: [managed] });
+      }
+    }
+    return groups.map((group) => ({
+      members: group.members,
+      key: group.key,
+      center: centerOf(group.members),
+    }));
+  }
+
+  private _atMaxZoom(): boolean {
+    const map = this._map!;
+    return (this._groupingZoom ?? map.getZoom()) >= map.getMaxZoom() - 0.01;
+  }
+
+  // Whether the members would still share one bubble at the maximum zoom, by
+  // the grouping rule: keyed within the group radius, else each within the
+  // radius of another
+  private _staysTogetherZoomedIn(group: ClusterGroup): boolean {
+    const maxZoom = this._map!.getMaxZoom();
+    const points = group.members.map((managed) =>
+      this._projectAt(managed.location, maxZoom)
+    );
+    const { radius, groupRadius } = this._clusterOptions!;
+    if (group.key !== undefined) {
+      const xs = points.map((point) => point.x);
+      const ys = points.map((point) => point.y);
+      const spread = Math.hypot(
+        Math.max(...xs) - Math.min(...xs),
+        Math.max(...ys) - Math.min(...ys)
+      );
+      if (spread <= (groupRadius ?? radius)) {
+        return true;
+      }
+    }
+    const linked = new Set([0]);
+    const queue = [0];
+    while (queue.length) {
+      const from = points[queue.pop()!];
+      points.forEach((point, index) => {
+        if (
+          !linked.has(index) &&
+          Math.hypot(point.x - from.x, point.y - from.y) <= radius
+        ) {
+          linked.add(index);
+          queue.push(index);
+        }
+      });
+    }
+    return linked.size === points.length;
+  }
+
+  private _buildIcon(group: ClusterGroup, expanded = false): MapClusterIcon {
     return this._clusterOptions!.iconBuilder(
       group.members.map((managed) => managed.handle),
       group.center,
-      group.key
+      group.key,
+      expanded
     );
   }
 
@@ -1407,7 +1754,27 @@ export class MapLibreMapEngine implements MapEngine {
     return { left, top, right: left + size[0], bottom: top + size[1] };
   }
 
-  private _mergeOverlappingBubbles(): void {
+  // Decides whether the group bubbles and whether that bubble is open, and
+  // builds the icon to place
+  private _prepareGroup(group: ClusterGroup, pending?: ManagedMarker[]): void {
+    // A lone non-keyed marker shows plainly; a lone zone occupant falls
+    // through to the bubble path so it renders in a bubble at its zone.
+    const bubbles = group.members.length > 1 || group.key !== undefined;
+    // Nothing splits a bubble at the maximum zoom, so all open there; below
+    // it only the activated one, when zooming further could not part it
+    if (
+      bubbles &&
+      !group.open &&
+      (this._atMaxZoom() ||
+        (pending?.some((managed) => group.members.includes(managed)) &&
+          this._staysTogetherZoomedIn(group)))
+    ) {
+      group.open = true;
+    }
+    group.icon = bubbles ? this._buildIcon(group, group.open) : undefined;
+  }
+
+  private _mergeOverlappingBubbles(pending?: ManagedMarker[]): void {
     for (;;) {
       const bubbles = this._clusterGroups.filter((group) => group.icon);
       const rects = bubbles.map((group) => this._iconRect(group));
@@ -1430,6 +1797,7 @@ export class MapLibreMapEngine implements MapEngine {
         return;
       }
       const members = [...pair[0].members, ...pair[1].members];
+      pair.forEach((group) => group.iconMarker?.remove());
       // Two zones cannot share a pinned bubble
       const keys = [pair[0].key, pair[1].key].filter(
         (key) => key !== undefined
@@ -1439,7 +1807,7 @@ export class MapLibreMapEngine implements MapEngine {
         key: keys.length === 1 ? keys[0] : undefined,
         center: centerOf(members),
       };
-      merged.icon = this._buildIcon(merged);
+      this._prepareGroup(merged, pending);
       this._clusterGroups = this._clusterGroups
         .filter((group) => !pair!.includes(group))
         .concat(merged);

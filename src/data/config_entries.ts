@@ -117,7 +117,7 @@ export const subscribeConfigEntries = (
 };
 
 export const getConfigEntries = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   filters?: {
     type?: IntegrationType[];
     domain?: string;
@@ -155,7 +155,10 @@ export const updateConfigEntry = (
     ...updatedValues,
   });
 
-export const deleteConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+export const deleteConfigEntry = (
+  hass: Pick<HomeAssistant, "callApi">,
+  configEntryId: string
+) =>
   hass.callApi<{
     require_restart: boolean;
   }>("DELETE", `config/config_entries/entry/${configEntryId}`);

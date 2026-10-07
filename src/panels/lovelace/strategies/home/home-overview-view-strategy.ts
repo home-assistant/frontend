@@ -77,7 +77,7 @@ export const preloadHomeEnergyPreferences = (hass: HomeAssistant) => {
     return existing;
   }
 
-  const request = getEnergyPreferences(hass).catch(() => undefined);
+  const request = getEnergyPreferences(hass.callWS).catch(() => undefined);
   energyPreferencesPromises.set(hass.connection, request);
   return request;
 };
@@ -159,12 +159,26 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
 
     const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
-      generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
-    const primaryFilter = generateEntityFilter(hass, {
-      entity_category: "none",
-    });
+    const primaryFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        entity_category: "none",
+      }
+    );
 
     // Only show the devices tile if the other devices view has content: it
     // only renders area-less primary entities that belong to a device.
@@ -318,19 +332,49 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     }
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
-      (filter) => generateEntityFilter(hass, filter)
+      (filter) =>
+        generateEntityFilter(
+          hass.states,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors,
+          filter
+        )
     );
 
     const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
-      generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
     const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
-      generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
     const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
-      (filter) => generateEntityFilter(hass, filter)
+      (filter) =>
+        generateEntityFilter(
+          hass.states,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors,
+          filter
+        )
     );
 
     const hasLights =
@@ -356,10 +400,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       conditions: computeDefaultSecurityAlertVisibility(alertEntity.entity),
     }));
 
-    const weatherFilter = generateEntityFilter(hass, {
-      domain: "weather",
-      entity_category: "none",
-    });
+    const weatherFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        domain: "weather",
+        entity_category: "none",
+      }
+    );
 
     const weatherEntity = Object.keys(hass.states)
       .filter(weatherFilter)

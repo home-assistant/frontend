@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { filterNavigationPages } from "../../../common/config/filter_navigation_pages";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";

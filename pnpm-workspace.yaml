@@ -1,0 +1,38 @@
+savePrefix: ""
+autoInstallPeers: false
+
+# Supply-chain protection
+minimumReleaseAge: 4320 # 3 days, in minutes
+minimumReleaseAgeExclude:
+  # Our own packages, published from our own CI. Keep in sync with renovate.json
+  - home-assistant-js-websocket
+  - "@home-assistant/*"
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # Backports published after provenance-signed 7.x releases
+  - semver@5.7.2
+  - semver@6.3.1
+  # Pre-release published without provenance, used by workbox-build
+  - "@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1"
+
+# Dependency build scripts are denied unless listed here with true
+allowBuilds:
+  "@tsparticles/engine": false
+  core-js: false
+  unrs-resolver: false
+
+overrides:
+  lit: 3.3.3
+  lit-html: 3.3.3
+  clean-css: 5.3.3
+  "@lit/reactive-element": 2.1.2
+  "@fullcalendar/daygrid": 6.1.21
+  tslib: 2.8.1
+
+patchedDependencies:
+  "@material/mwc-formfield@0.27.0": patches/@material__mwc-formfield@0.27.0.patch
+  "@material/mwc-list@0.27.0": patches/@material__mwc-list@0.27.0.patch
+  echarts@6.1.0: patches/echarts@6.1.0.patch
+  sortablejs@1.15.7: patches/sortablejs@1.15.7.patch
+  tinykeys@4.0.1: patches/tinykeys@4.0.1.patch
+  workbox-build@7.4.1: patches/workbox-build@7.4.1.patch

@@ -1,9 +1,9 @@
 import "../../../../components/skeleton/ha-skeleton";
 import "../../../../components/skeleton/ha-skeleton-text";
-import { consume } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../../common/datetime/relative_time";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";

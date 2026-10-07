@@ -21,7 +21,7 @@ export type SystemCheckValueObject =
   | SystemCheckValuePendingObject;
 
 export type SystemCheckValue =
-  string | number | boolean | SystemCheckValueObject;
+  string | number | boolean | null | SystemCheckValueObject;
 
 export type SystemHealthInfo = Partial<{
   homeassistant: {
@@ -31,8 +31,8 @@ export type SystemHealthInfo = Partial<{
       dev: boolean;
       hassio: boolean;
       docker: boolean;
-      container_arch: string;
-      user: string;
+      container_arch: string | null;
+      user: string | null;
       virtualenv: boolean;
       python_version: string;
       os_name: string;
@@ -65,9 +65,7 @@ interface SystemHealthEventUpdateError {
   success: false;
   domain: string;
   key: string;
-  error: {
-    msg: string;
-  };
+  error: SystemCheckValueErrorObject;
 }
 
 interface SystemHealthEventFinish {
@@ -107,10 +105,7 @@ export const subscribeSystemHealthInfo = (
             ...data[updateEvent.domain].info,
             [updateEvent.key]: updateEvent.success
               ? updateEvent.data
-              : {
-                  error: true,
-                  value: updateEvent.error.msg,
-                },
+              : updateEvent.error,
           },
         },
       };

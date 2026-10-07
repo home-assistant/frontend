@@ -15,7 +15,7 @@ describe("filterLowBatteryEntities", () => {
     });
 
     expect(
-      filterLowBatteryEntities(hass, [
+      filterLowBatteryEntities(hass.states, hass.entities, [
         "sensor.low_battery",
         "sensor.ok_battery",
       ])
@@ -69,7 +69,7 @@ describe("filterLowBatteryEntities", () => {
     );
 
     expect(
-      filterLowBatteryEntities(hass, [
+      filterLowBatteryEntities(hass.states, hass.entities, [
         "sensor.device_1_battery",
         "sensor.device_2_battery",
       ])
@@ -91,7 +91,7 @@ describe("filterLowBatteryEntities", () => {
     });
 
     expect(
-      filterLowBatteryEntities(hass, [
+      filterLowBatteryEntities(hass.states, hass.entities, [
         "binary_sensor.low_battery",
         "binary_sensor.ok_battery",
       ])
@@ -123,7 +123,11 @@ describe("filterLowBatteryEntities", () => {
       },
     });
 
-    expect(filterLowBatteryEntities(firstHass, ["sensor.battery"])).toEqual([]);
+    expect(
+      filterLowBatteryEntities(firstHass.states, firstHass.entities, [
+        "sensor.battery",
+      ])
+    ).toEqual([]);
 
     const secondHass = createMockHass(states, {
       entities: {
@@ -138,8 +142,10 @@ describe("filterLowBatteryEntities", () => {
       },
     });
 
-    expect(filterLowBatteryEntities(secondHass, ["sensor.battery"])).toEqual([
-      "sensor.battery",
-    ]);
+    expect(
+      filterLowBatteryEntities(secondHass.states, secondHass.entities, [
+        "sensor.battery",
+      ])
+    ).toEqual(["sensor.battery"]);
   });
 });

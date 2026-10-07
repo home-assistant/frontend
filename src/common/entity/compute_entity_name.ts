@@ -6,7 +6,10 @@ import type {
 import type { HomeAssistant } from "../../types";
 import { computeDeviceName } from "./compute_device_name";
 import { computeStateName } from "./compute_state_name";
-import { stripPrefixFromEntityName } from "./strip_prefix_from_entity_name";
+import {
+  isDeviceName,
+  stripPrefixFromEntityName,
+} from "./strip_prefix_from_entity_name";
 
 export const computeEntityName = (
   stateObj: HassEntity,
@@ -29,7 +32,7 @@ export const computeEntityEntryName = (
   fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
-    entry.name ||
+    entry.name ??
     ("original_name" in entry && entry.original_name != null
       ? String(entry.original_name)
       : undefined);
@@ -48,8 +51,12 @@ export const computeEntityEntryName = (
 
   const deviceName = computeDeviceName(device);
 
-  // If the device name is the same as the entity name, consider empty entity name
-  if (deviceName === name) {
+  if (entry.name == null || entry.next_name_part !== "device") {
+    return name || undefined;
+  }
+
+  // An empty entity name or one that is only the device name means the entity uses the device name
+  if (!name || (deviceName && isDeviceName(name, deviceName))) {
     return undefined;
   }
 

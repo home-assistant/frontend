@@ -4,20 +4,22 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
+import {
+  ScrollFadeController,
+  scrollFadeStyles,
+} from "../../../common/controllers/scroll-fade-controller";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewHeaderConfig,
-} from "../../../data/lovelace/config/view";
+import type { LovelaceViewHeaderConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { replaceView } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
 
@@ -37,7 +39,7 @@ export class HuiViewHeader extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceViewHeaderConfig;
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   private _checkHidden() {
     const allHidden =
@@ -55,6 +57,8 @@ export class HuiViewHeader extends LitElement {
     selector: ".scroll",
     enabled: false,
   });
+
+  private _badgesScrollFade = new ScrollFadeController(this);
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -129,55 +133,22 @@ export class HuiViewHeader extends LitElement {
       cardConfig,
       lovelaceConfig: this.lovelace.config,
       saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
-        const newConfig = { ...this.config };
-        newConfig.card = newCardConfig;
-        this._saveHeaderConfig(newConfig);
+        this.lovelace.saveConfig(
+          setAtPath(this.lovelace.config, this._cardPath, newCardConfig)
+        );
       },
       isNew: true,
     });
   }
 
-  private _deleteCard(ev) {
-    ev.stopPropagation();
-    const newConfig = { ...this.config };
-    delete newConfig.card;
-    this._saveHeaderConfig(newConfig);
-  }
-
-  private _editCard(ev) {
-    ev.stopPropagation();
-    const cardConfig = this.config!.card;
-
-    if (!cardConfig) {
-      return;
-    }
-
-    showEditCardDialog(this, {
-      cardConfig,
-      lovelaceConfig: this.lovelace.config,
-      saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
-        const newConfig = { ...this.config };
-        newConfig.card = newCardConfig;
-        this._saveHeaderConfig(newConfig);
-      },
-    });
+  private get _cardPath(): LovelacePath {
+    return [...this.path, "header", "card"];
   }
 
   private _saveHeaderConfig(headerConfig: LovelaceViewHeaderConfig) {
-    const viewConfig = this.lovelace.config.views[
-      this.viewIndex
-    ] as LovelaceViewConfig;
-
-    const config = { ...viewConfig };
-    config.header = headerConfig;
-
-    const updatedConfig = replaceView(
-      this.hass,
-      this.lovelace.config,
-      this.viewIndex,
-      config
+    this.lovelace.saveConfig(
+      setAtPath(this.lovelace.config, [...this.path, "header"], headerConfig)
     );
-    this.lovelace.saveConfig(updatedConfig);
   }
 
   private _configure = () => {
@@ -201,9 +172,7 @@ export class HuiViewHeader extends LitElement {
       this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
     const badgesWrap =
       this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
-    const badgeDragging = this._dragScrollController.scrolling
-      ? "dragging"
-      : "";
+    const badgesScrollable = !editMode && badgesWrap === "scroll";
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
@@ -243,10 +212,8 @@ export class HuiViewHeader extends LitElement {
                         ? card
                           ? html`
                               <hui-card-edit-mode
-                                @ll-edit-card=${this._editCard}
-                                @ll-delete-card=${this._deleteCard}
                                 .lovelace=${this.lovelace!}
-                                .path=${[0]}
+                                .path=${this._cardPath}
                                 no-duplicate
                                 no-move
                               >
@@ -272,12 +239,22 @@ export class HuiViewHeader extends LitElement {
             this.lovelace && (editMode || this.badges.length > 0)
               ? html`
                   <div
-                    class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
+                    class=${classMap({
+                      badges: true,
+                      [badgesPosition]: true,
+                      [badgesWrap]: true,
+                      dragging: this._dragScrollController.scrolling,
+                      "scroll-fade-start":
+                        badgesScrollable && this._badgesScrollFade.start,
+                      "scroll-fade-end":
+                        badgesScrollable && this._badgesScrollFade.end,
+                    })}
+                    ${this._badgesScrollFade.target()}
                   >
                     <hui-view-badges
                       .badges=${this.badges}
                       .lovelace=${this.lovelace!}
-                      .viewIndex=${this.viewIndex!}
+                      .path=${[...this.path, "badges"]}
                       .showAddLabel=${this.badges.length === 0}
                     ></hui-view-badges>
                   </div>
@@ -290,6 +267,8 @@ export class HuiViewHeader extends LitElement {
   }
 
   static styles = css`
+    ${scrollFadeStyles}
+
     :host([hidden]) {
       display: none !important;
     }
@@ -370,13 +349,6 @@ export class HuiViewHeader extends LitElement {
       max-width: 100%;
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
       scrollbar-width: none;
-      mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        black 16px,
-        black calc(100% - 16px),
-        transparent 100%
-      );
     }
 
     hui-view-badges {
@@ -413,12 +385,8 @@ export class HuiViewHeader extends LitElement {
 
     .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {
       --badges-wrap: nowrap;
-      --badges-aligmnent: flex-start;
-      --badge-padding: 16px;
-    }
-
-    .container:not(.edit-mode) .layout.center.badges-scroll hui-view-badges {
-      --badges-aligmnent: space-around;
+      width: max-content;
+      flex-shrink: 0;
     }
 
     @media (min-width: 768px) {
@@ -435,7 +403,7 @@ export class HuiViewHeader extends LitElement {
         hui-view-badges {
         --badges-wrap: wrap;
         --badges-aligmnent: flex-end;
-        --badge-padding: 0;
+        width: 100%;
       }
       .layout.responsive.has-heading hui-view-badges {
         --badges-aligmnent: flex-end;

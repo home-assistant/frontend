@@ -1,27 +1,38 @@
 import { endOfToday, startOfToday } from "date-fns";
-import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-card";
 import "../../../../components/chart/ha-chart-base";
-import type { EnergyData } from "../../../../data/energy";
 import {
-  getEnergyDataCollection,
-  validateEnergyCollectionKey,
-} from "../../../../data/energy";
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+  uiContext,
+} from "../../../../data/context";
+import type { EnergyData } from "../../../../data/energy";
+import { validateEnergyCollectionKey } from "../../../../data/energy";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import { isExternalStatistic } from "../../../../data/recorder";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FrontendLocaleData } from "../../../../data/translation";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
@@ -35,15 +46,13 @@ import {
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard
-  extends SubscribeMixin(LitElement)
+  extends LitElement
   implements LovelaceCard
 {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-devices-card-editor");
     return document.createElement("hui-energy-devices-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDevicesDetailGraphCardConfig;
 
@@ -81,16 +90,34 @@ export class HuiEnergyDevicesDetailGraphCard
   })
   private _hiddenStats: string[] = [];
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: HomeAssistantUI;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
         this._data = data;
-      }),
-    ];
+      },
+    });
   }
 
   public getCardSize(): Promise<number> | number {
@@ -104,14 +131,6 @@ export class HuiEnergyDevicesDetailGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
-      hasConfigChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    );
-  }
-
   protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("_config") || changedProps.has("_data")) {
       this._processStatistics();
@@ -119,7 +138,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -136,13 +155,12 @@ export class HuiEnergyDevicesDetailGraphCard
           })}"
         >
           <ha-chart-base
-            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale,
-              this.hass.config,
+              this._i18n.locale,
+              this._hassConfig,
               UNIT,
               this._compareStart,
               this._compareEnd,
@@ -161,9 +179,9 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    this.hass.localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
-      { num: formatNumber(total, this.hass.locale), unit: UNIT }
+      { num: formatNumber(total, this._i18n.locale), unit: UNIT }
     );
 
   // ha-chart-base will track hidden per ID (so it will have two entries for ID and compare-ID)
@@ -188,7 +206,7 @@ export class HuiEnergyDevicesDetailGraphCard
     if (isExternalStatistic(entityId)) {
       return;
     }
-    if (this.hass.states[entityId]) {
+    if (this._states[entityId]) {
       fireEvent(this, "hass-more-info", { entityId });
     }
   }
@@ -264,7 +282,10 @@ export class HuiEnergyDevicesDetailGraphCard
       compareStart,
       compareEnd,
     } = generateEnergyDevicesDetailGraphData({
-      hass: this.hass,
+      localize: this._i18n.localize,
+      states: this._states,
+      formatEntityName: this._formatters.formatEntityName,
+      darkMode: this._ui.themes.darkMode,
       energyData,
       config: this._config!,
       computedStyles: getComputedStyle(this),

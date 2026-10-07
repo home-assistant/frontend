@@ -20,12 +20,14 @@ const demoWebhooks: Webhook[] = [
     domain: "automation",
     name: "Front door motion",
     local_only: false,
+    allowed_methods: ["POST", "PUT"],
   },
   {
     webhook_id: "demo_companion_app",
     domain: "mobile_app",
     name: "Companion app",
     local_only: false,
+    allowed_methods: ["POST", "PUT"],
   },
 ];
 
@@ -49,12 +51,13 @@ const demoCloudhooks = Object.fromEntries(
 // object directly and reset on reload.
 const cloudStatus: CloudStatusLoggedIn = {
   logged_in: true,
+  auto_login: null,
   cloud: "connected",
   cloud_last_disconnect_reason: null,
   email: "demo@home-assistant.io",
   google_registered: false,
+  google_local_connected: false,
   google_entities: emptyFilter(),
-  google_domains: ["light", "switch", "climate", "cover"],
   alexa_registered: true,
   alexa_entities: emptyFilter(),
   remote_domain: "demo-instance.ui.nabu.casa",
@@ -75,10 +78,11 @@ const cloudStatus: CloudStatusLoggedIn = {
     alexa_enabled: true,
     remote_enabled: true,
     remote_allow_remote_enable: true,
-    strict_connection: "disabled",
-    google_secure_devices_pin: undefined,
+    google_secure_devices_pin: null,
     cloudhooks: demoCloudhooks,
+    alexa_default_expose: null,
     alexa_report_state: true,
+    google_default_expose: null,
     google_report_state: true,
     tts_default_voice: ["en-US", "JennyNeural"],
     cloud_ice_servers_enabled: false,

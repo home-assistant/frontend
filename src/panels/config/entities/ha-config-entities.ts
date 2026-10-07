@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -20,6 +19,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -1294,8 +1294,8 @@ export class HaConfigEntities extends LitElement {
             ),
             text: html`<pre>
     ${rejected
-      .map((r) => r.reason.message || r.reason.code || r.reason)
-      .join("\r\n")}</pre>`,
+                .map((r) => r.reason.message || r.reason.code || r.reason)
+                .join("\r\n")}</pre>`,
           });
         }
 
@@ -1420,8 +1420,8 @@ export class HaConfigEntities extends LitElement {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }

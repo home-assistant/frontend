@@ -57,7 +57,13 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                         )}
                       </span>
                       <span slot="supporting-text">
-                        ${formatHomeIdAsHex(this._network.controller.home_id)}
+                        ${
+                          this._network.controller.home_id !== null
+                            ? formatHomeIdAsHex(
+                                this._network.controller.home_id
+                              )
+                            : nothing
+                        }
                       </span>
                     </ha-list-item-base>
                     <ha-list-item-base>

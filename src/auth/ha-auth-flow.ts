@@ -37,6 +37,12 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public oauth2State?: string;
 
+  @property({ attribute: false }) public codeChallenge?: string;
+
+  @property({ attribute: false }) public codeChallengeMethod?: string;
+
+  @property({ attribute: false }) public responseType?: string;
+
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
   @property({ attribute: false }) public initStoreToken = false;
@@ -127,7 +133,7 @@ export class HaAuthFlow extends LitElement {
           width: 100%;
         }
       </style>
-      <form>${this._renderForm()}</form>
+      <form @submit=${this._handleSubmit}>${this._renderForm()}</form>
     `;
   }
 
@@ -298,10 +304,14 @@ export class HaAuthFlow extends LitElement {
     }
 
     try {
-      const response = await createLoginFlow(this.clientId, this.redirectUri, [
-        newProvider.type,
-        newProvider.id,
-      ]);
+      const response = await createLoginFlow(
+        this.clientId,
+        this.redirectUri,
+        [newProvider.type, newProvider.id],
+        this.codeChallenge,
+        this.codeChallengeMethod,
+        this.responseType
+      );
 
       const data = await response.json();
 

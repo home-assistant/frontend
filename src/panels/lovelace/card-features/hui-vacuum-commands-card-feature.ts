@@ -7,10 +7,10 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,

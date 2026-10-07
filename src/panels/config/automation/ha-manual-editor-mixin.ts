@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
@@ -9,6 +8,7 @@ import {
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { replaceCurrentUrl } from "../../../common/navigate";

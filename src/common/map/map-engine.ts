@@ -7,7 +7,14 @@
  * Positions are [latitude, longitude]; zoom levels use Leaflet semantics.
  */
 
+import type { ResolvedMapStyle } from "./map-styles";
+
 export type MapLatLng = [latitude: number, longitude: number];
+
+export interface MapView {
+  center: MapLatLng;
+  zoom: number;
+}
 
 export type MapControlPosition =
   "topleft" | "topright" | "bottomleft" | "bottomright";
@@ -21,12 +28,18 @@ export interface MapEngineEvents {
   moveStart(): void;
   /** The engine can no longer render; the host switches to the fallback */
   fatal(): void;
+  /**
+   * The map has something to show: MapLibre's first complete view, or Leaflet's
+   * layer in place. The host keeps the container hidden until then.
+   */
+  drawn(): void;
 }
 
 export interface MapEngineOptions {
   center: MapLatLng;
   zoom: number;
-  darkMode: boolean;
+  /** Cartography to draw; the host resolves the config and theme mode into one */
+  mapStyle: ResolvedMapStyle;
   /** Token for core's tile proxy */
   token?: string;
   zoomControlPosition: MapControlPosition;
@@ -42,6 +55,8 @@ export interface MapFitOptions {
   pad?: number;
   /** Ease the camera to the bounds instead of jumping; defaults to true */
   animate?: boolean;
+  /** Fly in an arc instead of easing straight there; defaults to false */
+  fly?: boolean;
   /** Viewport pixels covered by overlays; the bounds fit inside the rest */
   padding?: MapFitPadding;
 }
@@ -58,12 +73,16 @@ export interface MapMarkerOptions {
   size: [width: number, height: number];
   /** Point of the element placed on the coordinate, from its top left; defaults to the center */
   anchor?: [x: number, y: number];
+  /** Drawn above the other markers */
+  raised?: boolean;
   /** Takes pointer input; defaults to true */
   interactive?: boolean;
   /** A keyboard-focusable button, for markers that act on activation; defaults to interactive */
   focusable?: boolean;
   /** Accessible name */
   title?: string;
+  /** Also show the title as the browser's tooltip; defaults to true */
+  nativeTitle?: boolean;
   /** A meter-radius circle sharing the marker's lifecycle (GPS accuracy) */
   decoration?: MapCircleOptions;
   /** Cluster this marker; it appears once setClustering is called */
@@ -77,6 +96,8 @@ export interface MapCircleOptions {
   radius: number;
   /** Stroke color; the fill is derived from it, translucent */
   color: string;
+  /** Stroke the circle; defaults to true */
+  outline?: boolean;
 }
 
 export interface MapPathSegment {
@@ -107,6 +128,16 @@ export interface MapMarkerHandle extends MapItemHandle {
   readonly clusterData?: unknown;
 }
 
+export interface MapCircleHandle extends MapItemHandle {
+  /** Move, resize or recolor without removing it first */
+  update(center: MapLatLng, options: MapCircleOptions): void;
+}
+
+export interface MapPathHandle extends MapItemHandle {
+  /** Replace the drawn trail without removing it first */
+  update(path: MapPath): void;
+}
+
 export interface MapDraggableMarkerOptions extends MapMarkerOptions {
   onDragEnd?(location: MapLatLng): void;
 }
@@ -120,6 +151,7 @@ export interface MapEditableCircleOptions {
   centerElement?: HTMLElement;
   centerSize?: [width: number, height: number];
   title?: string;
+  nativeTitle?: boolean;
   /** The center can be dragged */
   moveable?: boolean;
   /** A handle on the edge can be dragged to change the radius */
@@ -178,11 +210,15 @@ export interface MapClusterOptions {
    */
   groupKey?(marker: MapMarkerHandle): string | undefined;
   groupRadius?: number;
-  /** Builds a cluster's element; called when its members change and on refreshClusters() */
+  /**
+   * Builds a cluster's element; called when its members change and on
+   * refreshClusters(). An expanded cluster shows every member.
+   */
   iconBuilder(
     members: MapMarkerHandle[],
     location: MapLatLng,
-    key?: string
+    key?: string,
+    expanded?: boolean
   ): MapClusterIcon;
 }
 
@@ -199,7 +235,7 @@ export interface MapEngine {
   /** Whether the map has a non-zero size, re-measuring if needed */
   hasUsableSize(): boolean;
 
-  setDarkMode(darkMode: boolean): void;
+  setMapStyle(style: ResolvedMapStyle): void;
 
   setZoomControlPosition(position: MapControlPosition): void;
 
@@ -207,6 +243,8 @@ export interface MapEngine {
   setScaleRuler(options: { metric: boolean } | null): void;
 
   setView(center: MapLatLng, zoom?: number): void;
+
+  getView(): MapView | undefined;
 
   setZoom(zoom: number): void;
 
@@ -227,13 +265,13 @@ export interface MapEngine {
   ): MapMarkerHandle;
 
   /** Draw a meter-radius circle (zone radius) */
-  addCircle(center: MapLatLng, options: MapCircleOptions): MapItemHandle;
+  addCircle(center: MapLatLng, options: MapCircleOptions): MapCircleHandle;
 
   /** Editing support, MapLibre only; undefined on the Leaflet fallback */
   editing?: MapEditingSupport;
 
   /** Draw one history trail (points with tooltips, connecting segments) */
-  addPath(path: MapPath): MapItemHandle;
+  addPath(path: MapPath): MapPathHandle;
 
   /** Cluster the markers added with cluster: true; call after each batch of addMarker calls */
   setClustering(options: MapClusterOptions | null): void;
@@ -312,4 +350,28 @@ export const circleBoundsPoints = (
     [latMin, center[1] - dLng],
     [latMax, center[1] + dLng],
   ];
+};
+
+const MERCATOR_MAX_LAT = 85.051129;
+
+const projectMercator = ([lat, lng]: MapLatLng, scale: number) => {
+  const sinLat = Math.sin(
+    toRadians(Math.max(-MERCATOR_MAX_LAT, Math.min(MERCATOR_MAX_LAT, lat)))
+  );
+  return {
+    x: (lng / 360 + 0.5) * scale,
+    y: (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale,
+  };
+};
+
+export const pixelDistance = (
+  a: MapLatLng,
+  b: MapLatLng,
+  zoom: number
+): number => {
+  const scale = 256 * 2 ** zoom;
+  const pa = projectMercator(a, scale);
+  const pb = projectMercator(b, scale);
+  const dx = Math.abs(pa.x - pb.x);
+  return Math.hypot(Math.min(dx, scale - dx), pa.y - pb.y);
 };

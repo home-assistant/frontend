@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiClose,
   mdiDevices,
@@ -19,6 +18,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import {
@@ -639,9 +639,10 @@ export class HaTargetPickerItemRow extends LitElement {
       const area = device
         ? getDeviceArea(device, this.hass.areas, this.hass.devices)
         : undefined;
-      const parentDevice = device?.parent_device_id
-        ? this.hass.devices[device.parent_device_id]
-        : undefined;
+      const parentDevice =
+        device?.parent_device_id && device.next_name_part === "parent_device"
+          ? this.hass.devices[device.parent_device_id]
+          : undefined;
       const context = [
         area ? computeAreaName(area) : undefined,
         parentDevice ? computeDeviceName(parentDevice) : undefined,

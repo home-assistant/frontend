@@ -40,7 +40,7 @@ class EntityPreviewRow extends LitElement {
       return nothing;
     }
     const stateObj = this.stateObj;
-    return html`<state-badge .stateObj=${stateObj} stateColor></state-badge>
+    return html`<state-badge .stateObj=${stateObj} color="state"></state-badge>
       <div class="name" .title=${computeStateName(stateObj)}>
         ${computeStateName(stateObj)}
       </div>

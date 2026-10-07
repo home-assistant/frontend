@@ -6,7 +6,9 @@ import {
   calcDateProperty,
   calcDateDifferenceProperty,
   shiftDateRange,
+  shiftToServerTimeZone,
 } from "../../../src/common/datetime/calc_date";
+import { LOCAL_TIME_ZONE } from "../../../src/common/datetime/resolve-time-zone";
 import {
   type FrontendLocaleData,
   TimeZone,
@@ -62,6 +64,63 @@ describe("calcDateDifferenceProperty", () => {
       config
     );
     expect(result).toBe(1);
+  });
+});
+
+describe("shiftToServerTimeZone", () => {
+  it("keeps the wall-clock time in a server time zone ahead", () => {
+    const sofia = { time_zone: "Europe/Sofia" } as HassConfig;
+    expect(shiftToServerTimeZone(new Date(2026, 8, 18), locale, sofia)).toEqual(
+      new Date("2026-09-18T00:00:00+03:00")
+    );
+    expect(
+      shiftToServerTimeZone(
+        new Date(2026, 8, 21, 23, 59, 59, 999),
+        locale,
+        sofia
+      )
+    ).toEqual(new Date("2026-09-21T23:59:59.999+03:00"));
+  });
+
+  it("keeps the wall-clock time in a server time zone behind", () => {
+    const newYork = { time_zone: "America/New_York" } as HassConfig;
+    expect(
+      shiftToServerTimeZone(new Date(2026, 8, 18), locale, newYork)
+    ).toEqual(new Date("2026-09-18T00:00:00-04:00"));
+  });
+
+  it("leaves dates alone when they are already in the server time zone", () => {
+    const date = new Date(2026, 8, 18);
+    const sofia = { time_zone: "Europe/Sofia" } as HassConfig;
+    expect(shiftToServerTimeZone(date, localeServer, sofia)).toBe(date);
+    expect(
+      shiftToServerTimeZone(date, locale, {
+        time_zone: LOCAL_TIME_ZONE,
+      } as HassConfig)
+    ).toBe(date);
+  });
+
+  it("leaves dates alone when Intl can't resolve time zone offsets", () => {
+    const realDateTimeFormat = Intl.DateTimeFormat;
+    // Like Chrome < 95 and Safari < 15.4, which lack "longOffset".
+    Intl.DateTimeFormat = new Proxy(realDateTimeFormat, {
+      construct(target, args) {
+        if (args[1]?.timeZoneName === "longOffset") {
+          throw new RangeError("Invalid timeZoneName");
+        }
+        return Reflect.construct(target, args);
+      },
+    });
+    try {
+      const date = new Date(2026, 8, 18);
+      expect(
+        shiftToServerTimeZone(date, locale, {
+          time_zone: "Asia/Tokyo",
+        } as HassConfig)
+      ).toBe(date);
+    } finally {
+      Intl.DateTimeFormat = realDateTimeFormat;
+    }
   });
 });
 
