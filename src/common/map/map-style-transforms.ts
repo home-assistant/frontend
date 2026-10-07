@@ -98,8 +98,19 @@ const addLatinLabels = (style: StyleSpecification): StyleSpecification => ({
   }),
 });
 
+// The atmosphere MapLibre scatters around the globe, which VersaTiles leaves
+// off for a crisp edge. Against the space ha-map draws behind it, that edge is
+// what wants softening.
+const ATMOSPHERE_BLEND = 0.5;
+
+const addAtmosphere = (style: StyleSpecification): StyleSpecification => ({
+  ...style,
+  sky: { ...style.sky, "atmosphere-blend": ATMOSPHERE_BLEND },
+});
+
 /** Everything a freshly built style needs before it is handed to MapLibre */
 export const finalizeMapStyle = (
   name: string,
   style: StyleSpecification
-): StyleSpecification => addLatinLabels(useTileJson(name, style));
+): StyleSpecification =>
+  addAtmosphere(addLatinLabels(useTileJson(name, style)));

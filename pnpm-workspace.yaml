@@ -3,6 +3,10 @@ autoInstallPeers: false
 
 # Supply-chain protection
 minimumReleaseAge: 4320 # 3 days, in minutes
+minimumReleaseAgeExclude:
+  # Our own packages, published from our own CI. Keep in sync with renovate.json
+  - home-assistant-js-websocket
+  - "@home-assistant/*"
 trustPolicy: no-downgrade
 trustPolicyExclude:
   # Backports published after provenance-signed 7.x releases
@@ -29,6 +33,6 @@ patchedDependencies:
   "@material/mwc-formfield@0.27.0": patches/@material__mwc-formfield@0.27.0.patch
   "@material/mwc-list@0.27.0": patches/@material__mwc-list@0.27.0.patch
   echarts@6.1.0: patches/echarts@6.1.0.patch
-  sortablejs@1.15.6: patches/sortablejs@1.15.6.patch
-  tinykeys@4.0.0: patches/tinykeys@4.0.0.patch
+  sortablejs@1.15.7: patches/sortablejs@1.15.7.patch
+  tinykeys@4.0.1: patches/tinykeys@4.0.1.patch
   workbox-build@7.4.1: patches/workbox-build@7.4.1.patch

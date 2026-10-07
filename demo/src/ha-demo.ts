@@ -29,6 +29,7 @@ import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
+import { zoneRegistryEntries } from "./stubs/map";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockRecorder } from "./stubs/recorder";
@@ -66,6 +67,7 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
+  "marketplace/",
   ...connectivityCommands,
 ];
 
@@ -94,8 +96,20 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
+          "marketplace",
           ...connectivityComponents,
         ],
+      },
+      panels: {
+        ...hass.panels,
+        // Opened from the settings page, not listed in the sidebar
+        marketplace: {
+          component_name: "marketplace",
+          icon: null,
+          title: null,
+          config: null,
+          url_path: "marketplace",
+        },
       },
     });
 
@@ -181,6 +195,7 @@ export class HaDemo extends HomeAssistantAppEl {
         modified_at: 0,
       },
       ...connectivityEntityRegistryEntries,
+      ...zoneRegistryEntries,
     ]);
 
     hass.addEntities(energyEntities());

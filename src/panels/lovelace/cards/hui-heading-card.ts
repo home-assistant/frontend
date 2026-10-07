@@ -1,9 +1,13 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
+import {
+  ScrollFadeController,
+  scrollFadeStyles,
+} from "../../../common/controllers/scroll-fade-controller";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -52,20 +56,14 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean }) public preview = false;
 
-  @query(".badges") private _badges?: HTMLDivElement;
-
   @state() private _config?: HeadingCardConfig;
-
-  @state() private _badgesOverflowing = false;
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".badges",
     enabled: false,
   });
 
-  private _resizeObserver?: ResizeObserver;
-
-  private _observedBadges?: HTMLDivElement;
+  private _badgesScrollFade = new ScrollFadeController(this);
 
   public setConfig(config: HeadingCardConfig): void {
     this._config = {
@@ -84,30 +82,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     this._dragScrollController.enabled = !this.preview;
   }
 
-  protected updated(): void {
-    if (!this._resizeObserver) {
-      this._resizeObserver = new ResizeObserver(() => {
-        this._measureBadgesOverflow();
-      });
-    }
-
-    if (this._observedBadges !== this._badges) {
-      this._resizeObserver.disconnect();
-      this._observedBadges = this._badges;
-
-      if (this._observedBadges) {
-        this._resizeObserver.observe(this._observedBadges);
-      } else {
-        this._badgesOverflowing = false;
-      }
-    }
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._resizeObserver?.disconnect();
-  }
-
   public getCardSize(): number {
     return 1;
   }
@@ -122,26 +96,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
-  }
-
-  private _measureBadgesOverflow() {
-    if (!this._badges) {
-      this._badgesOverflowing = false;
-      return;
-    }
-
-    // `.overflowing` pseudo-elements inflate `scrollWidth`, subtract to keep the check symmetric.
-    const padding = this._badgesOverflowing
-      ? parseFloat(
-          getComputedStyle(this._badges).getPropertyValue("--ha-space-4")
-        ) || 0
-      : 0;
-    const overflowing =
-      this._badges.scrollWidth - padding > this._badges!.clientWidth + 1;
-
-    if (overflowing !== this._badgesOverflowing) {
-      this._badgesOverflowing = overflowing;
-    }
   }
 
   protected render() {
@@ -187,9 +141,11 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                     class=${classMap({
                       badges: true,
                       draggable: !this.preview,
-                      overflowing: this._badgesOverflowing,
+                      "scroll-fade-start": this._badgesScrollFade.start,
+                      "scroll-fade-end": this._badgesScrollFade.end,
                       dragging: badgeDragging,
                     })}
+                    ${this._badgesScrollFade.target()}
                   >
                     <div class="badges-row">
                       ${badges.map(
@@ -213,6 +169,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
+    ${scrollFadeStyles}
+
     ha-card {
       background: none;
       backdrop-filter: none;
@@ -314,16 +272,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
       scrollbar-width: none;
     }
-    .badges.overflowing {
-      mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        black var(--ha-space-4),
-        black calc(100% - var(--ha-space-4)),
-        transparent 100%
-      );
-    }
-    .badges.draggable.overflowing {
+    .badges.draggable:is(.scroll-fade-start, .scroll-fade-end) {
       cursor: grab;
     }
     .badges-row {
@@ -335,35 +284,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       gap: var(--ha-space-2);
       margin: 0;
     }
-    /* Use before and after because padding doesn't work well with scrolling */
-    .badges-row::before,
-    .badges-row::after {
-      content: "";
-      position: relative;
-      display: block;
-      min-width: var(--badge-padding, 0);
-      height: var(--ha-space-4);
-      background-color: transparent;
-    }
-    .badges-row::before {
-      margin-inline-start: calc(var(--ha-space-2) * -1);
-      margin-inline-end: 0;
-    }
-    .badges-row::after {
-      margin-inline-end: calc(var(--ha-space-2) * -1);
-      margin-inline-start: 0;
-    }
     .badges-row > * {
       min-width: fit-content;
-    }
-    .badges.overflowing .badges-row {
-      --badge-padding: var(--ha-space-4);
-    }
-    .badges.overflowing .badges-row > *:first-child {
-      margin-inline-start: calc(var(--ha-space-2) * -1);
-    }
-    .badges.overflowing .badges-row > *:last-child {
-      margin-inline-end: calc(var(--ha-space-2) * -1);
     }
     .badges.dragging {
       cursor: grabbing;

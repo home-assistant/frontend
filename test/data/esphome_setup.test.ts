@@ -9,6 +9,7 @@ import {
   countRemainingESPHomeCapabilities,
   deriveESPHomeSetupStatus,
   deviceHasMediaPlayerEntity,
+  findESPHomeZWaveFlow,
   getESPHomeAudioControls,
   getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
@@ -18,6 +19,7 @@ import {
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
 } from "../../src/data/esphome_setup";
+import type { DataEntryFlowProgress } from "../../src/data/data_entry_flow";
 import type { SerialPortUsage } from "../../src/data/usb";
 
 const capabilities = (
@@ -49,6 +51,7 @@ const deriveOptions = (
     sendspinSupported: boolean;
     sendspinEnabled: boolean;
     serialConfigured: boolean;
+    zwaveFlowInProgress: boolean;
   }> = {}
 ) => ({
   mediaPlayerSupported: false,
@@ -259,6 +262,17 @@ describe("deriveESPHomeSetupStatus", () => {
     ).toBe("completed");
   });
 
+  it("marks connectivity detected when a discovery flow exists despite home_id 0", () => {
+    expect(
+      deriveESPHomeSetupStatus(
+        capabilities({
+          zwave_proxy: { supported: true, home_id: 0 },
+        }),
+        deriveOptions({ zwaveFlowInProgress: true })
+      ).connectivity
+    ).toBe("detected");
+  });
+
   it("marks serial completed only when an advertised UART is in use", () => {
     const caps = capabilities({
       serial_proxies: [serialProxy()],
@@ -283,6 +297,71 @@ describe("deriveESPHomeSetupStatus", () => {
         mediaPlayerSupported: false,
         musicAssistantLoaded: false,
       }).serial
+    ).toBeUndefined();
+  });
+});
+
+describe("findESPHomeZWaveFlow", () => {
+  const flow = (
+    context: DataEntryFlowProgress["context"],
+    handler = "zwave_js"
+  ): DataEntryFlowProgress => ({
+    flow_id: `${handler}-${JSON.stringify(context)}`,
+    handler,
+    step_id: "installation_type",
+    context,
+  });
+  const fromDevice = flow({
+    source: "esphome",
+    unique_id: "3551671779",
+    discovery_key: { domain: "esphome", key: "20:F8:3B:17:08:A8", version: 1 },
+  });
+
+  it("matches the flow by the device MAC, ignoring case and separators", () => {
+    expect(findESPHomeZWaveFlow([fromDevice], "20:f8:3b:17:08:a8")).toBe(
+      fromDevice
+    );
+    const rawKey = flow({
+      ...fromDevice.context,
+      discovery_key: { domain: "esphome", key: "20F83B1708A8", version: 1 },
+    });
+    expect(findESPHomeZWaveFlow([rawKey], "20:f8:3b:17:08:a8")).toBe(rawKey);
+  });
+
+  it("ignores flows from other devices", () => {
+    expect(
+      findESPHomeZWaveFlow(
+        [
+          fromDevice,
+          flow({ ...fromDevice.context, source: "usb" }),
+          flow(fromDevice.context, "zha"),
+        ],
+        "aa:bb:cc:dd:ee:ff"
+      )
+    ).toBeUndefined();
+  });
+
+  it("does not match flows without an ESPHome discovery key", () => {
+    const legacy = flow({ source: "esphome", unique_id: "3551671779" });
+    const otherKey = flow({
+      source: "esphome",
+      discovery_key: { domain: "usb", key: "20:F8:3B:17:08:A8", version: 1 },
+    });
+    expect(
+      findESPHomeZWaveFlow([legacy, otherKey], "20:F8:3B:17:08:A8")
+    ).toBeUndefined();
+    expect(findESPHomeZWaveFlow([fromDevice], undefined)).toBeUndefined();
+  });
+
+  it("ignores same-MAC flows from other sources and integrations", () => {
+    expect(
+      findESPHomeZWaveFlow(
+        [
+          flow({ ...fromDevice.context, source: "usb" }),
+          flow(fromDevice.context, "zha"),
+        ],
+        "20:F8:3B:17:08:A8"
+      )
     ).toBeUndefined();
   });
 });

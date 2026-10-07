@@ -177,6 +177,7 @@ gulp.task("copy-static-landing-page", async () => {
 
   copyFonts(paths.landingPage_output_static);
   copyTranslations(paths.landingPage_output_static);
+  copyLocaleData(paths.landingPage_output_static);
 });
 
 gulp.task("copy-static-e2e-test-app", async () => {

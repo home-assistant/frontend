@@ -35,7 +35,7 @@ import {
 } from "../../data/hassio/host";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant, ServiceCallRequest } from "../../types";
-import { showToast } from "../../util/toast";
+import { HOST_ACTION_TOAST_ID, showToast } from "../../util/toast";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -315,6 +315,7 @@ class DialogRestart extends LitElement {
   private _hostAction =
     (toastMessage: string, action: "reboot" | "shutdown") => async () => {
       showToast(this, {
+        id: HOST_ACTION_TOAST_ID,
         message: toastMessage,
         duration: -1,
       });
@@ -328,6 +329,11 @@ class DialogRestart extends LitElement {
       } catch (err: any) {
         // Ignore connection errors, these are all expected
         if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
+          showToast(this, {
+            id: HOST_ACTION_TOAST_ID,
+            message: "",
+            duration: 0,
+          });
           showAlertDialog(this, {
             title: this.hass.localize(`ui.dialogs.restart.${action}.failed`),
             text: extractApiErrorMessage(err),

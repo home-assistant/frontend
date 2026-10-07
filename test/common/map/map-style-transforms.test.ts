@@ -136,4 +136,15 @@ describe("finalizeMapStyle", () => {
     expect(textField(finalized, "label-motorway-shield")).toBe("{ref}");
     expect(finalized.layers[3]).toEqual(style().layers[3]);
   });
+
+  it("softens the globe's edge and keeps the rest of the sky", () => {
+    const withSky = style();
+    withSky.sky = { "sky-color": "#88c", "sky-horizon-blend": 0.2 };
+
+    expect(finalizeMapStyle("colorful", withSky).sky).toEqual({
+      "sky-color": "#88c",
+      "sky-horizon-blend": 0.2,
+      "atmosphere-blend": 0.5,
+    });
+  });
 });

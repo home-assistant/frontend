@@ -173,7 +173,8 @@ export class DialogEnergyDeviceSettings
           .placeholder=${
             this._device
               ? computeEnergyLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._device.stat_consumption,
                   this._params?.statsMetadata?.[this._device.stat_consumption]
                 )
@@ -238,7 +239,7 @@ export class DialogEnergyDeviceSettings
       this._params?.statsMetadata &&
       !(ev.detail.value in this._params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass, [
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {

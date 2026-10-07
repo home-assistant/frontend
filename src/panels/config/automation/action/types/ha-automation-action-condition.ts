@@ -163,7 +163,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
   };
 
   private _rowRenderer = (item: PickerComboBoxItem) => html`
-    <ha-combo-box-item type="button">
+    <ha-combo-box-item>
       <ha-condition-icon
         slot="start"
         .hass=${this.hass}

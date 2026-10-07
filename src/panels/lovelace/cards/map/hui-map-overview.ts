@@ -1,5 +1,9 @@
 import { mdiHistory } from "@mdi/js";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type {
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -12,6 +16,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
 import {
   HOME_ZONE_ENTITY_ID,
@@ -35,12 +40,13 @@ import "../../../../components/ha-spinner";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
-import "../../../logbook/ha-logbook-entry";
-import type { LogbookEntry } from "../../../../data/logbook";
+import "../../../../components/ha-button";
+import { formatTime } from "../../../../common/datetime/format_time";
 import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
 import {
   apiContext,
+  configContext,
   connectionContext,
   formattersContext,
   fullEntitiesContext,
@@ -52,7 +58,8 @@ import type { HistoryStates } from "../../../../data/history";
 import { fetchDateWS } from "../../../../data/history";
 import { computeUserInitials } from "../../../../data/user";
 import type {
-  HomeAssistant,
+  CurrentUser,
+  HomeAssistantConfig,
   HomeAssistantApi,
   HomeAssistantConnection,
   HomeAssistantFormatters,
@@ -62,6 +69,7 @@ import type {
 export type OverviewTab = "people" | "devices" | "zones";
 
 const ACTIVITY_HOURS = 24;
+const ACTIVITY_INITIAL_ENTRIES = 5;
 
 declare global {
   interface HASSDomEvents {
@@ -75,9 +83,6 @@ declare global {
 @customElement("hui-map-overview")
 export class HuiMapOverview extends LitElement {
   @property({ attribute: false }) public entities: HaMapEntity[] = [];
-
-  // Only handed to ha-logbook-entry, which takes the broad object
-  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public selected?: string;
 
@@ -102,6 +107,20 @@ export class HuiMapOverview extends LitElement {
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
 
   // Registry creation order decides the zone colors
   @state()
@@ -135,6 +154,8 @@ export class HuiMapOverview extends LitElement {
   @state() private _activity?: ActivityEntry[];
 
   @state() private _activityFailed = false;
+
+  @state() private _activityExpanded = false;
 
   // Counts activity loads so only the newest one may show its result, even
   // when the same entity is selected again while an older load is pending
@@ -173,6 +194,13 @@ export class HuiMapOverview extends LitElement {
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     this._watchPeek();
+    // The host filters the map by the tab it set; tell it when that one is gone
+    const tabs = Object.keys(
+      this._itemsPerTab(this._getPeople(), this._getDevices(), this._getZones())
+    ) as OverviewTab[];
+    if (tabs.length && !tabs.includes(this.tab)) {
+      fireEvent(this, "map-overview-tab", { tab: tabs[0] });
+    }
     if (changedProps.has("selected")) {
       this._moveFocus(changedProps.get("selected"));
     }
@@ -244,6 +272,10 @@ export class HuiMapOverview extends LitElement {
           !!stateObj && computeStateDomain(stateObj) === "person"
       )
       .sort((a, b) => {
+        const aMe = this._isMe(a);
+        if (aMe !== this._isMe(b)) {
+          return aMe ? -1 : 1;
+        }
         const aLocated = !!getEntityLocation(a, this._states);
         const bLocated = !!getEntityLocation(b, this._states);
         if (aLocated !== bLocated) {
@@ -254,6 +286,20 @@ export class HuiMapOverview extends LitElement {
           this._i18n.locale.language
         );
       });
+  }
+
+  private _isMe(stateObj: HassEntity): boolean {
+    return (
+      !!this._user &&
+      computeStateDomain(stateObj) === "person" &&
+      stateObj.attributes.user_id === this._user.id
+    );
+  }
+
+  private _personName(stateObj: HassEntity): string {
+    return this._isMe(stateObj)
+      ? this._i18n.localize("ui.panel.lovelace.cards.map.overview.me")
+      : computeStateName(stateObj);
   }
 
   private _getDevices(): HassEntity[] {
@@ -319,6 +365,7 @@ export class HuiMapOverview extends LitElement {
     if (changedProps.has("selected")) {
       this._activity = undefined;
       this._activityFailed = false;
+      this._activityExpanded = false;
       const request = ++this._activityRequest;
       if (this.selected) {
         this._loadActivity(this.selected, request);
@@ -450,16 +497,9 @@ export class HuiMapOverview extends LitElement {
           @click=${this._handleBack}
         ></ha-icon-button-prev>
         <div class="detail-title">
-          <button
-            type="button"
-            class="detail-name"
-            .title=${this._i18n.localize(
-              "ui.panel.lovelace.cards.show_more_info"
-            )}
-            @click=${this._handleMoreInfo}
-          >
-            ${computeStateName(stateObj)}
-          </button>
+          <span class="detail-name" tabindex="-1">
+            ${this._personName(stateObj)}
+          </span>
           <span class="detail-state">
             ${
               isZone
@@ -501,17 +541,18 @@ export class HuiMapOverview extends LitElement {
                         : "ui.panel.lovelace.cards.map.overview.no_activity"
                     )}
                   </span>`
-                : html`<div class="timeline">
-                    ${this._activity.map((entry, index, all) =>
-                      this._renderActivityEntry(
-                        stateObj,
-                        entry,
-                        index === all.length - 1
-                      )
-                    )}
-                  </div>`
+                : this._renderTimeline(stateObj, this._activity)
           }
         </div>
+        <ha-button
+          appearance="filled"
+          class="more-info"
+          @click=${this._handleMoreInfo}
+        >
+          ${this._i18n.localize(
+            "ui.panel.lovelace.cards.map.overview.more_info"
+          )}
+        </ha-button>
       </div>
     `;
   }
@@ -540,39 +581,88 @@ export class HuiMapOverview extends LitElement {
     );
   }
 
-  // A logbook row: the person, the zone they are in now, and when. On the
-  // zone tab the row belongs to the person who arrived or left.
+  private _renderTimeline(stateObj: HassEntity, activity: ActivityEntry[]) {
+    const shown = this._activityExpanded
+      ? activity
+      : activity.slice(0, ACTIVITY_INITIAL_ENTRIES);
+    return html`
+      <div class="timeline">
+        ${shown.map((entry, index) =>
+          this._renderActivityEntry(stateObj, entry, index === shown.length - 1)
+        )}
+      </div>
+      ${
+        activity.length > shown.length
+          ? html`<ha-button
+              appearance="plain"
+              size="s"
+              class="show-more"
+              @click=${this._showAllActivity}
+            >
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.show_more"
+              )}
+            </ha-button>`
+          : nothing
+      }
+    `;
+  }
+
   private _renderActivityEntry(
     stateObj: HassEntity,
     entry: ActivityEntry,
     last: boolean
   ) {
-    if (!this.hass) {
-      return nothing;
-    }
-    const entityId = entry.personId ?? stateObj.entity_id;
-    const subject = this._states[entityId];
-    const item: LogbookEntry = {
-      when: entry.when.getTime() / 1000,
-      name: subject ? computeStateName(subject) : entityId,
-      entity_id: entityId,
-      state: entry.state,
-    };
-    // Zone changes take the zone's color; arrivals and departures keep the
-    // logbook's own colors
-    const stateColor = entry.personId
-      ? undefined
-      : this._zoneColorForState(entry.state);
+    const person = entry.personId ? this._states[entry.personId] : undefined;
+    const headline = entry.personId
+      ? person
+        ? this._personName(person)
+        : entry.personId
+      : this._formatters.formatEntityState(stateObj, entry.state);
+    const color =
+      entry.personId && !entry.arrived
+        ? undefined
+        : this._zoneColorForState(entry.state);
     return html`
-      <ha-logbook-entry
-        .hass=${this.hass}
-        .item=${item}
-        .lastOfDay=${last}
-        .nodeColor=${stateColor}
-        narrow
-        no-detail
-      ></ha-logbook-entry>
+      <div class=${classMap({ entry: true, last })}>
+        <span
+          class="dot"
+          style=${styleMap({ "--dot-color": color })}
+          aria-hidden="true"
+        ></span>
+        <span class="entry-headline">${headline}</span>
+        <span class="entry-when">
+          ${
+            entry.personId
+              ? html`${this._i18n.localize(
+                  entry.arrived
+                    ? "ui.panel.lovelace.cards.map.overview.entered"
+                    : "ui.panel.lovelace.cards.map.overview.left"
+                )}
+                · `
+              : nothing
+          }
+          ${formatTime(entry.when, this._i18n.locale, this._config)} ·
+          <ha-relative-time .datetime=${entry.when}></ha-relative-time>
+        </span>
+      </div>
     `;
+  }
+
+  private _showAllActivity() {
+    this._activityExpanded = true;
+  }
+
+  private _itemsPerTab(
+    people: HassEntity[],
+    devices: HassEntity[],
+    zones: HassEntity[]
+  ): Partial<Record<OverviewTab, HassEntity[]>> {
+    return {
+      ...(people.length ? { people } : {}),
+      ...(devices.length ? { devices } : {}),
+      ...(zones.length ? { zones } : {}),
+    };
   }
 
   private _renderList(
@@ -580,16 +670,20 @@ export class HuiMapOverview extends LitElement {
     devices: HassEntity[],
     zones: HassEntity[]
   ) {
-    const itemsPerTab: Partial<Record<OverviewTab, HassEntity[]>> = {
-      people,
-      // A devices tab only for devices with a location, or while it is selected
-      ...(devices.length || this.tab === "devices" ? { devices } : {}),
-      zones,
-    };
+    const itemsPerTab = this._itemsPerTab(people, devices, zones);
     const tabs = Object.keys(itemsPerTab) as OverviewTab[];
-    // The selected tab stays selected even when empty; never switch away from it
-    const tab = tabs.includes(this.tab) ? this.tab : "people";
+    const tab = tabs.includes(this.tab) ? this.tab : tabs[0];
     const items = itemsPerTab[tab]!;
+
+    // A lone heading also serves as the phone sheet's peek strip
+    if (tabs.length === 1) {
+      return html`
+        <div class="heading peek" id="tab-${tab}">
+          ${this._i18n.localize(`ui.panel.lovelace.cards.map.overview.${tab}`)}
+        </div>
+        ${this._renderItems(tab, items)}
+      `;
+    }
 
     return html`
       <div class="tabs peek">
@@ -612,7 +706,6 @@ export class HuiMapOverview extends LitElement {
                 aria-selected=${tab === tabId}
                 tabindex=${tab === tabId ? 0 : -1}
                 data-tab=${tabId}
-                .disabled=${!itemsPerTab[tabId]!.length && tabId !== tab}
                 @click=${this._handleTabClick}
               >
                 ${this._i18n.localize(
@@ -623,33 +716,31 @@ export class HuiMapOverview extends LitElement {
           )}
         </div>
       </div>
+      ${this._renderItems(tab, items)}
+    `;
+  }
+
+  private _renderItems(tab: OverviewTab, items: HassEntity[]) {
+    return html`
       <div
         class="list"
         id="tabpanel"
         role="tabpanel"
         aria-labelledby="tab-${tab}"
       >
-        ${
-          items.length
-            ? html`<ha-md-list>
-                ${items.map((stateObj) =>
-                  tab === "zones"
-                    ? this._renderZone(stateObj)
-                    : this._renderEntity(stateObj)
-                )}
-              </ha-md-list>`
-            : html`<div class="empty">
-                ${this._i18n.localize(
-                  `ui.panel.lovelace.cards.map.overview.no_${tab}`
-                )}
-              </div>`
-        }
+        <ha-md-list>
+          ${items.map((stateObj) =>
+            tab === "zones"
+              ? this._renderZone(stateObj)
+              : this._renderEntity(stateObj)
+          )}
+        </ha-md-list>
       </div>
     `;
   }
 
   private _renderEntity(stateObj: HassEntity) {
-    const name = computeStateName(stateObj);
+    const name = this._personName(stateObj);
     const location = getEntityLocation(stateObj, this._states);
     const picture = stateObj.attributes.entity_picture;
 
@@ -670,7 +761,7 @@ export class HuiMapOverview extends LitElement {
                 />`
               : computeStateDomain(stateObj) === "person"
                 ? html`<span class="initials"
-                    >${computeUserInitials(name)}</span
+                    >${computeUserInitials(computeStateName(stateObj))}</span
                   >`
                 : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
           }
@@ -817,6 +908,14 @@ export class HuiMapOverview extends LitElement {
       padding-left: max(var(--ha-space-3), var(--safe-area-inset-left));
     }
 
+    .heading {
+      flex: none;
+      padding: var(--ha-space-2) var(--ha-space-3);
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+
     .tabs {
       position: relative;
       flex: none;
@@ -888,16 +987,6 @@ export class HuiMapOverview extends LitElement {
       min-height: 0;
       display: flex;
       flex-direction: column;
-    }
-
-    .empty {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: var(--ha-space-6) var(--ha-space-3);
-      color: var(--secondary-text-color);
-      text-align: center;
     }
 
     ha-md-list {
@@ -978,21 +1067,8 @@ export class HuiMapOverview extends LitElement {
     }
 
     .detail-name {
-      margin: 0;
-      padding: 0;
-      border: none;
-      background: none;
-      cursor: pointer;
-      text-align: start;
-      font-family: inherit;
-      color: inherit;
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-medium);
-    }
-
-    .detail-name:hover,
-    .detail-name:focus-visible {
-      text-decoration: underline;
     }
 
     .detail-state {
@@ -1041,6 +1117,59 @@ export class HuiMapOverview extends LitElement {
 
     .timeline {
       margin-top: var(--ha-space-2);
+      --rail-size: 10px;
+    }
+
+    .entry {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding-inline-start: calc(var(--rail-size) + var(--ha-space-3));
+      padding-bottom: var(--ha-space-4);
+    }
+    .entry.last {
+      padding-bottom: 0;
+    }
+    .entry::before {
+      content: "";
+      position: absolute;
+      inset-inline-start: calc(var(--rail-size) / 2 - 1px);
+      top: var(--rail-size);
+      bottom: 0;
+      width: 2px;
+      background: var(--divider-color);
+    }
+    .entry.last::before {
+      display: none;
+    }
+    .dot {
+      position: absolute;
+      inset-inline-start: 0;
+      top: 4px;
+      width: var(--rail-size);
+      height: var(--rail-size);
+      border-radius: var(--ha-border-radius-circle);
+      background: var(--dot-color, var(--secondary-text-color));
+    }
+    .entry-headline {
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+    .entry-when {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+    .show-more {
+      display: block;
+      margin-top: var(--ha-space-3);
+      padding-top: var(--ha-space-2);
+      border-top: 1px solid var(--divider-color);
+    }
+
+    .more-info {
+      flex: none;
+      width: 100%;
+      margin-top: var(--ha-space-3);
     }
   `;
 }

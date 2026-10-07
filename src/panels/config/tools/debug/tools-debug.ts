@@ -1,10 +1,9 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-yaml-editor";
 import "../../../../components/list/ha-list-base";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -14,8 +13,7 @@ import {
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import { showToast } from "../../../../util/toast";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-debug-connection-row";
 import "./ha-debug-disable-view-transition-row";
 import "./ha-debug-viewport-environment-card";
@@ -25,6 +23,8 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _entityId?: string;
+
+  @state() private _entityDiagnostic?: Record<string, unknown>;
 
   protected render() {
     return html`
@@ -56,16 +56,16 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
               @value-changed=${this._entityPicked}
             ></ha-entity-picker>
           </div>
-          <div class="card-actions">
-            <ha-button
-              @click=${this._copyEntityDiagnostic}
-              appearance="filled"
-              .disabled=${!this._entityId}
-              >${this.hass.localize(
-                "ui.panel.config.tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
-              )}</ha-button
-            >
-          </div>
+          ${
+            this._entityDiagnostic
+              ? html`<ha-yaml-editor
+                  .value=${this._entityDiagnostic}
+                  read-only
+                  auto-update
+                  copy-clipboard
+                ></ha-yaml-editor>`
+              : nothing
+          }
         </ha-card>
         <ha-debug-viewport-environment-card
           .hass=${this.hass}
@@ -74,12 +74,17 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private async _copyEntityDiagnostic() {
-    const id = this._entityId!;
+  private async _entityPicked(ev: ValueChangedEvent<string | undefined>) {
+    const id = ev.detail.value;
+    this._entityId = id;
+    this._entityDiagnostic = undefined;
+    if (!id) {
+      return;
+    }
     let statistic;
     if (computeDomain(id) === "sensor") {
       const [metadata, issues] = await Promise.all([
-        getStatisticMetadata(this.hass, [id]),
+        getStatisticMetadata(this.hass.callWS, [id]),
         validateStatistics(this.hass),
       ]);
       const issue = issues[id];
@@ -96,23 +101,18 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
     } catch {
       // not in the registry
     }
+    if (this._entityId !== id) {
+      // A different entity was picked while loading
+      return;
+    }
     const device = entity?.device_id && this.hass.devices[entity.device_id];
 
-    const data = {
+    this._entityDiagnostic = {
       state: this.hass.states[id],
       entity,
       device,
       statistic,
     };
-    const json = JSON.stringify(data, null, 2);
-    await copyToClipboard(json);
-    showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
-    });
-  }
-
-  private _entityPicked(ev) {
-    this._entityId = ev.detail.value;
   }
 
   static styles = [

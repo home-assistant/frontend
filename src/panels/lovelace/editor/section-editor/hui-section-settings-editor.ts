@@ -12,10 +12,12 @@ import type {
 } from "../../../../components/ha-form/types";
 import {
   DEFAULT_SECTION_BACKGROUND_OPACITY,
+  DEFAULT_SECTION_COLUMN_SPAN,
   resolveSectionBackground,
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { DEFAULT_MAX_COLUMNS } from "../../views/const";
 
 interface SettingsData {
   column_span?: number;
@@ -39,6 +41,7 @@ export class HuiDialogEditSection extends LitElement {
       [
         {
           name: "column_span",
+          default: DEFAULT_SECTION_COLUMN_SPAN,
           selector: {
             number: {
               min: 1,
@@ -63,6 +66,7 @@ export class HuiDialogEditSection extends LitElement {
               name: "background_color",
               selector: {
                 ui_color: {
+                  default_color: "default",
                   extra_options: [
                     {
                       value: "default",
@@ -78,6 +82,7 @@ export class HuiDialogEditSection extends LitElement {
             },
             {
               name: "background_opacity",
+              default: DEFAULT_SECTION_BACKGROUND_OPACITY,
               selector: {
                 number: {
                   min: 0,
@@ -104,16 +109,15 @@ export class HuiDialogEditSection extends LitElement {
     const background = resolveSectionBackground(this.config.background);
 
     const data: SettingsData = {
-      column_span: this.config.column_span || 1,
+      column_span: this.config.column_span,
       background_enabled: backgroundEnabled,
-      background_color: background?.color ?? "default",
-      background_opacity:
-        background?.opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
+      background_color: background?.color,
+      background_opacity: background?.opacity,
       theme: this.config.theme,
     };
 
     const schema = this._schema(
-      this.viewConfig.max_columns || 4,
+      this.viewConfig.max_columns || DEFAULT_MAX_COLUMNS,
       this._localize
     );
 
@@ -148,8 +152,13 @@ export class HuiDialogEditSection extends LitElement {
 
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
-      column_span: newData.column_span,
     };
+
+    if (newData.column_span) {
+      newConfig.column_span = newData.column_span;
+    } else {
+      delete newConfig.column_span;
+    }
 
     if (newData.background_enabled) {
       const hasCustomColor =
@@ -158,7 +167,9 @@ export class HuiDialogEditSection extends LitElement {
 
       newConfig.background = {
         ...(hasCustomColor ? { color: newData.background_color } : {}),
-        opacity: newData.background_opacity!,
+        ...(newData.background_opacity !== undefined
+          ? { opacity: newData.background_opacity }
+          : {}),
       };
     } else {
       delete newConfig.background;

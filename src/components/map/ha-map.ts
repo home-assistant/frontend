@@ -21,6 +21,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
+  MapCircleHandle,
   MapClusterIcon,
   MapControlPosition,
   MapEngine,
@@ -29,11 +30,13 @@ import type {
   MapLatLng,
   MapMarkerHandle,
   MapPath,
+  MapPathHandle,
   MapPathMarker,
   MapPathSegment,
   MapEditableCircleHandle,
   MapEditableMarkerHandle,
   MapEditingSupport,
+  MapView,
 } from "../../common/map/map-engine";
 import {
   circleBoundsPoints,
@@ -66,6 +69,7 @@ import {
 } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
+import "../ha-tooltip";
 import type {
   HomeAssistantConfig,
   HomeAssistantConnection,
@@ -74,7 +78,7 @@ import type {
   HomeAssistantUI,
   ThemeMode,
 } from "../../types";
-import "./ha-entity-marker";
+import { FLOATING_LIFT, floatingMarkerFootprint } from "./ha-entity-marker";
 
 declare global {
   // for fire event
@@ -84,6 +88,9 @@ declare global {
 }
 
 const PROGRAMMITIC_FIT_DELAY = 250;
+
+// An engine that never reports a drawn frame must not leave an empty card
+const DRAWN_FALLBACK = 3000;
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -123,6 +130,8 @@ export interface HaMapEditableLocation {
   radiusEditable?: boolean;
   /** Activating the marker fires editable-location-clicked; otherwise it is not a button */
   activatable?: boolean;
+  /** Counts toward the map fit; defaults to true */
+  fit?: boolean;
 }
 
 // Geometry is updated in place; a change to anything else rebuilds the marker
@@ -194,6 +203,7 @@ const staticEditing = (engine: MapEngine): MapEditingSupport => ({
           size: options.centerSize ?? [16, 16],
           interactive: !!options.onClick,
           title: options.title,
+          nativeTitle: options.nativeTitle,
         }),
       ];
     };
@@ -259,7 +269,8 @@ const CLUSTER_BUBBLE_PADDING = 6;
 const CLUSTER_BUBBLE_GAP = 4;
 // Space an opened bubble keeps from the map edges
 const CLUSTER_BUBBLE_MARGIN = 12;
-const CLUSTER_MAX_AVATARS = 3;
+// Beyond this the last slot becomes a count
+const CLUSTER_MAX_AVATARS = 4;
 const CLUSTER_MORE_WIDTH = 28;
 const CLUSTER_MORE_MAX = 99;
 const CLUSTER_TAIL_SIZE = 10;
@@ -270,6 +281,10 @@ const CLUSTER_RADIUS = 40;
 // Same-zone markers share the zone's bubble while they span at most this many
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
+// Circle radius (meters) for a selected marker without a reported accuracy
+const NOMINAL_ACCURACY = 2.5;
+// Fixes this good (meters) draw a soft disc without an outline
+const PRECISE_GPS_ACCURACY = 10;
 
 type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
 
@@ -408,6 +423,8 @@ export class HaMap extends ReactiveElement {
 
   private _entityHandles: MapMarkerHandle[] = [];
 
+  private _tooltipCount = 0;
+
   // Marker elements survive redraws so unchanged entities keep their DOM
   private _entityMarkers = new Map<string, EntityMarkerElement>();
 
@@ -415,7 +432,9 @@ export class HaMap extends ReactiveElement {
 
   private _zoneHandles: MapItemHandle[] = [];
 
-  private _pathHandles: MapItemHandle[] = [];
+  private _zoneCircleHandles: MapCircleHandle[] = [];
+
+  private _pathHandles: MapPathHandle[] = [];
 
   private _focusPoints: MapLatLng[] = [];
 
@@ -474,10 +493,12 @@ export class HaMap extends ReactiveElement {
     this._startingEngine?.destroy();
     this._startingEngine = undefined;
     this._loading = false;
+    clearTimeout(this._drawnFallback);
     this._entityHandles = [];
     this._entityMarkers.clear();
     this._clusterAvatars.clear();
     this._zoneHandles = [];
+    this._zoneCircleHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
     this._focusPoints = [];
@@ -604,7 +625,7 @@ export class HaMap extends ReactiveElement {
   private get _darkMode() {
     return (
       this.themeMode === "dark" ||
-      (this.themeMode === "auto" && Boolean(this._ui?.themes.darkMode))
+      (this.themeMode === "auto" && Boolean(this._ui?.themes?.darkMode))
     );
   }
 
@@ -623,7 +644,7 @@ export class HaMap extends ReactiveElement {
     // mode the page is in. A card forced to the other mode draws the other
     // palette, so those values would be the wrong half of the theme; the
     // style's own colors are the better answer there.
-    const pageDark = Boolean(this._ui?.themes.darkMode);
+    const pageDark = Boolean(this._ui?.themes?.darkMode);
     const colors =
       this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
     if (!deepEqual(colors, this._themeColors)) {
@@ -646,12 +667,32 @@ export class HaMap extends ReactiveElement {
     // case and keeps the map on the style the build generated.
     this._readThemeColors();
 
-    const map = this._mapElement!;
+    const map = this._mapElement;
+    if (!map) {
+      return;
+    }
     map.classList.toggle("clickable", this.clickable);
     map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("drawn", this._mapDrawn);
+    // The sky belongs behind a drawn globe; on a blank canvas it is just a
+    // gradient with a glow in it
+    map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
     this._engine?.setMapStyle(this._resolvedMapStyle);
+  }
+
+  private _mapDrawn = false;
+
+  private _drawnFallback?: number;
+
+  private _markDrawn(attempt: number): void {
+    if (attempt !== this._setupAttempt || this._mapDrawn) {
+      return;
+    }
+    clearTimeout(this._drawnFallback);
+    this._mapDrawn = true;
+    this._updateMapAppearance();
   }
 
   private _loading = false;
@@ -663,9 +704,14 @@ export class HaMap extends ReactiveElement {
 
   private _setupAttempt = 0;
 
+  /** Whether the next engine is the vector one: only it draws a globe */
+  private get _vectorEngine(): boolean {
+    return !this._forceLeaflet && supportsVectorMaps();
+  }
+
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this._forceLeaflet || !supportsVectorMaps()) {
+    if (!this._vectorEngine) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -699,8 +745,13 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.getElementById("map")?.remove();
     const map = document.createElement("div");
     map.id = "map";
+    // Which ground shows in the gap before the first frame; the rest of the
+    // classes wait for the engine (_updateMapAppearance)
+    map.classList.toggle("dark", this._darkMode);
     this.shadowRoot!.append(map);
     this._loading = true;
+    this._mapDrawn = false;
+    clearTimeout(this._drawnFallback);
     const attempt = ++this._setupAttempt;
     let engine: MapEngine | undefined;
     try {
@@ -718,6 +769,12 @@ export class HaMap extends ReactiveElement {
         return;
       }
       this._startingEngine = engine;
+      // Started here so the budget covers an engine that never reports a
+      // frame, not the token and the chunk it waited for
+      this._drawnFallback = window.setTimeout(
+        () => this._markDrawn(attempt),
+        DRAWN_FALLBACK
+      );
       await engine.init(map, {
         center: [
           this._config?.latitude ?? 52.3731339,
@@ -741,6 +798,7 @@ export class HaMap extends ReactiveElement {
             }
           },
           fatal: () => this._handleEngineFatal(),
+          drawn: () => this._markDrawn(attempt),
         },
       });
       // Disconnected while the style was loading, or superseded by a newer setup
@@ -785,6 +843,7 @@ export class HaMap extends ReactiveElement {
     this._engine = undefined;
     this._entityHandles = [];
     this._zoneHandles = [];
+    this._zoneCircleHandles = [];
     this._pathHandles = [];
     this._removeEditableLocations();
     this._focusPoints = [];
@@ -836,9 +895,12 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
+    // Zones join the fit when asked, or when they are all there is
+    const zonePoints =
+      this.fitZones || !this._focusPoints.length ? this._focusZonePoints : [];
     if (
       !this._focusPoints.length &&
-      !this._focusZonePoints.length &&
+      !zonePoints.length &&
       !this.editableLocations?.length
     ) {
       this._withProgrammaticFit(() => {
@@ -851,10 +913,12 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    const points = [...this._focusPoints, ...this._focusZonePoints];
+    const points = [...this._focusPoints, ...zonePoints];
 
-    // Editable locations contribute their bounds, radius included
-    this.editableLocations?.forEach((editable) => {
+    // Opted-out locations only count when nothing else would be fitted
+    const editables = this.editableLocations ?? [];
+    const fitted = editables.filter((editable) => editable.fit !== false);
+    (fitted.length ? fitted : editables).forEach((editable) => {
       if (editable.radius) {
         points.push(...circleBoundsPoints(editable.location, editable.radius));
       } else {
@@ -912,9 +976,18 @@ export class HaMap extends ReactiveElement {
     this._engine.setView(center, zoom);
   }
 
+  public getView(): MapView | undefined {
+    return this._engine?.getView();
+  }
+
   public fitBounds(
     boundingbox: MapLatLng[],
-    options?: { zoom?: number; pad?: number; padding?: MapFitPadding }
+    options?: {
+      zoom?: number;
+      pad?: number;
+      padding?: MapFitPadding;
+      fly?: boolean;
+    }
   ) {
     // An explicit fit is user intent, even while it waits for the engine or
     // a size; an auto-fit must not take its place in the meantime
@@ -933,6 +1006,7 @@ export class HaMap extends ReactiveElement {
         pad: options?.pad ?? 0.5,
         animate: this._hasFitted,
         padding: options?.padding,
+        fly: options?.fly,
       });
     });
     this._hasFitted = true;
@@ -966,6 +1040,7 @@ export class HaMap extends ReactiveElement {
       // Markers are buttons, so an unnamed location still gets a name
       const title =
         editable.title ?? this._i18n?.localize("ui.components.map.location");
+      const tooltip = !!editable.element && !!editable.title;
       const existing = this._editableHandles.get(id);
       const kind = editable.radius ? "circle" : "marker";
 
@@ -990,30 +1065,35 @@ export class HaMap extends ReactiveElement {
       }
 
       if (kind === "circle") {
+        const handle = editing.addEditableCircle(editable.location, {
+          radius: editable.radius!,
+          color: editable.color || defaultColor,
+          centerElement: editable.element,
+          centerSize: editable.elementSize,
+          title,
+          nativeTitle: !tooltip,
+          moveable: editable.locationEditable,
+          resizable: editable.radiusEditable,
+          resizeLabel: editable.title
+            ? this._i18n?.localize("ui.components.map.radius_of", {
+                name: editable.title,
+              })
+            : this._i18n?.localize("ui.components.map.radius"),
+          onMove: (location) =>
+            fireEvent(this, "editable-location-moved", { id, location }),
+          onResize: (radius) =>
+            fireEvent(this, "editable-location-resized", { id, radius }),
+          onClick: editable.activatable
+            ? () => fireEvent(this, "editable-location-clicked", { id })
+            : undefined,
+        });
         this._editableHandles.set(id, {
           kind,
           source: editable,
-          handle: editing.addEditableCircle(editable.location, {
-            radius: editable.radius!,
-            color: editable.color || defaultColor,
-            centerElement: editable.element,
-            centerSize: editable.elementSize,
-            title,
-            moveable: editable.locationEditable,
-            resizable: editable.radiusEditable,
-            resizeLabel: editable.title
-              ? this._i18n?.localize("ui.components.map.radius_of", {
-                  name: editable.title,
-                })
-              : this._i18n?.localize("ui.components.map.radius"),
-            onMove: (location) =>
-              fireEvent(this, "editable-location-moved", { id, location }),
-            onResize: (radius) =>
-              fireEvent(this, "editable-location-resized", { id, radius }),
-            onClick: editable.activatable
-              ? () => fireEvent(this, "editable-location-clicked", { id })
-              : undefined,
-          }),
+          handle,
+          cleanup: tooltip
+            ? this._attachTooltip(editable.element!, editable.title!)
+            : undefined,
         });
         continue;
       }
@@ -1052,23 +1132,40 @@ export class HaMap extends ReactiveElement {
       }
       // A location that cannot be dragged is static on any engine
       const support = editable.locationEditable ? editing : staticSupport;
+      const handle = support.addDraggableMarker(element, editable.location, {
+        size: editable.elementSize ?? [16, 16],
+        interactive: true,
+        focusable: !!editable.activatable,
+        title,
+        nativeTitle: !tooltip,
+        onDragEnd: (location) => {
+          dragged = true;
+          fireEvent(this, "editable-location-moved", { id, location });
+        },
+      });
+      const removeTooltip = tooltip
+        ? this._attachTooltip(editable.element!, editable.title!)
+        : undefined;
       this._editableHandles.set(id, {
         kind,
         source: editable,
-        cleanup,
-        handle: support.addDraggableMarker(element, editable.location, {
-          size: editable.elementSize ?? [16, 16],
-          interactive: true,
-          focusable: !!editable.activatable,
-          title,
-          onDragEnd: (location) => {
-            dragged = true;
-            fireEvent(this, "editable-location-moved", { id, location });
-          },
-        }),
+        cleanup: () => {
+          cleanup?.();
+          removeTooltip?.();
+        },
+        handle,
       });
     }
     return changed;
+  }
+
+  private _attachTooltip(element: HTMLElement, title: string): () => void {
+    element.id ||= `ha-map-editable-${this._tooltipCount++}`;
+    const tooltip = document.createElement("ha-tooltip");
+    tooltip.for = element.id;
+    tooltip.textContent = title;
+    this.shadowRoot!.append(tooltip);
+    return () => tooltip.remove();
   }
 
   // One by one, so the listeners on the caller's elements are detached too
@@ -1108,11 +1205,9 @@ export class HaMap extends ReactiveElement {
     if (!this._i18n || !this._config || !this._engine) {
       return;
     }
-    if (this._pathHandles.length) {
-      this._pathHandles.forEach((handle) => handle.remove());
-      this._pathHandles = [];
-    }
-    if (!this.paths) {
+    const paths = this.paths ?? [];
+    this._pathHandles.splice(paths.length).forEach((handle) => handle.remove());
+    if (!paths.length) {
       return;
     }
 
@@ -1120,7 +1215,7 @@ export class HaMap extends ReactiveElement {
       "--dark-primary-color"
     );
 
-    this.paths.forEach((path) => {
+    paths.forEach((path, index) => {
       let opacityStep: number;
       let baseOpacity: number;
       if (path.gradualOpacity) {
@@ -1212,7 +1307,12 @@ export class HaMap extends ReactiveElement {
         segments,
         markers,
       };
-      this._pathHandles.push(this._engine!.addPath(enginePath));
+      const handle = this._pathHandles[index];
+      if (handle) {
+        handle.update(enginePath);
+      } else {
+        this._pathHandles.push(this._engine!.addPath(enginePath));
+      }
     });
   }
 
@@ -1231,8 +1331,10 @@ export class HaMap extends ReactiveElement {
     this._zoneHandles.forEach((handle) => handle.remove());
     this._zoneHandles = [];
     this._focusZonePoints = [];
+    let zoneCircleCount = 0;
 
     if (!this.entities) {
+      this._zoneCircleHandles.splice(0).forEach((handle) => handle.remove());
       this._entityMarkers.clear();
       this._clusterAvatars.clear();
       engine.setClustering(null);
@@ -1314,9 +1416,16 @@ export class HaMap extends ReactiveElement {
               );
 
         if (!hideRadius && radius) {
-          this._zoneHandles.push(
-            engine.addCircle(position, { radius, color: markerColor })
-          );
+          const circleOptions = { radius, color: markerColor };
+          const circle = this._zoneCircleHandles[zoneCircleCount];
+          if (circle) {
+            circle.update(position, circleOptions);
+          } else {
+            this._zoneCircleHandles.push(
+              engine.addCircle(position, circleOptions)
+            );
+          }
+          zoneCircleCount++;
         }
 
         const circleEl = createZoneMarkerElement({
@@ -1349,10 +1458,7 @@ export class HaMap extends ReactiveElement {
           })
         );
 
-        if (
-          this.fitZones &&
-          (typeof entity === "string" || entity.focus !== false)
-        ) {
+        if (typeof entity === "string" || entity.focus !== false) {
           if (!hideRadius && radius) {
             this._focusZonePoints.push(...circleBoundsPoints(position, radius));
           } else {
@@ -1410,6 +1516,7 @@ export class HaMap extends ReactiveElement {
       entityMarker.entityColor = entityColor;
       entityMarker.selected =
         typeof entity !== "string" && (entity.selected ?? false);
+      entityMarker.floating = true;
 
       const clusterData: ClusterData = {
         entityId,
@@ -1427,18 +1534,28 @@ export class HaMap extends ReactiveElement {
           : undefined,
       };
 
+      const accuracy =
+        gpsAccuracy || (entityMarker.selected ? NOMINAL_ACCURACY : 0);
       const showAccuracy =
-        !!gpsAccuracy && !(typeof entity !== "string" && entity.hide_accuracy);
+        accuracy > 0 && !(typeof entity !== "string" && entity.hide_accuracy);
 
-      const markerSize = this._getMarkerSize(computedStyles);
       this._entityHandles.push(
         engine.addMarker(entityMarker, position, {
-          size: [markerSize, markerSize],
+          ...floatingMarkerFootprint(
+            this._getMarkerSize(computedStyles),
+            entityMarker.selected
+          ),
           title,
-          cluster: true,
+          // Selected, it leaves its bubble
+          cluster: !entityMarker.selected,
+          raised: entityMarker.selected,
           clusterData,
           decoration: showAccuracy
-            ? { radius: gpsAccuracy!, color: entityColor }
+            ? {
+                radius: accuracy,
+                color: entityColor,
+                outline: accuracy > PRECISE_GPS_ACCURACY,
+              }
             : undefined,
         })
       );
@@ -1447,6 +1564,10 @@ export class HaMap extends ReactiveElement {
         this._focusPoints.push(position);
       }
     }
+
+    this._zoneCircleHandles
+      .splice(zoneCircleCount)
+      .forEach((handle) => handle.remove());
 
     const shownIds = new Set(this.entities.map(getEntityId));
     for (const cache of [this._entityMarkers, this._clusterAvatars]) {
@@ -1493,7 +1614,10 @@ export class HaMap extends ReactiveElement {
     expanded = false
   ): MapClusterIcon => {
     const data = members.map((member) => member.clusterData as ClusterData);
-    const shown = expanded ? data : data.slice(0, CLUSTER_MAX_AVATARS);
+    const shown =
+      expanded || data.length <= CLUSTER_MAX_AVATARS
+        ? data
+        : data.slice(0, CLUSTER_MAX_AVATARS - 1);
     const hidden = data.length - shown.length;
 
     // With history trails shown, colored borders match avatars to trails
@@ -1564,37 +1688,30 @@ export class HaMap extends ReactiveElement {
       width += CLUSTER_MORE_WIDTH + CLUSTER_BUBBLE_GAP;
     }
 
-    // A cluster of one zone's occupants attaches to that zone's marker
-    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
-    const atZone = !!zonePosition;
-
-    let height =
+    const height =
       rows * CLUSTER_AVATAR_SIZE +
       (rows - 1) * CLUSTER_BUBBLE_GAP +
-      2 * CLUSTER_BUBBLE_PADDING;
-    let root: HTMLElement = bubble;
-    if (atZone) {
-      root = document.createElement("div");
-      root.className = "cluster-marker";
-      const tail = document.createElement("div");
-      tail.className = "cluster-bubble-tail";
-      root.append(bubble, tail);
-      height += CLUSTER_TAIL_HEIGHT;
-    }
+      2 * CLUSTER_BUBBLE_PADDING +
+      CLUSTER_TAIL_HEIGHT;
+    const root = document.createElement("div");
+    root.className = "cluster-marker";
+    const tail = document.createElement("div");
+    tail.className = "cluster-bubble-tail";
+    root.append(bubble, tail);
 
+    // A cluster of one zone's occupants floats above that zone's circle
+    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     return {
       element: root,
       size: [width, height],
-      // Float above the zone circle, tail pointing at it
-      ...(atZone && zonePosition
-        ? {
-            location: zonePosition,
-            anchor: [
-              width / 2,
-              height + ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING,
-            ] as [number, number],
-          }
-        : {}),
+      location: zonePosition,
+      anchor: [
+        width / 2,
+        height +
+          (zonePosition
+            ? ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING
+            : FLOATING_LIFT),
+      ],
     };
   };
 
@@ -1630,11 +1747,23 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
+      /* The map arrives in one piece: the container carries the cartography's
+         own ground, and fades in with the markers once a frame is drawn */
+      background-color: #f4efe6;
+      /* Hidden rather than transparent: the controls and markers in here are
+         not to be clicked or tabbed to before they are on screen */
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-in;
       /* A cluster bubble and its tail cast a single shadow around their
          combined silhouette (drop-shadow on the wrapper), so no shadow seam
          appears between the bubble and its tail. */
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
+    }
+    #map.drawn {
+      visibility: visible;
+      opacity: 1;
     }
     #map.clickable {
       cursor: pointer;
@@ -1653,7 +1782,7 @@ export class HaMap extends ReactiveElement {
       transition-delay: var(--ha-animation-duration-fast);
     }
     #map.dark {
-      background: #090909;
+      background: #191b2c;
       --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
         drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
     }
@@ -1666,6 +1795,39 @@ export class HaMap extends ReactiveElement {
       background: #ffffff;
       color: #000000;
       --map-filter: invert(0);
+    }
+    /* Zoomed out the sky fades out and the globe is left on a transparent
+       canvas, so what surrounds it is this element. The same sky in both
+       themes, day or night: a glow where the sphere sits at the widest zoom
+       out -- MapLibre's own atmosphere carries the edge from there in -- over
+       a gradient that lightens towards the top. */
+    #map.space {
+      --ha-map-space-glow: rgba(255, 255, 255, 0.95);
+      --ha-map-space-haze: rgba(255, 255, 255, 0.45);
+      --ha-map-space-fade: rgba(255, 255, 255, 0);
+      --ha-map-space-high: #dbe8f8;
+      --ha-map-space-low: #7aa5d3;
+      background-color: var(--ha-map-space-low);
+      background-image:
+        radial-gradient(
+          circle at 50% 50%,
+          var(--ha-map-space-glow) 18%,
+          var(--ha-map-space-haze) 24%,
+          var(--ha-map-space-fade) 34%
+        ),
+        linear-gradient(
+          180deg,
+          var(--ha-map-space-high) 0%,
+          var(--ha-map-space-low) 100%
+        );
+      background-repeat: no-repeat;
+    }
+    #map.space.dark {
+      --ha-map-space-glow: rgba(126, 158, 224, 0.5);
+      --ha-map-space-haze: rgba(86, 110, 170, 0.22);
+      --ha-map-space-fade: rgba(86, 110, 170, 0);
+      --ha-map-space-high: #141a30;
+      --ha-map-space-low: #05060f;
     }
     #map.clickable:active,
     #map:active {
@@ -1714,6 +1876,23 @@ export class HaMap extends ReactiveElement {
       border-top-color: #313131;
     }
     .dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
+      filter: invert(1);
+    }
+    /* Not inherited from the page, which may be in the other mode */
+    .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      color: #000000;
+    }
+    .dark .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      background-color: rgba(28, 28, 28, 0.6);
+      color: #ffffff;
+    }
+    .dark .maplibregl-ctrl-attrib.maplibregl-compact {
+      background-color: #1c1c1c;
+    }
+    .dark .maplibregl-ctrl-attrib a {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .dark .maplibregl-ctrl-attrib-button {
       filter: invert(1);
     }
     /* MapLibre's stylesheet, linked into this root, wins on equal specificity */
@@ -1788,9 +1967,9 @@ export class HaMap extends ReactiveElement {
       border-radius: 14px;
       filter: var(--ha-cluster-shadow);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
+      --ha-marker-selected-scale: 1;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
-      --ha-marker-shadow: none;
       --ha-marker-font-size: var(--ha-font-size-s);
       /* distinguish letter tiles from the bubble background */
       --ha-marker-background: var(--ha-color-fill-neutral-quiet-resting);

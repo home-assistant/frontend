@@ -3,6 +3,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { DurationUnits } from "../common/datetime/normalize_duration";
 import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -266,14 +267,30 @@ export interface LegacyDeviceSelector {
   };
 }
 
+export type DurationSelectorMode = "positive" | "signed" | "offset";
+
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
     enable_second?: boolean;
+    mode?: DurationSelectorMode;
   } | null;
 }
+
+export const getDurationSelectorMode = (
+  config: DurationSelector["duration"]
+): DurationSelectorMode =>
+  config?.mode ?? (config?.allow_negative ? "signed" : "positive");
+
+export const getDurationSelectorUnits = (
+  config: DurationSelector["duration"]
+): DurationUnits => ({
+  enableDay: !!config?.enable_day,
+  enableSecond: config?.enable_second ?? true,
+  enableMillisecond: !!config?.enable_millisecond,
+});
 
 interface EntitySelectorFilter {
   integration?: string;
@@ -670,8 +687,7 @@ export const expandLabelTarget = (
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
@@ -685,8 +701,7 @@ export const expandLabelTarget = (
         entities,
         devices,
         area.area_id,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newAreas.push(area.area_id);
@@ -700,8 +715,7 @@ export const expandLabelTarget = (
         hass.states,
         Object.values(entities),
         device,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newDevices.push(device.id);
@@ -714,7 +728,7 @@ export const expandLabelTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -730,8 +744,7 @@ export const expandFloorTarget = (
   hass: HomeAssistant,
   floorId: string,
   areas: HomeAssistant["areas"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newAreas: string[] = [];
   Object.values(areas).forEach((area) => {
@@ -742,8 +755,7 @@ export const expandFloorTarget = (
         hass.entities,
         hass.devices,
         area.area_id,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newAreas.push(area.area_id);
@@ -757,8 +769,7 @@ export const expandAreaTarget = (
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
@@ -770,8 +781,7 @@ export const expandAreaTarget = (
         hass.states,
         Object.values(entities),
         device,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newDevices.push(device.id);
@@ -783,7 +793,7 @@ export const expandAreaTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -798,8 +808,7 @@ export const expandDeviceTarget = (
   hass: HomeAssistant,
   deviceId: string,
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   Object.values(entities).forEach((entity) => {
@@ -808,7 +817,7 @@ export const expandDeviceTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -824,8 +833,7 @@ export const areaMeetsTargetSelector = (
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areaId: string,
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ): boolean => {
   const hasMatchingdevice = devicesInEffectiveArea(devices, areaId).some(
     (device) =>
@@ -833,8 +841,7 @@ export const areaMeetsTargetSelector = (
         hass.states,
         Object.values(entities),
         device,
-        targetSelector,
-        entitySources
+        targetSelector
       )
   );
   if (hasMatchingdevice) {
@@ -846,7 +853,7 @@ export const areaMeetsTargetSelector = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -861,16 +868,17 @@ export const deviceMeetsTargetSelector = (
   states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ): boolean => {
-  const deviceIntegrationLookup = entitySources
-    ? getDeviceIntegrationLookup(entitySources, entityRegistry)
-    : undefined;
-
   if (targetSelector.target?.device) {
+    const filterDevices = ensureArray(targetSelector.target.device);
+    const deviceIntegrationLookup = filterDevices.some(
+      (filterDevice) => filterDevice.integration
+    )
+      ? getDeviceIntegrationLookup(entityRegistry)
+      : undefined;
     if (
-      !ensureArray(targetSelector.target.device).some((filterDevice) =>
+      !filterDevices.some((filterDevice) =>
         filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)
       )
     ) {
@@ -885,11 +893,7 @@ export const deviceMeetsTargetSelector = (
     );
     return entities.some((entity) => {
       const entityState = states[entity.entity_id];
-      return entityMeetsTargetSelector(
-        entityState,
-        targetSelector,
-        entitySources
-      );
+      return entityMeetsTargetSelector(entityState, targetSelector);
     });
   }
   return true;
@@ -1032,7 +1036,8 @@ export const filterSelectorEntities = (
 
   if (
     filterIntegration &&
-    entitySources?.[entity.entity_id]?.domain !== filterIntegration
+    (entityRegistry?.[entity.entity_id]?.platform ??
+      entitySources?.[entity.entity_id]?.domain) !== filterIntegration
   ) {
     return false;
   }

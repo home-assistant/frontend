@@ -249,7 +249,12 @@ export class HaStatisticPicker extends LitElement {
         if (!stateObj) {
           if (!entitiesOnly) {
             const id = meta.statistic_id;
-            const label = getStatisticLabel(this.hass, meta.statistic_id, meta);
+            const label = getStatisticLabel(
+              this.hass.states,
+              this.hass.formatEntityName,
+              meta.statistic_id,
+              meta
+            );
             const type =
               meta.statistic_id.includes(":") &&
               !meta.statistic_id.includes(".")
@@ -428,7 +433,12 @@ export class HaStatisticPicker extends LitElement {
 
       if (type === "external") {
         const sortingPrefix = `${TYPE_ORDER.indexOf("external")}`;
-        const label = getStatisticLabel(this.hass, statisticId, statistic);
+        const label = getStatisticLabel(
+          this.hass.states,
+          this.hass.formatEntityName,
+          statisticId,
+          statistic
+        );
         const domain = statisticId.split(":")[0];
         const domainName = domainToName(this.hass.localize, domain);
 
@@ -446,7 +456,12 @@ export class HaStatisticPicker extends LitElement {
     }
 
     const sortingPrefix = `${TYPE_ORDER.indexOf("external")}`;
-    const label = getStatisticLabel(this.hass, statisticId, statistic);
+    const label = getStatisticLabel(
+      this.hass.states,
+      this.hass.formatEntityName,
+      statisticId,
+      statistic
+    );
 
     return {
       id: statisticId,
@@ -465,7 +480,7 @@ export class HaStatisticPicker extends LitElement {
   ) => {
     const showEntityId = this.hass.userData?.showEntityIdPicker;
     return html`
-      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+      <ha-combo-box-item .borderTop=${index !== 0}>
         ${
           item.icon_path
             ? html`

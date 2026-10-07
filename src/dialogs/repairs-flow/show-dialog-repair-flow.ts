@@ -19,7 +19,9 @@ import "./dialog-repairs-issue-subtitle";
 const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
   step.description_placeholders && issue.translation_placeholders
     ? { ...issue.translation_placeholders, ...step.description_placeholders }
-    : step.description_placeholders || issue.translation_placeholders;
+    : step.description_placeholders ||
+      issue.translation_placeholders ||
+      undefined;
 
 const renderIssueDescription = (hass: HomeAssistant, issue: RepairsIssue) =>
   issue.breaks_in_ha_version

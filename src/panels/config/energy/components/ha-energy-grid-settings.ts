@@ -130,7 +130,8 @@ export class EnergyGridSettings extends LitElement {
                               >${
                                 source.name ||
                                 getStatisticLabel(
-                                  this.hass,
+                                  this.hass.states,
+                                  this.hass.formatEntityName,
                                   primaryStat,
                                   this.statsMetadata?.[primaryStat]
                                 )
@@ -142,7 +143,8 @@ export class EnergyGridSettings extends LitElement {
                               !source.name
                                 ? html`<span class="label secondary"
                                     >${getStatisticLabel(
-                                      this.hass,
+                                      this.hass.states,
+                                      this.hass.formatEntityName,
                                       source.stat_energy_to,
                                       this.statsMetadata?.[
                                         source.stat_energy_to

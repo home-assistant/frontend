@@ -1,8 +1,7 @@
 import { mdiTransmissionTower } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import { formatNumber } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
@@ -10,23 +9,22 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/tile/ha-tile-icon";
 import "../../../../components/tile/ha-tile-info";
+import { internationalizationContext } from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridBalanceCardConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-grid-balance-card")
-class HuiEnergyGridBalanceCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-graph-card-editor");
     return document.createElement("hui-energy-graph-card-editor");
@@ -42,22 +40,22 @@ class HuiEnergyGridBalanceCard
     };
   }
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state() private _config?: EnergyGridBalanceCardConfig;
 
   @state() private _data?: EnergyData;
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass!, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
         this._data = data;
-      }),
-    ];
+      },
+    });
   }
 
   public getCardSize(): number {
@@ -71,23 +69,13 @@ class HuiEnergyGridBalanceCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return (
-      hasConfigChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    );
-  }
-
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
     if (!this._data) {
-      return html`${this.hass.localize(
-        "ui.panel.lovelace.cards.energy.loading"
-      )}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const { summedData } = getSummedData(this._data);
@@ -99,7 +87,7 @@ class HuiEnergyGridBalanceCard
     const fmt = (value: number) =>
       formatNumber(
         value,
-        this.hass.locale,
+        this._i18n.locale,
         Math.abs(value) < 0.01
           ? { maximumSignificantDigits: 2 }
           : { maximumFractionDigits: 2 }
@@ -124,7 +112,7 @@ class HuiEnergyGridBalanceCard
             <span slot="primary">
               ${
                 this._config.title ||
-                this.hass.localize(
+                this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.title"
                 )
               }
@@ -134,7 +122,7 @@ class HuiEnergyGridBalanceCard
                 ${fmt(imported)} kWh
               </span>
               <ha-tooltip for="eq-imported" placement="top">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.imported",
                   { value: fmt(imported) }
                 )}
@@ -144,7 +132,7 @@ class HuiEnergyGridBalanceCard
                 ${fmt(exported)} kWh
               </span>
               <ha-tooltip for="eq-exported" placement="top">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.exported",
                   { value: fmt(exported) }
                 )}
@@ -157,7 +145,7 @@ class HuiEnergyGridBalanceCard
                 ${fmt(net)} kWh
               </span>
               <ha-tooltip for="eq-net" placement="top">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"}`,
                   { value: fmt(Math.abs(net)) }
                 )}
@@ -173,7 +161,7 @@ class HuiEnergyGridBalanceCard
               style="width: ${leftPercent}%"
             ></div>
             <ha-tooltip for="bar-exported" placement="top">
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.exported",
                 { value: fmt(exported) }
               )}
@@ -186,7 +174,7 @@ class HuiEnergyGridBalanceCard
                       style="width: ${netBarWidth}%"
                     ></div>
                     <ha-tooltip for="bar-net-left" placement="top">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_export",
                         {
                           value: fmt(Math.abs(net)),
@@ -204,7 +192,7 @@ class HuiEnergyGridBalanceCard
               style="width: ${rightPercent}%"
             ></div>
             <ha-tooltip for="bar-imported" placement="top">
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.imported",
                 { value: fmt(imported) }
               )}
@@ -217,7 +205,7 @@ class HuiEnergyGridBalanceCard
                       style="width: ${netBarWidth}%"
                     ></div>
                     <ha-tooltip for="bar-net-right" placement="top">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_import",
                         {
                           value: fmt(Math.abs(net)),

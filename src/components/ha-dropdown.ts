@@ -106,6 +106,9 @@ export class HaDropdown extends Dropdown {
 
         #menu {
           padding: var(--ha-space-1);
+          --auto-size-available-width: calc(
+            var(--safe-width, 100vw) - var(--ha-space-5)
+          );
         }
         wa-popup::part(popup) {
           z-index: 200;

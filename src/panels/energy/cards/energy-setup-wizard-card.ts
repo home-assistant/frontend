@@ -116,7 +116,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   }
 
   private async _fetchconfig() {
-    this._info = await getEnergyInfo(this.hass);
+    this._info = await getEnergyInfo(this.hass.callWS);
   }
 
   private _prefsChanged(ev: CustomEvent) {
