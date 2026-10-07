@@ -12472,7 +12472,7 @@
         },
         "repository_source": {
           "catalog": "Community catalog",
-          "custom": "Custom repository"
+          "custom": "Custom repositories"
         },
         "repository_status": {
           "pending-restart": "Restart required",
