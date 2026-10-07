@@ -321,6 +321,13 @@ export class HaListBase extends LitElement {
     if (ev.isComposing) {
       return true;
     }
+    // Let controls nested in a row handle their own Enter/Space
+    if (
+      (ev.key === "Enter" || ev.key === " ") &&
+      !(ev.composedPath()[0] as Element).hasAttribute?.("ha-list-item")
+    ) {
+      return true;
+    }
     const target = ev.target as HTMLElement | null;
     // Allow held arrow/Home/End to repeat for continuous navigation
     return (
