@@ -63,7 +63,7 @@ export class HuiPowerSourcesGraphCard
 
   @state() private _yAxisFractionDigits = 1;
 
-  @state() private _energyData?: EnergyData;
+  private _energyData?: EnergyData;
 
   @state()
   @consume({ context: statesContext, subscribe: true })
@@ -120,19 +120,25 @@ export class HuiPowerSourcesGraphCard
   );
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.size > 1 || !changedProps.has("_states")) {
+    if (changedProps.size !== 1 || !changedProps.has("_states")) {
       return true;
     }
     const oldStates = changedProps.get("_states") as HassEntities | undefined;
-    if (
-      oldStates &&
-      this._statRateIds(this._energyData).every(
-        (id) => oldStates[id] === this._states[id]
+    return (
+      !oldStates ||
+      this._statRateIds(this._energyData).some(
+        (id) => oldStates[id] !== this._states[id]
       )
+    );
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (
+      (changedProps.has("_states") || changedProps.has("_i18n")) &&
+      !changedProps.has("_legendData")
     ) {
-      return false;
+      this._refreshLegendValues();
     }
-    return this._refreshLegendValues();
   }
 
   private _refreshLegendValues(): boolean {
