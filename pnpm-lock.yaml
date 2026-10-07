@@ -298,7 +298,7 @@ importers:
         version: 0.4.0
       '@maplibre/maplibre-gl-leaflet':
         specifier: 0.1.4
-        version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.11.2)
+        version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.12.0)
       '@material/mwc-formfield':
         specifier: 0.27.0
         version: 0.27.0(patch_hash=8b1c2ec43c93e3df718ac366dc3013ce79d5a333c0891bc357f41b348a3d7ccd)
@@ -328,7 +328,7 @@ importers:
         version: 4.4.0
       '@versatiles/style':
         specifier: 6.0.3
-        version: 6.0.3(maplibre-gl@6.11.2)
+        version: 6.0.3(maplibre-gl@6.12.0)
       '@vibrant/color':
         specifier: 4.0.4
         version: 4.0.4
@@ -411,8 +411,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       maplibre-gl:
-        specifier: 6.11.2
-        version: 6.11.2
+        specifier: 6.12.0
+        version: 6.12.0
       marked:
         specifier: 18.0.14
         version: 18.0.14
@@ -4619,8 +4619,8 @@ packages:
     resolution: {integrity: sha512-IYf1hpuWrdzse/s/YJOrFmU15lyhSzxelNVAHTEG3DtP4QsLTWZUzcUL3HMXmKQxXpa4EIrBPpwRgj0aehdvAw==}
     engines: {node: '>= 10.13.0'}
 
-  earcut@3.2.3:
-    resolution: {integrity: sha512-vnS4AVwp1KHAF13i1vp1/2D5evWy3k5u/iW/B81QVsUZtV8cv2tU0b2VNFlqvh4kYwrFMDdjPCfAmfyJW9y14Q==}
+  earcut@3.2.4:
+    resolution: {integrity: sha512-FHc6yNpnTORB0tM5kmZ03iD2mDuNakDE2lvf4Hw1XkfxtEHIGVi01B/GqUSwx+NcC1WGjidAfpTXzeALtPtfpg==}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -5934,8 +5934,8 @@ packages:
   map-stream@0.0.7:
     resolution: {integrity: sha512-C0X0KQmGm3N2ftbTGBhSyuydQ+vV1LC3f3zPvT3RXHXNZrvfPZcoXp/N5DOa8vedX/rTMm2CjTtivFg2STJMRQ==}
 
-  maplibre-gl@6.11.2:
-    resolution: {integrity: sha512-Xh06pxoipjX/Ad1sUPGhiNh9go9naCNGZZ1IJm3sIeqK1kYGuMaMDSTIGDQ2igOLfVyukJU7kvEOA089VO7Z7g==}
+  maplibre-gl@6.12.0:
+    resolution: {integrity: sha512-DwgganVi2BhNxOpD7ob3lJC0dQQz4HfJfuQQV3XxCY3XdOzFrMqp9ylMXhRzryRsOnIezdZcklWXIIs/Q8JPjA==}
     engines: {node: '>=16.14.0', npm: '>=8.1.0'}
 
   marked@11.2.0:
@@ -9813,11 +9813,11 @@ snapshots:
     dependencies:
       kdbush: 4.1.0
 
-  '@maplibre/maplibre-gl-leaflet@0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.11.2)':
+  '@maplibre/maplibre-gl-leaflet@0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.12.0)':
     dependencies:
       '@types/leaflet': 1.9.22
       leaflet: 1.9.4
-      maplibre-gl: 6.11.2
+      maplibre-gl: 6.12.0
 
   '@maplibre/maplibre-gl-style-spec@26.4.4':
     dependencies:
@@ -11332,11 +11332,11 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@versatiles/style@6.0.3(maplibre-gl@6.11.2)':
+  '@versatiles/style@6.0.3(maplibre-gl@6.12.0)':
     dependencies:
       '@maplibre/maplibre-gl-style-spec': 26.4.4
     optionalDependencies:
-      maplibre-gl: 6.11.2
+      maplibre-gl: 6.12.0
 
   '@vibrant/color@4.0.4': {}
 
@@ -12231,7 +12231,7 @@ snapshots:
       is-plain-object: 5.0.0
       object.defaults: 1.1.0
 
-  earcut@3.2.3: {}
+  earcut@3.2.4: {}
 
   eastasianwidth@0.2.0: {}
 
@@ -13709,7 +13709,7 @@ snapshots:
 
   map-stream@0.0.7: {}
 
-  maplibre-gl@6.11.2:
+  maplibre-gl@6.12.0:
     dependencies:
       '@mapbox/point-geometry': 1.1.0
       '@mapbox/tiny-sdf': 2.2.0
@@ -13721,7 +13721,7 @@ snapshots:
       '@maplibre/vt-pbf': 4.3.2
       '@types/geojson': 7946.0.16
       bidi-js: 1.1.0
-      earcut: 3.2.3
+      earcut: 3.2.4
       gl-matrix: 3.4.4
       kdbush: 4.1.0
       murmurhash-js: 1.0.0
