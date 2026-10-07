@@ -80,11 +80,11 @@ class DemoHomeOverviewViewStrategy extends ReactiveElement {
       return {
         ...section,
         // Place the demo card first so the tiles fill the rows next to it. It
-        // takes up the space of two tiles, so drop the last two.
+        // takes up the space of two tiles, so keep two less, but at least six.
         cards: [
           heading,
           { type: "custom:ha-demo-next-card" },
-          ...(cards.length > 6 ? cards.slice(0, -2) : cards),
+          ...cards.slice(0, Math.max(6, cards.length - 2)),
         ],
       };
     });
