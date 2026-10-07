@@ -1351,6 +1351,10 @@ export class HaDataTable extends LitElement {
           flex: 0 0 var(--data-table-safe-area-inset-right, 0px);
         }
 
+        :host(:not([narrow])) .mdc-data-table__header-row:dir(rtl)::after {
+          order: -1;
+        }
+
         /* Hide scrollbar for Chrome, Safari and Opera */
         .mdc-data-table__header-row::-webkit-scrollbar {
           display: none;
