@@ -15,7 +15,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
@@ -725,11 +728,15 @@ export class HaMarketplaceDashboard extends LitElement {
     this._activeSorting = ev.detail;
   }
 
-  private _handleGroupingChanged(ev: CustomEvent<{ value: string }>) {
+  private _handleGroupingChanged(
+    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
+  ) {
     this._activeGrouping = ev.detail.value;
   }
 
-  private _handleCollapseChanged(ev: CustomEvent<{ value: string[] }>) {
+  private _handleCollapseChanged(
+    ev: HASSDomEvent<HASSDomEvents["collapsed-changed"]>
+  ) {
     this._activeCollapsed = ev.detail.value;
   }
 

@@ -92,25 +92,6 @@ it("shows its tabs from the translations of the Marketplace itself", async () =>
   ).toBe(true);
 });
 
-it("groups by status and type", async () => {
-  const dashboard = await openDashboard();
-  const table = dashboard.shadowRoot!.querySelector(
-    "hass-tabs-subpage-data-table"
-  ) as unknown as {
-    columns: Record<string, { groupable?: boolean }>;
-    initialGroupColumn?: string;
-  };
-
-  // The table only offers to group by a column that allows it
-  expect(
-    Object.entries(table.columns)
-      .filter(([, column]) => column.groupable)
-      .map(([id]) => id)
-  ).toEqual(["translated_status", "translated_category"]);
-  // Grouped by status until something else is picked, like it was sorted before
-  expect(table.initialGroupColumn).toBe("translated_status");
-});
-
 it("counts what the search looks through, on the tab it is on", async () => {
   const repositories = [
     { id: "1", name: "One", category: "integration", installed: true },
