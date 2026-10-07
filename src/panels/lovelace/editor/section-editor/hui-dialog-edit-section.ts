@@ -476,7 +476,11 @@ export class HuiDialogEditSection
       !ev.detail.isValid ||
       !ev.detail.value ||
       typeof ev.detail.value !== "object" ||
-      Array.isArray(ev.detail.value);
+      Array.isArray(ev.detail.value) ||
+      ("strategy" in ev.detail.value &&
+        (!ev.detail.value.strategy ||
+          typeof ev.detail.value.strategy !== "object" ||
+          Array.isArray(ev.detail.value.strategy)));
     if (this._yamlError) {
       return;
     }
