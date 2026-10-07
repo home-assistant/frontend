@@ -5,6 +5,7 @@ import type { ConditionDescriptions } from "../../../src/data/condition";
 import type { ExtractFromTargetResult } from "../../../src/data/target";
 import type { TriggerDescriptions } from "../../../src/data/trigger";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { getLabelIds } from "./label_registry";
 import {
   conditionDescriptions,
   triggerDescriptions,
@@ -21,12 +22,44 @@ interface EntityFilter {
 
 // Expands a target to its areas, devices and entities, like core does
 const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
-  const floorIds = new Set(ensureArray(target.floor_id ?? []));
-  const labelIds = ensureArray(target.label_id ?? []);
+  // Like core, only expand the referenced IDs that exist
+  const missing = {
+    floors: [] as string[],
+    areas: [] as string[],
+    devices: [] as string[],
+    labels: [] as string[],
+  };
+  const existing = (
+    ids: string | string[] | undefined,
+    known: (id: string) => boolean,
+    missingIds: string[]
+  ) => {
+    const result: string[] = [];
+    for (const id of ensureArray(ids ?? [])) {
+      if (known(id)) {
+        result.push(id);
+      } else {
+        missingIds.push(id);
+      }
+    }
+    return result;
+  };
+  const knownLabelIds = getLabelIds();
+
+  const floorIds = new Set(
+    existing(target.floor_id, (id) => id in hass.floors, missing.floors)
+  );
+  const labelIds = existing(
+    target.label_id,
+    (id) => knownLabelIds.includes(id),
+    missing.labels
+  );
   const hasLabel = (labels?: string[]) =>
     labelIds.some((labelId) => labels?.includes(labelId));
 
-  const areaIds = new Set(ensureArray(target.area_id ?? []));
+  const areaIds = new Set(
+    existing(target.area_id, (id) => id in hass.areas, missing.areas)
+  );
   for (const area of Object.values(hass.areas)) {
     if (
       (area.floor_id && floorIds.has(area.floor_id)) ||
@@ -48,7 +81,9 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
     );
   };
 
-  const deviceIds = new Set(ensureArray(target.device_id ?? []));
+  const deviceIds = new Set(
+    existing(target.device_id, (id) => id in hass.devices, missing.devices)
+  );
   for (const device of Object.values(hass.devices)) {
     const areaId = deviceArea(device.id);
     if ((areaId && areaIds.has(areaId)) || hasLabel(device.labels)) {
@@ -79,6 +114,7 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
     areas: [...areaIds],
     devices: [...deviceIds],
     entities: [...entityIds],
+    missing,
   };
 };
 
@@ -183,15 +219,15 @@ export const mockAutomationPlatforms = (hass: MockHomeAssistant) => {
       msg: { target: HassServiceTarget },
       currentHass: MockHomeAssistant
     ): ExtractFromTargetResult => {
-      const { areas, devices, entities } = expandTarget(
+      const { areas, devices, entities, missing } = expandTarget(
         currentHass,
         msg.target
       );
       return {
-        missing_areas: [],
-        missing_devices: [],
-        missing_floors: [],
-        missing_labels: [],
+        missing_areas: missing.areas,
+        missing_devices: missing.devices,
+        missing_floors: missing.floors,
+        missing_labels: missing.labels,
         referenced_areas: areas,
         referenced_devices: devices,
         referenced_entities: entities,
