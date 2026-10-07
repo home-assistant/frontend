@@ -152,7 +152,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @state() private _overviewTab: OverviewTab = "people";
 
   // Height of the overview drawer when it sits over the bottom of the map
-  @state() private _overviewSize = { width: 0, height: 0 };
+  @state() private _overviewSize: HASSDomEvents["map-overview-resize"] = {
+    width: 0,
+    height: 0,
+  };
 
   private _overviewLoaded = false;
 
@@ -721,14 +724,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _handleOverviewResize(
-    ev: HASSDomEvent<{ width: number; height: number }>
+    ev: HASSDomEvent<HASSDomEvents["map-overview-resize"]>
   ) {
     const { width, height } = ev.detail;
+    const padding = this._overviewPadding();
     // A collapsed overview keeps its width; zero both so it reserves no space.
-    this._overviewSize =
-      width && height ? { width, height } : { width: 0, height: 0 };
+    this._overviewSize = width && height ? ev.detail : { width: 0, height: 0 };
     // A focused fit pauses auto-fit, so refit to apply the new padding.
-    if (this._overviewSelected) {
+    if (this._overviewSelected && this._overviewPadding() !== padding) {
       this._focusEntity(this._overviewSelected);
     }
   }
@@ -818,7 +821,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     return this._paddingFor(
       this._overviewSize.width,
-      this._overviewSize.height,
+      this._overviewSize.fitHeight ?? this._overviewSize.height,
       this.hass.language,
       this.hass.translationMetadata.translations
     );
