@@ -37,6 +37,25 @@ describe("validateConditionalConfig", () => {
     });
   });
 
+  describe("location condition validation", () => {
+    it.each([
+      ["locations", { condition: "location", locations: ["home"] }],
+      ["target", { condition: "location", target: { label_id: "store" } }],
+      ["empty target", { condition: "location", target: {} }],
+      ["away", { condition: "location", away: true }],
+    ])("should return true with %s", (_name, condition) => {
+      expect(validateConditionalConfig([condition] as any)).toBe(true);
+    });
+
+    it("should return false without locations, target or away", () => {
+      expect(
+        validateConditionalConfig([
+          { condition: "location", away: false },
+        ] as any)
+      ).toBe(false);
+    });
+  });
+
   describe("server-evaluated condition validation", () => {
     it("should accept server-evaluated conditions, leaving them to core", () => {
       const conditions = [
@@ -148,10 +167,14 @@ describe("checkConditionsMet", () => {
         entities: {
           "zone.store_1": { entity_id: "zone.store_1", labels: ["store"] },
           "zone.store_2": { entity_id: "zone.store_2", labels: ["store"] },
-          "zone.work": { entity_id: "zone.work", labels: [] },
+          "zone.work": {
+            entity_id: "zone.work",
+            labels: [],
+            area_id: "downtown",
+          },
         },
         devices: {},
-        areas: {},
+        areas: { downtown: { area_id: "downtown", labels: [] } },
         user: { id: "user1" },
       }) as unknown as HomeAssistant;
 
@@ -198,6 +221,68 @@ describe("checkConditionsMet", () => {
           {}
         )
       ).toBe(false);
+    });
+
+    it("matches zones in a selected area", () => {
+      const hass = createLocationHass("Work", ["zone.work"]);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { area_id: "downtown" } }],
+          hass,
+          {}
+        )
+      ).toBe(true);
+    });
+
+    it("does not match when the person has no in_zones", () => {
+      const hass = createLocationHass("Store", []);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { entity_id: "zone.store_1" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("picks up label changes for the same condition", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "work" } },
+      ] as any;
+      const hass = createLocationHass("Work", ["zone.work"]);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
+
+      // Registry updates replace hass.entities, which must refresh the cache.
+      const relabeled = {
+        ...hass,
+        entities: {
+          ...hass.entities,
+          "zone.work": { ...hass.entities["zone.work"], labels: ["work"] },
+        },
+      } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, relabeled, {})).toBe(true);
+    });
+
+    it("re-checks in_zones when the person moves", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+
+      // Same registries (cached zones), new person state.
+      const moved = {
+        ...hass,
+        states: {
+          ...hass.states,
+          "person.me": {
+            ...hass.states["person.me"],
+            state: "Work",
+            attributes: { user_id: "user1", in_zones: ["zone.work"] },
+          },
+        },
+      } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, moved, {})).toBe(false);
     });
 
     it("matches away when the person is not in any zone", () => {

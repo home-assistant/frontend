@@ -2,7 +2,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  any,
   array,
   assert,
   boolean,
@@ -15,13 +14,14 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import { targetStruct } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { LocationCondition } from "../../../common/validate-condition";
 
 const locationConditionStruct = object({
   condition: literal("location"),
   locations: optional(array(string())),
-  target: optional(any()),
+  target: optional(targetStruct),
   away: optional(boolean()),
 });
 

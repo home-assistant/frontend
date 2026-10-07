@@ -311,12 +311,32 @@ function checkLocationCondition(
 
 const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
 
+interface ResolvedZones {
+  entities: HomeAssistant["entities"];
+  devices: HomeAssistant["devices"];
+  areas: HomeAssistant["areas"];
+  zones: string[];
+}
+
+// Keyed by target so each card keeps its own entry. Resolving scans the
+// registries, so only redo it when one of them changes.
+const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
+
 /** Zone entity IDs selected directly or through a label, area or floor. */
 function resolveLocationZones(
   hass: HomeAssistant,
   target: HassServiceTarget
 ): string[] {
-  return resolveEntityIDs(
+  const cached = resolvedZonesCache.get(target);
+  if (
+    cached &&
+    cached.entities === hass.entities &&
+    cached.devices === hass.devices &&
+    cached.areas === hass.areas
+  ) {
+    return cached.zones;
+  }
+  const zones = resolveEntityIDs(
     hass,
     target,
     hass.entities,
@@ -324,6 +344,13 @@ function resolveLocationZones(
     hass.areas,
     ZONE_TARGET_SELECTOR
   ).filter((entityId) => computeDomain(entityId) === "zone");
+  resolvedZonesCache.set(target, {
+    entities: hass.entities,
+    devices: hass.devices,
+    areas: hass.areas,
+    zones,
+  });
+  return zones;
 }
 
 function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
