@@ -192,6 +192,8 @@ export const ManualEditorMixin = <TConfig>(
       // deselect previous selected row
       this.sidebarConfig?.close?.();
       this.sidebarConfig = ev.detail;
+      // The sheet opens items at half height, so make room before rows scroll
+      this._bottomSheetHeight = undefined;
       this.dispatchEvent(
         new CustomEvent("sidebar-config-changed", {
           detail: { value: this.sidebarConfig },
