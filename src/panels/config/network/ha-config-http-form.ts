@@ -259,11 +259,14 @@ class HaConfigHttpForm extends LitElement {
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
           ${
-            this._activeConfigType === "default"
+            this._activeConfigType === "default" ||
+            this._activeConfigType === "default_legacy_port"
               ? html`
                   <ha-alert alert-type="warning">
                     ${this.hass.localize(
-                      "ui.panel.config.network.http.running_default"
+                      this._activeConfigType === "default_legacy_port"
+                        ? "ui.panel.config.network.http.running_default_legacy_port"
+                        : "ui.panel.config.network.http.running_default"
                     )}
                   </ha-alert>
                 `
@@ -280,7 +283,12 @@ class HaConfigHttpForm extends LitElement {
                           )
                         : this.hass.localize(
                             "ui.panel.config.network.http.reverted_failed",
-                            { error: this._revertedPending.error ?? "" }
+                            {
+                              error:
+                                this._revertedPending.error_message ??
+                                this._revertedPending.error ??
+                                "",
+                            }
                           )
                     }
                     <ha-button slot="action" @click=${this._reviewReverted}>
