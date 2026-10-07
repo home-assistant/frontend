@@ -797,7 +797,7 @@ export class MapLibreMapEngine implements MapEngine {
   ): MapEditableMarkerHandle {
     element.style.width = `${options.size[0]}px`;
     element.style.height = `${options.size[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       element.title = options.title;
     }
     const interactive = options.interactive ?? true;
@@ -996,7 +996,7 @@ export class MapLibreMapEngine implements MapEngine {
     }
     centerEl.style.width = `${centerSize[0]}px`;
     centerEl.style.height = `${centerSize[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       centerEl.title = options.title;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
@@ -1014,9 +1014,26 @@ export class MapLibreMapEngine implements MapEngine {
 
     let resizeMarker: MapLibreMarker | undefined;
     let resizeHandle: HTMLElement | undefined;
+    // The user's hand wins while dragging; the host is the truth otherwise
+    let dragging = false;
+    // Hidden while the circle is under the center element
+    const syncResizeHandleVisibility = () => {
+      if (!resizeHandle || dragging) {
+        return;
+      }
+      const east = pointEastOf(currentCenter, currentRadius);
+      const centerPoint = map.project([currentCenter[1], currentCenter[0]]);
+      const eastPoint = map.project([east[1], east[0]]);
+      const covered =
+        Math.hypot(eastPoint.x - centerPoint.x, eastPoint.y - centerPoint.y) <
+        centerSize[0] / 2;
+      resizeHandle.style.display =
+        covered && !resizeHandle.matches(":focus-visible") ? "none" : "";
+    };
     const placeResizeHandle = () => {
       const east = pointEastOf(currentCenter, currentRadius);
       resizeMarker?.setLngLat([east[1], east[0]]);
+      syncResizeHandleVisibility();
       const radiusText = String(Math.round(currentRadius));
       resizeHandle?.setAttribute(
         "aria-valuemax",
@@ -1027,10 +1044,8 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
     };
 
-    // The user's hand wins while dragging; the host is the truth otherwise
-    let dragging = false;
-
     if (options.resizable) {
+      map.on("zoom", syncResizeHandleVisibility);
       const east = pointEastOf(center, options.radius);
       resizeHandle = createResizeHandleElement(options.resizeLabel);
       resizeMarker = new maplibre.Marker({
@@ -1090,7 +1105,10 @@ export class MapLibreMapEngine implements MapEngine {
       };
       resizeHandle.addEventListener("keyup", commitKeyboardResize);
       // Focus can leave while a key is still held
-      resizeHandle.addEventListener("blur", commitKeyboardResize);
+      resizeHandle.addEventListener("blur", () => {
+        commitKeyboardResize();
+        syncResizeHandleVisibility();
+      });
       // Like the other markers: a click on the handle is not a map click
       resizeHandle.addEventListener("click", (ev) => ev.stopPropagation());
     }
@@ -1101,6 +1119,7 @@ export class MapLibreMapEngine implements MapEngine {
       });
       handleMarker?.on("dragend", () => {
         dragging = false;
+        syncResizeHandleVisibility();
       });
     });
 
@@ -1174,6 +1193,7 @@ export class MapLibreMapEngine implements MapEngine {
         resetMarkerElement(centerEl);
         clearMarkerAccessibility(centerEl);
         this._placedElements.delete(centerEl);
+        map.off("zoom", syncResizeHandleVisibility);
         resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
