@@ -1259,7 +1259,8 @@
       "web-rtc-player": {
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
-        "connect_failed": "Failed to connect the WebRTC stream: {message}"
+        "connect_failed": "Failed to connect the WebRTC stream: {message}",
+        "media_failed": "Failed to get media tracks: {message}"
       },
       "siren": {
         "more_controls": "More controls",
