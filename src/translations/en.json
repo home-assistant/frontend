@@ -9524,6 +9524,7 @@
             "reset_focus": "Reset focus",
             "toggle_grouping": "Toggle grouping",
             "overview": {
+              "label": "Map overview",
               "people": "People",
               "devices": "Devices",
               "zones": "Zones",
