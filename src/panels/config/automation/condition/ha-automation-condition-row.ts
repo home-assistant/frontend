@@ -627,6 +627,7 @@ export default class HaAutomationConditionRow extends LitElement {
     }
 
     const condition = this.condition;
+    const { enabled: _enabled, ...testedCondition } = condition;
     requestAnimationFrame(() => {
       // @ts-ignore is supported in all browsers except firefox
       if (this.scrollIntoViewIfNeeded) {
@@ -640,7 +641,7 @@ export default class HaAutomationConditionRow extends LitElement {
     let validateResult: Record<"conditions", InvalidConfig | ValidConfig>;
     try {
       validateResult = await validateConfig(this.hass, {
-        conditions: condition,
+        conditions: testedCondition,
       });
     } catch (err: any) {
       showAlertDialog(this, {
@@ -670,7 +671,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
     let result: { result: boolean };
     try {
-      result = await testCondition(this.hass, condition);
+      result = await testCondition(this.hass, testedCondition);
     } catch (err: any) {
       if (this.condition !== condition) {
         return;
