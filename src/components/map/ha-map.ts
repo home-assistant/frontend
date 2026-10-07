@@ -69,6 +69,7 @@ import {
 } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
+import "../ha-tooltip";
 import type {
   HomeAssistantConfig,
   HomeAssistantConnection,
@@ -129,6 +130,8 @@ export interface HaMapEditableLocation {
   radiusEditable?: boolean;
   /** Activating the marker fires editable-location-clicked; otherwise it is not a button */
   activatable?: boolean;
+  /** Counts toward the map fit; defaults to true */
+  fit?: boolean;
 }
 
 // Geometry is updated in place; a change to anything else rebuilds the marker
@@ -200,6 +203,7 @@ const staticEditing = (engine: MapEngine): MapEditingSupport => ({
           size: options.centerSize ?? [16, 16],
           interactive: !!options.onClick,
           title: options.title,
+          nativeTitle: options.nativeTitle,
         }),
       ];
     };
@@ -418,6 +422,8 @@ export class HaMap extends ReactiveElement {
   >;
 
   private _entityHandles: MapMarkerHandle[] = [];
+
+  private _tooltipCount = 0;
 
   // Marker elements survive redraws so unchanged entities keep their DOM
   private _entityMarkers = new Map<string, EntityMarkerElement>();
@@ -909,8 +915,10 @@ export class HaMap extends ReactiveElement {
 
     const points = [...this._focusPoints, ...zonePoints];
 
-    // Editable locations contribute their bounds, radius included
-    this.editableLocations?.forEach((editable) => {
+    // Opted-out locations only count when nothing else would be fitted
+    const editables = this.editableLocations ?? [];
+    const fitted = editables.filter((editable) => editable.fit !== false);
+    (fitted.length ? fitted : editables).forEach((editable) => {
       if (editable.radius) {
         points.push(...circleBoundsPoints(editable.location, editable.radius));
       } else {
@@ -1032,6 +1040,7 @@ export class HaMap extends ReactiveElement {
       // Markers are buttons, so an unnamed location still gets a name
       const title =
         editable.title ?? this._i18n?.localize("ui.components.map.location");
+      const tooltip = !!editable.element && !!editable.title;
       const existing = this._editableHandles.get(id);
       const kind = editable.radius ? "circle" : "marker";
 
@@ -1056,30 +1065,35 @@ export class HaMap extends ReactiveElement {
       }
 
       if (kind === "circle") {
+        const handle = editing.addEditableCircle(editable.location, {
+          radius: editable.radius!,
+          color: editable.color || defaultColor,
+          centerElement: editable.element,
+          centerSize: editable.elementSize,
+          title,
+          nativeTitle: !tooltip,
+          moveable: editable.locationEditable,
+          resizable: editable.radiusEditable,
+          resizeLabel: editable.title
+            ? this._i18n?.localize("ui.components.map.radius_of", {
+                name: editable.title,
+              })
+            : this._i18n?.localize("ui.components.map.radius"),
+          onMove: (location) =>
+            fireEvent(this, "editable-location-moved", { id, location }),
+          onResize: (radius) =>
+            fireEvent(this, "editable-location-resized", { id, radius }),
+          onClick: editable.activatable
+            ? () => fireEvent(this, "editable-location-clicked", { id })
+            : undefined,
+        });
         this._editableHandles.set(id, {
           kind,
           source: editable,
-          handle: editing.addEditableCircle(editable.location, {
-            radius: editable.radius!,
-            color: editable.color || defaultColor,
-            centerElement: editable.element,
-            centerSize: editable.elementSize,
-            title,
-            moveable: editable.locationEditable,
-            resizable: editable.radiusEditable,
-            resizeLabel: editable.title
-              ? this._i18n?.localize("ui.components.map.radius_of", {
-                  name: editable.title,
-                })
-              : this._i18n?.localize("ui.components.map.radius"),
-            onMove: (location) =>
-              fireEvent(this, "editable-location-moved", { id, location }),
-            onResize: (radius) =>
-              fireEvent(this, "editable-location-resized", { id, radius }),
-            onClick: editable.activatable
-              ? () => fireEvent(this, "editable-location-clicked", { id })
-              : undefined,
-          }),
+          handle,
+          cleanup: tooltip
+            ? this._attachTooltip(editable.element!, editable.title!)
+            : undefined,
         });
         continue;
       }
@@ -1118,23 +1132,40 @@ export class HaMap extends ReactiveElement {
       }
       // A location that cannot be dragged is static on any engine
       const support = editable.locationEditable ? editing : staticSupport;
+      const handle = support.addDraggableMarker(element, editable.location, {
+        size: editable.elementSize ?? [16, 16],
+        interactive: true,
+        focusable: !!editable.activatable,
+        title,
+        nativeTitle: !tooltip,
+        onDragEnd: (location) => {
+          dragged = true;
+          fireEvent(this, "editable-location-moved", { id, location });
+        },
+      });
+      const removeTooltip = tooltip
+        ? this._attachTooltip(editable.element!, editable.title!)
+        : undefined;
       this._editableHandles.set(id, {
         kind,
         source: editable,
-        cleanup,
-        handle: support.addDraggableMarker(element, editable.location, {
-          size: editable.elementSize ?? [16, 16],
-          interactive: true,
-          focusable: !!editable.activatable,
-          title,
-          onDragEnd: (location) => {
-            dragged = true;
-            fireEvent(this, "editable-location-moved", { id, location });
-          },
-        }),
+        cleanup: () => {
+          cleanup?.();
+          removeTooltip?.();
+        },
+        handle,
       });
     }
     return changed;
+  }
+
+  private _attachTooltip(element: HTMLElement, title: string): () => void {
+    element.id ||= `ha-map-editable-${this._tooltipCount++}`;
+    const tooltip = document.createElement("ha-tooltip");
+    tooltip.for = element.id;
+    tooltip.textContent = title;
+    this.shadowRoot!.append(tooltip);
+    return () => tooltip.remove();
   }
 
   // One by one, so the listeners on the caller's elements are detached too
