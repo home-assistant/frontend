@@ -49,7 +49,6 @@ import type { EnergyUsageGraphCardConfig } from "../types";
 import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
-  formatSeriesTotal,
   generateFillBuckets,
   getCommonOptions,
   getCompareTransform,
@@ -539,7 +538,6 @@ export class HuiEnergyUsageGraphCard
           id,
           secondaryIds: compareIds.has(compareId) ? [compareId] : [],
           name: dataset.name as string,
-          value: formatSeriesTotal(dataset, this._i18n.locale, "kWh"),
         };
       });
   }
