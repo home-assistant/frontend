@@ -1,7 +1,8 @@
-import { consume, ContextEvent } from "@lit/context";
+import { ContextEvent } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../src/common/decorators/consume";
 import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import "../../../src/panels/lovelace/cards/hui-card";
 import type { HomeAssistant } from "../../../src/types";
