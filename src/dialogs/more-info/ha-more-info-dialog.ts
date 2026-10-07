@@ -8,6 +8,7 @@ import {
   mdiContentDuplicate,
   mdiDevices,
   mdiDotsVertical,
+  mdiDownload,
   mdiInformationOutline,
   mdiLinkVariant,
   mdiPencil,
@@ -29,6 +30,7 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { mainWindow } from "../../common/dom/get_main_window";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { consume } from "../../common/decorators/consume";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
   computeEntityEntryNameList,
@@ -56,6 +58,8 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "./ha-more-info-related";
+import { downloadCameraSnapshot } from "../../data/camera";
+import { apiContext } from "../../data/context";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -64,6 +68,7 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
@@ -74,7 +79,8 @@ import {
   haStyleScrollbar,
 } from "../../resources/styles";
 import "../../state-summary/state-card-content";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../types";
+import { showToast } from "../../util/toast";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import {
   computeShowHistoryComponent,
@@ -138,6 +144,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   "entity-registry" | "helper" | "vacuum-segment-mapping"
 >()(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
@@ -486,6 +495,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       case "details":
         this._setView("details");
         break;
+      case "download_snapshot":
+        this._downloadSnapshot();
+        break;
       default:
         break;
     }
@@ -560,6 +572,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._setView("add_to");
   }
 
+  private async _downloadSnapshot() {
+    try {
+      await downloadCameraSnapshot(this._api, this._entityId!);
+    } catch (_err) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.more_info_control.camera.failed_to_download"
+        ),
+      });
+    }
+  }
+
   private _breadcrumbClick(ev: Event) {
     ev.stopPropagation();
     this._setView("related");
@@ -608,6 +632,20 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
+    const downloadSnapshotMenuItem =
+      domain === "camera"
+        ? html`
+            <ha-dropdown-item
+              value="download_snapshot"
+              .disabled=${stateObj?.state === UNAVAILABLE}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.dialogs.more_info_control.camera.download_snapshot"
+              )}
+            </ha-dropdown-item>
+          `
+        : nothing;
     const viewTitle = this._computeViewTitle();
     const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
     if (!viewTitle) {
@@ -753,6 +791,14 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           ></ha-icon-button>
 
                           ${
+                            domain === "camera"
+                              ? html`
+                                  ${downloadSnapshotMenuItem}
+                                  <wa-divider></wa-divider>
+                                `
+                              : nothing
+                          }
+                          ${
                             this._shouldShowAddEntityTo()
                               ? html`
                                   <ha-dropdown-item value="add_to">
@@ -875,16 +921,41 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           </ha-dropdown-item>
                         </ha-dropdown>
                       `
-                    : !__DEMO__ && this._shouldShowAddEntityTo()
-                      ? html`
-                          <ha-icon-button
-                            slot="headerActionItems"
-                            .label=${addToMenuItem}
-                            .path=${mdiPlusBoxMultipleOutline}
-                            @click=${this._goToAddEntityTo}
-                          ></ha-icon-button>
-                        `
-                      : nothing
+                    : html`
+                        ${
+                          !__DEMO__ && this._shouldShowAddEntityTo()
+                            ? html`
+                                <ha-icon-button
+                                  slot="headerActionItems"
+                                  .label=${addToMenuItem}
+                                  .path=${mdiPlusBoxMultipleOutline}
+                                  @click=${this._goToAddEntityTo}
+                                ></ha-icon-button>
+                              `
+                            : nothing
+                        }
+                        ${
+                          domain === "camera"
+                            ? html`
+                                <ha-dropdown
+                                  slot="headerActionItems"
+                                  @closed=${stopPropagation}
+                                  @wa-select=${this._handleMenuAction}
+                                  placement="bottom-end"
+                                >
+                                  <ha-icon-button
+                                    slot="trigger"
+                                    .label=${this.hass.localize(
+                                      "ui.common.menu"
+                                    )}
+                                    .path=${mdiDotsVertical}
+                                  ></ha-icon-button>
+                                  ${downloadSnapshotMenuItem}
+                                </ha-dropdown>
+                              `
+                            : nothing
+                        }
+                      `
                 }
               `
             : this._currView === "details"

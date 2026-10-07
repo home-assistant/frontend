@@ -2,8 +2,10 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { slugify } from "../common/string/slugify";
 import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
+import { fileDownload } from "../util/file_download";
 import { getSignedPath } from "./auth";
 
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
@@ -103,6 +105,29 @@ export const fetchThumbnailUrl = async (
 ) => {
   const path = await getSignedPath(hass, `/api/camera_proxy/${entityId}`);
   return hass.hassUrl(path.path);
+};
+
+export const downloadCameraSnapshot = async (
+  api: HomeAssistantApi,
+  entityId: string
+) => {
+  const result: Response | undefined = await api.callApiRaw(
+    "GET",
+    `camera_proxy/${entityId}`
+  );
+
+  if (!result) {
+    throw new Error("No response from API");
+  }
+
+  const contentType = result.headers.get("content-type");
+  const ext = contentType === "image/png" ? "png" : "jpg";
+  const date = new Date().toLocaleString();
+  const filename = `snapshot_${slugify(entityId)}_${date}.${ext}`;
+
+  const blob = await result.blob();
+  const url = window.URL.createObjectURL(blob);
+  fileDownload(url, filename);
 };
 
 export const fetchStreamUrl = async (
