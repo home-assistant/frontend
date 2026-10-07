@@ -1408,6 +1408,21 @@ export class HaDataTable extends LitElement {
           white-space: normal;
         }
 
+        :host([narrow]) .load-error {
+          padding-left: calc(
+            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
+          );
+          padding-right: calc(
+            var(--ha-space-4) + var(--safe-area-inset-right, 0px)
+          );
+        }
+
+        :host(:not([narrow])) .load-error {
+          padding-right: calc(
+            var(--ha-space-4) + var(--data-table-safe-area-inset-right, 0px)
+          );
+        }
+
         .load-error ha-alert {
           display: block;
         }
