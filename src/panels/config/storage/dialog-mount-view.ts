@@ -531,15 +531,6 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._validationError = {};
     this._validationWarning = {};
     this._data = ev.detail.value;
-    // Network forms have no read-only control, so a disk's read-only value
-    // must not survive switching to a network type. A network mount that was
-    // already read-only keeps it.
-    if (
-      this._data?.type !== SupervisorMountType.DISK &&
-      (!this._existing || this._originalType === SupervisorMountType.DISK)
-    ) {
-      delete (this._data as Partial<SupervisorMountRequestParams>).read_only;
-    }
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
       this._validationError.name = "invalid_name";
     }
@@ -573,6 +564,15 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     const mountData = { ...this._data! };
     if (mountData.type === "cifs" && mountData.version === "auto") {
       mountData.version = undefined;
+    }
+    // Network forms have no read-only control, so a disk's read-only value
+    // must not reach a network mount. One that was already read-only keeps
+    // it. Only the request drops it, so switching back to Local disk keeps it.
+    if (
+      mountData.type !== SupervisorMountType.DISK &&
+      (!this._existing || this._originalType === SupervisorMountType.DISK)
+    ) {
+      delete mountData.read_only;
     }
     // Send the partition's uuid alongside its device path: Supervisor resolves
     // by uuid and rejects the request if the path now names a different disk.
