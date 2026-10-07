@@ -25,7 +25,10 @@ const createConfig = (): LovelaceConfig => ({
   views: [
     {
       title: "Home",
-      badges: ["sensor.badge0", { type: "entity", entity: "sensor.badge1" }],
+      badges: [
+        { type: "entity", entity: "sensor.badge0" },
+        { type: "entity", entity: "sensor.badge1" },
+      ],
       cards: [{ type: "v0-c0" }, { type: "v0-c1" }],
     },
     {
