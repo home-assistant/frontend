@@ -5,6 +5,7 @@ import mapStream from "map-stream";
 import transform from "gulp-json-transform";
 import { LokaliseApi } from "@lokalise/node-api";
 import JSZip from "jszip";
+import { SERVICE_DOMAINS } from "./gen-demo-core-data.js";
 
 const inDir = "translations";
 const inDirFrontend = `${inDir}/frontend`;
@@ -51,8 +52,9 @@ function convertBackendTranslations(data, _file) {
   if (!data.component) {
     return output;
   }
-  // Keep the entity domains and the domains with automation triggers or
-  // conditions, so the demo can show states and describe automations.
+  // Keep the entity domains, the domains with automation triggers or
+  // conditions and the domains whose services the demo mocks, so the demo can
+  // show states and describe automations.
   Object.keys(data.component).forEach((domain) => {
     const {
       entity_component,
@@ -62,7 +64,12 @@ function convertBackendTranslations(data, _file) {
       selector,
       title,
     } = data.component[domain];
-    if (!entity_component && !triggers && !conditions) {
+    if (
+      !entity_component &&
+      !triggers &&
+      !conditions &&
+      !SERVICE_DOMAINS.includes(domain)
+    ) {
       return;
     }
     output.component[domain] = {

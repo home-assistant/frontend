@@ -9,7 +9,7 @@ import { connectivityEntities } from "../stubs/connectivity/fixtures";
 import { setDemoFloors } from "../stubs/floor_registry";
 import { getDemoTheme } from "../stubs/frontend";
 import type { EntityInput } from "../../../src/fake_data/entities/types";
-import type { DemoConfig, DemoTheme } from "./types";
+import type { DemoAutomation, DemoConfig, DemoTheme } from "./types";
 
 export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
   if (typeof theme === "function") {
@@ -19,6 +19,27 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
   hass.mockTheme(null, getDemoTheme(theme));
 };
 
+export const automationEntity = ({
+  config: automation,
+  state = "on",
+  icon,
+  lastTriggered,
+}: DemoAutomation): EntityInput => ({
+  entity_id: `automation.${slugify(automation.alias)}`,
+  state,
+  attributes: {
+    id: automation.id,
+    friendly_name: automation.alias,
+    last_triggered:
+      lastTriggered === undefined
+        ? null
+        : new Date(Date.now() - lastTriggered * 60000).toISOString(),
+    mode: automation.mode,
+    current: 0,
+    icon,
+  },
+});
+
 // The automation entities are derived from the configs the editor shows, so
 // their names and IDs always match.
 export const demoConfigEntities = (
@@ -26,23 +47,7 @@ export const demoConfigEntities = (
   localize: LocalizeFunc
 ): EntityInput[] => [
   ...config.entities(localize),
-  ...(config.automations ?? []).map(
-    ({ config: automation, state = "on", icon, lastTriggered }) => ({
-      entity_id: `automation.${slugify(automation.alias)}`,
-      state,
-      attributes: {
-        id: automation.id,
-        friendly_name: automation.alias,
-        last_triggered:
-          lastTriggered === undefined
-            ? null
-            : new Date(Date.now() - lastTriggered * 60000).toISOString(),
-        mode: automation.mode,
-        current: 0,
-        icon,
-      },
-    })
-  ),
+  ...(config.automations ?? []).map(automationEntity),
 ];
 
 export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {

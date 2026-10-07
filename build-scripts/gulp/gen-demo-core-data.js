@@ -13,7 +13,7 @@ const CORE_URL =
   "https://raw.githubusercontent.com/home-assistant/core/refs/heads/dev/homeassistant/components";
 
 // Integrations whose services the mocked backend provides
-const SERVICE_DOMAINS = [
+export const SERVICE_DOMAINS = [
   "alarm_control_panel",
   "automation",
   "button",

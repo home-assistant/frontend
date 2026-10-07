@@ -1,8 +1,11 @@
 import type { AutomationConfig } from "../../../src/data/automation";
 import type { ScriptConfig } from "../../../src/data/script";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-import { selectedDemoConfig } from "../configs/demo-configs";
+import { computeDomain } from "../../../src/common/entity/compute_domain";
+import { automationEntity, selectedDemoConfig } from "../configs/demo-configs";
+import type { DemoAutomation } from "../configs/types";
 import { mockAutomationPlatforms } from "./automation_platforms";
+import { addEntityRegistryEntry } from "./entity_registry";
 
 // Automations saved in the editor during this session
 const savedAutomations: Record<string, AutomationConfig> = {};
@@ -50,10 +53,37 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
   );
   hass.mockAPI(
     /config\/automation\/config\/.+/,
-    (_hass, method, path, parameters) => {
+    (currentHass, method, path, parameters) => {
       const id = decodeURIComponent(path.split("/").pop()!);
       if (method === "POST") {
-        savedAutomations[id] = parameters as AutomationConfig;
+        const config = parameters as AutomationConfig;
+        savedAutomations[id] = config;
+        // Like core, update the automation entity, or add it for a new one
+        const existing = Object.values(currentHass.states).find(
+          (stateObj) =>
+            computeDomain(stateObj.entity_id) === "automation" &&
+            stateObj.attributes.id === id
+        );
+        const entity = automationEntity({
+          config: { ...config, id, alias: config.alias || id },
+          state: existing?.state as DemoAutomation["state"],
+          icon: existing?.attributes.icon,
+        });
+        currentHass.addEntities({
+          ...entity,
+          entity_id: existing?.entity_id ?? entity.entity_id,
+          attributes: {
+            ...entity.attributes,
+            last_triggered: existing?.attributes.last_triggered ?? null,
+          },
+        });
+        if (!existing) {
+          addEntityRegistryEntry(currentHass, {
+            entity_id: entity.entity_id,
+            platform: "automation",
+            unique_id: id,
+          });
+        }
         return { result: "ok" };
       }
       return automationConfig(id);
