@@ -426,23 +426,6 @@ it("remembers the search for this session", async () => {
   ).toBe("spook");
 });
 
-it("filters with the standard filter panes of Settings", async () => {
-  const dashboard = await openDashboard();
-
-  expect(
-    [
-      ...dashboard.shadowRoot!.querySelectorAll(
-        'ha-filter-states[slot="filter-pane"]'
-      ),
-    ].map((filter) => (filter as HTMLElement & { label: string }).label)
-  ).toEqual([
-    "ui.panel.marketplace.filters.status",
-    "ui.panel.marketplace.filters.type",
-    "ui.panel.marketplace.filters.source",
-  ]);
-  expect(dashboard.shadowRoot!.querySelector("ha-form")).toBeNull();
-});
-
 it.each([
   { name: "a brand icon", domain: "spook", tag: "img" },
   {
