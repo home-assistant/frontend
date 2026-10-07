@@ -10,23 +10,33 @@
   },
   "type": "module",
   "sideEffects": [
-    "./dist/**/index.js",
-    "./dist/**/hac-*.js"
+    "./dist/all.js",
+    "./dist/*/define.js",
+    "./src/all.ts",
+    "./src/*/define.ts"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "hac-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./all": {
+      "hac-source": "./src/all.ts",
+      "types": "./dist/all.d.ts",
+      "import": "./dist/all.js"
+    },
     "./card": {
-      "types": "./dist/card/index.d.ts",
-      "import": "./dist/card/index.js"
+      "hac-source": "./src/card/define.ts",
+      "types": "./dist/card/define.d.ts",
+      "import": "./dist/card/define.js"
     },
     "./header": {
-      "types": "./dist/header/index.d.ts",
-      "import": "./dist/header/index.js"
+      "hac-source": "./src/header/define.ts",
+      "types": "./dist/header/define.d.ts",
+      "import": "./dist/header/define.js"
     },
     "./package.json": "./package.json"
   },
@@ -38,7 +48,8 @@
   },
   "scripts": {
     "build": "rslib build",
-    "dev": "rslib build --watch"
+    "dev": "rslib build --watch",
+    "prepublishOnly": "rslib build"
   },
   "peerDependencies": {
     "lit": "^3.3.0"

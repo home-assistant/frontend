@@ -8,6 +8,8 @@
     // Modules
     "module": "ESNext",
     "moduleResolution": "bundler",
+    // Resolve workspace packages to their sources, see packages/hac
+    "customConditions": ["hac-source"],
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
@@ -51,8 +53,6 @@
       }
     ],
     "paths": {
-      "@home-assistant/hac": ["./packages/hac/src/index.ts"],
-      "@home-assistant/hac/*": ["./packages/hac/src/*"],
       "lit/static-html": ["./node_modules/lit/static-html.js"],
       "lit/decorators": ["./node_modules/lit/decorators.js"],
       "lit/directive": ["./node_modules/lit/directive.js"],
