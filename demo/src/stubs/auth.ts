@@ -8,16 +8,20 @@ export const mockAuth = (hass: MockHomeAssistant) => {
     path: msg.path,
   }));
 
-  let user = hass.user!;
-  // The profile dialog refreshes the user subscription after saving, which
-  // writes the updated user back to hass.user.
-  hass.mockWS("auth/current_user", () => user);
+  // Answer with the current user, so changes to hass.user, like a non-admin
+  // scenario, are not undone when the user subscription refreshes.
+  hass.mockWS(
+    "auth/current_user",
+    (_msg, currentHass: MockHomeAssistant) => currentHass.user
+  );
   hass.mockWS(
     "person/update_own_profile",
-    (msg: Partial<OwnProfileMutableParams>) => {
-      if (msg.name) {
-        user = { ...user, name: msg.name };
-      }
+    (msg: Partial<OwnProfileMutableParams>, currentHass: MockHomeAssistant) => {
+      const user = {
+        ...currentHass.user!,
+        ...(msg.name && { name: msg.name }),
+      };
+      currentHass.updateHass({ user });
       return { user_name: user.name, person: null };
     }
   );
