@@ -1,25 +1,36 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAutoFix,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
   mdiDragHorizontalVariant,
   mdiPencil,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { storage } from "../../../common/decorators/storage";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { deleteSection, duplicateSection } from "../editor/config-util";
+import {
+  deleteSection,
+  duplicateSection,
+  insertSection,
+} from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
@@ -36,6 +47,17 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ type: Boolean, attribute: "is-strategy", reflect: true })
   public isStrategy = false;
+
+  // Session storage keeps a copied or cut section while switching views and
+  // dashboards. Subscribing lets every section menu show Paste at once.
+  @state()
+  @storage({
+    key: "dashboardSectionClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  private _clipboard?: LovelaceSectionRawConfig;
 
   protected render(): TemplateResult {
     return html`
@@ -85,6 +107,38 @@ export class HuiSectionEditMode extends LitElement {
               ></ha-svg-icon>
               ${this.hass.localize("ui.common.duplicate")}
             </ha-dropdown-item>
+            <ha-dropdown-item value="copy">
+              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+              ${this.hass.localize("ui.common.copy")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="cut">
+              <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
+              ${this.hass.localize("ui.panel.lovelace.editor.section.cut")}
+            </ha-dropdown-item>
+            ${
+              this._clipboard
+                ? html`
+                    <ha-dropdown-item value="paste-above">
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiContentPaste}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.section.paste_above"
+                      )}
+                    </ha-dropdown-item>
+                    <ha-dropdown-item value="paste-below">
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiContentPaste}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.section.paste_below"
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
             <wa-divider></wa-divider>
             <ha-dropdown-item value="delete" variant="danger">
               <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
@@ -127,6 +181,18 @@ export class HuiSectionEditMode extends LitElement {
       case "duplicate":
         this._duplicateSection();
         break;
+      case "copy":
+        this._copySection();
+        break;
+      case "cut":
+        this._cutSection();
+        break;
+      case "paste-above":
+        this._pasteSection(this.index);
+        break;
+      case "paste-below":
+        this._pasteSection(this.index + 1);
+        break;
       case "delete":
         this._deleteSection();
         break;
@@ -152,6 +218,53 @@ export class HuiSectionEditMode extends LitElement {
       this.index
     );
     this.lovelace!.saveConfig(newConfig);
+  }
+
+  private _setClipboard(): void {
+    this._clipboard = deepClone(
+      findLovelaceContainer(this.lovelace!.config, [this.viewIndex, this.index])
+    );
+  }
+
+  private _copySection(): void {
+    this._setClipboard();
+    this.lovelace!.showToast({
+      message: this.hass.localize(
+        "ui.panel.lovelace.editor.section.copied_to_clipboard"
+      ),
+    });
+  }
+
+  private async _cutSection(): Promise<void> {
+    this._setClipboard();
+    await this.lovelace!.saveConfig(
+      deleteSection(this.lovelace!.config, this.viewIndex, this.index)
+    );
+    // Dashboards save every edit right away, unlike the automation editor, so
+    // a cut section is only on the clipboard until it is pasted. Offer the
+    // same undo as deleting a card.
+    this.lovelace!.showToast({
+      message: this.hass.localize(
+        "ui.panel.lovelace.editor.section.cut_to_clipboard"
+      ),
+      duration: 8000,
+      action: {
+        action: () => fireEvent(window, "undo-change"),
+        text: this.hass.localize("ui.common.undo"),
+      },
+    });
+  }
+
+  private _pasteSection(sectionIndex: number): void {
+    if (!this._clipboard) return;
+    this.lovelace!.saveConfig(
+      insertSection(
+        this.lovelace!.config,
+        this.viewIndex,
+        sectionIndex,
+        deepClone(this._clipboard)
+      )
+    );
   }
 
   private async _deleteSection() {
