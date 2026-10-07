@@ -427,6 +427,65 @@ it("remembers the search for this session", async () => {
 });
 
 it.each([
+  {
+    tab: "browse",
+    statuses: [
+      "pending-restart",
+      "pending-upgrade",
+      "installed",
+      "new",
+      "default",
+    ],
+  },
+  {
+    tab: "installed",
+    statuses: ["pending-restart", "pending-upgrade", "installed"],
+  },
+] as const)(
+  "offers the statuses the $tab tab can list",
+  async ({ tab, statuses }) => {
+    const dashboard = await openDashboard([], tab);
+
+    const statusFilter =
+      dashboard.shadowRoot?.querySelector("ha-filter-states");
+
+    expect(statusFilter?.states?.map((state) => state.value)).toEqual(statuses);
+  }
+);
+
+it("leaves out a status the installed tab can't list", async () => {
+  const dashboard = await openDashboard([
+    { id: "1", name: "One", category: "integration", installed: true },
+  ]);
+
+  const table = () =>
+    dashboard.shadowRoot?.querySelector("hass-tabs-subpage-data-table");
+
+  const statusFilter = () =>
+    dashboard.shadowRoot?.querySelector("ha-filter-states");
+
+  // New is picked on the browse tab, the filters are kept for every tab
+  statusFilter()?.dispatchEvent(
+    new CustomEvent("data-table-filter-changed", {
+      detail: { value: ["new"] },
+    })
+  );
+  dashboard.tab = "installed";
+  await dashboard.updateComplete;
+
+  expect(table()?.data.map((repository) => repository.id)).toEqual(["1"]);
+  expect(table()?.filters).toBe(0);
+  expect(statusFilter()?.value).toEqual([]);
+
+  dashboard.tab = "browse";
+  await dashboard.updateComplete;
+
+  // Still picked back on the browse tab
+  expect(statusFilter()?.value).toEqual(["new"]);
+  table()?.dispatchEvent(new CustomEvent("clear-filter"));
+});
+
+it.each([
   { name: "a brand icon", domain: "spook", tag: "img" },
   {
     name: "the category icon without a domain",

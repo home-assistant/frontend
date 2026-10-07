@@ -10,6 +10,13 @@ export const STATUS_ORDER = [
   "default",
 ] as const satisfies readonly RepositoryBase["status"][];
 
+// New and available are never installed, so the installed tab only has these
+export const INSTALLED_STATUS_ORDER = [
+  "pending-restart",
+  "pending-upgrade",
+  "installed",
+] as const satisfies readonly RepositoryBase["status"][];
+
 export const STATUS_FILTER = "status";
 export const TYPE_FILTER = "type";
 
