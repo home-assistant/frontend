@@ -175,7 +175,7 @@ export class HaMarketplaceDashboard extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _activeGrouping?: string;
+  private _activeGrouping?: string = "translated_status";
 
   @storage({
     key: "marketplace-dashboard-table-collapsed",

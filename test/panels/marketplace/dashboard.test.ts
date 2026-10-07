@@ -98,6 +98,7 @@ it("groups by status and type", async () => {
     "hass-tabs-subpage-data-table"
   ) as unknown as {
     columns: Record<string, { groupable?: boolean }>;
+    initialGroupColumn?: string;
   };
 
   // The table only offers to group by a column that allows it
@@ -106,6 +107,8 @@ it("groups by status and type", async () => {
       .filter(([, column]) => column.groupable)
       .map(([id]) => id)
   ).toEqual(["translated_status", "translated_category"]);
+  // Grouped by status until something else is picked, like it was sorted before
+  expect(table.initialGroupColumn).toBe("translated_status");
 });
 
 it("counts what the search looks through, on the tab it is on", async () => {
