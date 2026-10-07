@@ -1,0 +1,51 @@
+{
+  "name": "@home-assistant/hac",
+  "version": "0.0.0",
+  "description": "Home Assistant Components: framework-agnostic web components built with Lit",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/home-assistant/frontend.git",
+    "directory": "packages/hac"
+  },
+  "type": "module",
+  "sideEffects": [
+    "./dist/**/index.js",
+    "./dist/**/hac-*.js"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./card": {
+      "types": "./dist/card/index.d.ts",
+      "import": "./dist/card/index.js"
+    },
+    "./header": {
+      "types": "./dist/header/index.d.ts",
+      "import": "./dist/header/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch"
+  },
+  "peerDependencies": {
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "@rslib/core": "1.0.3",
+    "lit": "3.3.3",
+    "typescript": "6.0.3"
+  }
+}
