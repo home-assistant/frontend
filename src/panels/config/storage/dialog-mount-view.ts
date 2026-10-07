@@ -51,13 +51,16 @@ interface MountFormData {
   password?: string;
 }
 
-// Disk vendor/model, then partition label or device path, then size.
+// Disk vendor/model, then partition label and device path, then size. The
+// device path tells same-labelled partitions on identical disks apart.
 const mountPartitionLabel = ({
   disk,
   partition,
 }: MountableDiskPartition): string => {
   const drive = [disk.vendor, disk.model].filter(Boolean).join(" ");
-  const identity = partition.label || partition.device;
+  const identity = partition.label
+    ? `${partition.label} (${partition.device})`
+    : partition.device;
   const size = bytesToString(partition.size);
   return drive ? `${drive} — ${identity}, ${size}` : `${identity}, ${size}`;
 };
@@ -106,10 +109,11 @@ const mountSchema = memoizeOne(
         localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
       ],
     ];
-    // Offered when creating on a Supervisor with disk mounts, and kept when
-    // editing one. An existing network mount cannot become a disk mount: the
-    // edit form has no device picker to identify the disk with.
-    if ((showDisk && !existing) || mountType === SupervisorMountType.DISK) {
+    // Offered when creating on a Supervisor with disk mounts, and kept while
+    // editing a disk mount, even after another type is picked. An existing
+    // network mount cannot become a disk mount: the edit form has no device
+    // picker to identify the disk with.
+    if ((showDisk && !existing) || diskIdentity !== undefined) {
       typeOptions.push([
         SupervisorMountType.DISK,
         localize("ui.panel.config.storage.network_mounts.mount_type.disk"),
