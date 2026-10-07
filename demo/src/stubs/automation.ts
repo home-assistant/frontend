@@ -56,7 +56,8 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
     (currentHass, method, path, parameters) => {
       const id = decodeURIComponent(path.split("/").pop()!);
       if (method === "POST") {
-        const config = parameters as AutomationConfig;
+        // Core stores the ID in the config
+        const config = { ...(parameters as AutomationConfig), id };
         savedAutomations[id] = config;
         // Like core, update the automation entity, or add it for a new one
         const existing = Object.values(currentHass.states).find(
@@ -65,13 +66,18 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
             stateObj.attributes.id === id
         );
         const entity = automationEntity({
-          config: { ...config, id, alias: config.alias || id },
+          config: { ...config, alias: config.alias || id },
           state: existing?.state as DemoAutomation["state"],
           icon: existing?.attributes.icon,
         });
+        // A new automation gets a free entity ID, like core
+        let entityId = existing?.entity_id ?? entity.entity_id;
+        for (let i = 2; !existing && entityId in currentHass.states; i++) {
+          entityId = `${entity.entity_id}_${i}`;
+        }
         currentHass.addEntities({
           ...entity,
-          entity_id: existing?.entity_id ?? entity.entity_id,
+          entity_id: entityId,
           attributes: {
             ...entity.attributes,
             last_triggered: existing?.attributes.last_triggered ?? null,
@@ -79,7 +85,7 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
         });
         if (!existing) {
           addEntityRegistryEntry(currentHass, {
-            entity_id: entity.entity_id,
+            entity_id: entityId,
             platform: "automation",
             unique_id: id,
           });

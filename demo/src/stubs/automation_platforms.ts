@@ -13,6 +13,7 @@ import {
 type Descriptions = TriggerDescriptions | ConditionDescriptions;
 
 interface EntityFilter {
+  integration?: string;
   domain?: string | string[];
   device_class?: string | string[];
   supported_features?: number[];
@@ -75,6 +76,8 @@ const matchesFilter = (
   entityId: string,
   filter: EntityFilter
 ) =>
+  (!filter.integration ||
+    hass.entities[entityId]?.platform === filter.integration) &&
   (!filter.domain ||
     ensureArray(filter.domain).includes(computeDomain(entityId))) &&
   (!filter.device_class ||
@@ -91,7 +94,34 @@ const matchesFilter = (
         features
     ));
 
-// The triggers or conditions that apply to at least one entity of the target
+type TargetDescriptions = Record<
+  string,
+  { target?: { entity?: EntityFilter | EntityFilter[] } | null }
+>;
+
+// Like core, the components with a target that apply to at least one entity
+// of the target. A target without entity filters applies to any entity.
+const componentsForTarget = (
+  hass: MockHomeAssistant,
+  target: HassServiceTarget,
+  descriptions: TargetDescriptions
+) => {
+  const entityIds = targetEntities(hass, target);
+  return Object.entries(descriptions)
+    .filter(([, description]) => {
+      if (!description.target) {
+        return false;
+      }
+      const filters = ensureArray(description.target.entity ?? []);
+      return entityIds.some(
+        (entityId) =>
+          !filters.length ||
+          filters.some((filter) => matchesFilter(hass, entityId, filter))
+      );
+    })
+    .map(([key]) => key);
+};
+
 const mockForTarget = (
   hass: MockHomeAssistant,
   type: string,
@@ -99,22 +129,12 @@ const mockForTarget = (
 ) =>
   hass.mockWS(
     type,
-    (msg: { target: HassServiceTarget }, currentHass: MockHomeAssistant) => {
-      const entityIds = targetEntities(currentHass, msg.target);
-      return Object.entries(descriptions)
-        .filter(([, description]) => {
-          const filters = description.target?.entity;
-          return (
-            filters &&
-            entityIds.some((entityId) =>
-              ensureArray(filters as EntityFilter | EntityFilter[]).some(
-                (filter) => matchesFilter(currentHass, entityId, filter)
-              )
-            )
-          );
-        })
-        .map(([key]) => key);
-    }
+    (msg: { target: HassServiceTarget }, currentHass: MockHomeAssistant) =>
+      componentsForTarget(
+        currentHass,
+        msg.target,
+        descriptions as TargetDescriptions
+      )
   );
 
 const mockPlatformSubscription = (
@@ -166,15 +186,19 @@ export const mockAutomationPlatforms = (hass: MockHomeAssistant) => {
   );
   hass.mockWS(
     "get_services_for_target",
-    (msg: { target: HassServiceTarget }, currentHass: MockHomeAssistant) => {
-      const domains = new Set(
-        targetEntities(currentHass, msg.target).map(computeDomain)
-      );
-      return [...domains].flatMap((domain) =>
-        Object.keys(currentHass.services[domain] ?? {}).map(
-          (service) => `${domain}.${service}`
-        )
-      );
-    }
+    (msg: { target: HassServiceTarget }, currentHass: MockHomeAssistant) =>
+      componentsForTarget(
+        currentHass,
+        msg.target,
+        // Keyed by <domain>.<service>, like the triggers and conditions
+        Object.fromEntries(
+          Object.entries(currentHass.services).flatMap(([domain, services]) =>
+            Object.entries(services).map(([service, description]) => [
+              `${domain}.${service}`,
+              description,
+            ])
+          )
+        ) as TargetDescriptions
+      )
   );
 };
