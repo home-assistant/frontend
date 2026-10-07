@@ -16,7 +16,7 @@ import type {
   Connection,
   HassEntity,
 } from "home-assistant-js-websocket";
-import { getCollection } from "home-assistant-js-websocket";
+import { createStore, getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
   calcDate,
@@ -1052,34 +1052,91 @@ export const getEnergyDataCollection = (
 
   energyCollectionKeys.add(collectionKey);
 
-  const collection = getCollection<EnergyData>(connection, key, async () => {
-    if (!collection.prefs) {
-      // This will raise if not found.
-      // Detect by checking `e.code === "not_found"
-      try {
-        collection.prefs = await getEnergyPreferences(callWS);
-      } catch (err: any) {
-        if (err.code === "not_found") {
-          return {
-            prefs: EMPTY_PREFERENCES,
-            start: collection.start,
-            end: collection.end,
-          } as EnergyData;
+  let revision = 0;
+  let selectionRevision = 0;
+  let publishedSelectionRevision: number | undefined;
+  let subscriptionId = 0;
+  let store = createStore<EnergyData>();
+
+  const refresh = async (): Promise<void> => {
+    const requestRevision = ++revision;
+    const requestSelectionRevision = selectionRevision;
+    const { start, end, compare } = collection;
+    let prefs = collection.prefs;
+    let data: EnergyData;
+    let prefsNotFound = false;
+    try {
+      if (!prefs) {
+        try {
+          prefs = await getEnergyPreferences(callWS);
+          if (requestRevision === revision) {
+            collection.prefs = prefs;
+          }
+        } catch (err: any) {
+          if (err.code !== "not_found") {
+            throw err;
+          }
+          prefs = EMPTY_PREFERENCES;
+          prefsNotFound = true;
         }
+      }
+
+      if (!prefsNotFound && requestRevision === revision) {
+        scheduleHourlyRefresh(collection);
+      }
+      data = prefsNotFound
+        ? ({ prefs, start, end } as EnergyData)
+        : await getEnergyData(options, prefs, start, end, compare);
+    } catch (err) {
+      if (requestRevision === revision) {
         throw err;
       }
+      return;
     }
 
-    scheduleHourlyRefresh(collection);
+    if (requestRevision !== revision) {
+      return;
+    }
+    publishedSelectionRevision = requestSelectionRevision;
+    store.setState(data, true);
+  };
 
-    return getEnergyData(
-      options,
-      collection.prefs,
-      collection.start,
-      collection.end,
-      collection.compare
-    );
-  }) as EnergyCollection;
+  // Use the collection's subscription lifecycle, but publish explicitly so an
+  // obsolete fetch cannot overwrite its store or notify its subscribers.
+  const baseCollection = getCollection<EnergyData>(
+    connection,
+    key,
+    undefined,
+    async (_connection, subscribedStore) => {
+      const currentSubscriptionId = ++subscriptionId;
+      if (store.state !== undefined) {
+        subscribedStore.setState(store.state, true);
+      }
+      store = subscribedStore;
+      const refreshOnReady = () =>
+        refresh().catch((err) => {
+          if (connection.connected) {
+            throw err;
+          }
+        });
+      connection.addEventListener("ready", refreshOnReady);
+      refreshOnReady();
+      return () => {
+        connection.removeEventListener("ready", refreshOnReady);
+        if (currentSubscriptionId === subscriptionId) {
+          revision++;
+        }
+      };
+    }
+  );
+  const collection = {
+    ...baseCollection,
+    get state() {
+      return store.state!;
+    },
+    refresh,
+  } as EnergyCollection;
+  (connection as any)[key] = collection;
 
   collection._active = 0;
   collection.prefs = options.prefs;
@@ -1099,6 +1156,10 @@ export const getEnergyDataCollection = (
     const changed =
       collection.start.getTime() !== live.start.getTime() ||
       collection.end?.getTime() !== live.end.getTime();
+    if (changed) {
+      revision++;
+      selectionRevision++;
+    }
     collection.start = live.start;
     collection.end = live.end;
     return changed;
@@ -1148,7 +1209,12 @@ export const getEnergyDataCollection = (
       scheduleUpdatePeriod();
     }
 
-    const unsub = origSubscribe(subscriber);
+    const unsub = origSubscribe((data) => {
+      // A newly attached card can receive cached state while a new period loads.
+      if (publishedSelectionRevision === selectionRevision) {
+        subscriber(data);
+      }
+    });
     collection._active++;
 
     if (needsRefresh) {
@@ -1193,9 +1259,13 @@ export const getEnergyDataCollection = (
 
   collection.isActive = () => !!collection._active;
   collection.clearPrefs = () => {
+    revision++;
+    selectionRevision++;
     collection.prefs = undefined;
   };
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
+    revision++;
+    selectionRevision++;
     clearUpdatePeriodTimeout();
     collection.start = newStart;
     collection.end = newEnd;
@@ -1210,6 +1280,8 @@ export const getEnergyDataCollection = (
     }
   };
   collection.setCompare = (compare: CompareMode) => {
+    revision++;
+    selectionRevision++;
     collection.compare = compare;
   };
   return collection;
