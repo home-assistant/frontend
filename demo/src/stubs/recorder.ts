@@ -136,6 +136,10 @@ const statisticsFunctions: Record<
     period: "5minute" | "hour" | "day" | "month"
   ) => StatisticValue[]
 > = {
+  "sensor.energy_water": (_id, start, end, period = "hour") =>
+    generateSumStatistics(start, end, period, 4000, 20),
+  "sensor.energy_water_cost": (_id, start, end, period = "hour") =>
+    generateSumStatistics(start, end, period, 0, 0.08),
   "sensor.energy_consumption_tarif_1": (
     _id: string,
     start: Date,

@@ -39,7 +39,8 @@ export const energyEntities = () =>
       state: "88.6",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
-        friendly_name: "Grid consumption low tariff",
+        friendly_name:
+          "Grid consumption low tariff — Main house electricity meter with a very long source name",
         unit_of_measurement: "kWh",
       },
     },
@@ -156,7 +157,8 @@ export const energyEntities = () =>
       state: "4000",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
-        friendly_name: "Water",
+        friendly_name:
+          "Water consumption — Main house water meter with a very long source name",
         unit_of_measurement: "L",
       },
     },
