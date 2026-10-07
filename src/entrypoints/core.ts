@@ -2,11 +2,14 @@ import type { Auth, Connection } from "home-assistant-js-websocket";
 import {
   createConnection,
   ERR_INVALID_AUTH,
-  getAuth,
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
 } from "home-assistant-js-websocket";
+import {
+  getAuthSkippingRefusedCallback,
+  removeAuthCallbackParams,
+} from "../common/auth/get_auth";
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
@@ -36,19 +39,26 @@ declare global {
   }
 }
 
+const replaceUrlSearchParams = (searchParams: URLSearchParams) => {
+  const search = searchParams.toString();
+  history.replaceState(
+    null,
+    "",
+    `${location.pathname}${search ? `?${search}` : ""}`
+  );
+};
+
+const clearAuthCallbackParams = () => {
+  const searchParams = new URLSearchParams(location.search);
+  if (removeAuthCallbackParams(searchParams)) {
+    replaceUrlSearchParams(searchParams);
+  }
+};
+
 const clearUrlParams = () => {
   const searchParams = new URLSearchParams(location.search);
-  let changed = false;
   // Clear auth data from url if we have been able to establish a connection
-  if (location.search.includes("auth_callback=1")) {
-    // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
-    // Remove all data from QueryCallbackData type
-    searchParams.delete("auth_callback");
-    searchParams.delete("code");
-    searchParams.delete("state");
-    searchParams.delete("storeToken");
-    changed = true;
-  }
+  let changed = removeAuthCallbackParams(searchParams);
   // Remove the cache-busting param added by the stale-index recovery guard in
   // index.html once we have booted successfully, so it doesn't linger in the
   // URL (and stops acting as the guard's one-shot loop marker).
@@ -57,12 +67,7 @@ const clearUrlParams = () => {
     changed = true;
   }
   if (changed) {
-    const search = searchParams.toString();
-    history.replaceState(
-      null,
-      "",
-      `${location.pathname}${search ? `?${search}` : ""}`
-    );
+    replaceUrlSearchParams(searchParams);
   }
 };
 
@@ -72,12 +77,15 @@ const authProm = isExternal
         createExternalAuth(hassUrl)
       )
   : () =>
-      getAuth({
-        hassUrl,
-        limitHassInstance: true,
-        saveTokens,
-        loadTokens: () => Promise.resolve(loadTokens()),
-      });
+      getAuthSkippingRefusedCallback(
+        {
+          hassUrl,
+          limitHassInstance: true,
+          saveTokens,
+          loadTokens: () => Promise.resolve(loadTokens()),
+        },
+        clearAuthCallbackParams
+      );
 
 const connProm = async (auth) => {
   try {
