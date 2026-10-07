@@ -137,9 +137,19 @@ const statisticsFunctions: Record<
   ) => StatisticValue[]
 > = {
   "sensor.energy_water": (_id, start, end, period = "hour") =>
-    generateSumStatistics(start, end, period, 4000, 20),
-  "sensor.energy_water_cost": (_id, start, end, period = "hour") =>
-    generateSumStatistics(start, end, period, 0, 0.08),
+    generateSumStatistics(
+      start,
+      end,
+      period,
+      4000,
+      period === "month"
+        ? 14400
+        : period === "day"
+          ? 480
+          : period === "5minute"
+            ? 20 / 12
+            : 20
+    ),
   "sensor.energy_consumption_tarif_1": (
     _id: string,
     start: Date,
@@ -321,9 +331,30 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
       const end = end_time ? new Date(end_time) : new Date();
 
       const statistics: Record<string, StatisticValue[]> = {};
+      // Share consumption between the meter and cost, regardless of request order.
+      let waterStatistics: StatisticValue[] | undefined;
+      const getWaterStatistics = () => {
+        waterStatistics ??= statisticsFunctions["sensor.energy_water"](
+          "sensor.energy_water",
+          start,
+          end,
+          period
+        );
+        return waterStatistics;
+      };
 
       statistic_ids.forEach((id: string) => {
-        if (id in statisticsFunctions) {
+        if (id === "sensor.energy_water") {
+          statistics[id] = getWaterStatistics();
+        } else if (id === "sensor.energy_water_cost") {
+          // Demo tariff: 0.004 currency units per litre (4 per cubic metre).
+          let cost = 0;
+          statistics[id] = getWaterStatistics().map((statistic) => {
+            const change = statistic.change! * 0.004;
+            cost += change;
+            return { ...statistic, change, state: cost, sum: cost };
+          });
+        } else if (id in statisticsFunctions) {
           statistics[id] = statisticsFunctions[id](id, start, end, period);
         } else {
           const entityState = hass.states[id];
