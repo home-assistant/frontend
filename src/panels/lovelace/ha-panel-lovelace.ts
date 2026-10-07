@@ -440,7 +440,9 @@ export class LovelacePanel extends LitElement {
         let conf: LovelaceConfig;
         // If strategy defined, apply it here.
         if (isStrategyDashboard(newConfig)) {
-          conf = await generateLovelaceDashboardStrategy(newConfig, this.hass!);
+          conf = this._normalizeLovelaceConfig(
+            await generateLovelaceDashboardStrategy(newConfig, this.hass!)
+          );
         } else {
           conf = newConfig;
         }
