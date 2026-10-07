@@ -37,8 +37,12 @@ export const automationEntity = ({
       lastTriggered === undefined
         ? null
         : new Date(Date.now() - lastTriggered * 60000).toISOString(),
-    mode: automation.mode,
+    mode: automation.mode ?? "single",
     current: 0,
+    // Like core, only the modes that can run more than once have a maximum
+    ...((automation.mode === "queued" || automation.mode === "parallel") && {
+      max: automation.max ?? 10,
+    }),
     icon,
   },
 });
