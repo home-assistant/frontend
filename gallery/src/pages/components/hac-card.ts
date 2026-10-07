@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-svg-icon";
-import "../../../../src/hac";
+import "@home-assistant/hac";
 
 @customElement("demo-components-hac-card")
 export class DemoHacCard extends LitElement {

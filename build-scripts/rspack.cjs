@@ -426,6 +426,12 @@ const createRspackConfig = ({
             "src/resources/polyfills/bigdecimal.ts"
           ),
         }),
+        // Use the package sources directly, so no build step is needed in dev
+        "@home-assistant/hac$": path.resolve(
+          paths.root_dir,
+          "packages/hac/src"
+        ),
+        "@home-assistant/hac": path.resolve(paths.root_dir, "packages/hac/src"),
         "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",

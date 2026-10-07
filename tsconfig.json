@@ -51,6 +51,8 @@
       }
     ],
     "paths": {
+      "@home-assistant/hac": ["./packages/hac/src/index.ts"],
+      "@home-assistant/hac/*": ["./packages/hac/src/*"],
       "lit/static-html": ["./node_modules/lit/static-html.js"],
       "lit/decorators": ["./node_modules/lit/decorators.js"],
       "lit/directive": ["./node_modules/lit/directive.js"],
