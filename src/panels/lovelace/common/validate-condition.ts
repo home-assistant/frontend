@@ -312,11 +312,11 @@ function checkLocationCondition(
 const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
 
 /** Zone entity IDs selected directly or through a label, area or floor. */
-export const resolveLocationZones = (
+function resolveLocationZones(
   hass: HomeAssistant,
   target: HassServiceTarget
-): string[] =>
-  resolveEntityIDs(
+): string[] {
+  return resolveEntityIDs(
     hass,
     target,
     hass.entities,
@@ -324,6 +324,7 @@ export const resolveLocationZones = (
     hass.areas,
     ZONE_TARGET_SELECTOR
   ).filter((entityId) => computeDomain(entityId) === "zone");
+}
 
 function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
   return condition.users && hass.user?.id
