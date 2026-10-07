@@ -123,6 +123,7 @@ describe("computeEntityNameDisplay", () => {
           entity_id: "light.kitchen",
           name: "Kitchen Device",
           device_id: "dev1",
+          next_name_part: "device",
         }),
       },
       devices: {
@@ -155,6 +156,7 @@ describe("computeEntityNameDisplay", () => {
           entity_id: "light.kitchen",
           name: "Kitchen Device",
           device_id: "dev1",
+          next_name_part: "device",
         }),
       },
       devices: {
@@ -455,6 +457,17 @@ describe("name context", () => {
     );
 
     expect(result).toBe("Garage Power");
+  });
+
+  it("keeps a name equal to the device name when the entity has its own area", () => {
+    const result = joinedNameList(
+      registries(
+        { name: "Freezer", area_id: "garage", next_name_part: "area" },
+        { next_name_part: "parent_device" }
+      )
+    );
+
+    expect(result).toBe("Garage Freezer");
   });
 
   it("keeps the device name for an entity without a name of its own", () => {

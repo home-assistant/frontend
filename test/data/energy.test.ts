@@ -1462,7 +1462,7 @@ describe("computeEnergyLabel", () => {
   it("uses the device name alone when the entity has no name of its own", () => {
     const hass = createHass(
       "Washer",
-      { name: "Washer", device_id: "device1" },
+      { name: "Washer", device_id: "device1", next_name_part: "device" },
       { name: "Washer" }
     );
 
