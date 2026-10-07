@@ -36,6 +36,7 @@ import type {
   MapEditableCircleHandle,
   MapEditableMarkerHandle,
   MapEditingSupport,
+  MapView,
 } from "../../common/map/map-engine";
 import {
   circleBoundsPoints,
@@ -76,7 +77,7 @@ import type {
   HomeAssistantUI,
   ThemeMode,
 } from "../../types";
-import "./ha-entity-marker";
+import { FLOATING_LIFT, floatingMarkerFootprint } from "./ha-entity-marker";
 
 declare global {
   // for fire event
@@ -276,6 +277,10 @@ const CLUSTER_RADIUS = 40;
 // Same-zone markers share the zone's bubble while they span at most this many
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
+// Circle radius (meters) for a selected marker without a reported accuracy
+const NOMINAL_ACCURACY = 2.5;
+// Fixes this good (meters) draw a soft disc without an outline
+const PRECISE_GPS_ACCURACY = 10;
 
 type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
 
@@ -963,9 +968,18 @@ export class HaMap extends ReactiveElement {
     this._engine.setView(center, zoom);
   }
 
+  public getView(): MapView | undefined {
+    return this._engine?.getView();
+  }
+
   public fitBounds(
     boundingbox: MapLatLng[],
-    options?: { zoom?: number; pad?: number; padding?: MapFitPadding }
+    options?: {
+      zoom?: number;
+      pad?: number;
+      padding?: MapFitPadding;
+      fly?: boolean;
+    }
   ) {
     // An explicit fit is user intent, even while it waits for the engine or
     // a size; an auto-fit must not take its place in the meantime
@@ -984,6 +998,7 @@ export class HaMap extends ReactiveElement {
         pad: options?.pad ?? 0.5,
         animate: this._hasFitted,
         padding: options?.padding,
+        fly: options?.fly,
       });
     });
     this._hasFitted = true;
@@ -1470,6 +1485,7 @@ export class HaMap extends ReactiveElement {
       entityMarker.entityColor = entityColor;
       entityMarker.selected =
         typeof entity !== "string" && (entity.selected ?? false);
+      entityMarker.floating = true;
 
       const clusterData: ClusterData = {
         entityId,
@@ -1487,18 +1503,28 @@ export class HaMap extends ReactiveElement {
           : undefined,
       };
 
+      const accuracy =
+        gpsAccuracy || (entityMarker.selected ? NOMINAL_ACCURACY : 0);
       const showAccuracy =
-        !!gpsAccuracy && !(typeof entity !== "string" && entity.hide_accuracy);
+        accuracy > 0 && !(typeof entity !== "string" && entity.hide_accuracy);
 
-      const markerSize = this._getMarkerSize(computedStyles);
       this._entityHandles.push(
         engine.addMarker(entityMarker, position, {
-          size: [markerSize, markerSize],
+          ...floatingMarkerFootprint(
+            this._getMarkerSize(computedStyles),
+            entityMarker.selected
+          ),
           title,
-          cluster: true,
+          // Selected, it leaves its bubble
+          cluster: !entityMarker.selected,
+          raised: entityMarker.selected,
           clusterData,
           decoration: showAccuracy
-            ? { radius: gpsAccuracy!, color: entityColor }
+            ? {
+                radius: accuracy,
+                color: entityColor,
+                outline: accuracy > PRECISE_GPS_ACCURACY,
+              }
             : undefined,
         })
       );
@@ -1631,37 +1657,30 @@ export class HaMap extends ReactiveElement {
       width += CLUSTER_MORE_WIDTH + CLUSTER_BUBBLE_GAP;
     }
 
-    // A cluster of one zone's occupants attaches to that zone's marker
-    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
-    const atZone = !!zonePosition;
-
-    let height =
+    const height =
       rows * CLUSTER_AVATAR_SIZE +
       (rows - 1) * CLUSTER_BUBBLE_GAP +
-      2 * CLUSTER_BUBBLE_PADDING;
-    let root: HTMLElement = bubble;
-    if (atZone) {
-      root = document.createElement("div");
-      root.className = "cluster-marker";
-      const tail = document.createElement("div");
-      tail.className = "cluster-bubble-tail";
-      root.append(bubble, tail);
-      height += CLUSTER_TAIL_HEIGHT;
-    }
+      2 * CLUSTER_BUBBLE_PADDING +
+      CLUSTER_TAIL_HEIGHT;
+    const root = document.createElement("div");
+    root.className = "cluster-marker";
+    const tail = document.createElement("div");
+    tail.className = "cluster-bubble-tail";
+    root.append(bubble, tail);
 
+    // A cluster of one zone's occupants floats above that zone's circle
+    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     return {
       element: root,
       size: [width, height],
-      // Float above the zone circle, tail pointing at it
-      ...(atZone && zonePosition
-        ? {
-            location: zonePosition,
-            anchor: [
-              width / 2,
-              height + ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING,
-            ] as [number, number],
-          }
-        : {}),
+      location: zonePosition,
+      anchor: [
+        width / 2,
+        height +
+          (zonePosition
+            ? ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING
+            : FLOATING_LIFT),
+      ],
     };
   };
 
@@ -1828,6 +1847,23 @@ export class HaMap extends ReactiveElement {
     .dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
       filter: invert(1);
     }
+    /* Not inherited from the page, which may be in the other mode */
+    .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      color: #000000;
+    }
+    .dark .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      background-color: rgba(28, 28, 28, 0.6);
+      color: #ffffff;
+    }
+    .dark .maplibregl-ctrl-attrib.maplibregl-compact {
+      background-color: #1c1c1c;
+    }
+    .dark .maplibregl-ctrl-attrib a {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .dark .maplibregl-ctrl-attrib-button {
+      filter: invert(1);
+    }
     /* MapLibre's stylesheet, linked into this root, wins on equal specificity */
     .maplibregl-popup-content {
       padding: 8px !important;
@@ -1900,9 +1936,9 @@ export class HaMap extends ReactiveElement {
       border-radius: 14px;
       filter: var(--ha-cluster-shadow);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
+      --ha-marker-selected-scale: 1;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
-      --ha-marker-shadow: none;
       --ha-marker-font-size: var(--ha-font-size-s);
       /* distinguish letter tiles from the bubble background */
       --ha-marker-background: var(--ha-color-fill-neutral-quiet-resting);
