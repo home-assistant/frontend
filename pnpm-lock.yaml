@@ -513,6 +513,9 @@ importers:
       '@gfx/zopfli':
         specifier: 1.0.15
         version: 1.0.15
+      '@home-assistant/hac':
+        specifier: workspace:*
+        version: link:packages/hac
       '@html-eslint/eslint-plugin':
         specifier: 0.66.1
         version: 0.66.1(eslint@10.12.0(supports-color@8.1.1))
