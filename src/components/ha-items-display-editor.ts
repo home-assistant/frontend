@@ -186,7 +186,6 @@ export class HaItemDisplayEditor extends LitElement {
                           )}
                           .value=${value}
                           @click=${this._toggle}
-                          @keydown=${stopPropagation}
                           .disabled=${disableHiding || false}
                         ></ha-icon-button>`
                       : nothing
@@ -220,11 +219,13 @@ export class HaItemDisplayEditor extends LitElement {
     `;
   }
 
-  private _toggle(ev) {
+  private _toggle(ev: MouseEvent) {
     ev.stopPropagation();
     this._dragIndex = null;
-    const row = ev.currentTarget.closest("ha-list-item-button");
-    const value = ev.currentTarget.value;
+    const button = ev.currentTarget as HTMLElement & { value: string };
+    const value = button.value;
+    // Keyboard-triggered clicks have no click count
+    const fromKeyboard = ev.detail === 0;
 
     const hiddenItems = this._hiddenItems(this.items, this.value.hidden);
 
@@ -251,7 +252,9 @@ export class HaItemDisplayEditor extends LitElement {
 
     // Hiding or showing moves the row, which can drop focus. Wait for the
     // parent to pass the new value back before refocusing.
-    afterNextRender(() => row?.focus());
+    if (fromKeyboard) {
+      afterNextRender(() => button.focus());
+    }
   }
 
   private _itemMoved(ev: CustomEvent): void {
@@ -369,8 +372,8 @@ export class HaItemDisplayEditor extends LitElement {
       ev.preventDefault();
       this._keyActivatedMove(ev, (ev.currentTarget as IndexedElement).idx);
     } else if (
-      (!this.showNavigationButton && ev.key === "Enter") ||
-      ev.key === " "
+      ev.target === ev.currentTarget &&
+      ((!this.showNavigationButton && ev.key === "Enter") || ev.key === " ")
     ) {
       this._dragHandleKeydown(ev);
     }
