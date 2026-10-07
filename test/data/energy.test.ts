@@ -1438,7 +1438,8 @@ describe("getEnergyDataCollection gas energy unit", () => {
   const loadGasData = async (
     key: string,
     gasUnits: Record<string, string>,
-    compare?: CompareMode
+    compare?: CompareMode,
+    deviceStatIds: string[] = []
   ) => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
@@ -1474,6 +1475,9 @@ describe("getEnergyDataCollection gas energy unit", () => {
       key,
       prefs: {
         ...EMPTY_PREFERENCES,
+        device_consumption: deviceStatIds.map((id) => ({
+          stat_consumption: id,
+        })),
         energy_sources: statisticIds.map((id) => ({
           type: "gas" as const,
           stat_energy_from: id,
@@ -1525,6 +1529,21 @@ describe("getEnergyDataCollection gas energy unit", () => {
       "integration:gas_a": "thm",
       "integration:gas_b": "kWh",
     });
+    assert.equal(data?.gasUnit, "kWh");
+    assert.isUndefined(
+      energyRequests.find(
+        (msg) => (msg.units as { energy?: string }).energy === "thm"
+      )
+    );
+  });
+
+  it("keeps kWh when a therm gas statistic is also an individual device", async () => {
+    const { data, energyRequests } = await loadGasData(
+      "energy_gas_device",
+      { "integration:gas": "thm" },
+      undefined,
+      ["integration:gas"]
+    );
     assert.equal(data?.gasUnit, "kWh");
     assert.isUndefined(
       energyRequests.find(

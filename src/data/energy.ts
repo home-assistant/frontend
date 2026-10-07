@@ -1302,8 +1302,14 @@ const getEnergyGasUnit = (
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
     // Therms are a billing unit, so show them as is instead of converting.
+    // A gas statistic that is also an individual device is read by the device
+    // charts in kWh, so keep kWh there to not mislabel the values.
+    const deviceStatIds = new Set(
+      prefs.device_consumption.map((device) => device.stat_consumption)
+    );
     const allTherms = (energySourcesByType(prefs).gas ?? []).every(
       (source) =>
+        !deviceStatIds.has(source.stat_energy_from) &&
         getDisplayUnit(
           states,
           source.stat_energy_from,
