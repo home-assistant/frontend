@@ -1,6 +1,7 @@
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
+import type { MarketplaceTab } from "./ha-marketplace-dashboard";
 
 export const STATUS_ORDER = [
   "pending-restart",
@@ -11,7 +12,7 @@ export const STATUS_ORDER = [
 ] as const satisfies readonly RepositoryBase["status"][];
 
 // New and available are never installed, so the installed tab only has these
-export const INSTALLED_STATUS_ORDER = [
+const INSTALLED_STATUS_ORDER = [
   "pending-restart",
   "pending-upgrade",
   "installed",
@@ -39,6 +40,27 @@ export type RepositoryFilters = Partial<
     string[]
   >
 >;
+
+export const statusesOfTab = (
+  tab: MarketplaceTab
+): readonly (typeof STATUS_ORDER)[number][] =>
+  tab === "installed" ? INSTALLED_STATUS_ORDER : STATUS_ORDER;
+
+// The filters are kept for every tab. A status picked on another tab that this
+// one can't list is left out here, instead of leaving the table empty.
+export const filtersOfTab = (
+  filters: RepositoryFilters,
+  tab: MarketplaceTab
+): RepositoryFilters => {
+  const statuses: readonly string[] = statusesOfTab(tab);
+
+  return {
+    ...filters,
+    [STATUS_FILTER]: filters[STATUS_FILTER]?.filter((status) =>
+      statuses.includes(status)
+    ),
+  };
+};
 
 const matchesFilters = (
   repository: RepositoryBase,

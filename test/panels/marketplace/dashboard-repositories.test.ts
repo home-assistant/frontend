@@ -6,6 +6,8 @@ import {
   browseSettingsFromUrl,
   browseUrl,
   filterRepositories,
+  filtersOfTab,
+  statusesOfTab,
 } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 
 const localize = ((key: string) => key) as LocalizeFunc;
@@ -166,5 +168,28 @@ describe("browseUrl", () => {
 
     expect(url.pathname).toBe("/marketplace/browse");
     expect(browseSettingsFromUrl(url.search)).toEqual(settings);
+  });
+});
+
+describe("filtersOfTab", () => {
+  it("only offers statuses something installed can have on the installed tab", () => {
+    expect(statusesOfTab("installed")).toEqual([
+      "pending-restart",
+      "pending-upgrade",
+      "installed",
+    ]);
+    expect(statusesOfTab("browse")).toContain("new");
+  });
+
+  it("leaves out a status picked on browse that the installed tab can't list", () => {
+    const filters = { status: ["new", "installed"], type: ["theme"] };
+
+    expect(filtersOfTab(filters, "installed")).toEqual({
+      status: ["installed"],
+      type: ["theme"],
+    });
+    expect(filtersOfTab(filters, "browse")).toEqual(filters);
+    // Kept as picked, for when browse is opened again
+    expect(filters.status).toEqual(["new", "installed"]);
   });
 });

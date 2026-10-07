@@ -70,11 +70,12 @@ import { haStyle } from "../../../resources/styles";
 import {
   browseSettingsFromUrl,
   filterRepositories,
-  INSTALLED_STATUS_ORDER,
+  filtersOfTab,
   SOURCE_FILTER,
   SOURCE_ORDER,
   STATUS_FILTER,
   STATUS_ORDER,
+  statusesOfTab,
   TYPE_FILTER,
 } from "./dashboard-repositories";
 import type { RepositoryFilters } from "./dashboard-repositories";
@@ -129,27 +130,6 @@ const repositoriesOfTab = (
   tab === "installed"
     ? repositories.filter((repository) => repository.installed)
     : repositories;
-
-const statusesOfTab = (
-  tab: MarketplaceTab
-): readonly (typeof STATUS_ORDER)[number][] =>
-  tab === "installed" ? INSTALLED_STATUS_ORDER : STATUS_ORDER;
-
-// The filters are kept for every tab. A status picked on another tab that this
-// one can't list is left out here, instead of leaving the table empty.
-const filtersOfTab = (
-  filters: RepositoryFilters,
-  tab: MarketplaceTab
-): RepositoryFilters => {
-  const statuses: readonly string[] = statusesOfTab(tab);
-
-  return {
-    ...filters,
-    [STATUS_FILTER]: filters[STATUS_FILTER]?.filter((status) =>
-      statuses.includes(status)
-    ),
-  };
-};
 
 @customElement("ha-marketplace-dashboard")
 export class HaMarketplaceDashboard extends LitElement {
