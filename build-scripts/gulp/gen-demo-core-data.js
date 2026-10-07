@@ -66,6 +66,19 @@ export const SERVICE_DOMAINS = [
   "zone",
 ];
 
+// Services that return data. Core sets this when it registers a service, it is
+// not part of services.yaml. The value is whether the response is optional.
+const RESPONSE_SERVICES = {
+  "calendar.get_events": false,
+  "conversation.process": true,
+  "media_player.browse_media": false,
+  "media_player.search_media": false,
+  "recorder.get_statistics": false,
+  "schedule.get_schedule": false,
+  "todo.get_items": false,
+  "weather.get_forecasts": false,
+};
+
 // Integrations that provide the new style triggers and conditions
 const AUTOMATION_PLATFORM_DOMAINS = [
   "air_quality",
@@ -268,6 +281,10 @@ const serviceDescriptions = (yamls, { resolveFields, resolveTarget }) =>
           if (value && "target" in value) {
             description.target = resolveTarget(value.target);
           }
+          const key = `${domain}.${service}`;
+          if (key in RESPONSE_SERVICES) {
+            description.response = { optional: RESPONSE_SERVICES[key] };
+          }
           return [service, description];
         });
       return [domain, Object.fromEntries(services)];
@@ -339,6 +356,12 @@ gulp.task("gen-demo-core-data", async () => {
     await enumResolver([servicesYamls, triggersYamls, conditionsYamls])
   );
   const services = serviceDescriptions(servicesYamls, resolvers);
+  for (const key of Object.keys(RESPONSE_SERVICES)) {
+    const [domain, service] = key.split(".");
+    if (!services[domain]?.[service]) {
+      throw new Error(`Service ${key} that returns a response does not exist`);
+    }
+  }
   const triggers = platformDescriptions(triggersYamls, resolvers);
   const conditions = platformDescriptions(conditionsYamls, resolvers);
   const icons = {

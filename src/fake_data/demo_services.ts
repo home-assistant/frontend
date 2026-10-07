@@ -106,6 +106,7 @@ export const demoServices = {
         duration: { selector: { duration: null } },
       },
       target: { entity: { domain: "calendar" } },
+      response: { optional: false },
     },
   },
   camera: {
@@ -279,6 +280,7 @@ export const demoServices = {
           selector: { text: null },
         },
       },
+      response: { optional: true },
     },
     reload: {
       fields: {
@@ -1530,6 +1532,7 @@ export const demoServices = {
       target: {
         entity: { domain: "media_player", supported_features: [131072] },
       },
+      response: { optional: false },
     },
     search_media: {
       fields: {
@@ -1557,6 +1560,7 @@ export const demoServices = {
       target: {
         entity: { domain: "media_player", supported_features: [4194304] },
       },
+      response: { optional: false },
     },
     select_source: {
       fields: {
@@ -1785,6 +1789,7 @@ export const demoServices = {
           selector: { object: null },
         },
       },
+      response: { optional: false },
     },
   },
   remote: {
@@ -1920,7 +1925,11 @@ export const demoServices = {
   },
   schedule: {
     reload: { fields: {} },
-    get_schedule: { fields: {}, target: { entity: { domain: "schedule" } } },
+    get_schedule: {
+      fields: {},
+      target: { entity: { domain: "schedule" } },
+      response: { optional: false },
+    },
   },
   script: {
     reload: { fields: {} },
@@ -2061,6 +2070,7 @@ export const demoServices = {
         },
       },
       target: { entity: { domain: "todo" } },
+      response: { optional: false },
     },
     add_item: {
       fields: {
@@ -2357,6 +2367,7 @@ export const demoServices = {
         },
       },
       target: { entity: { domain: "weather", supported_features: [1, 2, 4] } },
+      response: { optional: false },
     },
   },
   zone: { reload: { fields: {} } },
