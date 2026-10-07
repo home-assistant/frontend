@@ -52,9 +52,9 @@ function convertBackendTranslations(data, _file) {
   if (!data.component) {
     return output;
   }
-  // Keep the entity domains, the domains with automation triggers or
-  // conditions and the domains whose services the demo mocks, so the demo can
-  // show states and describe automations.
+  // Keep the entity domains and the domains with automation triggers or
+  // conditions, so the demo can show states and describe automations. Only
+  // keep the services of the domains whose services the demo mocks.
   Object.keys(data.component).forEach((domain) => {
     const {
       entity_component,
@@ -74,7 +74,7 @@ function convertBackendTranslations(data, _file) {
     }
     output.component[domain] = {
       entity_component,
-      services,
+      services: SERVICE_DOMAINS.includes(domain) ? services : undefined,
       triggers,
       conditions,
       selector,
