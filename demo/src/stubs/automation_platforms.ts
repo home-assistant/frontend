@@ -123,9 +123,6 @@ const expandTarget = (
   };
 };
 
-const targetEntities = (hass: MockHomeAssistant, target: HassServiceTarget) =>
-  expandTarget(hass, target).entities;
-
 const matchesFilter = (
   hass: MockHomeAssistant,
   entityId: string,
@@ -151,7 +148,12 @@ const matchesFilter = (
 
 type TargetDescriptions = Record<
   string,
-  { target?: { entity?: EntityFilter | EntityFilter[] } | null }
+  {
+    target?: {
+      entity?: EntityFilter | EntityFilter[];
+      primary_entities_only?: boolean;
+    } | null;
+  }
 >;
 
 // Like core, the components with a target that apply to at least one entity
@@ -161,17 +163,25 @@ const componentsForTarget = (
   target: HassServiceTarget,
   descriptions: TargetDescriptions
 ) => {
-  const entityIds = targetEntities(hass, target);
+  const entityIds = expandTarget(hass, target, false).entities;
+  const targetedIds = ensureArray(target.entity_id ?? []);
   return Object.entries(descriptions)
     .filter(([, description]) => {
       if (!description.target) {
         return false;
       }
       const filters = ensureArray(description.target.entity ?? []);
+      const primaryEntitiesOnly =
+        description.target.primary_entities_only ?? true;
       return entityIds.some(
         (entityId) =>
-          !filters.length ||
-          filters.some((filter) => matchesFilter(hass, entityId, filter))
+          // Entities with a category only count when targeted directly,
+          // unless the component allows them
+          (!primaryEntitiesOnly ||
+            targetedIds.includes(entityId) ||
+            !hass.entities[entityId]?.entity_category) &&
+          (!filters.length ||
+            filters.some((filter) => matchesFilter(hass, entityId, filter)))
       );
     })
     .map(([key]) => key);
