@@ -41,10 +41,12 @@ const timeTriggerStruct = assign(
     alias: optional(string()),
     trigger: literal("time"),
     variables: optional(record(string(), unknown())),
-    at: union([
-      string(),
-      object({ entity_id: string(), offset: optional(string()) }),
-    ]),
+    at: optional(
+      union([
+        string(),
+        object({ entity_id: string(), offset: optional(string()) }),
+      ])
+    ),
     weekday: optional(union([string(), array(string())])),
   })
 );
