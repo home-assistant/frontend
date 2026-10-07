@@ -22,55 +22,56 @@ interface EntityFilter {
 
 // Expands a target to its areas, devices and entities, like core does
 const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
-  // Like core, only expand the referenced IDs that exist
   const missing = {
     floors: [] as string[],
     areas: [] as string[],
     devices: [] as string[],
     labels: [] as string[],
   };
-  const existing = (
-    ids: string | string[] | undefined,
-    known: (id: string) => boolean,
-    missingIds: string[]
-  ) => {
-    const result: string[] = [];
-    for (const id of ensureArray(ids ?? [])) {
-      if (known(id)) {
-        result.push(id);
-      } else {
-        missingIds.push(id);
-      }
-    }
-    return result;
-  };
   const knownLabelIds = getLabelIds();
-
-  const floorIds = new Set(
-    existing(target.floor_id, (id) => id in hass.floors, missing.floors)
-  );
-  const labelIds = existing(
-    target.label_id,
-    (id) => knownLabelIds.includes(id),
-    missing.labels
-  );
+  const floorIds = ensureArray(target.floor_id ?? []);
+  const labelIds = ensureArray(target.label_id ?? []);
+  missing.floors.push(...floorIds.filter((id) => !(id in hass.floors)));
+  // Like core, unknown labels are reported, but still expanded
+  missing.labels.push(...labelIds.filter((id) => !knownLabelIds.includes(id)));
   const hasLabel = (labels?: string[]) =>
     labelIds.some((labelId) => labels?.includes(labelId));
 
-  const areaIds = new Set(
-    existing(target.area_id, (id) => id in hass.areas, missing.areas)
-  );
+  // Unknown areas and devices are reported, but still referenced
+  const areaIds = new Set(ensureArray(target.area_id ?? []));
+  missing.areas.push(...[...areaIds].filter((id) => !(id in hass.areas)));
   for (const area of Object.values(hass.areas)) {
     if (
-      (area.floor_id && floorIds.has(area.floor_id)) ||
+      (area.floor_id && floorIds.includes(area.floor_id)) ||
       hasLabel(area.labels)
     ) {
       areaIds.add(area.area_id);
     }
   }
 
-  // Like core, a child device without its own area is in the area of its
-  // parent device
+  // A targeted or labeled device includes its child devices
+  const deviceIds = new Set<string>();
+  const addDevice = (deviceId: string) => {
+    deviceIds.add(deviceId);
+    for (const device of Object.values(hass.devices)) {
+      if (device.parent_device_id === deviceId) {
+        deviceIds.add(device.id);
+      }
+    }
+  };
+  for (const deviceId of ensureArray(target.device_id ?? [])) {
+    if (!(deviceId in hass.devices)) {
+      missing.devices.push(deviceId);
+    }
+    addDevice(deviceId);
+  }
+  for (const device of Object.values(hass.devices)) {
+    if (hasLabel(device.labels)) {
+      addDevice(device.id);
+    }
+  }
+
+  // A child device without its own area is in the area of its parent device
   const deviceArea = (deviceId: string) => {
     const device = hass.devices[deviceId];
     return (
@@ -80,13 +81,9 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
         : undefined)
     );
   };
-
-  const deviceIds = new Set(
-    existing(target.device_id, (id) => id in hass.devices, missing.devices)
-  );
   for (const device of Object.values(hass.devices)) {
     const areaId = deviceArea(device.id);
-    if ((areaId && areaIds.has(areaId)) || hasLabel(device.labels)) {
+    if (areaId && areaIds.has(areaId)) {
       deviceIds.add(device.id);
     }
   }
@@ -104,7 +101,7 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
     if (
       (entity.device_id && deviceIds.has(entity.device_id)) ||
       (areaId && areaIds.has(areaId)) ||
-      hasLabel(entity.labels)
+      (!entity.hidden && hasLabel(entity.labels))
     ) {
       entityIds.add(entity.entity_id);
     }
