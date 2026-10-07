@@ -9225,6 +9225,7 @@
             "invalid_port": "Enter a port number between 1 and 65535.",
             "invalid_login_attempts_threshold": "Enter a number between 1 and 1000.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
+            "running_default_legacy_port": "Your saved HTTP configuration could not be applied, and the default port was unavailable, so Home Assistant is running on the built-in default configuration on the previous default port.",
             "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
             "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
             "reverted_action": "Review the change",
