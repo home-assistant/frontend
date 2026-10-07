@@ -378,12 +378,15 @@ export function generateStateHistoryChartLineData(
 
       // pushData(timestamp, [value]) for one dataset, minus the per-point array
       const latestValues: (number | null)[] = [null];
+      const seriesData = data[0].data!;
       const pushValue = (timestamp: number, value: number) => {
         if (timestamp > endTimeMs) {
           return;
         }
-        data[0].data!.push([timestamp, value]);
-        trackY(value);
+        seriesData.push([timestamp, value]);
+        // trackY, but value is always finite here
+        if (value < yMin) yMin = value;
+        if (value > yMax) yMax = value;
         latestValues[0] = value;
         prevValues = latestValues;
       };
@@ -429,9 +432,12 @@ export function generateStateHistoryChartLineData(
           processData(statistic);
         }
       }
-      states.states.forEach((entityState) => {
-        processData(entityState);
-      });
+      const stateList = states.states;
+      // An indexed loop is noticeably faster than for...of on large histories
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let i = 0; i < stateList.length; i++) {
+        processData(stateList[i]);
+      }
       if (lastNullDate !== null) {
         pushData(lastNullDate, [null]);
       }
