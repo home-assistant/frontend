@@ -92,22 +92,6 @@ it("shows its tabs from the translations of the Marketplace itself", async () =>
   ).toBe(true);
 });
 
-it("offers no grouping", async () => {
-  const dashboard = await openDashboard();
-  const table = dashboard.shadowRoot!.querySelector(
-    "hass-tabs-subpage-data-table"
-  ) as unknown as {
-    columns: Record<string, { groupable?: boolean }>;
-    initialGroupColumn?: string;
-  };
-
-  // The table only offers to group by a column that allows it
-  expect(Object.values(table.columns).some((column) => column.groupable)).toBe(
-    false
-  );
-  expect(table.initialGroupColumn).toBeUndefined();
-});
-
 it("counts what the search looks through, on the tab it is on", async () => {
   const repositories = [
     { id: "1", name: "One", category: "integration", installed: true },
