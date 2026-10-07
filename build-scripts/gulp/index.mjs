@@ -6,7 +6,7 @@ import "./demo.js";
 import "./download-translations.js";
 import "./e2e-test-app.js";
 import "./entry-html.js";
-import "./fetch-nightly-translations.js";
+import "./fetch-nightly-translations.mts";
 import "./gallery.js";
 import "./gather-static.js";
 import "./gen-device-classes.js";

@@ -3,7 +3,7 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -36,7 +36,10 @@ import type {
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
-import { circleBoundsPoints } from "../../../common/map/map-engine";
+import {
+  circleBoundsPoints,
+  pixelDistance,
+} from "../../../common/map/map-engine";
 import {
   entityMapColor,
   zoneColor,
@@ -51,6 +54,15 @@ import type { HomeAssistant } from "../../../types";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { OverviewTab } from "./map/hui-map-overview";
 import { PANEL_VIEW_LAYOUT } from "../views/const";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import { currentPath } from "../../../common/url/current-path";
+import {
+  addSearchParam,
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
 import { findEntities } from "../common/find-entities";
 import {
   hasConfigChanged,
@@ -67,14 +79,13 @@ import {
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
-// GPS accuracy (meters) above which the selected person's circle is shown
-const IMPRECISE_GPS_ACCURACY = 100;
-
 // Margin around the overview (--ha-space-3), in pixels
 const OVERVIEW_GAP = 12;
 
-const FOCUS_PERSON_ZOOM = 19;
-const FOCUS_ZONE_MAX_ZOOM = 18;
+const FOCUS_MAX_ZOOM = 17;
+const FOCUS_CLEARANCE_PX = 80;
+const SELECTED_ENTITY_PARAM = "entity_id";
+const SELECTABLE_DOMAINS = ["person", "device_tracker", "zone"];
 
 interface GeoEntity {
   entity_id: string;
@@ -135,6 +146,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @state() private _clusterMarkers = true;
 
   @state() private _overviewSelected?: string;
+
+  private _path?: string;
 
   @state() private _overviewTab: OverviewTab = "people";
 
@@ -402,6 +415,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+    if (changedProps.has("layout")) {
+      this._syncSelection();
+    }
     if (changedProps.has("preview") && this.preview) {
       this._overviewSize = { width: 0, height: 0 };
     }
@@ -454,15 +470,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._overviewEntities = this._decorateOverviewEntities(
         entities,
         this._overviewSelected,
-        this._overviewSelected
-          ? this.hass.states[this._overviewSelected]
-          : undefined,
-        this.preview || this._overviewTab === "zones"
+        this.preview ||
+          this._config?.show_zone_radius ||
+          this._overviewTab === "zones"
       );
       // Without the overview, while editing, every marker shows
       this._filteredMapEntities = this.preview
         ? this._overviewEntities
-        : this._filterByOverviewTab(this._overviewEntities, this._overviewTab);
+        : this._filterByOverviewTab(
+            this._overviewEntities,
+            this._overviewTab,
+            this._overviewSelected
+          );
     }
   }
 
@@ -517,34 +536,32 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   // In panel layout, only the selected zone shows its radius (all of them on
-  // the Zones tab and while editing) and only an imprecise selected person
-  // its accuracy circle
+  // the Zones tab, while editing, or when configured) and only the selected
+  // person its accuracy circle
   private _decorateOverviewEntities = memoizeOne(
     (
       entities: HaMapEntity[],
       selectedId: string | undefined,
-      selectedStateObj: HassEntity | undefined,
       showRadii: boolean
-    ): HaMapEntity[] => {
-      const selectedLocation = selectedStateObj
-        ? getEntityLocation(selectedStateObj, this.hass.states)
-        : undefined;
-      const showSelectedAccuracy =
-        (selectedLocation?.gpsAccuracy ?? 0) > IMPRECISE_GPS_ACCURACY;
-      return entities.map((entity) => ({
+    ): HaMapEntity[] =>
+      entities.map((entity) => ({
         ...entity,
-        hide_accuracy: !(
-          showSelectedAccuracy && entity.entity_id === selectedId
-        ),
+        hide_accuracy: entity.entity_id !== selectedId,
         hide_radius: !showRadii && entity.entity_id !== selectedId,
         selected: entity.entity_id === selectedId,
-      }));
-    }
+      }))
   );
 
   private _filterByOverviewTab = memoizeOne(
-    (entities: HaMapEntity[], tab: OverviewTab): HaMapEntity[] =>
+    (
+      entities: HaMapEntity[],
+      tab: OverviewTab,
+      selected?: string
+    ): HaMapEntity[] =>
       entities.filter((entity) => {
+        if (entity.entity_id === selected) {
+          return true;
+        }
         const domain = computeDomain(entity.entity_id);
         if (domain === "person") {
           return tab === "people";
@@ -558,6 +575,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._path = currentPath();
+    mainWindow.addEventListener("popstate", this._syncSelection);
+    mainWindow.addEventListener("location-changed", this._syncSelection);
+    this._syncSelection();
     if (this.hasUpdated && this._configEntities?.length) {
       this._subscribeHistory();
     }
@@ -565,8 +586,25 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    mainWindow.removeEventListener("popstate", this._syncSelection);
+    mainWindow.removeEventListener("location-changed", this._syncSelection);
     this._unsubscribeHistory();
   }
+
+  private _syncSelection = () => {
+    if (this.layout !== PANEL_VIEW_LAYOUT || currentPath() !== this._path) {
+      return;
+    }
+    const entityId = extractSearchParam(SELECTED_ENTITY_PARAM);
+    const selectable =
+      !!entityId && SELECTABLE_DOMAINS.includes(computeDomain(entityId));
+    if (entityId && !selectable) {
+      replaceCurrentUrl(
+        constructUrlCurrentPath(removeSearchParam(SELECTED_ENTITY_PARAM))
+      );
+    }
+    this._overviewSelected = selectable ? entityId : undefined;
+  };
 
   private _subscribeHistory() {
     if (
@@ -619,6 +657,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._computePadding();
     }
+    if (
+      changedProps.has("_overviewSelected") &&
+      this._overviewSelected &&
+      this.layout === PANEL_VIEW_LAYOUT
+    ) {
+      this._focusEntity(this._overviewSelected);
+    }
   }
 
   private _computePadding(): void {
@@ -649,9 +694,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _handleMapClicked() {
-    // A click on the map itself (not on a marker) deselects
     if (this._overviewSelected) {
-      this._overviewSelected = undefined;
+      this._deselect();
     }
   }
 
@@ -664,7 +708,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (
       this.layout !== PANEL_VIEW_LAYOUT ||
       !entityId ||
-      !["person", "device_tracker", "zone"].includes(computeDomain(entityId)) ||
+      !SELECTABLE_DOMAINS.includes(computeDomain(entityId)) ||
       (computeDomain(entityId) !== "zone" &&
         !this._filteredMapEntities.some(
           (entity) => entity.entity_id === entityId
@@ -673,8 +717,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
     ev.stopPropagation();
-    this._overviewSelected = entityId;
-    this._focusEntity(entityId);
+    this._select(entityId);
   }
 
   private _handleOverviewResize(
@@ -697,48 +740,71 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
-    this._overviewSelected = ev.detail.entityId;
     if (ev.detail.entityId) {
-      this._focusEntity(ev.detail.entityId);
+      this._select(ev.detail.entityId);
+    } else {
+      this._deselect();
     }
+  }
+
+  private _deselect() {
+    this._navigateSelection(removeSearchParam(SELECTED_ENTITY_PARAM));
+  }
+
+  private _select(entityId: string) {
+    if (entityId === this._overviewSelected) {
+      this._focusEntity(entityId);
+      return;
+    }
+    this._navigateSelection(
+      addSearchParam({ [SELECTED_ENTITY_PARAM]: entityId })
+    );
+  }
+
+  private _navigateSelection(searchParams: string) {
+    navigate(constructUrlCurrentPath(searchParams));
   }
 
   private _focusEntity(entityId: string) {
     const stateObj = this.hass.states[entityId];
-    if (!stateObj) {
+    const center = this._entityCenter(entityId);
+    if (!stateObj || !center) {
       return;
     }
-    if (computeStateDomain(stateObj) === "zone") {
-      const { latitude, longitude, radius } = stateObj.attributes;
-      this._map?.fitBounds(
-        circleBoundsPoints([latitude, longitude], radius ?? 100),
-        {
-          pad: 0.2,
-          zoom: FOCUS_ZONE_MAX_ZOOM,
-          padding: this._overviewPadding(),
-        }
-      );
-      return;
-    }
-    const location = getEntityLocation(stateObj, this.hass.states);
-    if (!location) {
-      return;
-    }
-    const center: MapLatLng = [location.latitude, location.longitude];
-    const accuracy = location.gpsAccuracy ?? 0;
-    // Fit the accuracy circle so it is not mostly off-screen, capping the zoom
-    if (accuracy > IMPRECISE_GPS_ACCURACY) {
-      this._map?.fitBounds(circleBoundsPoints(center, accuracy), {
+    const zoom = this._map?.getView()?.zoom;
+    const zone = computeStateDomain(stateObj) === "zone";
+    this._map?.fitBounds(
+      zone
+        ? circleBoundsPoints(center, stateObj.attributes.radius ?? 100)
+        : [center],
+      {
         pad: 0.2,
-        zoom: FOCUS_PERSON_ZOOM,
+        zoom: zoom === undefined || zone ? zoom : this._focusZoom(center, zoom),
         padding: this._overviewPadding(),
-      });
-      return;
+        fly: !this._map.containsLocation(center),
+      }
+    );
+  }
+
+  private _entityCenter(entityId: string): MapLatLng | undefined {
+    const stateObj = this.hass.states[entityId];
+    const location = stateObj && getEntityLocation(stateObj, this.hass.states);
+    return location && [location.latitude, location.longitude];
+  }
+
+  // Zoom in only as far as it takes to clear the nearest other marker
+  private _focusZoom(center: MapLatLng, zoom: number): number {
+    let nearest = Infinity;
+    for (const entity of this._filteredMapEntities) {
+      const other = this._entityCenter(entity.entity_id);
+      if (other && (other[0] !== center[0] || other[1] !== center[1])) {
+        nearest = Math.min(nearest, pixelDistance(center, other, zoom));
+      }
     }
-    this._map?.fitBounds([center], {
-      zoom: FOCUS_PERSON_ZOOM,
-      padding: this._overviewPadding(),
-    });
+    return Math.max(
+      zoom,
+      Math.min(FOCUS_MAX_ZOOM, zoom + Math.log2(FOCUS_CLEARANCE_PX / nearest))
+    );
   }
 
   // The part of the map the overview covers, so fitted markers land next to

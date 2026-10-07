@@ -664,6 +664,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._replaceTarget,
       searchString,
       this._configEntryLookup,
+      this.hass.entities,
       this._selectedSection
     );
   };
@@ -679,6 +680,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       replaceTarget: TargetItem | undefined,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
+      _entities: HomeAssistant["entities"],
       filterType?: TargetTypeFloorless
     ) => {
       const replacingEntityId =

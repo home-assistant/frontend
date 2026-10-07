@@ -9,9 +9,9 @@ export interface LabPreviewFeature {
   domain: string;
   enabled: boolean;
   is_built_in: boolean;
-  feedback_url?: string;
-  learn_more_url?: string;
-  report_issue_url?: string;
+  feedback_url: string | null;
+  learn_more_url: string | null;
+  report_issue_url: string | null;
 }
 
 export interface LabPreviewFeaturesResponse {

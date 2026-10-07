@@ -38,7 +38,10 @@ export class HaTargetSelector extends LitElement {
 
   @state() private _createDomains: string[] | undefined;
 
-  private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
+  private _deviceIntegrationLookup = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceIntegrationLookup(Object.values(entities))
+  );
 
   private _hasIntegration(selector: TargetSelector) {
     return (
@@ -108,11 +111,8 @@ export class HaTargetSelector extends LitElement {
       return true;
     }
 
-    const deviceIntegrations = this._entitySources
-      ? this._deviceIntegrationLookup(
-          this._entitySources,
-          Object.values(this.hass.entities)
-        )
+    const deviceIntegrations = this._hasIntegration(this.selector)
+      ? this._deviceIntegrationLookup(this.hass.entities)
       : undefined;
 
     return ensureArray(this.selector.target.device).some((filter) =>

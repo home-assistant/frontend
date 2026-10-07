@@ -29,7 +29,6 @@ import {
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import type { StatisticsMetaData } from "../../src/data/recorder";
-import type { HomeAssistant } from "../../src/types";
 import { createMockEntityState, createMockHass } from "../fixtures/hass";
 
 const checkConsumptionResult = (
@@ -84,120 +83,140 @@ describe("Energy Short Format Test", () => {
     first_weekday: FirstWeekday.language,
   };
 
-  const hass = { locale: defaultLocale } as HomeAssistant;
   it("No Unit conversion", () => {
-    assert.strictEqual(formatConsumptionShort(hass, 0, "Wh"), "0 Wh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "kWh"), "0 Wh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "kWh", "kWh"), "0 kWh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "GWh"), "0 Wh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "GWh", "GWh"), "0 GWh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "gal"), "0 gal");
+    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "Wh"), "0 Wh");
+    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "kWh"), "0 Wh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "kWh", "kWh"),
+      "0 kWh"
+    );
+    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "GWh"), "0 Wh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "GWh", "GWh"),
+      "0 GWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "gal"),
+      "0 gal"
+    );
 
     assert.strictEqual(
-      formatConsumptionShort(hass, 10000.12345, "gal"),
+      formatConsumptionShort(defaultLocale, 10000.12345, "gal"),
       "10,000 gal"
     );
 
-    assert.strictEqual(formatConsumptionShort(hass, 1.2345, "kWh"), "1.23 kWh");
     assert.strictEqual(
-      formatConsumptionShort(hass, 10.12345, "kWh"),
+      formatConsumptionShort(defaultLocale, 1.2345, "kWh"),
+      "1.23 kWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 10.12345, "kWh"),
       "10.1 kWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 500.12345, "kWh"),
+      formatConsumptionShort(defaultLocale, 500.12345, "kWh"),
       "500 kWh"
     );
 
-    assert.strictEqual(formatConsumptionShort(hass, 10.01, "kWh"), "10 kWh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 10.01, "kWh"),
+      "10 kWh"
+    );
   });
   it("Upward Unit conversion", () => {
     assert.strictEqual(
-      formatConsumptionShort(hass, 1512.34567, "kWh"),
+      formatConsumptionShort(defaultLocale, 1512.34567, "kWh"),
       "1.51 MWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 15123.4567, "kWh"),
+      formatConsumptionShort(defaultLocale, 15123.4567, "kWh"),
       "15.1 MWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 151234.5678, "kWh"),
+      formatConsumptionShort(defaultLocale, 151234.5678, "kWh"),
       "151 MWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 1512345.6789, "kWh"),
+      formatConsumptionShort(defaultLocale, 1512345.6789, "kWh"),
       "1.51 GWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 15123456789.9, "kWh"),
+      formatConsumptionShort(defaultLocale, 15123456789.9, "kWh"),
       "15.1 TWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 15123456789000.9, "kWh"),
+      formatConsumptionShort(defaultLocale, 15123456789000.9, "kWh"),
       "15,123 TWh"
     );
   });
   it("Downward Unit conversion", () => {
-    assert.strictEqual(formatConsumptionShort(hass, 0.00012, "kWh"), "0.12 Wh");
-    assert.strictEqual(formatConsumptionShort(hass, 0.12345, "kWh"), "123 Wh");
     assert.strictEqual(
-      formatConsumptionShort(hass, 0.00001234, "TWh"),
+      formatConsumptionShort(defaultLocale, 0.00012, "kWh"),
+      "0.12 Wh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0.12345, "kWh"),
+      "123 Wh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0.00001234, "TWh"),
       "12.3 MWh"
     );
   });
   it("Negativ Consumption", () => {
     assert.strictEqual(
-      formatConsumptionShort(hass, -500.123, "kWh"),
+      formatConsumptionShort(defaultLocale, -500.123, "kWh"),
       "-500 kWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, -1234.56, "kWh"),
+      formatConsumptionShort(defaultLocale, -1234.56, "kWh"),
       "-1.23 MWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, -0.001234, "kWh"),
+      formatConsumptionShort(defaultLocale, -0.001234, "kWh"),
       "-1.23 Wh"
     );
   });
   it("Conversion with target unit", () => {
     assert.strictEqual(
-      formatConsumptionShort(hass, 0.00012, "kWh", "Wh"),
+      formatConsumptionShort(defaultLocale, 0.00012, "kWh", "Wh"),
       "0.12 Wh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 0.00012, "kWh", "kWh"),
+      formatConsumptionShort(defaultLocale, 0.00012, "kWh", "kWh"),
       "0 kWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 0.01012, "kWh", "kWh"),
+      formatConsumptionShort(defaultLocale, 0.01012, "kWh", "kWh"),
       "0.01 kWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 0.00012, "kWh", "MWh"),
+      formatConsumptionShort(defaultLocale, 0.00012, "kWh", "MWh"),
       "0 MWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 10.12345, "kWh", "kWh"),
+      formatConsumptionShort(defaultLocale, 10.12345, "kWh", "kWh"),
       "10.1 kWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 10.12345, "kWh", "ZZZZZWh"),
+      formatConsumptionShort(defaultLocale, 10.12345, "kWh", "ZZZZZWh"),
       "10.1 kWh"
     );
     assert.strictEqual(
-      formatConsumptionShort(hass, 151234.5678, "kWh", "MWh"),
+      formatConsumptionShort(defaultLocale, 151234.5678, "kWh", "MWh"),
       "151 MWh"
     );
   });
   it("Power Short Format", () => {
-    assert.strictEqual(formatPowerShort(hass, 0), "0 W");
-    assert.strictEqual(formatPowerShort(hass, 10), "10 W");
-    assert.strictEqual(formatPowerShort(hass, 12.2), "12 W");
-    assert.strictEqual(formatPowerShort(hass, 999), "999 W");
-    assert.strictEqual(formatPowerShort(hass, 1000), "1 kW");
-    assert.strictEqual(formatPowerShort(hass, 1234), "1.234 kW");
-    assert.strictEqual(formatPowerShort(hass, 10_500), "10.5 kW");
-    assert.strictEqual(formatPowerShort(hass, 1_500_000), "1.5 MW");
-    assert.strictEqual(formatPowerShort(hass, -1500), "-1.5 kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 0), "0 W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 10), "10 W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 12.2), "12 W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 999), "999 W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1000), "1 kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1234), "1.234 kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 10_500), "10.5 kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1_500_000), "1.5 MW");
+    assert.strictEqual(formatPowerShort(defaultLocale, -1500), "-1.5 kW");
   });
 });
 
@@ -1137,10 +1156,19 @@ describe("getEnergyDataCollection live day", () => {
       callWS,
     });
     if (preset) {
-      localStorage.setItem(getEnergyDefaultPeriodStorageKey(hass, key), preset);
+      localStorage.setItem(
+        getEnergyDefaultPeriodStorageKey(hass.panelUrl, key),
+        preset
+      );
     }
     return {
-      collection: getEnergyDataCollection(hass, {
+      collection: getEnergyDataCollection(hass.connection, {
+        callWS: hass.callWS,
+        entities: hass.entities,
+        states: hass.states,
+        locale: hass.locale,
+        config: hass.config,
+        panelUrl: hass.panelUrl,
         key,
         prefs: EMPTY_PREFERENCES,
         midnightRollover,
@@ -1336,7 +1364,13 @@ describe("getEnergyDataCollection statistics range", () => {
       },
       callWS,
     });
-    const collection = getEnergyDataCollection(hass, {
+    const collection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
       key,
       prefs: {
         ...EMPTY_PREFERENCES,
@@ -1384,34 +1418,27 @@ describe("getEnergyDataCollection statistics range", () => {
 describe("getEnergyDefaultPeriodStorageKey", () => {
   it("uses an explicit collection key", () => {
     assert.equal(
-      getEnergyDefaultPeriodStorageKey(
-        { panelUrl: "energy" } as HomeAssistant,
-        "energy_dashboard"
-      ),
+      getEnergyDefaultPeriodStorageKey("energy", "energy_dashboard"),
       "energy-default-period-_energy_dashboard"
     );
   });
 
   it("scopes to the panel when no collection key is given", () => {
     assert.equal(
-      getEnergyDefaultPeriodStorageKey({
-        panelUrl: "my-dashboard",
-      } as HomeAssistant),
+      getEnergyDefaultPeriodStorageKey("my-dashboard"),
       "energy-default-period-_energy_my-dashboard"
     );
   });
 
   it("falls back to the global key without a panel url", () => {
     assert.equal(
-      getEnergyDefaultPeriodStorageKey({} as HomeAssistant),
+      getEnergyDefaultPeriodStorageKey(""),
       "energy-default-period-_energy"
     );
   });
 
   it("rejects a collection key with the wrong prefix", () => {
-    assert.throws(() =>
-      getEnergyDefaultPeriodStorageKey({} as HomeAssistant, "dashboard")
-    );
+    assert.throws(() => getEnergyDefaultPeriodStorageKey("", "dashboard"));
   });
 });
 
@@ -1456,17 +1483,23 @@ describe("computeEnergyLabel", () => {
       { name: "Washer" }
     );
 
-    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer Energy");
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Washer Energy"
+    );
   });
 
   it("uses the device name alone when the entity has no name of its own", () => {
     const hass = createHass(
       "Washer",
-      { name: "Washer", device_id: "device1" },
+      { name: "Washer", device_id: "device1", next_name_part: "device" },
       { name: "Washer" }
     );
 
-    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer");
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Washer"
+    );
   });
 
   it("distinguishes entities sharing a name by their device", () => {
@@ -1476,7 +1509,10 @@ describe("computeEnergyLabel", () => {
       { name: "Dishwasher" }
     );
 
-    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Dishwasher Energy");
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Dishwasher Energy"
+    );
   });
 
   it("keeps a name set by the user", () => {
@@ -1487,7 +1523,13 @@ describe("computeEnergyLabel", () => {
     );
 
     assert.equal(
-      computeEnergyLabel(hass, ENTITY_ID, undefined, "Laundry"),
+      computeEnergyLabel(
+        hass.states,
+        hass.formatEntityName,
+        ENTITY_ID,
+        undefined,
+        "Laundry"
+      ),
       "Laundry"
     );
   });
@@ -1500,7 +1542,13 @@ describe("computeEnergyLabel", () => {
     );
 
     assert.equal(
-      computeEnergyLabel(hass, ENTITY_ID, undefined, ""),
+      computeEnergyLabel(
+        hass.states,
+        hass.formatEntityName,
+        ENTITY_ID,
+        undefined,
+        ""
+      ),
       "Washer Energy"
     );
   });
@@ -1508,14 +1556,17 @@ describe("computeEnergyLabel", () => {
   it("falls back to the friendly name for an entity outside the registry", () => {
     const hass = createHass("Washer Energy");
 
-    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer Energy");
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Washer Energy"
+    );
   });
 
   it("uses the statistic metadata name when there is no entity", () => {
     const hass = createMockHass();
 
     assert.equal(
-      computeEnergyLabel(hass, "external:solar", {
+      computeEnergyLabel(hass.states, hass.formatEntityName, "external:solar", {
         statistic_id: "external:solar",
         name: "Solar production",
       } as StatisticsMetaData),
@@ -1526,7 +1577,10 @@ describe("computeEnergyLabel", () => {
   it("falls back to the statistic id when there is nothing to name it with", () => {
     const hass = createMockHass();
 
-    assert.equal(computeEnergyLabel(hass, "external:solar"), "external:solar");
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, "external:solar"),
+      "external:solar"
+    );
   });
 });
 
@@ -1549,15 +1603,24 @@ describe("computeEnergyDeviceLabels", () => {
   });
 
   it("keys labels by the consumption statistic", () => {
-    assert.deepEqual(computeEnergyDeviceLabels(hass, DEVICES), {
-      "sensor.washer_energy": "Washer Energy",
-      "sensor.heater_energy": "Heater",
-    });
+    assert.deepEqual(
+      computeEnergyDeviceLabels(hass.states, hass.formatEntityName, DEVICES),
+      {
+        "sensor.washer_energy": "Washer Energy",
+        "sensor.heater_energy": "Heater",
+      }
+    );
   });
 
   it("keys labels by the rate statistic, skipping devices without one", () => {
     assert.deepEqual(
-      computeEnergyDeviceLabels(hass, DEVICES, undefined, "stat_rate"),
+      computeEnergyDeviceLabels(
+        hass.states,
+        hass.formatEntityName,
+        DEVICES,
+        undefined,
+        "stat_rate"
+      ),
       { "sensor.washer_power": "Washer Power" }
     );
   });

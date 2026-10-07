@@ -59,7 +59,8 @@ export class DialogStatisticsFix extends LitElement {
             `ui.panel.config.tools.tabs.statistics.fix_issue.${issue.type}.info_text_1`,
             {
               name: getStatisticLabel(
-                this.hass,
+                this.hass.states,
+                this.hass.formatEntityName,
                 issue.data.statistic_id,
                 undefined
               ),

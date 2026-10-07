@@ -217,10 +217,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
     if (!this._info.warning_accepted) {
       return html`
-        <ha-marketplace-warning
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-marketplace-warning>
+        <ha-marketplace-warning .narrow=${this.narrow}></ha-marketplace-warning>
       `;
     }
 

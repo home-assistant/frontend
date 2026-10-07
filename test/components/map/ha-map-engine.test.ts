@@ -75,6 +75,8 @@ const fakeEngine = vi.hoisted(() => {
 
     setView = vi.fn();
 
+    getView = () => undefined;
+
     setZoom = vi.fn();
 
     fitBounds = vi.fn();
@@ -89,9 +91,9 @@ const fakeEngine = vi.hoisted(() => {
       remove: vi.fn(),
     }));
 
-    addCircle = vi.fn(() => ({ remove: vi.fn() }));
+    addCircle = vi.fn(() => ({ update: vi.fn(), remove: vi.fn() }));
 
-    addPath = vi.fn(() => ({ remove: vi.fn() }));
+    addPath = vi.fn(() => ({ update: vi.fn(), remove: vi.fn() }));
 
     setClustering = vi.fn();
 

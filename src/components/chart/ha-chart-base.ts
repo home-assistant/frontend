@@ -30,6 +30,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
@@ -42,7 +43,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
-import { uiContext } from "../../data/context";
+import {
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type {
   ECOption,
@@ -51,7 +56,11 @@ import type {
   HaECSeriesItem,
   HaTooltipOption,
 } from "../../resources/echarts/echarts";
-import type { HomeAssistant, HomeAssistantUI } from "../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
@@ -129,8 +138,6 @@ export type CustomLegendOption = ECOption["legend"] & {
 export class HaChartBase extends MobileAwareMixin(LitElement) {
   public chart?: EChartsType;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: HaECSeries = [];
 
   @property({ attribute: false }) public options?: HaECOption;
@@ -161,10 +168,23 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   })
   private _themes!: Themes;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
   @property({ attribute: "click-label-for-more-info", type: Boolean })
   public clickLabelForMoreInfo = false;
 
   @state() private _isZoomed = false;
+
+  // Separate from _isZoomed, whose touch handling reruns graph layouts
+  @state() private _isGraphRoamed = false;
 
   @state() private _zoomRatio = 1;
 
@@ -550,7 +570,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             )}
             aria-label=${ifDefined(
               sonifiable
-                ? this.hass.localize("ui.components.history_charts.chart")
+                ? this._i18n.localize("ui.components.history_charts.chart")
                 : undefined
             )}
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
@@ -568,12 +588,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             class="chart-controls ${classMap({ small: this.smallControls })}"
           >
             ${
-              this._isZoomed && !this.hideResetButton
+              (this._isZoomed || this._isGraphRoamed) && !this.hideResetButton
                 ? html`<ha-icon-button
                     class="zoom-reset"
                     .path=${mdiRestart}
                     @click=${this._handleZoomReset}
-                    title=${this.hass.localize(
+                    title=${this._i18n.localize(
                       "ui.components.history_charts.zoom_reset"
                     )}
                   ></ha-icon-button>`
@@ -673,7 +693,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               class="legend-toggle"
               data-id=${id}
               aria-pressed=${!this._hiddenDatasets.has(id)}
-              .title=${this.hass.localize(
+              .title=${this._i18n.localize(
                 "ui.components.history_charts.toggle_visibility"
               )}
               @click=${this._toggleDataset}
@@ -709,10 +729,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                   filled
                   label=${
                     this.expandLegend
-                      ? this.hass.localize(
+                      ? this._i18n.localize(
                           "ui.components.history_charts.collapse_legend"
                         )
-                      : `${this.hass.localize(
+                      : `${this._i18n.localize(
                           "ui.components.history_charts.expand_legend"
                         )} (${items.length - overflowLimit})`
                   }
@@ -754,9 +774,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     try {
       const sonification = await sonifyChart(this.chart, {
         cc: this._sonificationOutput!,
-        localize: this.hass.localize,
-        locale: this.hass.locale,
-        config: this.hass.config,
+        localize: this._i18n.localize,
+        locale: this._i18n.locale,
+        config: this._hassConfig,
         formatLabel: this.sonificationLabelFormatter,
         onError: () => {
           // Charts the extension cannot describe stay silent rather than
@@ -798,8 +818,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _formatTimeLabel = (value: number | Date) =>
     formatTimeLabel(
       value,
-      this.hass.locale,
-      this.hass.config,
+      this._i18n.locale,
+      this._hassConfig,
       this._minutesDifference * this._zoomRatio
     );
 
@@ -838,6 +858,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this._zoomRatio = 1;
         fireEvent(this, "chart-sankeyroam", { zoom: 1 });
       }
+      this._isGraphRoamed = false;
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
@@ -870,6 +891,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
+      });
+
+      this.chart.on("graphroam", () => {
+        this._isGraphRoamed = this._getGraphRoams().some(
+          ({ zoom, x, y }) =>
+            Math.abs(zoom - 1) > 1e-6 || Math.abs(x) > 0.5 || Math.abs(y) > 0.5
+        );
       });
 
       if (!this.options?.dataZoom) {
@@ -1469,7 +1497,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   private _handleZoomReset() {
-    this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    // A dataZoom action reruns the layout of every series, graphs included
+    if (this._isZoomed) {
+      this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    }
     // Reset sankey roam zoom
     const option = this.chart?.getOption();
     const sankeySeries = (option?.series as any[])?.filter(
@@ -1486,6 +1517,35 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this._isZoomed = false;
       fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
+    this._getGraphRoams().forEach(({ series, zoom, x, y }) => {
+      this.chart!.dispatchAction({
+        type: "graphRoam",
+        seriesId: series.id,
+        dx: -x,
+        dy: -y,
+        zoom: 1 / zoom,
+        originX: 0,
+        originY: 0,
+      });
+      // The action stores an absolute center, which a later re-fit would keep
+      series.option.center = null;
+      series.option.zoom = 1;
+    });
+  }
+
+  private _getGraphRoams(): {
+    series: any;
+    zoom: number;
+    x: number;
+    y: number;
+  }[] {
+    const graphSeries: any[] =
+      // @ts-ignore private method but no other way to get the roam transform
+      this.chart?.getModel().getSeriesByType("graph") ?? [];
+    return graphSeries.flatMap((series) => {
+      const roam = series.coordinateSystem?.getRoamTransform?.();
+      return roam ? [{ series, zoom: roam[0], x: roam[4], y: roam[5] }] : [];
+    });
   }
 
   private _updateSankeyRoam() {

@@ -1078,12 +1078,7 @@ ${rejected
         return;
       }
       const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
-      showScriptEditor({
-        ...config,
-        alias: `${config?.alias} (${this.hass.localize(
-          "ui.panel.config.script.picker.duplicate"
-        )})`,
-      });
+      showScriptEditor({ ...config, alias: undefined });
     } catch (err: any) {
       if (err.status_code === 404) {
         const response = await getScriptStateConfig(

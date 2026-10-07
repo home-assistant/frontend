@@ -27,7 +27,7 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
 import "../components/progress/ha-progress-bar";
 import type { AuthUrlSearchParams } from "../data/auth";
-import { hassUrl } from "../data/auth";
+import { hassUrl, redirectWithAuthCode } from "../data/auth";
 import { saveFrontendSystemData } from "../data/frontend";
 import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
@@ -313,7 +313,23 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           saveTokens,
           loadTokens: () => Promise.resolve(loadTokens()),
         });
-        history.replaceState(null, "", location.pathname);
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.has("auth_callback")) {
+          // HAWS appends its callback after the original authorization parameters.
+          const originalParams = new URLSearchParams();
+          for (const [key, value] of searchParams) {
+            if (key === "auth_callback") {
+              break;
+            }
+            originalParams.append(key, value);
+          }
+          const search = originalParams.toString();
+          history.replaceState(
+            null,
+            "",
+            `${location.pathname}${search ? `?${search}` : ""}`
+          );
+        }
         await this._connectHass(auth);
         const currentStep = steps.findIndex((stp) => !stp.done);
         const singelStepProgress = 100 / steps.length;
@@ -442,17 +458,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       // Revoke current auth token.
       await this.hass!.auth.revoke();
 
-      // Build up the url to redirect to
-      let redirectUrl = authParams.redirect_uri!;
-      redirectUrl +=
-        (redirectUrl.includes("?") ? "&" : "?") +
-        `code=${encodeURIComponent(result.auth_code)}&storeToken=true`;
-
-      if (authParams.state) {
-        redirectUrl += `&state=${encodeURIComponent(authParams.state)}`;
-      }
-
-      document.location.assign(redirectUrl);
+      redirectWithAuthCode(
+        authParams.redirect_uri!,
+        result.auth_code,
+        authParams.state,
+        true
+      );
     }
   }
 
