@@ -32,7 +32,8 @@ import type {
 } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-resizable-bottom-sheet";
+import "../../../../components/ha-snap-bottom-sheet";
+import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-relative-time";
@@ -75,8 +76,16 @@ declare global {
   interface HASSDomEvents {
     "map-overview-select": { entityId?: string };
     "map-overview-tab": { tab: OverviewTab };
-    /** Rendered size, so the host keeps controls and focused markers clear of it */
-    "map-overview-resize": { width: number; height: number };
+    /**
+     * Rendered size, so the host keeps controls and focused markers clear of
+     * it. The phone sheet also sends the height markers are framed for, the
+     * same at every position so moving the sheet never moves the map.
+     */
+    "map-overview-resize": {
+      width: number;
+      height: number;
+      fitHeight?: number;
+    };
   }
 }
 
@@ -139,6 +148,8 @@ export class HuiMapOverview extends LitElement {
   @state() private _sheetMinHeight?: number;
 
   @query(".panel.sheet") private _sheetPanel?: HTMLElement;
+
+  @query("ha-snap-bottom-sheet") private _sheet?: HaSnapBottomSheet;
 
   @query(".peek") private _peek?: HTMLElement;
 
@@ -203,6 +214,9 @@ export class HuiMapOverview extends LitElement {
     }
     if (changedProps.has("selected")) {
       this._moveFocus(changedProps.get("selected"));
+      if (this.selected) {
+        this._sheet?.snapTo("half");
+      }
     }
   }
 
@@ -247,20 +261,23 @@ export class HuiMapOverview extends LitElement {
         return;
       }
       const style = getComputedStyle(panel);
+      // The sheet adds the bottom safe area below this strip
       this._sheetMinHeight =
         parseFloat(style.paddingTop) +
         peek.offsetHeight +
-        parseFloat(style.paddingBottom);
+        parseFloat(style.getPropertyValue("--ha-space-3"));
     });
     this._peekObserver.observe(peek);
   }
 
   private _handleSheetResized(
-    ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
+    ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]> &
+      HASSDomCurrentTargetEvent<HaSnapBottomSheet>
   ) {
     fireEvent(this, "map-overview-resize", {
       width: window.innerWidth,
       height: ev.detail.height,
+      fitHeight: ev.currentTarget.halfHeight,
     });
   }
 
@@ -472,15 +489,15 @@ export class HuiMapOverview extends LitElement {
     return html`
       ${
         this._phone
-          ? html`<ha-resizable-bottom-sheet
-              persistent
-              open-at-content-height
-              open-max-viewport-height="45"
+          ? html`<ha-snap-bottom-sheet
               .minHeight=${this._sheetMinHeight}
+              .label=${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.label"
+              )}
               @bottom-sheet-resized=${this._handleSheetResized}
             >
               <div class="panel sheet">${content}</div>
-            </ha-resizable-bottom-sheet>`
+            </ha-snap-bottom-sheet>`
           : html`<div class="panel">${content}</div>`
       }
     `;
@@ -885,7 +902,7 @@ export class HuiMapOverview extends LitElement {
       box-shadow: var(--ha-box-shadow-m);
     }
 
-    ha-resizable-bottom-sheet {
+    ha-snap-bottom-sheet {
       pointer-events: auto;
       /* The tabs sit right under the handle */
       --ha-bottom-sheet-handle-padding: var(--ha-space-2);
@@ -896,7 +913,7 @@ export class HuiMapOverview extends LitElement {
     .panel.sheet {
       flex: 1;
       min-height: 0;
-      border-radius: 0;
+      background: none;
       box-shadow: none;
       --sheet-bottom-space: max(
         var(--ha-space-3),
