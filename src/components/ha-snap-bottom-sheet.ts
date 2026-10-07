@@ -8,7 +8,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { isSwipeLocked } from "../common/dom/is-swipe-locked";
 import { popoverSupported } from "../common/feature-detect/support-popover";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
-import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
 
 export type BottomSheetPosition = "collapsed" | "half" | "full";
 
@@ -123,7 +122,10 @@ export class HaSnapBottomSheet extends LitElement {
         popover=${popover}
         role="region"
         aria-label=${ifDefined(this.label)}
-        style=${styleMap({ height: this._height() })}
+        style=${styleMap({
+          height: this._height(),
+          "min-height": this._collapsedHeight(),
+        })}
         @touchstart=${this._handleTouchStart}
       >
         <div class="handle-wrapper">
@@ -189,14 +191,17 @@ export class HaSnapBottomSheet extends LitElement {
     window.removeEventListener("resize", this._handleViewportResize);
   }
 
+  private _collapsedHeight(): string | undefined {
+    return this.minHeight === undefined
+      ? undefined
+      : `calc(${this.minHeight}px + var(--safe-area-inset-bottom, 0px))`;
+  }
+
   private _height(): string | undefined {
     if (this._dragHeight !== undefined) {
       return `${this._dragHeight}px`;
     }
-    if (this._position === "collapsed" && this.minHeight !== undefined) {
-      return `calc(${this.minHeight}px + var(--safe-area-inset-bottom, 0px))`;
-    }
-    return undefined;
+    return this._position === "collapsed" ? this._collapsedHeight() : undefined;
   }
 
   private _showPopovers() {
@@ -364,7 +369,10 @@ export class HaSnapBottomSheet extends LitElement {
   private _stops(): Stop[] {
     const stops: Stop[] = [];
     if (this.minHeight !== undefined) {
-      stops.push({ position: "collapsed", height: this.minHeight });
+      stops.push({
+        position: "collapsed",
+        height: parseFloat(getComputedStyle(this._sheet).minHeight),
+      });
     }
     stops.push(
       { position: "half", height: this.halfHeight },
@@ -489,8 +497,8 @@ export class HaSnapBottomSheet extends LitElement {
       );
       transform: translateY(100%);
       transition:
-        transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease,
-        height ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
+        transform var(--ha-animation-duration-normal) ease,
+        height var(--ha-animation-duration-normal) ease;
       margin-left: var(--sheet-inset-left);
       margin-right: var(--sheet-inset-right);
       outline: none;
@@ -525,7 +533,7 @@ export class HaSnapBottomSheet extends LitElement {
         var(--mdc-dialog-scrim-color, transparent)
       );
       pointer-events: none;
-      transition: opacity ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
+      transition: opacity var(--ha-animation-duration-normal) ease;
     }
 
     .backdrop.active {
@@ -542,7 +550,7 @@ export class HaSnapBottomSheet extends LitElement {
     }
 
     .sheet.dragging {
-      transition: transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
+      transition: transform var(--ha-animation-duration-normal) ease;
     }
 
     .sheet.show {
