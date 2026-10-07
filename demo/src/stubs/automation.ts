@@ -76,6 +76,8 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
           const { [existing.entity_id]: _entity, ...entities } =
             currentHass.entities;
           currentHass.updateHass({ states, entities });
+          // Otherwise a service call to it would add its state again
+          delete currentHass.mockEntities[existing.entity_id];
           removeEntityRegistryEntry(currentHass, existing.entity_id);
         }
         return { result: "ok" };
