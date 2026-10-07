@@ -36,12 +36,22 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
     }
   }
 
+  // Like core, a child device without its own area is in the area of its
+  // parent device
+  const deviceArea = (deviceId: string) => {
+    const device = hass.devices[deviceId];
+    return (
+      device?.area_id ??
+      (device?.parent_device_id
+        ? hass.devices[device.parent_device_id]?.area_id
+        : undefined)
+    );
+  };
+
   const deviceIds = new Set(ensureArray(target.device_id ?? []));
   for (const device of Object.values(hass.devices)) {
-    if (
-      (device.area_id && areaIds.has(device.area_id)) ||
-      hasLabel(device.labels)
-    ) {
+    const areaId = deviceArea(device.id);
+    if ((areaId && areaIds.has(areaId)) || hasLabel(device.labels)) {
       deviceIds.add(device.id);
     }
   }
@@ -51,7 +61,7 @@ const expandTarget = (hass: MockHomeAssistant, target: HassServiceTarget) => {
     // An entity is in the area of its device, unless it has its own area
     const areaId =
       entity.area_id ??
-      (entity.device_id ? hass.devices[entity.device_id]?.area_id : undefined);
+      (entity.device_id ? deviceArea(entity.device_id) : undefined);
     if (
       (entity.device_id && deviceIds.has(entity.device_id)) ||
       (areaId && areaIds.has(areaId)) ||
