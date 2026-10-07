@@ -35,6 +35,7 @@ export class HaDropdownItem extends DropdownItem {
       css`
         :host {
           min-height: var(--ha-space-10);
+          overflow-wrap: break-word;
         }
 
         #check {
