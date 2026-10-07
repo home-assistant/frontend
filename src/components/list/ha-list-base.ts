@@ -201,6 +201,9 @@ export class HaListBase extends LitElement {
     ) {
       this.activeItemIndex = this.firstFocusableIndex;
     }
+    if (!this._activeItem) {
+      this._activeItem = this.items[this.activeItemIndex];
+    }
     this.applyActive(false);
   }
 
@@ -229,6 +232,15 @@ export class HaListBase extends LitElement {
     }
     this.items = this.items.filter((it) => it !== item);
     this.updateListItems();
+    if (item === this._activeItem) {
+      // A moved row registers again in the same task, a removed row does not
+      queueMicrotask(() => {
+        if (this._activeItem === item && !this.items.includes(item)) {
+          this._activeItem = undefined;
+          this.updateListItems();
+        }
+      });
+    }
   };
 
   protected recomputeFocusableIndexes() {
