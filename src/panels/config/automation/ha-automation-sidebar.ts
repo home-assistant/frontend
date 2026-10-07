@@ -2,10 +2,11 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
 import { consume } from "../../../common/decorators/consume";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/ha-resizable-bottom-sheet";
-import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
+import "../../../components/ha-snap-bottom-sheet";
+import type { HaSnapBottomSheet } from "../../../components/ha-snap-bottom-sheet";
 import {
   isCondition,
   isScriptField,
@@ -46,12 +47,14 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _resizing = false;
 
+  @state() private _sheetMinHeight?: number;
+
   @state()
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: DomainManifestLookup;
 
-  @query("ha-resizable-bottom-sheet")
-  private _bottomSheetElement?: HaResizableBottomSheet;
+  @query("ha-snap-bottom-sheet")
+  private _bottomSheetElement?: HaSnapBottomSheet;
 
   @query(".handle")
   private _handleElement?: HTMLDivElement;
@@ -62,6 +65,12 @@ export default class HaAutomationSidebar extends LitElement {
 
   protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (
+      changedProperties.has("sidebarKey") &&
+      this._bottomSheetElement?.position === "collapsed"
+    ) {
+      this._bottomSheetElement.snapTo("half");
+    }
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
       if (!this.config || this.narrow) {
         this._tinykeysUnsub?.();
@@ -185,9 +194,16 @@ export default class HaAutomationSidebar extends LitElement {
 
     if (this.narrow) {
       return html`
-        <ha-resizable-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
+        <ha-snap-bottom-sheet
+          .minHeight=${this._sheetMinHeight}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.sidebar_label"
+          )}
+          @bottom-sheet-closed=${this._closeSidebar}
+          @sidebar-header-resized=${this._handleHeaderResized}
+        >
           ${this._renderContent()}
-        </ha-resizable-bottom-sheet>
+        </ha-snap-bottom-sheet>
       `;
     }
 
@@ -251,6 +267,12 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _closeSidebar() {
     this.config?.close(true);
+  }
+
+  private _handleHeaderResized(
+    ev: HASSDomEvent<HASSDomEvents["sidebar-header-resized"]>
+  ) {
+    this._sheetMinHeight = ev.detail.height;
   }
 
   private _toggleYamlMode = () => {
@@ -389,9 +411,6 @@ export default class HaAutomationSidebar extends LitElement {
         var(--ha-border-radius-2xl)
       );
       border-radius: var(--ha-card-border-radius);
-      --ha-bottom-sheet-border-width: 2px;
-      --ha-bottom-sheet-border-style: solid;
-      --ha-bottom-sheet-border-color: var(--primary-color);
       margin-top: var(--safe-area-inset-top);
 
       --ha-bottom-sheet-surface-background: var(--card-background-color);

@@ -8,8 +8,10 @@ import {
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { replaceCurrentUrl } from "../../../common/navigate";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -68,6 +70,8 @@ export const ManualEditorMixin = <TConfig>(
 
     @state() protected sidebarKey = 0;
 
+    @state() private _bottomSheetHeight?: number;
+
     @storage({
       key: "automation-sidebar-width",
       state: false,
@@ -116,12 +120,18 @@ export const ManualEditorMixin = <TConfig>(
             "has-sidebar": this.sidebarConfig && !this.narrow,
           })}
         >
-          <div class="content-wrapper">
-            <div
-              class="content ${
-                this.sidebarConfig && this.narrow ? "has-bottom-sheet" : ""
-              }"
-            >
+          <div
+            class="content-wrapper ${
+              this.sidebarConfig && this.narrow ? "has-bottom-sheet" : ""
+            }"
+            style=${styleMap({
+              "--automation-bottom-sheet-settled-height":
+                this._bottomSheetHeight === undefined
+                  ? undefined
+                  : `${this._bottomSheetHeight}px`,
+            })}
+          >
+            <div class="content">
               <slot name="alerts"></slot>
               ${this.renderContent()}
             </div>
@@ -152,6 +162,7 @@ export const ManualEditorMixin = <TConfig>(
               @sidebar-resized=${this.resizeSidebar}
               @sidebar-resizing-stopped=${this.stopResizeSidebar}
               @sidebar-reset-size=${this.resetSidebarWidth}
+              @bottom-sheet-resized=${this._handleBottomSheetResized}
             ></ha-automation-sidebar>
           </div>
         </div>
@@ -226,8 +237,15 @@ export const ManualEditorMixin = <TConfig>(
       }
     }
 
+    private _handleBottomSheetResized(
+      ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
+    ) {
+      this._bottomSheetHeight = ev.detail.height;
+    }
+
     protected handleCloseSidebar() {
       this.sidebarConfig = undefined;
+      this._bottomSheetHeight = undefined;
       this.dispatchEvent(
         new CustomEvent("sidebar-config-changed", {
           detail: { value: undefined },

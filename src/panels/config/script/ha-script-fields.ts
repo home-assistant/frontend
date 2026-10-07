@@ -75,15 +75,6 @@ export default class HaScriptFields extends LitElement {
     row.updateComplete.then(() => {
       row.openSidebar();
       row.focus();
-
-      if (this.narrow) {
-        window.setTimeout(() => {
-          row.scrollIntoView({
-            block: "start",
-            behavior: "smooth",
-          });
-        }, 180); // duration of transition of added padding for bottom sheet
-      }
     });
   }
 
@@ -162,6 +153,7 @@ export default class HaScriptFields extends LitElement {
       display: block;
       margin-bottom: 16px;
       scroll-margin-top: 48px;
+      scroll-margin-bottom: var(--automation-bottom-sheet-height, 0px);
     }
     ha-svg-icon {
       height: 20px;
