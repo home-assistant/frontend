@@ -255,7 +255,7 @@ describe("getPowerLegendValues", () => {
       [RATE_IDS.solar]: power(RATE_IDS.solar, "-800"),
       [RATE_IDS.battery]: power(RATE_IDS.battery, "200"),
     };
-    expect(getPowerLegendValues(energyData, states, format, now)).toEqual({
+    expect(getPowerLegendValues(energyData, states, format)).toEqual({
       grid: "1500 W",
       solar: "-800 W",
       battery: "200 W",
@@ -264,15 +264,6 @@ describe("getPowerLegendValues", () => {
   });
 
   it("returns nothing when no power reading is available", () => {
-    expect(getPowerLegendValues(energyData, {}, format, now)).toEqual({});
-  });
-
-  it("returns nothing when not showing today", () => {
-    const states: HassEntities = {
-      [RATE_IDS.grid]: power(RATE_IDS.grid, "1500"),
-    };
-    expect(
-      getPowerLegendValues(energyData, states, format, now + 10 * dayMs)
-    ).toEqual({});
+    expect(getPowerLegendValues(energyData, {}, format)).toEqual({});
   });
 });

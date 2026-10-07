@@ -76,15 +76,8 @@ function processData(
 export function getPowerLegendValues(
   energyData: EnergyData,
   states: HassEntities,
-  formatPower: (powerWatts: number) => string,
-  now: number
+  formatPower: (powerWatts: number) => string
 ): Record<string, string> {
-  if (
-    now < energyData.start.getTime() ||
-    (energyData.end && now > energyData.end.getTime())
-  ) {
-    return {};
-  }
   const watts: Record<string, number> = {};
   for (const source of energyData.prefs.energy_sources) {
     if (
@@ -129,8 +122,7 @@ export function generatePowerSourcesGraphData(
   const legendValues = getPowerLegendValues(
     energyData,
     states,
-    params.formatPower,
-    params.now
+    params.formatPower
   );
 
   const datasets: LineSeriesOption[] = [];

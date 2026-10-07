@@ -148,8 +148,7 @@ export class HuiPowerSourcesGraphCard
     const values = getPowerLegendValues(
       this._energyData,
       this._states,
-      this._formatPower,
-      Date.now()
+      this._formatPower
     );
     if (this._legendData.every((item) => item.value === values[item.id!])) {
       return false;
