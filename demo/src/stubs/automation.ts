@@ -108,7 +108,8 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
         };
         // Kept per demo, so it is still there after switching demos
         saveDemoAutomation(id, automation);
-        const display = currentHass.entities[entityId];
+        // A display entry of a new automation is left over from another demo
+        const display = existing ? currentHass.entities[entityId] : undefined;
         currentHass.addEntities(automationEntity(automation));
         // Adding the entity resets its display entry, keep what the registry
         // holds
