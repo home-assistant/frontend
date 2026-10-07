@@ -10175,7 +10175,12 @@
               "location": {
                 "label": "Location",
                 "locations": "Locations",
-                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones."
+                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones.",
+                "convert": "Convert to zones and labels",
+                "target": "Zones",
+                "target_helper": "True if the person entity of the user viewing this dashboard is in any of the selected zones, or any zone with the selected labels.",
+                "away": "Away",
+                "away_helper": "Also true when the person is not in any zone."
               },
               "user": {
                 "label": "User"

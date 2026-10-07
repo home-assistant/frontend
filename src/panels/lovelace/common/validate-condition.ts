@@ -1,3 +1,4 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
@@ -7,6 +8,7 @@ import {
   WEEKDAYS_SHORT,
   type WeekdayShort,
 } from "../../../common/datetime/weekday";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import type {
   NumericStateCondition as CoreNumericStateCondition,
@@ -19,6 +21,7 @@ import type {
 import type { DeviceCondition } from "../../../data/device/device_automation";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
+import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
@@ -57,7 +60,12 @@ export interface ViewColumnsCondition extends BaseCondition {
 
 export interface LocationCondition extends BaseCondition {
   condition: "location";
+  /** Legacy: matches the person state (active zone name). */
   locations?: string[];
+  /** Zones (directly or by label) matched against the person `in_zones`. */
+  target?: HassServiceTarget;
+  /** Matches when the person is not in any zone. */
+  away?: boolean;
 }
 
 export interface NumericStateCondition extends BaseCondition {
@@ -284,8 +292,38 @@ function checkLocationCondition(
   if (!stateObj) {
     return false;
   }
-  return condition.locations?.includes(stateObj.state);
+  if (condition.locations?.includes(stateObj.state)) {
+    return true;
+  }
+  if (condition.away && stateObj.state === "not_home") {
+    return true;
+  }
+  if (!condition.target) {
+    return false;
+  }
+  const inZones = stateObj.attributes.in_zones;
+  if (!Array.isArray(inZones) || inZones.length === 0) {
+    return false;
+  }
+  const zones = resolveLocationZones(hass, condition.target);
+  return inZones.some((zone) => zones.includes(zone));
 }
+
+const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
+
+/** Zone entity IDs selected directly or through a label, area or floor. */
+export const resolveLocationZones = (
+  hass: HomeAssistant,
+  target: HassServiceTarget
+): string[] =>
+  resolveEntityIDs(
+    hass,
+    target,
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    ZONE_TARGET_SELECTOR
+  ).filter((entityId) => computeDomain(entityId) === "zone");
 
 function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
   return condition.users && hass.user?.id
@@ -448,7 +486,11 @@ function validateUserCondition(condition: UserCondition) {
 }
 
 function validateLocationCondition(condition: LocationCondition) {
-  return condition.locations != null;
+  return (
+    condition.locations != null ||
+    condition.target != null ||
+    condition.away === true
+  );
 }
 
 function validateAndCondition(condition: AndCondition) {
