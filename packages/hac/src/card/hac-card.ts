@@ -1,21 +1,25 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 
 /**
  * Container that groups related content.
  *
+ * Importing this module does not register the element. Import
+ * `@home-assistant/hac/card` to register `<hac-card>`.
+ *
  * @slot header - Header of the card, usually a `hac-header`.
  * @slot - Content of the card.
- * @slot footer - Footer of the card, e.g. actions.
+ * @slot footer - Footer of the card, e.g. actions. Hidden when empty.
  *
  * @cssprop --hac-card-background - Background of the card.
+ * @cssprop --hac-card-color - Text color of the card.
  * @cssprop --hac-card-border-color - Border color of the card.
  * @cssprop --hac-card-border-width - Border width of the card.
  * @cssprop --hac-card-border-radius - Border radius of the card.
  * @cssprop --hac-card-box-shadow - Box shadow of the card.
  * @cssprop --hac-card-content-padding - Padding of the content.
+ * @cssprop --hac-card-footer-padding - Padding of the footer.
  */
-@customElement("hac-card")
 export class HacCard extends LitElement {
   /** Visual style of the card. */
   @property({ reflect: true }) public appearance: "outlined" | "raised" =
@@ -27,22 +31,22 @@ export class HacCard extends LitElement {
 
   protected render() {
     return html`
-      <slot name="header" @slotchange=${this._handleHeaderChange}></slot>
-      <div class=${this._hasHeader ? "content with-header" : "content"}>
+      <slot name="header" @slotchange=${this._headerChanged}></slot>
+      <div class="content ${this._hasHeader ? "below-header" : ""}">
         <slot></slot>
       </div>
       <div class="footer" ?hidden=${!this._hasFooter}>
-        <slot name="footer" @slotchange=${this._handleFooterChange}></slot>
+        <slot name="footer" @slotchange=${this._footerChanged}></slot>
       </div>
     `;
   }
 
-  private _handleHeaderChange(ev: Event) {
-    this._hasHeader = (ev.target as HTMLSlotElement).assignedNodes().length > 0;
+  private _headerChanged(ev: Event) {
+    this._hasHeader = _hasAssignedElements(ev);
   }
 
-  private _handleFooterChange(ev: Event) {
-    this._hasFooter = (ev.target as HTMLSlotElement).assignedNodes().length > 0;
+  private _footerChanged(ev: Event) {
+    this._hasFooter = _hasAssignedElements(ev);
   }
 
   static styles = css`
@@ -50,36 +54,47 @@ export class HacCard extends LitElement {
       display: block;
       position: relative;
       box-sizing: border-box;
-      background: var(--hac-card-background, var(--card-background-color));
-      color: var(--primary-text-color);
-      border-radius: var(--hac-card-border-radius, var(--ha-border-radius-lg));
+      background: var(
+        --hac-card-background,
+        var(--card-background-color, #fff)
+      );
+      color: var(--hac-card-color, var(--primary-text-color, #141414));
       border: var(--hac-card-border-width, 1px) solid
-        var(--hac-card-border-color, var(--divider-color));
+        var(--hac-card-border-color, var(--divider-color, #e0e0e0));
+      border-radius: var(
+        --hac-card-border-radius,
+        var(--ha-border-radius-lg, 12px)
+      );
       box-shadow: var(--hac-card-box-shadow, none);
-      overflow: hidden;
     }
 
     :host([appearance="raised"]) {
       border-color: transparent;
       box-shadow: var(
         --hac-card-box-shadow,
-        0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-        0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12)
       );
     }
 
     .content {
-      padding: var(--hac-card-content-padding, var(--ha-space-4));
+      padding: var(--hac-card-content-padding, var(--ha-space-4, 16px));
     }
 
-    .content.with-header {
-      padding-top: var(--ha-space-2);
+    /* The header already provides the spacing above the content */
+    .content.below-header {
+      padding-block-start: 0;
     }
 
     .footer {
-      border-top: 1px solid var(--divider-color);
-      padding: var(--ha-space-2);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--ha-space-2, 8px);
+      padding: var(--hac-card-footer-padding, var(--ha-space-2, 8px));
+      border-block-start: 1px solid var(--divider-color, #e0e0e0);
     }
 
     .footer[hidden] {
@@ -87,6 +102,9 @@ export class HacCard extends LitElement {
     }
   `;
 }
+
+const _hasAssignedElements = (ev: Event) =>
+  (ev.target as HTMLSlotElement).assignedElements().length > 0;
 
 declare global {
   interface HTMLElementTagNameMap {
