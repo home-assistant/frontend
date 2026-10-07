@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { DataTableRowData } from "../../../src/components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
-import { filterRepositories } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
+import {
+  browseSettingsFromUrl,
+  browseUrl,
+  filterRepositories,
+} from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
@@ -148,5 +152,19 @@ describe("filterRepositories", () => {
     filterRepositories(unsorted, localize);
 
     expect(names(unsorted)).toEqual(["Beta", "Alpha"]);
+  });
+});
+
+describe("browseUrl", () => {
+  it("links to what browseSettingsFromUrl reads back", () => {
+    const settings = {
+      sorting: { column: "stars", direction: "desc" as const },
+      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+    };
+
+    const url = new URL(browseUrl(settings), "http://localhost");
+
+    expect(url.pathname).toBe("/marketplace/browse");
+    expect(browseSettingsFromUrl(url.search)).toEqual(settings);
   });
 });
