@@ -52,10 +52,24 @@ const CONFIG_FILES = [
   path.join(__dirname, "lit-disable-dev-mode-loader.cjs"),
   path.join(__dirname, "babel-plugins", "custom-polyfill-plugin.js"),
   path.join(__dirname, "babel-plugins", "inline-constants-plugin.cjs"),
+  // Its exports define the hac source aliases below
+  path.join(__dirname, "..", "packages", "hac", "package.json"),
 ];
 
 // Patches change a package's files but not its version, which is all the
 // node_modules snapshot checks, so their contents go into the version too.
+// Resolve @home-assistant/hac entry points to their sources, so the package
+// needs no build step during development. The entry points are read from the
+// "hac-source" export condition of the package.
+const hacSourceAliases = Object.fromEntries(
+  Object.entries(require("../packages/hac/package.json").exports)
+    .filter(([, target]) => target["hac-source"])
+    .map(([subpath, target]) => [
+      `${path.posix.join("@home-assistant/hac", subpath)}$`,
+      path.resolve(paths.root_dir, "packages/hac", target["hac-source"]),
+    ])
+);
+
 const PATCHES_DIR = path.join(paths.root_dir, "patches");
 
 // Content hash of the toolchain versions and our own build files, used as the
@@ -377,12 +391,7 @@ const createRspackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
-        // Use the package sources directly, so no build step is needed in dev
-        "@home-assistant/hac$": path.resolve(
-          paths.root_dir,
-          "packages/hac/src"
-        ),
-        "@home-assistant/hac": path.resolve(paths.root_dir, "packages/hac/src"),
+        ...hacSourceAliases,
         "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",

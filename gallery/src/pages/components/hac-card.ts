@@ -3,7 +3,8 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-svg-icon";
-import "@home-assistant/hac";
+import "@home-assistant/hac/card";
+import "@home-assistant/hac/header";
 
 @customElement("demo-components-hac-card")
 export class DemoHacCard extends LitElement {
@@ -38,6 +39,7 @@ export class DemoHacCard extends LitElement {
       display: grid;
       gap: var(--ha-space-4);
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      align-items: start;
       padding: var(--ha-space-4);
     }
     p {
