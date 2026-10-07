@@ -2,7 +2,6 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
 import { consume } from "../../../common/decorators/consume";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-snap-bottom-sheet";
@@ -28,6 +27,9 @@ import "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
 
+// The sidebar card header: the dialog header's 48px minimum plus its padding
+const COLLAPSED_SHEET_HEIGHT = 68;
+
 @customElement("ha-automation-sidebar")
 export default class HaAutomationSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -46,8 +48,6 @@ export default class HaAutomationSidebar extends LitElement {
   @state() private _yamlMode = false;
 
   @state() private _resizing = false;
-
-  @state() private _sheetMinHeight?: number;
 
   @state()
   @consume({ context: manifestsContext, subscribe: true })
@@ -195,12 +195,11 @@ export default class HaAutomationSidebar extends LitElement {
     if (this.narrow) {
       return html`
         <ha-snap-bottom-sheet
-          .minHeight=${this._sheetMinHeight}
+          .minHeight=${COLLAPSED_SHEET_HEIGHT}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.sidebar_label"
           )}
           @bottom-sheet-closed=${this._closeSidebar}
-          @sidebar-header-resized=${this._handleHeaderResized}
         >
           ${this._renderContent()}
         </ha-snap-bottom-sheet>
@@ -267,12 +266,6 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _closeSidebar() {
     this.config?.close(true);
-  }
-
-  private _handleHeaderResized(
-    ev: HASSDomEvent<HASSDomEvents["sidebar-header-resized"]>
-  ) {
-    this._sheetMinHeight = ev.detail.height;
   }
 
   private _toggleYamlMode = () => {

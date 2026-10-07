@@ -1,6 +1,4 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -45,25 +43,6 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
   @property({ type: Boolean }) public narrow = false;
 
   @query(".card-content") private _contentElement!: HTMLDivElement;
-
-  @query("ha-dialog-header") private _header!: HTMLElement;
-
-  private _headerSize = new ResizeController(this, {
-    target: null,
-    callback: (entries) => {
-      const header = entries[0]?.target as HTMLElement | undefined;
-      if (header) {
-        fireEvent(this, "sidebar-header-resized", {
-          height: header.offsetHeight,
-        });
-      }
-    },
-  });
-
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this._headerSize.observe(this._header);
-  }
 
   protected get scrollableElement(): HTMLElement | null {
     return this._contentElement;
@@ -186,10 +165,5 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-sidebar-card": HaAutomationSidebarCard;
-  }
-
-  interface HASSDomEvents {
-    /** The collapsed bottom sheet keeps the header visible */
-    "sidebar-header-resized": { height: number };
   }
 }
