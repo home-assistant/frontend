@@ -89,10 +89,45 @@ export const mockEntityRegistry = (
         modified_at: Date.now() / 1000,
       };
       entries = [...entries.filter((e) => e.entity_id !== entityId), entry];
+      // Core updates the display registry too
+      const display = currentHass.entities[entityId];
+      if (display) {
+        currentHass.updateHass({
+          entities: {
+            ...currentHass.entities,
+            [entityId]: {
+              ...display,
+              ...("name" in updates && { name: entry.name ?? undefined }),
+              ...("icon" in updates && { icon: entry.icon ?? undefined }),
+              ...("area_id" in updates && {
+                area_id: entry.area_id ?? undefined,
+              }),
+              ...("labels" in updates && { labels: entry.labels }),
+              ...("hidden_by" in updates && {
+                hidden: entry.hidden_by !== null,
+              }),
+            },
+          },
+        });
+      }
       currentHass.mockEvent("entity_registry_updated");
       return { entity_entry: extEntry(entry) };
     }
   );
+};
+
+// Replaces the entries of a platform, like core does for the entities of a
+// demo config
+export const setPlatformEntityRegistryEntries = (
+  hass: MockHomeAssistant,
+  platform: string,
+  platformEntries: Pick<EntityRegistryEntry, "entity_id" | "unique_id">[]
+) => {
+  entries = [
+    ...entries.filter((e) => e.platform !== platform),
+    ...platformEntries.map((entry) => newEntry({ ...entry, platform })),
+  ];
+  hass.mockEvent("entity_registry_updated");
 };
 
 // Adds an entry like core does when an integration creates an entity

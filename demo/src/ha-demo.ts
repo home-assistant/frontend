@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../src/types";
 import {
   applyDemoTheme,
   demoConfigEntities,
+  registerDemoAutomations,
   selectedDemoConfig,
 } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
@@ -225,6 +226,7 @@ export class HaDemo extends HomeAssistantAppEl {
         setDemoFloors(hass, conf.floors);
         setDemoAreas(hass, conf.areas);
         hass.addEntities(demoConfigEntities(conf, localize));
+        registerDemoAutomations(hass, conf);
         applyDemoTheme(hass, conf.theme);
       }
     );

@@ -4,6 +4,7 @@ import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type { Lovelace } from "../../../src/panels/lovelace/types";
 import { setDemoAreas } from "../stubs/area_registry";
+import { setPlatformEntityRegistryEntries } from "../stubs/entity_registry";
 import { energyEntities } from "../stubs/entities";
 import { connectivityEntities } from "../stubs/connectivity/fixtures";
 import { setDemoFloors } from "../stubs/floor_registry";
@@ -26,6 +27,7 @@ export const automationEntity = ({
   lastTriggered,
 }: DemoAutomation): EntityInput => ({
   entity_id: `automation.${slugify(automation.alias)}`,
+  platform: "automation",
   state,
   attributes: {
     id: automation.id,
@@ -49,6 +51,20 @@ export const demoConfigEntities = (
   ...config.entities(localize),
   ...(config.automations ?? []).map(automationEntity),
 ];
+
+// Like core, the automations of a demo config are in the entity registry
+export const registerDemoAutomations = (
+  hass: MockHomeAssistant,
+  config: DemoConfig
+) =>
+  setPlatformEntityRegistryEntries(
+    hass,
+    "automation",
+    (config.automations ?? []).map((automation) => ({
+      entity_id: automationEntity(automation).entity_id,
+      unique_id: automation.config.id,
+    }))
+  );
 
 export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
   sections: () => import("./sections").then((mod) => mod.demoSections),
@@ -87,6 +103,7 @@ export const setDemoConfig = async (
   setDemoFloors(hass, config.floors);
   setDemoAreas(hass, config.areas);
   hass.addEntities(demoConfigEntities(config, hass.localize), true);
+  registerDemoAutomations(hass, config);
   hass.addEntities(energyEntities());
   // Replaced the whole state map above, so the entities that do not belong to a
   // demo config have to be added back.

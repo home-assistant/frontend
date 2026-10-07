@@ -175,8 +175,9 @@ gulp.task("fetch-lokalise", async function () {
     fs.mkdir(inDirBackend, { recursive: true }),
   ]);
 
-  // The backend project only provides entity domain translations, which are
-  // merged into the demo, gallery, cast and e2e builds. The shipped app fetches
+  // The backend project only provides the translations the mocked backend
+  // needs (see convertBackendTranslations), which are merged into the demo,
+  // gallery, cast and e2e builds. The shipped app fetches
   // them live from core, so builds that only produce the app (release, release
   // landing-page) can skip this second, whole-project export to save time.
   const projects = Object.entries(lokaliseProjects).filter(
