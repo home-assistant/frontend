@@ -595,6 +595,15 @@ const getEnergyData = async (
 
   const gasUnit = getEnergyGasUnit(states, config, prefs, statsMetadata);
   const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
+  // Gas billed in therms is shown in therms. Other energy-class gas stays in
+  // kWh, so only fetch separately when the therm unit is in use.
+  const gasThermStatIds =
+    gasUnit === "thm"
+      ? (energySourcesByType(prefs).gas ?? []).map(
+          (source) => source.stat_energy_from
+        )
+      : [];
+  const gasThermUnits: StatisticsUnitConfiguration = { energy: "thm" };
 
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
@@ -621,6 +630,18 @@ const getEnergyData = async (
         ["change"]
       )
     : {};
+  const _gasThermStats: Statistics | Promise<Statistics> =
+    gasThermStatIds.length
+      ? fetchStatistics(
+          callWS,
+          periodStart,
+          periodEnd,
+          gasThermStatIds,
+          period,
+          gasThermUnits,
+          ["change"]
+        )
+      : {};
   const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
     ? fetchStatistics(
         callWS,
@@ -661,6 +682,7 @@ const getEnergyData = async (
   let periodEndCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
+  let _gasThermStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
     if (compare === CompareMode.PREVIOUS) {
       if (
@@ -723,6 +745,17 @@ const getEnergyData = async (
         ["change"]
       );
     }
+    if (gasThermStatIds.length) {
+      _gasThermStatsCompare = fetchStatistics(
+        callWS,
+        periodStartCompare,
+        periodEndCompare,
+        gasThermStatIds,
+        period,
+        gasThermUnits,
+        ["change"]
+      );
+    }
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         callWS,
@@ -762,19 +795,23 @@ const getEnergyData = async (
 
   const [
     energyStats,
+    gasThermStats,
     powerStats,
     powerStatsHour,
     waterStats,
     energyStatsCompare,
+    gasThermStatsCompare,
     waterStatsCompare,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
+    _gasThermStats,
     _powerStats,
     _powerStatsHour,
     _waterStats,
     _energyStatsCompare,
+    _gasThermStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
@@ -810,9 +847,18 @@ const getEnergyData = async (
     });
   }
 
-  const stats = { ...energyStats, ...waterStats, ...powerStats };
+  const stats = {
+    ...energyStats,
+    ...gasThermStats,
+    ...waterStats,
+    ...powerStats,
+  };
   if (compare) {
-    statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+    statsCompare = {
+      ...energyStatsCompare,
+      ...gasThermStatsCompare,
+      ...waterStatsCompare,
+    };
   }
 
   const data: EnergyData = {
@@ -1255,7 +1301,16 @@ const getEnergyGasUnit = (
 ): string => {
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
-    return "kWh";
+    // Therms are a billing unit, so show them as is instead of converting.
+    const allTherms = (energySourcesByType(prefs).gas ?? []).every(
+      (source) =>
+        getDisplayUnit(
+          states,
+          source.stat_energy_from,
+          statisticsMetaData[source.stat_energy_from]
+        ) === "thm"
+    );
+    return allTherms ? "thm" : "kWh";
   }
 
   const units = prefs.energy_sources

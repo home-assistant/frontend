@@ -25,9 +25,11 @@ import {
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
   EMPTY_PREFERENCES,
+  CompareMode,
 } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
+import { StatisticMeanType } from "../../src/data/recorder";
 import type { StatisticsMetaData } from "../../src/data/recorder";
 import { createMockEntityState, createMockHass } from "../fixtures/hass";
 
@@ -1412,6 +1414,135 @@ describe("getEnergyDataCollection statistics range", () => {
       start_time: start.toISOString(),
       end_time: end.toISOString(),
     });
+  });
+});
+
+describe("getEnergyDataCollection gas energy unit", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const gasMetadata = (
+    statisticId: string,
+    unit: string
+  ): StatisticsMetaData => ({
+    statistic_id: statisticId,
+    source: "test",
+    name: null,
+    statistics_unit_of_measurement: unit,
+    unit_class: "energy",
+    mean_type: StatisticMeanType.NONE,
+    has_sum: true,
+  });
+
+  const loadGasData = async (
+    key: string,
+    gasUnits: Record<string, string>,
+    compare?: CompareMode
+  ) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
+    const hass = createMockHass();
+    hass.locale = { ...energyPeriodLocale, time_zone: TimeZone.local };
+    const statisticIds = Object.keys(gasUnits);
+    const callWS = vi.fn(async (msg: Record<string, unknown>) => {
+      switch (msg.type) {
+        case "energy/info":
+          return { cost_sensors: {}, solar_forecast_domains: [] };
+        case "recorder/get_statistics_metadata":
+          return statisticIds.map((id) => gasMetadata(id, gasUnits[id]));
+        case "recorder/statistics_during_period":
+          return {};
+      }
+      throw new Error(`unexpected ${msg.type}`);
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    const collection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      key,
+      prefs: {
+        ...EMPTY_PREFERENCES,
+        energy_sources: statisticIds.map((id) => ({
+          type: "gas" as const,
+          stat_energy_from: id,
+          stat_cost: null,
+          entity_energy_price: null,
+          number_energy_price: null,
+        })),
+      },
+    });
+    collection.setPeriod(
+      new Date(2026, 8, 18),
+      endOfDay(new Date(2026, 8, 21))
+    );
+    if (compare) {
+      collection.setCompare(compare);
+    }
+    await collection.refresh();
+    const energyRequests = callWS.mock.calls
+      .map(([msg]) => msg)
+      .filter((msg) => msg.type === "recorder/statistics_during_period");
+    return { data: collection.state, energyRequests };
+  };
+
+  it("shows therm gas in therms and requests it in therms", async () => {
+    const { data, energyRequests } = await loadGasData("energy_gas_thm", {
+      "integration:gas": "thm",
+    });
+    assert.equal(data?.gasUnit, "thm");
+    const thermRequest = energyRequests.find(
+      (msg) => (msg.units as { energy?: string }).energy === "thm"
+    );
+    assert.deepEqual(thermRequest?.statistic_ids, ["integration:gas"]);
+  });
+
+  it("keeps other energy gas in kWh", async () => {
+    const { data, energyRequests } = await loadGasData("energy_gas_kwh", {
+      "integration:gas": "kWh",
+    });
+    assert.equal(data?.gasUnit, "kWh");
+    assert.isUndefined(
+      energyRequests.find(
+        (msg) => (msg.units as { energy?: string }).energy === "thm"
+      )
+    );
+  });
+
+  it("falls back to kWh when gas sources mix therms and another unit", async () => {
+    const { data, energyRequests } = await loadGasData("energy_gas_mixed", {
+      "integration:gas_a": "thm",
+      "integration:gas_b": "kWh",
+    });
+    assert.equal(data?.gasUnit, "kWh");
+    assert.isUndefined(
+      energyRequests.find(
+        (msg) => (msg.units as { energy?: string }).energy === "thm"
+      )
+    );
+  });
+
+  it("also requests therm gas in therms for the compare period", async () => {
+    const { energyRequests } = await loadGasData(
+      "energy_gas_thm_compare",
+      { "integration:gas": "thm" },
+      CompareMode.PREVIOUS
+    );
+    const thermRequests = energyRequests.filter(
+      (msg) => (msg.units as { energy?: string }).energy === "thm"
+    );
+    assert.equal(thermRequests.length, 2);
   });
 });
 
