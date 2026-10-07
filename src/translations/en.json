@@ -12346,6 +12346,7 @@
           "available_version": "Available version",
           "status": "Status",
           "type": "Type",
+          "source": "Source",
           "last_updated": "Activity",
           "actions": "Actions"
         },
@@ -12359,7 +12360,8 @@
         },
         "filters": {
           "status": "Status",
-          "type": "Type"
+          "type": "Type",
+          "source": "Source"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
@@ -12467,6 +12469,10 @@
           "install_other_version": "Install another version",
           "reinstall": "Reinstall",
           "update_information": "Refresh information"
+        },
+        "repository_source": {
+          "catalog": "Community catalog",
+          "custom": "Custom repository"
         },
         "repository_status": {
           "pending-restart": "Restart required",

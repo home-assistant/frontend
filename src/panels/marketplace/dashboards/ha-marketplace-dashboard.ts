@@ -70,6 +70,8 @@ import { haStyle } from "../../../resources/styles";
 import {
   browseSettingsFromUrl,
   filterRepositories,
+  SOURCE_FILTER,
+  SOURCE_ORDER,
   STATUS_FILTER,
   STATUS_ORDER,
   TYPE_FILTER,
@@ -384,6 +386,14 @@ export class HaMarketplaceDashboard extends LitElement {
             .narrow=${this.narrow}
             @data-table-filter-changed=${this._typeFilterChanged}
           ></ha-filter-states>
+          <ha-filter-states
+            slot="filter-pane"
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.source")}
+            .value=${this._filters[SOURCE_FILTER]}
+            .states=${this._sourceStates(this._i18n.localize)}
+            .narrow=${this.narrow}
+            @data-table-filter-changed=${this._sourceFilterChanged}
+          ></ha-filter-states>
         </hass-tabs-subpage-data-table>`
       )}
       <ha-dropdown
@@ -570,6 +580,14 @@ export class HaMarketplaceDashboard extends LitElement {
         groupable: true,
         hidden: false,
       },
+      translated_source: {
+        ...defaultKeyData,
+        title: localizeFunc("ui.panel.marketplace.column.source"),
+        sortable: true,
+        groupable: true,
+        hidden: false,
+        defaultHidden: true,
+      },
       description: defaultKeyData,
       authors: defaultKeyData,
       domain: defaultKeyData,
@@ -698,14 +716,30 @@ export class HaMarketplaceDashboard extends LitElement {
       }))
   );
 
-  // Statuses group in the order of the filter, not alphabetically
+  private _sourceStates = memoize((localize: LocalizeFunc) =>
+    SOURCE_ORDER.map((source) => ({
+      value: source,
+      label: localize(`ui.panel.marketplace.repository_source.${source}`),
+    }))
+  );
+
+  // Statuses and sources group in the order of their filters, not alphabetically
   private _groupOrder = memoize(
-    (grouping: string | undefined, localize: LocalizeFunc) =>
-      grouping === "translated_status"
-        ? STATUS_ORDER.map((status) =>
-            localize(`ui.panel.marketplace.repository_status.${status}`)
-          )
-        : undefined
+    (grouping: string | undefined, localize: LocalizeFunc) => {
+      if (grouping === "translated_status") {
+        return STATUS_ORDER.map((status) =>
+          localize(`ui.panel.marketplace.repository_status.${status}`)
+        );
+      }
+
+      if (grouping === "translated_source") {
+        return SOURCE_ORDER.map((source) =>
+          localize(`ui.panel.marketplace.repository_source.${source}`)
+        );
+      }
+
+      return undefined;
+    }
   );
 
   private _handleRowClicked(ev: CustomEvent) {
@@ -718,6 +752,10 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+  }
+
+  private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
+    this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
   }
 
   private _handleSearchFilterChanged(ev: CustomEvent) {

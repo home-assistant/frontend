@@ -438,6 +438,7 @@ it("filters with the standard filter panes of Settings", async () => {
   ).toEqual([
     "ui.panel.marketplace.filters.status",
     "ui.panel.marketplace.filters.type",
+    "ui.panel.marketplace.filters.source",
   ]);
   expect(dashboard.shadowRoot!.querySelector("ha-form")).toBeNull();
 });

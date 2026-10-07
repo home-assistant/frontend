@@ -57,6 +57,23 @@ describe("filterRepositories", () => {
     ).toEqual(expected);
   });
 
+  it.each([
+    [{ source: ["custom"] }, ["Linked"]],
+    [{ source: ["catalog"] }, ["Plain"]],
+    [{ source: ["catalog", "custom"] }, ["Linked", "Plain"]],
+    [{ source: ["custom"], type: ["theme"] }, []],
+  ])("keeps the source that matches %j", (activeFilters, expected) => {
+    expect(
+      names(
+        filterRepositories(
+          [repository("Plain"), repository("Linked", { custom: true })],
+          localize,
+          activeFilters
+        )
+      )
+    ).toEqual(expected);
+  });
+
   it("puts installed first, then new, then the most starred, then by name", () => {
     const sorted = filterRepositories(
       [
@@ -93,9 +110,15 @@ describe("filterRepositories", () => {
     ]);
   });
 
-  it("adds the translated status and category to group by", () => {
+  it("adds the translated status, category and source to group by", () => {
     const [row] = filterRepositories(
-      [repository("Downloaded", { status: "installed", category: "theme" })],
+      [
+        repository("Downloaded", {
+          status: "installed",
+          category: "theme",
+          custom: true,
+        }),
+      ],
       localize
     );
 
@@ -104,6 +127,9 @@ describe("filterRepositories", () => {
     );
     expect(row.translated_category).toBe(
       "ui.panel.marketplace.common.type.theme"
+    );
+    expect(row.translated_source).toBe(
+      "ui.panel.marketplace.repository_source.custom"
     );
   });
 
