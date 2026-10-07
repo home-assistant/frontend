@@ -1038,6 +1038,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       LegendComponentOption | undefined;
+    const hiddenCount = this._hiddenDatasets.size;
     Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
       if (selected === false) {
         this._getAllIdsFromLegend(options, stat).forEach((id) =>
@@ -1045,7 +1046,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         );
       }
     });
-    this.requestUpdate("_hiddenDatasets");
+    // Flagging this rebuilds and downsamples every series, so only when needed
+    if (this._hiddenDatasets.size !== hiddenCount) {
+      this.requestUpdate("_hiddenDatasets");
+    }
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
