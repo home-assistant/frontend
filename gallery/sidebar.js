@@ -81,6 +81,10 @@ export default [
         pages: ["ha-alert", "ha-spinner", "ha-tip", "ha-bar", "ha-gauge"],
       },
       {
+        header: "Layout",
+        pages: ["hac-card"],
+      },
+      {
         header: "Labels and text",
         pages: ["ha-badge", "ha-label-badge", "ha-chips", "ha-marquee-text"],
       },
