@@ -1,11 +1,16 @@
 import { customElement } from "lit/decorators";
+import type { LocalizeFunc } from "../../src/common/translations/localize";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
 import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
-import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
+import {
+  applyDemoTheme,
+  demoConfigEntities,
+  selectedDemoConfig,
+} from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import {
   connectivityCommands,
@@ -26,6 +31,7 @@ import { mockHardware } from "./stubs/hardware";
 import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
+import { automationPlatformDomains } from "./stubs/automation_platform_domains";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
@@ -58,6 +64,12 @@ const CONFIG_PANEL_COMMANDS = [
   "system_health/",
   "backup/",
   "automation/config",
+  "trigger_platforms/subscribe",
+  "condition_platforms/subscribe",
+  "get_triggers_for_target",
+  "get_conditions_for_target",
+  "get_services_for_target",
+  "extract_from_target",
   "script/config",
   "config/automation/config",
   "config/script/config",
@@ -89,15 +101,19 @@ export class HaDemo extends HomeAssistantAppEl {
       config: {
         ...hass.config,
         components: [
-          ...(hass.config?.components ?? []),
-          "backup",
-          "webhook",
-          "usage_prediction",
-          "assist_pipeline",
-          "hassio",
-          "hardware",
-          "marketplace",
-          ...connectivityComponents,
+          // Some automation platforms are loaded already
+          ...new Set([
+            ...(hass.config?.components ?? []),
+            "backup",
+            "webhook",
+            "usage_prediction",
+            "assist_pipeline",
+            "hassio",
+            "hardware",
+            "marketplace",
+            ...connectivityComponents,
+            ...automationPlatformDomains,
+          ]),
         ],
       },
       panels: {
@@ -116,7 +132,9 @@ export class HaDemo extends HomeAssistantAppEl {
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
-        () => this.hass!.localize
+        // hass is not updated yet when another fragment started loading
+        // meanwhile, so use the localize with these translations directly
+        (localize?: LocalizeFunc) => localize ?? this.hass!.localize
       );
 
     mockLovelace(hass, localizePromise);
@@ -206,7 +224,7 @@ export class HaDemo extends HomeAssistantAppEl {
       ([conf, localize]) => {
         setDemoFloors(hass, conf.floors);
         setDemoAreas(hass, conf.areas);
-        hass.addEntities(conf.entities(localize));
+        hass.addEntities(demoConfigEntities(conf, localize));
         applyDemoTheme(hass, conf.theme);
       }
     );

@@ -51,15 +51,28 @@ function convertBackendTranslations(data, _file) {
   if (!data.component) {
     return output;
   }
+  // Keep the entity domains and the domains with automation triggers or
+  // conditions, so the demo can show states and describe automations.
   Object.keys(data.component).forEach((domain) => {
-    if (!("entity_component" in data.component[domain])) {
+    const {
+      entity_component,
+      services,
+      triggers,
+      conditions,
+      selector,
+      title,
+    } = data.component[domain];
+    if (!entity_component && !triggers && !conditions) {
       return;
     }
-    output.component[domain] = { entity_component: {} };
-    Object.keys(data.component[domain].entity_component).forEach((key) => {
-      output.component[domain].entity_component[key] =
-        data.component[domain].entity_component[key];
-    });
+    output.component[domain] = {
+      entity_component,
+      services,
+      triggers,
+      conditions,
+      selector,
+      title,
+    };
   });
   return output;
 }
@@ -155,7 +168,7 @@ gulp.task("fetch-lokalise", async function () {
     fs.mkdir(inDirBackend, { recursive: true }),
   ]);
 
-  // The backend project only provides entity_component translations, which are
+  // The backend project only provides entity domain translations, which are
   // merged into the demo, gallery, cast and e2e builds. The shipped app fetches
   // them live from core, so builds that only produce the app (release, release
   // landing-page) can skip this second, whole-project export to save time.

@@ -12,6 +12,17 @@ export const mockIcons = (hass: MockHomeAssistant) => {
       category: IconCategory;
       integration?: string;
     }) => {
+      if (category === "triggers" || category === "conditions") {
+        const { triggerIcons, conditionIcons } =
+          await import("./automation_platforms_icons");
+        const icons: Record<string, unknown> =
+          category === "triggers" ? triggerIcons : conditionIcons;
+        return {
+          resources: integration
+            ? { [integration]: icons[integration] ?? {} }
+            : icons,
+        };
+      }
       if (integration) {
         try {
           const response = await fetch(

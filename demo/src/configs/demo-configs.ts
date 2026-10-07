@@ -1,4 +1,6 @@
 import { navigate } from "../../../src/common/navigate";
+import { slugify } from "../../../src/common/string/slugify";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type { Lovelace } from "../../../src/panels/lovelace/types";
 import { setDemoAreas } from "../stubs/area_registry";
@@ -6,6 +8,7 @@ import { energyEntities } from "../stubs/entities";
 import { connectivityEntities } from "../stubs/connectivity/fixtures";
 import { setDemoFloors } from "../stubs/floor_registry";
 import { getDemoTheme } from "../stubs/frontend";
+import type { EntityInput } from "../../../src/fake_data/entities/types";
 import type { DemoConfig, DemoTheme } from "./types";
 
 export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
@@ -15,6 +18,32 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
   }
   hass.mockTheme(null, getDemoTheme(theme));
 };
+
+// The automation entities are derived from the configs the editor shows, so
+// their names and IDs always match.
+export const demoConfigEntities = (
+  config: DemoConfig,
+  localize: LocalizeFunc
+): EntityInput[] => [
+  ...config.entities(localize),
+  ...(config.automations ?? []).map(
+    ({ config: automation, state = "on", icon, lastTriggered }) => ({
+      entity_id: `automation.${slugify(automation.alias)}`,
+      state,
+      attributes: {
+        id: automation.id,
+        friendly_name: automation.alias,
+        last_triggered:
+          lastTriggered === undefined
+            ? null
+            : new Date(Date.now() - lastTriggered * 60000).toISOString(),
+        mode: automation.mode,
+        current: 0,
+        icon,
+      },
+    })
+  ),
+];
 
 export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
   sections: () => import("./sections").then((mod) => mod.demoSections),
@@ -52,7 +81,7 @@ export const setDemoConfig = async (
 
   setDemoFloors(hass, config.floors);
   setDemoAreas(hass, config.areas);
-  hass.addEntities(config.entities(hass.localize), true);
+  hass.addEntities(demoConfigEntities(config, hass.localize), true);
   hass.addEntities(energyEntities());
   // Replaced the whole state map above, so the entities that do not belong to a
   // demo config have to be added back.
