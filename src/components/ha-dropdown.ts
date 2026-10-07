@@ -106,8 +106,6 @@ export class HaDropdown extends Dropdown {
 
         #menu {
           padding: var(--ha-space-1);
-          /* The popup only auto-sizes vertically, so cap the width to keep
-             long items from overflowing the viewport. */
           --auto-size-available-width: calc(
             var(--safe-width, 100vw) - var(--ha-space-5)
           );
