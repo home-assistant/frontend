@@ -132,7 +132,11 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_config") || changedProps.has("_data")) {
+    if (
+      changedProps.has("_config") ||
+      changedProps.has("_data") ||
+      changedProps.has("_i18n")
+    ) {
       this._processStatistics();
     }
   }
@@ -283,6 +287,7 @@ export class HuiEnergyDevicesDetailGraphCard
       compareEnd,
     } = generateEnergyDevicesDetailGraphData({
       localize: this._i18n.localize,
+      locale: this._i18n.locale,
       states: this._states,
       formatEntityName: this._formatters.formatEntityName,
       darkMode: this._ui.themes.darkMode,
