@@ -100,6 +100,7 @@ Dashboards:
           - src/panels/lovelace/**
           - "src/panels/{home,climate,light,security,maintenance,map}/**"
           - src/panels/config/lovelace/**
+          - "src/panels/config/dashboard/{dashboard-card,dialog-new-dashboard,show-dialog-new-dashboard}.ts"
           - src/data/lovelace/**
           - src/data/lovelace*.ts
 
@@ -238,6 +239,7 @@ Search:
   - changed-files:
       - any-glob-to-any-file:
           - src/dialogs/quick-bar/**
+          - src/state/quick-bar-mixin.ts
           - "src/data/{quick_bar,search}.ts"
 
 Sidebar:
@@ -287,7 +289,9 @@ Theming:
   - changed-files:
       - any-glob-to-any-file:
           - src/resources/theme/**
-          - src/data/theme.ts
+          - src/state/themes-mixin.ts
+          - src/common/dom/apply_themes_on_element.ts
+          - "src/data/{theme,ws-themes}.ts"
 
 To-do:
   - changed-files:
