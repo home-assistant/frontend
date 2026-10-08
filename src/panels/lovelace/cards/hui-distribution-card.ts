@@ -24,11 +24,17 @@ import "../../../components/ha-card";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
-import { configContext, formattersContext } from "../../../data/context";
+import {
+  configContext,
+  formattersContext,
+  uiContext,
+} from "../../../data/context";
+import type { Themes } from "../../../data/ws-themes";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
   HomeAssistantFormatters,
+  HomeAssistantUI,
 } from "../../../types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -157,6 +163,14 @@ export class HuiDistributionCard
     transformer: ({ config }) => config,
   })
   private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _themes!: Themes;
 
   @state() private _hiddenEntities = new Set<string>();
 
