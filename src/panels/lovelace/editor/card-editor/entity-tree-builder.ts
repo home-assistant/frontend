@@ -204,7 +204,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
       name,
       area: areaName ?? "",
       parentDevice: parentDeviceName ?? "",
-      device: deviceName ?? "",
+      device: (searchLabels.entityName && deviceName) || "",
       domain: domainName,
       search_labels: {
         ...searchLabels,
