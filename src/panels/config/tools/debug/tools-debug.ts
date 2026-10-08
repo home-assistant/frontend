@@ -36,9 +36,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
           )}
         >
           <ha-list-base>
-            <ha-debug-safe-area-tool-row
-              .hass=${this.hass}
-            ></ha-debug-safe-area-tool-row>
+            <ha-debug-safe-area-tool-row></ha-debug-safe-area-tool-row>
             <ha-debug-connection-row
               .hass=${this.hass}
             ></ha-debug-connection-row>
