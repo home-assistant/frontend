@@ -27,6 +27,7 @@ import {
   configContext,
   entitiesContext,
   internationalizationContext,
+  reducedMotionContext,
   statesContext,
   uiContext,
 } from "../../../../data/context";
@@ -46,7 +47,6 @@ import type {
   HomeAssistantInternationalization,
   HomeAssistantUI,
 } from "../../../../types";
-import { ReducedMotionMixin } from "../../../../mixins/reduced-motion-mixin";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -64,10 +64,7 @@ const periodIncludesNow = (data: EnergyData): boolean =>
   !data.end || data.end.getTime() >= Date.now();
 
 @customElement("hui-energy-distribution-card")
-class HuiEnergyDistrubutionCard
-  extends ReducedMotionMixin(LitElement)
-  implements LovelaceCard
-{
+class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-graph-card-editor");
     return document.createElement("hui-energy-graph-card-editor");
@@ -86,6 +83,10 @@ class HuiEnergyDistrubutionCard
   }
 
   @state() private _data?: EnergyData;
+
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })

@@ -1,9 +1,10 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { parseAnimationDuration } from "../../../common/util/parse-animation-duration";
+import { reducedMotionContext } from "../../../data/context";
 import { strokeWidth } from "../../../data/graph";
-import { ReducedMotionMixin } from "../../../mixins/reduced-motion-mixin";
 import { getPath } from "../common/graph/get-path";
 
 export interface HuiGraphGradient {
@@ -15,7 +16,7 @@ export interface HuiGraphGradient {
 }
 
 @customElement("hui-graph-base")
-export class HuiGraphBase extends ReducedMotionMixin(LitElement) {
+export class HuiGraphBase extends LitElement {
   @property({ attribute: false }) public coordinates?: number[][];
 
   @property({ attribute: "y-axis-origin", type: Number })
@@ -29,6 +30,10 @@ export class HuiGraphBase extends ReducedMotionMixin(LitElement) {
 
   @state()
   private _displayCoordinates?: number[][];
+
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   private _animationFrame?: number;
 

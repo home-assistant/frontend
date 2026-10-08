@@ -10,9 +10,10 @@ import type {
 } from "echarts/types/dist/shared";
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import { ReducedMotionMixin } from "../../mixins/reduced-motion-mixin";
+import { reducedMotionContext } from "../../data/context";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
@@ -71,7 +72,7 @@ const PHYSICS_DISABLE_THRESHOLD = 512;
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
 @customElement("ha-network-graph")
-export class HaNetworkGraph extends ReducedMotionMixin(LitElement) {
+export class HaNetworkGraph extends LitElement {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public data!: NetworkData;
@@ -93,6 +94,10 @@ export class HaNetworkGraph extends ReducedMotionMixin(LitElement) {
   @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @state() private _highlightedNodes?: Set<string>;
+
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   @state() private _physicsEnabled?: boolean;
 

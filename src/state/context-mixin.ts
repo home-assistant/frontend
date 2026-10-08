@@ -26,6 +26,7 @@ import {
   localizeContext,
   manifestsContext,
   panelsContext,
+  reducedMotionContext,
   registriesContext,
   selectedThemeContext,
   servicesContext,
@@ -36,6 +37,7 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
+import { listenMediaQuery } from "../common/dom/media_query";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
 import { fetchIntegrationManifestsCollection } from "../data/integration";
@@ -238,6 +240,21 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     private __relatedContextProvider = new RelatedContextProvider(this);
 
+    private __reducedMotionProvider = new ContextProvider(this, {
+      context: reducedMotionContext,
+      initialValue: false,
+    });
+
+    private __unsubReducedMotion?: () => void;
+
+    public connectedCallback() {
+      super.connectedCallback();
+      this.__unsubReducedMotion = listenMediaQuery(
+        "(prefers-reduced-motion: reduce)",
+        (matches) => this.__reducedMotionProvider.setValue(matches)
+      );
+    }
+
     protected hassConnected() {
       super.hassConnected();
       for (const [key, value] of Object.entries(this.hass!)) {
@@ -290,6 +307,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     public disconnectedCallback() {
       super.disconnectedCallback();
+      this.__unsubReducedMotion?.();
+      this.__unsubReducedMotion = undefined;
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.unsubscribe();
       }
