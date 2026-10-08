@@ -6,7 +6,6 @@ export enum AITaskEntityFeature {
   SUPPORT_ATTACHMENTS = 2,
   GENERATE_IMAGE = 4,
   EVALUATE = 8,
-  EVALUATE_ATTACHMENTS = 16,
 }
 export interface AITaskPreferences {
   evaluate_entity_id: string | null;
