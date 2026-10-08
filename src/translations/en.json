@@ -3036,7 +3036,10 @@
           "gen_data_header": "Data generation tasks",
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
-          "gen_image_description": "Generate images."
+          "gen_image_description": "Generate images.",
+          "evaluate_header": "Default decision entity",
+          "evaluate_description": "Evaluate questions using the model configured for this entity.",
+          "allow_automatic_evaluation": "Allow automatically using the default decision entity to enhance my experience"
         },
         "mcp": {
           "header": "Model Context Protocol",
