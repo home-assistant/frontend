@@ -14,6 +14,7 @@ import {
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
+import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
@@ -143,7 +144,7 @@ export class HaCardConditionLocation extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
-    if (!changedProps.has("condition")) {
+    if (!changedProps.has("condition") && !changedProps.has("hass")) {
       return;
     }
     if (this.condition.locations === undefined) {
@@ -151,7 +152,12 @@ export class HaCardConditionLocation extends LitElement {
       return;
     }
     this._migrated = true;
-    this._data = migrateLocationCondition(this.condition, this.hass.states);
+    // Redo on state changes so a renamed or added zone is picked up, but keep
+    // the same object when nothing changed so the form doesn't re-render.
+    const data = migrateLocationCondition(this.condition, this.hass.states);
+    if (!deepEqual(data, this._data)) {
+      this._data = data;
+    }
   }
 
   protected render() {

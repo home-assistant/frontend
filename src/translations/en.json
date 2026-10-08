@@ -10176,10 +10176,10 @@
                 "label": "Location",
                 "migrated": {
                   "title": "Location condition updated",
-                  "description": "This condition used zone names, and is now shown with zones instead. It matches the person's `in_zones` attribute, so it is true in any zone they are in, not only the zone shown as their state. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition."
+                  "description": "This condition used zone names, and is now shown with zones instead. It matches the zones in the person's in_zones attribute, so it is true in any zone they are in, not only the zone shown as their state. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition."
                 },
                 "target": "Zones",
-                "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in any of the selected zones, or in any zone with the selected labels.",
+                "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in any of the selected zones, or in any zone with the selected labels, areas or floors.",
                 "away": "Away",
                 "away_helper": "This condition will also be true if the person entity of the user viewing this dashboard is away. Passive zones don't change this, so a person who is only in passive zones is away."
               },

@@ -187,6 +187,32 @@ describe("ha-card-condition-location", () => {
       });
     });
 
+    it("picks up renamed zones without replacing unchanged data", () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Store 1"],
+      });
+      const first = shown(editor);
+      open(editor);
+      expect((editor as any)._data).toBe(first);
+
+      editor.hass = {
+        ...HASS,
+        states: {
+          ...HASS.states,
+          "zone.store_1": {
+            ...HASS.states["zone.store_1"],
+            attributes: { friendly_name: "Shop 1" },
+          },
+        },
+      } as unknown as HomeAssistant;
+      (editor as any).willUpdate(new Map([["hass", HASS]]));
+      expect((editor as any)._data).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.store_1_2"] },
+      });
+    });
+
     it("shows the alert without writing the config when opened", () => {
       const editor = createEditor({
         condition: "location",
