@@ -616,4 +616,65 @@ describe("computeLogbookItem run rows", () => {
     );
     expect(model.value).toEqual({ text: "Backup finished", type: "message" });
   });
+
+  it("uses the run label for a run with a trigger source", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "triggered by time pattern",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "ui.components.logbook.automation_triggered",
+      type: "state",
+    });
+  });
+
+  it("uses the run label for a started script", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "script.backup",
+        domain: "script",
+        name: "Backup",
+        message: "started",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "ui.components.logbook.script_ran",
+      type: "state",
+    });
+  });
+
+  // logbook.log with an automation entity_id used to show "Triggered" (#53746)
+  it("keeps a custom message logged for an automation", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "skipped, nobody home",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "skipped, nobody home",
+      type: "message",
+    });
+  });
 });
