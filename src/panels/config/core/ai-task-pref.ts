@@ -149,17 +149,13 @@ export class AITaskPref extends LitElement {
               @value-changed=${this._handlePrefChange}
             ></ha-entity-picker>
           </ha-settings-row>
-          <ha-settings-row .narrow=${this.narrow}>
-            <span slot="heading">
-              ${this.hass.localize("ui.panel.config.ai_task.allow_automatic_evaluation")}
-            </span>
-            <ha-switch
-              .checked=${prefs.allow_automatic_evaluation ?? false}
-              .disabled=${disabled || !prefs.evaluate_entity_id}
-              aria-label=${this.hass.localize("ui.panel.config.ai_task.allow_automatic_evaluation")}
-              @change=${this._handleAutomaticEvaluationChange}
-            ></ha-switch>
-          </ha-settings-row>
+          <ha-switch
+            .checked=${prefs.allow_automatic_evaluation ?? false}
+            .disabled=${disabled || !prefs.evaluate_entity_id}
+            @change=${this._handleAutomaticEvaluationChange}
+          >
+            ${this.hass.localize("ui.panel.config.ai_task.allow_automatic_evaluation")}
+          </ha-switch>
         </div>
         <div class="card-actions">
           <ha-progress-button .disabled=${disabled} @click=${this._update}>
@@ -248,6 +244,10 @@ export class AITaskPref extends LitElement {
     }
     .card-actions {
       text-align: right;
+    }
+    ha-switch {
+      display: block;
+      margin-block-start: var(--ha-space-4);
     }
     ha-entity-picker {
       flex: 1;
