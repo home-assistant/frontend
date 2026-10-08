@@ -443,9 +443,9 @@ export class HuiDistributionCard
 
     if (missingEntities.length === this._configEntities.length) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${missingEntities.map((entity) =>
-            createEntityNotFoundWarning(this.hass!, entity.entity)
+        <hui-warning>
+          ${missingEntities.map(() =>
+            createEntityNotFoundWarning(this.hass!.localize, this.hass!.config)
           )}
         </hui-warning>
       `;
@@ -458,7 +458,7 @@ export class HuiDistributionCard
     );
     if (deviceClassError) {
       return html`
-        <hui-warning .hass=${this.hass}>
+        <hui-warning>
           <ha-alert alert-type="error">${deviceClassError}</ha-alert>
         </hui-warning>
       `;
