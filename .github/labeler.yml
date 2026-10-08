@@ -47,7 +47,8 @@ Automations:
   - changed-files:
       - any-glob-to-any-file:
           - "src/panels/config/{automation,script,scene,blueprint}/**"
-          - "src/data/{automation,automation_i18n,script,script_i18n,scene,blueprint}.ts"
+          - src/components/automation/**
+          - "src/data/{automation,automation_i18n,script,script_i18n,scene,blueprint,trigger,condition,action}.ts"
 
 Backups:
   - changed-files:
@@ -169,9 +170,10 @@ Integrations:
       - any-glob-to-any-file:
           - src/panels/config/integrations/**
           - src/panels/config/application_credentials/**
+          - src/dialogs/config-flow/**
           - src/data/application_credential.ts
           - src/data/config_entries.ts
-          - src/data/config_flow.ts
+          - "src/data/{config_flow,data_entry_flow,options_flow,sub_config_flow}.ts"
 
 Labels:
   - changed-files:
@@ -195,7 +197,14 @@ Media:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/media-browser/**
+          - src/components/media-player/**
           - src/data/media_source.ts
+
+Notifications:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/dialogs/notifications/**
+          - src/data/persistent_notification.ts
 
 Onboarding:
   - changed-files:
@@ -215,6 +224,18 @@ Profile:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/profile/**
+
+Search:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/dialogs/quick-bar/**
+          - "src/data/{quick_bar,search}.ts"
+
+Sidebar:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/components/ha-sidebar.ts
+          - src/dialogs/sidebar/**
 
 System:
   - changed-files:
@@ -276,7 +297,8 @@ Voice:
       - any-glob-to-any-file:
           - src/panels/config/voice-assistants/**
           - "src/dialogs/{voice-assistant-setup,voice-command-dialog}/**"
-          - src/data/assist_pipeline.ts
+          - src/components/ha-assist-chat.ts
+          - "src/data/{assist_pipeline,assist_satellite,conversation,stt,tts,wake_word}.ts"
 
 Zones:
   - changed-files:
