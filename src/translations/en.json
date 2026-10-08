@@ -12317,19 +12317,23 @@
         "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
-          "title": "Before you use the Marketplace",
-          "intro": "Everything in the Marketplace is made and published by the community. What you install runs inside Home\u00a0Assistant, with full access to your home, your data, and the system Home\u00a0Assistant runs on.",
-          "risks_title": "Serious risks are involved",
+          "title": "Before you install from the Marketplace",
+          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "risks_title": "Anything you install can",
           "risks": {
-            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home\u00a0Assistant project.",
-            "own_risk": "You use everything you install from the Marketplace at your own risk.",
-            "privacy": "It can violate your privacy, for example by sending your data to others.",
-            "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
-            "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
+            "internet": "Connect to the internet",
+            "data": "Share your data with others",
+            "stability": "Slow down or crash Home\u00a0Assistant"
           },
-          "understand": "I understand the risks",
-          "continue": "Continue",
-          "continue_in": "You can continue in {seconds, plural,\n  one {# second}\n  other {# seconds}\n}"
+          "mindful_title": "So be mindful",
+          "mindful": {
+            "read": "Read the documentation and understand what the item changes.",
+            "monitor": "Keep an eye on your system after installing.",
+            "uninstall": "If something goes wrong, uninstall it right away."
+          },
+          "understand": "I understand the risks and agree",
+          "go_back": "Go back",
+          "continue": "Continue"
         },
         "common": {
           "install": "Install",
