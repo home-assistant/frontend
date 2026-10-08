@@ -7,6 +7,7 @@
 # paths don't match, even when the script's code check does:
 #
 # - Companion App
+# - Home Assistant Link
 # - Labs
 # - Supervisor
 
@@ -162,13 +163,6 @@ History:
           - src/panels/history/**
           - src/panels/lovelace/**/*history*
           - src/data/history.ts
-
-Home Assistant Link:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/panels/config/cloud/**
-          - src/data/cloud/**
-          - src/data/cloud.ts
 
 Integrations:
   - changed-files:

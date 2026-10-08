@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Applies the Companion App, Labs and Supervisor labels to pull requests.
+ * Applies the Companion App, Home Assistant Link, Labs and Supervisor labels
+ * to pull requests.
  *
  * These areas are often changed from code outside their folders, which
  * actions/labeler can't see, so this script owns them and .github/labeler.yml
@@ -30,6 +31,16 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
     paths: [/^src\/external_app\//],
     // Reads or messages the companion app the frontend is running in
     pattern: /\bauth\.external\b|\bfireExternalBusMessage\(/,
+  },
+  {
+    label: "Home Assistant Link",
+    paths: [
+      /^src\/panels\/config\/cloud\//,
+      /^src\/data\/cloud\//,
+      /^src\/data\/cloud\.ts$/,
+    ],
+    // Only runs when Home Assistant Link is set up
+    pattern: /isComponentLoaded\([^)]*["']cloud["']/,
   },
   {
     label: "Labs",
