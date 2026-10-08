@@ -36,6 +36,9 @@ import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
+  @property({ attribute: "aria-label" })
+  public ariaLabel: string | null = null;
+
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
@@ -209,7 +212,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     compact
                     .unknown=${this._unknownValue}
                     .unknownItemText=${this.unknownItemText}
-                    aria-label=${ifDefined(this.label)}
+                    aria-label=${ifDefined(this.ariaLabel || this.label)}
                     @click=${this.open}
                     @clear=${this._clear}
                     .icon=${this.icon}
@@ -239,7 +242,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     @closed=${this._hidePicker}
                     role="dialog"
                     aria-modal="true"
-                    aria-label=${this.label || "Select option"}
+                    aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
                     ${this._renderComboBox(true)}
                   </ha-bottom-sheet>
@@ -263,7 +266,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     trap-focus
                     role="dialog"
                     aria-modal="true"
-                    aria-label=${this.label || "Select option"}
+                    aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
                     ${this._renderComboBox()}
                   </wa-popover>

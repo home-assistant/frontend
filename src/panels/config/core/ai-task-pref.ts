@@ -111,6 +111,9 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="gen_data_entity_id"
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.config.ai_task.gen_data_header"
+              )}
               .disabled=${disabled}
               .value=${prefs.gen_data_entity_id ?? undefined}
               .entityFilter=${filterGenData}
@@ -128,6 +131,9 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="gen_image_entity_id"
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.config.ai_task.gen_image_header"
+              )}
               .disabled=${disabled}
               .value=${prefs.gen_image_entity_id ?? undefined}
               .entityFilter=${filterGenImage}
@@ -143,6 +149,9 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="evaluate_entity_id"
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.config.ai_task.evaluate_header"
+              )}
               .disabled=${disabled}
               .value=${prefs.evaluate_entity_id ?? undefined}
               .entityFilter=${filterEvaluate}
