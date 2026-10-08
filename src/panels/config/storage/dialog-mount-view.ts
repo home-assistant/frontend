@@ -10,7 +10,10 @@ import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
 import {
@@ -69,6 +72,18 @@ const mountPartitionLabel = ({
   const size = bytesToString(partition.size);
   return drive ? `${drive} — ${identity}, ${size}` : `${identity}, ${size}`;
 };
+
+const requiredFieldsFilled = (
+  schema: readonly HaFormSchema[],
+  data?: MountFormData
+): boolean =>
+  schema.every((field) => {
+    if (!field.required) {
+      return true;
+    }
+    const value = data?.[field.name as keyof MountFormData];
+    return value !== undefined && value !== null && value !== "";
+  });
 
 const mountSchema = memoizeOne(
   (
@@ -347,6 +362,17 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     if (!this.params) {
       return nothing;
     }
+    const schema = mountSchema(
+      this._i18n.localize,
+      this._existing,
+      this._data?.type,
+      this._showCIFSVersion,
+      this._diskSupported,
+      this._partitions,
+      this._diskIdentity,
+      this._readOnlyForced,
+      this._allowBackupUsage
+    );
     return html`
       <ha-dialog
         open
@@ -393,17 +419,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
         <ha-form
           autofocus
           .data=${this._data}
-          .schema=${mountSchema(
-            this._i18n.localize,
-            this._existing,
-            this._data?.type,
-            this._showCIFSVersion,
-            this._diskSupported,
-            this._partitions,
-            this._diskIdentity,
-            this._readOnlyForced,
-            this._allowBackupUsage
-          )}
+          .schema=${schema}
           .error=${this._validationError}
           .warning=${this._validationWarning}
           .computeLabel=${this._computeLabelCallback}
@@ -436,7 +452,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
           <ha-progress-button
             slot="primaryAction"
             .progress=${!!this._waiting}
-            .disabled=${!this.isDirtyState || this._partitionMissing}
+            .disabled=${
+              !this.isDirtyState || !requiredFieldsFilled(schema, this._data)
+            }
             @click=${this._connectMount}
           >
             ${
@@ -460,14 +478,6 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       !this._existing &&
       this._data?.type === SupervisorMountType.DISK &&
       this._partitions?.length === 0
-    );
-  }
-
-  private get _partitionMissing(): boolean {
-    return (
-      !this._existing &&
-      this._data?.type === SupervisorMountType.DISK &&
-      !this._data.device
     );
   }
 
