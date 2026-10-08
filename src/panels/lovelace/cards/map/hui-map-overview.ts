@@ -537,7 +537,7 @@ export class HuiMapOverview extends LitElement {
         </div>
         <ha-icon-button
           .label=${this._i18n.localize(
-            "ui.panel.lovelace.cards.map.overview.view_entity"
+            "ui.panel.lovelace.cards.show_more_info"
           )}
           .path=${mdiInformationOutline}
           @click=${this._handleMoreInfo}
