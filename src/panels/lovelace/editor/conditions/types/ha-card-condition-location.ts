@@ -90,7 +90,7 @@ export class HaCardConditionLocation extends LitElement {
           ? html`
               <ha-button
                 appearance="plain"
-size="s"
+                size="s"
                 .disabled=${this.disabled}
                 @click=${this._convert}
               >
