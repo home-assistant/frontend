@@ -1,4 +1,4 @@
-import { mdiHistory, mdiInformationOutline } from "@mdi/js";
+import { mdiCogOutline, mdiHistory } from "@mdi/js";
 import type {
   HassConfig,
   HassEntities,
@@ -43,6 +43,7 @@ import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
 import "../../../../components/ha-button";
+import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import { formatTime } from "../../../../common/datetime/format_time";
 import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
@@ -535,13 +536,17 @@ export class HuiMapOverview extends LitElement {
             }
           </span>
         </div>
-        <ha-icon-button
-          .label=${this._i18n.localize(
-            "ui.panel.lovelace.cards.show_more_info"
-          )}
-          .path=${mdiInformationOutline}
-          @click=${this._handleMoreInfo}
-        ></ha-icon-button>
+        ${
+          this._user?.is_admin
+            ? html`<ha-icon-button
+                .label=${this._i18n.localize(
+                  "ui.dialogs.more_info_control.settings"
+                )}
+                .path=${mdiCogOutline}
+                @click=${this._handleSettings}
+              ></ha-icon-button>`
+            : nothing
+        }
       </div>
       <div class="list">
         <div class="activity">
@@ -874,9 +879,9 @@ export class HuiMapOverview extends LitElement {
     fireEvent(this, "map-overview-select", { entityId: undefined });
   }
 
-  private _handleMoreInfo() {
+  private _handleSettings() {
     if (this.selected) {
-      fireEvent(this, "hass-more-info", { entityId: this.selected });
+      showMoreInfoDialog(this, { entityId: this.selected, view: "settings" });
     }
   }
 
