@@ -915,8 +915,10 @@ export default class HaAutomationActionRow extends LitElement {
     this._running = false;
     this._runResult = undefined;
 
+    const { enabled: _enabled, ...action } = this.action;
+
     const validated = await validateConfig(this.hass, {
-      actions: this.action,
+      actions: action,
     });
 
     if (!validated.actions.valid) {
@@ -940,7 +942,7 @@ export default class HaAutomationActionRow extends LitElement {
       }, 500);
 
       try {
-        await callExecuteScript(this.hass, this.action);
+        await callExecuteScript(this.hass, action);
         clearTimeout(runTimeout);
       } catch (err: any) {
         clearTimeout(runTimeout);
