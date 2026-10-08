@@ -64,8 +64,10 @@ const open = (editor: HaCardConditionLocation) =>
   (editor as any).willUpdate(new Map([["condition", undefined]]));
 
 // The condition shown in the form.
-const shown = (editor: HaCardConditionLocation): LocationCondition =>
-  (editor as any)._data(editor.condition, HASS.states);
+const shown = (editor: HaCardConditionLocation): LocationCondition => {
+  open(editor);
+  return (editor as any)._data;
+};
 
 const formChange = (value: Partial<LocationCondition>) => ({
   detail: { value: { condition: "location", ...value } },
@@ -86,6 +88,24 @@ describe("ha-card-condition-location", () => {
       expect(await value).toEqual({
         condition: "location",
         target: { label_id: "store" },
+      });
+    });
+
+    it("keeps other keys and removes away when it is turned off", async () => {
+      const editor = createEditor({
+        condition: "location",
+        target: {},
+        away: true,
+        alias: "At a store",
+      } as LocationCondition);
+      const value = nextValue(editor);
+      (editor as any)._valueChanged(
+        formChange({ target: { label_id: "store" }, away: false })
+      );
+      expect(await value).toEqual({
+        condition: "location",
+        target: { label_id: "store" },
+        alias: "At a store",
       });
     });
 

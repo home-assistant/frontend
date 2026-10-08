@@ -2,7 +2,6 @@ import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -128,6 +127,10 @@ export class HaCardConditionLocation extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  // `locations` is shown migrated, and written only once the condition is
+  // edited, so dashboards nobody edits keep their config.
+  @state() private _data?: LocationCondition;
+
   // Stays set after the first edit, so the alert keeps explaining the change.
   @state() private _migrated = false;
 
@@ -139,25 +142,22 @@ export class HaCardConditionLocation extends LitElement {
     return assert(condition, locationConditionStruct);
   }
 
-  // `locations` is shown migrated, and written only once the condition is
-  // edited, so dashboards nobody edits keep their config.
-  private _data = memoizeOne(
-    (condition: LocationCondition, states: HassEntities): LocationCondition =>
-      condition.locations === undefined
-        ? condition
-        : migrateLocationCondition(condition, states)
-  );
-
   protected willUpdate(changedProps: PropertyValues<this>): void {
-    if (
-      changedProps.has("condition") &&
-      this.condition.locations !== undefined
-    ) {
-      this._migrated = true;
+    if (!changedProps.has("condition")) {
+      return;
     }
+    if (this.condition.locations === undefined) {
+      this._data = this.condition;
+      return;
+    }
+    this._migrated = true;
+    this._data = migrateLocationCondition(this.condition, this.hass.states);
   }
 
   protected render() {
+    if (!this._data) {
+      return nothing;
+    }
     return html`
       ${
         this._migrated
@@ -177,7 +177,7 @@ export class HaCardConditionLocation extends LitElement {
       }
       <ha-form
         .hass=${this.hass}
-        .data=${this._data(this.condition, this.hass.states)}
+        .data=${this._data}
         .schema=${SCHEMA}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
@@ -192,11 +192,14 @@ export class HaCardConditionLocation extends LitElement {
     const value = ev.detail.value as LocationCondition;
 
     const condition: LocationCondition = {
-      condition: "location",
+      ...this.condition,
       target: value.target ?? {},
     };
+    delete condition.locations;
     if (value.away) {
       condition.away = true;
+    } else {
+      delete condition.away;
     }
 
     fireEvent(this, "value-changed", { value: condition });
