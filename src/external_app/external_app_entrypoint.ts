@@ -99,6 +99,8 @@ export const handleExternalMessage = (
     barCodeListeners.forEach((listener) => listener(msg));
   } else if (msg.command === "kiosk_mode/set") {
     fireEvent(window, "hass-kiosk-mode", { enable: msg.payload.enable });
+  } else if (msg.command === "webrtc/stream/stopped") {
+    fireEvent(window, "webrtc-stream-stopped", msg.payload);
   } else {
     return false;
   }
@@ -118,6 +120,7 @@ declare global {
     "improv-discovered-device": ImprovDiscoveredDevice;
     "improv-device-setup-done": undefined;
     "matter-commission-finish": MatterCommissionFinish;
+    "webrtc-stream-stopped": { session_id: string };
   }
 
   interface GlobalEventHandlersEventMap {
@@ -129,6 +132,9 @@ declare global {
     >;
     "matter-commission-finish": HASSDomEvent<
       HASSDomEvents["matter-commission-finish"]
+    >;
+    "webrtc-stream-stopped": HASSDomEvent<
+      HASSDomEvents["webrtc-stream-stopped"]
     >;
   }
 }

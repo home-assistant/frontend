@@ -77,6 +77,21 @@ interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
   type: "thread/import_credentials";
 }
 
+interface EMOutgoingMessageWebRtcStreamStart extends EMMessage {
+  type: "webrtc/stream/start";
+  payload: {
+    stream_type: "microphone";
+    entity_id: string;
+  };
+}
+
+interface EMOutgoingMessageWebRtcStreamStop extends EMMessage {
+  type: "webrtc/stream/stop";
+  payload: {
+    session_id: string;
+  };
+}
+
 interface EMOutgoingMessageWithAnswer {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
@@ -85,6 +100,11 @@ interface EMOutgoingMessageWithAnswer {
   "entity/add_to/get_actions": {
     request: EMOutgoingMessageEntityAddToGetActions;
     response: ExternalEntityAddToActions;
+  };
+  // Replies once the stream is connected
+  "webrtc/stream/start": {
+    request: EMOutgoingMessageWebRtcStreamStart;
+    response: { session_id: string };
   };
 }
 
@@ -251,7 +271,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageEntityControlled
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageReloadAndClearCache
-  | EMOutgoingMessageAssistSettings;
+  | EMOutgoingMessageAssistSettings
+  | EMOutgoingMessageWebRtcStreamStop;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -368,6 +389,16 @@ export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
   payload: MatterCommissionFinish;
 }
 
+// Sent when a connected stream ends without the frontend stopping it
+export interface EMIncomingMessageWebRtcStreamStopped extends EMMessage {
+  id: number;
+  type: "command";
+  command: "webrtc/stream/stopped";
+  payload: {
+    session_id: string;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -380,7 +411,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
   | EMIncomingMessageMatterCommissionFinish
-  | EMIncomingMessageKioskModeSet;
+  | EMIncomingMessageKioskModeSet
+  | EMIncomingMessageWebRtcStreamStopped;
 
 type EMIncomingMessage =
   EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
@@ -403,6 +435,7 @@ export interface ExternalConfig {
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
+  hasCameraMicrophoneStream?: boolean; // App streams the microphone to a camera itself with webrtc/stream/start, used when the frontend has no secure context
 }
 
 export interface ExternalEntityAddToAction {

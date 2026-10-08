@@ -1,7 +1,9 @@
+import type { ContextType } from "@lit/context";
 import { mdiMicrophone, mdiMicrophoneOff } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { watchAudioLevel } from "../../../common/audio/watch-audio-level";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -20,13 +22,24 @@ import {
   STREAM_TYPE_WEB_RTC,
   type CameraEntity,
 } from "../../../data/camera";
+import { configContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
+import {
+  canAppStreamMicrophone,
+  startAppMicrophoneStream,
+  stopAppMicrophoneStream,
+  subscribeAppStreamStopped,
+} from "../../../external_app/camera_microphone_stream";
+import { showToast } from "../../../util/toast";
 
 @customElement("more-info-camera")
 class MoreInfoCamera extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
@@ -42,6 +55,10 @@ class MoreInfoCamera extends LitElement {
 
   private _stopAudioLevel?: () => void;
 
+  private _appMicrophoneSession?: string;
+
+  private _unsubAppStreamStopped?: () => void;
+
   public connectedCallback() {
     super.connectedCallback();
     this._attached = true;
@@ -51,6 +68,15 @@ class MoreInfoCamera extends LitElement {
     super.disconnectedCallback();
     this._attached = false;
     this._stopMicrophoneMeter();
+    this._stopAppMicrophone();
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    const oldStateObj = changedProps.get("stateObj");
+    if (oldStateObj && oldStateObj.entity_id !== this.stateObj?.entity_id) {
+      this._stopAppMicrophone();
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -97,9 +123,20 @@ class MoreInfoCamera extends LitElement {
     `;
   }
 
+  /**
+   * Browsers only allow microphone access in a secure context (HTTPS). Without
+   * it, an app can send the microphone itself in a separate stream, while the
+   * video stream keeps running in the frontend.
+   */
+  private get _useAppMicrophone(): boolean {
+    return (
+      !window.isSecureContext &&
+      canAppStreamMicrophone(this._config?.auth.external)
+    );
+  }
+
   private _microphoneDisabledReason(): string | undefined {
-    // Browsers only allow microphone access in a secure context (HTTPS)
-    if (!window.isSecureContext) {
+    if (!window.isSecureContext && !this._useAppMicrophone) {
       return this._localize(
         "ui.dialogs.more_info_control.camera.microphone_not_secure"
       );
@@ -162,8 +199,77 @@ class MoreInfoCamera extends LitElement {
   }
 
   private _toggleMicrophone() {
+    if (this._useAppMicrophone) {
+      this._toggleAppMicrophone();
+      return;
+    }
     this._cameraStream?.toggleMicrophone();
   }
+
+  private async _toggleAppMicrophone() {
+    if (this._appMicrophoneSession) {
+      this._stopAppMicrophone();
+      return;
+    }
+    this._microphoneState = "connecting";
+    try {
+      const sessionId = await startAppMicrophoneStream(
+        this._config.auth.external!,
+        this.stateObj!.entity_id
+      );
+      // Stopped or closed while the app was connecting
+      if (this._microphoneState !== "connecting" || !this.isConnected) {
+        stopAppMicrophoneStream(this._config.auth.external!, sessionId);
+        return;
+      }
+      this._appMicrophoneSession = sessionId;
+      // Only connected sessions can be stopped by the app
+      this._unsubAppStreamStopped = subscribeAppStreamStopped(
+        this._appStreamStopped
+      );
+      this._microphoneState = "on";
+    } catch (err: unknown) {
+      this._microphoneState = "off";
+      showToast(this, {
+        message: this._localize(
+          "ui.dialogs.more_info_control.camera.microphone_app_failed",
+          { message: (err as { message?: string }).message ?? "" }
+        ),
+      });
+    }
+  }
+
+  private _stopAppMicrophone() {
+    if (this._appMicrophoneSession) {
+      stopAppMicrophoneStream(
+        this._config.auth.external!,
+        this._appMicrophoneSession
+      );
+      this._clearAppMicrophoneSession();
+    }
+    if (this._useAppMicrophone) {
+      this._microphoneState = "off";
+    }
+  }
+
+  private _clearAppMicrophoneSession() {
+    this._appMicrophoneSession = undefined;
+    this._unsubAppStreamStopped?.();
+    this._unsubAppStreamStopped = undefined;
+  }
+
+  private _appStreamStopped = (sessionId: string) => {
+    if (sessionId !== this._appMicrophoneSession) {
+      return;
+    }
+    this._clearAppMicrophoneSession();
+    this._microphoneState = "off";
+    showToast(this, {
+      message: this._localize(
+        "ui.dialogs.more_info_control.camera.microphone_app_stopped"
+      ),
+    });
+  };
 
   private _streamTypeChanged(
     ev: HASSDomEvent<HASSDomEvents["stream-type-changed"]>
@@ -174,6 +280,9 @@ class MoreInfoCamera extends LitElement {
   private _microphoneChanged(
     ev: HASSDomEvent<HASSDomEvents["microphone-changed"]>
   ) {
+    if (this._useAppMicrophone) {
+      return;
+    }
     this._microphoneState = ev.detail.state;
   }
 
