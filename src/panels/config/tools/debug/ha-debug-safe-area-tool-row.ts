@@ -1,37 +1,32 @@
-import type { ContextType } from "@lit/context";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { consume } from "../../../../common/decorators/consume";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { storage } from "../../../../common/decorators/storage";
 import { DEBUG_SAFE_AREA_TOOL_STORAGE_KEY } from "../../../../common/util/debug-safe-area";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/item/ha-list-item-base";
-import { internationalizationContext } from "../../../../data/context";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 @customElement("ha-debug-safe-area-tool-row")
 class HaDebugSafeAreaToolRow extends LitElement {
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: ContextType<typeof internationalizationContext>;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @storage({ key: DEBUG_SAFE_AREA_TOOL_STORAGE_KEY, state: true })
   private _enabled = false;
 
   protected render() {
-    if (!this._i18n) {
-      return nothing;
-    }
-    const { localize } = this._i18n;
     return html`
       <ha-list-item-base>
         <span slot="headline"
-          >${localize(
+          >${this._localize(
             "ui.panel.config.tools.tabs.debug.safe_area_tool.title"
           )}</span
         >
         <span slot="supporting-text"
-          >${localize(
+          >${this._localize(
             "ui.panel.config.tools.tabs.debug.safe_area_tool.description"
           )}</span
         >
