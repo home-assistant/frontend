@@ -20,10 +20,19 @@ import {
   type TriggerIdOption,
 } from "../../trigger/automation-trigger-id";
 import { describeTrigger } from "../../../../../data/automation_i18n";
-import { fullEntitiesContext } from "../../../../../data/context";
+import {
+  fullEntitiesContext,
+  triggerDescriptionsContext,
+} from "../../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
+import type { TriggerDescriptions } from "../../../../../data/trigger";
+import { isTriggerList } from "../../../../../data/trigger";
 import type { HomeAssistant } from "../../../../../types";
+import "../../ha-automation-row-options";
+import "../../ha-automation-row-threshold";
 import { rowStyles } from "../../styles";
+import { getTriggerTarget } from "../../target/get_trigger_target";
+import "../../target/ha-automation-row-targets";
 
 @customElement("ha-automation-condition-trigger")
 export class HaTriggerCondition extends LitElement {
@@ -40,6 +49,10 @@ export class HaTriggerCondition extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityReg: EntityRegistryEntry[] = [];
+
+  @state()
+  @consume({ context: triggerDescriptionsContext, subscribe: true })
+  private _triggerDescriptions: TriggerDescriptions = {};
 
   public static get defaultConfig(): TriggerCondition {
     return {
@@ -111,10 +124,11 @@ export class HaTriggerCondition extends LitElement {
                   }
                 ></ha-trigger-icon>
               </span>
-              <span slot="headline">
+              <span slot="headline" class="trigger-summary">
                 ${capitalizeFirstLetter(
                   describeTrigger(option.trigger, this.hass, this._entityReg)
                 )}
+                ${this._renderTriggerDetails(option.trigger)}
               </span>
               ${
                 option.duplicate
@@ -148,6 +162,42 @@ export class HaTriggerCondition extends LitElement {
           `
         )}
       </ha-list-selectable>
+    `;
+  }
+
+  private _renderTriggerDetails(trigger: TriggerIdOption["trigger"]) {
+    if (isTriggerList(trigger)) {
+      return nothing;
+    }
+    const description = this._triggerDescriptions[trigger.trigger];
+    const triggerTarget = getTriggerTarget(trigger, this._triggerDescriptions);
+    return html`
+      ${
+        description
+          ? html`<ha-automation-row-threshold
+                .config=${trigger}
+                .description=${description}
+              ></ha-automation-row-threshold>
+              <ha-automation-row-options
+                .config=${trigger}
+              ></ha-automation-row-options>`
+          : nothing
+      }
+      ${
+        triggerTarget &&
+        (triggerTarget.target !== undefined || triggerTarget.targetRequired)
+          ? html`<ha-automation-row-targets
+              size="s"
+              .target=${triggerTarget.target}
+              .targetRequired=${triggerTarget.targetRequired}
+              .selector=${
+                triggerTarget.targetSpec
+                  ? { target: triggerTarget.targetSpec }
+                  : undefined
+              }
+            ></ha-automation-row-targets>`
+          : nothing
+      }
     `;
   }
 
@@ -221,6 +271,13 @@ export class HaTriggerCondition extends LitElement {
       }
       ha-list-item-option {
         --ha-list-item-padding: var(--ha-space-1) var(--ha-space-2);
+      }
+      .trigger-summary {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--ha-space-1) var(--ha-space-2);
+        white-space: normal;
       }
       .trigger-row-leading {
         display: inline-flex;
