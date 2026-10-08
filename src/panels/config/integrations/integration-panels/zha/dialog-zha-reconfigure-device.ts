@@ -375,19 +375,14 @@ class DialogZHAReconfigureDevice extends LitElement {
   }
 
   private _handleMessage(message: ClusterConfigurationEvent): void {
-    // Messages can still arrive after the dialog closed, while the
-    // unsubscribe is in flight.
-    if (!this._clusterConfigurationStatuses) {
-      return;
-    }
-
     if (message.type === ZHA_CHANNEL_CFG_DONE) {
       this._unsubscribe();
       this._status = this._allSuccessful ? "finished" : "failed";
     } else {
-      const clusterConfigurationStatus = this._clusterConfigurationStatuses.get(
-        message.zha_channel_msg_data.cluster_id
-      );
+      const clusterConfigurationStatus =
+        this._clusterConfigurationStatuses!.get(
+          message.zha_channel_msg_data.cluster_id
+        );
       if (message.type === ZHA_CHANNEL_MSG_BIND) {
         if (!this._stages) {
           this._stages = ["binding"];
@@ -427,11 +422,20 @@ class DialogZHAReconfigureDevice extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._subscribed = reconfigureNode(
+    const subscription = reconfigureNode(
       this.hass,
       params.device.ieee,
-      this._handleMessage.bind(this)
+      (message) => {
+        // Messages of an earlier run can still arrive while its unsubscribe
+        // is in flight, also after the dialog was reopened. Only handle the
+        // messages of the current run.
+        if (this._subscribed !== subscription) {
+          return;
+        }
+        this._handleMessage(message);
+      }
     );
+    this._subscribed = subscription;
   }
 
   private _toggleDetails() {
