@@ -35,7 +35,6 @@ import { contrastingZoneContent } from "../../../../common/map/zone-marker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-relative-time";
-import "../../../../components/ha-resizable-bottom-sheet";
 import "../../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
 import "../../../../components/ha-spinner";
