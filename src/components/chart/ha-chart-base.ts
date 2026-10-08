@@ -531,6 +531,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
+      this._disposeSonification();
       if (this._compareCustomLegendOptions(previousOptions, this.options)) {
         // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
