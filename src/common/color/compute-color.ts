@@ -109,3 +109,24 @@ export function isValidColorString(color: string | undefined): boolean {
     return false;
   }
 }
+
+/**
+ * Converts a CSS color, like a color name, to `#rrggbb`.
+ * Returns undefined for invalid colors and colors with transparency.
+ */
+export function cssColorToHex(color: string): string | undefined {
+  const style = new Option().style;
+  style.color = color;
+  if (style.color === "") {
+    return undefined;
+  }
+
+  // The canvas normalizes any opaque CSS color to #rrggbb
+  const context = document.createElement("canvas").getContext("2d");
+  if (!context) {
+    return undefined;
+  }
+  context.fillStyle = color;
+  const normalized = String(context.fillStyle);
+  return /^#[0-9a-f]{6}$/.test(normalized) ? normalized : undefined;
+}

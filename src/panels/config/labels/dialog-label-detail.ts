@@ -2,6 +2,10 @@ import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import {
+  THEME_COLORS,
+  cssColorToHex,
+} from "../../../common/color/compute-color";
 import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -189,13 +193,23 @@ class DialogLabelDetail extends DirtyStateProviderMixin<LabelFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
+  // Core stores a theme color or #RRGGBB, but the color picker also accepts
+  // CSS colors like "gold". Convert those, so they can be saved.
+  private _labelColor(): string | null {
+    const color = this._color.trim();
+    if (!color || THEME_COLORS.has(color) || /^#[0-9a-f]{6}$/i.test(color)) {
+      return color || null;
+    }
+    return cssColorToHex(color) ?? color;
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
       const values: LabelRegistryEntryMutableParams = {
         name: this._name.trim(),
         icon: this._icon.trim() || null,
-        color: this._color.trim() || null,
+        color: this._labelColor(),
         description: this._description.trim() || null,
       };
       if (this.params!.entry) {
