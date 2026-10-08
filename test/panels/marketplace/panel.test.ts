@@ -170,14 +170,38 @@ describe("ha-panel-marketplace", () => {
     );
   });
 
-  it("shows the warning instead of the Marketplace until it is accepted", async () => {
+  it("keeps the Marketplace out of use behind the warning until it is accepted", async () => {
     const panel = await openPanel({
       "marketplace/info": async () => ({ ...INFO, warning_accepted: false }),
       "marketplace/repositories/list": async () => [],
     });
 
     expect(screen(panel, "ha-marketplace-warning")).not.toBeNull();
-    expect(screen(panel, "ha-marketplace-router")).toBeNull();
+    expect(screen(panel, "ha-marketplace-router")!.hasAttribute("inert")).toBe(
+      true
+    );
+  });
+
+  it("starts the Marketplace over once the warning is accepted", async () => {
+    let accepted = false;
+    const panel = await openPanel({
+      "marketplace/info": async () => ({
+        ...INFO,
+        warning_accepted: accepted,
+      }),
+      "marketplace/repositories/list": async () => [],
+    });
+    const behindWarning = screen(panel, "ha-marketplace-router");
+
+    accepted = true;
+    panel.dispatchEvent(new Event("marketplace-refresh"));
+    await settle(panel);
+
+    // What it tried before, like adding a repository from a link, runs again
+    const router = screen(panel, "ha-marketplace-router");
+    expect(router).not.toBe(behindWarning);
+    expect(router!.hasAttribute("inert")).toBe(false);
+    expect(screen(panel, "ha-marketplace-warning")).toBeNull();
   });
 
   it("loads the translations of the errors of the backend", async () => {

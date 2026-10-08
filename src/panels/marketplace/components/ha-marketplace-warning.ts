@@ -41,9 +41,8 @@ export class HaMarketplaceWarning extends LitElement {
 
   @state() private _error?: string;
 
-  // Set once there is no need to leave the Marketplace anymore when the
-  // dialog closes, after going back or accepting
-  private _done = false;
+  // Going back twice would leave the page before the Marketplace as well
+  private _leaving = false;
 
   protected render() {
     return html`
@@ -53,7 +52,6 @@ export class HaMarketplaceWarning extends LitElement {
         without-header
         aria-labelledby="title"
         aria-describedby="intro"
-        @closed=${this._goBack}
       >
         <div class="heading">
           <span class="badge">
@@ -106,6 +104,7 @@ export class HaMarketplaceWarning extends LitElement {
         </section>
         <div class="agree">
           <ha-checkbox
+            autofocus
             .checked=${this._understood}
             .disabled=${this._accepting}
             @change=${this._understoodChanged}
@@ -138,13 +137,13 @@ export class HaMarketplaceWarning extends LitElement {
     this._understood = ev.target.checked;
   }
 
-  // Escape closes the dialog too, without accepting there is nothing to use
-  // in the Marketplace, so that leaves it the same way
+  // Neither Escape nor the scrim close the warning, leaving the Marketplace
+  // takes a deliberate choice here, like accepting it does
   private _goBack(): void {
-    if (this._done) {
+    if (this._leaving) {
       return;
     }
-    this._done = true;
+    this._leaving = true;
     goBack("/config");
   }
 
@@ -157,10 +156,9 @@ export class HaMarketplaceWarning extends LitElement {
     this._error = undefined;
 
     try {
+      // The panel removes the warning once it fetches the acceptance, until
+      // then it stays usable
       await acceptMarketplaceWarning(this.hass);
-      // The panel removes this notice once the backend reports the
-      // acceptance, until then it stays usable
-      this._done = true;
     } catch (err: unknown) {
       this._error = marketplaceErrorMessage(err, this.hass.localize);
     } finally {
