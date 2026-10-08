@@ -75,7 +75,7 @@ const processAreasForClimate = (
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+  const computeTileCard = computeAreaTileCardConfig(hass, true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -173,7 +173,7 @@ const processUnassignedEntities = (
   );
   const unassignedEntities = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+  const computeTileCard = computeAreaTileCardConfig(hass, true);
 
   for (const entityId of unassignedEntities) {
     areaCards.push(computeTileCard(entityId));

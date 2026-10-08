@@ -75,7 +75,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       });
     }
 
-    const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
+    const computeTileCard = computeAreaTileCardConfig(hass, true);
 
     const areaFilter = generateEntityFilter(
       hass.states,

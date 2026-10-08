@@ -28,7 +28,6 @@ import type {
 } from "../cards/types";
 import type { EntityConfig } from "../entity-rows/types";
 import type { ButtonsHeaderFooterConfig } from "../header-footer/types";
-import { stripNamePrefix } from "./strip-name-prefix";
 
 const HIDE_DOMAIN = new Set([
   "ai_task",
@@ -120,25 +119,26 @@ export const computeSection = (
   ...sectionOptions,
 });
 
+interface ComputeCardsOptions {
+  renderFooterEntities?: boolean;
+  entityName?: EntityConfig["name"];
+}
+
 export const computeCards = (
   hass: HomeAssistant,
   entityIds: string[],
   entityCardOptions: Partial<EntitiesCardConfig>,
-  renderFooterEntities = true
+  options: ComputeCardsOptions = {}
 ): LovelaceCardConfig[] => {
+  const { renderFooterEntities = true, entityName } = options;
   const cards: LovelaceCardConfig[] = [];
   const states = hass.states;
   // For entity card
   const entitiesConf: (string | EntityConfig)[] = [];
 
-  const titlePrefix = entityCardOptions.title
-    ? entityCardOptions.title.toLowerCase()
-    : undefined;
-
   const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
 
   for (const entityId of entityIds) {
-    const stateObj = states[entityId];
     const domain = computeDomain(entityId);
 
     if (domain === "alarm_control_panel") {
@@ -208,33 +208,15 @@ export const computeCards = (
       renderFooterEntities &&
       (domain === "scene" || domain === "script")
     ) {
-      const conf: (typeof footerEntities)[0] = {
+      footerEntities.push({
         entity: entityId,
         show_icon: true,
         show_name: true,
-      };
-      let name: string | undefined;
-      if (
-        titlePrefix &&
-        stateObj &&
-        (name = stripNamePrefix(hass.formatEntityName(stateObj), titlePrefix))
-      ) {
-        conf.name = name;
-      }
-      footerEntities.push(conf);
+      });
     } else {
-      let name: string | undefined;
-      const entityConf =
-        titlePrefix &&
-        stateObj &&
-        (name = stripNamePrefix(hass.formatEntityName(stateObj), titlePrefix))
-          ? {
-              entity: entityId,
-              name,
-            }
-          : entityId;
-
-      entitiesConf.push(entityConf);
+      entitiesConf.push(
+        entityName ? { entity: entityId, name: entityName } : entityId
+      );
     }
   }
 
@@ -274,7 +256,10 @@ export const computeCards = (
   // If we ended up with footer entities but no normal entities,
   // render the footer entities as normal entities.
   if (entitiesConf.length === 0 && footerEntities.length > 0) {
-    return computeCards(hass, entityIds, entityCardOptions, false);
+    return computeCards(hass, entityIds, entityCardOptions, {
+      ...options,
+      renderFooterEntities: false,
+    });
   }
 
   if (entitiesConf.length > 0 || footerEntities.length > 0) {
@@ -600,7 +585,8 @@ export const generateDefaultViewConfig = (
                 `ui.panel.config.devices.type.${device.entry_type || "device"}`
               ),
             }),
-        }
+        },
+        { entityName: { type: "entity" } }
       )
     );
   }
