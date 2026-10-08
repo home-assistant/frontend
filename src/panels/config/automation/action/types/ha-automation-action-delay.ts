@@ -6,6 +6,7 @@ import { hasTemplate } from "../../../../../common/string/has-template";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-duration-input";
 import type { DelayAction } from "../../../../../data/script";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
@@ -24,17 +25,26 @@ export class HaDelayAction extends LitElement implements ActionElement {
     return { delay: "" };
   }
 
+  public static checkUiSupport(
+    localize: LocalizeFunc,
+    action: DelayAction
+  ): Error | undefined {
+    // Check for templates in action. If found, revert to YAML mode.
+    if (hasTemplate(action)) {
+      return Error(localize("ui.errors.config.no_template_editor_support"));
+    }
+    return undefined;
+  }
+
   public willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("action")) {
       return;
     }
-    // Check for templates in action. If found, revert to YAML mode.
-    if (this.action && hasTemplate(this.action)) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
-      );
+    const err = this.action
+      ? HaDelayAction.checkUiSupport(this.hass.localize, this.action)
+      : undefined;
+    if (err) {
+      fireEvent(this, "ui-mode-not-available", err);
       return;
     }
 
