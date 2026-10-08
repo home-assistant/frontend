@@ -175,7 +175,7 @@ export const showConfigFlowDialog = (
 
     renderExternalStepDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || step.handler}.config.${step.step_id}.description`,
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.description`,
         step.description_placeholders
       );
 
