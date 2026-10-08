@@ -787,6 +787,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 100%;
       --data-table-border-width: 0;
       --data-table-empty-row-height: var(--safe-area-inset-bottom, 0px);
+      /* Same insets as the content padding of hass-tabs-subpage */
+      --data-table-inset-right: var(--safe-area-inset-right, 0px);
+    }
+    :host([narrow]) ha-data-table {
+      --data-table-inset-left: var(--safe-area-inset-left, 0px);
     }
     :host(:not([narrow])) ha-data-table,
     .pane {
@@ -842,11 +847,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 56px;
       width: 100%;
       justify-content: space-between;
-      padding: 0 16px;
+      padding-left: calc(16px + var(--data-table-inset-left, 0px));
+      padding-right: calc(16px + var(--data-table-inset-right, 0px));
       gap: var(--ha-space-4);
       box-sizing: border-box;
       background: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
+      overflow-x: auto;
+      scrollbar-width: none;
     }
     ha-input-search {
       flex: 1;
@@ -911,27 +919,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .narrow-header-row {
-      --header-row-inset-start: var(--safe-area-inset-left, 0px);
-      --header-row-inset-end: var(--safe-area-inset-right, 0px);
       display: flex;
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0;
-      padding-inline-start: calc(16px + var(--header-row-inset-start));
+      padding-left: calc(16px + var(--data-table-inset-left, 0px));
+      padding-right: calc(16px + var(--data-table-inset-right, 0px));
       box-sizing: border-box;
       overflow-x: scroll;
       scrollbar-width: none;
-    }
-
-    .narrow-header-row:dir(rtl) {
-      --header-row-inset-start: var(--safe-area-inset-right, 0px);
-      --header-row-inset-end: var(--safe-area-inset-left, 0px);
-    }
-
-    .narrow-header-row::after {
-      content: "";
-      flex: 0 0 var(--header-row-inset-end);
     }
 
     .narrow-header-row .flex {

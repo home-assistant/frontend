@@ -1255,6 +1255,8 @@ export class HaDataTable extends LitElement {
         :host {
           height: 100%;
           --_cell-padding-inline: 16px;
+          --_inset-left: var(--data-table-inset-left, 0px);
+          --_inset-right: var(--data-table-inset-right, 0px);
         }
 
         :host([narrow]) {
@@ -1327,13 +1329,13 @@ export class HaDataTable extends LitElement {
           overflow: auto;
         }
 
+        .mdc-data-table {
+          width: calc(100% + var(--_inset-left) + var(--_inset-right));
+          margin-left: calc(-1 * var(--_inset-left));
+          margin-right: calc(-1 * var(--_inset-right));
+        }
+
         :host([narrow]) .mdc-data-table {
-          width: calc(
-            100% + var(--safe-area-inset-left, 0px) +
-              var(--safe-area-inset-right, 0px)
-          );
-          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
-          margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
           overflow: visible;
         }
 
@@ -1391,6 +1393,8 @@ export class HaDataTable extends LitElement {
         .load-error {
           flex-shrink: 0;
           padding: var(--ha-space-2) var(--ha-space-4);
+          padding-left: calc(var(--ha-space-4) + var(--_inset-left));
+          padding-right: calc(var(--ha-space-4) + var(--_inset-right));
           white-space: normal;
         }
 
@@ -1652,13 +1656,13 @@ export class HaDataTable extends LitElement {
           overflow: overlay !important;
         }
 
-        :host([narrow]) .mdc-data-table__row {
-          box-sizing: border-box;
-          padding-left: var(--safe-area-inset-left, 0px);
-          padding-right: var(--safe-area-inset-right, 0px);
+        .mdc-data-table__row,
+        :host(:not([narrow])) .mdc-data-table__header-row {
+          padding-left: var(--_inset-left);
+          padding-right: var(--_inset-right);
         }
 
-        :host([narrow]) .mdc-data-table__row:has(.group-header) {
+        .mdc-data-table__row:has(.group-header) {
           background-color: var(--primary-background-color);
         }
 
