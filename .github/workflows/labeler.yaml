@@ -2,6 +2,11 @@ name: "Pull Request Labeler"
 
 on: pull_request_target # zizmor: ignore[dangerous-triggers] -- safe: checks out base repo scripts only and reads PR files through the API, never PR head code
 
+# Runs one at a time per pull request, so an older run can't undo a newer one
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   triage:
     permissions:
