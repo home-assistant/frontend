@@ -37,7 +37,7 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
     // imports of data/external rather than isExternal, which is also a common
     // local name.
     pattern:
-      /\bauth\??\.external\b|\bfireExternalBusMessage\(|from ["'][^"']*\/(?:external_app\/|data\/external["'])/,
+      /\bauth\??\.external\b|\bfireExternalBusMessage\(|\bimport\s[^;]*?from ["'][^"']*\/(?:external_app\/|data\/external["'])/g,
   },
   {
     label: "Home Assistant Link",
@@ -47,14 +47,14 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
       /^src\/data\/cloud\.ts$/,
     ],
     // Only runs when Home Assistant Link is set up
-    pattern: /isComponentLoaded\([^)]*["']cloud["']/,
+    pattern: /isComponentLoaded\([^)]*["']cloud["']/g,
   },
   {
     label: "Labs",
     paths: [/^src\/panels\/config\/labs\//, /^src\/data\/labs\.ts$/],
     // Gates a feature behind, or toggles, a Labs preview feature
     pattern:
-      /\b(?:subscribeLabFeatures?|fetchLabFeatures|labsUpdatePreviewFeature)\(/,
+      /\b(?:subscribeLabFeatures?|fetchLabFeatures|labsUpdatePreviewFeature)\(/g,
   },
   {
     label: "Supervisor",
@@ -64,37 +64,87 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
       /^src\/data\/supervisor\//,
     ],
     // Only runs on installs with the Supervisor
-    pattern: /isComponentLoaded\([^)]*["']hassio["']/,
+    pattern: /isComponentLoaded\([^)]*["']hassio["']/g,
   },
 ];
 
-const normalise = (line: string) => line.slice(1).replace(/\s+/g, "");
+interface HunkSide {
+  lines: string[];
+  changed: boolean[];
+}
 
-// Matching lines that were only moved, reindented or reformatted cancel out
-const changesMatch = (patch: string, pattern: RegExp) => {
-  const added: string[] = [];
-  const removed: string[] = [];
+interface CodeChange {
+  code: string;
+  filename: string;
+}
+
+const parseHunks = (patch: string) => {
+  const hunks: { before: HunkSide; after: HunkSide }[] = [];
 
   for (const line of patch.split("\n")) {
-    if (
-      line.startsWith("+++") ||
-      line.startsWith("---") ||
-      !pattern.test(line)
-    ) {
+    if (line.startsWith("@@")) {
+      hunks.push({
+        before: { lines: [], changed: [] },
+        after: { lines: [], changed: [] },
+      });
       continue;
     }
 
-    if (line.startsWith("+")) {
-      added.push(normalise(line));
-    } else if (line.startsWith("-")) {
-      removed.push(normalise(line));
+    const hunk = hunks.at(-1);
+
+    if (!hunk || line.startsWith("\\")) {
+      continue;
+    }
+
+    const text = line.slice(1);
+
+    if (!line.startsWith("+")) {
+      hunk.before.lines.push(text);
+      hunk.before.changed.push(line.startsWith("-"));
+    }
+
+    if (!line.startsWith("-")) {
+      hunk.after.lines.push(text);
+      hunk.after.changed.push(line.startsWith("+"));
     }
   }
 
-  return (
-    added.some((line) => !removed.includes(line)) ||
-    removed.some((line) => !added.includes(line))
-  );
+  return hunks;
+};
+
+// Matches whole calls, which can span lines, that touch a changed line
+const changedMatches = (side: HunkSide, pattern: RegExp) => {
+  const text = side.lines.join("\n");
+  const matches: string[] = [];
+
+  for (const match of text.matchAll(pattern)) {
+    const first = text.slice(0, match.index).split("\n").length - 1;
+    const last = first + match[0].split("\n").length - 1;
+
+    if (side.changed.slice(first, last + 1).some(Boolean)) {
+      matches.push(match[0].replace(/\s+/g, ""));
+    }
+  }
+
+  return matches;
+};
+
+// Matches that were only moved, reindented or reformatted cancel out in pairs,
+// returning a file with a match that doesn't
+const unmatchedChange = (added: CodeChange[], removed: CodeChange[]) => {
+  const remaining = [...removed];
+
+  for (const change of added) {
+    const index = remaining.findIndex(({ code }) => code === change.code);
+
+    if (index === -1) {
+      return change.filename;
+    }
+
+    remaining.splice(index, 1);
+  }
+
+  return remaining[0]?.filename;
 };
 
 const describeError = (cause: unknown) =>
@@ -109,7 +159,6 @@ export default async function labelContent({
   core,
 }: GitHubScriptArgs<PullRequestPayload>) {
   const pr = context.payload.pull_request;
-  const existing = new Set(pr.labels.map((l) => l.name));
 
   const summary = createSummary(core, {
     heading: "Content labels",
@@ -129,19 +178,34 @@ export default async function labelContent({
   const { owner, repo } = context.repo;
 
   let files;
+  let existing: Set<string>;
 
   try {
-    files = await withRetry("pull request files", () =>
-      github.paginate(github.rest.pulls.listFiles, {
-        owner,
-        repo,
-        pull_number: pr.number,
-        per_page: 100,
-      })
-    );
+    // Read the current labels, as the event's snapshot can be stale by now
+    const [fileList, labels] = await Promise.all([
+      withRetry("pull request files", () =>
+        github.paginate(github.rest.pulls.listFiles, {
+          owner,
+          repo,
+          pull_number: pr.number,
+          per_page: 100,
+        })
+      ),
+      withRetry("pull request labels", () =>
+        github.paginate(github.rest.issues.listLabelsOnIssue, {
+          owner,
+          repo,
+          issue_number: pr.number,
+          per_page: 100,
+        })
+      ),
+    ]);
+
+    files = fileList;
+    existing = new Set(labels.map((l) => l.name));
   } catch (error) {
     summary.warn(
-      `Could not list the pull request's files: ${describeError(error)}`
+      `Could not read the pull request's files and labels: ${describeError(error)}`
     );
     await summary.write();
 
@@ -152,17 +216,30 @@ export default async function labelContent({
   const remove: string[] = [];
 
   for (const rule of RULES) {
-    const match = files.find(
-      (file) =>
-        rule.paths.some((path) => path.test(file.filename)) ||
-        (checkCode &&
-          file.patch !== undefined &&
-          changesMatch(file.patch, rule.pattern))
-    );
+    const added: CodeChange[] = [];
+    const removed: CodeChange[] = [];
+
+    if (checkCode) {
+      for (const { filename, patch } of files) {
+        for (const { before, after } of parseHunks(patch ?? "")) {
+          for (const code of changedMatches(after, rule.pattern)) {
+            added.push({ code, filename });
+          }
+
+          for (const code of changedMatches(before, rule.pattern)) {
+            removed.push({ code, filename });
+          }
+        }
+      }
+    }
+
+    const match =
+      files.find((file) => rule.paths.some((path) => path.test(file.filename)))
+        ?.filename ?? unmatchedChange(added, removed);
 
     if (match && !existing.has(rule.label)) {
-      core.info(`Adding ${rule.label} for ${match.filename}`);
-      add.push({ label: rule.label, reason: match.filename });
+      core.info(`Adding ${rule.label} for ${match}`);
+      add.push({ label: rule.label, reason: match });
     } else if (!match && existing.has(rule.label)) {
       core.info(`Removing ${rule.label}, no longer matched`);
       remove.push(rule.label);
