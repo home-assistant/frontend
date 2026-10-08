@@ -123,8 +123,6 @@ export const fetchDateWS = (
 
 // Rebuilding the charts for this many states takes tens of milliseconds
 const LARGE_HISTORY_STATES = 100_000;
-// About the width of a chart in pixels
-const HISTORY_CHART_PIXELS = 1000;
 const MIN_LARGE_HISTORY_UPDATE_DELAY = 1000;
 
 export const countHistoryStates = (history: HistoryStates): number => {
@@ -139,15 +137,13 @@ export const countHistoryStates = (history: HistoryStates): number => {
 export const computeHistoryUpdateDelay = (
   stateCount: number,
   timespanMs: number,
+  chartPixels: number,
   maxDelay: number
 ): number =>
   stateCount < LARGE_HISTORY_STATES
     ? 0
     : Math.min(
-        Math.max(
-          timespanMs / HISTORY_CHART_PIXELS,
-          MIN_LARGE_HISTORY_UPDATE_DELAY
-        ),
+        Math.max(timespanMs / chartPixels, MIN_LARGE_HISTORY_UPDATE_DELAY),
         maxDelay
       );
 

@@ -31,7 +31,10 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { shallowEqual } from "../../common/util/shallow-equal";
-import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
+import {
+  DEFAULT_CHART_WIDTH,
+  MIN_TIME_BETWEEN_UPDATES,
+} from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/date-picker/ha-date-range-nav";
@@ -518,6 +521,8 @@ class HaPanelHistory extends LitElement {
               countHistoryStates(history),
               Math.min(this._endDate.getTime(), Date.now()) -
                 this._startDate.getTime(),
+              (this._stateHistoryCharts?.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
               MIN_TIME_BETWEEN_UPDATES
             )
           : 0;
