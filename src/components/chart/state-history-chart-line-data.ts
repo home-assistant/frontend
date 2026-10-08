@@ -436,7 +436,7 @@ export function generateStateHistoryChartLineData(
       const stateObj = hass.states[states.entity_id];
       const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
       if (currentValue !== null) {
-        data[0].data!.push([nowMs, currentValue]);
+        data[0].data!.push([Math.max(nowMs, endTimeMs), currentValue]);
         trackY(currentValue);
       }
     }
