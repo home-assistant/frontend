@@ -215,7 +215,9 @@ export const computeCards = (
       });
     } else {
       entitiesConf.push(
-        entityName ? { entity: entityId, name: entityName } : entityId
+        entityName !== undefined
+          ? { entity: entityId, name: entityName }
+          : entityId
       );
     }
   }
