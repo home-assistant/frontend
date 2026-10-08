@@ -22,6 +22,7 @@ import type {
   PullRequestPayload,
 } from "./github-script.d.ts";
 import { withRetry } from "./github-retry.mts";
+import { createSummary } from "./github-summary.mts";
 
 const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
   {
@@ -91,37 +92,17 @@ export default async function labelContent({
 }: GitHubScriptArgs<PullRequestPayload>) {
   const pr = context.payload.pull_request;
   const existing = new Set(pr.labels.map((l) => l.name));
-  const results: string[][] = [];
-  const warnings: string[] = [];
 
-  const warn = (message: string) => {
-    core.warning(message);
-    warnings.push(message);
-  };
-
-  const writeSummary = async () => {
-    core.summary.addHeading("Content labels", 2);
-
-    if (results.length > 0) {
-      core.summary.addTable([
-        ["Label", "Change", "Reason"].map((data) => ({ data, header: true })),
-        ...results,
-      ]);
-    } else {
-      core.summary.addRaw("No content labels changed.\n");
-    }
-
-    if (warnings.length > 0) {
-      core.summary
-        .addHeading("Warnings", 3)
-        .addRaw(`${warnings.map((w) => `- ${w}`).join("\n")}\n`);
-    }
-
-    await core.summary.write();
-  };
+  const summary = createSummary(core, {
+    heading: "Content labels",
+    columns: ["Label", "Change", "Reason"],
+    empty: "No content labels changed.",
+  });
 
   if (process.env.LABELER_OUTCOME === "failure") {
-    warn("Applying labels from .github/labeler.yml failed, see its step");
+    summary.warn(
+      "Applying labels from .github/labeler.yml failed, see its step"
+    );
   }
 
   // Bot pull requests, such as Prettier bumps, rewrite code they don't change
@@ -141,8 +122,10 @@ export default async function labelContent({
       })
     );
   } catch (error) {
-    warn(`Could not list the pull request's files: ${describeError(error)}`);
-    await writeSummary();
+    summary.warn(
+      `Could not list the pull request's files: ${describeError(error)}`
+    );
+    await summary.write();
 
     return;
   }
@@ -186,9 +169,11 @@ export default async function labelContent({
 
     // Already removed, such as by hand or a run that raced this one
     if (removal.status === "fulfilled" || isNotFound(removal.reason)) {
-      results.push([name, "Removed", "No longer matched"]);
+      summary.addRow(name, "Removed", "No longer matched");
     } else {
-      warn(`Could not remove ${name}: ${describeError(removal.reason)}`);
+      summary.warn(
+        `Could not remove ${name}: ${describeError(removal.reason)}`
+      );
     }
   });
 
@@ -202,13 +187,16 @@ export default async function labelContent({
           labels: add.map(({ label }) => label),
         })
       );
-      results.push(...add.map(({ label, reason }) => [label, "Added", reason]));
+
+      for (const { label, reason } of add) {
+        summary.addRow(label, "Added", reason);
+      }
     } catch (error) {
-      warn(
+      summary.warn(
         `Could not add ${add.map(({ label }) => label).join(", ")}: ${describeError(error)}`
       );
     }
   }
 
-  await writeSummary();
+  await summary.write();
 }
