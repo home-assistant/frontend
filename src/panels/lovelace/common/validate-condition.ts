@@ -295,10 +295,10 @@ function checkLocationCondition(
   if (condition.locations?.includes(stateObj.state)) {
     return true;
   }
-  if (condition.away && stateObj.state === "not_home") {
+  if (condition.away === true && stateObj.state === "not_home") {
     return true;
   }
-  if (!condition.target) {
+  if (!isTargetObject(condition.target)) {
     return false;
   }
   const inZones = stateObj.attributes.in_zones;
@@ -308,6 +308,10 @@ function checkLocationCondition(
   const zones = resolveLocationZones(hass, condition.target);
   return inZones.some((zone) => zones.includes(zone));
 }
+
+/** YAML can hold anything here; only a mapping is a usable target. */
+const isTargetObject = (target: unknown): target is HassServiceTarget =>
+  typeof target === "object" && target !== null && !Array.isArray(target);
 
 const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
 
@@ -514,6 +518,12 @@ function validateUserCondition(condition: UserCondition) {
 }
 
 function validateLocationCondition(condition: LocationCondition) {
+  if (condition.target != null && !isTargetObject(condition.target)) {
+    return false;
+  }
+  if (condition.away != null && typeof condition.away !== "boolean") {
+    return false;
+  }
   return (
     condition.locations != null ||
     condition.target != null ||

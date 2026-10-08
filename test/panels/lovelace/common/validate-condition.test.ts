@@ -47,6 +47,18 @@ describe("validateConditionalConfig", () => {
       expect(validateConditionalConfig([condition] as any)).toBe(true);
     });
 
+    it.each([
+      ["a string target", { condition: "location", target: "zone.home" }],
+      ["a list target", { condition: "location", target: ["zone.home"] }],
+      ["a non-boolean away", { condition: "location", away: "yes" }],
+      [
+        "a non-boolean away with a target",
+        { condition: "location", target: {}, away: "yes" },
+      ],
+    ])("should return false with %s", (_name, condition) => {
+      expect(validateConditionalConfig([condition] as any)).toBe(false);
+    });
+
     it("should return false without locations, target or away", () => {
       expect(
         validateConditionalConfig([
@@ -239,6 +251,26 @@ describe("checkConditionsMet", () => {
       expect(
         checkConditionsMet(
           [{ condition: "location", target: { entity_id: "zone.store_1" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("does not match a target that is not a mapping", () => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      const conditions = [
+        { condition: "location", target: "zone.store_1" },
+      ] as any;
+      expect(() => checkConditionsMet(conditions, hass, {})).not.toThrow();
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
+    });
+
+    it("only treats away: true as away", () => {
+      const hass = createLocationHass("not_home", []);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", away: "yes" }] as any,
           hass,
           {}
         )

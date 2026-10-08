@@ -10,6 +10,7 @@ import {
   optional,
   string,
 } from "superstruct";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-form/ha-form";
@@ -108,14 +109,21 @@ export class HaCardConditionLocation extends LitElement {
     ev.stopPropagation();
     const value = ev.detail.value as LocationCondition;
 
-    const condition: LocationCondition = { condition: "location" };
     if (this._isLegacy) {
-      condition.locations = value.locations ?? [];
-    } else {
-      condition.target = value.target ?? {};
-      if (value.away) {
-        condition.away = true;
-      }
+      // Keep `target` and `away` from hand-written YAML; the legacy form
+      // doesn't show them.
+      fireEvent(this, "value-changed", {
+        value: { ...this.condition, locations: value.locations ?? [] },
+      });
+      return;
+    }
+
+    const condition: LocationCondition = {
+      condition: "location",
+      target: value.target ?? {},
+    };
+    if (value.away) {
+      condition.away = true;
     }
 
     fireEvent(this, "value-changed", { value: condition });
@@ -138,11 +146,17 @@ export class HaCardConditionLocation extends LitElement {
       )
       .map((stateObj) => stateObj.entity_id);
 
-    const condition: LocationCondition = {
-      condition: "location",
-      target: zoneIds.length ? { entity_id: zoneIds } : {},
-    };
-    if (names.has("not_home")) {
+    // Merge into any `target` and `away` already set in YAML.
+    const target = { ...this.condition.target };
+    const entityIds = [
+      ...new Set([...ensureArray(target.entity_id ?? []), ...zoneIds]),
+    ];
+    if (entityIds.length) {
+      target.entity_id = entityIds;
+    }
+
+    const condition: LocationCondition = { condition: "location", target };
+    if (names.has("not_home") || this.condition.away === true) {
       condition.away = true;
     }
 

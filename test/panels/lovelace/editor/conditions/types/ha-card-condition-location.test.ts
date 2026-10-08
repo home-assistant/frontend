@@ -70,6 +70,23 @@ describe("ha-card-condition-location", () => {
       });
     });
 
+    it("keeps target and away when editing a mixed legacy condition", async () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["home"],
+        target: { label_id: "store" },
+        away: true,
+      });
+      const value = nextValue(editor);
+      (editor as any)._valueChanged(formChange({ locations: ["Store 1"] }));
+      expect(await value).toEqual({
+        condition: "location",
+        locations: ["Store 1"],
+        target: { label_id: "store" },
+        away: true,
+      });
+    });
+
     it("omits away when it is turned off", async () => {
       const editor = createEditor({ condition: "location", target: {} });
       const value = nextValue(editor);
@@ -105,6 +122,25 @@ describe("ha-card-condition-location", () => {
       expect(await value).toEqual({
         condition: "location",
         target: { entity_id: ["zone.home", "zone.store_2"] },
+        away: true,
+      });
+    });
+
+    it("merges into an existing target and away", async () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Store 1"],
+        target: { entity_id: "zone.store_2", label_id: "store" },
+        away: true,
+      });
+      const value = nextValue(editor);
+      (editor as any)._convert();
+      expect(await value).toEqual({
+        condition: "location",
+        target: {
+          entity_id: ["zone.store_2", "zone.store_1"],
+          label_id: "store",
+        },
         away: true,
       });
     });
