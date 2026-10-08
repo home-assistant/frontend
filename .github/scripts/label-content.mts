@@ -37,7 +37,7 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
     // imports of data/external rather than isExternal, which is also a common
     // local name.
     pattern:
-      /\bauth\??\.external\b|\bfireExternalBusMessage\(|\bimport\s[^;]*?from ["'][^"']*\/(?:external_app\/|data\/external["'])/g,
+      /\bauth\??\.external\b|\bfireExternalBusMessage\([^)]*|\bimport\s[^;]*?from ["'][^"']*\/(?:external_app\/|data\/external["'])/g,
   },
   {
     label: "Home Assistant Link",
@@ -54,7 +54,7 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
     paths: [/^src\/panels\/config\/labs\//, /^src\/data\/labs\.ts$/],
     // Gates a feature behind, or toggles, a Labs preview feature
     pattern:
-      /\b(?:subscribeLabFeatures?|fetchLabFeatures|labsUpdatePreviewFeature)\(/g,
+      /\b(?:subscribeLabFeatures?|fetchLabFeatures|labsUpdatePreviewFeature)\([^)]*/g,
   },
   {
     label: "Supervisor",
@@ -112,7 +112,8 @@ const parseHunks = (patch: string) => {
   return hunks;
 };
 
-// Matches whole calls, which can span lines, that touch a changed line
+// Matches whole calls, which can span lines, that touch a changed line.
+// Whitespace and trailing commas are ignored, as Prettier adds them on wrap.
 const changedMatches = (side: HunkSide, pattern: RegExp) => {
   const text = side.lines.join("\n");
   const matches: string[] = [];
@@ -122,7 +123,7 @@ const changedMatches = (side: HunkSide, pattern: RegExp) => {
     const last = first + match[0].split("\n").length - 1;
 
     if (side.changed.slice(first, last + 1).some(Boolean)) {
-      matches.push(match[0].replace(/\s+/g, ""));
+      matches.push(match[0].replace(/\s+/g, "").replace(/,(?=[}\])]|$)/g, ""));
     }
   }
 
