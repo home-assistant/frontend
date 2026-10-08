@@ -12,7 +12,7 @@ import {
   formatTime,
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
-import { applyDurationSign } from "../common/datetime/normalize_duration";
+import { normalizeDuration } from "../common/datetime/normalize_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { sortWeekdays } from "../common/datetime/sort_weekdays";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
@@ -827,13 +827,14 @@ const describeLegacyTrigger = (
     let offset = "";
     const duration = createDurationData(trigger.offset);
     if (duration) {
-      const before = durationDataToSeconds(duration) < 0;
-      offset = formatDurationLong(
-        hass.locale,
-        applyDurationSign(duration, before)
-      );
+      const normalized = normalizeDuration(duration, {
+        enableDay: true,
+        enableSecond: true,
+        enableMillisecond: true,
+      });
+      offset = formatDurationLong(hass.locale, normalized.duration);
       if (offset) {
-        offsetChoice = before ? "before" : "after";
+        offsetChoice = normalized.negative ? "before" : "after";
       }
     }
 
@@ -868,8 +869,13 @@ const formatSunOffset = (
     return "";
   }
   try {
-    const formatted = formatDurationDigital(hass.locale, offset);
-    return formatted.startsWith("-") ? formatted : `+${formatted}`;
+    const normalized = normalizeDuration(offset, {
+      enableDay: false,
+      enableSecond: true,
+      enableMillisecond: true,
+    });
+    const formatted = formatDurationDigital(hass.locale, normalized.duration);
+    return `${normalized.negative ? "-" : "+"}${formatted}`;
   } catch (_e) {
     return JSON.stringify(offset);
   }
