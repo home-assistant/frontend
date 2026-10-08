@@ -28,9 +28,16 @@ import { createSummary } from "./github-summary.mts";
 const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
   {
     label: "Companion App",
-    paths: [/^src\/external_app\//],
-    // Reads or messages the companion app the frontend is running in
-    pattern: /\bauth\.external\b|\bfireExternalBusMessage\(/,
+    paths: [
+      /^src\/external_app\//,
+      /^src\/data\/external\.ts$/,
+      /^src\/util\/is_ios\.ts$/,
+    ],
+    // Reads or messages the companion app the frontend is running in. Matches
+    // imports of data/external rather than isExternal, which is also a common
+    // local name.
+    pattern:
+      /\bauth\??\.external\b|\bfireExternalBusMessage\(|from ["'][^"']*\/(?:external_app\/|data\/external["'])/,
   },
   {
     label: "Home Assistant Link",
