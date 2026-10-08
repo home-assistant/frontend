@@ -625,9 +625,6 @@ class AddIntegrationDialog extends LitElement {
       getIntegrationDescriptions(this.hass),
       fetchConfigFlowInProgress(this.hass.connection),
     ]);
-    if (loadId !== this._loadId) {
-      return;
-    }
 
     // Filter discovered flows
     this._flowsInProgress = flowsInProgress.filter((flow) =>
@@ -640,6 +637,10 @@ class AddIntegrationDialog extends LitElement {
         ...new Set(this._flowsInProgress.map((flow) => flow.handler)),
       ];
       await this.hass.loadBackendTranslation("title", discoveredHandlers, true);
+    }
+
+    if (loadId !== this._loadId) {
+      return;
     }
 
     for (const integration in descriptions.custom.integration) {
