@@ -39,6 +39,10 @@ const HASS = {
       attributes: { friendly_name: "Store 1" },
     },
   },
+  // Registered, but without a state (for example while zones reload).
+  entities: {
+    "zone.reloading": { entity_id: "zone.reloading" },
+  },
 } as unknown as HomeAssistant;
 
 const createEditor = (condition: LocationCondition) => {
@@ -203,6 +207,17 @@ describe("ha-card-condition-location", () => {
       expect(shown(editor)).toEqual({
         condition: "location",
         target: { entity_id: ["zone.store_3"] },
+      });
+    });
+
+    it("does not reuse the ID of a registered zone without a state", () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Reloading"],
+      });
+      expect(shown(editor)).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.reloading_2"] },
       });
     });
 

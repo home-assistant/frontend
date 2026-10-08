@@ -304,6 +304,20 @@ describe("checkConditionsMet", () => {
       expect(checkConditionsMet(conditions, relabeled, {})).toBe(true);
     });
 
+    it("picks up a zone whose state returns without a registry change", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      // zone.store_1 has no state while zones reload.
+      const { "zone.store_1": _store1, ...states } = hass.states;
+      const reloading = { ...hass, states } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, reloading, {})).toBe(false);
+
+      // Same registries, state is back.
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+    });
+
     it("re-checks in_zones when the person moves", () => {
       const conditions = [
         { condition: "location", target: { label_id: "store" } },

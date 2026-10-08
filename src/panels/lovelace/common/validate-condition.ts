@@ -342,6 +342,8 @@ interface ResolvedZones {
   entities: HomeAssistant["entities"];
   devices: HomeAssistant["devices"];
   areas: HomeAssistant["areas"];
+  /** Set while a registered zone has no state, which leaves it out. */
+  states?: HomeAssistant["states"];
   zones: string[];
 }
 
@@ -359,7 +361,8 @@ function resolveLocationZones(
     cached &&
     cached.entities === hass.entities &&
     cached.devices === hass.devices &&
-    cached.areas === hass.areas
+    cached.areas === hass.areas &&
+    (cached.states === undefined || cached.states === hass.states)
   ) {
     return cached.zones;
   }
@@ -371,10 +374,16 @@ function resolveLocationZones(
     hass.areas,
     ZONE_TARGET_SELECTOR
   ).filter((entityId) => computeDomain(entityId) === "zone");
+  // Resolving skips entities without a state, such as zones while they
+  // reload. Until they're back, resolve again on every state change.
+  const missingState = Object.keys(hass.entities).some(
+    (entityId) => computeDomain(entityId) === "zone" && !hass.states[entityId]
+  );
   resolvedZonesCache.set(target, {
     entities: hass.entities,
     devices: hass.devices,
     areas: hass.areas,
+    states: missingState ? hass.states : undefined,
     zones,
   });
   return zones;

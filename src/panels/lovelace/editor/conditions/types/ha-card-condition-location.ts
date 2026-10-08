@@ -1,4 +1,3 @@
-import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -44,17 +43,23 @@ const SCHEMA: HaFormSchema[] = [
  * Pick an unused zone ID for a name that matches no zone, adding `_2`, `_3`
  * and so on like Home Assistant does for new entities. A renamed zone keeps
  * its old ID, so the plain slug could select a zone the name never matched.
- * `reserved` holds IDs already picked for other names that slugify the same.
+ * Registered zones count as taken even without a state, such as while they
+ * reload. `reserved` holds IDs already picked for other names that slugify
+ * the same.
  */
 function missingZoneId(
   name: string,
-  states: HassEntities,
+  hass: HomeAssistant,
   reserved: Set<string>
 ): string {
   const baseId = `zone.${slugify(name)}`;
   let entityId = baseId;
   let i = 2;
-  while (entityId in states || reserved.has(entityId)) {
+  while (
+    entityId in hass.states ||
+    entityId in hass.entities ||
+    reserved.has(entityId)
+  ) {
     entityId = `${baseId}_${i}`;
     i++;
   }
@@ -67,13 +72,13 @@ function missingZoneId(
  */
 function migrateLocationCondition(
   condition: LocationCondition,
-  states: HassEntities
+  hass: HomeAssistant
 ): LocationCondition {
   // The person state is "home" for zone.home, otherwise the zone name.
   // Zone names aren't unique, and the old condition matched every zone with
   // the name, so keep all of them.
   const zoneIdsByName = new Map<string, string[]>();
-  for (const stateObj of Object.values(states)) {
+  for (const stateObj of Object.values(hass.states)) {
     const name = stateObj.attributes.friendly_name;
     if (
       stateObj.entity_id.startsWith("zone.") &&
@@ -108,7 +113,7 @@ function migrateLocationCondition(
     } else if (name !== "home" && name !== "not_home") {
       // Names that match no zone are kept, so the picker shows them as not
       // found instead of silently removing them.
-      const entityId = missingZoneId(name, states, missingIds);
+      const entityId = missingZoneId(name, hass, missingIds);
       missingIds.add(entityId);
       entityIds.add(entityId);
     }
@@ -158,7 +163,7 @@ export class HaCardConditionLocation extends LitElement {
     this._migrated = true;
     // Redo on state changes so a renamed or added zone is picked up, but keep
     // the same object when nothing changed so the form doesn't re-render.
-    const data = migrateLocationCondition(this.condition, this.hass.states);
+    const data = migrateLocationCondition(this.condition, this.hass);
     if (!deepEqual(data, this._data)) {
       this._data = data;
     }
