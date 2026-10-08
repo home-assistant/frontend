@@ -551,6 +551,33 @@ describe("computeRunTraceLink", () => {
       computeRunTraceLink(traceContexts, runRow({ domain: "script" }))
     ).toBe("/config/script/trace/child_a?run_id=run_script");
   });
+
+  it("does not link a run without trace contexts, as for non-admins", () => {
+    expect(
+      computeRunTraceLink(
+        {},
+        runRow({
+          domain: "automation",
+          item_id: "parent",
+          run_id: "run_parent",
+        })
+      )
+    ).toBeUndefined();
+  });
+
+  it("does not link a run whose context has no stored trace", () => {
+    expect(
+      computeRunTraceLink(
+        traceContexts,
+        runRow({
+          context_id: "ctx_2",
+          domain: "automation",
+          item_id: "parent",
+          run_id: "run_parent",
+        })
+      )
+    ).toBeUndefined();
+  });
 });
 
 describe("computeLogbookItem cause", () => {
