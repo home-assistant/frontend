@@ -153,7 +153,6 @@ export class MatterNetworkVisualization extends LitElement {
     }
     return html`
       <ha-network-graph
-        .hass=${this.hass}
         .searchFilter=${this._searchFilter}
         .data=${this._formatNetworkData(
           this._topology,
