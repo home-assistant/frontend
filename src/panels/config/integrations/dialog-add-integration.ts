@@ -45,9 +45,11 @@ import type {
   Brand,
   Brands,
   Integration,
+  IntegrationFilter,
   Integrations,
 } from "../../../data/integrations";
 import {
+  filterIntegrationsByDomains,
   findIntegration,
   getIntegrationDescriptions,
 } from "../../../data/integrations";
@@ -95,6 +97,8 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _filter?: string;
 
+  @state() private _integrationFilter?: IntegrationFilter;
+
   @state() private _pickedBrand?: string;
 
   @state() private _prevPickedBrand?: string;
@@ -117,8 +121,10 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
+  private _loadId = 0;
+
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
-    const loadPromise = this._load();
+    const loadPromise = this._load(params?.integrationFilter);
 
     if (params?.domain) {
       // If we get here we clicked the button to add an entry for a specific integration
@@ -150,6 +156,7 @@ class AddIntegrationDialog extends LitElement {
         : params?.domain || params?.brand;
     this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
+    this._integrationFilter = params?.integrationFilter;
     this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -171,8 +178,10 @@ class AddIntegrationDialog extends LitElement {
     this._openedDirectly = false;
     this._navigateToResult = false;
     this._filter = undefined;
+    this._integrationFilter = undefined;
     this._width = undefined;
     this._height = undefined;
+    this._loadId++;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -213,11 +222,12 @@ class AddIntegrationDialog extends LitElement {
       components: HassConfig["components"],
       localize: LocalizeFunc,
       discoveredFlowsCount: number,
-      filter?: string
+      filter?: string,
+      integrationFilter?: IntegrationFilter
     ): IntegrationListItem[] => {
       // Create a single discovered devices row if there are any discovered flows
       const discoveredRows: IntegrationListItem[] =
-        discoveredFlowsCount > 0
+        !integrationFilter && discoveredFlowsCount > 0
           ? [
               {
                 id: "_discovered",
@@ -235,7 +245,7 @@ class AddIntegrationDialog extends LitElement {
           : [];
 
       const addDeviceRows: IntegrationListItem[] = PROTOCOL_INTEGRATIONS.filter(
-        (domain) => components.includes(domain)
+        (domain) => !integrationFilter && components.includes(domain)
       )
         .map((domain) => ({
           id: `device_${domain}`,
@@ -386,7 +396,8 @@ class AddIntegrationDialog extends LitElement {
       this.hass.config.components,
       this.hass.localize,
       this._flowsInProgress?.length ?? 0,
-      this._filter
+      this._filter,
+      this._integrationFilter
     );
   }
 
@@ -608,7 +619,8 @@ class AddIntegrationDialog extends LitElement {
     `;
   };
 
-  private async _load() {
+  private async _load(integrationFilter?: IntegrationFilter) {
+    const loadId = ++this._loadId;
     const [descriptions, flowsInProgress] = await Promise.all([
       getIntegrationDescriptions(this.hass),
       fetchConfigFlowInProgress(this.hass.connection),
@@ -625,6 +637,10 @@ class AddIntegrationDialog extends LitElement {
         ...new Set(this._flowsInProgress.map((flow) => flow.handler)),
       ];
       await this.hass.loadBackendTranslation("title", discoveredHandlers, true);
+    }
+
+    if (loadId !== this._loadId) {
+      return;
     }
 
     for (const integration in descriptions.custom.integration) {
@@ -657,6 +673,16 @@ class AddIntegrationDialog extends LitElement {
       ...descriptions.core.helper,
       ...descriptions.custom.helper,
     };
+    if (integrationFilter) {
+      this._integrations = filterIntegrationsByDomains(
+        this._integrations,
+        integrationFilter.domains
+      );
+      this._helpers = filterIntegrationsByDomains(
+        this._helpers,
+        integrationFilter.domains
+      );
+    }
     this.hass.loadBackendTranslation(
       "title",
       descriptions.core.translated_name,
