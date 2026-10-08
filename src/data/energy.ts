@@ -1331,8 +1331,13 @@ export const getEnergyDataCollection = (
     collection.prefs = undefined;
   };
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
-    revision++;
-    selectionRevision++;
+    if (
+      collection.start.getTime() !== newStart.getTime() ||
+      collection.end?.getTime() !== newEnd?.getTime()
+    ) {
+      revision++;
+      selectionRevision++;
+    }
     clearUpdatePeriodTimeout();
     collection.start = newStart;
     collection.end = newEnd;
@@ -1347,9 +1352,11 @@ export const getEnergyDataCollection = (
     }
   };
   collection.setCompare = (compare: CompareMode) => {
-    revision++;
-    selectionRevision++;
-    collection.compare = compare;
+    if (collection.compare !== compare) {
+      revision++;
+      selectionRevision++;
+      collection.compare = compare;
+    }
   };
   return collection;
 };
