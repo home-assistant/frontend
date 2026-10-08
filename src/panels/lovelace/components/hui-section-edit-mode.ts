@@ -215,18 +215,17 @@ export class HuiSectionEditMode extends LitElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private _setClipboard(): boolean {
-    const section = getAtPath<LovelaceSectionRawConfig>(
+  private _getSection(): LovelaceSectionRawConfig | undefined {
+    return getAtPath<LovelaceSectionRawConfig>(
       this.lovelace!.config,
       this.path
     );
-    if (!section) return false;
-    this._clipboard = deepClone(section);
-    return true;
   }
 
   private _copySection(): void {
-    if (!this._setClipboard()) return;
+    const section = this._getSection();
+    if (!section) return;
+    this._clipboard = deepClone(section);
     this.lovelace!.showToast({
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.copied_to_clipboard"
@@ -235,10 +234,23 @@ export class HuiSectionEditMode extends LitElement {
   }
 
   private async _cutSection(): Promise<void> {
-    if (!this._setClipboard()) return;
-    await this.lovelace!.saveConfig(
-      deleteAtPath(this.lovelace!.config, this.path)
-    );
+    const section = this._getSection();
+    if (!section) return;
+    try {
+      await this.lovelace!.saveConfig(
+        deleteAtPath(this.lovelace!.config, this.path)
+      );
+    } catch (_err: unknown) {
+      // The clipboard is only replaced once the section is gone, so a failed
+      // cut does not turn into a copy.
+      this.lovelace!.showToast({
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.section.cut_error"
+        ),
+      });
+      return;
+    }
+    this._clipboard = deepClone(section);
     // Dashboards save every edit right away, unlike the automation editor, so
     // a cut section is only on the clipboard until it is pasted. Offer the
     // same undo as deleting a card.
@@ -254,16 +266,24 @@ export class HuiSectionEditMode extends LitElement {
     });
   }
 
-  private _pasteSection(offset: 0 | 1): void {
+  private async _pasteSection(offset: 0 | 1): Promise<void> {
     if (!this._clipboard) return;
     const index = this.path[this.path.length - 1] as number;
-    this.lovelace!.saveConfig(
-      insertAtPath(
-        this.lovelace!.config,
-        [...getParentPath(this.path), index + offset],
-        deepClone(this._clipboard)
-      )
-    );
+    try {
+      await this.lovelace!.saveConfig(
+        insertAtPath(
+          this.lovelace!.config,
+          [...getParentPath(this.path), index + offset],
+          deepClone(this._clipboard)
+        )
+      );
+    } catch (_err: unknown) {
+      this.lovelace!.showToast({
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.section.paste_error"
+        ),
+      });
+    }
   }
 
   private async _deleteSection() {
