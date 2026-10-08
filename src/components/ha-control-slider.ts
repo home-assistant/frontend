@@ -572,6 +572,7 @@ export class HaControlSlider extends LitElement {
       transition:
         transform 180ms ease-in-out,
         background-color 180ms ease-in-out;
+      will-change: transform;
     }
     .slider .slider-track-bar.show-handle {
       --slider-size: calc(100% - 2 * var(--handle-margin) - var(--handle-size));
