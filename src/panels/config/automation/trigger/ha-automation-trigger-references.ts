@@ -9,9 +9,15 @@ import "../../../../components/ha-tooltip";
 import "../../../../components/ha-trigger-icon";
 import type { TriggerCondition } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
-import { fullEntitiesContext } from "../../../../data/context";
+import {
+  fullEntitiesContext,
+  triggerDescriptionsContext,
+} from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TriggerDescriptions } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
+import { getPlatformTriggerTarget } from "../target/get_trigger_target";
+import "../target/ha-automation-row-targets";
 import {
   automationTriggerContext,
   type AutomationTriggerContext,
@@ -30,6 +36,10 @@ export class HaAutomationTriggerReferences extends LitElement {
   @state()
   @consume({ context: automationTriggerContext, subscribe: true })
   private _triggers?: AutomationTriggerContext;
+
+  @state()
+  @consume({ context: triggerDescriptionsContext, subscribe: true })
+  private _triggerDescriptions: TriggerDescriptions = {};
 
   protected render() {
     const options = this._triggers?.options ?? [];
@@ -51,8 +61,12 @@ export class HaAutomationTriggerReferences extends LitElement {
     }
 
     return [
-      selectedTriggers.map(
-        (option) => html`
+      selectedTriggers.map((option) => {
+        const platform = getPlatformTriggerTarget(
+          option.trigger,
+          this._triggerDescriptions
+        );
+        return html`
           <span class="trigger-reference">
             <span
               id="trigger-index-badge-${option.index}"
@@ -84,9 +98,24 @@ export class HaAutomationTriggerReferences extends LitElement {
                 describeTrigger(option.trigger, this.hass, this._entityReg)
               )}
             </span>
+            ${
+              platform &&
+              (platform.target !== undefined || platform.targetRequired)
+                ? html`<ha-automation-row-targets
+                    size="s"
+                    .target=${platform.target}
+                    .targetRequired=${platform.targetRequired}
+                    .selector=${
+                      platform.targetSpec
+                        ? { target: platform.targetSpec }
+                        : undefined
+                    }
+                  ></ha-automation-row-targets>`
+                : nothing
+            }
           </span>
-        `
-      ),
+        `;
+      }),
       missingIds.map(
         () => html`
           <span class="trigger-reference missing">
@@ -113,6 +142,7 @@ export class HaAutomationTriggerReferences extends LitElement {
     .trigger-reference {
       display: inline-flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: var(--ha-space-2);
       min-width: 0;
       max-width: 100%;
