@@ -83,7 +83,7 @@ import {
   handleGitHubNotConnected,
   handleGitHubRateLimited,
 } from "../tools/connect-github";
-import { brandsUrl } from "../../../util/brands-url";
+import { marketplaceBrandsUrl } from "../../../util/brands-url";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
@@ -523,7 +523,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
           alt=""
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
-          src=${brandsUrl(
+          src=${marketplaceBrandsUrl(
             {
               domain: repository.domain,
               type: "icon",
