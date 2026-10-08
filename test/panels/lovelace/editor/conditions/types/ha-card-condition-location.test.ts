@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { HaCardConditionLocation } from "../../../../../../src/panels/lovelace/editor/conditions/types/ha-card-condition-location";
 import type { LocationCondition } from "../../../../../../src/panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../../../../../src/types";
@@ -20,7 +20,7 @@ const HASS = {
       state: "0",
       attributes: { friendly_name: "Store 2" },
     },
-    // Shares a zone's name but isn't a zone, so convert must ignore it.
+    // Shares a zone's name but isn't a zone, so migration must ignore it.
     "person.me": {
       entity_id: "person.me",
       state: "home",
@@ -47,6 +47,10 @@ const nextValue = (editor: HaCardConditionLocation) =>
     );
   });
 
+// Runs the update hook without rendering ha-form, whose selectors load lazily.
+const open = (editor: HaCardConditionLocation) =>
+  (editor as any).willUpdate(new Map([["condition", undefined]]));
+
 const formChange = (value: Partial<LocationCondition>) => ({
   detail: { value: { condition: "location", ...value } },
   stopPropagation: () => undefined,
@@ -57,36 +61,6 @@ const validate = (condition: unknown) =>
 
 describe("ha-card-condition-location", () => {
   describe("value changes", () => {
-    it("keeps only locations for a legacy condition", async () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["home"],
-      });
-      const value = nextValue(editor);
-      (editor as any)._valueChanged(formChange({ locations: ["Store 1"] }));
-      expect(await value).toEqual({
-        condition: "location",
-        locations: ["Store 1"],
-      });
-    });
-
-    it("keeps target and away when editing a mixed legacy condition", async () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["home"],
-        target: { label_id: "store" },
-        away: true,
-      });
-      const value = nextValue(editor);
-      (editor as any)._valueChanged(formChange({ locations: ["Store 1"] }));
-      expect(await value).toEqual({
-        condition: "location",
-        locations: ["Store 1"],
-        target: { label_id: "store" },
-        away: true,
-      });
-    });
-
     it("omits away when it is turned off", async () => {
       const editor = createEditor({ condition: "location", target: {} });
       const value = nextValue(editor);
@@ -111,19 +85,20 @@ describe("ha-card-condition-location", () => {
     });
   });
 
-  describe("convert", () => {
-    it("maps zone names, home and not_home", async () => {
+  describe("migration", () => {
+    it("maps zone names, home and not_home when opened", async () => {
       const editor = createEditor({
         condition: "location",
         locations: ["home", "Store 2", "not_home"],
       });
       const value = nextValue(editor);
-      (editor as any)._convert();
+      open(editor);
       expect(await value).toEqual({
         condition: "location",
         target: { entity_id: ["zone.home", "zone.store_2"] },
         away: true,
       });
+      expect((editor as any)._migrated).toBe(true);
     });
 
     it("merges into an existing target and away", async () => {
@@ -134,7 +109,7 @@ describe("ha-card-condition-location", () => {
         away: true,
       });
       const value = nextValue(editor);
-      (editor as any)._convert();
+      open(editor);
       expect(await value).toEqual({
         condition: "location",
         target: {
@@ -145,27 +120,41 @@ describe("ha-card-condition-location", () => {
       });
     });
 
-    it("drops names that match no zone", async () => {
+    it("keeps names that match no zone", async () => {
       const editor = createEditor({
         condition: "location",
-        locations: ["Store 1", "Away", "Old store"],
+        locations: ["Store 1", "Old store"],
       });
       const value = nextValue(editor);
-      (editor as any)._convert();
+      open(editor);
       expect(await value).toEqual({
         condition: "location",
-        target: { entity_id: ["zone.store_1"] },
+        target: { entity_id: ["zone.store_1", "zone.old_store"] },
       });
     });
 
-    it("leaves an empty target when nothing matches", async () => {
+    it("leaves a condition without locations unchanged", async () => {
       const editor = createEditor({
         condition: "location",
-        locations: ["Old store"],
+        target: { label_id: "store" },
       });
-      const value = nextValue(editor);
-      (editor as any)._convert();
-      expect(await value).toEqual({ condition: "location", target: {} });
+      const listener = vi.fn();
+      editor.addEventListener("value-changed", listener);
+      open(editor);
+      expect(listener).not.toHaveBeenCalled();
+      expect((editor as any)._migrated).toBe(false);
+    });
+
+    it("does not migrate while disabled", async () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["home"],
+      });
+      editor.disabled = true;
+      const listener = vi.fn();
+      editor.addEventListener("value-changed", listener);
+      open(editor);
+      expect(listener).not.toHaveBeenCalled();
     });
   });
 
