@@ -536,6 +536,7 @@ class HaPanelHistory extends LitElement {
         }
         // Every message carries the complete history, so the latest one wins.
         pending = history;
+        this._stateHistoryCharts?.requestUpdate();
         if (this._historyUpdateTimer === undefined) {
           this._historyUpdateTimer = window.setTimeout(() => {
             this._historyUpdateTimer = undefined;
