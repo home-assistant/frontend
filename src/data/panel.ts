@@ -107,22 +107,48 @@ export const getConfigSubpageTitle = (
   path: string,
   configSections: Record<string, PageNavigation[]>
 ): string | undefined => {
-  // Search through all config section groups for a matching path
-  for (const sectionGroup of Object.values(configSections)) {
-    const pageNav = sectionGroup.find((nav) => path.startsWith(nav.path));
-    if (pageNav) {
-      if (pageNav.translationKey) {
-        const localized = hass.localize(pageNav.translationKey as LocalizeKeys);
-        if (localized) {
-          return localized;
-        }
-      }
+  const sections = Object.entries(configSections);
 
-      if (pageNav.name) {
-        return pageNav.name;
+  // Prefer pages with a full translation key or a name. The dashboard
+  // sections also list pages like /config/integrations under a broader title.
+  for (const [, pages] of sections) {
+    const pageNav = pages.find((nav) => path.startsWith(nav.path));
+    if (!pageNav) {
+      continue;
+    }
+
+    if (pageNav.translationKey?.includes(".")) {
+      const localized = hass.localize(pageNav.translationKey as LocalizeKeys);
+      if (localized) {
+        return localized;
       }
     }
+
+    if (pageNav.name) {
+      return pageNav.name;
+    }
   }
+
+  // Some pages are only listed with a short translation key. Expand it the
+  // same way their navigation does.
+  for (const [section, pages] of sections) {
+    const shortKey = pages.find((nav) =>
+      path.startsWith(nav.path)
+    )?.translationKey;
+    if (!shortKey || shortKey.includes(".")) {
+      continue;
+    }
+
+    const translationKey =
+      section === "general"
+        ? `ui.panel.config.${shortKey}.caption`
+        : `ui.panel.config.dashboard.${shortKey}.main`;
+    const localized = hass.localize(translationKey as LocalizeKeys);
+    if (localized) {
+      return localized;
+    }
+  }
+
   return undefined;
 };
 
