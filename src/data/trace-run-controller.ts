@@ -88,14 +88,24 @@ export class TraceRunController implements ReactiveController {
    */
   public writeRunIdToUrl(runId: string): void {
     const params = new URLSearchParams(location.search);
-    if (
-      location.pathname !== this._options.tracePath() ||
-      params.get("run_id") === runId
-    ) {
+    if (!this._isTracePage() || params.get("run_id") === runId) {
       return;
     }
     params.set("run_id", runId);
     replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
+  }
+
+  // The route decodes the item id, so a link may encode it differently than
+  // tracePath does, or not at all.
+  private _isTracePage(): boolean {
+    const tracePath = this._options.tracePath();
+    try {
+      return (
+        decodeURIComponent(location.pathname) === decodeURIComponent(tracePath)
+      );
+    } catch (_err) {
+      return location.pathname === tracePath;
+    }
   }
 
   // An entry without a run_id is left alone: closing a dialog with back lands
@@ -106,7 +116,7 @@ export class TraceRunController implements ReactiveController {
     if (
       !runId ||
       runId === (this._requestedRunId ?? shownRunId) ||
-      location.pathname !== this._options.tracePath()
+      !this._isTracePage()
     ) {
       return;
     }

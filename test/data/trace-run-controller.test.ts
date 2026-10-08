@@ -126,4 +126,38 @@ describe("TraceRunController", () => {
     navigate(`${PATH}?run_id=b`);
     expect(loadedRuns).toEqual([]);
   });
+
+  describe("with an item id that needs encoding", () => {
+    // The automation id "kitchen:lights", which the route decodes from any of
+    // its encodings.
+    let automation: TraceRunController;
+
+    beforeEach(() => {
+      automation = new TraceRunController(createHost(), {
+        tracePath: () => "/config/automation/trace/kitchen%3Alights",
+        shownRunId: () => "a",
+        loadRun: (runId) => loadedRuns.push(runId),
+      });
+      automation.hostConnected();
+    });
+
+    afterEach(() => {
+      automation.hostDisconnected();
+    });
+
+    it("follows links that encode the id differently or not at all", () => {
+      navigate("/config/automation/trace/kitchen:lights?run_id=b");
+      navigate("/config/automation/trace/kitchen%3alights?run_id=c");
+      automation.writeRunIdToUrl("d");
+      expect(loadedRuns).toEqual(["b", "c"]);
+      expect(location.pathname + location.search).toBe(
+        "/config/automation/trace/kitchen%3alights?run_id=d"
+      );
+    });
+
+    it("ignores a path that cannot be decoded", () => {
+      navigate("/config/automation/trace/kitchen%3?run_id=b");
+      expect(loadedRuns).toEqual([]);
+    });
+  });
 });
