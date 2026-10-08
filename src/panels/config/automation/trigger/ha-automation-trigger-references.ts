@@ -16,7 +16,7 @@ import {
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
-import { getPlatformTriggerTarget } from "../target/get_trigger_target";
+import { getTriggerTarget } from "../target/get_trigger_target";
 import "../target/ha-automation-row-targets";
 import {
   automationTriggerContext,
@@ -62,7 +62,7 @@ export class HaAutomationTriggerReferences extends LitElement {
 
     return [
       selectedTriggers.map((option) => {
-        const platform = getPlatformTriggerTarget(
+        const triggerTarget = getTriggerTarget(
           option.trigger,
           this._triggerDescriptions
         );
@@ -99,15 +99,16 @@ export class HaAutomationTriggerReferences extends LitElement {
               )}
             </span>
             ${
-              platform &&
-              (platform.target !== undefined || platform.targetRequired)
+              triggerTarget &&
+              (triggerTarget.target !== undefined ||
+                triggerTarget.targetRequired)
                 ? html`<ha-automation-row-targets
                     size="s"
-                    .target=${platform.target}
-                    .targetRequired=${platform.targetRequired}
+                    .target=${triggerTarget.target}
+                    .targetRequired=${triggerTarget.targetRequired}
                     .selector=${
-                      platform.targetSpec
-                        ? { target: platform.targetSpec }
+                      triggerTarget.targetSpec
+                        ? { target: triggerTarget.targetSpec }
                         : undefined
                     }
                   ></ha-automation-row-targets>`

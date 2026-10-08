@@ -26,11 +26,12 @@ import {
 } from "../../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { TriggerDescriptions } from "../../../../../data/trigger";
+import { isTriggerList } from "../../../../../data/trigger";
 import type { HomeAssistant } from "../../../../../types";
 import "../../ha-automation-row-options";
 import "../../ha-automation-row-threshold";
 import { rowStyles } from "../../styles";
-import { getPlatformTriggerTarget } from "../../target/get_trigger_target";
+import { getTriggerTarget } from "../../target/get_trigger_target";
 import "../../target/ha-automation-row-targets";
 
 @customElement("ha-automation-condition-trigger")
@@ -127,7 +128,7 @@ export class HaTriggerCondition extends LitElement {
                 ${capitalizeFirstLetter(
                   describeTrigger(option.trigger, this.hass, this._entityReg)
                 )}
-                ${this._renderPlatformDetails(option.trigger)}
+                ${this._renderTriggerDetails(option.trigger)}
               </span>
               ${
                 option.duplicate
@@ -164,31 +165,34 @@ export class HaTriggerCondition extends LitElement {
     `;
   }
 
-  private _renderPlatformDetails(trigger: TriggerIdOption["trigger"]) {
-    const platform = getPlatformTriggerTarget(
-      trigger,
-      this._triggerDescriptions
-    );
-    if (!platform) {
+  private _renderTriggerDetails(trigger: TriggerIdOption["trigger"]) {
+    if (isTriggerList(trigger)) {
       return nothing;
     }
+    const description = this._triggerDescriptions[trigger.trigger];
+    const triggerTarget = getTriggerTarget(trigger, this._triggerDescriptions);
     return html`
-      <ha-automation-row-threshold
-        .config=${platform.trigger}
-        .description=${platform.description}
-      ></ha-automation-row-threshold>
-      <ha-automation-row-options
-        .config=${platform.trigger}
-      ></ha-automation-row-options>
       ${
-        platform.target !== undefined || platform.targetRequired
+        description
+          ? html`<ha-automation-row-threshold
+                .config=${trigger}
+                .description=${description}
+              ></ha-automation-row-threshold>
+              <ha-automation-row-options
+                .config=${trigger}
+              ></ha-automation-row-options>`
+          : nothing
+      }
+      ${
+        triggerTarget &&
+        (triggerTarget.target !== undefined || triggerTarget.targetRequired)
           ? html`<ha-automation-row-targets
               size="s"
-              .target=${platform.target}
-              .targetRequired=${platform.targetRequired}
+              .target=${triggerTarget.target}
+              .targetRequired=${triggerTarget.targetRequired}
               .selector=${
-                platform.targetSpec
-                  ? { target: platform.targetSpec }
+                triggerTarget.targetSpec
+                  ? { target: triggerTarget.targetSpec }
                   : undefined
               }
             ></ha-automation-row-targets>`

@@ -75,8 +75,7 @@ import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
-import { getDeviceTarget } from "../target/get_device_target";
-import { getEntityTarget } from "../target/get_entity_target";
+import { getTriggerTarget } from "../target/get_trigger_target";
 import "../target/ha-automation-row-targets";
 import {
   automationTriggerContext,
@@ -226,23 +225,12 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     const yamlMode = this._yamlMode || !supported;
 
-    const descriptionHasTarget =
-      type === "platform" &&
-      "target" in
-        this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger];
-
-    const hasEntityTarget = type === "state" || type === "numeric_state";
-
-    const target = this._getTarget(type, descriptionHasTarget, hasEntityTarget);
-
-    const targetRequired =
-      (descriptionHasTarget || hasEntityTarget) && !this._isNew;
-
-    const triggerTargetSpec =
-      type === "platform"
-        ? this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
-            ?.target
-        : undefined;
+    const triggerTarget = this._getTriggerTarget(
+      this.trigger,
+      this.triggerDescriptions
+    );
+    const target = triggerTarget?.target;
+    const targetRequired = !!triggerTarget?.targetRequired && !this._isNew;
 
     const noteTooltipText = truncateWithEllipsis(
       (type !== "list" &&
@@ -321,7 +309,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             ? this._renderTargets(
                 target,
                 targetRequired,
-                triggerTargetSpec,
+                triggerTarget?.targetSpec,
                 type !== "device"
               )
             : nothing
@@ -625,26 +613,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
-  private _getEntityTarget = memoizeOne(getEntityTarget);
-
-  private _getDeviceTarget = memoizeOne(getDeviceTarget);
-
-  private _getTarget(
-    type: string,
-    descriptionHasTarget: boolean,
-    hasEntityTarget: boolean
-  ): HassServiceTarget | undefined {
-    if (descriptionHasTarget && "target" in this.trigger) {
-      return this.trigger.target;
-    }
-    if (hasEntityTarget && "entity_id" in this.trigger) {
-      return this._getEntityTarget(this.trigger.entity_id);
-    }
-    if (type === "device" && "device_id" in this.trigger) {
-      return this._getDeviceTarget(this.trigger.device_id);
-    }
-    return undefined;
-  }
+  private _getTriggerTarget = memoizeOne(getTriggerTarget);
 
   private _renderTargets = memoizeOne(
     (
