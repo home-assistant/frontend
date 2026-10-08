@@ -26,6 +26,12 @@ const HASS = {
       state: "0",
       attributes: { friendly_name: "Store 2" },
     },
+    // Renamed from "Store", so its ID no longer matches its name.
+    "zone.store": {
+      entity_id: "zone.store",
+      state: "0",
+      attributes: { friendly_name: "Shop" },
+    },
     // Shares a zone's name but isn't a zone, so migration must ignore it.
     "person.me": {
       entity_id: "person.me",
@@ -135,6 +141,18 @@ describe("ha-card-condition-location", () => {
       expect(shown(editor)).toEqual({
         condition: "location",
         target: { entity_id: ["zone.store_1", "zone.old_store"] },
+      });
+    });
+
+    it("does not reuse the ID of a zone with another name", () => {
+      // zone.store is "Shop" and zone.store_2 is "Store 2".
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Store"],
+      });
+      expect(shown(editor)).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.store_3"] },
       });
     });
 
