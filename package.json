@@ -77,7 +77,6 @@
     "@lit/context": "1.1.6",
     "@lit/reactive-element": "2.1.2",
     "@lit/task": "1.0.3",
-    "@mapbox/mapbox-gl-rtl-text": "0.4.0",
     "@maplibre/maplibre-gl-leaflet": "0.1.4",
     "@material/mwc-formfield": "0.27.0",
     "@material/mwc-list": "0.27.0",

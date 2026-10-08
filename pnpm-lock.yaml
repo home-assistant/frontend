@@ -293,9 +293,6 @@ importers:
       '@lit/task':
         specifier: 1.0.3
         version: 1.0.3
-      '@mapbox/mapbox-gl-rtl-text':
-        specifier: 0.4.0
-        version: 0.4.0
       '@maplibre/maplibre-gl-leaflet':
         specifier: 0.1.4
         version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.12.0)
@@ -2257,9 +2254,6 @@ packages:
   '@mapbox/jsonlint-lines-primitives@2.0.3':
     resolution: {integrity: sha512-0SElaV0uMxEnxzBhhX9WTuPyUeMsAN/SS0i16tjuba4/mio63MG9khjC1a0JAiPGXAwvwm4UfHJURCN7nyudQg==}
     engines: {node: '>= 22'}
-
-  '@mapbox/mapbox-gl-rtl-text@0.4.0':
-    resolution: {integrity: sha512-WNSgEFxXd2a15Eh2GwZNWBiV7Z8leq8JEGcoHpfrgaBDmFQMW4a1MO5Ol9BNv6APqTbHZ8uq7L8H5q2KCVt1kg==}
 
   '@mapbox/point-geometry@1.1.0':
     resolution: {integrity: sha512-YGcBz1cg4ATXDCM/71L9xveh4dynfGmcLDqufR+nQQy3fKwsAZsWd/x4621/6uJaeB9mwOHE6hPeDgXz9uViUQ==}
@@ -9790,8 +9784,6 @@ snapshots:
   '@lokalise/node-api@16.6.0': {}
 
   '@mapbox/jsonlint-lines-primitives@2.0.3': {}
-
-  '@mapbox/mapbox-gl-rtl-text@0.4.0': {}
 
   '@mapbox/point-geometry@1.1.0': {}
 
