@@ -25,6 +25,8 @@ import {
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
   EMPTY_PREFERENCES,
+  CompareMode,
+  type EnergyData,
 } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
@@ -1124,6 +1126,326 @@ describe("getEnergyLiveDayPeriod", () => {
     const expected = energyPeriodDay(now, -1);
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
+  });
+});
+
+describe("getEnergyDataCollection overlapping refreshes", () => {
+  afterEach(() => {
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  const createCollection = (key = "energy_overlapping") => {
+    const hass = createMockHass();
+    const pending: {
+      resolve: (info: {
+        cost_sensors: Record<string, string>;
+        solar_forecast_domains: string[];
+      }) => void;
+      reject: (error: Error) => void;
+    }[] = [];
+    const callWS = vi.fn((msg: { type: string }) => {
+      if (msg.type !== "energy/info") {
+        throw new Error(`unexpected ${msg.type}`);
+      }
+      return new Promise((resolve, reject) => {
+        pending.push({ resolve, reject });
+      });
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    const collection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      key,
+      prefs: EMPTY_PREFERENCES,
+    });
+    collection.setPeriod(
+      new Date("2026-01-01T00:00:00Z"),
+      new Date("2026-01-31T23:59:59Z")
+    );
+    return { collection, pending, connection: hass.connection, callWS };
+  };
+
+  const complete = async (
+    request: ReturnType<typeof createCollection>["pending"][number]
+  ) => {
+    request.resolve({ cost_sensors: {}, solar_forecast_domains: [] });
+    await vi.advanceTimersByTimeAsync(0);
+  };
+
+  it.each([true, false])(
+    "keeps today's data on resubscribe within the grace period (already loaded: %s)",
+    async (loaded) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-01-01T12:00:00Z"));
+      const { collection, pending } = createCollection();
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const unsub = collection.subscribe(() => undefined);
+      if (loaded) {
+        await complete(pending[0]);
+      }
+      unsub();
+      // The Home summary reapplies today's range before every subscription.
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const received = vi.fn();
+      const unsubAgain = collection.subscribe(received);
+      if (!loaded) {
+        await complete(pending[0]);
+      }
+      await vi.advanceTimersByTimeAsync(0);
+      assert.equal(pending.length, 1);
+      assert.equal(received.mock.calls.length, 1);
+      assert.strictEqual(received.mock.calls[0][0], collection.state);
+      unsubAgain();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
+  it("keeps an in-flight result when the comparison mode is reapplied", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    collection.setCompare(CompareMode.PREVIOUS);
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    collection.setCompare(CompareMode.PREVIOUS);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 1);
+    assert.equal(collection.state.compareMode, CompareMode.PREVIOUS);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it.each([true, false])(
+    "discards an older response (latest completes first: %s)",
+    async (latestFirst) => {
+      vi.useFakeTimers();
+      const { collection, pending } = createCollection();
+      const received: EnergyData[] = [];
+      const unsub = collection.subscribe((data) => received.push(data));
+      collection.setPeriod(
+        new Date("2026-02-01T00:00:00Z"),
+        new Date("2026-02-28T23:59:59Z")
+      );
+      const refresh = collection.refresh();
+      const [older, latest] = pending;
+      await complete(latestFirst ? latest : older);
+      if (!latestFirst) {
+        assert.equal(received.length, 0);
+        assert.equal(collection.state, undefined);
+      }
+      await complete(latestFirst ? older : latest);
+      await refresh;
+      assert.equal(received.length, 1);
+      assert.equal(
+        collection.state.start.getTime(),
+        collection.start.getTime()
+      );
+      assert.strictEqual(received[0], collection.state);
+      unsub();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
+  it("invalidates a load when the selection changes before another refresh starts", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    collection.setCompare(CompareMode.PREVIOUS);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 0);
+    assert.equal(collection.state, undefined);
+    const refresh = collection.refresh();
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(collection.state.compareMode, CompareMode.PREVIOUS);
+    assert.equal(received.mock.calls.length, 1);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("distinguishes requests when navigating away and back to the same period", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    const { start, end } = collection;
+    collection.setPeriod(
+      new Date("2026-02-01T00:00:00Z"),
+      new Date("2026-02-28T23:59:59Z")
+    );
+    collection.setPeriod(start, end);
+    const refresh = collection.refresh();
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 0);
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(received.mock.calls.length, 1);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("ignores obsolete failures but rejects failures for the current request", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const oldRefresh = collection.refresh();
+    const oldResult = oldRefresh.then(
+      () => "resolved",
+      () => "rejected"
+    );
+    const latestRefresh = collection.refresh();
+    const latestError = new Error("current load failed");
+    const latestResult = latestRefresh.then(
+      () => undefined,
+      (error: unknown) => error
+    );
+    pending[0].reject(new Error("obsolete load failed"));
+    assert.equal(await oldResult, "resolved");
+    pending[1].reject(latestError);
+    assert.strictEqual(await latestResult, latestError);
+  });
+
+  it("does not restore obsolete preferences after they have been cleared", async () => {
+    vi.useFakeTimers();
+    const { collection, pending, callWS } = createCollection();
+    const oldPrefs = { ...EMPTY_PREFERENCES };
+    const latestPrefs = { ...EMPTY_PREFERENCES };
+    let resolveOldPrefs!: (prefs: typeof oldPrefs) => void;
+    let resolveLatestPrefs!: (prefs: typeof latestPrefs) => void;
+    callWS.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveOldPrefs = resolve;
+        })
+    );
+    callWS.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveLatestPrefs = resolve;
+        })
+    );
+    collection.clearPrefs();
+    const oldRefresh = collection.refresh();
+    collection.clearPrefs();
+    const latestRefresh = collection.refresh();
+    resolveLatestPrefs(latestPrefs);
+    await vi.advanceTimersByTimeAsync(0);
+    resolveOldPrefs(oldPrefs);
+    await vi.advanceTimersByTimeAsync(0);
+    assert.strictEqual(collection.prefs, latestPrefs);
+    await complete(pending[1]);
+    await oldRefresh;
+    assert.equal(collection.state, undefined);
+    await complete(pending[0]);
+    await latestRefresh;
+    assert.strictEqual(collection.state.prefs, latestPrefs);
+  });
+
+  it("replays relevant cached data while refreshing the same selection", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const unsub = collection.subscribe(() => undefined);
+    await complete(pending[0]);
+    const cachedData = collection.state;
+    const refresh = collection.refresh();
+    const received = vi.fn();
+    const unsubSecond = collection.subscribe(received);
+    await vi.advanceTimersByTimeAsync(0);
+    assert.equal(received.mock.calls.length, 1);
+    assert.strictEqual(received.mock.calls[0][0], cachedData);
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(received.mock.calls.length, 2);
+    unsubSecond();
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("does not replay obsolete cached data to a newly attached subscriber", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const unsub = collection.subscribe(() => undefined);
+    await complete(pending[0]);
+    collection.setPeriod(
+      new Date("2026-02-01T00:00:00Z"),
+      new Date("2026-02-28T23:59:59Z")
+    );
+    const refresh = collection.refresh();
+    const received = vi.fn();
+    const unsubSecond = collection.subscribe(received);
+    await vi.advanceTimersByTimeAsync(0);
+    assert.equal(received.mock.calls.length, 0);
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(received.mock.calls.length, 1);
+    unsubSecond();
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("guards reconnect refreshes and removes their listener on teardown", async () => {
+    vi.useFakeTimers();
+    const { collection, pending, connection } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    const addListener = vi.mocked(connection.addEventListener);
+    const ready = addListener.mock.calls.find(
+      ([event]) => event === "ready"
+    )![1];
+    ready(connection, undefined);
+    await complete(pending[1]);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 1);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+    assert.equal(collection.state, undefined);
+    assert.isTrue(
+      vi
+        .mocked(connection.removeEventListener)
+        .mock.calls.some(
+          ([event, listener]) => event === "ready" && listener === ready
+        )
+    );
+  });
+
+  it("discards responses after the last subscriber's grace period expires", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const unsub = collection.subscribe(() => undefined);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+    await complete(pending[0]);
+    assert.equal(collection.state, undefined);
+    const received = vi.fn();
+    const unsubSecond = collection.subscribe(received);
+    await complete(pending[1]);
+    assert.equal(received.mock.calls.length, 1);
+    unsubSecond();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("keeps refreshes independent between collections", async () => {
+    vi.useFakeTimers();
+    const first = createCollection("energy_first");
+    const second = createCollection("energy_second");
+    const firstRefresh = first.collection.refresh();
+    const secondRefresh = second.collection.refresh();
+    await complete(first.pending[0]);
+    await complete(second.pending[0]);
+    await Promise.all([firstRefresh, secondRefresh]);
+    assert.isDefined(first.collection.state);
+    assert.isDefined(second.collection.state);
   });
 });
 
