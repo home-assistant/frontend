@@ -20,7 +20,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../../common/entity/get_entity_location";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
@@ -962,7 +961,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         const name =
           entityConfig?.name ??
           (entityId in this.hass.states
-            ? computeStateName(this.hass.states[entityId])
+            ? this.hass.formatEntityName(this.hass.states[entityId])
             : entityId);
 
         paths.push({

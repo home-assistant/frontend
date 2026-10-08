@@ -287,7 +287,7 @@ export interface HomeAssistantFormatters {
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,
-    name: string | EntityNameItem | EntityNameItem[] | undefined,
+    name?: string | EntityNameItem | EntityNameItem[],
     options?: EntityNameOptions
   ): string;
 }

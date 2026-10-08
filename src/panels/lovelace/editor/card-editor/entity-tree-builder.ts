@@ -14,7 +14,6 @@ import {
   computeEntityNameList,
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { stringCompare } from "../../../../common/string/compare";
@@ -137,6 +136,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
   const unassignedHelperByDomain = new Map<string, string[]>();
   const unassignedEntityByDomain = new Map<string, string[]>();
   const searchableEntities: SearchableEntity[] = [];
+  const entityNames = new Map<string, string>();
 
   const addDeviceEntity = (
     bucket: Map<string, string[]>,
@@ -196,9 +196,12 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
       floorReg
     );
 
+    const name = searchLabels.entityName || searchLabels.deviceName || entityId;
+    entityNames.set(entityId, name);
+
     searchableEntities.push({
       id: entityId,
-      name: searchLabels.entityName || searchLabels.friendlyName || entityId,
+      name,
       area: areaName ?? "",
       parentDevice: parentDeviceName ?? "",
       device: deviceName ?? "",
@@ -241,11 +244,8 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     }
   }
 
-  const sortByName = (a: string, b: string) => {
-    const an = computeStateName(states[a]) || a;
-    const bn = computeStateName(states[b]) || b;
-    return stringCompare(an, bn, language);
-  };
+  const sortByName = (a: string, b: string) =>
+    stringCompare(entityNames.get(a) ?? a, entityNames.get(b) ?? b, language);
 
   const sortDeviceNodes = (nodes: DeviceNode[]) => {
     nodes.sort((a, b) => stringCompare(a.name, b.name, language));

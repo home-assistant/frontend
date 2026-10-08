@@ -6,7 +6,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -301,8 +300,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "state-on": stateActive(stateObj),
           })}
-          title=${`${computeStateName(
-            stateObj
+          title=${`${this.hass.formatEntityName(
+            stateObj,
+            entityConf.name
           )} : ${this.hass.formatEntityState(stateObj)}`}
         >
           <ha-state-icon

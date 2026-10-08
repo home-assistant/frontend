@@ -7,11 +7,11 @@ import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { consumeEntityStates } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
-import { computeStateName } from "../common/entity/compute_state_name";
 import {
   configContext,
   connectionContext,
   entitiesContext,
+  formattersContext,
 } from "../data/context";
 import { entityIcon } from "../data/icons";
 import "./ha-items-display-editor";
@@ -40,6 +40,10 @@ export class HaEntitiesDisplayEditor extends LitElement {
   @state()
   private _connection!: ContextType<typeof connectionContext>;
 
+  @consume({ context: formattersContext, subscribe: true })
+  @state()
+  private _formatters!: ContextType<typeof formattersContext>;
+
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: EntitiesDisplayValue;
@@ -60,7 +64,8 @@ export class HaEntitiesDisplayEditor extends LitElement {
       this._entityStates,
       this._entitiesReg,
       this._config,
-      this._connection
+      this._connection,
+      this._formatters
     );
 
     const value: DisplayValue = {
@@ -83,7 +88,8 @@ export class HaEntitiesDisplayEditor extends LitElement {
       entityStates: Record<string, HassEntity> | undefined,
       entitiesReg: ContextType<typeof entitiesContext>,
       config: ContextType<typeof configContext>,
-      connection: ContextType<typeof connectionContext>
+      connection: ContextType<typeof connectionContext>,
+      formatters: ContextType<typeof formattersContext>
     ): DisplayItem[] => {
       const entities = entitiesIds
         .map((entityId) => entityStates?.[entityId])
@@ -91,7 +97,7 @@ export class HaEntitiesDisplayEditor extends LitElement {
 
       return entities.map((entity) => ({
         value: entity.entity_id,
-        label: computeStateName(entity),
+        label: formatters.formatEntityName(entity),
         icon: entityIcon(
           entitiesReg,
           config.config,

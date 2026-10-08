@@ -298,10 +298,12 @@ export class HuiMapOverview extends LitElement {
         if (aLocated !== bLocated) {
           return aLocated ? -1 : 1;
         }
-        return computeStateName(a).localeCompare(
-          computeStateName(b),
-          this._i18n.locale.language
-        );
+        return this._formatters
+          .formatEntityName(a)
+          .localeCompare(
+            this._formatters.formatEntityName(b),
+            this._i18n.locale.language
+          );
       });
   }
 
@@ -316,7 +318,7 @@ export class HuiMapOverview extends LitElement {
   private _personName(stateObj: HassEntity): string {
     return this._isMe(stateObj)
       ? this._i18n.localize("ui.panel.lovelace.cards.map.overview.me")
-      : computeStateName(stateObj);
+      : this._formatters.formatEntityName(stateObj);
   }
 
   private _getDevices(): HassEntity[] {
@@ -329,10 +331,12 @@ export class HuiMapOverview extends LitElement {
           !!getEntityLocation(stateObj, this._states)
       )
       .sort((a, b) =>
-        computeStateName(a).localeCompare(
-          computeStateName(b),
-          this._i18n.locale.language
-        )
+        this._formatters
+          .formatEntityName(a)
+          .localeCompare(
+            this._formatters.formatEntityName(b),
+            this._i18n.locale.language
+          )
       );
   }
 
@@ -355,10 +359,12 @@ export class HuiMapOverview extends LitElement {
         ) {
           return a.entity_id === HOME_ZONE_ENTITY_ID ? -1 : 1;
         }
-        return computeStateName(a).localeCompare(
-          computeStateName(b),
-          this._i18n.locale.language
-        );
+        return this._formatters
+          .formatEntityName(a)
+          .localeCompare(
+            this._formatters.formatEntityName(b),
+            this._i18n.locale.language
+          );
       });
   }
 
@@ -778,7 +784,9 @@ export class HuiMapOverview extends LitElement {
                 />`
               : computeStateDomain(stateObj) === "person"
                 ? html`<span class="initials"
-                    >${computeUserInitials(computeStateName(stateObj))}</span
+                    >${computeUserInitials(
+                      this._formatters.formatEntityName(stateObj)
+                    )}</span
                   >`
                 : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
           }
@@ -821,7 +829,9 @@ export class HuiMapOverview extends LitElement {
         >
           <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
         </div>
-        <span slot="headline">${computeStateName(stateObj)}</span>
+        <span slot="headline"
+          >${this._formatters.formatEntityName(stateObj)}</span
+        >
         <span slot="supporting-text">
           ${
             Number.isNaN(count)
