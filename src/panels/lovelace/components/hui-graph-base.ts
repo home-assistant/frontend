@@ -1,10 +1,9 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
-import { listenMediaQuery } from "../../../common/dom/media_query";
 import { parseAnimationDuration } from "../../../common/util/parse-animation-duration";
 import { strokeWidth } from "../../../data/graph";
+import { ReducedMotionMixin } from "../../../mixins/reduced-motion-mixin";
 import { getPath } from "../common/graph/get-path";
 
 export interface HuiGraphGradient {
@@ -16,7 +15,7 @@ export interface HuiGraphGradient {
 }
 
 @customElement("hui-graph-base")
-export class HuiGraphBase extends LitElement {
+export class HuiGraphBase extends ReducedMotionMixin(LitElement) {
   @property({ attribute: false }) public coordinates?: number[][];
 
   @property({ attribute: "y-axis-origin", type: Number })
@@ -30,11 +29,6 @@ export class HuiGraphBase extends LitElement {
 
   @state()
   private _displayCoordinates?: number[][];
-
-  @state()
-  private _reducedMotion = false;
-
-  private _unsubMediaQuery?: MediaQueriesListener;
 
   private _animationFrame?: number;
 
@@ -121,18 +115,6 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMediaQuery = listenMediaQuery(
-      "(prefers-reduced-motion: reduce)",
-      (matches) => {
-        if (this._reducedMotion !== matches) {
-          this._reducedMotion = matches;
-        }
-      }
-    );
-  }
-
   public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.coordinates) {
       return;
@@ -145,8 +127,6 @@ export class HuiGraphBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubMediaQuery?.();
-    this._unsubMediaQuery = undefined;
     this._cancelAnimation();
   }
 

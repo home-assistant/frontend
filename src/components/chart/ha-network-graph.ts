@@ -11,8 +11,8 @@ import type {
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
-import { listenMediaQuery } from "../../common/dom/media_query";
 import type { LocalizeFunc } from "../../common/translations/localize";
+import { ReducedMotionMixin } from "../../mixins/reduced-motion-mixin";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
@@ -71,7 +71,7 @@ const PHYSICS_DISABLE_THRESHOLD = 512;
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
 @customElement("ha-network-graph")
-export class HaNetworkGraph extends LitElement {
+export class HaNetworkGraph extends ReducedMotionMixin(LitElement) {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public data!: NetworkData;
@@ -94,15 +94,11 @@ export class HaNetworkGraph extends LitElement {
 
   @state() private _highlightedNodes?: Set<string>;
 
-  @state() private _reducedMotion = false;
-
   @state() private _physicsEnabled?: boolean;
 
   @state() private _showLabels = true;
 
   private _nodePositions: Record<string, { x: number; y: number }> = {};
-
-  private _unsubReducedMotion?: () => void;
 
   @query("ha-chart-base") private _baseChart?: HaChartBase;
 
@@ -474,22 +470,8 @@ export class HaNetworkGraph extends LitElement {
     }
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._unsubReducedMotion = listenMediaQuery(
-      "(prefers-reduced-motion)",
-      (matches) => {
-        if (this._reducedMotion !== matches) {
-          this._reducedMotion = matches;
-        }
-      }
-    );
-  }
-
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._unsubReducedMotion?.();
-    this._unsubReducedMotion = undefined;
     if (this._emphasisGuardHandler) {
       this._baseChart?.chart?.off("mouseover", this._emphasisGuardHandler);
       this._baseChart?.chart?.off("mouseout", this._emphasisGuardHandler);
