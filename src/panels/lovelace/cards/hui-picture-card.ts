@@ -221,7 +221,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       >
         <img
           alt=${ifDefined(
-            this._config.alt_text || stateObj?.attributes.friendly_name
+            this._config.alt_text ||
+              (stateObj ? this.hass.formatEntityName(stateObj) : undefined)
           )}
           src=${this._reconnectImg ? nothing : live(this.hass.hassUrl(image))}
         />

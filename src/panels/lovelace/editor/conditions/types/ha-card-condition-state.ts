@@ -15,7 +15,6 @@ import type { HomeAssistant } from "../../../../../types";
 import type { StateCondition } from "../../../common/validate-condition";
 import type { ConditionsEntityContext } from "../context";
 import { conditionsEntityContext } from "../context";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import {
   CURRENT_ENTITY_ID,
   currentEntityOption,
@@ -153,7 +152,7 @@ export class HaCardConditionState extends LitElement {
       ? this.hass.states[currentEntityId]
       : undefined;
     const currentEntityName = currentStateObj
-      ? computeStateName(currentStateObj)
+      ? this.hass.formatEntityName(currentStateObj)
       : undefined;
 
     const data: StateConditionData = {

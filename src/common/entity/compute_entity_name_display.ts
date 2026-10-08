@@ -47,7 +47,7 @@ const computeTextOnlyName = (
  */
 export const computeEntityNameDisplayWithoutContext = (
   stateObj: HassEntity,
-  name: string | EntityNameItem | EntityNameItem[] | undefined,
+  name?: string | EntityNameItem | EntityNameItem[],
   options?: EntityNameOptions
 ): string => {
   if (typeof name === "string") {

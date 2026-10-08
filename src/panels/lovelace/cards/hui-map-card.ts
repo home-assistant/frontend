@@ -20,7 +20,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../../common/entity/get_entity_location";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
@@ -306,7 +305,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._stateHistory,
               this._entityReg,
-              this._themes
+              this._themes,
+              this.hass.formatEntityName
             )}
             .autoFit=${this._config.auto_fit || false}
             .fitPadding=${this._overviewPadding()}
@@ -926,7 +926,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       history: HistoryStates | undefined,
       // Trail colors follow the registry order and the theme like the markers
       _entityReg: EntityRegistryEntry[],
-      _themes: Themes | undefined
+      _themes: Themes | undefined,
+      formatEntityName: HomeAssistant["formatEntityName"]
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
@@ -962,7 +963,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         const name =
           entityConfig?.name ??
           (entityId in this.hass.states
-            ? computeStateName(this.hass.states[entityId])
+            ? formatEntityName(this.hass.states[entityId])
             : entityId);
 
         paths.push({

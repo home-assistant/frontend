@@ -535,16 +535,16 @@ class HuiPowerSankeyCard
   }
 
   /**
-   * Get entity label (friendly name or entity ID)
+   * Get entity label (entity name or entity ID)
    * @param entityId - The entity ID to get label for
-   * @returns Friendly name if available, otherwise the entity ID
+   * @returns Entity name if available, otherwise the entity ID
    */
   private _getEntityLabel(entityId: string): string {
     const stateObj = this._states[entityId];
     if (!stateObj) {
       return entityId;
     }
-    return stateObj.attributes.friendly_name || entityId;
+    return this._formatEntityName(stateObj) || entityId;
   }
 
   static styles = css`
