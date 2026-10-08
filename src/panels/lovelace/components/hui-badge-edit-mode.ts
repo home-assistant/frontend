@@ -21,10 +21,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import {
-  ensureBadgeConfig,
-  type LovelaceBadgeConfig,
-} from "../../../data/lovelace/config/badge";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { haStyle } from "../../../resources/styles";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import type { LovelacePath } from "../editor/lovelace-path";
@@ -66,12 +63,7 @@ export class HuiBadgeEditMode extends LitElement {
   protected _clipboard?: LovelaceBadgeConfig;
 
   private get _badgeConfig() {
-    return ensureBadgeConfig(
-      getAtPath<Partial<LovelaceBadgeConfig> | string>(
-        this.lovelace.config,
-        this.path
-      )!
-    );
+    return getAtPath<LovelaceBadgeConfig>(this.lovelace.config, this.path)!;
   }
 
   private _touchStarted = false;
