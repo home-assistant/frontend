@@ -249,7 +249,7 @@ describe("getPowerLegendValues", () => {
   const power = (id: string, value: string) =>
     createMockEntityState(id, value, { unit_of_measurement: "W" });
 
-  it("returns current power per source and usage when showing today", () => {
+  it("returns current power per source and usage", () => {
     const states: HassEntities = {
       [RATE_IDS.grid]: power(RATE_IDS.grid, "1500"),
       [RATE_IDS.solar]: power(RATE_IDS.solar, "-800"),
