@@ -93,15 +93,19 @@ function migrateLocationCondition(
   let away = condition.away === true;
   const missingIds = new Set<string>();
   for (const name of new Set(condition.locations ?? [])) {
+    // A zone can also be named "home" or "not_home", and the old condition
+    // matched it too, so these still collect zones by name.
     if (name === "not_home") {
       away = true;
     } else if (name === "home") {
       entityIds.add("zone.home");
-    } else if (zoneIdsByName.has(name)) {
-      for (const entityId of zoneIdsByName.get(name)!) {
+    }
+    const zoneIds = zoneIdsByName.get(name);
+    if (zoneIds) {
+      for (const entityId of zoneIds) {
         entityIds.add(entityId);
       }
-    } else {
+    } else if (name !== "home" && name !== "not_home") {
       // Names that match no zone are kept, so the picker shows them as not
       // found instead of silently removing them.
       const entityId = missingZoneId(name, states, missingIds);

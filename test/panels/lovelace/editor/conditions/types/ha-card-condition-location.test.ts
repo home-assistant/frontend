@@ -136,6 +136,36 @@ describe("ha-card-condition-location", () => {
       });
     });
 
+    it("keeps zones named home or not_home", () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["home", "not_home"],
+      });
+      editor.hass = {
+        ...HASS,
+        states: {
+          ...HASS.states,
+          "zone.lowercase_home": {
+            entity_id: "zone.lowercase_home",
+            state: "0",
+            attributes: { friendly_name: "home" },
+          },
+          "zone.not_home": {
+            entity_id: "zone.not_home",
+            state: "0",
+            attributes: { friendly_name: "not_home" },
+          },
+        },
+      } as unknown as HomeAssistant;
+      expect(shown(editor)).toEqual({
+        condition: "location",
+        target: {
+          entity_id: ["zone.home", "zone.lowercase_home", "zone.not_home"],
+        },
+        away: true,
+      });
+    });
+
     it("merges into an existing target and away", () => {
       const editor = createEditor({
         condition: "location",

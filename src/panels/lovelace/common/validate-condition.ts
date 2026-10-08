@@ -64,7 +64,7 @@ export interface LocationCondition extends BaseCondition {
   locations?: string[];
   /** Zones (directly or by label) matched against the person `in_zones`. */
   target?: HassServiceTarget;
-  /** Matches when the person is not in any zone. */
+  /** Matches the person state `not_home`, which passive zones don't change. */
   away?: boolean;
 }
 
@@ -295,6 +295,8 @@ function checkLocationCondition(
   if (condition.locations?.includes(stateObj.state)) {
     return true;
   }
+  // Passive zones don't change the state, so this can match while `in_zones`
+  // lists one.
   if (condition.away === true && stateObj.state === "not_home") {
     return true;
   }
