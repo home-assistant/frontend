@@ -683,7 +683,6 @@ export class HaConfigEntities extends LitElement {
 
         const entityName = computeEntityEntryName(
           entry as EntityRegistryEntry,
-          this.hass.devices,
           entity
         );
 

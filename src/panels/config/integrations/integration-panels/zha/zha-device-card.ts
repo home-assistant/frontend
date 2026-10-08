@@ -139,29 +139,14 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     );
 
     const updateProms = entities.map((entity) => {
-      const name = entity.name;
       const newEntityId = entityIdsMapping[entity.entity_id];
-      let newName: string | null | undefined;
 
-      if (entity.has_entity_name && !entity.name) {
-        newName = undefined;
-      } else if (
-        entity.has_entity_name &&
-        (entity.name === oldDeviceName || entity.name === newDeviceName)
-      ) {
-        // Use the device name when the entity name matches it
-        newName = "";
-      } else if (name && name.includes(oldDeviceName)) {
-        newName = name.replace(oldDeviceName, newDeviceName);
-      }
-
-      if (newName !== undefined && !newEntityId) {
+      if (!newEntityId || newEntityId === entity.entity_id) {
         return undefined;
       }
 
       return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-        name: newName,
-        new_entity_id: newEntityId || undefined,
+        new_entity_id: newEntityId,
       });
     });
     await Promise.all(updateProms);

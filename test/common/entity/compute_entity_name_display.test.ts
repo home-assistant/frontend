@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  computeDefaultEntityNameItems,
   computeEntityNameDisplay,
   computeEntityNameDisplayWithoutContext,
   computeEntityNameList,
@@ -121,7 +122,6 @@ describe("computeEntityNameDisplay", () => {
       entities: {
         "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
-          name: "Kitchen Device",
           device_id: "dev1",
           next_name_part: "device",
         }),
@@ -154,7 +154,6 @@ describe("computeEntityNameDisplay", () => {
       entities: {
         "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
-          name: "Kitchen Device",
           device_id: "dev1",
           next_name_part: "device",
         }),
@@ -178,8 +177,6 @@ describe("computeEntityNameDisplay", () => {
       hass.floors
     );
 
-    // Since entity name equals device name, entity returns undefined
-    // So we only get the device name
     expect(result).toBe("Kitchen Device");
   });
 
@@ -506,6 +503,103 @@ describe("name context", () => {
       deviceName: "Freezer",
       parentDeviceName: "Power strip",
       areaName: "Garage",
+    });
+  });
+
+  describe("default name", () => {
+    const cases: {
+      title: string;
+      entity: Partial<EntityRegistryDisplayEntry>;
+      freezer: Partial<DeviceRegistryEntry>;
+      name: string;
+      items: EntityNameItem[];
+    }[] = [
+      {
+        title: "uses the device and entity names",
+        entity: { name: "Power", next_name_part: "device" },
+        freezer: { area_id: "garage", next_name_part: "area" },
+        name: "Freezer Power",
+        items: [{ type: "device" }, { type: "entity" }],
+      },
+      {
+        title: "uses the device name for an entity without a name of its own",
+        entity: { next_name_part: "device" },
+        freezer: { area_id: "garage", next_name_part: "area" },
+        name: "Freezer",
+        items: [{ type: "device" }],
+      },
+      {
+        title: "leaves out the device of an entity with its own area",
+        entity: { name: "Power", area_id: "garage", next_name_part: "area" },
+        freezer: { next_name_part: "parent_device" },
+        name: "Power",
+        items: [{ type: "entity" }],
+      },
+      {
+        title: "adds the parent of a child device without its own area",
+        entity: { name: "Power", next_name_part: "device" },
+        freezer: { next_name_part: "parent_device" },
+        name: "Power strip Freezer Power",
+        items: [
+          { type: "parent_device" },
+          { type: "device" },
+          { type: "entity" },
+        ],
+      },
+    ];
+
+    it.each(cases)("$title", ({ entity, freezer, name, items }) => {
+      const { entities, devices } = registries(entity, freezer);
+
+      expect(
+        computeEntityNameDisplay(
+          stateObj,
+          undefined,
+          entities,
+          devices,
+          areas,
+          {}
+        )
+      ).toBe(name);
+      expect(
+        computeDefaultEntityNameItems(stateObj, entities, devices, areas, {})
+      ).toEqual(items);
+      // Saving the picker chips as the name keeps the same name
+      expect(
+        computeEntityNameDisplay(stateObj, items, entities, devices, areas, {})
+      ).toBe(name);
+    });
+
+    it("uses the friendly name for an entity outside the registry", () => {
+      const friendlyStateObj = mockStateObj({
+        entity_id: "switch.freezer",
+        attributes: { friendly_name: "Freezer switch" },
+      });
+
+      expect(
+        computeEntityNameDisplay(friendlyStateObj, undefined, {}, {}, areas, {})
+      ).toBe("Freezer switch");
+      expect(
+        computeDefaultEntityNameItems(friendlyStateObj, {}, {}, areas, {})
+      ).toEqual([{ type: "entity" }]);
+    });
+
+    it("falls back to the object id when no part has a value", () => {
+      const { entities, devices } = registries({ device_id: undefined }, {});
+
+      expect(
+        computeEntityNameDisplay(
+          stateObj,
+          undefined,
+          entities,
+          devices,
+          areas,
+          {}
+        )
+      ).toBe("freezer");
+      expect(
+        computeDefaultEntityNameItems(stateObj, entities, devices, areas, {})
+      ).toEqual([]);
     });
   });
 });

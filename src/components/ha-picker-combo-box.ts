@@ -467,7 +467,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       });
     }
 
-    if (!items.length && !this.allowCustomValue) {
+    if (!items.length && (!this.allowCustomValue || this.emptyLabel)) {
       items.push({ id: NO_ITEMS_AVAILABLE_ID, primary: "" });
     }
 

@@ -1764,7 +1764,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _entryName(): string | undefined {
-    return computeEntityEntryName(this.entry, this.hass.devices);
+    return computeEntityEntryName(this.entry);
   }
 
   private get _useDeviceArea(): boolean {

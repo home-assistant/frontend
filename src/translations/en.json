@@ -833,7 +833,9 @@
           "mode_custom": "Custom",
           "add": "Add",
           "search": "Search name",
-          "custom_name": "Custom name"
+          "custom_name": "Custom name",
+          "no_more_parts": "Nothing left to add",
+          "restore": "[%key:ui::dialogs::entity_registry::editor::restore_name%]"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
