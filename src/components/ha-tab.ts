@@ -128,7 +128,11 @@ export class HaTab extends LitElement {
     }
 
     div:focus-visible {
-      background-color: rgba(var(--rgb-secondary-text-color), 0.08);
+      background-color: color-mix(
+        in srgb,
+        var(--secondary-text-color) 8%,
+        transparent
+      );
     }
   `;
 }
