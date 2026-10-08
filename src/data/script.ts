@@ -174,6 +174,8 @@ export interface WaitForTriggerAction extends BaseAction {
   wait_for_trigger: Trigger | Trigger[];
   timeout?: number | Partial<WaitForTriggerActionParts> | string;
   continue_on_timeout?: boolean;
+  on_trigger?: Action | Action[];
+  on_timeout?: Action | Action[];
 }
 
 export interface RepeatAction extends BaseAction {
@@ -549,6 +551,12 @@ export const migrateAutomationAction = (
   if (actionType === "wait_for_trigger") {
     const _action = action as WaitForTriggerAction;
     migrateAutomationTrigger(_action.wait_for_trigger, report);
+    if (_action.on_trigger) {
+      migrateAutomationAction(_action.on_trigger, report);
+    }
+    if (_action.on_timeout) {
+      migrateAutomationAction(_action.on_timeout, report);
+    }
   }
 
   return action;

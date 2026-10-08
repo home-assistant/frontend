@@ -6071,6 +6071,9 @@
                   "label": "Wait for a trigger",
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
+                  "on_trigger": "On trigger",
+                  "on_timeout": "On timeout",
+                  "branches_need_timeout": "These actions need a timeout with \"Continue on timeout\" enabled. Set a timeout and enable it, or remove these actions.",
                   "description": {
                     "picker": "Waits for a trigger to perform a sequence of actions.",
                     "wait_for_a_trigger": "Wait for a trigger",

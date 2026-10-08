@@ -10,6 +10,7 @@ import type {
   ParallelAction,
   RepeatAction,
   SequenceAction,
+  WaitForTriggerAction,
 } from "./script";
 import type {
   ActionTraceStep,
@@ -323,6 +324,36 @@ export class TraceTree {
         });
         break;
       }
+      case "wait_for_trigger": {
+        const wait = config as WaitForTriggerAction;
+        if (
+          !ensureArray(wait.on_trigger ?? []).length &&
+          !ensureArray(wait.on_timeout ?? []).length
+        ) {
+          break;
+        }
+        const records = this.trace.trace[path] as
+          WaitActionTraceStep[] | undefined;
+        node.branches = (["on_trigger", "on_timeout"] as const).map(
+          (choice) => {
+            const prefix = `${path}/${choice}/`;
+            const hasTrace =
+              !!records?.some((record) =>
+                choice === "on_trigger"
+                  ? !!record.result?.wait?.trigger
+                  : !!record.result?.timeout
+              ) || this._hasTracedSteps(prefix);
+            return this._branch(
+              `${path}/${choice}`,
+              prefix,
+              ensureArray<Action>(wait[choice] ?? []),
+              disabled,
+              hasTrace
+            );
+          }
+        );
+        break;
+      }
       case "repeat": {
         const repeat = config as RepeatAction;
         const prefix = `${path}/repeat/sequence/`;
@@ -574,7 +605,18 @@ export class TraceTree {
       }
 
       const result = (lastRecord as WaitActionTraceStep).result;
-      if (result?.wait || result?.enabled === false) {
+      if (result?.enabled === false) {
+        return true;
+      }
+      // A wait with on_trigger/on_timeout actions is only finished once the
+      // branch it took is, which the caller checks like other blocks.
+      if (
+        result?.wait &&
+        !(
+          "wait_for_trigger" in action &&
+          (action.on_trigger || action.on_timeout)
+        )
+      ) {
         return true;
       }
     }
@@ -595,9 +637,15 @@ export class TraceTree {
     const parts = path.split("/");
     for (let index = parts.length - 1; index > 0; index--) {
       if (
-        !["action", "sequence", "then", "else", "default"].includes(
-          parts[index - 1]
-        )
+        ![
+          "action",
+          "sequence",
+          "then",
+          "else",
+          "default",
+          "on_trigger",
+          "on_timeout",
+        ].includes(parts[index - 1])
       ) {
         continue;
       }
