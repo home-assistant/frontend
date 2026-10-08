@@ -1,3 +1,6 @@
+# Labels are only ever added. .github/scripts/label-content.mts also adds some
+# of these labels from the code a pull request changes.
+
 Agents:
   - changed-files:
       - any-glob-to-any-file:
@@ -121,8 +124,11 @@ Integrations:
           - src/data/config_entries.ts
           - src/data/config_flow.ts
 
-# Labs is applied by .github/scripts/label-labs.mts, as it also checks added
-# code, not just paths.
+Labs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/labs/**
+          - src/data/labs.ts
 
 Landing Page:
   - changed-files:
