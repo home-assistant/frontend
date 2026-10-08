@@ -11,6 +11,7 @@ import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -274,8 +275,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._name = this.entry.name || this._originalName;
-    this._useDeviceName =
-      !!this._device && !(this.entry.name ?? this._originalName);
+    this._useDeviceName = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -1757,7 +1757,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _hasOwnName(): boolean {
+    if (this._device && this._useDeviceName) {
+      return false;
+    }
     return !!(this._computeName() ?? this._originalName);
+  }
+
+  private get _entryName(): string | undefined {
+    return computeEntityEntryName(this.entry, this.hass.devices);
   }
 
   private get _useDeviceArea(): boolean {
@@ -1787,6 +1794,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return this.entry.name;
     }
     if (this._device && this._useDeviceName) {
+      if (!this._entryName) {
+        return this.entry.name;
+      }
       return this._originalName ? "" : null;
     }
     const name = this._name.trim();

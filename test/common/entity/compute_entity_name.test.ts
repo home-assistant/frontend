@@ -80,6 +80,7 @@ describe("computeEntityEntryName", () => {
       entity_id: "light.kitchen",
       name: "Kitchen Light",
       device_id: "dev1",
+      next_name_part: "device",
     });
     const hass = {
       devices: { dev1: {} },
@@ -97,6 +98,7 @@ describe("computeEntityEntryName", () => {
       entity_id: "light.kitchen",
       name: "Kitchen Light",
       device_id: "dev1",
+      next_name_part: "device",
     });
     const hass = {
       devices: { dev1: {} },
@@ -145,6 +147,43 @@ describe("computeEntityEntryName", () => {
     expect(computeEntityEntryName({ ...entry, name: null }, devices)).toBe(
       "Temperature"
     );
+  });
+
+  it("matches only a user-set name loosely against the device name", () => {
+    const devices = { dev1: mockDevice({ id: "dev1", name: "Kitchen" }) };
+    const entry = mockEntityEntry({
+      device_id: "dev1",
+      name: "KITCHEN",
+      next_name_part: "device",
+    });
+
+    expect(computeEntityEntryName(entry, devices)).toBeUndefined();
+    expect(
+      computeEntityEntryName(
+        { ...entry, name: null, original_name: "KITCHEN" },
+        devices
+      )
+    ).toBe("KITCHEN");
+  });
+
+  it("keeps a user-set name as-is when the entity has an area of its own", () => {
+    const devices = { dev1: mockDevice({ id: "dev1", name: "My Device" }) };
+    const entry = mockEntityEntry({
+      device_id: "dev1",
+      area_id: "kitchen",
+      next_name_part: "area",
+      name: "My Device Temperature",
+    });
+
+    expect(computeEntityEntryName(entry, devices)).toBe(
+      "My Device Temperature"
+    );
+    expect(
+      computeEntityEntryName({ ...entry, name: "My Device" }, devices)
+    ).toBe("My Device");
+    expect(
+      computeEntityEntryName({ ...entry, name: "" }, devices)
+    ).toBeUndefined();
   });
 
   it("returns undefined if no name, original_name, or device", () => {

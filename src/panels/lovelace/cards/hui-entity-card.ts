@@ -145,6 +145,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
+    const color = colored ? this._computeColor(stateObj) : undefined;
 
     const fixedFooter =
       this.layout === "grid" && this._footerElement !== undefined;
@@ -160,6 +161,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           "with-fixed-footer": fixedFooter,
           action: hasAnyAction(this._config),
         })}
+        style=${styleMap({ "--state-color": color })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config.hold_action),
@@ -175,7 +177,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
-                color: colored ? this._computeColor(stateObj) : undefined,
+                color,
                 filter: colored ? stateColorBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
@@ -307,6 +309,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           flex-direction: column;
           justify-content: space-between;
           outline: none;
+          transition:
+            box-shadow 180ms ease-in-out,
+            border-color 180ms ease-in-out;
+        }
+
+        ha-card:focus-visible {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px var(--state-color, var(--state-icon-color));
+          border-color: var(--state-color, var(--state-icon-color));
+          box-shadow: var(--shadow-default), var(--shadow-focus);
         }
 
         ha-card.action {

@@ -1,5 +1,7 @@
 import type { BarSeriesOption } from "echarts/charts";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 import type {
@@ -17,23 +19,28 @@ import {
   calculateStatisticSumGrowth,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistantFormatters } from "../../../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import {
   computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  formatSeriesTotal,
   generateFillBuckets,
   getCompareTransform,
   getPeriodMidpointOffset,
   splitUntrackedConsumption,
 } from "./common/energy-chart-options";
 import { getEnergyColor } from "./common/color";
+import type { FrontendLocaleData } from "../../../../data/translation";
 
 const UNIT = "kWh";
-
 export interface EnergyDevicesDetailGraphDataParams {
-  hass: HomeAssistant;
+  localize: LocalizeFunc;
+  locale: FrontendLocaleData;
+  states: HassEntities;
+  formatEntityName: HomeAssistantFormatters["formatEntityName"];
+  darkMode: boolean;
   energyData: EnergyData;
   config: EnergyDevicesDetailGraphCardConfig;
   computedStyles: CSSStyleDeclaration;
@@ -63,7 +70,8 @@ const getStatIdFromId = (id: string): string =>
     .replace(/-\d+$/, ""); // Remove numeric suffix
 
 interface ProcessContext {
-  hass: HomeAssistant;
+  localize: LocalizeFunc;
+  darkMode: boolean;
   config: EnergyDevicesDetailGraphCardConfig;
   start: Date;
   end: Date;
@@ -169,7 +177,7 @@ function processDataSet(
     const name =
       ctx.deviceLabels[source.stat_consumption] +
       (source.stat_consumption in childMap
-        ? ` (${ctx.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
+        ? ` (${ctx.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
         : "");
 
     data.push({
@@ -272,7 +280,7 @@ function processUntracked(
     itemStyle: {
       borderColor: getEnergyColor(
         computedStyle,
-        ctx.hass.themes.darkMode,
+        ctx.darkMode,
         false,
         compare,
         "--history-unknown-color"
@@ -281,7 +289,7 @@ function processUntracked(
     barMaxWidth: 50,
     color: getEnergyColor(
       computedStyle,
-      ctx.hass.themes.darkMode,
+      ctx.darkMode,
       true,
       compare,
       "--history-unknown-color"
@@ -291,7 +299,7 @@ function processUntracked(
   });
   const dataset = makeDataset(
     compare ? `compare-untracked-${order}` : `untracked-${order}`,
-    ctx.hass.localize(
+    ctx.localize(
       "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
     ),
     untrackedConsumption
@@ -301,7 +309,7 @@ function processUntracked(
     compare
       ? `compare-untracked-negative-${order}`
       : `untracked-negative-${order}`,
-    ctx.hass.localize(
+    ctx.localize(
       "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.over_reported_consumption"
     ),
     negativeUntracked
@@ -312,11 +320,13 @@ function processUntracked(
 // Legend item for an untracked series (positive or negative): not tied to an
 // entity, so the label isn't clickable, and paired with its compare series.
 const untrackedLegendItem = (
-  dataset: BarSeriesOption
+  dataset: BarSeriesOption,
+  locale: FrontendLocaleData
 ): NonNullable<CustomLegendOption["data"]>[number] => ({
   id: dataset.id as string,
   secondaryIds: [`compare-${dataset.id}`],
   name: dataset.name as string,
+  value: formatSeriesTotal(dataset, locale, UNIT),
   itemStyle: {
     color: dataset.color as string,
     borderColor: dataset.itemStyle?.borderColor as string,
@@ -327,15 +337,25 @@ const untrackedLegendItem = (
 /**
  * Transforms an `EnergyData` collection update into the ECharts bar series and
  * derived chart state for `hui-energy-devices-detail-graph-card`. Pure data
- * processing: all environment inputs (current time via `now`, theme style via
- * `computedStyles`, hass, config) are injected so the transform is
+ * processing: all environment inputs (current time via `now`, theme style,
+ * localize, entity states and names, config) are injected so the transform is
  * deterministic and benchmarkable.
  */
 export function generateEnergyDevicesDetailGraphData(
   params: EnergyDevicesDetailGraphDataParams
 ): EnergyDevicesDetailGraphData {
-  const { hass, energyData, config, computedStyles, now, untrackedOrder } =
-    params;
+  const {
+    localize,
+    locale,
+    states,
+    formatEntityName,
+    darkMode,
+    energyData,
+    config,
+    computedStyles,
+    now,
+    untrackedOrder,
+  } = params;
 
   const start = energyData.start;
   const end = energyData.end || now;
@@ -349,14 +369,16 @@ export function generateEnergyDevicesDetailGraphData(
   const devices = energyData.prefs.device_consumption;
 
   const ctx: ProcessContext = {
-    hass,
+    localize,
+    darkMode,
     config,
     start,
     end,
     compareStart,
     untrackedOrder,
     deviceLabels: computeEnergyDeviceLabels(
-      hass,
+      states,
+      formatEntityName,
       devices,
       energyData.statsMetadata
     ),
@@ -480,11 +502,12 @@ export function generateEnergyDevicesDetailGraphData(
       id: d.id as string,
       secondaryIds: [`compare-${d.id}`],
       name: d.name as string,
+      value: formatSeriesTotal(d, locale, UNIT),
       itemStyle: {
         color: d.color as string,
         borderColor: d.itemStyle?.borderColor as string,
       },
-      noLabelClick: isExternalStatistic(statId) || !hass.states[statId],
+      noLabelClick: isExternalStatistic(statId) || !states[statId],
     };
   });
 
@@ -498,7 +521,7 @@ export function generateEnergyDevicesDetailGraphData(
       false
     );
     datasets.push(untrackedData);
-    legendData.push(untrackedLegendItem(untrackedData));
+    legendData.push(untrackedLegendItem(untrackedData, locale));
 
     // Only surface the negative untracked series (and its legend item) when
     // either the main or compare period actually has negative values, so users
@@ -510,7 +533,7 @@ export function generateEnergyDevicesDetailGraphData(
       datasets.push(negativeDataset);
     }
     if (hasNegative || hasCompareNegative) {
-      legendData.push(untrackedLegendItem(negativeDataset));
+      legendData.push(untrackedLegendItem(negativeDataset, locale));
     }
   }
 

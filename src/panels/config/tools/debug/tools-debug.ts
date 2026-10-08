@@ -84,7 +84,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
     let statistic;
     if (computeDomain(id) === "sensor") {
       const [metadata, issues] = await Promise.all([
-        getStatisticMetadata(this.hass, [id]),
+        getStatisticMetadata(this.hass.callWS, [id]),
         validateStatistics(this.hass),
       ]);
       const issue = issues[id];

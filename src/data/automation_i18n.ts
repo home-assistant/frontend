@@ -11,6 +11,7 @@ import {
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { sortWeekdays } from "../common/datetime/sort_weekdays";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
@@ -149,8 +150,6 @@ const formatNumericLimitValue = (
 export interface DescribeOptions {
   // Skip the user defined alias and describe the underlying config.
   ignoreAlias?: boolean;
-  // Rows with trigger-reference chips render the IDs separately.
-  hideTriggerIds?: boolean;
 }
 
 export const describeTrigger = (
@@ -470,7 +469,10 @@ const describeLegacyTrigger = (
     // Handle weekday information if present
     let weekdays: string[] = [];
     if (trigger.weekday) {
-      const weekdayArray = ensureArray(trigger.weekday);
+      const weekdayArray = sortWeekdays(
+        hass.locale,
+        ensureArray(trigger.weekday)
+      );
       if (weekdayArray.length > 0) {
         weekdays = weekdayArray.map((day) =>
           hass.localize(
@@ -925,7 +927,7 @@ const tryDescribeCondition = (
     return condition.alias;
   }
 
-  if (condition.condition === "trigger" && options?.hideTriggerIds) {
+  if (condition.condition === "trigger") {
     return hass.localize(
       `${conditionsTranslationBaseKey}.trigger.description.summary`
     );
@@ -1167,7 +1169,7 @@ const describeLegacyCondition = (
 
       let localizedDays: string[] = [];
       if (validWeekdays) {
-        localizedDays = weekdaysArray.map((d) =>
+        localizedDays = sortWeekdays(hass.locale, weekdaysArray).map((d) =>
           hass.localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
@@ -1302,18 +1304,6 @@ const describeLegacyCondition = (
   if (condition.condition === "template") {
     return hass.localize(
       `${conditionsTranslationBaseKey}.template.description.full`
-    );
-  }
-
-  if (condition.condition === "trigger" && condition.id != null) {
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.trigger.description.full`,
-      {
-        id: formatListWithOrs(
-          hass.locale,
-          ensureArray(condition.id).map((id) => id.toString())
-        ),
-      }
     );
   }
 
