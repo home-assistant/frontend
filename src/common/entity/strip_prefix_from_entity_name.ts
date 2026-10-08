@@ -10,8 +10,10 @@ export const stripPrefixFromEntityName = (
   entityName: string,
   prefix: string
 ) => {
-  const lowerCasedEntityName = entityName.toLowerCase();
-  const lowerCasedPrefix = prefix.toLowerCase();
+  // Treat typographic apostrophes like straight apostrophes for matching only.
+  // This replacement preserves length so we can slice the original name below.
+  const lowerCasedEntityName = entityName.toLowerCase().replaceAll("’", "'");
+  const lowerCasedPrefix = prefix.toLowerCase().replaceAll("’", "'");
   for (const suffix of SUFFIXES) {
     const lowerCasedPrefixWithSuffix = `${lowerCasedPrefix}${suffix}`;
 
