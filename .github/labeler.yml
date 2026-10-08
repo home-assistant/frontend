@@ -16,6 +16,19 @@ Agents:
           - .github/skills/**
           - .github/workflows/copilot-setup-steps.yml
 
+Automations:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/panels/config/{automation,script,scene,blueprint}/**"
+          - "src/data/{automation,automation_i18n,script,script_i18n,scene,blueprint}.ts"
+
+Backups:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/backup/**
+          - src/data/backup*.ts
+          - src/onboarding/onboarding-restore-backup.ts
+
 Build:
   - changed-files:
       - any-glob-to-any-file:
@@ -28,6 +41,17 @@ Cast:
       - any-glob-to-any-file:
           - cast/src/**
           - src/cast/**
+
+Companion App:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/external_app/**
+
+Dashboards:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/lovelace/**
+          - src/data/lovelace/**
 
 Demo:
   - changed-files:
@@ -57,12 +81,69 @@ Dependencies:
           - "^renovate/"
           - "^dependabot/"
 
+Devices & Entities:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/panels/config/{devices,entities,areas}/**"
+          - src/data/device/device_registry.ts
+          - src/data/entity/entity_registry*.ts
+          - src/data/floor_registry.ts
+
+Energy:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/energy/**
+          - src/panels/config/energy/**
+          - src/panels/lovelace/cards/energy/**
+          - src/panels/lovelace/**/*energy*
+          - src/data/energy*.ts
+
 GitHub Actions:
   - changed-files:
       - any-glob-to-any-file:
           - .github/actions/**
           - .github/workflows/**
           - .github/*.yml
+
+History:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/history/**
+          - src/panels/logbook/**
+          - "src/panels/lovelace/**/*{history,logbook}*"
+          - src/data/history.ts
+          - src/data/logbook.ts
+
+Integrations:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/integrations/**
+          - src/data/config_entries.ts
+          - src/data/config_flow.ts
+
+Labs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/labs/**
+
+Landingpage:
+  - changed-files:
+      - any-glob-to-any-file:
+          - landing-page/**
+
+Onboarding:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/onboarding/**
+          - src/auth/**
+          - src/data/onboarding.ts
+          - src/data/auth.ts
+
+Supervisor:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/apps/**
+          - src/data/supervisor/**
 
 "Tests: E2E":
   - changed-files:
@@ -93,3 +174,15 @@ GitHub Actions:
       - any-glob-to-any-file:
           - test/*.ts
           - "test/!(e2e)/**"
+
+Theming:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/resources/theme/**
+          - src/data/theme.ts
+
+Voice:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/voice-assistants/**
+          - src/data/assist_pipeline.ts
