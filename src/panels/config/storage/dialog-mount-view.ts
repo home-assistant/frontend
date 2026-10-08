@@ -436,7 +436,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
           <ha-progress-button
             slot="primaryAction"
             .progress=${!!this._waiting}
-            .disabled=${!this.isDirtyState}
+            .disabled=${!this.isDirtyState || this._partitionMissing}
             @click=${this._connectMount}
           >
             ${
@@ -460,6 +460,14 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       !this._existing &&
       this._data?.type === SupervisorMountType.DISK &&
       this._partitions?.length === 0
+    );
+  }
+
+  private get _partitionMissing(): boolean {
+    return (
+      !this._existing &&
+      this._data?.type === SupervisorMountType.DISK &&
+      !this._data.device
     );
   }
 
