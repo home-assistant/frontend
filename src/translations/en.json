@@ -10181,7 +10181,7 @@
                 "target": "Zones",
                 "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in any of the selected zones, or in any zone with the selected labels.",
                 "away": "Away",
-                "away_helper": "This condition will also be true if the person entity of the user viewing this dashboard is not in any zone."
+                "away_helper": "This condition will also be true if the person entity of the user viewing this dashboard is away. Passive zones don't change this, so a person who is only in passive zones is away."
               },
               "user": {
                 "label": "User"
