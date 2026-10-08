@@ -295,7 +295,7 @@ export class HaMarketplaceWarning extends LitElement {
       padding: var(--ha-space-1) var(--ha-space-2);
       border-radius: var(--ha-border-radius-lg);
       background-color: rgba(var(--rgb-warning-color), 0.08);
-      transition: background-color 150ms ease-in-out;
+      transition: background-color var(--ha-animation-duration-fast) ease-in-out;
     }
 
     .agree:hover {

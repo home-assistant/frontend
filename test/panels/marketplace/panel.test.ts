@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ConfigEntryUpdate } from "../../../src/data/config_entries";
 import { MarketplaceDispatchEvent } from "../../../src/data/marketplace/common";
 import "../../../src/panels/marketplace/ha-panel-marketplace";
-import type { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 
 // The real screens need more browser than jsdom has, the panel only hands
 // them properties.
@@ -202,6 +202,32 @@ describe("ha-panel-marketplace", () => {
     expect(router).not.toBe(behindWarning);
     expect(router!.hasAttribute("inert")).toBe(false);
     expect(screen(panel, "ha-marketplace-warning")).toBeNull();
+  });
+
+  it("opens a link only once the warning is accepted, the catalog shows until then", async () => {
+    let accepted = false;
+    const panel = await openPanel({
+      "marketplace/info": async () => ({
+        ...INFO,
+        warning_accepted: accepted,
+      }),
+      "marketplace/repositories/list": async () => [],
+    });
+    const link = { prefix: "/marketplace", path: "/repository/42" };
+    panel.route = link;
+    await settle(panel);
+    const routeOf = () =>
+      (screen(panel, "ha-marketplace-router") as HTMLElement & { route: Route })
+        .route;
+
+    // A link could add a repository or open a dialog over the warning
+    expect(routeOf()).toEqual({ prefix: "/marketplace", path: "/browse" });
+
+    accepted = true;
+    panel.dispatchEvent(new Event("marketplace-refresh"));
+    await settle(panel);
+
+    expect(routeOf()).toBe(link);
   });
 
   it("loads the translations of the errors of the backend", async () => {

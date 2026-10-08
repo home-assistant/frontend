@@ -73,6 +73,12 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
 
   protected hassSubscribeRequiredHostProps = ["_integrationLoaded"];
 
+  // The catalog, whatever the route is
+  private _behindWarning = memoizeOne((route: Route): Route => ({
+    prefix: route.prefix,
+    path: "/browse",
+  }));
+
   private _marketplace = memoizeOne(
     (
       repositories: RepositoryBase[],
@@ -219,15 +225,16 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     const accepted = this._info.warning_accepted;
 
     // The Marketplace shows behind the warning, which keeps it from being
-    // used. It starts over once accepted, so what it tried before, like
-    // adding a repository from a link, runs again.
+    // used. Until it is accepted only the catalog shows there, a link that
+    // adds a repository or opens a dialog waits for the acceptance, when the
+    // Marketplace starts over on the route it was opened on.
     return html`
       ${keyed(
         accepted,
         html`<ha-marketplace-router
           .hass=${this.hass}
           .marketplace=${this._marketplace(this._repositories, this._info)}
-          .route=${this.route}
+          .route=${accepted ? this.route : this._behindWarning(this.route)}
           .narrow=${this.narrow}
           ?inert=${!accepted}
         ></ha-marketplace-router>`
