@@ -33,11 +33,11 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
       /^src\/data\/external\.ts$/,
       /^src\/util\/is_ios\.ts$/,
     ],
-    // Reads or messages the companion app the frontend is running in. Matches
-    // imports of data/external rather than isExternal, which is also a common
-    // local name.
+    // Reads or messages the companion app the frontend is running in, or
+    // imports its modules. Matches imports of data/external rather than
+    // isExternal, which is also a common local name.
     pattern:
-      /\bauth\??\.external\b|\bfireExternalBusMessage\([^)]*|\bimport\s[^;]*?from ["'][^"']*\/(?:external_app\/|data\/external["'])/g,
+      /\bauth\??\.external\b(?:[!?]*\.\w+\([^)]*)?|\bfireExternalBusMessage\([^)]*|(?:\bimport\s[^;]*?from\s*|\bimport\(\s*)["'][^"']*\/(?:external_app\/[^"']*|data\/external)["']/g,
   },
   {
     label: "Home Assistant Link",
@@ -112,8 +112,27 @@ const parseHunks = (patch: string) => {
   return hunks;
 };
 
-// Matches whole calls, which can span lines, that touch a changed line.
-// Whitespace and trailing commas are ignored, as Prettier adds them on wrap.
+// Ignores whitespace and trailing commas outside strings, as Prettier changes
+// them when wrapping
+const normaliseCode = (code: string) => {
+  const parts = code.split(
+    /("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)/
+  );
+
+  return parts
+    .map((part, i) => {
+      if (i % 2 === 1) {
+        return part;
+      }
+
+      const stripped = part.replace(/\s+/g, "").replace(/,(?=[}\])])/g, "");
+
+      return i === parts.length - 1 ? stripped.replace(/,$/, "") : stripped;
+    })
+    .join("");
+};
+
+// Matches whole calls, which can span lines, that touch a changed line
 const changedMatches = (side: HunkSide, pattern: RegExp) => {
   const text = side.lines.join("\n");
   const matches: string[] = [];
@@ -123,7 +142,7 @@ const changedMatches = (side: HunkSide, pattern: RegExp) => {
     const last = first + match[0].split("\n").length - 1;
 
     if (side.changed.slice(first, last + 1).some(Boolean)) {
-      matches.push(match[0].replace(/\s+/g, "").replace(/,(?=[}\])]|$)/g, ""));
+      matches.push(normaliseCode(match[0]));
     }
   }
 
