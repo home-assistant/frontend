@@ -280,7 +280,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return html`
         <hui-warning-element
-          .label=${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
+          .label=${createEntityNotFoundWarning(this.hass!.localize, this.hass!.config)}
         ></hui-warning-element>
       `;
     }

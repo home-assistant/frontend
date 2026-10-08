@@ -529,6 +529,19 @@
       "last": "Last"
     },
     "components": {
+      "safe_area_tool": {
+        "title": "Safe area",
+        "presets": {
+          "none": "None",
+          "portrait": "Portrait",
+          "landscape": "Landscape"
+        },
+        "top": "Top",
+        "bottom": "Bottom",
+        "left": "Left",
+        "right": "Right",
+        "highlight": "Highlight"
+      },
       "input": {
         "clear": "Clear",
         "show_password": "Show password",
@@ -1256,6 +1269,11 @@
         "load_error": "Failed to load data",
         "retry": "[%key:ui::panel::app::retry%]"
       },
+      "web-rtc-player": {
+        "not_supported": "WebRTC is not supported in this browser.",
+        "start_failed": "Failed to start the WebRTC stream: {message}",
+        "connect_failed": "Failed to connect the WebRTC stream: {message}"
+      },
       "siren": {
         "more_controls": "More controls",
         "tone": "Tone",
@@ -1523,6 +1541,12 @@
         "parent_device_name": "Parent device name",
         "area_name": "Area name",
         "floor_name": "Floor name"
+      },
+      "unit-of-measurement-picker": {
+        "unit_of_measurement": "Unit of measurement",
+        "no_units": "No units available",
+        "no_match": "No units found for {term}",
+        "custom_unit": "Use custom unit"
       },
       "multi-textfield": {
         "add_item": "Add {item}"
@@ -4043,6 +4067,10 @@
               "debug_connection": {
                 "title": "Debug connection",
                 "description": "Observe requests to the server and responses from the server in browser console."
+              },
+              "safe_area_tool": {
+                "title": "Debug safe area",
+                "description": "Show a floating tool to simulate the parts of the screen a device can't use, like a notch or a camera cutout. Only applies to this browser."
               },
               "disable_view_transition": {
                 "title": "Disable view transitions",
@@ -9226,6 +9254,7 @@
             "invalid_port": "Enter a port number between 1 and 65535.",
             "invalid_login_attempts_threshold": "Enter a number between 1 and 1000.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
+            "running_default_legacy_port": "Your saved HTTP configuration could not be applied, and the default port was unavailable, so Home Assistant is running on the built-in default configuration on the previous default port.",
             "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
             "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
             "reverted_action": "Review the change",
@@ -9560,12 +9589,14 @@
             "reset_focus": "Reset focus",
             "toggle_grouping": "Toggle grouping",
             "overview": {
+              "label": "Map overview",
               "people": "People",
               "devices": "Devices",
               "zones": "Zones",
               "me": "Me",
               "activity": "Activity",
               "show_more": "Show more",
+              "more_info": "More info",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
               "entered": "Entered",
@@ -10026,6 +10057,13 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "paste_above": "Paste above",
+            "paste_below": "Paste below",
+            "copied_to_clipboard": "Section copied to clipboard",
+            "cut_to_clipboard": "Section cut to clipboard",
+            "cut_error": "Error while cutting section",
+            "paste_error": "Error while pasting section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
@@ -10036,7 +10074,7 @@
           },
           "delete_section": {
             "title": "Delete section",
-            "text": "This section and all its cards will be deleted."
+            "text": "This section and all its content will be deleted."
           },
           "error_section": {
             "title": "Error"
@@ -10722,10 +10760,16 @@
                 "toner": "Toner"
               },
               "scale_ruler": "Scale ruler",
+              "scale_ruler_helper": "Show a distance scale in the corner of the map",
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",
+              "auto_fit_helper": "Keep all entities in view by zooming and panning as they move",
               "fit_zones": "Fit zones",
+              "fit_zones_helper": "Include zones when fitting the map, not only entities",
+              "show_zone_radius": "Show zone radius",
+              "show_zone_radius_helper": "In the panel layout, always show the radius of every zone, not only on the Zones tab",
               "cluster": "Cluster markers",
+              "cluster_helper": "Group markers that are close together into one bubble",
               "show_all": "Show all",
               "show_all_helper": "Automatically add all entities with coordinates",
               "source": "Source",
@@ -12335,6 +12379,7 @@
           "available_version": "Available version",
           "status": "Status",
           "type": "Type",
+          "source": "Source",
           "last_updated": "Activity",
           "actions": "Actions"
         },
@@ -12348,7 +12393,8 @@
         },
         "filters": {
           "status": "Status",
-          "type": "Type"
+          "type": "Type",
+          "source": "Source"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
@@ -12456,6 +12502,10 @@
           "install_other_version": "Install another version",
           "reinstall": "Reinstall",
           "update_information": "Refresh information"
+        },
+        "repository_source": {
+          "catalog": "Community catalog",
+          "custom": "Custom repositories"
         },
         "repository_status": {
           "pending-restart": "Restart required",

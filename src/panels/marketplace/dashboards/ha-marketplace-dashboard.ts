@@ -15,7 +15,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
@@ -67,6 +70,8 @@ import { haStyle } from "../../../resources/styles";
 import {
   browseSettingsFromUrl,
   filterRepositories,
+  SOURCE_FILTER,
+  SOURCE_ORDER,
   STATUS_FILTER,
   STATUS_ORDER,
   TYPE_FILTER,
@@ -169,6 +174,20 @@ export class HaMarketplaceDashboard extends LitElement {
     subscribe: false,
   })
   private _activeSorting?: { column: string; direction: SortingDirection };
+
+  @storage({
+    key: "marketplace-dashboard-table-grouping",
+    state: true,
+    subscribe: false,
+  })
+  private _activeGrouping?: string = "translated_status";
+
+  @storage({
+    key: "marketplace-dashboard-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed: string[] = [];
 
   @storage({
     storage: "sessionStorage",
@@ -308,9 +327,17 @@ export class HaMarketplaceDashboard extends LitElement {
           .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
           .empty=${!this.marketplace.repositories.length}
           .initialSorting=${this._activeSorting}
+          .initialGroupColumn=${this._activeGrouping}
+          .initialCollapsedGroups=${this._activeCollapsed}
+          .groupOrder=${this._groupOrder(
+            this._activeGrouping,
+            this._i18n.localize
+          )}
           .columnOrder=${this._orderTableColumns}
           .hiddenColumns=${this._hiddenTableColumns}
           @columns-changed=${this._handleColumnsChanged}
+          @grouping-changed=${this._handleGroupingChanged}
+          @collapsed-changed=${this._handleCollapseChanged}
           @row-click=${this._handleRowClicked}
           @clear-filter=${this._handleClearFilter}
           @search-changed=${this._handleSearchFilterChanged}
@@ -358,6 +385,14 @@ export class HaMarketplaceDashboard extends LitElement {
             )}
             .narrow=${this.narrow}
             @data-table-filter-changed=${this._typeFilterChanged}
+          ></ha-filter-states>
+          <ha-filter-states
+            slot="filter-pane"
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.source")}
+            .value=${this._filters[SOURCE_FILTER]}
+            .states=${this._sourceStates(this._i18n.localize)}
+            .narrow=${this.narrow}
+            @data-table-filter-changed=${this._sourceFilterChanged}
           ></ha-filter-states>
         </hass-tabs-subpage-data-table>`
       )}
@@ -534,6 +569,7 @@ export class HaMarketplaceDashboard extends LitElement {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.status"),
         sortable: true,
+        groupable: true,
         hidden: false,
         defaultHidden: true,
       },
@@ -541,7 +577,16 @@ export class HaMarketplaceDashboard extends LitElement {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.type"),
         sortable: true,
+        groupable: true,
         hidden: false,
+      },
+      translated_source: {
+        ...defaultKeyData,
+        title: localizeFunc("ui.panel.marketplace.column.source"),
+        sortable: true,
+        groupable: true,
+        hidden: false,
+        defaultHidden: true,
       },
       description: defaultKeyData,
       authors: defaultKeyData,
@@ -671,6 +716,32 @@ export class HaMarketplaceDashboard extends LitElement {
       }))
   );
 
+  private _sourceStates = memoize((localize: LocalizeFunc) =>
+    SOURCE_ORDER.map((source) => ({
+      value: source,
+      label: localize(`ui.panel.marketplace.repository_source.${source}`),
+    }))
+  );
+
+  // Statuses and sources group in the order of their filters, not alphabetically
+  private _groupOrder = memoize(
+    (grouping: string | undefined, localize: LocalizeFunc) => {
+      if (grouping === "translated_status") {
+        return STATUS_ORDER.map((status) =>
+          localize(`ui.panel.marketplace.repository_status.${status}`)
+        );
+      }
+
+      if (grouping === "translated_source") {
+        return SOURCE_ORDER.map((source) =>
+          localize(`ui.panel.marketplace.repository_source.${source}`)
+        );
+      }
+
+      return undefined;
+    }
+  );
+
   private _handleRowClicked(ev: CustomEvent) {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
@@ -683,12 +754,28 @@ export class HaMarketplaceDashboard extends LitElement {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
   }
 
+  private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
+    this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+  }
+
   private _handleSearchFilterChanged(ev: CustomEvent) {
     this._activeSearch = ev.detail.value;
   }
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(
+    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
+  ) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(
+    ev: HASSDomEvent<HASSDomEvents["collapsed-changed"]>
+  ) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {

@@ -505,6 +505,21 @@ describe("computeTraceLink", () => {
     expect(computeTraceLink(traceContexts, undefined)).toBeUndefined();
     expect(computeTraceLink({}, "ctx_1")).toBeUndefined();
   });
+
+  it("encodes the item id, which is free-form for automations", () => {
+    expect(
+      computeTraceLink(
+        {
+          ctx_1: {
+            run_id: "run_9",
+            domain: "automation",
+            item_id: "lights?evening #2",
+          },
+        },
+        "ctx_1"
+      )
+    ).toBe("/config/automation/trace/lights%3Fevening%20%232?run_id=run_9");
+  });
 });
 
 describe("computeLogbookItem cause", () => {

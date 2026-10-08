@@ -51,6 +51,7 @@ import type {
   MapMarkerOptions,
   MapPath,
   MapPathHandle,
+  MapView,
 } from "../map-engine";
 import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
@@ -87,6 +88,11 @@ const WHEEL_ZOOM_RATE = 1 / 200;
 
 // Regroup clusters once continuous zooming settles, not on every wheel notch
 export const CLUSTER_REBUILD_DELAY = 120;
+
+const ATTRIBUTION_SHOW_DURATION = 5000;
+const ATTRIBUTION_SHOWN_CLASS = "maplibregl-compact-show";
+// The app's narrow-layout breakpoint (home-assistant-main)
+const NARROW_VIEWPORT_QUERY = "(max-width: 870px)";
 
 type GeoJSONSourceSpecification = Extract<
   Parameters<MapLibreMap["addSource"]>[1],
@@ -128,7 +134,7 @@ const coloredCircle = (
   options: MapCircleOptions
 ): Feature<Polygon> => ({
   ...circlePolygon(center, options.radius),
-  properties: { color: options.color },
+  properties: { color: options.color, outline: options.outline !== false },
 });
 
 const pathLines = (path: MapPath): FeatureCollection => ({
@@ -192,10 +198,15 @@ const iconFootprint = (icon: MapClusterIcon, center: MapLatLng): Footprint => ({
   half: Math.max(...icon.size) / 2,
 });
 
-const markerFootprint = (managed: ManagedMarker): Footprint => ({
-  location: managed.location,
-  offset: [0, 0],
-  half: Math.max(...managed.options.size) / 2,
+const markerFootprint = ({ location, options }: ManagedMarker): Footprint => ({
+  location,
+  offset: options.anchor
+    ? [
+        options.size[0] / 2 - options.anchor[0],
+        options.size[1] / 2 - options.anchor[1],
+      ]
+    : [0, 0],
+  half: Math.max(...options.size) / 2,
 });
 
 interface ClusterGroup {
@@ -231,6 +242,14 @@ export class MapLibreMapEngine implements MapEngine {
   private _zoomControl?: IControl;
 
   private _scaleControl?: IControl;
+
+  private _attributionControl?: IControl;
+
+  private _attributionObserver?: MutationObserver;
+
+  private _attributionTimeout?: number;
+
+  private _narrowViewport = window.matchMedia(NARROW_VIEWPORT_QUERY);
 
   private _markers: ManagedMarker[] = [];
 
@@ -334,8 +353,7 @@ export class MapLibreMapEngine implements MapEngine {
       touchPitch: false,
       // Rendered with a device font, so these glyphs are never requested
       localIdeographFontFamily: "sans-serif",
-      // Inline on wide maps, collapsible (open by default) on narrow ones
-      attributionControl: {},
+      attributionControl: false,
       // Proxied by core behind a token; absolute so the worker can resolve them
       transformRequest: (url) => ({
         ...withMapTilesToken(url),
@@ -373,6 +391,8 @@ export class MapLibreMapEngine implements MapEngine {
 
     this._zoomControl = new maplibre.NavigationControl({ showCompass: false });
     map.addControl(this._zoomControl, POSITIONS[options.zoomControlPosition]);
+    this._setUpAttribution();
+    this._narrowViewport.addEventListener("change", this._setUpAttribution);
 
     map.on("click", (ev) => {
       // Clicks on path points (they have tooltips) are not map clicks
@@ -436,6 +456,62 @@ export class MapLibreMapEngine implements MapEngine {
     }
   };
 
+  // Compact on a narrow viewport too, not only on a narrow map
+  private _setUpAttribution = (): void => {
+    const map = this._map;
+    if (!map || !this._maplibre) {
+      return;
+    }
+    if (this._attributionControl) {
+      map.removeControl(this._attributionControl);
+    }
+    this._attributionControl = new this._maplibre.AttributionControl({
+      compact: this._narrowViewport.matches ? true : undefined,
+    });
+    map.addControl(this._attributionControl, "bottom-right");
+    const attribution = map
+      .getContainer()
+      .querySelector<HTMLElement>(".maplibregl-ctrl-attrib");
+    if (attribution) {
+      this._autoHideAttribution(attribution);
+    }
+  };
+
+  private _autoHideAttribution(attribution: HTMLElement): void {
+    clearTimeout(this._attributionTimeout);
+    this._attributionObserver?.disconnect();
+    let byUser = false;
+    attribution
+      .querySelector(".maplibregl-ctrl-attrib-button")
+      ?.addEventListener("click", () => {
+        // MapLibre's click handler already ran; the observer sees this flag
+        byUser = true;
+        queueMicrotask(() => {
+          byUser = false;
+        });
+      });
+    let shown = false;
+    const sync = () => {
+      const nowShown = attribution.classList.contains(ATTRIBUTION_SHOWN_CLASS);
+      if (nowShown === shown) {
+        return;
+      }
+      shown = nowShown;
+      clearTimeout(this._attributionTimeout);
+      if (shown && !byUser) {
+        this._attributionTimeout = window.setTimeout(() => {
+          attribution.classList.remove(ATTRIBUTION_SHOWN_CLASS);
+        }, ATTRIBUTION_SHOW_DURATION);
+      }
+    };
+    this._attributionObserver = new MutationObserver(sync);
+    this._attributionObserver.observe(attribution, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    sync();
+  }
+
   private _scheduleFatal(): void {
     clearTimeout(this._fallbackTimeout);
     // Backgrounding drops the context too, and there it comes back on return
@@ -454,6 +530,10 @@ export class MapLibreMapEngine implements MapEngine {
     this._unsubscribeToken?.();
     clearTimeout(this._fallbackTimeout);
     clearTimeout(this._clusterRebuildTimeout);
+    clearTimeout(this._attributionTimeout);
+    this._attributionObserver?.disconnect();
+    this._attributionObserver = undefined;
+    this._narrowViewport.removeEventListener("change", this._setUpAttribution);
     document.removeEventListener("visibilitychange", this._handleVisibility);
     this._revealEmerged(true);
     this._clusterGroups.forEach((group) => group.iconMarker?.remove());
@@ -580,6 +660,17 @@ export class MapLibreMapEngine implements MapEngine {
     });
   }
 
+  public getView(): MapView | undefined {
+    if (!this._map) {
+      return undefined;
+    }
+    const center = this._map.getCenter();
+    return {
+      center: [center.lat, center.lng],
+      zoom: this._map.getZoom() + ZOOM_OFFSET,
+    };
+  }
+
   public setZoom(zoom: number): void {
     this._map?.easeTo({ zoom: zoom - ZOOM_OFFSET });
   }
@@ -607,21 +698,27 @@ export class MapLibreMapEngine implements MapEngine {
 
   public fitBounds(points: MapLatLng[], options?: MapFitOptions): void {
     const fit = this._fitFor(points, options);
-    if (fit) {
-      this._map!.fitBounds(fit.bounds, {
-        ...fit.options,
-        animate: options?.animate,
-      });
+    if (!fit) {
+      return;
     }
-  }
-
-  // The zoom a fit would land on, without moving the map
-  private _zoomAfterFit(points: MapLatLng[], options?: MapFitOptions): number {
-    const fit = this._fitFor(points, options);
-    return (
-      (fit && this._map!.cameraForBounds(fit.bounds, fit.options)?.zoom) ??
-      this._map!.getZoom()
-    );
+    const map = this._map!;
+    // Regroup now for the zoom the fit lands on
+    const zoom = this._clusterOptions
+      ? map.cameraForBounds(fit.bounds, fit.options)?.zoom
+      : undefined;
+    if (zoom !== undefined) {
+      this._groupingZoom = zoom;
+      try {
+        this._rebuildClusters(true);
+      } finally {
+        this._groupingZoom = undefined;
+      }
+    }
+    map.fitBounds(fit.bounds, {
+      ...fit.options,
+      animate: options?.animate,
+      linear: !options?.fly,
+    });
   }
 
   private _fitFor(points: MapLatLng[], options?: MapFitOptions) {
@@ -703,7 +800,7 @@ export class MapLibreMapEngine implements MapEngine {
   ): MapEditableMarkerHandle {
     element.style.width = `${options.size[0]}px`;
     element.style.height = `${options.size[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       element.title = options.title;
     }
     const interactive = options.interactive ?? true;
@@ -713,6 +810,7 @@ export class MapLibreMapEngine implements MapEngine {
       element.style.pointerEvents = "none";
     }
     setMarkerAccessibility(element, options.title, focusable);
+    element.style.zIndex = options.raised ? "1" : "";
     if (draggable) {
       // The engine, not the host, knows whether this element really drags
       element.style.cursor = "move";
@@ -831,7 +929,10 @@ export class MapLibreMapEngine implements MapEngine {
       id: `${id}-line`,
       type: "line",
       source: id,
-      paint: { "line-color": ["get", "color"], "line-width": 3 },
+      paint: {
+        "line-color": ["get", "color"],
+        "line-width": ["case", ["get", "outline"], 3, 0],
+      },
     });
     return {
       update: (newCenter, newOptions) => {
@@ -898,7 +999,7 @@ export class MapLibreMapEngine implements MapEngine {
     }
     centerEl.style.width = `${centerSize[0]}px`;
     centerEl.style.height = `${centerSize[1]}px`;
-    if (options.title) {
+    if (options.title && options.nativeTitle !== false) {
       centerEl.title = options.title;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
@@ -916,9 +1017,26 @@ export class MapLibreMapEngine implements MapEngine {
 
     let resizeMarker: MapLibreMarker | undefined;
     let resizeHandle: HTMLElement | undefined;
+    // The user's hand wins while dragging; the host is the truth otherwise
+    let dragging = false;
+    // Hidden while the circle is under the center element
+    const syncResizeHandleVisibility = () => {
+      if (!resizeHandle || dragging) {
+        return;
+      }
+      const east = pointEastOf(currentCenter, currentRadius);
+      const centerPoint = map.project([currentCenter[1], currentCenter[0]]);
+      const eastPoint = map.project([east[1], east[0]]);
+      const covered =
+        Math.hypot(eastPoint.x - centerPoint.x, eastPoint.y - centerPoint.y) <
+        centerSize[0] / 2;
+      resizeHandle.style.display =
+        covered && !resizeHandle.matches(":focus-visible") ? "none" : "";
+    };
     const placeResizeHandle = () => {
       const east = pointEastOf(currentCenter, currentRadius);
       resizeMarker?.setLngLat([east[1], east[0]]);
+      syncResizeHandleVisibility();
       const radiusText = String(Math.round(currentRadius));
       resizeHandle?.setAttribute(
         "aria-valuemax",
@@ -929,10 +1047,8 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
     };
 
-    // The user's hand wins while dragging; the host is the truth otherwise
-    let dragging = false;
-
     if (options.resizable) {
+      map.on("zoom", syncResizeHandleVisibility);
       const east = pointEastOf(center, options.radius);
       resizeHandle = createResizeHandleElement(options.resizeLabel);
       resizeMarker = new maplibre.Marker({
@@ -992,7 +1108,10 @@ export class MapLibreMapEngine implements MapEngine {
       };
       resizeHandle.addEventListener("keyup", commitKeyboardResize);
       // Focus can leave while a key is still held
-      resizeHandle.addEventListener("blur", commitKeyboardResize);
+      resizeHandle.addEventListener("blur", () => {
+        commitKeyboardResize();
+        syncResizeHandleVisibility();
+      });
       // Like the other markers: a click on the handle is not a map click
       resizeHandle.addEventListener("click", (ev) => ev.stopPropagation());
     }
@@ -1003,6 +1122,7 @@ export class MapLibreMapEngine implements MapEngine {
       });
       handleMarker?.on("dragend", () => {
         dragging = false;
+        syncResizeHandleVisibility();
       });
     });
 
@@ -1076,6 +1196,7 @@ export class MapLibreMapEngine implements MapEngine {
         resetMarkerElement(centerEl);
         clearMarkerAccessibility(centerEl);
         this._placedElements.delete(centerEl);
+        map.off("zoom", syncResizeHandleVisibility);
         resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
@@ -1478,21 +1599,14 @@ export class MapLibreMapEngine implements MapEngine {
       }
       const { icon } = group;
       this._placeIcon(group, icon);
-      // Zooms in on the members, regrouped up front as they will sit once the
-      // zoom lands: leavers part now and the bubble opens for the rest
       const zoomToMembers = () => {
         const { members } = group;
-        const locations = members.map((managed) => managed.location);
-        const fit = { pad: 0.3, maxZoom: this._getMaxZoom() };
         this._openAfterRegroup = members;
-        this._groupingZoom = this._zoomAfterFit(locations, fit);
-        try {
-          this._rebuildClusters(true, group);
-        } finally {
-          this._groupingZoom = undefined;
-        }
+        this.fitBounds(
+          members.map((managed) => managed.location),
+          { pad: 0.3, maxZoom: this._getMaxZoom() }
+        );
         this._hideEmerging(members);
-        this.fitBounds(locations, fit);
       };
       setMarkerAccessibility(icon.element, this._groupTitle(group), true);
       icon.element.addEventListener("click", (ev) => {

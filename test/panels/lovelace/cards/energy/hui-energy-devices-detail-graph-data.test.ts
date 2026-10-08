@@ -22,7 +22,7 @@ const computedStyles = createMockComputedStyle({
   "--history-unknown-color": "#888888",
 });
 
-const { localize, states, formatEntityName } = createMockHass();
+const { localize, locale, states, formatEntityName } = createMockHass();
 
 // Fixed `now` (end fallback) and `untrackedOrder` (untracked dataset id
 // suffix, `untracked-<order>`) for deterministic output. In the live card
@@ -54,6 +54,7 @@ const config: EnergyDevicesDetailGraphCardConfig = {
 
 const baseParams = {
   localize,
+  locale,
   states,
   formatEntityName,
   darkMode: false,

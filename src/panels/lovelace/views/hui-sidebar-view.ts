@@ -11,7 +11,8 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
-import { replaceCard } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { setAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 @customElement("hui-sidebar-view")
@@ -20,7 +21,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
+  @property({ attribute: false }) public path?: LovelacePath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -93,7 +94,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       <hui-view-badges
         .badges=${this.badges}
         .lovelace=${this.lovelace}
-        .viewIndex=${this.index}
+        .path=${[...this.path!, "badges"]}
         show-add-label
       ></hui-view-badges>
       <div
@@ -113,7 +114,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    fireEvent(this, "ll-create-card");
+    fireEvent(this, "ll-create-card", { path: [...this.path!, "cards"] });
   }
 
   private _createCards(): void {
@@ -156,7 +157,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         element = document.createElement("hui-card-options");
         element.hass = this.hass;
         element.lovelace = this.lovelace;
-        element.path = [this.index!, idx];
+        element.path = [...this.path!, "cards", idx];
         card.preview = true;
         const movePositionButton = document.createElement("ha-icon-button");
         movePositionButton.slot = "buttons";
@@ -168,7 +169,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         movePositionButton.appendChild(moveIcon);
         movePositionButton.addEventListener("click", () => {
           this.lovelace!.saveConfig(
-            replaceCard(this.lovelace!.config, [this.index!, idx], {
+            setAtPath(this.lovelace!.config, [...this.path!, "cards", idx], {
               ...cardConfig!,
               view_layout: {
                 position:
