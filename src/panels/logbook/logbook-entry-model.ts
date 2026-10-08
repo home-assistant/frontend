@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import { computeEntityNameParts } from "../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../common/entity/state_color";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -60,20 +60,12 @@ export const entityDisplay = (
     return {};
   }
 
-  const [entityName, deviceName, parentDeviceName, areaName] =
-    computeEntityNameList(
-      stateObj,
-      [
-        { type: "entity" },
-        { type: "device" },
-        { type: "parent_device" },
-        { type: "area" },
-      ],
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
-    );
+  const {
+    entity: entityName,
+    device: deviceName,
+    parent_device: parentDeviceName,
+    area: areaName,
+  } = computeEntityNameParts(stateObj, hass);
 
   const primary = entityName || deviceName || entityId;
 

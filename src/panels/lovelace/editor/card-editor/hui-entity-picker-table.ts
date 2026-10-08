@@ -68,13 +68,12 @@ export class HuiEntityPickerTable extends LitElement {
           const stateObj = states[entity];
 
           const { entityName, deviceName, parentDeviceName, areaName } =
-            computeEntitySearchLabels(
-              stateObj,
-              entityRegistry,
+            computeEntitySearchLabels(stateObj, {
+              entities: entityRegistry,
               devices,
               areas,
-              floors
-            );
+              floors,
+            });
           const name = [deviceName, entityName].filter(Boolean).join(" ");
           const domain = computeDomain(entity);
 

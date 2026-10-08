@@ -28,7 +28,7 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   deleteEntity,
@@ -681,10 +681,7 @@ export class HaConfigEntities extends LitElement {
           .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
           .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
 
-        const entityName = computeEntityEntryName(
-          entry as EntityRegistryEntry,
-          entity
-        );
+        const entityName = computeEntityEntryName(entry as EntityRegistryEntry);
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
@@ -699,7 +696,10 @@ export class HaConfigEntities extends LitElement {
 
         result.push({
           ...entry,
-          name: entityName || deviceName || entry.entity_id,
+          name:
+            entityName ||
+            deviceName ||
+            (entity ? computeStateName(entity) : entry.entity_id),
           device: deviceName,
           area: areaName,
           device_full: deviceFullName,

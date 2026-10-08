@@ -3,9 +3,9 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
-  computeEntityEntryNameList,
-  computeEntityNameList,
-  type EntityNameItem,
+  computeEntityEntryNameParts,
+  computeEntityNameParts,
+  type EntityNameType,
 } from "../../../../common/entity/compute_entity_name_display";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-button";
@@ -27,11 +27,11 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { VacuumSegmentMappingDialogParams } from "./show-dialog-vacuum-segment-mapping";
 
-const BREADCRUMB_NAME: EntityNameItem[] = [
-  { type: "area" },
-  { type: "parent_device" },
-  { type: "device" },
-  { type: "entity" },
+const BREADCRUMB_NAME: EntityNameType[] = [
+  "area",
+  "parent_device",
+  "device",
+  "entity",
 ];
 
 interface VacuumSegmentMappingState {
@@ -135,26 +135,15 @@ export class DialogVacuumSegmentMapping
 
     const stateObj = this.hass.states[this._params.entityId];
 
+    const nameParts = stateObj
+      ? computeEntityNameParts(stateObj, this.hass)
+      : this._entry
+        ? computeEntityEntryNameParts(this._entry, this.hass)
+        : undefined;
     const breadcrumb = (
-      stateObj
-        ? computeEntityNameList(
-            stateObj,
-            BREADCRUMB_NAME,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          )
-        : this._entry
-          ? computeEntityEntryNameList(
-              this._entry,
-              BREADCRUMB_NAME,
-              this.hass.entities,
-              this.hass.devices,
-              this.hass.areas,
-              this.hass.floors
-            )
-          : [this._params.entityId]
+      nameParts
+        ? BREADCRUMB_NAME.map((type) => nameParts[type])
+        : [this._params.entityId]
     ).filter((v): v is string => Boolean(v));
 
     return html`

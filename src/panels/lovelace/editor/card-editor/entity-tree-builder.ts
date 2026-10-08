@@ -11,7 +11,7 @@ import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import {
-  computeEntityNameList,
+  computeEntityNameParts,
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
@@ -180,21 +180,12 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     const domain = computeDomain(entityId);
     const domainName = domainToName(localize, domain);
 
-    const searchLabels = computeEntitySearchLabels(
-      stateObj,
-      entityReg,
-      deviceReg,
-      areaReg,
-      floorReg
-    );
-    const [deviceName, parentDeviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "device" }, { type: "parent_device" }, { type: "area" }],
-      entityReg,
-      deviceReg,
-      areaReg,
-      floorReg
-    );
+    const searchLabels = computeEntitySearchLabels(stateObj, input);
+    const {
+      device: deviceName,
+      parent_device: parentDeviceName,
+      area: areaName,
+    } = computeEntityNameParts(stateObj, input);
 
     const name = searchLabels.entityName || searchLabels.deviceName || entityId;
     entityNames.set(entityId, name);

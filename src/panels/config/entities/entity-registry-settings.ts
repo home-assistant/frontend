@@ -5,7 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";

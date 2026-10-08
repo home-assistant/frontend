@@ -76,10 +76,7 @@ export const createMockHass = (
       computeEntityNameDisplay(
         stateObj,
         name,
-        entities,
-        devices,
-        areas,
-        floors,
+        { entities, devices, areas, floors },
         options
       )) satisfies HomeAssistant["formatEntityName"],
   } as unknown as HomeAssistant;

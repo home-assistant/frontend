@@ -92,10 +92,7 @@ export const computeFormatFunctions = async (
       computeEntityNameDisplay(
         stateObj,
         name,
-        entities,
-        devices,
-        areas,
-        floors,
+        { entities, devices, areas, floors },
         options
       ),
   };
