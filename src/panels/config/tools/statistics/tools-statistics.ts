@@ -864,6 +864,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         .search-toolbar {
           display: flex;
           align-items: center;
+          padding: 0 var(--ha-space-4);
           color: var(--secondary-text-color);
         }
 
