@@ -80,7 +80,7 @@ export class HaMarketplaceWarning extends LitElement {
           <h3>
             ${this._i18n.localize("ui.panel.marketplace.warning.risks_title")}
           </h3>
-          <ul>
+          <ul role="list">
             ${RISKS.map(
               ({ risk, icon }) => html`
                 <li>
