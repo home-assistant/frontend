@@ -31,7 +31,10 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { shallowEqual } from "../../common/util/shallow-equal";
-import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
+import {
+  DEFAULT_CHART_WIDTH,
+  MIN_TIME_BETWEEN_UPDATES,
+} from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/date-picker/ha-date-range-nav";
@@ -55,10 +58,12 @@ import "../../components/ha-top-app-bar-fixed";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import { entityTypesNeedStates } from "../../data/entity/entity_type";
-import type { HistoryResult } from "../../data/history";
+import type { HistoryResult, HistoryStates } from "../../data/history";
 import {
   computeHistory,
+  computeHistoryUpdateDelay,
   convertStatisticsToHistory,
+  countHistoryStates,
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
@@ -132,6 +137,10 @@ class HaPanelHistory extends LitElement {
   private _statsFetchId = 0;
 
   private _interval?: number;
+
+  private _historyUpdateTimer?: number;
+
+  private _historyGeneration = 0;
 
   public constructor() {
     super();
@@ -484,17 +493,60 @@ class HaPanelHistory extends LitElement {
 
     const now = new Date();
 
+    // The first message is applied right away, live updates to a large history are coalesced
+    const generation = this._historyGeneration;
+    let lastApplied = 0;
+    let pending: HistoryStates | undefined;
+    const applyHistory = (history: HistoryStates) => {
+      lastApplied = Date.now();
+      this._isLoading = false;
+      this._stateHistory = computeHistory(
+        this.hass,
+        history,
+        entityIds,
+        this.hass.localize,
+        true
+      );
+    };
+
     this._subscribed = subscribeHistory(
       this.hass,
       (history) => {
-        this._isLoading = false;
-        this._stateHistory = computeHistory(
-          this.hass,
-          history,
-          entityIds,
-          this.hass.localize,
-          true
-        );
+        // A replaced subscription can still deliver until its unsubscribe is acknowledged
+        if (generation !== this._historyGeneration) {
+          return;
+        }
+        const delay = lastApplied
+          ? computeHistoryUpdateDelay(
+              countHistoryStates(history),
+              Math.min(this._endDate.getTime(), Date.now()) -
+                this._startDate.getTime(),
+              (this._stateHistoryCharts?.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
+              MIN_TIME_BETWEEN_UPDATES
+            )
+          : 0;
+        const wait = lastApplied + delay - Date.now();
+        if (wait <= 0) {
+          window.clearTimeout(this._historyUpdateTimer);
+          this._historyUpdateTimer = undefined;
+          pending = undefined;
+          applyHistory(history);
+          return;
+        }
+        // Every message carries the complete history, so the latest one wins.
+        pending = history;
+        this._stateHistoryCharts?.requestUpdate();
+        if (this._historyUpdateTimer === undefined) {
+          this._historyUpdateTimer = window.setTimeout(() => {
+            this._historyUpdateTimer = undefined;
+            if (pending) {
+              const latest = pending;
+              pending = undefined;
+              applyHistory(latest);
+            }
+          }, wait);
+        }
       },
       this._startDate,
       this._endDate,
@@ -531,6 +583,9 @@ class HaPanelHistory extends LitElement {
       clearInterval(this._interval);
       this._interval = undefined;
     }
+    window.clearTimeout(this._historyUpdateTimer);
+    this._historyUpdateTimer = undefined;
+    this._historyGeneration++;
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
