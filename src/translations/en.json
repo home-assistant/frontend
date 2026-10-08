@@ -3039,7 +3039,7 @@
           "gen_image_description": "Generate images.",
           "evaluate_header": "Default decision entity",
           "evaluate_description": "Evaluate questions using the model configured for this entity.",
-          "allow_automatic_evaluation": "Allow automatically using the default decision entity to enhance my experience"
+          "allow_automatic_evaluation": "Allow Home Assistant to automatically use the default decision model to enhance my experience"
         },
         "mcp": {
           "header": "Model Context Protocol",

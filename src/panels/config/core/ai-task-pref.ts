@@ -249,6 +249,12 @@ export class AITaskPref extends LitElement {
       display: block;
       margin-block-start: var(--ha-space-4);
     }
+    ha-switch::part(base) {
+      height: auto;
+    }
+    ha-switch::part(label) {
+      margin-inline-start: var(--ha-space-4);
+    }
     ha-entity-picker {
       flex: 1;
       margin-left: 16px;
