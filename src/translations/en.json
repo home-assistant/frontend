@@ -12275,27 +12275,21 @@
         "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
-          "title": "Welcome to the Marketplace",
-          "subtitle": "Discover and manage custom elements to further customize your Home\u00a0Assistant",
-          "points": {
-            "community": {
-              "title": "Built by the community",
-              "description": "Contributors create and maintain these items. The Home\u00a0Assistant project doesn't review or test them."
-            },
-            "behavior": {
-              "title": "They can change how your system behaves",
-              "description": "Like mods for any software, some connect to services outside your home, and a faulty one can slow down or crash Home\u00a0Assistant."
-            },
-            "read_first": {
-              "title": "Read first, uninstall if needed",
-              "description": "Check what each item does and what it changes before installing. If something goes wrong, uninstall it right away."
-            },
-            "data": {
-              "title": "Any item can affect your data and system",
-              "description": "Anything you install can potentially connect to the internet, share your data with others, or crash your Home\u00a0Assistant instance.\nRead all the documentation carefully."
-            }
+          "title": "Before you install from the Marketplace",
+          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "risks_title": "Anything you install can",
+          "risks": {
+            "internet": "Connect to the internet",
+            "data": "Share your data with others",
+            "stability": "Slow down or crash Home\u00a0Assistant"
           },
-          "understand": "I understand and agree",
+          "mindful_title": "So be mindful",
+          "mindful": {
+            "read": "Read the documentation and understand what the item changes.",
+            "monitor": "Keep an eye on your system after installing.",
+            "uninstall": "If something goes wrong, uninstall it right away."
+          },
+          "understand": "I understand the risks and agree",
           "go_back": "Go back",
           "continue": "Continue"
         },

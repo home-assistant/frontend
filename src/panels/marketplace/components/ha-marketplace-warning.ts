@@ -1,9 +1,8 @@
 import {
-  mdiAccountGroupOutline,
+  mdiAlertOctagonOutline,
   mdiAlertOutline,
-  mdiBookOpenPageVariantOutline,
-  mdiStorefrontOutline,
-  mdiSwapHorizontal,
+  mdiDatabaseExportOutline,
+  mdiWeb,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -22,14 +21,13 @@ import {
   marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 
-type Point = "community" | "behavior" | "read_first" | "data";
+const RISKS = [
+  { risk: "internet", icon: mdiWeb },
+  { risk: "data", icon: mdiDatabaseExportOutline },
+  { risk: "stability", icon: mdiAlertOctagonOutline },
+] as const;
 
-const POINTS: { point: Point; icon: string; warning?: boolean }[] = [
-  { point: "community", icon: mdiAccountGroupOutline },
-  { point: "behavior", icon: mdiSwapHorizontal },
-  { point: "read_first", icon: mdiBookOpenPageVariantOutline },
-  { point: "data", icon: mdiAlertOutline, warning: true },
-];
+const MINDFUL = ["read", "monitor", "uninstall"] as const;
 
 // Shown over the Marketplace until the user accepts it, the Marketplace stays
 // visible behind it but can't be used before then
@@ -54,18 +52,18 @@ export class HaMarketplaceWarning extends LitElement {
         prevent-scrim-close
         without-header
         aria-labelledby="title"
-        aria-describedby="subtitle"
+        aria-describedby="intro"
         @closed=${this._goBack}
       >
         <div class="heading">
           <span class="badge">
-            <ha-svg-icon .path=${mdiStorefrontOutline}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
           </span>
           <h2 id="title">
             ${this.hass.localize("ui.panel.marketplace.warning.title")}
           </h2>
-          <p id="subtitle">
-            ${this.hass.localize("ui.panel.marketplace.warning.subtitle")}
+          <p id="intro">
+            ${this.hass.localize("ui.panel.marketplace.warning.intro")}
           </p>
         </div>
         ${
@@ -73,27 +71,39 @@ export class HaMarketplaceWarning extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing
         }
-        <ul class="points">
-          ${POINTS.map(
-            ({ point, icon, warning }) => html`
-              <li class=${warning ? "warning" : ""}>
-                <ha-svg-icon .path=${icon}></ha-svg-icon>
-                <div>
-                  <span class="point-title">
-                    ${this.hass.localize(
-                      `ui.panel.marketplace.warning.points.${point}.title`
-                    )}
-                  </span>
-                  <span class="point-description">
-                    ${this.hass.localize(
-                      `ui.panel.marketplace.warning.points.${point}.description`
-                    )}
-                  </span>
-                </div>
-              </li>
-            `
-          )}
-        </ul>
+        <section class="box risks">
+          <h3>
+            ${this.hass.localize("ui.panel.marketplace.warning.risks_title")}
+          </h3>
+          <ul>
+            ${RISKS.map(
+              ({ risk, icon }) => html`
+                <li>
+                  <ha-svg-icon .path=${icon}></ha-svg-icon>
+                  ${this.hass.localize(
+                    `ui.panel.marketplace.warning.risks.${risk}`
+                  )}
+                </li>
+              `
+            )}
+          </ul>
+        </section>
+        <section class="box mindful">
+          <h3>
+            ${this.hass.localize("ui.panel.marketplace.warning.mindful_title")}
+          </h3>
+          <ol>
+            ${MINDFUL.map(
+              (step) => html`
+                <li>
+                  ${this.hass.localize(
+                    `ui.panel.marketplace.warning.mindful.${step}`
+                  )}
+                </li>
+              `
+            )}
+          </ol>
+        </section>
         <div class="agree">
           <ha-checkbox
             .checked=${this._understood}
@@ -160,7 +170,6 @@ export class HaMarketplaceWarning extends LitElement {
 
   static styles = css`
     ha-dialog {
-      --ha-dialog-width-md: 520px;
       --ha-dialog-border-radius: var(--ha-border-radius-3xl);
     }
 
@@ -168,7 +177,7 @@ export class HaMarketplaceWarning extends LitElement {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-2);
-      padding-bottom: var(--ha-space-2);
+      padding-bottom: var(--ha-space-4);
     }
 
     .badge {
@@ -178,8 +187,8 @@ export class HaMarketplaceWarning extends LitElement {
       height: 48px;
       margin-bottom: var(--ha-space-2);
       border-radius: var(--ha-border-radius-circle);
-      background-color: rgba(var(--rgb-primary-color), 0.12);
-      color: var(--primary-color);
+      background-color: rgba(var(--rgb-warning-color), 0.16);
+      color: var(--warning-color);
     }
 
     h2 {
@@ -189,7 +198,7 @@ export class HaMarketplaceWarning extends LitElement {
       line-height: 1.3;
     }
 
-    #subtitle {
+    #intro {
       margin: 0;
       font-size: var(--ha-font-size-l);
       line-height: var(--ha-line-height-normal);
@@ -198,80 +207,101 @@ export class HaMarketplaceWarning extends LitElement {
 
     ha-alert {
       display: block;
-      margin-block: var(--ha-space-2);
+      margin-bottom: var(--ha-space-3);
     }
 
-    .points {
+    .box {
       display: flex;
       flex-direction: column;
+      gap: var(--ha-space-3);
+      padding: var(--ha-space-4);
+      border-radius: var(--ha-border-radius-lg);
+    }
+
+    .box + .box {
+      margin-top: var(--ha-space-3);
+    }
+
+    h3 {
       margin: 0;
-      padding: var(--ha-space-2) 0;
-      list-style: none;
-    }
-
-    li {
-      display: flex;
-      gap: var(--ha-space-4);
-      padding-block: var(--ha-space-3);
-    }
-
-    li ha-svg-icon {
-      flex: none;
-      margin-top: 2px;
-      color: var(--secondary-text-color);
-    }
-
-    li div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .point-title {
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-medium);
     }
 
-    .point-description {
+    ul,
+    ol {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      gap: var(--ha-space-3);
+      list-style: none;
       font-size: var(--ha-font-size-m);
       line-height: 1.45;
-      color: var(--secondary-text-color);
-      white-space: pre-line;
     }
 
-    /* Stands out from the other points, without alarming */
-    li.warning {
-      margin: var(--ha-space-1) calc(-1 * var(--ha-space-3)) 0;
-      padding: var(--ha-space-3);
-      border-radius: var(--ha-border-radius-lg);
+    .risks {
       background-color: rgba(var(--rgb-warning-color), 0.12);
     }
 
-    li.warning ha-svg-icon {
+    .risks li {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
+    }
+
+    .risks ha-svg-icon {
+      flex: none;
+      --mdc-icon-size: 20px;
       color: var(--warning-color);
     }
 
-    li.warning .point-description {
-      color: var(--primary-text-color);
+    .mindful {
+      border: 1px solid var(--divider-color);
+    }
+
+    .mindful ol {
+      counter-reset: step;
+    }
+
+    .mindful li {
+      display: flex;
+      gap: var(--ha-space-3);
+      counter-increment: step;
+    }
+
+    .mindful li::before {
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: 22px;
+      height: 22px;
+      border-radius: var(--ha-border-radius-circle);
+      background-color: var(--secondary-background-color);
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: 1;
     }
 
     .agree {
-      margin: var(--ha-space-2) calc(-1 * var(--ha-space-2)) 0;
+      margin: var(--ha-space-4) calc(-1 * var(--ha-space-2)) 0;
       padding: var(--ha-space-1) var(--ha-space-2);
       border-radius: var(--ha-border-radius-lg);
-      background-color: rgba(var(--rgb-primary-color), 0.06);
+      background-color: rgba(var(--rgb-warning-color), 0.08);
       transition: background-color 150ms ease-in-out;
     }
 
     .agree:hover {
-      background-color: rgba(var(--rgb-primary-color), 0.1);
+      background-color: rgba(var(--rgb-warning-color), 0.14);
     }
 
     ha-checkbox {
       display: flex;
       align-items: center;
       min-height: 40px;
-      font-size: var(--ha-font-size-l);
+      font-size: var(--ha-font-size-m);
     }
   `;
 }
