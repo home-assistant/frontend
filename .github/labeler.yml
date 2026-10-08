@@ -36,6 +36,13 @@ Agents:
           - .github/skills/**
           - .github/workflows/copilot-setup-steps.yml
 
+AI:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/panels/config/core/{ha-config-section-ai,ai-task-pref,mcp-pref}.ts"
+          - src/components/ha-suggest-with-ai-button.ts
+          - "src/data/{ai_task,llm}.ts"
+
 Areas:
   - changed-files:
       - any-glob-to-any-file:
