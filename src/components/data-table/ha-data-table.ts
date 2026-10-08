@@ -1335,14 +1335,6 @@ export class HaDataTable extends LitElement {
           margin-right: calc(-1 * var(--_inset-right));
         }
 
-        :host([narrow]) .mdc-data-table {
-          overflow: visible;
-        }
-
-        :host([narrow]) .mdc-data-table__header-row {
-          overflow: visible;
-        }
-
         /* Hide scrollbar for Chrome, Safari and Opera */
         .mdc-data-table__header-row::-webkit-scrollbar {
           display: none;
