@@ -35,6 +35,13 @@ Agents:
           - .github/skills/**
           - .github/workflows/copilot-setup-steps.yml
 
+Areas:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/areas/**
+          - src/data/area/**
+          - "src/data/{area_floor_picker,floor_registry,ws-area_registry,ws-floor_registry}.ts"
+
 Automations:
   - changed-files:
       - any-glob-to-any-file:
@@ -55,17 +62,35 @@ Build:
           - .browserslistrc
           - gulpfile.js
 
+Calendar:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/calendar/**
+          - src/panels/lovelace/**/*calendar*
+          - src/data/calendar.ts
+
 Cast:
   - changed-files:
       - any-glob-to-any-file:
           - cast/src/**
           - src/cast/**
 
+Connectivity:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/connectivity/**
+          - src/panels/config/tags/**
+          - "src/panels/config/integrations/integration-panels/{bluetooth,infrared,matter,modbus,mqtt,radio_frequency,serial,thread,zha,zwave_js}/**"
+          - "src/data/{bluetooth,infrared,matter,matter-lock,modbus,mqtt,otbr,radio_frequency,tag,thread,usb,zha,zwave_js,zwave_js-credentials}.ts"
+
 Dashboards:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/lovelace/**
+          - "src/panels/{home,climate,light,security,maintenance,map}/**"
+          - src/panels/config/lovelace/**
           - src/data/lovelace/**
+          - src/data/lovelace*.ts
 
 Demo:
   - changed-files:
@@ -95,13 +120,12 @@ Dependencies:
           - "^renovate/"
           - "^dependabot/"
 
-Devices & Entities:
+Devices:
   - changed-files:
       - any-glob-to-any-file:
-          - "src/panels/config/{devices,entities,areas}/**"
+          - src/panels/config/devices/**
           - src/data/device/device_registry.ts
-          - src/data/entity/entity_registry*.ts
-          - src/data/floor_registry.ts
+          - src/data/ws-device_registry.ts
 
 Energy:
   - changed-files:
@@ -112,12 +136,25 @@ Energy:
           - src/panels/lovelace/**/*energy*
           - src/data/energy*.ts
 
+Entities:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/entities/**
+          - src/data/entity/entity_registry*.ts
+          - src/data/ws-entity_registry_display.ts
+
 GitHub Actions:
   - changed-files:
       - any-glob-to-any-file:
           - .github/actions/**
           - .github/workflows/**
           - .github/*.yml
+
+Helpers:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/helpers/**
+          - src/data/helpers_crud.ts
 
 History:
   - changed-files:
@@ -126,17 +163,45 @@ History:
           - src/panels/lovelace/**/*history*
           - src/data/history.ts
 
+Home Assistant Link:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/cloud/**
+          - src/data/cloud/**
+          - src/data/cloud.ts
+
 Integrations:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/config/integrations/**
+          - src/panels/config/application_credentials/**
+          - src/data/application_credential.ts
           - src/data/config_entries.ts
           - src/data/config_flow.ts
+
+Labels:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/labels/**
+          - src/data/label/**
 
 Landing Page:
   - changed-files:
       - any-glob-to-any-file:
           - landing-page/**
+
+Marketplace:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/marketplace/**
+          - src/data/marketplace/**
+          - src/panels/config/integrations/offer-marketplace-uninstall.ts
+
+Media:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/media-browser/**
+          - src/data/media_source.ts
 
 Onboarding:
   - changed-files:
@@ -145,6 +210,24 @@ Onboarding:
           - src/auth/**
           - src/data/onboarding.ts
           - src/data/auth.ts
+
+People:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/panels/config/{person,users}/**"
+          - "src/data/{person,user,ws-user}.ts"
+
+Profile:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/profile/**
+
+System:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/panels/config/{core,hardware,info,logs,network,repairs,storage}/**"
+          - "src/dialogs/{repairs-flow,restart,system-log-report}/**"
+          - "src/data/{analytics,entity_id_format,error_log,hardware,network,repairs,system_health,system_log,system_log_report,update}.ts"
 
 "Tests: E2E":
   - changed-files:
@@ -182,8 +265,27 @@ Theming:
           - src/resources/theme/**
           - src/data/theme.ts
 
+To-do:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/todo/**
+          - src/panels/lovelace/**/*todo*
+          - src/data/todo.ts
+
+Tools:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/tools/**
+
 Voice:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/config/voice-assistants/**
+          - "src/dialogs/{voice-assistant-setup,voice-command-dialog}/**"
           - src/data/assist_pipeline.ts
+
+Zones:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/config/zone/**
+          - src/data/zone.ts
