@@ -156,6 +156,17 @@ describe("ha-card-condition-location", () => {
       });
     });
 
+    it("keeps missing names that slugify the same apart", () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Old store", "Old-store", "Old store"],
+      });
+      expect(shown(editor)).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.old_store", "zone.old_store_2"] },
+      });
+    });
+
     it("shows the alert without writing the config when opened", () => {
       const editor = createEditor({
         condition: "location",

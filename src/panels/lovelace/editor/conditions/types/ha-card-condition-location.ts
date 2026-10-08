@@ -44,12 +44,17 @@ const SCHEMA: HaFormSchema[] = [
  * Pick an unused zone ID for a name that matches no zone, adding `_2`, `_3`
  * and so on like Home Assistant does for new entities. A renamed zone keeps
  * its old ID, so the plain slug could select a zone the name never matched.
+ * `reserved` holds IDs already picked for other names that slugify the same.
  */
-function missingZoneId(name: string, states: HassEntities): string {
+function missingZoneId(
+  name: string,
+  states: HassEntities,
+  reserved: Set<string>
+): string {
   const baseId = `zone.${slugify(name)}`;
   let entityId = baseId;
   let i = 2;
-  while (entityId in states) {
+  while (entityId in states || reserved.has(entityId)) {
     entityId = `${baseId}_${i}`;
     i++;
   }
@@ -86,19 +91,22 @@ function migrateLocationCondition(
   const target = { ...condition.target };
   const entityIds = new Set(ensureArray(target.entity_id ?? []));
   let away = condition.away === true;
-  for (const name of condition.locations ?? []) {
+  const missingIds = new Set<string>();
+  for (const name of new Set(condition.locations ?? [])) {
     if (name === "not_home") {
       away = true;
     } else if (name === "home") {
       entityIds.add("zone.home");
+    } else if (zoneIdsByName.has(name)) {
+      for (const entityId of zoneIdsByName.get(name)!) {
+        entityIds.add(entityId);
+      }
     } else {
       // Names that match no zone are kept, so the picker shows them as not
       // found instead of silently removing them.
-      for (const entityId of zoneIdsByName.get(name) ?? [
-        missingZoneId(name, states),
-      ]) {
-        entityIds.add(entityId);
-      }
+      const entityId = missingZoneId(name, states, missingIds);
+      missingIds.add(entityId);
+      entityIds.add(entityId);
     }
   }
   if (entityIds.size) {
