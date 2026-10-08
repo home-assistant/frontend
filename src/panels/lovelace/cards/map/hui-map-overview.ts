@@ -537,7 +537,7 @@ export class HuiMapOverview extends LitElement {
           </span>
         </div>
         ${
-          this._user?.is_admin
+          !__DEMO__ && this._user?.is_admin
             ? html`<ha-icon-button
                 .label=${this._i18n.localize(
                   "ui.dialogs.more_info_control.settings"
