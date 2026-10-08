@@ -1971,7 +1971,12 @@
         },
         "camera": {
           "download_snapshot": "Download snapshot",
-          "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
+          "failed_to_download": "Failed to download snapshot. Please check the logs for more information.",
+          "start_talking": "Start talking",
+          "stop_talking": "Stop talking",
+          "microphone_not_secure": "[%key:ui::dialogs::voice_command::not_supported_microphone_browser%]",
+          "microphone_webrtc_only": "Talking to this camera is only possible when the stream uses WebRTC.",
+          "microphone_denied": "Microphone access was denied. Allow it in your browser settings to talk to this camera."
         },
         "timer": {
           "edit_mode": "Edit presets",
