@@ -1185,6 +1185,48 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
   };
 
   it.each([true, false])(
+    "keeps today's data on resubscribe within the grace period (already loaded: %s)",
+    async (loaded) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-01-01T12:00:00Z"));
+      const { collection, pending } = createCollection();
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const unsub = collection.subscribe(() => undefined);
+      if (loaded) {
+        await complete(pending[0]);
+      }
+      unsub();
+      // The Home summary reapplies today's range before every subscription.
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const received = vi.fn();
+      const unsubAgain = collection.subscribe(received);
+      if (!loaded) {
+        await complete(pending[0]);
+      }
+      await vi.advanceTimersByTimeAsync(0);
+      assert.equal(pending.length, 1);
+      assert.equal(received.mock.calls.length, 1);
+      assert.strictEqual(received.mock.calls[0][0], collection.state);
+      unsubAgain();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
+  it("keeps an in-flight result when the comparison mode is reapplied", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    collection.setCompare(CompareMode.PREVIOUS);
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    collection.setCompare(CompareMode.PREVIOUS);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 1);
+    assert.equal(collection.state.compareMode, CompareMode.PREVIOUS);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it.each([true, false])(
     "discards an older response (latest completes first: %s)",
     async (latestFirst) => {
       vi.useFakeTimers();
