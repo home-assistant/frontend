@@ -50,6 +50,14 @@ describe("validateConditionalConfig", () => {
     it.each([
       ["a string target", { condition: "location", target: "zone.home" }],
       ["a list target", { condition: "location", target: ["zone.home"] }],
+      [
+        "a target with a non-string ID",
+        { condition: "location", target: { entity_id: 5 } },
+      ],
+      [
+        "a target with an unknown key",
+        { condition: "location", target: { zone_id: "zone.home" } },
+      ],
       ["a non-boolean away", { condition: "location", away: "yes" }],
       [
         "a non-boolean away with a target",
@@ -257,11 +265,12 @@ describe("checkConditionsMet", () => {
       ).toBe(false);
     });
 
-    it("does not match a target that is not a mapping", () => {
+    it.each([
+      ["not a mapping", "zone.store_1"],
+      ["holds a non-string ID", { entity_id: ["zone.store_1", 5] }],
+    ])("does not match a target that is %s", (_name, target) => {
       const hass = createLocationHass("Store", ["zone.store_1"]);
-      const conditions = [
-        { condition: "location", target: "zone.store_1" },
-      ] as any;
+      const conditions = [{ condition: "location", target }] as any;
       expect(() => checkConditionsMet(conditions, hass, {})).not.toThrow();
       expect(checkConditionsMet(conditions, hass, {})).toBe(false);
     });

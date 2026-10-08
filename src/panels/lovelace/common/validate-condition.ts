@@ -298,7 +298,7 @@ function checkLocationCondition(
   if (condition.away === true && stateObj.state === "not_home") {
     return true;
   }
-  if (!isTargetObject(condition.target)) {
+  if (!isValidTarget(condition.target)) {
     return false;
   }
   const inZones = stateObj.attributes.in_zones;
@@ -309,9 +309,30 @@ function checkLocationCondition(
   return inZones.some((zone) => zones.includes(zone));
 }
 
-/** YAML can hold anything here; only a mapping is a usable target. */
-const isTargetObject = (target: unknown): target is HassServiceTarget =>
-  typeof target === "object" && target !== null && !Array.isArray(target);
+const TARGET_KEYS = [
+  "entity_id",
+  "device_id",
+  "area_id",
+  "floor_id",
+  "label_id",
+] as const;
+
+const isIdList = (value: unknown): boolean =>
+  typeof value === "string" ||
+  (Array.isArray(value) && value.every((id) => typeof id === "string"));
+
+/**
+ * YAML can hold anything here. Like `targetStruct`, only a mapping of target
+ * keys to IDs is usable; anything else would throw while resolving zones.
+ */
+const isValidTarget = (target: unknown): target is HassServiceTarget =>
+  typeof target === "object" &&
+  target !== null &&
+  !Array.isArray(target) &&
+  Object.entries(target).every(
+    ([key, value]) =>
+      (TARGET_KEYS as readonly string[]).includes(key) && isIdList(value)
+  );
 
 const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
 
@@ -518,7 +539,7 @@ function validateUserCondition(condition: UserCondition) {
 }
 
 function validateLocationCondition(condition: LocationCondition) {
-  if (condition.target != null && !isTargetObject(condition.target)) {
+  if (condition.target != null && !isValidTarget(condition.target)) {
     return false;
   }
   if (condition.away != null && typeof condition.away !== "boolean") {
