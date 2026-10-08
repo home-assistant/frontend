@@ -121,10 +121,8 @@ Integrations:
           - src/data/config_entries.ts
           - src/data/config_flow.ts
 
-Labs:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/panels/config/labs/**
+# Labs is applied by .github/scripts/label-labs.mts, as it also checks added
+# code, not just paths.
 
 Landingpage:
   - changed-files:

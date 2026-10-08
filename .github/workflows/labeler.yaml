@@ -1,6 +1,6 @@
 name: "Pull Request Labeler"
 
-on: pull_request_target # zizmor: ignore[dangerous-triggers] -- safe: only runs actions/labeler, no PR code checkout
+on: pull_request_target # zizmor: ignore[dangerous-triggers] -- safe: checks out base repo scripts only and reads PR files through the API, never PR head code
 
 jobs:
   triage:
@@ -13,3 +13,16 @@ jobs:
         uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
         with:
           sync-labels: true
+      - name: Check out workflow scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - name: Apply Labs label
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { default: labelLabs } = await import(
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/label-labs.mts`
+            );
+            await labelLabs({ github, context, core });
