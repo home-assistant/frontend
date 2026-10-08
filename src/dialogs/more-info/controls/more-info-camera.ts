@@ -38,6 +38,7 @@ class MoreInfoCamera extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
+  @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
 
@@ -339,6 +340,7 @@ class MoreInfoCamera extends LitElement {
       .microphone-waves::before,
       .microphone-waves::after {
         animation: none;
+        transform: scale(1.08, 1.3);
       }
     }
   `;

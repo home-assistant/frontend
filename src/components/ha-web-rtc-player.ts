@@ -20,11 +20,12 @@ import {
 import { apiContext, connectionContext } from "../data/context";
 import "./ha-alert";
 import "./ha-spinner";
+import { showToast } from "../util/toast";
 
 const HIDDEN_CLEANUP_DELAY = 60000;
 
 interface WebRtcPlayerError {
-  type: "not_supported" | "start_failed" | "connect_failed" | "media_failed";
+  type: "not_supported" | "start_failed" | "connect_failed";
   message?: string;
 }
 
@@ -121,28 +122,26 @@ export class HaWebRtcPlayer extends LitElement {
 
     this._microphoneConnecting = true;
     this._fireMicrophoneChanged();
-    const tracks = await this._getMediaTracks("user", {
-      video: false,
-      audio: true,
-    });
-    if (!tracks.length) {
+    const track = await this._getMicrophoneTrack();
+    // Cleaned up (closed, hidden or entity changed) while asking for it
+    if (!this._microphoneConnecting || !this.isConnected) {
+      track?.stop();
+      return;
+    }
+    if (!track) {
       this._logEvent("unable to add audio send track");
       this._microphoneConnecting = false;
       this._fireMicrophoneChanged();
       return;
     }
-    this._logEvent(
-      "found",
-      tracks.length,
-      "microphone(s) to use for audio return track"
-    );
+    this._logEvent("found microphone to use for audio return track");
     if (this._microphoneSender) {
       // The connection was already set up with a microphone, swap it back in
       try {
-        await this._microphoneSender.replaceTrack(tracks[0]);
-        this._localReturnAudioTrack = tracks[0];
+        await this._microphoneSender.replaceTrack(track);
+        this._localReturnAudioTrack = track;
       } catch (_err: unknown) {
-        tracks[0].stop();
+        track.stop();
       }
       this._microphoneConnecting = false;
       this._fireMicrophoneChanged();
@@ -152,7 +151,7 @@ export class HaWebRtcPlayer extends LitElement {
     // (go2rtc answers with a new DTLS fingerprint, which Firefox rejects), so
     // start a new connection and session with the microphone track instead.
     this._captureReconnectFrame();
-    await this._startWebRtc(tracks[0]);
+    await this._startWebRtc(track);
   }
 
   private _captureReconnectFrame() {
@@ -333,8 +332,6 @@ export class HaWebRtcPlayer extends LitElement {
     this._peerConnection.onicecandidate = this._handleIceCandidate;
     this._peerConnection.oniceconnectionstatechange =
       this._iceConnectionStateChanged;
-    this._peerConnection.onicegatheringstatechange =
-      this._iceGatheringStateChanged;
 
     // just for debugging
     this._peerConnection.onsignalingstatechange = (ev) => {
@@ -436,13 +433,6 @@ export class HaWebRtcPlayer extends LitElement {
     }
   };
 
-  private _iceGatheringStateChanged = () => {
-    this._logEvent(
-      "ice gathering state change",
-      this._peerConnection?.iceGatheringState
-    );
-  };
-
   private async _handleOfferEvent(
     peerConnection: RTCPeerConnection,
     event: WebRtcOfferEvent
@@ -452,7 +442,6 @@ export class HaWebRtcPlayer extends LitElement {
       return;
     }
     if (event.type === "session") {
-      this._logEvent("session", event.session_id);
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
         addWebRtcCandidate(
@@ -562,21 +551,25 @@ export class HaWebRtcPlayer extends LitElement {
     this._logEvent("end setRemoteDescription");
   }
 
-  private async _getMediaTracks(media, constraints) {
+  private async _getMicrophoneTrack(): Promise<MediaStreamTrack | undefined> {
     try {
-      const stream =
-        media === "user"
-          ? await navigator.mediaDevices.getUserMedia(constraints)
-          : await navigator.mediaDevices.getDisplayMedia(constraints);
-      return stream.getTracks();
-    } catch (err: any) {
-      // A denied permission is not a stream error, the video keeps playing
-      if (err.name === "NotAllowedError") {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      return stream.getAudioTracks()[0];
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "NotAllowedError") {
         this._microphoneDenied = true;
-        return [];
+        return undefined;
       }
-      this._error = { type: "media_failed", message: err.message };
-      return [];
+      // A missing or busy microphone should not replace the running video
+      showToast(this, {
+        message: this._localize(
+          "ui.components.web-rtc-player.microphone_failed",
+          { message: err instanceof Error ? err.message : String(err) }
+        ),
+      });
+      return undefined;
     }
   }
 

@@ -10,6 +10,10 @@ export const watchAudioLevel = (
   onLevel: (level: number) => void
 ): (() => void) => {
   const context = new AudioContext();
+  // Browsers can start an audio context suspended when it is not created in a
+  // click handler, like here. Resume without waiting: until it runs the level
+  // is 0, and resume() can stay pending in browsers that need a new click.
+  context.resume().catch(() => undefined);
   const analyser = context.createAnalyser();
   analyser.fftSize = 512;
   context.createMediaStreamSource(new MediaStream([track])).connect(analyser);

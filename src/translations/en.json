@@ -1260,7 +1260,7 @@
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
         "connect_failed": "Failed to connect the WebRTC stream: {message}",
-        "media_failed": "Failed to get media tracks: {message}"
+        "microphone_failed": "Could not access the microphone: {message}"
       },
       "siren": {
         "more_controls": "More controls",
