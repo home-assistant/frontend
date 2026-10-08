@@ -141,6 +141,7 @@ Supervisor:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/config/apps/**
+          - src/data/hassio/**
           - src/data/supervisor/**
 
 "Tests: E2E":
