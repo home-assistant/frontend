@@ -2428,6 +2428,9 @@ class DialogAddAutomationElement
           background-color: var(--ha-color-fill-primary-normal-active);
           --icon-primary-color: var(--ha-color-on-primary-normal);
         }
+        .groups .selected::part(headline) {
+          color: var(--ha-color-on-primary-normal);
+        }
         .groups .selected ha-svg-icon {
           color: var(--ha-color-on-primary-normal);
         }
