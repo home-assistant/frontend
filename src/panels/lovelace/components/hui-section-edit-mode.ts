@@ -49,7 +49,7 @@ export class HuiSectionEditMode extends LitElement {
   public isStrategy = false;
 
   // Session storage keeps a copied or cut section while switching views and
-  // dashboards. Subscribing lets every section menu show Paste at once.
+  // dashboards.
   @state()
   @storage({
     key: "dashboardSectionClipboard",
@@ -251,9 +251,6 @@ export class HuiSectionEditMode extends LitElement {
       return;
     }
     this._clipboard = deepClone(section);
-    // Dashboards save every edit right away, unlike the automation editor, so
-    // a cut section is only on the clipboard until it is pasted. Offer the
-    // same undo as deleting a card.
     this.lovelace!.showToast({
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.cut_to_clipboard"
