@@ -1,4 +1,4 @@
-import { mdiHistory } from "@mdi/js";
+import { mdiHistory, mdiInformationOutline } from "@mdi/js";
 import type {
   HassConfig,
   HassEntities,
@@ -31,6 +31,7 @@ import type {
   HASSDomEvent,
 } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
@@ -534,6 +535,13 @@ export class HuiMapOverview extends LitElement {
             }
           </span>
         </div>
+        <ha-icon-button
+          .label=${this._i18n.localize(
+            "ui.panel.lovelace.cards.map.overview.view_entity"
+          )}
+          .path=${mdiInformationOutline}
+          @click=${this._handleMoreInfo}
+        ></ha-icon-button>
       </div>
       <div class="list">
         <div class="activity">
@@ -561,15 +569,6 @@ export class HuiMapOverview extends LitElement {
                 : this._renderTimeline(stateObj, this._activity)
           }
         </div>
-        <ha-button
-          appearance="filled"
-          class="more-info"
-          @click=${this._handleMoreInfo}
-        >
-          ${this._i18n.localize(
-            "ui.panel.lovelace.cards.map.overview.more_info"
-          )}
-        </ha-button>
       </div>
     `;
   }
@@ -1078,6 +1077,7 @@ export class HuiMapOverview extends LitElement {
     }
 
     .detail-title {
+      flex: 1;
       display: flex;
       flex-direction: column;
       min-width: 0;
@@ -1181,12 +1181,6 @@ export class HuiMapOverview extends LitElement {
       margin-top: var(--ha-space-3);
       padding-top: var(--ha-space-2);
       border-top: 1px solid var(--divider-color);
-    }
-
-    .more-info {
-      flex: none;
-      width: 100%;
-      margin-top: var(--ha-space-3);
     }
   `;
 }
