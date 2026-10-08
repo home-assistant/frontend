@@ -26,12 +26,14 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { duplicateSection } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
 import {
-  deleteSection,
-  duplicateSection,
-  insertSection,
-} from "../editor/config-util";
-import { findLovelaceContainer } from "../editor/lovelace-path";
+  deleteAtPath,
+  getAtPath,
+  getParentPath,
+  insertAtPath,
+} from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
 
@@ -41,9 +43,7 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public index!: number;
-
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   @property({ type: Boolean, attribute: "is-strategy", reflect: true })
   public isStrategy = false;
@@ -188,10 +188,10 @@ export class HuiSectionEditMode extends LitElement {
         this._cutSection();
         break;
       case "paste-above":
-        this._pasteSection(this.index);
+        this._pasteSection(0);
         break;
       case "paste-below":
-        this._pasteSection(this.index + 1);
+        this._pasteSection(1);
         break;
       case "delete":
         this._deleteSection();
@@ -206,28 +206,27 @@ export class HuiSectionEditMode extends LitElement {
       saveConfig: (newConfig) => {
         this.lovelace!.saveConfig(newConfig);
       },
-      viewIndex: this.viewIndex,
-      sectionIndex: this.index,
+      path: this.path,
     });
   }
 
   private _duplicateSection(): void {
-    const newConfig = duplicateSection(
-      this.lovelace!.config,
-      this.viewIndex,
-      this.index
-    );
+    const newConfig = duplicateSection(this.lovelace!.config, this.path);
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private _setClipboard(): void {
-    this._clipboard = deepClone(
-      findLovelaceContainer(this.lovelace!.config, [this.viewIndex, this.index])
+  private _setClipboard(): boolean {
+    const section = getAtPath<LovelaceSectionRawConfig>(
+      this.lovelace!.config,
+      this.path
     );
+    if (!section) return false;
+    this._clipboard = deepClone(section);
+    return true;
   }
 
   private _copySection(): void {
-    this._setClipboard();
+    if (!this._setClipboard()) return;
     this.lovelace!.showToast({
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.copied_to_clipboard"
@@ -236,9 +235,9 @@ export class HuiSectionEditMode extends LitElement {
   }
 
   private async _cutSection(): Promise<void> {
-    this._setClipboard();
+    if (!this._setClipboard()) return;
     await this.lovelace!.saveConfig(
-      deleteSection(this.lovelace!.config, this.viewIndex, this.index)
+      deleteAtPath(this.lovelace!.config, this.path)
     );
     // Dashboards save every edit right away, unlike the automation editor, so
     // a cut section is only on the clipboard until it is pasted. Offer the
@@ -255,24 +254,25 @@ export class HuiSectionEditMode extends LitElement {
     });
   }
 
-  private _pasteSection(sectionIndex: number): void {
+  private _pasteSection(offset: 0 | 1): void {
     if (!this._clipboard) return;
+    const index = this.path[this.path.length - 1] as number;
     this.lovelace!.saveConfig(
-      insertSection(
+      insertAtPath(
         this.lovelace!.config,
-        this.viewIndex,
-        sectionIndex,
+        [...getParentPath(this.path), index + offset],
         deepClone(this._clipboard)
       )
     );
   }
 
   private async _deleteSection() {
-    const path = [this.viewIndex, this.index] as [number, number];
+    const section = getAtPath<LovelaceSectionRawConfig>(
+      this.lovelace!.config,
+      this.path
+    );
 
-    const section = findLovelaceContainer(this.lovelace!.config, path);
-
-    const cardCount = "cards" in section && section.cards?.length;
+    const cardCount = section && "cards" in section && section.cards?.length;
 
     if (cardCount) {
       const confirm = await showConfirmationDialog(this, {
@@ -289,11 +289,7 @@ export class HuiSectionEditMode extends LitElement {
       if (!confirm) return;
     }
 
-    const newConfig = deleteSection(
-      this.lovelace!.config,
-      this.viewIndex,
-      this.index
-    );
+    const newConfig = deleteAtPath(this.lovelace!.config, this.path);
     this.lovelace!.saveConfig(newConfig);
   }
 

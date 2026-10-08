@@ -459,6 +459,10 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ha-row-item {
           --ha-row-item-padding-inline: 0;
         }
+        ha-row-item::part(headline),
+        ha-row-item::part(supporting-text) {
+          white-space: normal;
+        }
         img {
           height: 32px;
           width: 32px;

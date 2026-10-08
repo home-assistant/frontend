@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { DataTableRowData } from "../../../src/components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
-import { filterRepositories } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
+import {
+  browseSettingsFromUrl,
+  browseUrl,
+  filterRepositories,
+} from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
@@ -57,6 +61,23 @@ describe("filterRepositories", () => {
     ).toEqual(expected);
   });
 
+  it.each([
+    [{ source: ["custom"] }, ["Linked"]],
+    [{ source: ["catalog"] }, ["Plain"]],
+    [{ source: ["catalog", "custom"] }, ["Linked", "Plain"]],
+    [{ source: ["custom"], type: ["theme"] }, []],
+  ])("keeps the source that matches %j", (activeFilters, expected) => {
+    expect(
+      names(
+        filterRepositories(
+          [repository("Plain"), repository("Linked", { custom: true })],
+          localize,
+          activeFilters
+        )
+      )
+    ).toEqual(expected);
+  });
+
   it("puts installed first, then new, then the most starred, then by name", () => {
     const sorted = filterRepositories(
       [
@@ -93,9 +114,15 @@ describe("filterRepositories", () => {
     ]);
   });
 
-  it("adds the translated status and category to group by", () => {
+  it("adds the translated status, category and source to group by", () => {
     const [row] = filterRepositories(
-      [repository("Downloaded", { status: "installed", category: "theme" })],
+      [
+        repository("Downloaded", {
+          status: "installed",
+          category: "theme",
+          custom: true,
+        }),
+      ],
       localize
     );
 
@@ -104,6 +131,9 @@ describe("filterRepositories", () => {
     );
     expect(row.translated_category).toBe(
       "ui.panel.marketplace.common.type.theme"
+    );
+    expect(row.translated_source).toBe(
+      "ui.panel.marketplace.repository_source.custom"
     );
   });
 
@@ -122,5 +152,19 @@ describe("filterRepositories", () => {
     filterRepositories(unsorted, localize);
 
     expect(names(unsorted)).toEqual(["Beta", "Alpha"]);
+  });
+});
+
+describe("browseUrl", () => {
+  it("links to what browseSettingsFromUrl reads back", () => {
+    const settings = {
+      sorting: { column: "stars", direction: "desc" as const },
+      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+    };
+
+    const url = new URL(browseUrl(settings), "http://localhost");
+
+    expect(url.pathname).toBe("/marketplace/browse");
+    expect(browseSettingsFromUrl(url.search)).toEqual(settings);
   });
 });

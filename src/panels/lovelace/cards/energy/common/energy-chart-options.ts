@@ -326,6 +326,26 @@ function formatTooltip(
     }`;
 }
 
+/**
+ * Sum of a series' y values over the displayed period, formatted for the
+ * legend (e.g. "1.2 kWh"). Returns undefined when the series has no data.
+ */
+export function formatSeriesTotal(
+  series: BarSeriesOption | LineSeriesOption | undefined,
+  locale: FrontendLocaleData,
+  unit: string
+): string | undefined {
+  const data = series?.data as any[] | undefined;
+  if (!data?.length) {
+    return undefined;
+  }
+  const total = data.reduce(
+    (acc, point) => acc + ((point?.value ?? point)?.[1] ?? 0),
+    0
+  );
+  return `${formatNumber(total, locale, { maximumFractionDigits: 2 })} ${unit}`;
+}
+
 export function fillLineGaps(datasets: LineSeriesOption[]) {
   // Single pass per datapoint: normalise it to a LineDataItemOption, compute
   // its x once, collect every x into the shared bucket set, and build each

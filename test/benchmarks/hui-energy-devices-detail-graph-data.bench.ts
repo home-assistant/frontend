@@ -17,7 +17,7 @@ import { generateStatistics } from "../fixtures/statistics";
 const computedStyles = createMockComputedStyle({
   "--history-unknown-color": "#888888",
 });
-const { localize, states, formatEntityName } = createMockHass();
+const { localize, locale, states, formatEntityName } = createMockHass();
 const now = new Date("2024-02-01T00:00:00Z");
 const config: EnergyDevicesDetailGraphCardConfig = {
   type: "energy-devices-detail-graph",
@@ -107,6 +107,7 @@ const monthFiveMinute = generateEnergyData(3, {
 const run = (data: EnergyData) =>
   generateEnergyDevicesDetailGraphData({
     localize,
+    locale,
     states,
     formatEntityName,
     darkMode: false,
