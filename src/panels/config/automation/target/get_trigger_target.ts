@@ -36,19 +36,18 @@ export const getTriggerTarget = (
     };
   }
 
-  if (
-    (trigger.trigger === "state" || trigger.trigger === "numeric_state") &&
-    "entity_id" in trigger
-  ) {
+  if (trigger.trigger === "state" || trigger.trigger === "numeric_state") {
     return {
-      target: getEntityTarget(trigger.entity_id),
+      target:
+        "entity_id" in trigger ? getEntityTarget(trigger.entity_id) : undefined,
       targetRequired: true,
     };
   }
 
-  if (trigger.trigger === "device" && "device_id" in trigger) {
+  if (trigger.trigger === "device") {
     return {
-      target: getDeviceTarget(trigger.device_id),
+      target:
+        "device_id" in trigger ? getDeviceTarget(trigger.device_id) : undefined,
       targetRequired: false,
     };
   }
