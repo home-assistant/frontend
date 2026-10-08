@@ -132,6 +132,17 @@ export const computeTraceLink = (
     : undefined;
 };
 
+// An automation and the scripts it calls share their context, so a run row
+// links the run it names itself. Entries recorded before core added the run
+// fall back to the context.
+export const computeRunTraceLink = (
+  traceContexts: TraceContexts,
+  row: LogbookEntry
+): string | undefined =>
+  row.domain && row.item_id && row.run_id
+    ? `/config/${row.domain}/trace/${encodeURIComponent(row.item_id)}?run_id=${row.run_id}`
+    : computeTraceLink(traceContexts, row.context_id);
+
 // Unavailable is flagged with an orange badge by the row, not a color change.
 export const nodeColor = (
   category: LogbookEntryCategory,
