@@ -10038,6 +10038,13 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "paste_above": "Paste above",
+            "paste_below": "Paste below",
+            "copied_to_clipboard": "Section copied to clipboard",
+            "cut_to_clipboard": "Section cut to clipboard",
+            "cut_error": "Error while cutting section",
+            "paste_error": "Error while pasting section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
