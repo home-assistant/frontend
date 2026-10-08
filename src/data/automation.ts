@@ -5,7 +5,10 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import { createDurationData } from "../common/datetime/create_duration_data";
+import { applyDurationSign } from "../common/datetime/normalize_duration";
 import type { WeekdayShort } from "../common/datetime/weekday";
+import { computeDomain } from "../common/entity/compute_domain";
 import { navigate } from "../common/navigate";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
@@ -518,6 +521,26 @@ export const pickRowConfig = <T extends object>(
   return config as Partial<T>;
 };
 
+// Older sun and calendar triggers set a positive offset with an offset type,
+// which the backend folds into the sign of the offset.
+const OFFSET_TYPE_TRIGGER_DOMAINS = ["sun", "calendar"];
+
+const foldOffsetType = (
+  options: Record<string, unknown>
+): Record<string, unknown> => {
+  const { offset_type: offsetType, ...folded } = options;
+  const offset = createDurationData(
+    folded.offset as string | number | ForDict | undefined
+  );
+  if (offset && !Object.values(offset).every(Number.isFinite)) {
+    return options;
+  }
+  if (offsetType === "before" && offset) {
+    folded.offset = applyDurationSign(offset, true);
+  }
+  return folded;
+};
+
 export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[],
   report?: AutomationMigrationReport
@@ -557,6 +580,13 @@ export const migrateAutomationTrigger = (
           report.deprecated = true;
         }
       }
+    }
+    if (
+      trigger.options &&
+      "offset_type" in trigger.options &&
+      OFFSET_TYPE_TRIGGER_DOMAINS.includes(computeDomain(trigger.trigger))
+    ) {
+      trigger.options = foldOffsetType(trigger.options);
     }
   }
 

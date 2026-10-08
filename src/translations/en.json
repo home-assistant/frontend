@@ -5533,9 +5533,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "start": "Event start",
                   "end": "Event end",
-                  "offset": "Offset (optional)",
-                  "before": "Before",
-                  "after": "After",
+                  "offset": "Offset",
                   "description": {
                     "picker": "Triggers when a calendar event starts or ends.",
                     "full": "When{offsetChoice, select, \n before { it's {offset} before}\n after { it's {offset} after}\n other {}\n} a calendar event{eventChoice, select, \n start { starts}\n end { ends}\n other { starts or ends}\n}{hasCalendar, select, \n true { in {calendar}}\n other {}\n}"
@@ -5658,7 +5656,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset in seconds or HH:MM:SS (optional)",
+                  "offset": "Offset",
                   "description": {
                     "picker": "Triggers when the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",

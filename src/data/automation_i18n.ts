@@ -1,6 +1,8 @@
 import { TZDate } from "@date-fns/tz";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import { createDurationData } from "../common/datetime/create_duration_data";
+import { durationDataToSeconds } from "../common/datetime/duration_to_seconds";
 import {
   formatDurationDigital,
   formatDurationLong,
@@ -10,6 +12,7 @@ import {
   formatTime,
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
+import { applyDurationSign } from "../common/datetime/normalize_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { sortWeekdays } from "../common/datetime/sort_weekdays";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
@@ -413,16 +416,7 @@ const describeLegacyTrigger = (
 
   // Sun Trigger
   if (trigger.trigger === "sun" && trigger.event) {
-    let duration = "";
-    if (trigger.offset) {
-      if (typeof trigger.offset === "number") {
-        duration = secondsToDuration(trigger.offset)!;
-      } else if (typeof trigger.offset === "string") {
-        duration = trigger.offset;
-      } else {
-        duration = JSON.stringify(trigger.offset);
-      }
-    }
+    const duration = formatSunOffset(hass, trigger.offset);
 
     return hass.localize(
       trigger.event === "sunset"
@@ -831,19 +825,15 @@ const describeLegacyTrigger = (
 
     let offsetChoice = "other";
     let offset = "";
-    if (typeof trigger.offset === "string" && trigger.offset) {
-      offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
-      const parts = trigger.offset.startsWith("-")
-        ? trigger.offset.substring(1).split(":")
-        : trigger.offset.split(":");
-      const duration = {
-        hours: parts.length > 0 ? +parts[0] : 0,
-        minutes: parts.length > 1 ? +parts[1] : 0,
-        seconds: parts.length > 2 ? +parts[2] : 0,
-      };
-      offset = formatDurationLong(hass.locale, duration);
-      if (offset === "") {
-        offsetChoice = "other";
+    const duration = createDurationData(trigger.offset);
+    if (duration) {
+      const before = durationDataToSeconds(duration) < 0;
+      offset = formatDurationLong(
+        hass.locale,
+        applyDurationSign(duration, before)
+      );
+      if (offset) {
+        offsetChoice = before ? "before" : "after";
       }
     }
 
@@ -873,6 +863,9 @@ const formatSunOffset = (
   }
   if (typeof offset === "string") {
     return offset;
+  }
+  if (!durationDataToSeconds(offset)) {
+    return "";
   }
   try {
     const formatted = formatDurationDigital(hass.locale, offset);
