@@ -24,6 +24,12 @@ vi.mock("../../../src/components/ha-dialog-footer", () =>
 vi.mock("../../../src/components/ha-svg-icon", () =>
   stubElement("ha-svg-icon")
 );
+vi.mock("../../../src/components/item/ha-list-item-base", () =>
+  stubElement("ha-list-item-base")
+);
+vi.mock("../../../src/components/list/ha-list-base", () =>
+  stubElement("ha-list-base")
+);
 vi.mock("../../../src/common/navigate", () => ({ goBack: vi.fn() }));
 vi.mock("../../../src/data/marketplace/websocket", async (importOriginal) => ({
   ...(await importOriginal<object>()),
