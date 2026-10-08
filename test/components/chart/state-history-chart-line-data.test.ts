@@ -90,6 +90,27 @@ describe("generateStateHistoryChartLineData", () => {
     ).toMatchSnapshot();
   });
 
+  it("appends current state at endTime when it is ahead of now", () => {
+    const data = toLineChartEntities({
+      "sensor.power_meter": generateNumericSensorStates(4, { count: 20 }),
+    });
+    const endTime = new Date(FIXED_EPOCH_MS + dayMs);
+    const points = generateStateHistoryChartLineData({
+      ...baseParams,
+      hass: createMockHass({
+        "sensor.power_meter": createMockEntityState(
+          "sensor.power_meter",
+          "123.4",
+          { unit_of_measurement: "W" }
+        ),
+      }),
+      data,
+      endTime,
+      now: new Date(endTime.getTime() - 1500),
+    })!.datasets[0].data!;
+    expect(points[points.length - 1]).toEqual([endTime.getTime(), 123.4]);
+  });
+
   it("builds a visual map for entities backed by statistics", () => {
     const statsHistory = convertStatisticsToHistory(
       hass,

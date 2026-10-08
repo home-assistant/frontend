@@ -273,7 +273,12 @@ export class StateHistoryCharts extends LitElement {
       )
     ) {
       // Don't recompute times when we just want to update layout
-      const now = new Date();
+      // A browser clock behind the server's would put the newest states past
+      // the end time, and the charts drop those. Rounded up because Date
+      // truncates their sub-millisecond timestamps.
+      const now = new Date(
+        Math.max(Date.now(), Math.ceil(this._newestStateTime()))
+      );
 
       this._computedEndTime =
         this.upToNow || !this.endTime || this.endTime > now
@@ -284,7 +289,7 @@ export class StateHistoryCharts extends LitElement {
         this._computedStartTime = this.startTime;
       } else if (this.hoursToShow) {
         this._computedStartTime = new Date(
-          new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
+          now.getTime() - 60 * 60 * this.hoursToShow * 1000
         );
       } else {
         let minTimeAll = (this.historyData?.timeline ?? []).reduce(
@@ -381,6 +386,25 @@ export class StateHistoryCharts extends LitElement {
       });
       this._isSyncing = false;
     });
+  }
+
+  private _newestStateTime(): number {
+    let newest = 0;
+    for (const entity of this.historyData?.timeline ?? []) {
+      newest = Math.max(
+        newest,
+        entity.data[entity.data.length - 1]?.last_changed ?? 0
+      );
+    }
+    for (const unit of this.historyData?.line ?? []) {
+      for (const entity of unit.data) {
+        newest = Math.max(
+          newest,
+          entity.states[entity.states.length - 1]?.last_changed ?? 0
+        );
+      }
+    }
+    return newest;
   }
 
   private _isHistoryEmpty(): boolean {
