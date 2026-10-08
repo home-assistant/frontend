@@ -55,6 +55,8 @@ Automations:
       - any-glob-to-any-file:
           - "src/panels/config/{automation,script,scene,blueprint}/**"
           - src/components/automation/**
+          - src/components/trace/**
+          - src/data/trace*.ts
           - "src/data/{automation,automation_i18n,script,script_i18n,scene,blueprint,trigger,condition,action}.ts"
 
 Backups:
