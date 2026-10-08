@@ -336,6 +336,14 @@ export default class HaAutomationActionRow extends LitElement {
       250
     );
 
+    const liveTestCondition = !this.optionsInSidebar
+      ? undefined
+      : waitTemplateCondition ||
+        (type === "condition" &&
+        (this.action as Condition).condition !== "trigger"
+          ? (this.action as Condition)
+          : undefined);
+
     return html`
       ${
         type === "service" && "action" in this.action && this.action.action
@@ -347,39 +355,25 @@ export default class HaAutomationActionRow extends LitElement {
                 .service=${this.action.action}
               ></ha-service-icon>
             `
-          : waitTemplateCondition && this.optionsInSidebar
+          : liveTestCondition
             ? html`<ha-automation-condition-live-test
                 id="condition-icon"
                 slot="leading-icon"
                 .hass=${this.hass}
-                .condition=${waitTemplateCondition}
+                .condition=${liveTestCondition}
               >
                 <ha-svg-icon
                   class="action-icon"
                   .path=${ACTION_ICONS[type!]}
                 ></ha-svg-icon>
               </ha-automation-condition-live-test>`
-            : type === "condition" &&
-                this.optionsInSidebar &&
-                (this.action as Condition).condition !== "trigger"
-              ? html`<ha-automation-condition-live-test
-                  id="condition-icon"
+            : html`
+                <ha-svg-icon
                   slot="leading-icon"
-                  .hass=${this.hass}
-                  .condition=${this.action as Condition}
-                >
-                  <ha-svg-icon
-                    class="action-icon"
-                    .path=${ACTION_ICONS[type]}
-                  ></ha-svg-icon>
-                </ha-automation-condition-live-test>`
-              : html`
-                  <ha-svg-icon
-                    slot="leading-icon"
-                    class="action-icon"
-                    .path=${ACTION_ICONS[type!]}
-                  ></ha-svg-icon>
-                `
+                  class="action-icon"
+                  .path=${ACTION_ICONS[type!]}
+                ></ha-svg-icon>
+              `
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
