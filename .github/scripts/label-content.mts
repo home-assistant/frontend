@@ -78,6 +78,12 @@ const changesMatch = (patch: string, pattern: RegExp) => {
   );
 };
 
+const describeError = (cause: unknown) =>
+  cause instanceof Error ? cause.message : String(cause);
+
+const isNotFound = (cause: unknown) =>
+  cause instanceof Error && "status" in cause && cause.status === 404;
+
 export default async function labelContent({
   github,
   context,
@@ -85,22 +91,63 @@ export default async function labelContent({
 }: GitHubScriptArgs<PullRequestPayload>) {
   const pr = context.payload.pull_request;
   const existing = new Set(pr.labels.map((l) => l.name));
+  const results: string[][] = [];
+  const warnings: string[] = [];
+
+  const warn = (message: string) => {
+    core.warning(message);
+    warnings.push(message);
+  };
+
+  const writeSummary = async () => {
+    core.summary.addHeading("Content labels", 2);
+
+    if (results.length > 0) {
+      core.summary.addTable([
+        ["Label", "Change", "Reason"].map((data) => ({ data, header: true })),
+        ...results,
+      ]);
+    } else {
+      core.summary.addRaw("No content labels changed.\n");
+    }
+
+    if (warnings.length > 0) {
+      core.summary
+        .addHeading("Warnings", 3)
+        .addRaw(`${warnings.map((w) => `- ${w}`).join("\n")}\n`);
+    }
+
+    await core.summary.write();
+  };
+
+  if (process.env.LABELER_OUTCOME === "failure") {
+    warn("Applying labels from .github/labeler.yml failed, see its step");
+  }
 
   // Bot pull requests, such as Prettier bumps, rewrite code they don't change
   const checkCode = pr.user.type !== "Bot";
 
   const { owner, repo } = context.repo;
 
-  const files = await withRetry("pull request files", () =>
-    github.paginate(github.rest.pulls.listFiles, {
-      owner,
-      repo,
-      pull_number: pr.number,
-      per_page: 100,
-    })
-  );
+  let files;
 
-  const add: string[] = [];
+  try {
+    files = await withRetry("pull request files", () =>
+      github.paginate(github.rest.pulls.listFiles, {
+        owner,
+        repo,
+        pull_number: pr.number,
+        per_page: 100,
+      })
+    );
+  } catch (error) {
+    warn(`Could not list the pull request's files: ${describeError(error)}`);
+    await writeSummary();
+
+    return;
+  }
+
+  const add: { label: string; reason: string }[] = [];
   const remove: string[] = [];
 
   for (const rule of RULES) {
@@ -114,48 +161,54 @@ export default async function labelContent({
 
     if (match && !existing.has(rule.label)) {
       core.info(`Adding ${rule.label} for ${match.filename}`);
-      add.push(rule.label);
+      add.push({ label: rule.label, reason: match.filename });
     } else if (!match && existing.has(rule.label)) {
       core.info(`Removing ${rule.label}, no longer matched`);
       remove.push(rule.label);
     }
   }
 
-  await Promise.all(
+  const removals = await Promise.allSettled(
     remove.map((name) =>
-      withRetry("label removal", async () => {
-        try {
-          await github.rest.issues.removeLabel({
-            owner,
-            repo,
-            issue_number: pr.number,
-            name,
-          });
-        } catch (error) {
-          // Already removed, such as by hand or a run that raced this one
-          if (
-            typeof error !== "object" ||
-            error === null ||
-            !("status" in error) ||
-            error.status !== 404
-          ) {
-            throw error;
-          }
-        }
-      })
+      withRetry("label removal", () =>
+        github.rest.issues.removeLabel({
+          owner,
+          repo,
+          issue_number: pr.number,
+          name,
+        })
+      )
     )
   );
 
-  if (add.length === 0) {
-    return;
+  removals.forEach((removal, i) => {
+    const name = remove[i];
+
+    // Already removed, such as by hand or a run that raced this one
+    if (removal.status === "fulfilled" || isNotFound(removal.reason)) {
+      results.push([name, "Removed", "No longer matched"]);
+    } else {
+      warn(`Could not remove ${name}: ${describeError(removal.reason)}`);
+    }
+  });
+
+  if (add.length > 0) {
+    try {
+      await withRetry("label addition", () =>
+        github.rest.issues.addLabels({
+          owner,
+          repo,
+          issue_number: pr.number,
+          labels: add.map(({ label }) => label),
+        })
+      );
+      results.push(...add.map(({ label, reason }) => [label, "Added", reason]));
+    } catch (error) {
+      warn(
+        `Could not add ${add.map(({ label }) => label).join(", ")}: ${describeError(error)}`
+      );
+    }
   }
 
-  await withRetry("label addition", () =>
-    github.rest.issues.addLabels({
-      owner,
-      repo,
-      issue_number: pr.number,
-      labels: add,
-    })
-  );
+  await writeSummary();
 }
