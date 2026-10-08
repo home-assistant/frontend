@@ -128,7 +128,7 @@ export const computeTraceLink = (
 ): string | undefined => {
   const traceContext = contextId ? traceContexts[contextId] : undefined;
   return traceContext
-    ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
+    ? `/config/${traceContext.domain}/trace/${encodeURIComponent(traceContext.item_id)}?run_id=${traceContext.run_id}`
     : undefined;
 };
 
