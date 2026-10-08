@@ -124,7 +124,7 @@ Integrations:
 # Labs is applied by .github/scripts/label-labs.mts, as it also checks added
 # code, not just paths.
 
-Landingpage:
+Landing Page:
   - changed-files:
       - any-glob-to-any-file:
           - landing-page/**
