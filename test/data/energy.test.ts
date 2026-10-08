@@ -1512,6 +1512,29 @@ describe("getEnergyDataCollection gas energy unit", () => {
     assert.deepEqual(thermRequest?.statistic_ids, ["integration:gas"]);
   });
 
+  it("shows gas in the unit of its sources for any energy unit", async () => {
+    const { data, energyRequests } = await loadGasData("energy_gas_gj", {
+      "integration:gas_a": "GJ",
+      "integration:gas_b": "GJ",
+    });
+    assert.equal(data?.gasUnit, "GJ");
+    const request = energyRequests.find(
+      (msg) => (msg.units as { energy?: string }).energy === "GJ"
+    );
+    assert.sameMembers(request?.statistic_ids as string[], [
+      "integration:gas_a",
+      "integration:gas_b",
+    ]);
+  });
+
+  it("falls back to kWh when gas sources use different energy units", async () => {
+    const { data } = await loadGasData("energy_gas_gj_mwh", {
+      "integration:gas_a": "GJ",
+      "integration:gas_b": "MWh",
+    });
+    assert.equal(data?.gasUnit, "kWh");
+  });
+
   it("keeps other energy gas in kWh", async () => {
     const { data, energyRequests } = await loadGasData("energy_gas_kwh", {
       "integration:gas": "kWh",

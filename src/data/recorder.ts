@@ -115,8 +115,26 @@ export interface StatisticsValidationResultMeanTypeChanged {
 
 export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
+export const ENERGY_UNITS = [
+  "J",
+  "kJ",
+  "MJ",
+  "GJ",
+  "mWh",
+  "Wh",
+  "kWh",
+  "MWh",
+  "GWh",
+  "TWh",
+  "cal",
+  "kcal",
+  "Mcal",
+  "Gcal",
+  "thm",
+] as const;
+
 export interface StatisticsUnitConfiguration {
-  energy?: "Wh" | "kWh" | "MWh" | "GJ" | "thm";
+  energy?: (typeof ENERGY_UNITS)[number];
   power?: "W" | "kW";
   pressure?:
     "Pa" | "hPa" | "kPa" | "bar" | "cbar" | "mbar" | "inHg" | "psi" | "mmHg";
