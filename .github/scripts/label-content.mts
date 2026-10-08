@@ -37,7 +37,7 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
     // imports its modules. Matches imports of data/external rather than
     // isExternal, which is also a common local name.
     pattern:
-      /\bauth\??\.external\b(?:[!?]*\.\w+\([^)]*)?|\bfireExternalBusMessage\([^)]*|(?:\bimport\s[^;]*?from\s*|\bimport\(\s*)["'][^"']*\/(?:external_app\/[^"']*|data\/external)["']/g,
+      /\bauth\??\.external\b(?:[!?]*\.\w+)*(?:\([^)]*)?|\bfireExternalBusMessage\([^)]*|(?:\bimport\s[^;]*?from\s*|\bimport\(\s*)["'][^"']*\/(?:external_app\/[^"']*|data\/external)["']/g,
   },
   {
     label: "Home Assistant Link",
@@ -253,9 +253,15 @@ export default async function labelContent({
       }
     }
 
+    // Renames count for both locations, as moving a file out of an area changes it
     const match =
-      files.find((file) => rule.paths.some((path) => path.test(file.filename)))
-        ?.filename ?? unmatchedChange(added, removed);
+      files.find(({ filename, previous_filename }) =>
+        rule.paths.some(
+          (path) =>
+            path.test(filename) ||
+            (previous_filename !== undefined && path.test(previous_filename))
+        )
+      )?.filename ?? unmatchedChange(added, removed);
 
     if (match && !existing.has(rule.label)) {
       core.info(`Adding ${rule.label} for ${match}`);
