@@ -305,7 +305,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._stateHistory,
               this._entityReg,
-              this._themes
+              this._themes,
+              this.hass.formatEntityName
             )}
             .autoFit=${this._config.auto_fit || false}
             .fitPadding=${this._overviewPadding()}
@@ -925,7 +926,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       history: HistoryStates | undefined,
       // Trail colors follow the registry order and the theme like the markers
       _entityReg: EntityRegistryEntry[],
-      _themes: Themes | undefined
+      _themes: Themes | undefined,
+      formatEntityName: HomeAssistant["formatEntityName"]
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
@@ -961,7 +963,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         const name =
           entityConfig?.name ??
           (entityId in this.hass.states
-            ? this.hass.formatEntityName(this.hass.states[entityId])
+            ? formatEntityName(this.hass.states[entityId])
             : entityId);
 
         paths.push({
