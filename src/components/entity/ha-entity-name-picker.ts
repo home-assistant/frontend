@@ -95,7 +95,7 @@ export class HaEntityNamePicker extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated) {
-      const items = this._toItems(this.value);
+      const items = this._toItems(this.value ?? this.defaultValue);
       this._mode =
         items.length === 1 && items[0].type === "text" ? "custom" : "composed";
     }
@@ -103,7 +103,7 @@ export class HaEntityNamePicker extends LitElement {
 
   protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (this._mode === undefined) {
-      const items = this._toItems(this.value);
+      const items = this._toItems(this.value ?? this.defaultValue);
       this._mode =
         items.length === 1 && items[0].type === "text" ? "custom" : "composed";
     }
@@ -290,7 +290,7 @@ export class HaEntityNamePicker extends LitElement {
 
   private _restore(ev: Event) {
     ev.stopPropagation();
-    this._mode = "composed";
+    this._mode = undefined;
     this.value = undefined;
     fireEvent(this, "value-changed", { value: undefined });
   }
