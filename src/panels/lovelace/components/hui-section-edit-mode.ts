@@ -17,6 +17,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import { isStrategySection } from "../../../data/lovelace/config/section";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -155,9 +156,14 @@ export class HuiSectionEditMode extends LitElement {
       this.path
     );
 
-    const cardCount = section && "cards" in section && section.cards?.length;
+    const hasContent =
+      section &&
+      !isStrategySection(section) &&
+      (section.cards?.length ||
+        section.badges?.length ||
+        section.sections?.length);
 
-    if (cardCount) {
+    if (hasContent) {
       const confirm = await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.lovelace.editor.delete_section.title"

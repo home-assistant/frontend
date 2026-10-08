@@ -7,6 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -15,6 +16,8 @@ import type {
 import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
+import "../badges/hui-badge";
+import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { createSectionElement } from "../create-element/create-section-element";
@@ -47,9 +50,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
   @property({ type: Boolean, attribute: "import-only" })
   public importOnly = false;
 
+  @property({ attribute: false }) public insideStrategy = false;
+
   @property({ attribute: false }) public path!: LovelacePath;
 
   @state() private _cards: HuiCard[] = [];
+
+  @state() private _badges: HuiBadge[] = [];
+
+  @state() private _sections: HuiSection[] = [];
 
   private _layoutElementType?: string;
 
@@ -65,6 +74,37 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       this._cards = [...this._cards];
     });
     element.load();
+    return element;
+  }
+
+  private _createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
+    const element = document.createElement("hui-badge");
+    element.hass = this.hass;
+    element.preview = this.preview;
+    element.config = badgeConfig;
+    element.addEventListener("badge-updated", (ev: Event) => {
+      ev.stopPropagation();
+      this._badges = [...this._badges];
+    });
+    element.load();
+    return element;
+  }
+
+  private _createSectionElement(
+    sectionConfig: LovelaceSectionRawConfig,
+    index: number,
+    insideStrategy: boolean
+  ) {
+    const element = document.createElement("hui-section");
+    element.hass = this.hass;
+    element.lovelace = this.lovelace;
+    element.preview = this.preview;
+    element.importOnly = this.importOnly;
+    element.insideStrategy = insideStrategy;
+    element.config = sectionConfig;
+    if (this.path) {
+      element.path = [...this.path, "sections", index];
+    }
     return element;
   }
 
@@ -127,7 +167,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     super.disconnectedCallback();
     this.removeEventListener(
       "card-visibility-changed",
-      this._cardVisibilityChanged
+      this._contentVisibilityChanged
+    );
+    this.removeEventListener(
+      "badge-visibility-changed",
+      this._contentVisibilityChanged
+    );
+    this.removeEventListener(
+      "section-visibility-changed",
+      this._sectionVisibilityChanged
     );
   }
 
@@ -136,7 +184,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._updateVisibility();
     this.addEventListener(
       "card-visibility-changed",
-      this._cardVisibilityChanged
+      this._contentVisibilityChanged
+    );
+    this.addEventListener(
+      "badge-visibility-changed",
+      this._contentVisibilityChanged
+    );
+    this.addEventListener(
+      "section-visibility-changed",
+      this._sectionVisibilityChanged
     );
     // Reapply theme on reconnect (e.g., after navigating away and back)
     if (this.hass && this._config?.theme) {
@@ -154,6 +210,12 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
         this._cards.forEach((element) => {
           element.hass = this.hass;
         });
+        this._badges.forEach((element) => {
+          element.hass = this.hass;
+        });
+        this._sections.forEach((element) => {
+          element.hass = this.hass;
+        });
         this._layoutElement.hass = this.hass;
         // React to theme or dark mode changes
         const oldHass = changedProperties.get("hass");
@@ -167,26 +229,49 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
+        this._sections.forEach((element) => {
+          element.lovelace = this.lovelace;
+        });
       }
       if (changedProperties.has("preview")) {
         this._layoutElement.preview = this.preview;
         this._cards.forEach((element) => {
           element.preview = this.preview;
         });
+        this._badges.forEach((element) => {
+          element.preview = this.preview;
+        });
+        this._sections.forEach((element) => {
+          element.preview = this.preview;
+        });
       }
       if (changedProperties.has("importOnly")) {
         this._layoutElement.importOnly = this.importOnly;
+        this._sections.forEach((element) => {
+          element.importOnly = this.importOnly;
+        });
       }
       if (changedProperties.has("path")) {
         this._layoutElement.path = this.path;
+        this._sections.forEach((element, index) => {
+          element.path = [...this.path, "sections", index];
+        });
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
+      if (changedProperties.has("_badges")) {
+        this._layoutElement.badges = this._badges;
+      }
+      if (changedProperties.has("_sections")) {
+        this._layoutElement.sections = this._sections;
+      }
       if (
         changedProperties.has("hass") ||
         changedProperties.has("preview") ||
-        changedProperties.has("_cards")
+        changedProperties.has("_cards") ||
+        changedProperties.has("_badges") ||
+        changedProperties.has("_sections")
       ) {
         this._updateVisibility();
       }
@@ -234,12 +319,18 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       this._layoutElement.setConfig(sectionConfig);
     }
 
+    const fromStrategy = isStrategy || this.insideStrategy;
+
     this._createCards(sectionConfig);
-    this._layoutElement!.isStrategy = isStrategy;
+    this._createBadges(sectionConfig);
+    this._createSections(sectionConfig, fromStrategy);
+    this._layoutElement!.isStrategy = fromStrategy;
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.lovelace = this.lovelace;
     this._layoutElement!.path = this.path;
     this._layoutElement!.cards = this._cards;
+    this._layoutElement!.badges = this._badges;
+    this._layoutElement!.sections = this._sections;
 
     if (addLayoutElement) {
       while (this.lastChild) {
@@ -249,8 +340,14 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
   }
 
-  private _cardVisibilityChanged = () => {
+  private _contentVisibilityChanged = () => {
     this._updateVisibility();
+  };
+
+  private _sectionVisibilityChanged = (ev: Event) => {
+    if (ev.target !== this) {
+      this._updateVisibility();
+    }
   };
 
   protected _updateVisibility(conditionsMet?: boolean) {
@@ -275,11 +372,12 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       return;
     }
 
-    // Hide section when all cards are conditionally hidden
-    const allCardsHidden =
-      this._cards.length > 0 && this._cards.every((card) => card.hidden);
+    // Hide section when all its content is conditionally hidden
+    const content = [...this._cards, ...this._badges, ...this._sections];
+    const allContentHidden =
+      content.length > 0 && content.every((element) => element.hidden);
 
-    this._setElementVisibility(!allCardsHidden);
+    this._setElementVisibility(!allContentHidden);
   }
 
   private _setElementVisibility(visible: boolean) {
@@ -313,6 +411,31 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
 
     this._cards = config.cards.map((cardConfig) =>
       this._createCardElement(cardConfig)
+    );
+  }
+
+  private _createBadges(config: LovelaceSectionConfig): void {
+    if (!config || !config.badges || !Array.isArray(config.badges)) {
+      this._badges = [];
+      return;
+    }
+
+    this._badges = config.badges.map((badgeConfig) =>
+      this._createBadgeElement(badgeConfig)
+    );
+  }
+
+  private _createSections(
+    config: LovelaceSectionConfig,
+    insideStrategy: boolean
+  ): void {
+    if (!config || !config.sections || !Array.isArray(config.sections)) {
+      this._sections = [];
+      return;
+    }
+
+    this._sections = config.sections.map((sectionConfig, index) =>
+      this._createSectionElement(sectionConfig, index, insideStrategy)
     );
   }
 }
