@@ -1,14 +1,21 @@
 #!/usr/bin/env node
-// Adds area labels to pull requests from the code they change, as
-// actions/labeler can only match paths. A rule matches when an added or removed
-// line uses that area's API, such as gating a feature behind Labs or only
-// showing it on Supervisor installs. It only adds labels, so one added by hand
-// stays. Invoked from the `triage` job in .github/workflows/labeler.yaml via
-// actions/github-script:
-//
-//   const { default: labelContent } =
-//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/label-content.mts`);
-//   await labelContent({ github, context, core });
+/**
+ * Applies the Companion App, Labs and Supervisor labels to pull requests.
+ *
+ * These areas are often changed from code outside their folders, which
+ * actions/labeler can't see, so this script owns them and .github/labeler.yml
+ * leaves them out.
+ *
+ * A label matches when the pull request:
+ * - changes a file in one of the area's paths, or
+ * - adds or removes a line that uses the area's API, such as gating a feature
+ *   behind Labs or only showing it on Supervisor installs.
+ *
+ * Like actions/labeler, a label is removed once the pull request no longer
+ * matches, including one added by hand.
+ *
+ * Invoked from the `triage` job in .github/workflows/labeler.yaml.
+ */
 
 import type {
   GitHubScriptArgs,
@@ -16,20 +23,27 @@ import type {
 } from "./github-script.d.ts";
 import { withRetry } from "./github-retry.mts";
 
-const RULES: { label: string; pattern: RegExp }[] = [
+const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
   {
     label: "Companion App",
+    paths: [/^src\/external_app\//],
     // Reads or messages the companion app the frontend is running in
     pattern: /\bauth\.external\b|\bfireExternalBusMessage\(/,
   },
   {
     label: "Labs",
+    paths: [/^src\/panels\/config\/labs\//, /^src\/data\/labs\.ts$/],
     // Gates a feature behind, or toggles, a Labs preview feature
     pattern:
       /\b(?:subscribeLabFeatures?|fetchLabFeatures|labsUpdatePreviewFeature)\(/,
   },
   {
     label: "Supervisor",
+    paths: [
+      /^src\/panels\/config\/apps\//,
+      /^src\/data\/hassio\//,
+      /^src\/data\/supervisor\//,
+    ],
     // Only runs on installs with the Supervisor
     pattern: /isComponentLoaded\([^)]*["']hassio["']/,
   },
@@ -70,21 +84,10 @@ export default async function labelContent({
   core,
 }: GitHubScriptArgs<PullRequestPayload>) {
   const pr = context.payload.pull_request;
-
-  if (pr.user.type === "Bot") {
-    core.info(`Skipping bot author: ${pr.user.login}`);
-
-    return;
-  }
-
   const existing = new Set(pr.labels.map((l) => l.name));
-  const rules = RULES.filter((rule) => !existing.has(rule.label));
 
-  if (rules.length === 0) {
-    core.info("All content labels already applied");
-
-    return;
-  }
+  // Bot pull requests, such as Prettier bumps, rewrite code they don't change
+  const checkCode = pr.user.type !== "Bot";
 
   const { owner, repo } = context.repo;
 
@@ -97,23 +100,53 @@ export default async function labelContent({
     })
   );
 
-  const labels: string[] = [];
+  const add: string[] = [];
+  const remove: string[] = [];
 
-  for (const rule of rules) {
+  for (const rule of RULES) {
     const match = files.find(
       (file) =>
-        file.patch !== undefined && changesMatch(file.patch, rule.pattern)
+        rule.paths.some((path) => path.test(file.filename)) ||
+        (checkCode &&
+          file.patch !== undefined &&
+          changesMatch(file.patch, rule.pattern))
     );
 
-    if (match) {
+    if (match && !existing.has(rule.label)) {
       core.info(`Adding ${rule.label} for ${match.filename}`);
-      labels.push(rule.label);
+      add.push(rule.label);
+    } else if (!match && existing.has(rule.label)) {
+      core.info(`Removing ${rule.label}, no longer matched`);
+      remove.push(rule.label);
     }
   }
 
-  if (labels.length === 0) {
-    core.info("No content labels to add");
+  await Promise.all(
+    remove.map((name) =>
+      withRetry("label removal", async () => {
+        try {
+          await github.rest.issues.removeLabel({
+            owner,
+            repo,
+            issue_number: pr.number,
+            name,
+          });
+        } catch (error) {
+          // Already removed, such as by hand or a run that raced this one
+          if (
+            typeof error !== "object" ||
+            error === null ||
+            !("status" in error) ||
+            error.status !== 404
+          ) {
+            throw error;
+          }
+        }
+      })
+    )
+  );
 
+  if (add.length === 0) {
     return;
   }
 
@@ -122,7 +155,7 @@ export default async function labelContent({
       owner,
       repo,
       issue_number: pr.number,
-      labels,
+      labels: add,
     })
   );
 }

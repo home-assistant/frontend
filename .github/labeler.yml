@@ -1,5 +1,14 @@
-# Labels are only ever added. .github/scripts/label-content.mts also adds some
-# of these labels from the code a pull request changes.
+# Path rules for .github/workflows/labeler.yaml, which runs actions/labeler on
+# every pull request. A label is added when a pull request changes a matching
+# file, and removed again when it no longer does, including one added by hand.
+#
+# Do not add these labels here. .github/scripts/label-content.mts applies and
+# removes them from paths and code. A rule here would remove them whenever its
+# paths don't match, even when the script's code check does:
+#
+# - Companion App
+# - Labs
+# - Supervisor
 
 Agents:
   - changed-files:
@@ -44,11 +53,6 @@ Cast:
       - any-glob-to-any-file:
           - cast/src/**
           - src/cast/**
-
-Companion App:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/external_app/**
 
 Dashboards:
   - changed-files:
@@ -124,12 +128,6 @@ Integrations:
           - src/data/config_entries.ts
           - src/data/config_flow.ts
 
-Labs:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/panels/config/labs/**
-          - src/data/labs.ts
-
 Landing Page:
   - changed-files:
       - any-glob-to-any-file:
@@ -142,13 +140,6 @@ Onboarding:
           - src/auth/**
           - src/data/onboarding.ts
           - src/data/auth.ts
-
-Supervisor:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/panels/config/apps/**
-          - src/data/hassio/**
-          - src/data/supervisor/**
 
 "Tests: E2E":
   - changed-files:
