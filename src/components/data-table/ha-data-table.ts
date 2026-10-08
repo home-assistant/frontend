@@ -1292,6 +1292,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__row {
           display: flex;
+          box-sizing: border-box;
           height: var(--data-table-row-height, 52px);
           width: var(--table-row-width, 100%);
         }
