@@ -10,6 +10,13 @@
 # - Labs
 # - Supervisor
 
+Activity:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/panels/logbook/**
+          - src/panels/lovelace/**/*logbook*
+          - src/data/logbook.ts
+
 Agents:
   - changed-files:
       - any-glob-to-any-file:
@@ -116,10 +123,8 @@ History:
   - changed-files:
       - any-glob-to-any-file:
           - src/panels/history/**
-          - src/panels/logbook/**
-          - "src/panels/lovelace/**/*{history,logbook}*"
+          - src/panels/lovelace/**/*history*
           - src/data/history.ts
-          - src/data/logbook.ts
 
 Integrations:
   - changed-files:
