@@ -10176,7 +10176,7 @@
                 "label": "Location",
                 "migrated": {
                   "title": "Location condition updated",
-                  "description": "This condition used zone names and was converted to zones. Save the card to apply the change. It now matches any zone the person is in, including a zone that contains a smaller one they are in, not only the zone shown as their state. Zone names that could not be found are kept and shown as not found."
+                  "description": "This condition used zone names, and is now shown with zones instead. It matches the person's `in_zones` attribute, so it is true in any zone they are in, not only the zone shown as their state. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition."
                 },
                 "target": "Zones",
                 "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in any of the selected zones, or in any zone with the selected labels.",

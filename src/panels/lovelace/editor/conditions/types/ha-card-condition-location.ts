@@ -49,14 +49,20 @@ function migrateLocationCondition(
   states: HassEntities
 ): LocationCondition {
   // The person state is "home" for zone.home, otherwise the zone name.
-  const zoneIdsByName = new Map<string, string>();
+  // Zone names aren't unique, and the old condition matched every zone with
+  // the name, so keep all of them.
+  const zoneIdsByName = new Map<string, string[]>();
   for (const stateObj of Object.values(states)) {
+    const name = stateObj.attributes.friendly_name;
     if (
       stateObj.entity_id.startsWith("zone.") &&
       stateObj.entity_id !== "zone.home" &&
-      stateObj.attributes.friendly_name
+      name
     ) {
-      zoneIdsByName.set(stateObj.attributes.friendly_name, stateObj.entity_id);
+      zoneIdsByName.set(name, [
+        ...(zoneIdsByName.get(name) ?? []),
+        stateObj.entity_id,
+      ]);
     }
   }
 
@@ -72,7 +78,11 @@ function migrateLocationCondition(
     } else {
       // Names that match no zone are kept, so the picker shows them as not
       // found instead of silently removing them.
-      entityIds.add(zoneIdsByName.get(name) ?? `zone.${slugify(name)}`);
+      for (const entityId of zoneIdsByName.get(name) ?? [
+        `zone.${slugify(name)}`,
+      ]) {
+        entityIds.add(entityId);
+      }
     }
   }
   if (entityIds.size) {
@@ -94,7 +104,7 @@ export class HaCardConditionLocation extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  // Stays set after migrating, so the alert keeps explaining the change.
+  // Stays set after the first edit, so the alert keeps explaining the change.
   @state() private _migrated = false;
 
   public static get defaultConfig(): LocationCondition {
@@ -105,6 +115,8 @@ export class HaCardConditionLocation extends LitElement {
     return assert(condition, locationConditionStruct);
   }
 
+  // `locations` is shown migrated, and written only once the condition is
+  // edited, so dashboards nobody edits keep their config.
   private _data = memoizeOne(
     (condition: LocationCondition, states: HassEntities): LocationCondition =>
       condition.locations === undefined
@@ -113,17 +125,11 @@ export class HaCardConditionLocation extends LitElement {
   );
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
-    // Migrate `locations` when the editor opens. The dashboard keeps the old
-    // format until the card is saved.
     if (
       changedProps.has("condition") &&
-      this.condition.locations !== undefined &&
-      !this.disabled
+      this.condition.locations !== undefined
     ) {
       this._migrated = true;
-      fireEvent(this, "value-changed", {
-        value: this._data(this.condition, this.hass.states),
-      });
     }
   }
 
