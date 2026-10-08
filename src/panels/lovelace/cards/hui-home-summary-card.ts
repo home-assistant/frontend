@@ -49,6 +49,7 @@ import {
 } from "../strategies/home/helpers/home-summaries";
 import {
   filterLowBatteryEntities,
+  filterProblemEntities,
   filterUnavailableBatteryEntities,
 } from "../../maintenance/strategies/maintenance-view-strategy";
 import {
@@ -340,6 +341,11 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           maintenanceEntities
         );
 
+        const problemEntities = filterProblemEntities(
+          states,
+          maintenanceEntities
+        );
+
         const unavailableBatteryEntities = filterUnavailableBatteryEntities(
           states,
           maintenanceEntities
@@ -355,6 +361,16 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
               )
             : undefined;
 
+        const problemText =
+          problemEntities.length > 0
+            ? localize(
+                "ui.card.home-summary.count_maintenance_problem_issues",
+                {
+                  count: problemEntities.length,
+                }
+              )
+            : undefined;
+
         const unavailableText =
           unavailableBatteryEntities.length > 0
             ? localize(
@@ -365,17 +381,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
               )
             : undefined;
 
-        if (lowBatteryText && unavailableText) {
-          return `${lowBatteryText}, ${unavailableText}`;
-        }
+        let status = [lowBatteryText, problemText, unavailableText];
+        status = status.filter((x) => x !== undefined);
 
-        if (lowBatteryText) {
-          return lowBatteryText;
-        }
-
-        if (unavailableText) {
-          return unavailableText;
-        }
+        if (status.length > 0) return status.join(", ");
 
         return localize("ui.card.home-summary.all_maintenance_good");
       }

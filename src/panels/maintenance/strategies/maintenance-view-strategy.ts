@@ -29,7 +29,7 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   },
   {
     domain: "binary_sensor",
-    device_class: ["battery"],
+    device_class: ["battery", "problem"],
   },
 ];
 
@@ -48,7 +48,8 @@ export const filterLowBatteryEntities = (
     const state = states[entityId]?.state ?? "";
 
     if (computeDomain(entityId) === "binary_sensor") {
-      return state === BINARY_STATE_ON;
+      const device_class = states[entityId]?.attributes?.device_class ?? "";
+      return state === BINARY_STATE_ON && device_class !== "problem";
     }
 
     const stateValue = parseFloat(state);
@@ -72,6 +73,16 @@ export const filterLowBatteryEntities = (
     return batteryCharging?.state !== "on";
   });
 };
+
+export const filterProblemEntities = (
+  states: HomeAssistant["states"],
+  entityIds: string[]
+): string[] =>
+  entityIds.filter((entityId) => {
+    const state = states[entityId]?.state ?? "";
+    const device_class = states[entityId]?.attributes?.device_class ?? "";
+    return device_class === "problem" && state === BINARY_STATE_ON;
+  });
 
 export const filterUnavailableBatteryEntities = (
   states: HomeAssistant["states"],
