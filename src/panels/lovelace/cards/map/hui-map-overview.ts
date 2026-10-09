@@ -15,6 +15,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { formatTime } from "../../../../common/datetime/format_time";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
@@ -300,12 +301,10 @@ export class HuiMapOverview extends LitElement {
         if (aLocated !== bLocated) {
           return aLocated ? -1 : 1;
         }
-        return this._formatters
-          .formatEntityName(a)
-          .localeCompare(
-            this._formatters.formatEntityName(b),
-            this._i18n.locale.language
-          );
+        return this._entityName(a).localeCompare(
+          this._entityName(b),
+          this._i18n.locale.language
+        );
       });
   }
 
@@ -320,8 +319,24 @@ export class HuiMapOverview extends LitElement {
   private _personName(stateObj: HassEntity): string {
     return this._isMe(stateObj)
       ? this._i18n.localize("ui.panel.lovelace.cards.map.overview.me")
-      : this._formatters.formatEntityName(stateObj);
+      : this._entityName(stateObj);
   }
+
+  private _entityName(stateObj: HassEntity): string {
+    return (
+      this._configuredNames(this.entities).get(stateObj.entity_id) ??
+      this._formatters.formatEntityName(stateObj)
+    );
+  }
+
+  private _configuredNames = memoizeOne(
+    (entities: HaMapEntity[]) =>
+      new Map(
+        entities
+          .filter((entity) => entity.name)
+          .map((entity) => [entity.entity_id, entity.name!] as const)
+      )
+  );
 
   private _getDevices(): HassEntity[] {
     return this.entities
@@ -333,12 +348,10 @@ export class HuiMapOverview extends LitElement {
           !!getEntityLocation(stateObj, this._states)
       )
       .sort((a, b) =>
-        this._formatters
-          .formatEntityName(a)
-          .localeCompare(
-            this._formatters.formatEntityName(b),
-            this._i18n.locale.language
-          )
+        this._entityName(a).localeCompare(
+          this._entityName(b),
+          this._i18n.locale.language
+        )
       );
   }
 
@@ -361,12 +374,10 @@ export class HuiMapOverview extends LitElement {
         ) {
           return a.entity_id === HOME_ZONE_ENTITY_ID ? -1 : 1;
         }
-        return this._formatters
-          .formatEntityName(a)
-          .localeCompare(
-            this._formatters.formatEntityName(b),
-            this._i18n.locale.language
-          );
+        return this._entityName(a).localeCompare(
+          this._entityName(b),
+          this._i18n.locale.language
+        );
       });
   }
 
@@ -787,9 +798,7 @@ export class HuiMapOverview extends LitElement {
                 />`
               : computeStateDomain(stateObj) === "person"
                 ? html`<span class="initials"
-                    >${computeUserInitials(
-                      this._formatters.formatEntityName(stateObj)
-                    )}</span
+                    >${computeUserInitials(this._entityName(stateObj))}</span
                   >`
                 : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
           }
@@ -831,9 +840,7 @@ export class HuiMapOverview extends LitElement {
         >
           <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
         </div>
-        <span slot="headline"
-          >${this._formatters.formatEntityName(stateObj)}</span
-        >
+        <span slot="headline">${this._entityName(stateObj)}</span>
         <span slot="supporting-text">
           ${
             Number.isNaN(count)
