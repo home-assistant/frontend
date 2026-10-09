@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { filterLowBatteryEntities } from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
+import {
+  filterLowBatteryEntities,
+  filterProblemEntities,
+} from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
 import { mockEntity } from "../../../common/entity/context/context-mock";
 import { createMockEntityState, createMockHass } from "../../../fixtures/hass";
 
@@ -147,5 +150,34 @@ describe("filterLowBatteryEntities", () => {
         "sensor.battery",
       ])
     ).toEqual(["sensor.battery"]);
+  });
+});
+
+describe("filterProblemEntities", () => {
+  it("filters only problems", () => {
+    const hass = createMockHass({
+      "binary_sensor.has_problem": createMockEntityState(
+        "binary_sensor.has_problem",
+        "on",
+        { device_class: "problem" }
+      ),
+      "binary_sensor.no_problem": createMockEntityState(
+        "binary_sensor.no_problem",
+        "off",
+        { device_class: "problem" }
+      ),
+      "binary_sensor.other": createMockEntityState(
+        "binary_sensor.other",
+        "off",
+        { device_class: "other" }
+      ),
+    });
+    expect(
+      filterProblemEntities(hass.states, [
+        "binary_sensor.has_problem",
+        "binary_sensor.no_problem",
+        "binary_sensor.other",
+      ])
+    ).toEqual(["binary_sensor.has_problem"]);
   });
 });
