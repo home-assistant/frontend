@@ -128,6 +128,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._origAmount = undefined;
     this._amount = undefined;
     this._chosenStat = undefined;
+    this._initDirtyTracking({ type: "deep" }, { amount: undefined });
     this._busy = false;
     this._showingOutliers = false;
     this._adjustedChanges.clear();
@@ -577,7 +578,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         unit || null
       );
     } catch (err: any) {
-      this._busy = false;
+      // Report the error even if the dialog was closed or reopened while
+      // adjusting, but leave the state of a newer invocation alone
+      if (this._params === params) {
+        this._busy = false;
+      }
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
