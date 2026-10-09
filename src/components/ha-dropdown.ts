@@ -113,6 +113,22 @@ export class HaDropdown extends Dropdown {
         wa-popup::part(popup) {
           z-index: 200;
         }
+
+        /* The auto size ignores safe areas, so a long menu could end up
+           behind the Android navigation bar or the notch. */
+        wa-popup[data-current-placement^="bottom"] #menu {
+          max-height: calc(
+            var(--auto-size-available-height) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          ) !important;
+        }
+        wa-popup[data-current-placement^="top"] #menu {
+          max-height: calc(
+            var(--auto-size-available-height) - var(--safe-area-inset-top, 0px)
+          ) !important;
+        }
       `,
     ];
   }
