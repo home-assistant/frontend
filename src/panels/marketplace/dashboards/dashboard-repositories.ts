@@ -62,6 +62,23 @@ export const filtersOfTab = (
   };
 };
 
+// The status pane only sends what this tab lists, so statuses picked on another
+// tab that this one can't list are kept for when that tab is opened again
+export const statusFilterOfTab = (
+  filters: RepositoryFilters,
+  tab: MarketplaceTab,
+  picked: string[] = []
+): string[] => {
+  const statuses: readonly string[] = statusesOfTab(tab);
+
+  return [
+    ...(filters[STATUS_FILTER]?.filter(
+      (status) => !statuses.includes(status)
+    ) ?? []),
+    ...picked,
+  ];
+};
+
 const matchesFilters = (
   repository: RepositoryBase,
   filters: RepositoryFilters = {}

@@ -76,6 +76,7 @@ import {
   STATUS_FILTER,
   STATUS_ORDER,
   statusesOfTab,
+  statusFilterOfTab,
   TYPE_FILTER,
 } from "./dashboard-repositories";
 import type { RepositoryFilters } from "./dashboard-repositories";
@@ -751,8 +752,16 @@ export class HaMarketplaceDashboard extends LitElement {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
-  private _statusFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [STATUS_FILTER]: ev.detail.value };
+  // The pane's own clear button sends no value
+  private _statusFilterChanged(ev: HASSDomEvent<{ value?: string[] }>) {
+    this._filters = {
+      ...this._filters,
+      [STATUS_FILTER]: statusFilterOfTab(
+        this._filters,
+        this.tab,
+        ev.detail.value
+      ),
+    };
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
