@@ -1317,8 +1317,8 @@ const getEnergyGasUnit = (
 
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
-    // A gas statistic that is also an individual device is read by the device
-    // charts in kWh, so keep kWh there to not mislabel the values.
+    // A gas statistic that is also a grid, solar, battery or device statistic
+    // is read by those charts in kWh, so keep kWh to not mislabel the values.
     const kWhStatIds = new Set([
       ...prefs.device_consumption.map((device) => device.stat_consumption),
       ...prefs.energy_sources.flatMap((source) => {

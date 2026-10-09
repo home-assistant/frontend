@@ -27,6 +27,7 @@ import {
   EMPTY_PREFERENCES,
   CompareMode,
 } from "../../src/data/energy";
+import type { EnergySource } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import { StatisticMeanType } from "../../src/data/recorder";
@@ -1439,7 +1440,8 @@ describe("getEnergyDataCollection gas energy unit", () => {
     key: string,
     gasUnits: Record<string, string>,
     compare?: CompareMode,
-    deviceStatIds: string[] = []
+    deviceStatIds: string[] = [],
+    otherSources: EnergySource[] = []
   ) => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
@@ -1478,13 +1480,16 @@ describe("getEnergyDataCollection gas energy unit", () => {
         device_consumption: deviceStatIds.map((id) => ({
           stat_consumption: id,
         })),
-        energy_sources: statisticIds.map((id) => ({
-          type: "gas" as const,
-          stat_energy_from: id,
-          stat_cost: null,
-          entity_energy_price: null,
-          number_energy_price: null,
-        })),
+        energy_sources: [
+          ...statisticIds.map((id) => ({
+            type: "gas" as const,
+            stat_energy_from: id,
+            stat_cost: null,
+            entity_energy_price: null,
+            number_energy_price: null,
+          })),
+          ...otherSources,
+        ],
       },
     });
     collection.setPeriod(
@@ -1573,6 +1578,49 @@ describe("getEnergyDataCollection gas energy unit", () => {
         (msg) => (msg.units as { energy?: string }).energy === "thm"
       )
     );
+  });
+
+  const sharedSources: Record<string, EnergySource> = {
+    grid: {
+      type: "grid",
+      stat_energy_from: "integration:gas",
+      stat_energy_to: null,
+      stat_cost: null,
+      entity_energy_price: null,
+      number_energy_price: null,
+      stat_compensation: null,
+      entity_energy_price_export: null,
+      number_energy_price_export: null,
+      cost_adjustment_day: 0,
+    },
+    solar: {
+      type: "solar",
+      stat_energy_from: "integration:gas",
+      config_entry_solar_forecast: null,
+    },
+    battery: {
+      type: "battery",
+      stat_energy_from: "integration:gas",
+      stat_energy_to: "integration:other",
+    },
+  };
+
+  Object.entries(sharedSources).forEach(([name, source]) => {
+    it(`keeps kWh when a therm gas statistic is also a ${name} statistic`, async () => {
+      const { data, energyRequests } = await loadGasData(
+        `energy_gas_shared_${name}`,
+        { "integration:gas": "thm" },
+        undefined,
+        [],
+        [source]
+      );
+      assert.equal(data?.gasUnit, "kWh");
+      assert.isUndefined(
+        energyRequests.find(
+          (msg) => (msg.units as { energy?: string }).energy === "thm"
+        )
+      );
+    });
   });
 
   it("also requests therm gas in therms for the compare period", async () => {
