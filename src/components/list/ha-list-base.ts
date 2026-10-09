@@ -191,10 +191,7 @@ export class HaListBase extends LitElement {
       ) {
         this.activeItemIndex = -1;
       }
-      this.applyActive(false);
-      return;
-    }
-    if (
+    } else if (
       this.activeItemIndex >= this.itemCount ||
       !this.hasFocusableItem ||
       this.activeItemIndex < 0
