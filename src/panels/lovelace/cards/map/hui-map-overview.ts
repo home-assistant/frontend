@@ -569,14 +569,16 @@ export class HuiMapOverview extends LitElement {
       </div>
       <div class="list">
         <div class="activity">
-          <span class="activity-icon">
-            <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
-          </span>
-          <span class="activity-title">
-            ${this._i18n.localize(
-              "ui.panel.lovelace.cards.map.overview.activity"
-            )}
-          </span>
+          <div class="activity-header">
+            <span class="activity-icon">
+              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+            </span>
+            <span class="activity-title">
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.activity"
+              )}
+            </span>
+          </div>
           ${
             !this._activity
               ? html`<div class="activity-loading">
@@ -1043,6 +1045,13 @@ export class HuiMapOverview extends LitElement {
       --ha-list-item-focus-radius: var(--ha-border-radius-lg);
       --ha-row-item-gap: var(--ha-space-3);
       --ha-row-item-padding-inline: var(--ha-space-2);
+      /* The ripple's hover layer would sit above the content */
+      --ha-ripple-hover-opacity: 0;
+    }
+
+    ha-list-item-button:hover,
+    ha-list-item-button:focus-within {
+      background: var(--ha-color-fill-neutral-quiet-resting);
     }
 
     ha-list-item-button::part(headline) {
@@ -1077,7 +1086,6 @@ export class HuiMapOverview extends LitElement {
     }
 
     .avatar.zone {
-      border-radius: 50%;
       border: none;
       background: var(--accent-color);
       color: #fff;
@@ -1092,6 +1100,9 @@ export class HuiMapOverview extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--ha-space-1);
+      padding: var(--ha-space-1) var(--ha-space-3);
+      border-radius: var(--ha-border-radius-lg);
+      background: var(--ha-color-fill-neutral-quiet-resting);
       color: var(--primary-text-color);
     }
 
@@ -1122,21 +1133,30 @@ export class HuiMapOverview extends LitElement {
       overflow-y: auto;
     }
 
+    /* The panel shares the avatar's resting fill */
+    .activity .avatar {
+      background: var(--card-background-color);
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
+    }
+
     .activity-icon {
+      flex: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: var(--ha-border-radius-md);
-      background: var(--primary-color);
-      color: var(--text-primary-color);
-      --mdc-icon-size: 20px;
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      border-radius: var(--ha-border-radius-lg);
+      background: var(--card-background-color);
+      color: var(--primary-color);
     }
 
     .activity-title {
-      display: block;
-      margin: var(--ha-space-2) 0;
       font-weight: var(--ha-font-weight-medium);
     }
 
