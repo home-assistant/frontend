@@ -90,7 +90,7 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
         type=${confirmPrompt ? "alert" : "standard"}
         .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
         @closed=${this._dialogClosed}
-        aria-labelledby="dialog-box-title"
+        .accessibleLabel=${dialogTitle || undefined}
         aria-describedby="dialog-box-description"
       >
         <ha-dialog-header slot="header">
