@@ -53,6 +53,7 @@ import {
 } from "../../../../data/selector";
 import { extractFromTarget, type TargetType } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
+import { isConfigObject } from "../ui-support";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
@@ -261,10 +262,16 @@ export class HaAutomationRowTargets extends LitElement {
   }
 
   protected render() {
-    // A target written as a plain string is invalid. Without this, its
-    // characters would be counted as separate targets.
-    const target =
-      this.target && typeof this.target === "object" ? this.target : undefined;
+    // In actions, the whole target can be a template
+    if (typeof this.target === "string" && isTemplate(this.target)) {
+      return html`<span class="target-wrapper">
+        ${this._renderTarget("entity", this.target)}
+      </span>`;
+    }
+
+    // Any other value that isn't a mapping is invalid. Without this, the
+    // characters of a string or the items of a list would count as targets.
+    const target = isConfigObject(this.target) ? this.target : undefined;
     const length = Object.keys(target || {}).length;
     if (!length) {
       return this._renderTargetBadge(
