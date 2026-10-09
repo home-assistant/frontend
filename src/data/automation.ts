@@ -365,8 +365,13 @@ export type ConditionWithShorthand =
   | ShorthandNotCondition;
 
 export const expandConditionWithShorthand = (
-  cond: ConditionWithShorthand
+  cond: ConditionWithShorthand | string
 ): Condition => {
+  // A bare template string is shorthand for a template condition
+  if (typeof cond === "string") {
+    return { condition: "template", value_template: cond };
+  }
+
   if ("condition" in cond && Array.isArray(cond.condition)) {
     return {
       condition: "and",
