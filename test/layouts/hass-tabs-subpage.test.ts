@@ -10,9 +10,20 @@ import type { HassTabsSubpage } from "../../src/layouts/hass-tabs-subpage";
 vi.mock("../../src/components/ha-icon-button-arrow-prev", () => ({}));
 vi.mock("../../src/components/ha-menu-button", () => ({}));
 vi.mock("../../src/components/ha-tab", () => ({}));
-customElements.define("ha-icon-button-arrow-prev", class extends LitElement {});
-customElements.define("ha-menu-button", class extends LitElement {});
-customElements.define("ha-tab", class extends LitElement {});
+vi.mock("../../src/components/ha-tab-group", () => ({}));
+vi.mock("../../src/components/ha-tab-group-tab", () => ({}));
+[
+  "ha-icon-button-arrow-prev",
+  "ha-menu-button",
+  "ha-tab",
+  "ha-tab-group",
+  "ha-tab-group-tab",
+].forEach((tag) => customElements.define(tag, class extends LitElement {}));
+vi.mock("../../src/common/navigate", () => ({
+  getHistoryState: () => undefined,
+  navigate: vi.fn(),
+}));
+const { navigate } = await import("../../src/common/navigate");
 await import("../../src/layouts/hass-tabs-subpage");
 
 let host: HTMLDivElement | undefined;
@@ -110,5 +121,52 @@ describe("hass-tabs-subpage tabs", () => {
     const element = await mountElement({ tabs });
     expect(element.showTabs).toBe(expected);
     expect(element.hasAttribute("show-tabs")).toBe(expected);
+  });
+
+  const showInTabRow = async (path: string) => {
+    vi.mocked(navigate).mockClear();
+    const element = await mountElement(
+      {
+        tabs: [areas, floors],
+        route: { prefix: "/config/floors", path: "" },
+      },
+      true
+    );
+    element
+      .shadowRoot!.querySelector(".tab-row")!
+      .dispatchEvent(
+        new CustomEvent("wa-tab-show", { detail: { name: path } })
+      );
+  };
+
+  it("does not navigate when the tab row shows the active tab", async () => {
+    await showInTabRow("/config/floors");
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it("navigates when the tab row shows another tab", async () => {
+    await showInTabRow("/config/areas/dashboard");
+    expect(navigate).toHaveBeenCalledExactlyOnceWith(
+      "/config/areas/dashboard",
+      {
+        replace: true,
+      }
+    );
+  });
+
+  it("navigates on a tab row click when no tab matches the route", async () => {
+    vi.mocked(navigate).mockClear();
+    const element = await mountElement(
+      {
+        tabs: [areas, floors],
+        route: { prefix: "/config/other", path: "" },
+      },
+      true
+    );
+    element.shadowRoot!.querySelector<HTMLAnchorElement>(".tab-row a")!.click();
+    expect(navigate).toHaveBeenCalledExactlyOnceWith(
+      "/config/areas/dashboard",
+      { replace: true }
+    );
   });
 });

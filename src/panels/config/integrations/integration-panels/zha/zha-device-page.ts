@@ -299,8 +299,7 @@ class ZHADevicePage extends LitElement {
           max-width: 1400px;
           width: 100%;
           margin: 0 auto;
-          padding: var(--ha-space-4) var(--ha-space-4)
-            calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
+          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-20);
         }
 
         .loading {

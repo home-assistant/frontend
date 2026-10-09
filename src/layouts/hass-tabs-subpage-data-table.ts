@@ -13,11 +13,10 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { canShowPage } from "../common/config/can_show_page";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -41,11 +40,7 @@ import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
 import "../components/input/ha-input-search";
 import type { HaInputSearch } from "../components/input/ha-input-search";
-import {
-  configContext,
-  entitiesContext,
-  internationalizationContext,
-} from "../data/context";
+import { internationalizationContext } from "../data/context";
 import type { PageNavigation } from "../data/page_navigation";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
@@ -57,14 +52,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
-
-  @state()
-  @consume({ context: configContext, subscribe: true })
-  private _hassConfig!: ContextType<typeof configContext>;
-
-  @state()
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: ContextType<typeof entitiesContext>;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -108,13 +95,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ attribute: "has-fab", type: Boolean, reflect: true })
   public hasFab = false;
-
-  /**
-   * Show tabs on top or at bottom (narrow) of the page.
-   * @type {Boolean}
-   */
-  @property({ attribute: "show-tabs", type: Boolean, reflect: true })
-  public showTabs = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -243,18 +223,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
-    if (
-      changedProperties.has("tabs") ||
-      changedProperties.has("_hassConfig") ||
-      changedProperties.has("_entities")
-    ) {
-      this.showTabs =
-        this.tabs.filter((page) =>
-          canShowPage({ ...this._hassConfig, entities: this._entities }, page)
-        ).length > 1;
-    }
-
+  protected willUpdate() {
     if (this.hasUpdated) {
       return;
     }
@@ -822,11 +791,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
           )
       );
     }
-    /* Reserve space for fab + doubled narrow-mode bottom padding (28px * 2)
-       when using narrow layout with bottom tabs. */
-    :host([narrow][show-tabs][has-fab]) ha-data-table {
-      --data-table-empty-row-height: calc(48px + 28px * 2);
-    }
 
     .pane-content {
       height: calc(
@@ -842,6 +806,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     :host([narrow]) hass-tabs-subpage {
       --main-title-margin: 0;
+      /* The empty row of the data table clears the safe area */
+      --tabs-subpage-content-padding-bottom: 0px;
     }
     :host([narrow]) {
       --expansion-panel-summary-padding: 0 16px;

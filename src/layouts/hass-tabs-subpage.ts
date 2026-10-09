@@ -26,6 +26,8 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
+import "../components/ha-tab-group";
+import "../components/ha-tab-group-tab";
 import {
   configContext,
   entitiesContext,
@@ -87,7 +89,6 @@ export class HassTabsSubpage extends LitElement {
 
   /**
    * Whether tabs are shown (2 or more tabs visible).
-   * When both, show-tabs and narrow are true, tabs are shown as bottom bar.
    * @type {Boolean}
    */
   @property({ type: Boolean, attribute: "show-tabs", reflect: true })
@@ -116,7 +117,6 @@ export class HassTabsSubpage extends LitElement {
     (
       shownTabs: PageNavigation[],
       activeTab: PageNavigation | undefined,
-      narrow: boolean,
       localizeFunc: LocalizeFunc
     ) =>
       shownTabs.map(
@@ -124,7 +124,6 @@ export class HassTabsSubpage extends LitElement {
           <a href=${page.path} @click=${this._tabClicked}>
             <ha-tab
               .active=${page.path === activeTab?.path}
-              .narrow=${narrow}
               .badge=${page.badge}
               .name=${this._tabName(page, localizeFunc)}
             >
@@ -140,6 +139,40 @@ export class HassTabsSubpage extends LitElement {
           </a>
         `
       )
+  );
+
+  private _renderTabRow = memoizeOne(
+    (
+      shownTabs: PageNavigation[],
+      activeTab: PageNavigation | undefined,
+      localizeFunc: LocalizeFunc
+    ) => html`
+      <ha-tab-group
+        class="tab-row"
+        activation="manual"
+        without-scroll-controls
+        @wa-tab-show=${this._tabShown}
+      >
+        ${shownTabs.map(
+          (page) => html`
+            <ha-tab-group-tab
+              slot="nav"
+              .panel=${page.path}
+              .active=${page.path === activeTab?.path}
+            >
+              <a href=${page.path} tabindex="-1" @click=${this._tabRowClicked}>
+                ${this._tabName(page, localizeFunc)}
+                ${
+                  page.badge
+                    ? html`<span class="badge">${page.badge}</span>`
+                    : nothing
+                }
+              </a>
+            </ha-tab-group-tab>
+          `
+        )}
+      </ha-tab-group>
+    `
   );
 
   private _tabName(page: PageNavigation, localizeFunc: LocalizeFunc) {
@@ -175,13 +208,13 @@ export class HassTabsSubpage extends LitElement {
     const shownTabs = this._getShownTabs();
     const titleTab = this.showTabs ? this._activeTab : shownTabs[0];
     const title = titleTab ? this._tabName(titleTab, localizeFunc) : "";
-    const tabs = this.showTabs
-      ? this._renderTabs(shownTabs, this._activeTab, this._narrow, localizeFunc)
-      : nothing;
+    const tabRow = this.showTabs && this._narrow;
     const backPath = sanitizeNavigationPath(this.backPath);
 
     return html`
-      <div class="toolbar ${classMap({ narrow: this._narrow })}">
+      <div
+        class="toolbar ${classMap({ narrow: this._narrow, "has-tab-row": tabRow })}"
+      >
         <slot name="toolbar">
           <div class="toolbar-content">
             ${
@@ -203,7 +236,13 @@ export class HassTabsSubpage extends LitElement {
             }
             ${
               this.showTabs && !this._narrow
-                ? html`<div id="tabbar">${tabs}</div>`
+                ? html`<div id="tabbar">
+                    ${this._renderTabs(
+                      shownTabs,
+                      this._activeTab,
+                      localizeFunc
+                    )}
+                  </div>`
                 : ""
             }
             <div id="toolbar-icon">
@@ -211,12 +250,12 @@ export class HassTabsSubpage extends LitElement {
             </div>
           </div>
         </slot>
-        ${
-          this.showTabs && this._narrow
-            ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
-            : ""
-        }
       </div>
+      ${
+        tabRow
+          ? this._renderTabRow(shownTabs, this._activeTab, localizeFunc)
+          : nothing
+      }
       <div class="container">
         ${
           this.pane
@@ -287,12 +326,37 @@ export class HassTabsSubpage extends LitElement {
     await navigate(href, { replace: true });
   }
 
+  // Plain clicks are left to the tab group, which ignores the click that ends a
+  // drag scroll. Other clicks keep the browser's link behavior.
+  private _tabRowClicked(ev: MouseEvent): void {
+    const href = isNavigationClick(ev);
+    if (!href) {
+      ev.stopPropagation();
+      return;
+    }
+    // Without a matching tab the group marks the first tab active, so it
+    // would not fire wa-tab-show for it.
+    if (!this._activeTab) {
+      ev.stopPropagation();
+      navigate(href, { replace: true });
+    }
+  }
+
+  // Click and keyboard activation in the tab row
+  private _tabShown(ev: CustomEvent<{ name: string }>) {
+    const path = ev.detail.name;
+    if (path && path !== this._activeTab?.path) {
+      navigate(path, { replace: true });
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
       css`
         :host {
-          display: block;
+          display: flex;
+          flex-direction: column;
           height: 100%;
           background-color: var(--primary-background-color);
         }
@@ -301,17 +365,11 @@ export class HassTabsSubpage extends LitElement {
           width: 100%;
           position: fixed;
         }
-        :host([narrow][show-tabs]) {
-          --ha-bottom-bar-height: calc(
-            var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
-          );
-        }
 
         .container {
           display: flex;
-          height: calc(
-            100% - var(--header-height, 0px) - var(--safe-area-inset-top, 0px)
-          );
+          flex: 1;
+          min-height: 0;
         }
 
         ha-menu-button {
@@ -331,6 +389,10 @@ export class HassTabsSubpage extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           border-bottom: 1px solid var(--divider-color);
           box-sizing: border-box;
+          flex-shrink: 0;
+        }
+        .toolbar.has-tab-row {
+          border-bottom: none;
         }
         :host([narrow]) .toolbar {
           padding-left: var(--safe-area-inset-left);
@@ -349,12 +411,10 @@ export class HassTabsSubpage extends LitElement {
           color: var(--sidebar-text-color);
           text-decoration: none;
         }
-        .bottom-bar a {
-          width: 25%;
-        }
-
         #tabbar {
           display: flex;
+          flex: 1;
+          justify-content: center;
           font-size: var(--ha-font-size-m);
           overflow: hidden;
         }
@@ -364,25 +424,35 @@ export class HassTabsSubpage extends LitElement {
           max-width: 45%;
         }
 
-        #tabbar.bottom-bar {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          padding: 0 calc(16px + var(--safe-area-inset-right))
-            var(--safe-area-inset-bottom)
-            calc(16px + var(--safe-area-inset-left));
-          box-sizing: border-box;
+        .tab-row {
+          flex-shrink: 0;
+          padding-left: var(--safe-area-inset-left, 0px);
+          padding-right: var(--safe-area-inset-right, 0px);
+          color: var(--sidebar-text-color);
           background-color: var(--sidebar-background-color);
-          border-top: 1px solid var(--divider-color);
-          justify-content: space-around;
-          z-index: 2;
-          font-size: var(--ha-font-size-s);
-          width: 100%;
+          border-bottom: 1px solid var(--divider-color);
+          --ha-tab-track-color: transparent;
         }
-
-        #tabbar:not(.bottom-bar) {
-          flex: 1;
-          justify-content: center;
+        .tab-row ha-tab-group-tab::part(base) {
+          padding: 0;
+        }
+        .tab-row a {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-3) var(--ha-space-4);
+          color: inherit;
+          text-decoration: none;
+          white-space: nowrap;
+        }
+        .badge {
+          padding: 0 var(--ha-space-2);
+          border-radius: var(--ha-border-radius-pill);
+          font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-normal);
+          white-space: nowrap;
+          color: var(--text-primary-color);
+          background-color: var(--warning-color);
         }
 
         :host(:not([narrow])) #toolbar-icon {
@@ -422,6 +492,20 @@ export class HassTabsSubpage extends LitElement {
         :host([narrow]) .content {
           padding-left: var(--safe-area-inset-left);
         }
+        /* The fab spacer already clears the safe area. Pages that clear it
+           themselves, like data tables, set the variable to 0px. */
+        :host([narrow]:not([has-fab])) .content {
+          padding-bottom: var(
+            --tabs-subpage-content-padding-bottom,
+            max(
+              0px,
+              var(--safe-area-inset-bottom, 0px) - var(
+                  --ha-bottom-bar-height,
+                  0px
+                )
+            )
+          );
+        }
 
         .content .fab-bottom-space {
           height: calc(
@@ -434,10 +518,6 @@ export class HassTabsSubpage extends LitElement {
                   )
               )
           );
-        }
-
-        :host([narrow][show-tabs]) .content .fab-bottom-space {
-          height: calc(80px + var(--safe-area-inset-bottom, 0px));
         }
 
         #fab {
@@ -458,9 +538,6 @@ export class HassTabsSubpage extends LitElement {
           justify-content: flex-end;
           gap: var(--ha-space-2);
           --ha-button-box-shadow: var(--ha-box-shadow-l);
-        }
-        :host([narrow][show-tabs]) #fab {
-          bottom: calc(28px + var(--ha-bottom-bar-height, 0px));
         }
 
         .pane {
