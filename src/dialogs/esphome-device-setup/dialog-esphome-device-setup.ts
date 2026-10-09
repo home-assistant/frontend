@@ -679,21 +679,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       <p>${localize("ui.panel.config.devices.esphome.setup_adapters_intro")}</p>
       <ha-list-nav>
         <ha-list-item-button
-          href=${documentationUrl(this._hassConfig!, "/connect/zbt-2/")}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <span slot="headline">
-            ${localize("ui.panel.config.devices.esphome.setup_adapter_zbt2")}
-          </span>
-          <span slot="supporting-text">
-            ${localize(
-              "ui.panel.config.devices.esphome.setup_adapter_zbt2_description"
-            )}
-          </span>
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-list-item-button>
-        <ha-list-item-button
           href=${documentationUrl(this._hassConfig!, "/connect/zwa-2/")}
           target="_blank"
           rel="noreferrer noopener"
