@@ -11,7 +11,7 @@ exports[`generateEnergyDevicesDetailGraphData > large month-of-hourly digest is 
     "start",
     "yAxisFractionDigits",
   ],
-  "numberCount": 20100,
+  "numberCount": 20452,
   "numberSum": "1.51115931576e+16",
   "type": "object",
 }
@@ -28,7 +28,7 @@ exports[`generateEnergyDevicesDetailGraphData > large month-of-hourly digest is 
     "start",
     "yAxisFractionDigits",
   ],
-  "numberCount": 66969,
+  "numberCount": 67660,
   "numberSum": "4.54406219712e+16",
   "type": "object",
 }
@@ -17298,26 +17298,46 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
             1704067200000,
           ],
         },
-        [
-          1704072600000,
-          -0.2929999999999999,
-          1704070800000,
-        ],
-        [
-          1704076200000,
-          -0.15800000000000003,
-          1704074400000,
-        ],
-        [
-          1704079800000,
-          -0.8039999999999999,
-          1704078000000,
-        ],
-        [
-          1704083400000,
-          -1.3940000000000001,
-          1704081600000,
-        ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+            1704070800000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+            1704074400000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+            1704078000000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+            1704081600000,
+          ],
+        },
         {
           "itemStyle": {
             "borderRadius": [
@@ -17348,16 +17368,26 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
             1704088800000,
           ],
         },
-        [
-          1704094200000,
-          -1.1039999999999999,
-          1704092400000,
-        ],
-        [
-          1704097800000,
-          -1.062,
-          1704096000000,
-        ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+            1704092400000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+            1704096000000,
+          ],
+        },
         {
           "itemStyle": {
             "borderRadius": [
@@ -17373,11 +17403,16 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
             1704099600000,
           ],
         },
-        [
-          1704105000000,
-          -0.913,
-          1704103200000,
-        ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+            1704103200000,
+          ],
+        },
         {
           "itemStyle": {
             "borderWidth": 0,
@@ -17432,16 +17467,26 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
             1704117600000,
           ],
         },
-        [
-          1704123000000,
-          -0.798,
-          1704121200000,
-        ],
-        [
-          1704126600000,
-          -1.7380000000000002,
-          1704124800000,
-        ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+            1704121200000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+            1704124800000,
+          ],
+        },
         {
           "itemStyle": {
             "borderWidth": 0,
@@ -17496,21 +17541,36 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
             1704139200000,
           ],
         },
-        [
-          1704144600000,
-          -0.985,
-          1704142800000,
-        ],
-        [
-          1704148200000,
-          -0.02200000000000002,
-          1704146400000,
-        ],
-        [
-          1704151800000,
-          -0.693,
-          1704150000000,
-        ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+            1704142800000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+            1704146400000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+            1704150000000,
+          ],
+        },
       ],
       "id": "sensor.grid_consumption-3",
       "itemStyle": {
@@ -17805,7 +17865,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704072600000,
-            -2.9000000000000004,
+            -3.193,
             1704070800000,
           ],
         },
@@ -17820,7 +17880,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704076200000,
-            -1.9809999999999997,
+            -2.1389999999999993,
             1704074400000,
           ],
         },
@@ -17835,7 +17895,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704079800000,
-            -3.2979999999999996,
+            -4.101999999999999,
             1704078000000,
           ],
         },
@@ -17850,7 +17910,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704083400000,
-            -2.425,
+            -3.819,
             1704081600000,
           ],
         },
@@ -17895,7 +17955,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704094200000,
-            -2.0839999999999996,
+            -3.1879999999999997,
             1704092400000,
           ],
         },
@@ -17910,7 +17970,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704097800000,
-            -1.9679999999999997,
+            -3.03,
             1704096000000,
           ],
         },
@@ -17940,7 +18000,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704105000000,
-            -3.114,
+            -4.027,
             1704103200000,
           ],
         },
@@ -18015,7 +18075,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704123000000,
-            -2.839,
+            -3.637,
             1704121200000,
           ],
         },
@@ -18030,7 +18090,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704126600000,
-            -3.503,
+            -5.241,
             1704124800000,
           ],
         },
@@ -18105,7 +18165,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704144600000,
-            -2.6610000000000005,
+            -3.646,
             1704142800000,
           ],
         },
@@ -18120,7 +18180,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704148200000,
-            -1.1469999999999998,
+            -1.1689999999999998,
             1704146400000,
           ],
         },
@@ -18135,7 +18195,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
           },
           "value": [
             1704151800000,
-            -2.8089999999999993,
+            -3.502,
             1704150000000,
           ],
         },

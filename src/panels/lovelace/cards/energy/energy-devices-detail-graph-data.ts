@@ -149,7 +149,7 @@ function processDataSet(
           sumChildren += getChildStartChange(c).get(point.start) || 0;
         });
 
-        const y = point.change - sumChildren;
+        const y = Math.max(point.change - sumChildren, 0);
         const dataPoint: EnergyDataPoint = [
           computeStatMidpoint(
             point.start,
