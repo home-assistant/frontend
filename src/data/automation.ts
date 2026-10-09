@@ -362,10 +362,11 @@ export type ConditionWithShorthand =
   | ShorthandAndConditionList
   | ShorthandAndCondition
   | ShorthandOrCondition
-  | ShorthandNotCondition;
+  | ShorthandNotCondition
+  | string;
 
 export const expandConditionWithShorthand = (
-  cond: ConditionWithShorthand | string
+  cond: ConditionWithShorthand
 ): Condition => {
   // A bare template string is shorthand for a template condition
   if (typeof cond === "string") {
