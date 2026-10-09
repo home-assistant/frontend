@@ -662,10 +662,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     if (
       changedProps.has("_overviewSelected") &&
-      this._overviewSelected &&
       this.layout === PANEL_VIEW_LAYOUT
     ) {
-      this._focusEntity(this._overviewSelected);
+      if (this._overviewSelected) {
+        this._focusEntity(this._overviewSelected);
+      } else if (changedProps.get("_overviewSelected")) {
+        this._map?.updateComplete.then(() =>
+          this._map?.fitMap({ unpause_autofit: true })
+        );
+      }
     }
   }
 
@@ -819,9 +824,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (this.layout !== PANEL_VIEW_LAYOUT) {
       return undefined;
     }
+    const { width, height, fitHeight } = this._overviewSize;
+    if (!width || !height) {
+      return undefined;
+    }
+    // The unused dimension must not refit the map
+    const phone = window.matchMedia("(max-width: 600px)").matches;
     return this._paddingFor(
-      this._overviewSize.width,
-      this._overviewSize.fitHeight ?? this._overviewSize.height,
+      phone,
+      phone ? (fitHeight ?? height) : width,
       this.hass.language,
       this.hass.translationMetadata.translations
     );
@@ -829,18 +840,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _paddingFor = memoizeOne(
     (
-      width: number,
-      height: number,
+      phone: boolean,
+      size: number,
       language: string,
       translations: HomeAssistant["translationMetadata"]["translations"]
-    ): MapFitPadding | undefined => {
-      if (!width || !height) {
-        return undefined;
+    ): MapFitPadding => {
+      if (phone) {
+        return { bottom: size + OVERVIEW_GAP };
       }
-      if (window.matchMedia("(max-width: 600px)").matches) {
-        return { bottom: height + OVERVIEW_GAP };
-      }
-      const side = width + 2 * OVERVIEW_GAP;
+      const side = size + 2 * OVERVIEW_GAP;
       return computeRTL(language, translations)
         ? { right: side }
         : { left: side };
@@ -1040,6 +1048,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       display: flex;
       z-index: 1;
     }
+    #overview[single-tab] {
+      width: min(300px, calc(100% - 2 * var(--ha-space-3)));
+    }
 
     #root.panel-layout {
       --map-bleed-left: var(--view-container-inset-left, 0px);
@@ -1076,7 +1087,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     @media (max-width: 600px) {
-      #overview {
+      #overview,
+      #overview[single-tab] {
         top: auto;
         bottom: 0;
         inset-inline-start: 0;
