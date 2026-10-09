@@ -289,7 +289,10 @@ export class HaConfigAppsInstalled extends LitElement {
         padding: 0 var(--ha-space-4);
         box-sizing: border-box;
         border-bottom: 1px solid var(--divider-color);
-        isolation: isolate;
+        background: var(
+          --app-toolbar-background,
+          var(--lovelace-background, var(--primary-background-color))
+        );
       }
 
       ha-input-search {
