@@ -60,6 +60,7 @@ const RULES: { label: string; paths: RegExp[]; pattern: RegExp }[] = [
     label: "Supervisor",
     paths: [
       /^src\/panels\/config\/apps\//,
+      /^src\/panels\/app\//,
       /^src\/data\/hassio\//,
       /^src\/data\/supervisor\//,
     ],
