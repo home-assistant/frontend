@@ -1040,6 +1040,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       display: flex;
       z-index: 1;
     }
+    #overview[single-tab] {
+      width: min(300px, calc(100% - 2 * var(--ha-space-3)));
+    }
 
     #root.panel-layout {
       --map-bleed-left: var(--view-container-inset-left, 0px);
@@ -1076,7 +1079,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     @media (max-width: 600px) {
-      #overview {
+      #overview,
+      #overview[single-tab] {
         top: auto;
         bottom: 0;
         inset-inline-start: 0;

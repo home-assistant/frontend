@@ -215,6 +215,7 @@ export class HuiMapOverview extends LitElement {
     if (tabs.length && !tabs.includes(this.tab)) {
       fireEvent(this, "map-overview-tab", { tab: tabs[0] });
     }
+    this.toggleAttribute("single-tab", tabs.length === 1);
     if (changedProps.has("selected")) {
       this._moveFocus(changedProps.get("selected"));
       if (this.selected) {
