@@ -1500,6 +1500,7 @@
           "entity_picture": "Entity picture",
           "friendly_name": "Friendly name",
           "icon": "Icon",
+          "supported_features": "Supported features",
           "unit_of_measurement": "Unit of measurement"
         }
       },
