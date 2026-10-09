@@ -263,7 +263,7 @@ export class HaMarketplaceDashboard extends LitElement {
     updateHistoryState({ [APPLIED_LINK_STATE]: search });
     this._linksApplied++;
     // A search left behind would hide part of what the link promised
-    this._activeSearch = "";
+    this._activeSearch = settings.search ?? "";
     this._filters = settings.filters;
     if (settings.sorting) {
       this._activeSorting = settings.sorting;
