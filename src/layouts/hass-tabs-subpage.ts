@@ -16,7 +16,10 @@ import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { getHistoryState, navigate } from "../common/navigate";
-import type { LocalizeFunc } from "../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../common/translations/localize";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
@@ -97,45 +100,33 @@ export class HassTabsSubpage extends LitElement {
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
-  private _getTabs = memoizeOne(
+  private _shownTabs = memoizeOne(
     (
       tabs: PageNavigation[],
-      activeTab: PageNavigation | undefined,
       _components,
-      _language,
       _userData,
-      _narrow,
-      localizeFunc,
       entities: ContextType<typeof entitiesContext>
-    ) => {
-      const shownTabs = tabs.filter((page) =>
+    ) =>
+      tabs.filter((page) =>
         canShowPage({ ...this._hassConfig, entities }, page)
-      );
+      )
+  );
 
-      if (shownTabs.length < 2) {
-        this.showTabs = false;
-        if (shownTabs.length === 1) {
-          const page = shownTabs[0];
-          return [
-            page.translationKey ? localizeFunc(page.translationKey) : page.name,
-          ];
-        }
-        return [""];
-      }
-
-      this.showTabs = true;
-      return shownTabs.map(
+  private _renderTabs = memoizeOne(
+    (
+      shownTabs: PageNavigation[],
+      activeTab: PageNavigation | undefined,
+      narrow: boolean,
+      localizeFunc: LocalizeFunc
+    ) =>
+      shownTabs.map(
         (page) => html`
           <a href=${page.path} @click=${this._tabClicked}>
             <ha-tab
               .active=${page.path === activeTab?.path}
-              .narrow=${this._narrow}
+              .narrow=${narrow}
               .badge=${page.badge}
-              .name=${
-                page.translationKey
-                  ? localizeFunc(page.translationKey)
-                  : page.name
-              }
+              .name=${this._tabName(page, localizeFunc)}
             >
               ${
                 page.iconPath
@@ -148,33 +139,45 @@ export class HassTabsSubpage extends LitElement {
             </ha-tab>
           </a>
         `
-      );
-    }
+      )
   );
+
+  private _tabName(page: PageNavigation, localizeFunc: LocalizeFunc) {
+    return page.translationKey
+      ? localizeFunc(page.translationKey as LocalizeKeys)
+      : page.name;
+  }
+
+  private _getShownTabs() {
+    return this._shownTabs(
+      this.tabs,
+      this._hassConfig.config.components,
+      this._hassConfig.userData,
+      this._entities
+    );
+  }
 
   public willUpdate(changedProperties: PropertyValues<this>) {
     this.toggleAttribute("narrow", this._narrow);
 
-    if (changedProperties.has("route")) {
+    if (changedProperties.has("route") || changedProperties.has("tabs")) {
       const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
         this._isActiveTabPath(tab.path, currentPath)
       );
     }
+    this.showTabs = this._getShownTabs().length > 1;
     super.willUpdate(changedProperties);
   }
 
   protected render(): TemplateResult {
-    const tabs = this._getTabs(
-      this.tabs,
-      this._activeTab,
-      this._hassConfig.config.components,
-      this._i18n.language,
-      this._hassConfig.userData,
-      this._narrow,
-      this.localizeFunc || this._i18n.localize,
-      this._entities
-    );
+    const localizeFunc = this.localizeFunc || this._i18n.localize;
+    const shownTabs = this._getShownTabs();
+    const titleTab = this.showTabs ? this._activeTab : shownTabs[0];
+    const title = titleTab ? this._tabName(titleTab, localizeFunc) : "";
+    const tabs = this.showTabs
+      ? this._renderTabs(shownTabs, this._activeTab, this._narrow, localizeFunc)
+      : nothing;
     const backPath = sanitizeNavigationPath(this.backPath);
 
     return html`
@@ -194,7 +197,7 @@ export class HassTabsSubpage extends LitElement {
             ${
               this._narrow || !this.showTabs
                 ? html`<div class="main-title">
-                    <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                    <slot name="header">${title}</slot>
                   </div>`
                 : ""
             }
