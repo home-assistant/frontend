@@ -583,9 +583,11 @@ class AddIntegrationDialog extends LitElement {
               .rowRenderer=${this._renderRow}
               style=${styleMap({
                 width: `${this._width}px`,
+                // Leave room for the dialog margin, header and search on
+                // short screens, so only the list scrolls
                 height: this._narrow
                   ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
-                  : "500px",
+                  : "min(500px, calc(var(--safe-height) - var(--ha-space-20) - 184px))",
               })}
             >
             </ha-list-virtualized>`
