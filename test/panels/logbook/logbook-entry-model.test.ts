@@ -677,4 +677,32 @@ describe("computeLogbookItem run rows", () => {
       type: "message",
     });
   });
+
+  it("only treats the domain's own run message as a run", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const automation = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "started",
+      }),
+      {}
+    );
+    const script = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "script.backup",
+        domain: "script",
+        name: "Backup",
+        message: "triggered",
+      }),
+      {}
+    );
+    expect(automation.value).toEqual({ text: "started", type: "message" });
+    expect(script.value).toEqual({ text: "triggered", type: "message" });
+  });
 });

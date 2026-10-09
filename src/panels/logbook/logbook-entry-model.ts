@@ -19,12 +19,13 @@ export type LogbookEntryCategory = "entity" | "automation" | "integration";
 
 const TRIGGER_DOMAINS = ["automation", "script"];
 
-// The fixed messages core uses to describe automation and script runs.
-const isRunMessage = (message: string | undefined) =>
+// The fixed messages core uses to describe a run: "triggered" (optionally
+// "by" a source) for automations, "started" for scripts.
+const isRunMessage = (domain: string, message: string | undefined) =>
   message === undefined ||
-  message === "started" ||
-  message === "triggered" ||
-  message.startsWith("triggered by ");
+  (domain === "script"
+    ? message === "started"
+    : message === "triggered" || message.startsWith("triggered by "));
 
 const stripEntityId = (message: string, entityId?: string) =>
   entityId ? message.replace(entityId, " ") : message;
@@ -339,7 +340,7 @@ const computeLogbookValue = (
     item.entity_id &&
     domain &&
     TRIGGER_DOMAINS.includes(domain) &&
-    isRunMessage(item.message);
+    isRunMessage(domain, item.message);
   if (isAutomationRun) {
     return {
       text: hass.localize(
