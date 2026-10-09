@@ -381,6 +381,7 @@ class ZHAConfigDashboard extends LitElement {
                 size="s"
                 .iconPath=${mdiDownload}
                 .progress=${this._generatingBackup}
+                .disabled=${this._configEntry?.state !== "loaded"}
                 @click=${this._createAndDownloadBackup}
               >
                 ${this.hass.localize(
