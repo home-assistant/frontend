@@ -8,8 +8,6 @@ import "./ha-ripple";
 export class HaTab extends LitElement {
   @property({ type: Boolean, reflect: true }) public active = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
-
   @property() public name?: string;
 
   // A short note next to the name, like how many updates wait there
@@ -47,7 +45,7 @@ export class HaTab extends LitElement {
     div {
       padding: 0 32px;
       display: flex;
-      flex-direction: column;
+      gap: var(--ha-space-2);
       text-align: center;
       box-sizing: border-box;
       align-items: center;
@@ -57,11 +55,6 @@ export class HaTab extends LitElement {
       cursor: pointer;
       position: relative;
       outline: none;
-    }
-
-    :host(:not([narrow])) div {
-      flex-direction: row;
-      gap: var(--ha-space-2);
     }
 
     .badge {
@@ -85,27 +78,8 @@ export class HaTab extends LitElement {
       color: var(--primary-color);
     }
 
-    :host(:not([narrow])[active]) div {
+    :host([active]) div {
       border-bottom: 2px solid var(--primary-color);
-    }
-
-    :host([narrow]) {
-      min-width: 0;
-      display: flex;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    :host([narrow]) div {
-      padding: 0 4px;
-    }
-
-    ::slotted([slot="icon"]) {
-      margin-bottom: var(--ha-space-1);
-    }
-
-    :host(:not([narrow])) ::slotted([slot="icon"]) {
-      margin-bottom: 0;
     }
 
     div:focus-visible:before {
