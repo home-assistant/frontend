@@ -419,6 +419,22 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+          isolation: isolate;
+        }
+        :host::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          z-index: -1;
+          pointer-events: none;
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+        }
+
         ha-config-section {
           margin: auto;
           margin-top: -32px;

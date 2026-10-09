@@ -330,6 +330,22 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+          isolation: isolate;
+        }
+        :host::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          z-index: -1;
+          pointer-events: none;
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+        }
+
         ha-media-manage-button {
           --mdc-theme-primary: var(--app-header-text-color);
         }

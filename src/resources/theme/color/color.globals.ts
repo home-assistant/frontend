@@ -276,7 +276,7 @@ export const colorStyles = css`
     --table-header-background-color: var(--input-fill-color);
     --table-row-background-color: var(--primary-background-color);
     --table-row-alternative-background-color: var(--secondary-background-color);
-    --data-table-background-color: var(--card-background-color);
+    --data-table-background-color: var(--ha-card-background, var(--card-background-color));
     --markdown-code-background-color: var(--primary-background-color);
     --bar-box-shadow: 0 2px 12px var(--shadow-color);
 

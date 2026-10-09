@@ -162,8 +162,20 @@ export class HaFilterPane extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
+          isolation: isolate;
+        }
+
+        :host::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          z-index: -1;
+          pointer-events: none;
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
 
         .content,

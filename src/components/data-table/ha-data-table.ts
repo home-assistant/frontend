@@ -1551,7 +1551,7 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
-          background-color: var(--primary-background-color);
+          background-color: var(--data-table-background-color);
         }
 
         .group-header ha-icon-button {
@@ -1656,7 +1656,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row:has(.group-header) {
-          background-color: var(--primary-background-color);
+          background-color: var(--data-table-background-color);
         }
 
         .mdc-data-table__table.auto-height .scroller {

@@ -865,7 +865,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           );
           gap: var(--ha-space-4);
           box-sizing: border-box;
-          background: var(--primary-background-color);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
           border-bottom: 1px solid var(--divider-color);
           overflow-x: auto;
           scrollbar-width: none;

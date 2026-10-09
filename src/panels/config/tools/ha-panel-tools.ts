@@ -142,6 +142,19 @@ class PanelTools extends LitElement {
   }
 
   static readonly styles: CSSResultGroup = css`
+    :host {
+      display: block;
+      isolation: isolate;
+    }
+    :host::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: var(--lovelace-background, var(--primary-background-color));
+    }
+
     tools-router {
       display: block;
       height: 100%;

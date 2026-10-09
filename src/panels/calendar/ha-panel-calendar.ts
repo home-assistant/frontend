@@ -398,6 +398,18 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       css`
         :host {
           display: block;
+          isolation: isolate;
+        }
+        :host::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          z-index: -1;
+          pointer-events: none;
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
         ha-full-calendar {
           --calendar-header-padding: 12px;
