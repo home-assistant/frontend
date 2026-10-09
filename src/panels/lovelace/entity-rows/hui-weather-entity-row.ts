@@ -267,6 +267,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           margin-inline-end: initial;
         }
 
+        .attributes > div {
+          direction: ltr;
+        }
+
         .secondary {
           color: var(--secondary-text-color);
         }
