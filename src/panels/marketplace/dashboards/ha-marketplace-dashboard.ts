@@ -70,10 +70,13 @@ import { haStyle } from "../../../resources/styles";
 import {
   browseSettingsFromUrl,
   filterRepositories,
+  filtersOfTab,
   SOURCE_FILTER,
   SOURCE_ORDER,
   STATUS_FILTER,
   STATUS_ORDER,
+  statusesOfTab,
+  statusFilterOfTab,
   TYPE_FILTER,
 } from "./dashboard-repositories";
 import type { RepositoryFilters } from "./dashboard-repositories";
@@ -290,10 +293,11 @@ export class HaMarketplaceDashboard extends LitElement {
       </hass-tabs-subpage>`;
     }
 
+    const filters = this._filtersOfTab(this._filters, this.tab);
     const repositories = this._filterRepositories(
       this._repositoriesOfTab(this.marketplace.repositories, this.tab),
       this._i18n.localize,
-      this._filters
+      filters
     );
 
     return html`${keyed(
@@ -321,8 +325,7 @@ export class HaMarketplaceDashboard extends LitElement {
           .filter=${this._activeSearch || ""}
           has-filters
           .filters=${
-            Object.values(this._filters).filter((values) => values?.length)
-              .length
+            Object.values(filters).filter((values) => values?.length).length
           }
           .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
           .empty=${!this.marketplace.repositories.length}
@@ -370,8 +373,8 @@ export class HaMarketplaceDashboard extends LitElement {
           <ha-filter-states
             slot="filter-pane"
             .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
-            .value=${this._filters[STATUS_FILTER]}
-            .states=${this._statusStates(this._i18n.localize)}
+            .value=${filters[STATUS_FILTER]}
+            .states=${this._statusStates(this._i18n.localize, this.tab)}
             .narrow=${this.narrow}
             @data-table-filter-changed=${this._statusFilterChanged}
           ></ha-filter-states>
@@ -473,6 +476,8 @@ export class HaMarketplaceDashboard extends LitElement {
   private _repositoriesOfTab = memoize(repositoriesOfTab);
 
   private _filterRepositories = memoize(filterRepositories);
+
+  private _filtersOfTab = memoize(filtersOfTab);
 
   private _columns = memoize(
     (
@@ -701,11 +706,12 @@ export class HaMarketplaceDashboard extends LitElement {
     }
   }
 
-  private _statusStates = memoize((localize: LocalizeFunc) =>
-    STATUS_ORDER.map((status) => ({
-      value: status,
-      label: localize(`ui.panel.marketplace.repository_status.${status}`),
-    }))
+  private _statusStates = memoize(
+    (localize: LocalizeFunc, tab: MarketplaceTab) =>
+      statusesOfTab(tab).map((status) => ({
+        value: status,
+        label: localize(`ui.panel.marketplace.repository_status.${status}`),
+      }))
   );
 
   private _typeStates = memoize(
@@ -746,8 +752,16 @@ export class HaMarketplaceDashboard extends LitElement {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
-  private _statusFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [STATUS_FILTER]: ev.detail.value };
+  // The pane's own clear button sends no value
+  private _statusFilterChanged(ev: HASSDomEvent<{ value?: string[] }>) {
+    this._filters = {
+      ...this._filters,
+      [STATUS_FILTER]: statusFilterOfTab(
+        this._filters,
+        this.tab,
+        ev.detail.value
+      ),
+    };
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
