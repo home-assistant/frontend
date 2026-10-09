@@ -155,9 +155,18 @@ class HassSubpage extends LitElement {
               1px - var(--header-height, 0px) - var(
                 --safe-area-inset-top,
                 0px
-              ) - var(--safe-area-inset-bottom, 0px)
+              ) - max(
+                var(--safe-area-inset-bottom, 0px),
+                var(--ha-bottom-bar-height, 0px)
+              )
           );
-          padding-bottom: var(--safe-area-inset-bottom, 0px);
+          padding-bottom: max(
+            0px,
+            var(--safe-area-inset-bottom, 0px) - var(
+                --ha-bottom-bar-height,
+                0px
+              )
+          );
           margin-right: var(--safe-area-inset-right);
           overflow-y: auto;
           overflow: auto;
@@ -184,22 +193,19 @@ class HassSubpage extends LitElement {
           right: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-end: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
-          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+          bottom: calc(
+            16px +
+              max(
+                var(--safe-area-inset-bottom, 0px),
+                var(--ha-bottom-bar-height, 0px)
+              )
+          );
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
           --ha-button-box-shadow: var(--ha-box-shadow-l);
-        }
-        :host([narrow]) #fab.tabs {
-          bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
-        }
-        #fab[is-wide] {
-          bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
-          right: calc(24px + var(--safe-area-inset-right, 0px));
-          inset-inline-end: calc(24px + var(--safe-area-inset-right, 0px));
-          inset-inline-start: initial;
         }
       `,
     ];
