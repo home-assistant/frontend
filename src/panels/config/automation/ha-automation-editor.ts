@@ -219,6 +219,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
     const useBlueprint = "use_blueprint" in this.config;
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
+    const yamlModeLabel = this.hass.localize(
+      `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
+    );
 
     return html`
       <hass-subpage
@@ -277,6 +280,22 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                     })
                   </span>
                 </ha-tooltip>`
+            : nothing
+        }
+        ${
+          !this.narrow
+            ? html`
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  id="button-yaml-mode"
+                  .label=${yamlModeLabel}
+                  .path=${mdiPlaylistEdit}
+                  @click=${this._toggleYamlMode}
+                ></ha-icon-button>
+                <ha-tooltip placement="bottom" for="button-yaml-mode">
+                  ${yamlModeLabel}
+                </ha-tooltip>
+              `
             : nothing
         }
         ${
@@ -425,13 +444,19 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 `
               : nothing
           }
-
-          <ha-dropdown-item value="toggle_yaml_mode">
-            ${this.hass.localize(
-              `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-dropdown-item>
+          ${
+            this.narrow
+              ? html`<ha-dropdown-item value="toggle_yaml_mode">
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
+                  )}
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiPlaylistEdit}
+                  ></ha-svg-icon>
+                </ha-dropdown-item>`
+              : nothing
+          }
 
           <wa-divider></wa-divider>
 
@@ -1228,6 +1253,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._undoRedoController.redo();
   }
 
+  private _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      return;
+    }
+    this.switchUiMode();
+  }
+
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
@@ -1267,11 +1300,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "disable":
         this._toggle();
