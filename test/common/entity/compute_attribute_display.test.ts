@@ -368,4 +368,26 @@ describe("computeAttributeNameDisplay", () => {
     );
     expect(result).toBe("Brightness  IP ID MAC GPS GPS");
   });
+
+  // No integration translates the attributes every entity can have (#54691)
+  it("translates common attributes from the frontend", () => {
+    const localize = (key: string) =>
+      key === "ui.components.attributes.names.friendly_name"
+        ? "Friendly name (translated)"
+        : "";
+
+    const stateObj = {
+      entity_id: "sensor.test",
+      attributes: {},
+    } as HassEntity;
+
+    expect(
+      computeAttributeNameDisplay(
+        localize,
+        stateObj,
+        {} as HomeAssistant["entities"],
+        "friendly_name"
+      )
+    ).toBe("Friendly name (translated)");
+  });
 });

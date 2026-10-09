@@ -1450,7 +1450,17 @@
         }
       },
       "attributes": {
-        "expansion_header": "Attributes"
+        "expansion_header": "Attributes",
+        "names": {
+          "assumed_state": "Assumed state",
+          "attribution": "Attribution",
+          "device_class": "Device class",
+          "entity_picture": "Entity picture",
+          "friendly_name": "Friendly name",
+          "icon": "Icon",
+          "supported_features": "Supported features",
+          "unit_of_measurement": "Unit of measurement"
+        }
       },
       "qr-scanner": {
         "select_camera": "Select camera",
