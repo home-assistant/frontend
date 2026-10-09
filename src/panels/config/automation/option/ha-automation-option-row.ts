@@ -53,6 +53,7 @@ import {
   rowStyles,
 } from "../styles";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -590,10 +591,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }

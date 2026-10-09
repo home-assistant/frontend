@@ -5423,6 +5423,7 @@
             },
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
+            "sidebar_label": "Item editor",
             "copy_to_clipboard": "Copy to clipboard",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
