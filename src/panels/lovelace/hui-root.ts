@@ -1349,25 +1349,10 @@ class HUIRoot extends LitElement {
           color: var(--app-header-text-color, white);
           position: fixed;
           top: 0;
-          width: calc(
-            var(--ha-top-app-bar-width, 100%) - var(
-                --safe-area-inset-right,
-                0px
-              )
-          );
+          width: var(--ha-top-app-bar-width, 100%);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
-          padding-right: var(--safe-area-inset-right);
           z-index: 4;
-        }
-        .narrow .header {
-          width: calc(
-            var(--ha-top-app-bar-width, 100%) - var(
-                --safe-area-inset-left,
-                0px
-              ) - var(--safe-area-inset-right, 0px)
-          );
-          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -1389,7 +1374,6 @@ class HUIRoot extends LitElement {
           font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
           padding-right: calc(12px + var(--safe-area-inset-right, 0px));
-          width: calc(100% + var(--safe-area-inset-right, 0px));
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
@@ -1399,11 +1383,6 @@ class HUIRoot extends LitElement {
         .narrow .toolbar {
           padding: 0 calc(4px + var(--safe-area-inset-right, 0px)) 0
             calc(4px + var(--safe-area-inset-left, 0px));
-          width: calc(
-            100% + var(--safe-area-inset-left, 0px) +
-              var(--safe-area-inset-right, 0px)
-          );
-          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
         }
         .main-title {
           margin-inline-start: var(--ha-space-6);
@@ -1481,6 +1460,10 @@ class HUIRoot extends LitElement {
         }
         .tab-bar {
           display: flex;
+          padding-right: var(--safe-area-inset-right, 0px);
+        }
+        .narrow .tab-bar {
+          padding-left: var(--safe-area-inset-left, 0px);
         }
         .edit-mode ha-tab-group {
           flex-grow: 0;
