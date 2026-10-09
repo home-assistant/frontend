@@ -76,6 +76,7 @@ import {
   STATUS_FILTER,
   STATUS_ORDER,
   statusesOfTab,
+  statusFilterOfTab,
   TYPE_FILTER,
 } from "./dashboard-repositories";
 import type { RepositoryFilters } from "./dashboard-repositories";
@@ -752,7 +753,14 @@ export class HaMarketplaceDashboard extends LitElement {
   }
 
   private _statusFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [STATUS_FILTER]: ev.detail.value };
+    this._filters = {
+      ...this._filters,
+      [STATUS_FILTER]: statusFilterOfTab(
+        this._filters[STATUS_FILTER],
+        ev.detail.value,
+        this.tab
+      ),
+    };
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {

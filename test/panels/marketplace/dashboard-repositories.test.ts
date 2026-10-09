@@ -8,6 +8,7 @@ import {
   filterRepositories,
   filtersOfTab,
   statusesOfTab,
+  statusFilterOfTab,
 } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 
 const localize = ((key: string) => key) as LocalizeFunc;
@@ -191,5 +192,28 @@ describe("filtersOfTab", () => {
     expect(filtersOfTab(filters, "browse")).toEqual(filters);
     // Kept as picked, for when browse is opened again
     expect(filters.status).toEqual(["new", "installed"]);
+  });
+});
+
+describe("statusFilterOfTab", () => {
+  it("keeps statuses picked on browse when the installed status changes", () => {
+    expect(
+      statusFilterOfTab(["new", "installed"], ["pending-upgrade"], "installed")
+    ).toEqual(["new", "pending-upgrade"]);
+    expect(statusFilterOfTab(["new", "installed"], [], "installed")).toEqual([
+      "new",
+    ]);
+    expect(
+      statusFilterOfTab(["new", "installed"], undefined, "installed")
+    ).toEqual(["new"]);
+  });
+
+  it("uses the picked statuses when nothing is hidden on this tab", () => {
+    expect(statusFilterOfTab(["new"], ["installed"], "browse")).toEqual([
+      "installed",
+    ]);
+    expect(statusFilterOfTab(["installed"], undefined, "installed")).toBe(
+      undefined
+    );
   });
 });

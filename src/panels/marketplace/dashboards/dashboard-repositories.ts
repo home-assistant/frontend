@@ -62,6 +62,19 @@ export const filtersOfTab = (
   };
 };
 
+// The status control only lists this tab's statuses, so it only reports those.
+// Statuses picked on another tab are kept, for when that tab is opened again.
+export const statusFilterOfTab = (
+  stored: string[] | undefined,
+  picked: string[] | undefined,
+  tab: MarketplaceTab
+): string[] | undefined => {
+  const statuses: readonly string[] = statusesOfTab(tab);
+  const hidden = stored?.filter((status) => !statuses.includes(status)) ?? [];
+
+  return hidden.length ? [...hidden, ...(picked ?? [])] : picked;
+};
+
 const matchesFilters = (
   repository: RepositoryBase,
   filters: RepositoryFilters = {}
