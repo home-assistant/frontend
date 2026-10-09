@@ -261,7 +261,11 @@ export class HaAutomationRowTargets extends LitElement {
   }
 
   protected render() {
-    const length = Object.keys(this.target || {}).length;
+    // A target written as a plain string is invalid. Without this, its
+    // characters would be counted as separate targets.
+    const target =
+      this.target && typeof this.target === "object" ? this.target : undefined;
+    const length = Object.keys(target || {}).length;
     if (!length) {
       return this._renderTargetBadge(
         this.targetRequired
@@ -274,13 +278,13 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
       );
     }
-    const totalLength = Object.values(this.target || {}).reduce(
+    const totalLength = Object.values(target || {}).reduce(
       (acc, val) => acc + ensureArray(val).length,
       0
     );
 
     if (totalLength <= 5) {
-      const targets = Object.entries(this.target!).reduce<
+      const targets = Object.entries(target!).reduce<
         ["floor" | "area" | "device" | "entity" | "label", string][]
       >((acc, [targetType, targetId]) => {
         const type = targetType.replace("_id", "") as
@@ -302,7 +306,7 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    const rows = Object.entries(this.target!)
+    const rows = Object.entries(target!)
       .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
         (acc, [targetType, targetId]) => {
           const type = targetType.replace("_id", "") as
