@@ -97,7 +97,20 @@ export class HaObjectSelector extends LitElement {
           .filter(Boolean)
           .join(" · ");
 
+    const overviewLabels = this.selector.object!.overview_labels || false;
+
+    const labelField =
+      preferredLabel || Object.keys(this.selector.object!.fields!)[0];
+
+    const labelHeader = overviewLabels
+      ? `${this._computeLabel({
+          name: labelField,
+          selector: fields[labelField]?.selector,
+        })}: `
+      : "";
+
     let description = "";
+    let descriptionHeader = "";
 
     const descriptionField = this.selector.object!.description_field;
     if (descriptionField && descriptionField in fields) {
@@ -109,6 +122,12 @@ export class HaObjectSelector extends LitElement {
             item[descriptionField],
             descriptionSelector
           )
+        : "";
+      descriptionHeader = overviewLabels
+        ? `${this._computeLabel({
+            name: descriptionField,
+            selector: descriptionSelector,
+          })}: `
         : "";
     }
 
@@ -127,11 +146,11 @@ export class HaObjectSelector extends LitElement {
               `
             : nothing
         }
-        <div slot="headline" class="label">${label}</div>
+        <div slot="headline" class="label">${labelHeader}${label}</div>
         ${
           description
             ? html`<div slot="supporting-text" class="description">
-                ${description}
+                ${descriptionHeader}${description}
               </div>`
             : nothing
         }
