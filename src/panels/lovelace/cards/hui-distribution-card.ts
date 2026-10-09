@@ -657,9 +657,9 @@ export class HuiDistributionCard
       height: 24px;
       --ha-button-height: 24px;
       --ha-chip-label-weight: 500;
-      --md-assist-chip-leading-space: var(--ha-space-2);
-      --md-assist-chip-trailing-space: var(--ha-space-2);
-      --md-assist-chip-icon-label-space: var(--ha-space-1);
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
 
     .legend li:has(ha-assist-chip) {

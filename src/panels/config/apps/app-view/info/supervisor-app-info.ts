@@ -1689,8 +1689,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           margin-bottom: var(--ha-space-2);
         }
         ha-assist-chip {
-          --md-sys-color-primary: var(--text-primary-color);
-          --md-sys-color-on-surface: var(--text-primary-color);
+          --ha-assist-chip-label-text-color: var(--text-primary-color);
           --ha-assist-chip-filled-container-color: var(--primary-color);
         }
 
