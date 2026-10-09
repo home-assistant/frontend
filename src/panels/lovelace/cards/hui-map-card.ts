@@ -819,9 +819,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (this.layout !== PANEL_VIEW_LAYOUT) {
       return undefined;
     }
+    const { width, height, fitHeight } = this._overviewSize;
+    if (!width || !height) {
+      return undefined;
+    }
+    // The unused dimension must not refit the map
+    const phone = window.matchMedia("(max-width: 600px)").matches;
     return this._paddingFor(
-      this._overviewSize.width,
-      this._overviewSize.fitHeight ?? this._overviewSize.height,
+      phone,
+      phone ? (fitHeight ?? height) : width,
       this.hass.language,
       this.hass.translationMetadata.translations
     );
@@ -829,18 +835,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _paddingFor = memoizeOne(
     (
-      width: number,
-      height: number,
+      phone: boolean,
+      size: number,
       language: string,
       translations: HomeAssistant["translationMetadata"]["translations"]
-    ): MapFitPadding | undefined => {
-      if (!width || !height) {
-        return undefined;
+    ): MapFitPadding => {
+      if (phone) {
+        return { bottom: size + OVERVIEW_GAP };
       }
-      if (window.matchMedia("(max-width: 600px)").matches) {
-        return { bottom: height + OVERVIEW_GAP };
-      }
-      const side = width + 2 * OVERVIEW_GAP;
+      const side = size + 2 * OVERVIEW_GAP;
       return computeRTL(language, translations)
         ? { right: side }
         : { left: side };
