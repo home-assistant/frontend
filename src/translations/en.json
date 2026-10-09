@@ -529,6 +529,19 @@
       "last": "Last"
     },
     "components": {
+      "safe_area_tool": {
+        "title": "Safe area",
+        "presets": {
+          "none": "None",
+          "portrait": "Portrait",
+          "landscape": "Landscape"
+        },
+        "top": "Top",
+        "bottom": "Bottom",
+        "left": "Left",
+        "right": "Right",
+        "highlight": "Highlight"
+      },
       "input": {
         "clear": "Clear",
         "show_password": "Show password",
@@ -1528,6 +1541,12 @@
         "parent_device_name": "Parent device name",
         "area_name": "Area name",
         "floor_name": "Floor name"
+      },
+      "unit-of-measurement-picker": {
+        "unit_of_measurement": "Unit of measurement",
+        "no_units": "No units available",
+        "no_match": "No units found for {term}",
+        "custom_unit": "Use custom unit"
       },
       "multi-textfield": {
         "add_item": "Add {item}"
@@ -4048,6 +4067,10 @@
               "debug_connection": {
                 "title": "Debug connection",
                 "description": "Observe requests to the server and responses from the server in browser console."
+              },
+              "safe_area_tool": {
+                "title": "Debug safe area",
+                "description": "Show a floating tool to simulate the parts of the screen a device can't use, like a notch or a camera cutout. Only applies to this browser."
               },
               "disable_view_transition": {
                 "title": "Disable view transitions",
@@ -9571,7 +9594,6 @@
               "me": "Me",
               "activity": "Activity",
               "show_more": "Show more",
-              "more_info": "More info",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
               "entered": "Entered",
@@ -10032,6 +10054,13 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "paste_above": "Paste above",
+            "paste_below": "Paste below",
+            "copied_to_clipboard": "Section copied to clipboard",
+            "cut_to_clipboard": "Section cut to clipboard",
+            "cut_error": "Error while cutting section",
+            "paste_error": "Error while pasting section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
@@ -10042,7 +10071,7 @@
           },
           "delete_section": {
             "title": "Delete section",
-            "text": "This section and all its cards will be deleted."
+            "text": "This section and all its content will be deleted."
           },
           "error_section": {
             "title": "Error"
@@ -12288,19 +12317,23 @@
         "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
-          "title": "Before you use the Marketplace",
-          "intro": "Everything in the Marketplace is made and published by the community. What you install runs inside Home\u00a0Assistant, with full access to your home, your data, and the system Home\u00a0Assistant runs on.",
-          "risks_title": "Serious risks are involved",
+          "title": "Before you install from the Marketplace",
+          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "risks_title": "Anything you install can",
           "risks": {
-            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home\u00a0Assistant project.",
-            "own_risk": "You use everything you install from the Marketplace at your own risk.",
-            "privacy": "It can violate your privacy, for example by sending your data to others.",
-            "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
-            "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
+            "internet": "Connect to the internet",
+            "data": "Share your data with others",
+            "stability": "Slow down or crash Home\u00a0Assistant"
           },
-          "understand": "I understand the risks",
-          "continue": "Continue",
-          "continue_in": "You can continue in {seconds, plural,\n  one {# second}\n  other {# seconds}\n}"
+          "mindful_title": "So be mindful",
+          "mindful": {
+            "read": "Read the documentation and understand what the item changes.",
+            "monitor": "Keep an eye on your system after installing.",
+            "uninstall": "If something goes wrong, uninstall it right away."
+          },
+          "understand": "I understand the risks and agree",
+          "go_back": "Go back",
+          "continue": "Continue"
         },
         "common": {
           "install": "Install",
@@ -12347,6 +12380,7 @@
           "available_version": "Available version",
           "status": "Status",
           "type": "Type",
+          "source": "Source",
           "last_updated": "Activity",
           "actions": "Actions"
         },
@@ -12360,7 +12394,8 @@
         },
         "filters": {
           "status": "Status",
-          "type": "Type"
+          "type": "Type",
+          "source": "Source"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
@@ -12468,6 +12503,10 @@
           "install_other_version": "Install another version",
           "reinstall": "Reinstall",
           "update_information": "Refresh information"
+        },
+        "repository_source": {
+          "catalog": "Community catalog",
+          "custom": "Custom repositories"
         },
         "repository_status": {
           "pending-restart": "Restart required",

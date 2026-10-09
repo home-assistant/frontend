@@ -1,4 +1,4 @@
-import { mdiHistory } from "@mdi/js";
+import { mdiCogOutline, mdiHistory } from "@mdi/js";
 import type {
   HassConfig,
   HassEntities,
@@ -31,6 +31,7 @@ import type {
   HASSDomEvent,
 } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
@@ -42,6 +43,7 @@ import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
 import "../../../../components/ha-button";
+import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import { formatTime } from "../../../../common/datetime/format_time";
 import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
@@ -298,10 +300,12 @@ export class HuiMapOverview extends LitElement {
         if (aLocated !== bLocated) {
           return aLocated ? -1 : 1;
         }
-        return computeStateName(a).localeCompare(
-          computeStateName(b),
-          this._i18n.locale.language
-        );
+        return this._formatters
+          .formatEntityName(a)
+          .localeCompare(
+            this._formatters.formatEntityName(b),
+            this._i18n.locale.language
+          );
       });
   }
 
@@ -316,7 +320,7 @@ export class HuiMapOverview extends LitElement {
   private _personName(stateObj: HassEntity): string {
     return this._isMe(stateObj)
       ? this._i18n.localize("ui.panel.lovelace.cards.map.overview.me")
-      : computeStateName(stateObj);
+      : this._formatters.formatEntityName(stateObj);
   }
 
   private _getDevices(): HassEntity[] {
@@ -329,10 +333,12 @@ export class HuiMapOverview extends LitElement {
           !!getEntityLocation(stateObj, this._states)
       )
       .sort((a, b) =>
-        computeStateName(a).localeCompare(
-          computeStateName(b),
-          this._i18n.locale.language
-        )
+        this._formatters
+          .formatEntityName(a)
+          .localeCompare(
+            this._formatters.formatEntityName(b),
+            this._i18n.locale.language
+          )
       );
   }
 
@@ -355,10 +361,12 @@ export class HuiMapOverview extends LitElement {
         ) {
           return a.entity_id === HOME_ZONE_ENTITY_ID ? -1 : 1;
         }
-        return computeStateName(a).localeCompare(
-          computeStateName(b),
-          this._i18n.locale.language
-        );
+        return this._formatters
+          .formatEntityName(a)
+          .localeCompare(
+            this._formatters.formatEntityName(b),
+            this._i18n.locale.language
+          );
       });
   }
 
@@ -534,6 +542,17 @@ export class HuiMapOverview extends LitElement {
             }
           </span>
         </div>
+        ${
+          !__DEMO__ && this._user?.is_admin
+            ? html`<ha-icon-button
+                .label=${this._i18n.localize(
+                  "ui.dialogs.more_info_control.settings"
+                )}
+                .path=${mdiCogOutline}
+                @click=${this._handleSettings}
+              ></ha-icon-button>`
+            : nothing
+        }
       </div>
       <div class="list">
         <div class="activity">
@@ -561,15 +580,6 @@ export class HuiMapOverview extends LitElement {
                 : this._renderTimeline(stateObj, this._activity)
           }
         </div>
-        <ha-button
-          appearance="filled"
-          class="more-info"
-          @click=${this._handleMoreInfo}
-        >
-          ${this._i18n.localize(
-            "ui.panel.lovelace.cards.map.overview.more_info"
-          )}
-        </ha-button>
       </div>
     `;
   }
@@ -778,7 +788,9 @@ export class HuiMapOverview extends LitElement {
                 />`
               : computeStateDomain(stateObj) === "person"
                 ? html`<span class="initials"
-                    >${computeUserInitials(computeStateName(stateObj))}</span
+                    >${computeUserInitials(
+                      this._formatters.formatEntityName(stateObj)
+                    )}</span
                   >`
                 : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
           }
@@ -821,7 +833,9 @@ export class HuiMapOverview extends LitElement {
         >
           <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
         </div>
-        <span slot="headline">${computeStateName(stateObj)}</span>
+        <span slot="headline"
+          >${this._formatters.formatEntityName(stateObj)}</span
+        >
         <span slot="supporting-text">
           ${
             Number.isNaN(count)
@@ -875,9 +889,9 @@ export class HuiMapOverview extends LitElement {
     fireEvent(this, "map-overview-select", { entityId: undefined });
   }
 
-  private _handleMoreInfo() {
+  private _handleSettings() {
     if (this.selected) {
-      fireEvent(this, "hass-more-info", { entityId: this.selected });
+      showMoreInfoDialog(this, { entityId: this.selected, view: "settings" });
     }
   }
 
@@ -1078,6 +1092,7 @@ export class HuiMapOverview extends LitElement {
     }
 
     .detail-title {
+      flex: 1;
       display: flex;
       flex-direction: column;
       min-width: 0;
@@ -1181,12 +1196,6 @@ export class HuiMapOverview extends LitElement {
       margin-top: var(--ha-space-3);
       padding-top: var(--ha-space-2);
       border-top: 1px solid var(--divider-color);
-    }
-
-    .more-info {
-      flex: none;
-      width: 100%;
-      margin-top: var(--ha-space-3);
     }
   `;
 }

@@ -599,10 +599,11 @@ export class HaScriptEditor extends SubscribeMixin(
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
       }
-      this.config = {
-        ...baseConfig,
-        ...initData,
-      } as ScriptConfig;
+      // Spread the init data first, so a duplicated script keeps its key
+      // order. The defaults only fill in what is missing.
+      const missingDefaults =
+        initData && "sequence" in initData ? {} : baseConfig;
+      this.config = { ...initData, ...missingDefaults } as ScriptConfig;
       this._initDirtyTracking(
         { type: "deep" },
         {

@@ -64,7 +64,11 @@ import {
   startHassioAddon,
 } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
-import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
+import {
+  listSerialIntegrations,
+  listSerialPortsWithUsage,
+  type SerialPortUsage,
+} from "../../data/usb";
 import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";
@@ -712,9 +716,21 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _setupSerialPort = (ev: Event) => {
+  private _setupSerialPort = async (ev: Event) => {
     ev.stopPropagation();
-    showAddIntegrationDialog(this);
+    if (!this._api) {
+      return;
+    }
+    const domains = await listSerialIntegrations(this._api).catch(
+      () => undefined
+    );
+    if (!this.isConnected) {
+      return;
+    }
+    showAddIntegrationDialog(
+      this,
+      domains ? { integrationFilter: { domains } } : undefined
+    );
   };
 
   private _dialogTitle(): string {

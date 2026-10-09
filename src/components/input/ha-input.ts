@@ -176,8 +176,12 @@ export class HaInput extends WaInputMixin(LitElement) {
       return false;
     }
 
+    // Compare against wa-input, not our own value: a value set right before
+    // (like clearing the field and focusing it again) only reaches the native
+    // input on the next render, and must not be overwritten by the old text.
     const nativeValue = native.value;
-    if ((this.value ?? "") === nativeValue) {
+    const currentValue = this._input ? this._input.value : this.value;
+    if ((currentValue ?? "") === nativeValue) {
       return false;
     }
 

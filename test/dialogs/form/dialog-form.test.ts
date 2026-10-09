@@ -178,7 +178,7 @@ describe("dialog-form mounted nested forms", () => {
     const dialog = await openDialog();
     const parent = getForms(dialog)[0];
     const opener = document.createElement("button");
-    parent.append(opener);
+    parent.shadowRoot!.append(opener);
     opener.focus();
 
     expect(deepActiveElement()).toBe(opener);
@@ -197,7 +197,7 @@ describe("dialog-form mounted nested forms", () => {
       const dialog = await openDialog();
       const parent = getForms(dialog)[0];
       const opener = document.createElement("button");
-      parent.append(opener);
+      parent.shadowRoot!.append(opener);
       opener.focus();
 
       await showNestedDialog(dialog, parent, nestedParams());
@@ -207,7 +207,7 @@ describe("dialog-form mounted nested forms", () => {
 
       const child = getForms(dialog)[1];
       const childFocusTarget = document.createElement("button");
-      child.append(childFocusTarget);
+      child.shadowRoot!.append(childFocusTarget);
       childFocusTarget.focus();
 
       expect(deepActiveElement()).toBe(childFocusTarget);
@@ -226,7 +226,7 @@ describe("dialog-form mounted nested forms", () => {
     const dialog = await openDialog();
     const parent = getForms(dialog)[0];
     const opener = document.createElement("button");
-    parent.append(opener);
+    parent.shadowRoot!.append(opener);
     opener.focus();
 
     await showNestedDialog(dialog, parent, nestedParams());
@@ -246,7 +246,7 @@ describe("dialog-form mounted nested forms", () => {
     const dialog = await openDialog();
     const parent = getForms(dialog)[0];
     const opener = document.createElement("button");
-    parent.append(opener);
+    parent.shadowRoot!.append(opener);
     opener.focus();
 
     mockForm.delayedTag = tag;
@@ -275,7 +275,7 @@ describe("dialog-form mounted nested forms", () => {
     const dialog = await openDialog();
     const parent = getForms(dialog)[0];
     const opener = document.createElement("button");
-    parent.append(opener);
+    parent.shadowRoot!.append(opener);
     opener.focus();
 
     await showNestedDialog(dialog, parent, nestedParams());

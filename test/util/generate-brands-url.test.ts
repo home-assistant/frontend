@@ -7,6 +7,7 @@ import {
   fetchAndScheduleBrandsAccessToken,
   fetchBrandsAccessToken,
   hardwareBrandsUrl,
+  marketplaceBrandsUrl,
   scheduleBrandsTokenRefresh,
 } from "../../src/util/brands-url";
 
@@ -21,6 +22,16 @@ describe("Brands URLs without a token", () => {
     assert.strictEqual(
       brandsUrl(
         { domain: "cloud", type: "logo" },
+        "http://homeassistant.local:8123"
+      ),
+      ""
+    );
+  });
+
+  it("marketplaceBrandsUrl returns an empty src", () => {
+    assert.strictEqual(
+      marketplaceBrandsUrl(
+        { domain: "hair", type: "icon" },
         "http://homeassistant.local:8123"
       ),
       ""
@@ -74,6 +85,15 @@ describe("Generate brands Url", () => {
         "http://homeassistant.local:8123"
       ),
       "http://homeassistant.local:8123/api/brands/integration/cloud/logo.png?token=test-token-123"
+    );
+  });
+  it("Generate Marketplace brands url for an integration", () => {
+    assert.strictEqual(
+      marketplaceBrandsUrl(
+        { domain: "hair", type: "icon@2x", darkOptimized: true },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/marketplace/hair/dark_icon@2x.png?token=test-token-123"
     );
   });
   it("Generate icon brands url for cloud component", () => {

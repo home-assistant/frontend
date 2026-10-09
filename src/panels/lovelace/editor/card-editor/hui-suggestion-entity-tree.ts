@@ -16,8 +16,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { mainWindow } from "../../../../common/dom/get_main_window";
-import { computeEntityName } from "../../../../common/entity/compute_entity_name";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeEntityPickerDisplay } from "../../../../common/entity/compute_entity_name_display";
 import { ignoreRepeatedActivation } from "../../../../common/keyboard/ignore-repeated-activation";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
@@ -610,13 +609,9 @@ export class HuiSuggestionEntityTree extends LitElement {
   private _renderEntity(entityId: string, depthClass: string): TemplateResult {
     const stateObj = this.hass.states[entityId];
     const selected = this.selectedEntityId === entityId;
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : undefined;
-    const name =
-      entityName ||
-      (stateObj ? computeStateName(stateObj) : undefined) ||
-      entityId;
+    const name = stateObj
+      ? computeEntityPickerDisplay(this.hass, stateObj).primary
+      : entityId;
     return html`
       <ha-list-item-button
         aria-current=${selected ? "true" : "false"}

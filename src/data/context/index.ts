@@ -104,6 +104,11 @@ export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
  */
 export const narrowViewportContext = createContext<boolean>("narrowViewport");
 
+/**
+ * Whether the user prefers reduced motion.
+ */
+export const reducedMotionContext = createContext<boolean>("reducedMotion");
+
 // #region lazy-contexts
 
 /**

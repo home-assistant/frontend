@@ -368,7 +368,6 @@ vi.mock("maplibre-gl", () => ({
   AttributionControl: fakes.FakeAttributionControl,
   NavigationControl: vi.fn(),
   ScaleControl: vi.fn(),
-  setRTLTextPlugin: vi.fn(),
   setWorkerUrl: vi.fn(),
 }));
 
@@ -376,7 +375,6 @@ const loadStyle = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   loadStyle,
-  ensureRTLTextPlugin: vi.fn(),
   ensureWorkerUrl: vi.fn(),
 }));
 

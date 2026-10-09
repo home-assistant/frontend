@@ -95,6 +95,7 @@ import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
+import { getUiSupportWarnings } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
@@ -246,6 +247,13 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     const type = getAutomationActionType(this.action);
+    if (this._warnings && this._yamlMode && type) {
+      this._warnings = getUiSupportWarnings(
+        this.hass.localize,
+        `ha-automation-action-${type}`,
+        this.action
+      );
+    }
     this._uiModeAvailable =
       type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
@@ -336,6 +344,14 @@ export default class HaAutomationActionRow extends LitElement {
       250
     );
 
+    const liveTestCondition = !this.optionsInSidebar
+      ? undefined
+      : waitTemplateCondition ||
+        (type === "condition" &&
+        (this.action as Condition).condition !== "trigger"
+          ? (this.action as Condition)
+          : undefined);
+
     return html`
       ${
         type === "service" && "action" in this.action && this.action.action
@@ -347,39 +363,25 @@ export default class HaAutomationActionRow extends LitElement {
                 .service=${this.action.action}
               ></ha-service-icon>
             `
-          : waitTemplateCondition && this.optionsInSidebar
+          : liveTestCondition
             ? html`<ha-automation-condition-live-test
                 id="condition-icon"
                 slot="leading-icon"
                 .hass=${this.hass}
-                .condition=${waitTemplateCondition}
+                .condition=${liveTestCondition}
               >
                 <ha-svg-icon
                   class="action-icon"
                   .path=${ACTION_ICONS[type!]}
                 ></ha-svg-icon>
               </ha-automation-condition-live-test>`
-            : type === "condition" &&
-                this.optionsInSidebar &&
-                (this.action as Condition).condition !== "trigger"
-              ? html`<ha-automation-condition-live-test
-                  id="condition-icon"
+            : html`
+                <ha-svg-icon
                   slot="leading-icon"
-                  .hass=${this.hass}
-                  .condition=${this.action as Condition}
-                >
-                  <ha-svg-icon
-                    class="action-icon"
-                    .path=${ACTION_ICONS[type]}
-                  ></ha-svg-icon>
-                </ha-automation-condition-live-test>`
-              : html`
-                  <ha-svg-icon
-                    slot="leading-icon"
-                    class="action-icon"
-                    .path=${ACTION_ICONS[type!]}
-                  ></ha-svg-icon>
-                `
+                  class="action-icon"
+                  .path=${ACTION_ICONS[type!]}
+                ></ha-svg-icon>
+              `
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
@@ -457,7 +459,9 @@ export default class HaAutomationActionRow extends LitElement {
         class="event-chip"
         aria-live="polite"
       >
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
       </ha-automation-row-event-chip>
 
       <ha-automation-row-event-chip
@@ -911,8 +915,10 @@ export default class HaAutomationActionRow extends LitElement {
     this._running = false;
     this._runResult = undefined;
 
+    const { enabled: _enabled, ...action } = this.action;
+
     const validated = await validateConfig(this.hass, {
-      actions: this.action,
+      actions: action,
     });
 
     if (!validated.actions.valid) {
@@ -936,7 +942,7 @@ export default class HaAutomationActionRow extends LitElement {
       }, 500);
 
       try {
-        await callExecuteScript(this.hass, this.action);
+        await callExecuteScript(this.hass, action);
         clearTimeout(runTimeout);
       } catch (err: any) {
         clearTimeout(runTimeout);
@@ -1160,7 +1166,7 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
@@ -1208,8 +1214,10 @@ export default class HaAutomationActionRow extends LitElement {
         this._renameAction();
       },
       editNote: this._editNoteAction,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,

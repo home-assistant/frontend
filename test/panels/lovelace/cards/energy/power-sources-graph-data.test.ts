@@ -6,7 +6,10 @@
 import { describe, expect, it } from "vitest";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { EnergyData } from "../../../../../src/data/energy";
-import { generatePowerSourcesGraphData } from "../../../../../src/panels/lovelace/cards/energy/power-sources-graph-data";
+import {
+  generatePowerSourcesGraphData,
+  getPowerLegendValues,
+} from "../../../../../src/panels/lovelace/cards/energy/power-sources-graph-data";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
 import { createMockEntityState, mockLocalize } from "../../../../fixtures/hass";
@@ -87,6 +90,7 @@ const buildEnergyData = (seed: number, o: BuildOptions): EnergyData => {
 describe("generatePowerSourcesGraphData", () => {
   const baseParams = {
     localize: mockLocalize,
+    formatPower: (w: number) => `${w} W`,
     states: {} as HassEntities,
     computedStyles,
     start: new Date(FIXED_EPOCH_MS),
@@ -225,5 +229,41 @@ describe("generatePowerSourcesGraphData", () => {
         })
       )
     ).toMatchSnapshot();
+  });
+});
+
+describe("getPowerLegendValues", () => {
+  const now = FIXED_EPOCH_MS + 12 * 60 * 60 * 1000;
+  const format = (w: number) => `${w} W`;
+  const energyData = {
+    ...buildEnergyData(5, {
+      days: 1,
+      period: "hour",
+      grid: true,
+      solar: true,
+      battery: true,
+    }),
+    start: new Date(now),
+    end: new Date(now + 1000),
+  };
+  const power = (id: string, value: string) =>
+    createMockEntityState(id, value, { unit_of_measurement: "W" });
+
+  it("returns current power per source and usage", () => {
+    const states: HassEntities = {
+      [RATE_IDS.grid]: power(RATE_IDS.grid, "1500"),
+      [RATE_IDS.solar]: power(RATE_IDS.solar, "-800"),
+      [RATE_IDS.battery]: power(RATE_IDS.battery, "200"),
+    };
+    expect(getPowerLegendValues(energyData, states, format)).toEqual({
+      grid: "1500 W",
+      solar: "-800 W",
+      battery: "200 W",
+      usage: "900 W",
+    });
+  });
+
+  it("returns nothing when no power reading is available", () => {
+    expect(getPowerLegendValues(energyData, {}, format)).toEqual({});
   });
 });

@@ -16,7 +16,6 @@ import {
 } from "../marker-accessibility";
 import {
   CONTEXT_RESTORE_GRACE,
-  ensureRTLTextPlugin,
   ensureWorkerUrl,
   loadStyle,
   MAP_MAX_ZOOM,
@@ -320,7 +319,6 @@ export class MapLibreMapEngine implements MapEngine {
     const maplibre = await import("maplibre-gl");
     this._maplibre = maplibre;
     ensureWorkerUrl(maplibre.setWorkerUrl);
-    ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
 
     // MapLibre's stylesheet for controls and popups; one link per root
     const root = container.parentNode;
