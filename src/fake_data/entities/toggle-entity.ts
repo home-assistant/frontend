@@ -1,7 +1,7 @@
 import { MockBaseEntity } from "./base-entity";
 
 /**
- * Generic toggle entity used for domains: automation, input_boolean, switch.
+ * Generic toggle entity used for domains: input_boolean, switch.
  * Handles turn_on, turn_off, and toggle services via homeassistant or own domain.
  */
 export class MockToggleEntity extends MockBaseEntity {

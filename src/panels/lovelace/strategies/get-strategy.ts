@@ -1,6 +1,7 @@
 import {
   isStrategySection,
   type LovelaceSectionConfig,
+  type LovelaceSectionRawConfig,
   type LovelaceStrategySectionConfig,
 } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
@@ -307,6 +308,25 @@ export const checkStrategyShouldRegenerate = (
   return dependencies.some((key) => oldHass[key] !== newHass[key]);
 };
 
+const expandLovelaceSectionStrategies = async (
+  section: LovelaceSectionRawConfig,
+  hass: HomeAssistant
+): Promise<LovelaceSectionConfig> => {
+  const newSection = isStrategySection(section)
+    ? await generateLovelaceSectionStrategy(section, hass)
+    : { ...section };
+
+  if (newSection.sections) {
+    newSection.sections = await Promise.all(
+      newSection.sections.map((childSection) =>
+        expandLovelaceSectionStrategies(childSection, hass)
+      )
+    );
+  }
+
+  return newSection;
+};
+
 /**
  * Find all references to strategies and replaces them with the generated output
  */
@@ -326,12 +346,9 @@ export const expandLovelaceConfigStrategies = async (
 
       if (newView.sections) {
         newView.sections = await Promise.all(
-          newView.sections.map(async (section) => {
-            const newSection = isStrategySection(section)
-              ? await generateLovelaceSectionStrategy(section, hass)
-              : { ...section };
-            return newSection;
-          })
+          newView.sections.map((section) =>
+            expandLovelaceSectionStrategies(section, hass)
+          )
         );
       }
 

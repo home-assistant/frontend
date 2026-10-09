@@ -869,7 +869,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_entityReg")) {
+    // The filtered list holds entity IDs, so also refresh it when automations
+    // are added or removed
+    if (changedProps.has("_entityReg") || changedProps.has("automations")) {
       this._applyFilters();
     }
   }

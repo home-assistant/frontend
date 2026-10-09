@@ -16,6 +16,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-debug-connection-row";
 import "./ha-debug-disable-view-transition-row";
+import "./ha-debug-safe-area-tool-row";
 import "./ha-debug-viewport-environment-card";
 
 @customElement("tools-debug")
@@ -35,6 +36,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
           )}
         >
           <ha-list-base>
+            <ha-debug-safe-area-tool-row></ha-debug-safe-area-tool-row>
             <ha-debug-connection-row
               .hass=${this.hass}
             ></ha-debug-connection-row>

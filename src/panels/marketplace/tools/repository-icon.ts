@@ -2,7 +2,7 @@ import { mdiArrowUpCircle, mdiCheckCircle } from "@mdi/js";
 import { html, nothing } from "lit";
 import "../../../components/ha-svg-icon";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
-import { brandsUrl } from "../../../util/brands-url";
+import { marketplaceBrandsUrl } from "../../../util/brands-url";
 import { typeIcon } from "./type-icon";
 
 interface RepositoryIconOptions {
@@ -30,7 +30,7 @@ export const renderRepositoryIcon = (
             alt=""
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
-            src=${brandsUrl(
+            src=${marketplaceBrandsUrl(
               {
                 domain: repository.domain,
                 type: "icon",

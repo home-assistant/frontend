@@ -9,6 +9,7 @@ import "./entry-html.js";
 import "./fetch-nightly-translations.mts";
 import "./gallery.js";
 import "./gather-static.js";
+import "./gen-demo-core-data.js";
 import "./gen-device-classes.js";
 import "./gen-icons-json.js";
 import "./gen-sensor-entity-constants.js";

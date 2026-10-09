@@ -37,6 +37,7 @@ Container components may keep `hass` when they own it and feed providers. Leaf c
 | `apiContext`                                                         | `hass.callService`, `hass.callApi`, `hass.callApiRaw`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth` |
 | `uiContext`                                                          | themes, selected theme, panels, sidebar, and UI state                                                     |
 | `narrowViewportContext`                                              | narrow-layout boolean                                                                                     |
+| `reducedMotionContext`                                               | `prefers-reduced-motion` media query                                                                      |
 
 Lazy contexts subscribe on first consumer and tear down after the last consumer: `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, `manifestsContext`, `triggerDescriptionsContext`, and `conditionDescriptionsContext`.
 

@@ -67,7 +67,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
             : nothing
         }
         <ha-network-graph
-          .hass=${this.hass}
           .searchFilter=${this._searchFilter}
           .data=${this._networkData}
           .searchableAttributes=${this._getSearchableAttributes}
