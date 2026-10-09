@@ -10,6 +10,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { filterNavigationPages } from "../../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ctrlOrCmdLabel } from "../../../common/keyboard/ctrl-or-cmd";
 import "../../../components/ha-card";
@@ -180,6 +181,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           ? pages.filter((page) => page.path !== "/config/apps")
           : pages;
       return [
+        configSections.dashboard_devices,
+        configSections.dashboard_automations,
+        configSections.dashboard_areas,
         isCloudLoaded
           ? filterApps([
               {
@@ -349,7 +353,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             this.hass.userData?.apps_info_dismissed,
             isComponentLoaded(this.hass.config, "hassio")
           ).map((categoryPages) =>
-            categoryPages.length === 0
+            filterNavigationPages(this.hass, categoryPages).length === 0
               ? nothing
               : html`
                   <ha-card outlined>

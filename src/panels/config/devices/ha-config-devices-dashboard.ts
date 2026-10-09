@@ -97,7 +97,7 @@ import {
   getLabelsTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../config-sections";
+import { configPageTabs } from "../config-sections";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
@@ -876,7 +876,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
-        .tabs=${configSections.devices}
+        .tabs=${configPageTabs["/config/devices"]}
         .route=${this.route}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.devices.picker.search",

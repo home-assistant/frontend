@@ -4,7 +4,7 @@ import type { PageNavigation } from "../../src/data/page_navigation";
 import type { HomeAssistant } from "../../src/types";
 
 const translations: Record<string, string> = {
-  "ui.panel.config.dashboard.devices.main": "Devices & services",
+  "ui.panel.config.dashboard.integrations.main": "Integrations entry",
   "ui.panel.config.dashboard.system.main": "System",
   "ui.panel.config.dashboard.matter.main": "Matter",
   "ui.panel.config.integrations.caption": "Integrations",
@@ -18,8 +18,8 @@ const hass = {
 
 // Mirrors how config-sections.ts mixes short and full translation keys.
 const configSections: Record<string, PageNavigation[]> = {
-  dashboard: [
-    { path: "/config/integrations", translationKey: "devices" },
+  dashboard_devices: [
+    { path: "/config/integrations", translationKey: "integrations" },
   ] as PageNavigation[],
   dashboard_3: [
     { path: "/config/system", translationKey: "system" },

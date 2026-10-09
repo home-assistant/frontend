@@ -1,6 +1,7 @@
 import {
   mdiAccessPointNetwork,
   mdiAccount,
+  mdiApps,
   mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiBluetooth,
@@ -55,36 +56,144 @@ const getHasDomainCheck = (domain: string) => {
     checkRegistry(hass.entities);
 };
 
+// Pages that the Settings page lists one by one, with their entry's
+// translation key under ui.panel.config.dashboard
+const dashboardEntryKeys = {
+  "/config/integrations": "integrations",
+  "/config/devices": "device_list",
+  "/config/entities": "entities",
+  "/config/helpers": "helpers",
+  "/config/automation": "automation_list",
+  "/config/scene": "scenes",
+  "/config/script": "scripts",
+  "/config/blueprint": "blueprints",
+  "/config/areas": "area_list",
+  "/config/labels": "labels",
+  "/config/zone": "zones",
+} as const;
+
+export type ConfigEntryPagePath = keyof typeof dashboardEntryKeys;
+
+type ConfigEntryPage = PageNavigation & { path: ConfigEntryPagePath };
+
+const devicesPages: ConfigEntryPage[] = [
+  {
+    component: "integrations",
+    path: "/config/integrations",
+    translationKey: "ui.panel.config.integrations.caption",
+    iconPath: mdiPuzzle,
+    iconColor: "#2D338F",
+    core: true,
+    adminOnly: true,
+  },
+  {
+    component: "devices",
+    path: "/config/devices",
+    translationKey: "ui.panel.config.devices.caption",
+    iconPath: mdiDevices,
+    iconColor: "#0277BD",
+    core: true,
+    adminOnly: true,
+  },
+  {
+    component: "entities",
+    path: "/config/entities",
+    translationKey: "ui.panel.config.entities.caption",
+    iconPath: mdiShape,
+    iconColor: "#7E57C2",
+    core: true,
+    adminOnly: true,
+  },
+  {
+    component: "helpers",
+    path: "/config/helpers",
+    translationKey: "ui.panel.config.helpers.caption",
+    iconPath: mdiTools,
+    iconColor: "#4D2EA4",
+    core: true,
+    adminOnly: true,
+  },
+];
+
+const automationsPages: ConfigEntryPage[] = [
+  {
+    component: "automation",
+    path: "/config/automation",
+    translationKey: "ui.panel.config.automation.caption",
+    iconPath: mdiRobot,
+    iconColor: "#518C43",
+    adminOnly: true,
+  },
+  {
+    component: "scene",
+    path: "/config/scene",
+    translationKey: "ui.panel.config.scene.caption",
+    iconPath: mdiPalette,
+    iconColor: "#00796B",
+    adminOnly: true,
+  },
+  {
+    component: "script",
+    path: "/config/script",
+    translationKey: "ui.panel.config.script.caption",
+    iconPath: mdiScriptText,
+    iconColor: "#1B5E20",
+    adminOnly: true,
+  },
+  {
+    component: "blueprint",
+    path: "/config/blueprint",
+    translationKey: "ui.panel.config.blueprint.caption",
+    iconPath: mdiPaletteSwatch,
+    iconColor: "#827717",
+    adminOnly: true,
+  },
+];
+
+const areasPages: ConfigEntryPage[] = [
+  {
+    component: "areas",
+    path: "/config/areas",
+    translationKey: "ui.panel.config.areas.caption",
+    iconPath: mdiSofa,
+    iconColor: "#E48629",
+    core: true,
+    adminOnly: true,
+  },
+  {
+    component: "labels",
+    path: "/config/labels",
+    translationKey: "ui.panel.config.labels.caption",
+    iconPath: mdiLabel,
+    iconColor: "#D84315",
+    core: true,
+    adminOnly: true,
+  },
+  {
+    component: "zone",
+    path: "/config/zone",
+    translationKey: "ui.panel.config.zone.caption",
+    iconPath: mdiMapMarkerRadius,
+    iconColor: "#A1662F",
+    adminOnly: true,
+  },
+];
+
+const dashboardEntries = (pages: ConfigEntryPage[]): PageNavigation[] =>
+  pages.map((page) => ({
+    ...page,
+    translationKey: dashboardEntryKeys[page.path],
+  }));
+
 export const configSections: Record<string, PageNavigation[]> = {
+  dashboard_devices: dashboardEntries(devicesPages),
+  dashboard_automations: dashboardEntries(automationsPages),
+  dashboard_areas: dashboardEntries(areasPages),
   dashboard: [
-    {
-      path: "/config/integrations",
-      translationKey: "devices",
-      iconPath: mdiDevices,
-      iconColor: "#0D47A1",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      path: "/config/automation",
-      translationKey: "automations",
-      iconPath: mdiRobot,
-      iconColor: "#518C43",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      path: "/config/areas",
-      translationKey: "areas",
-      iconPath: mdiSofa,
-      iconColor: "#E48629",
-      component: "zone",
-      adminOnly: true,
-    },
     {
       path: "/config/apps",
       translationKey: "apps",
-      iconPath: mdiPuzzle,
+      iconPath: mdiApps,
       iconColor: "#F1C447",
       core: true,
       adminOnly: true,
@@ -287,78 +396,8 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
   ],
-  devices: [
-    {
-      component: "integrations",
-      path: "/config/integrations",
-      translationKey: "ui.panel.config.integrations.caption",
-      iconPath: mdiPuzzle,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "devices",
-      path: "/config/devices",
-      translationKey: "ui.panel.config.devices.caption",
-      iconPath: mdiDevices,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "entities",
-      path: "/config/entities",
-      translationKey: "ui.panel.config.entities.caption",
-      iconPath: mdiShape,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "helpers",
-      path: "/config/helpers",
-      translationKey: "ui.panel.config.helpers.caption",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
-      core: true,
-      adminOnly: true,
-    },
-  ],
-  automations: [
-    {
-      component: "automation",
-      path: "/config/automation",
-      translationKey: "ui.panel.config.automation.caption",
-      iconPath: mdiRobot,
-      iconColor: "#518C43",
-      adminOnly: true,
-    },
-    {
-      component: "scene",
-      path: "/config/scene",
-      translationKey: "ui.panel.config.scene.caption",
-      iconPath: mdiPalette,
-      iconColor: "#518C43",
-      adminOnly: true,
-    },
-    {
-      component: "script",
-      path: "/config/script",
-      translationKey: "ui.panel.config.script.caption",
-      iconPath: mdiScriptText,
-      iconColor: "#518C43",
-      adminOnly: true,
-    },
-    {
-      component: "blueprint",
-      path: "/config/blueprint",
-      translationKey: "ui.panel.config.blueprint.caption",
-      iconPath: mdiPaletteSwatch,
-      iconColor: "#518C43",
-      adminOnly: true,
-    },
-  ],
+  devices: devicesPages,
+  automations: automationsPages,
   tags: [
     {
       component: "tag",
@@ -476,34 +515,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
   ],
-  areas: [
-    {
-      component: "areas",
-      path: "/config/areas",
-      translationKey: "ui.panel.config.areas.caption",
-      iconPath: mdiSofa,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "labels",
-      path: "/config/labels",
-      translationKey: "ui.panel.config.labels.caption",
-      iconPath: mdiLabel,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "zone",
-      path: "/config/zone",
-      translationKey: "ui.panel.config.zone.caption",
-      iconPath: mdiMapMarkerRadius,
-      iconColor: "#E48629",
-      adminOnly: true,
-    },
-  ],
+  areas: areasPages,
   general: [
     {
       path: "/config/general",
@@ -611,3 +623,13 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
   ],
 };
+
+const singlePageTabs = (pages: ConfigEntryPage[]) =>
+  Object.fromEntries(pages.map((page) => [page.path, [page]]));
+
+// Pages reached directly from the Settings page, each as its own only tab
+export const configPageTabs = {
+  ...singlePageTabs(devicesPages),
+  ...singlePageTabs(automationsPages),
+  ...singlePageTabs(areasPages),
+} as Record<ConfigEntryPagePath, PageNavigation[]>;
