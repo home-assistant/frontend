@@ -1,41 +1,146 @@
+import type { ContextType } from "@lit/context";
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { consume } from "../../../common/decorators/consume";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { SupervisorMountRequestParams } from "../../../data/supervisor/mounts";
+import { fetchHostDisks } from "../../../data/hassio/host";
+import type {
+  CIFSVersion,
+  MountableDiskPartition,
+  SupervisorMountRequestParams,
+} from "../../../data/supervisor/mounts";
 import {
   createSupervisorMount,
+  mountableDiskPartitions,
   removeSupervisorMount,
   SupervisorMountType,
   SupervisorMountUsage,
   updateSupervisorMount,
 } from "../../../data/supervisor/mounts";
+import { bytesToString } from "../../../util/bytes-to-string";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { MountViewDialogParams } from "./show-dialog-view-mount";
+
+interface MountFormData {
+  name: string;
+  type: SupervisorMountType;
+  usage?: SupervisorMountUsage | null;
+  read_only?: boolean;
+  server?: string;
+  port?: number;
+  path?: string;
+  share?: string;
+  version?: CIFSVersion | null;
+  device?: string;
+  uuid?: string;
+  username?: string;
+  password?: string;
+}
+
+// Disk vendor/model, then partition label and device path, then size. The
+// device path tells same-labelled partitions on identical disks apart.
+const mountPartitionLabel = ({
+  disk,
+  partition,
+}: MountableDiskPartition): string => {
+  const drive = [disk.vendor, disk.model].filter(Boolean).join(" ");
+  const identity = partition.label
+    ? `${partition.label} (${partition.device})`
+    : partition.device;
+  const size = bytesToString(partition.size);
+  return drive ? `${drive} — ${identity}, ${size}` : `${identity}, ${size}`;
+};
+
+const requiredFieldsFilled = (
+  schema: readonly HaFormSchema[],
+  data?: MountFormData
+): boolean =>
+  schema.every((field) => {
+    if (!field.required) {
+      return true;
+    }
+    const value = data?.[field.name as keyof MountFormData];
+    return value !== undefined && value !== null && value !== "";
+  });
 
 const mountSchema = memoizeOne(
   (
     localize: LocalizeFunc,
     existing?: boolean,
     mountType?: SupervisorMountType,
-    showCIFSVersion?: boolean
-  ) =>
-    [
+    showCIFSVersion?: boolean,
+    showDisk?: boolean,
+    partitions?: MountableDiskPartition[],
+    diskIdentity?: string,
+    readOnlyForced?: boolean,
+    allowBackupUsage = true
+  ) => {
+    // Supervisor rejects read-only backup mounts.
+    const usageOptions: [string, string][] = allowBackupUsage
+      ? [
+          [
+            SupervisorMountUsage.BACKUP,
+            localize(
+              "ui.panel.config.storage.network_mounts.mount_usage.backup"
+            ),
+          ],
+        ]
+      : [];
+    usageOptions.push(
+      [
+        SupervisorMountUsage.MEDIA,
+        localize("ui.panel.config.storage.network_mounts.mount_usage.media"),
+      ],
+      [
+        SupervisorMountUsage.SHARE,
+        localize("ui.panel.config.storage.network_mounts.mount_usage.share"),
+      ]
+    );
+
+    const typeOptions: [string, string][] = [
+      [
+        SupervisorMountType.CIFS,
+        localize("ui.panel.config.storage.network_mounts.mount_type.cifs"),
+      ],
+      [
+        SupervisorMountType.NFS,
+        localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
+      ],
+    ];
+    // Offered when creating on a Supervisor with disk mounts, and kept while
+    // editing a disk mount, even after another type is picked. An existing
+    // network mount cannot become a disk mount: the edit form has no device
+    // picker to identify the disk with.
+    if ((showDisk && !existing) || diskIdentity !== undefined) {
+      typeOptions.push([
+        SupervisorMountType.DISK,
+        localize("ui.panel.config.storage.network_mounts.mount_type.disk"),
+      ]);
+    }
+
+    return [
       {
         name: "name",
         required: true,
@@ -46,57 +151,34 @@ const mountSchema = memoizeOne(
         name: "usage",
         required: true,
         type: "select",
-        options: [
-          [
-            SupervisorMountUsage.BACKUP,
-            localize(
-              "ui.panel.config.storage.network_mounts.mount_usage.backup"
-            ),
-          ],
-          [
-            SupervisorMountUsage.MEDIA,
-            localize(
-              "ui.panel.config.storage.network_mounts.mount_usage.media"
-            ),
-          ],
-          [
-            SupervisorMountUsage.SHARE,
-            localize(
-              "ui.panel.config.storage.network_mounts.mount_usage.share"
-            ),
-          ],
-        ] as const,
-      },
-      {
-        name: "server",
-        required: true,
-        selector: { text: {} },
+        options: usageOptions,
       },
       {
         name: "type",
         required: true,
         type: "select",
-        options: [
-          [
-            SupervisorMountType.CIFS,
-            localize("ui.panel.config.storage.network_mounts.mount_type.cifs"),
-          ],
-          [
-            SupervisorMountType.NFS,
-            localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
-          ],
-        ],
+        options: typeOptions,
       },
-      ...(mountType === "nfs"
+      ...(mountType === SupervisorMountType.NFS
         ? ([
+            {
+              name: "server",
+              required: true,
+              selector: { text: {} },
+            },
             {
               name: "path",
               required: true,
               selector: { text: {} },
             },
           ] as const)
-        : mountType === "cifs"
+        : mountType === SupervisorMountType.CIFS
           ? ([
+              {
+                name: "server",
+                required: true,
+                selector: { text: {} },
+              },
               ...(showCIFSVersion
                 ? ([
                     {
@@ -148,17 +230,62 @@ const mountSchema = memoizeOne(
                 selector: { text: { type: "password" } },
               },
             ] as const)
-          : ([] as const)),
-    ] as const
+          : mountType === SupervisorMountType.DISK
+            ? existing
+              ? // Mounted partitions are not listed; show what was resolved.
+                ([
+                  {
+                    name: "device_identity",
+                    type: "constant",
+                    value: diskIdentity,
+                  },
+                  {
+                    name: "read_only",
+                    selector: { boolean: {} },
+                  },
+                ] as const)
+              : ([
+                  {
+                    name: "device",
+                    required: true,
+                    selector: {
+                      select: {
+                        options: (partitions ?? []).map((entry) => ({
+                          value: entry.partition.device,
+                          label: mountPartitionLabel(entry),
+                        })),
+                        mode: "dropdown",
+                      },
+                    },
+                  },
+                  {
+                    name: "read_only",
+                    disabled: readOnlyForced,
+                    selector: { boolean: {} },
+                  },
+                ] as const)
+            : ([] as const)),
+    ] as const;
+  }
 );
 
 @customElement("dialog-mount-view")
 class ViewMountDialog extends DirtyStateProviderMixin<
   Partial<SupervisorMountRequestParams>
->()(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+>()(DialogMixin<MountViewDialogParams>(LitElement)) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _data?: SupervisorMountRequestParams;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state() private _data?: MountFormData;
 
   @state() private _waiting?: boolean;
 
@@ -172,75 +299,106 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 
   @state() private _showCIFSVersion?: boolean;
 
-  @state() private _reloadMounts?: () => void;
+  @state() private _partitions?: MountableDiskPartition[];
 
-  @state() private _open = false;
+  @state() private _diskSupported = false;
 
-  public async showDialog(
-    dialogParams: MountViewDialogParams
-  ): Promise<Promise<void>> {
-    this._data = dialogParams.mount;
-    this._existing = dialogParams.mount !== undefined;
-    this._reloadMounts = dialogParams.reloadMounts;
-    this._open = true;
-    if (
-      dialogParams.mount?.type === "cifs" &&
-      dialogParams.mount.version &&
-      dialogParams.mount.version !== "auto"
-    ) {
+  private _originalType?: SupervisorMountType;
+
+  @state() private _diskIdentity?: string;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.params) {
+      return;
+    }
+    const { mount } = this.params;
+    this._data = mount;
+    this._existing = mount !== undefined;
+    this._originalType = mount?.type;
+    if (mount?.type === "cifs" && mount.version && mount.version !== "auto") {
       this._showCIFSVersion = true;
     }
-    this._initDirtyTracking({ type: "deep" }, this._data ?? {});
+    if (mount?.type === SupervisorMountType.DISK) {
+      this._diskIdentity = [mount.filesystem, mount.uuid]
+        .filter(Boolean)
+        .join(" • ");
+    }
+    this._initDirtyTracking(
+      { type: "deep" },
+      (this._data ?? {}) as Partial<SupervisorMountRequestParams>
+    );
   }
 
-  public closeDialog(): void {
-    this._open = false;
+  protected firstUpdated(): void {
+    // Disks only matter when picking one for a new mount.
+    if (this.params && !this._existing) {
+      this._loadDisks();
+    }
   }
 
-  private _dialogClosed(): void {
-    this._data = undefined;
-    this._waiting = undefined;
-    this._error = undefined;
-    this._validationError = undefined;
-    this._validationWarning = undefined;
-    this._existing = undefined;
-    this._showCIFSVersion = undefined;
-    this._reloadMounts = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  private async _loadDisks(): Promise<void> {
+    try {
+      const { disks } = await fetchHostDisks(this._api.callWS);
+      // The dialog can be closed while waiting for the backend.
+      if (!this.isConnected) {
+        return;
+      }
+      this._partitions = mountableDiskPartitions(disks);
+      this._diskSupported = true;
+    } catch (_err: any) {
+      if (!this.isConnected) {
+        return;
+      }
+      // Older Supervisors lack the endpoint, and the relayed error carries no
+      // status to tell that apart. Hide the option rather than block network
+      // storage with an error.
+      this._partitions = [];
+      this._diskSupported = false;
+    }
   }
 
   protected render() {
-    if (this._existing === undefined) {
+    if (!this.params) {
       return nothing;
     }
+    const schema = mountSchema(
+      this._i18n.localize,
+      this._existing,
+      this._data?.type,
+      this._showCIFSVersion,
+      this._diskSupported,
+      this._partitions,
+      this._diskIdentity,
+      this._readOnlyForced,
+      this._allowBackupUsage
+    );
     return html`
       <ha-dialog
-        .open=${this._open}
+        open
         header-title=${
           this._existing
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.panel.config.storage.network_mounts.update_title"
               )
-            : this.hass.localize(
+            : this._i18n.localize(
                 "ui.panel.config.storage.network_mounts.add_title"
               )
         }
         .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
       >
         <a
           slot="headerActionItems"
           class="header_button"
           href=${documentationUrl(
-            this.hass,
+            this._config,
             "/common-tasks/os#network-storage"
           )}
-          title=${this.hass.localize(
+          title=${this._i18n.localize(
             "ui.panel.config.storage.network_mounts.documentation"
           )}
           target="_blank"
           rel="noreferrer"
-          dir=${computeRTLDirection(this.hass)}
         >
           <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
         </a>
@@ -249,15 +407,19 @@ class ViewMountDialog extends DirtyStateProviderMixin<
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing
         }
+        ${
+          this._showNoPartitions
+            ? html`<ha-alert alert-type="info">
+                ${this._i18n.localize(
+                  "ui.panel.config.storage.network_mounts.no_disks"
+                )}
+              </ha-alert>`
+            : nothing
+        }
         <ha-form
           autofocus
           .data=${this._data}
-          .schema=${mountSchema(
-            this.hass.localize,
-            this._existing,
-            this._data?.type,
-            this._showCIFSVersion
-          )}
+          .schema=${schema}
           .error=${this._validationError}
           .warning=${this._validationWarning}
           .computeLabel=${this._computeLabelCallback}
@@ -276,7 +438,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
                   slot="secondaryAction"
                   appearance="plain"
                 >
-                  ${this.hass.localize("ui.common.delete")}
+                  ${this._i18n.localize("ui.common.delete")}
                 </ha-button>`
               : nothing
           }
@@ -285,20 +447,22 @@ class ViewMountDialog extends DirtyStateProviderMixin<
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-progress-button
             slot="primaryAction"
             .progress=${!!this._waiting}
-            .disabled=${!this.isDirtyState}
+            .disabled=${
+              !this.isDirtyState || !requiredFieldsFilled(schema, this._data)
+            }
             @click=${this._connectMount}
           >
             ${
               this._existing
-                ? this.hass.localize(
+                ? this._i18n.localize(
                     "ui.panel.config.storage.network_mounts.update"
                   )
-                : this.hass.localize(
+                : this._i18n.localize(
                     "ui.panel.config.storage.network_mounts.connect"
                   )
             }
@@ -308,11 +472,37 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     `;
   }
 
+  // An empty partition list is only relevant while creating a mount.
+  private get _showNoPartitions(): boolean {
+    return (
+      !this._existing &&
+      this._data?.type === SupervisorMountType.DISK &&
+      this._partitions?.length === 0
+    );
+  }
+
+  private get _readOnlyForced(): boolean {
+    if (this._existing || this._data?.type !== SupervisorMountType.DISK) {
+      return false;
+    }
+    const { device } = this._data;
+    return !!this._partitions?.find(
+      (entry) => entry.partition.device === device
+    )?.partition.read_only;
+  }
+
+  // Backup usage is impossible for a read-only mount.
+  private get _allowBackupUsage(): boolean {
+    return !(
+      this._data?.type === SupervisorMountType.DISK && this._data.read_only
+    );
+  }
+
   private _computeLabelCallback = (
     // @ts-ignore
     schema: SchemaUnion<ReturnType<typeof mountSchema>>
   ): string =>
-    this.hass.localize(
+    this._i18n.localize(
       `ui.panel.config.storage.network_mounts.options.${schema.name}.title`
     );
 
@@ -320,18 +510,18 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     // @ts-ignore
     schema: SchemaUnion<ReturnType<typeof mountSchema>>
   ): string =>
-    this.hass.localize(
+    this._i18n.localize(
       `ui.panel.config.storage.network_mounts.options.${schema.name}.description`
     );
 
   private _computeErrorCallback = (error: string): string =>
-    this.hass.localize(
+    this._i18n.localize(
       // @ts-ignore
       `ui.panel.config.storage.network_mounts.errors.${error}`
     ) || error;
 
   private _computeWarningCallback = (warning: string): string =>
-    this.hass.localize(
+    this._i18n.localize(
       // @ts-ignore
       `ui.panel.config.storage.network_mounts.warnings.${warning}`
     ) || warning;
@@ -353,7 +543,17 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     ) {
       this._validationWarning.version = "not_recomeded_cifs_version";
     }
-    this._updateDirtyState(this._data ?? {});
+    // Host reports this device as read-only.
+    if (this._readOnlyForced) {
+      this._data!.read_only = true;
+    }
+    // Read-only plus backup is invalid; drop usage so the user picks again.
+    if (!this._allowBackupUsage && this._data?.usage === "backup") {
+      delete (this._data as Partial<SupervisorMountRequestParams>).usage;
+    }
+    this._updateDirtyState(
+      (this._data ?? {}) as Partial<SupervisorMountRequestParams>
+    );
   }
 
   private async _connectMount(ev) {
@@ -364,13 +564,41 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     if (mountData.type === "cifs" && mountData.version === "auto") {
       mountData.version = undefined;
     }
+    // Network forms have no read-only control, so a disk's read-only value
+    // must not reach a network mount. One that was already read-only keeps
+    // it. Only the request drops it, so switching back to Local disk keeps it.
+    if (
+      mountData.type !== SupervisorMountType.DISK &&
+      (!this._existing || this._originalType === SupervisorMountType.DISK)
+    ) {
+      delete mountData.read_only;
+    }
+    // Send the partition's uuid alongside its device path: Supervisor resolves
+    // by uuid and rejects the request if the path now names a different disk.
+    if (mountData.type === SupervisorMountType.DISK && !this._existing) {
+      const partition = this._partitions?.find(
+        (entry) => entry.partition.device === mountData.device
+      )?.partition;
+      if (partition) {
+        mountData.uuid = partition.uuid;
+      }
+    }
     try {
       if (this._existing) {
-        await updateSupervisorMount(this.hass, mountData);
+        await updateSupervisorMount(
+          this._api.callWS,
+          mountData as Partial<SupervisorMountRequestParams>
+        );
       } else {
-        await createSupervisorMount(this.hass, mountData);
+        await createSupervisorMount(
+          this._api.callWS,
+          mountData as SupervisorMountRequestParams
+        );
       }
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       this._error = extractApiErrorMessage(err);
       this._waiting = false;
       progressButton.actionError();
@@ -379,8 +607,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       }
       return;
     }
-    if (this._reloadMounts) {
-      this._reloadMounts();
+    this.params?.reloadMounts();
+    if (!this.isConnected) {
+      return;
     }
     this._markDirtyStateClean();
     this.closeDialog();
@@ -390,14 +619,18 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._error = undefined;
     this._waiting = true;
     try {
-      await removeSupervisorMount(this.hass, this._data!.name);
+      await removeSupervisorMount(this._api.callWS, this._data!.name);
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       this._error = extractApiErrorMessage(err);
       this._waiting = false;
       return;
     }
-    if (this._reloadMounts) {
-      this._reloadMounts();
+    this.params?.reloadMounts();
+    if (!this.isConnected) {
+      return;
     }
     this.closeDialog();
   }
