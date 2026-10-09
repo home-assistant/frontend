@@ -216,6 +216,22 @@ export class HaInput extends WaInputMixin(LitElement) {
     }
   }
 
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    this._syncAriaInvalid();
+  }
+
+  // wa-input never sets aria-invalid on its native input. Without it, WebKit
+  // falls back to the native validity, so screen readers announce an empty
+  // required field as invalid before anything was typed.
+  private async _syncAriaInvalid(): Promise<void> {
+    await this._input?.updateComplete;
+    this._getNativeInput()?.setAttribute(
+      "aria-invalid",
+      this.invalid || this._invalid ? "true" : "false"
+    );
+  }
+
   public override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("focusin", this._syncFromNativeInput);
