@@ -118,7 +118,7 @@
     "maplibre-gl": "6.12.0",
     "marked": "18.1.0",
     "memoize-one": "6.0.0",
-    "nanoid": "6.0.1",
+    "nanoid": "6.0.2",
     "node-vibrant": "4.0.4",
     "object-hash": "3.0.0",
     "punycode": "2.3.1",
