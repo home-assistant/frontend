@@ -53,9 +53,11 @@ import {
 } from "../../../../data/selector";
 import { extractFromTarget, type TargetType } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
-import { isConfigObject } from "../ui-support";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
+
+const isConfigObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 @customElement("ha-automation-row-targets")
 export class HaAutomationRowTargets extends LitElement {
