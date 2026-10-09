@@ -18,8 +18,8 @@ import {
   subscribeHistoryStatesTimeWindow,
   type HistoryResult,
 } from "../../../data/history";
-import { isConnectionLost } from "../../../data/websocket_api";
 import { fetchStatistics } from "../../../data/recorder";
+import { isConnectionLost } from "../../../data/websocket_api";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";

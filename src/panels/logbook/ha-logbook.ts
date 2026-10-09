@@ -106,6 +106,9 @@ export class HaLogbook extends LitElement {
   // Set when the subscribe was rejected because the connection dropped
   private _resubscribeOnReady = false;
 
+  // Dropped on reconnect, still sent if it was waiting for the socket
+  private _replacedLogbook?: Promise<UnsubscribeFunc>;
+
   public getEntries(): LogbookEntry[] {
     return this._logbookEntries || [];
   }
@@ -302,6 +305,7 @@ export class HaLogbook extends LitElement {
       return;
     }
     this._resubscribeOnReady = false;
+    this._replacedLogbook = this._unsubLogbook;
     this._unsubLogbook = undefined;
     this._logbookEntries = undefined;
     this._pendingStreamMessages = [];
@@ -348,7 +352,7 @@ export class HaLogbook extends LitElement {
     try {
       this._logbookSubscriptionId++;
 
-      this._unsubLogbook = subscribeLogbook(
+      const subscription = subscribeLogbook(
         this.hass,
         (streamMessage, subscriptionId) => {
           if (subscriptionId !== this._logbookSubscriptionId) {
@@ -363,7 +367,13 @@ export class HaLogbook extends LitElement {
         this.entityIds,
         this.deviceIds
       );
-      await this._unsubLogbook;
+      this._unsubLogbook = subscription;
+      await subscription;
+      if (this._replacedLogbook === subscription) {
+        // Subscribed again on reconnect, this one would stream unused
+        this._replacedLogbook = undefined;
+        subscription.then((unsub) => unsub()).catch(() => undefined);
+      }
     } catch (err: any) {
       this._unsubLogbook = undefined;
       if (isConnectionLost(err)) {

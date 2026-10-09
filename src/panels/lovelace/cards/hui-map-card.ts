@@ -44,8 +44,8 @@ import {
   zoneColor,
 } from "../../../common/map/entity-map-colors";
 import type { HistoryStates } from "../../../data/history";
-import { isConnectionLost } from "../../../data/websocket_api";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import { isConnectionLost } from "../../../data/websocket_api";
 import type { Themes } from "../../../data/ws-themes";
 import { fullEntitiesContext, uiContext } from "../../../data/context";
 import { transform } from "../../../common/decorators/transform";
