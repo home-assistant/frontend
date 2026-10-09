@@ -706,6 +706,39 @@ describe("createMatterNetworkChartData", () => {
     expect(data.nodes.find((n) => n.id === "br_1")!.name).toBe("Cuisine");
   });
 
+  it("links Home Assistant straight to a wired node", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({ id: "36", node_id: 36, network_type: "ethernet" }),
+        node({
+          id: "37",
+          node_id: 37,
+          network_type: "ethernet",
+          available: false,
+        }),
+        node({ id: "38", node_id: 38, network_type: "unknown" }),
+      ]),
+      mockHass(),
+      element
+    );
+
+    // an Ethernet node has no radio link, but HA reaches it over the LAN
+    const online = data.links.find(
+      (l) => l.source === "ha" && l.target === "36"
+    )!;
+    expect(online.lineStyle?.type).toBe("solid");
+    expect(online.symbol).toBe("none");
+    expect(online.ignoreForceLayout).toBeFalsy();
+
+    const offline = data.links.find(
+      (l) => l.source === "ha" && l.target === "37"
+    )!;
+    expect(offline.lineStyle?.type).toBe("dashed");
+
+    // an unknown transport still has no path we can see
+    expect(data.links.map((l) => l.target)).toEqual(["36", "37"]);
+  });
+
   it("routes HA through the Wi-Fi access point, not the stations", () => {
     const data = createMatterNetworkChartData(
       topology(
