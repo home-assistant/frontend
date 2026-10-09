@@ -6,7 +6,6 @@ import { watchAudioLevel } from "../../../common/audio/watch-audio-level";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
 import "../../../components/ha-camera-stream";
@@ -17,11 +16,7 @@ import type {
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { WebRtcMicrophoneState } from "../../../components/ha-web-rtc-player";
-import {
-  CameraEntityFeature,
-  STREAM_TYPE_WEB_RTC,
-  type CameraEntity,
-} from "../../../data/camera";
+import { STREAM_TYPE_WEB_RTC, type CameraEntity } from "../../../data/camera";
 import { configContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
@@ -117,7 +112,7 @@ class MoreInfoCamera extends LitElement {
         @stream-type-changed=${this._streamTypeChanged}
       ></ha-camera-stream>
       ${
-        supportsFeature(this.stateObj, CameraEntityFeature.TWO_WAY_AUDIO)
+        this.stateObj.attributes.has_two_way_audio
           ? this._renderMicrophoneButton()
           : nothing
       }
