@@ -1619,10 +1619,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       background-color: var(--ha-color-fill-primary-normal-hover);
     }
 
-    wa-tree-item::part(base).tree-item-selected .item {
-      background-color: yellow;
-    }
-
     ha-list-base {
       --ha-row-item-padding-inline: var(--ha-space-3);
       --ha-row-item-padding-block: var(--ha-space-1);
