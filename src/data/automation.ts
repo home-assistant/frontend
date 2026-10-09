@@ -573,6 +573,10 @@ export const flattenTriggers = (
   const flatTriggers: Trigger[] = [];
 
   ensureArray(triggers).forEach((t) => {
+    // Incomplete YAML can leave null entries in the trigger list
+    if (!t || typeof t !== "object") {
+      return;
+    }
     if ("triggers" in t) {
       if (t.triggers) {
         flatTriggers.push(...flattenTriggers(t.triggers));
