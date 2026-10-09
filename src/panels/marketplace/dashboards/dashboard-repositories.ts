@@ -197,7 +197,8 @@ export const browseSettingsFromUrl = (
   return {
     search,
     sorting: sort
-      ? { column: sort, direction: direction === "asc" ? "asc" : "desc" }
+      ? // Ascending unless the link says otherwise, like picking a sort in the table
+        { column: sort, direction: direction === "desc" ? "desc" : "asc" }
       : undefined,
     filters,
   };
