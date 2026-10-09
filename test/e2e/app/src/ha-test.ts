@@ -18,7 +18,10 @@ import {
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEnergy } from "../../../../demo/src/stubs/energy";
 import { energyEntities } from "../../../../demo/src/stubs/entities";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import {
+  mockEntityRegistry,
+  mockEntityRegistryDisplay,
+} from "../../../../demo/src/stubs/entity_registry";
 import { mockEvents } from "../../../../demo/src/stubs/events";
 import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockFrontend } from "../../../../demo/src/stubs/frontend";
@@ -168,6 +171,7 @@ export class HaTest extends HomeAssistantAppEl {
     mockDeviceRegistry(hass);
     mockFloorRegistry(hass);
     mockLabelRegistry(hass);
+    mockEntityRegistryDisplay(hass);
     mockEntityRegistry(hass, []);
     mockConfigEntries(hass);
     mockIcons(hass);
