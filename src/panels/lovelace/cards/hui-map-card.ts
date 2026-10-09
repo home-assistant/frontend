@@ -662,10 +662,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     if (
       changedProps.has("_overviewSelected") &&
-      this._overviewSelected &&
       this.layout === PANEL_VIEW_LAYOUT
     ) {
-      this._focusEntity(this._overviewSelected);
+      if (this._overviewSelected) {
+        this._focusEntity(this._overviewSelected);
+      } else if (changedProps.get("_overviewSelected")) {
+        this._map?.updateComplete.then(() =>
+          this._map?.fitMap({ unpause_autofit: true })
+        );
+      }
     }
   }
 
