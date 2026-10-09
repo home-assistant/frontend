@@ -121,11 +121,14 @@ export function cssColorToHex(color: string): string | undefined {
     return undefined;
   }
 
-  // The canvas normalizes any opaque CSS color to #rrggbb
+  // The canvas normalizes any opaque CSS color to #rrggbb. It ignores values
+  // it can't paint, like "inherit", so start from transparent: that never
+  // matches #rrggbb, instead of the default black.
   const context = document.createElement("canvas").getContext("2d");
   if (!context) {
     return undefined;
   }
+  context.fillStyle = "transparent";
   context.fillStyle = color;
   const normalized = String(context.fillStyle);
   return /^#[0-9a-f]{6}$/.test(normalized) ? normalized : undefined;

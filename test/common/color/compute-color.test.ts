@@ -21,6 +21,7 @@ describe("computeCssColor", () => {
 describe("cssColorToHex", () => {
   // jsdom has no canvas, so stand in for the browser's color normalization
   const normalized: Record<string, string> = {
+    transparent: "rgba(0, 0, 0, 0)",
     gold: "#ffd700",
     "#FFF": "#ffffff",
     "rgba(255, 0, 0, 0.5)": "rgba(255, 0, 0, 0.5)",
@@ -56,6 +57,13 @@ describe("cssColorToHex", () => {
     mockCanvas();
     expect(cssColorToHex("not-a-color")).toBeUndefined();
     expect(cssColorToHex("primary")).toBeUndefined();
+  });
+
+  // The canvas ignores values it can't paint, which used to leave the
+  // default black
+  it("rejects CSS-wide values like inherit", () => {
+    mockCanvas();
+    expect(cssColorToHex("inherit")).toBeUndefined();
   });
 
   it("rejects colors with transparency", () => {
