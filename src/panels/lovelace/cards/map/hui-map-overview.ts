@@ -15,38 +15,35 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { formatTime } from "../../../../common/datetime/format_time";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { contrastingZoneContent } from "../../../../common/map/zone-marker";
-import {
-  HOME_ZONE_ENTITY_ID,
-  zoneColor,
-} from "../../../../common/map/entity-map-colors";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { getEntityLocation } from "../../../../common/entity/get_entity_location";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { getEntityLocation } from "../../../../common/entity/get_entity_location";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../../common/map/entity-map-colors";
+import { contrastingZoneContent } from "../../../../common/map/zone-marker";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-relative-time";
 import "../../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-relative-time";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
-import "../../../../components/ha-button";
-import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
-import { formatTime } from "../../../../common/datetime/format_time";
-import type { ActivityEntry } from "./map-activity";
-import { personActivity, zoneActivity } from "./map-activity";
 import {
   apiContext,
   configContext,
@@ -60,14 +57,17 @@ import type { EntityRegistryEntry } from "../../../../data/entity/entity_registr
 import type { HistoryStates } from "../../../../data/history";
 import { fetchDateWS } from "../../../../data/history";
 import { computeUserInitials } from "../../../../data/user";
+import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type {
   CurrentUser,
-  HomeAssistantConfig,
   HomeAssistantApi,
+  HomeAssistantConfig,
   HomeAssistantConnection,
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../../types";
+import type { ActivityEntry } from "./map-activity";
+import { personActivity, zoneActivity } from "./map-activity";
 
 export type OverviewTab = "people" | "devices" | "zones";
 
@@ -157,7 +157,7 @@ export class HuiMapOverview extends LitElement {
 
   @query(".detail-name") private _detailName?: HTMLElement;
 
-  @queryAll("ha-md-list-item")
+  @queryAll("ha-list-item-button")
   private _listItems!: NodeListOf<HTMLElement>;
 
   private _peekObserver?: ResizeObserver;
@@ -755,13 +755,13 @@ export class HuiMapOverview extends LitElement {
         role="tabpanel"
         aria-labelledby="tab-${tab}"
       >
-        <ha-md-list>
+        <ha-list-base>
           ${items.map((stateObj) =>
             tab === "zones"
               ? this._renderZone(stateObj)
               : this._renderEntity(stateObj)
           )}
-        </ha-md-list>
+        </ha-list-base>
       </div>
     `;
   }
@@ -772,8 +772,7 @@ export class HuiMapOverview extends LitElement {
     const picture = stateObj.attributes.entity_picture;
 
     return html`
-      <ha-md-list-item
-        type="button"
+      <ha-list-item-button
         data-entity-id=${stateObj.entity_id}
         class=${classMap({ "no-location": !location })}
         @click=${this._handleItemClick}
@@ -803,7 +802,7 @@ export class HuiMapOverview extends LitElement {
             format="short"
           ></ha-relative-time>
         </span>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -818,8 +817,7 @@ export class HuiMapOverview extends LitElement {
     );
 
     return html`
-      <ha-md-list-item
-        type="button"
+      <ha-list-item-button
         data-entity-id=${stateObj.entity_id}
         @click=${this._handleItemClick}
       >
@@ -846,7 +844,7 @@ export class HuiMapOverview extends LitElement {
                 )
           }
         </span>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -1020,30 +1018,28 @@ export class HuiMapOverview extends LitElement {
       flex-direction: column;
     }
 
-    ha-md-list {
+    ha-list-base {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
-      padding: 0;
       margin-top: var(--ha-space-2);
-      background: none;
       margin-bottom: calc(-1 * var(--sheet-bottom-space, 0px));
       padding-bottom: var(--sheet-bottom-space, 0px);
-      --md-list-item-leading-space: var(--ha-space-2);
-      --md-list-item-trailing-space: var(--ha-space-2);
-      --md-list-item-one-line-container-height: 56px;
-      --md-list-item-two-line-container-height: 64px;
     }
 
-    ha-md-list-item {
+    ha-list-item-button {
       border-radius: var(--ha-border-radius-lg);
-      --md-list-item-supporting-text-size: var(--ha-font-size-s);
-      --md-list-item-label-text-weight: var(--ha-font-weight-medium);
-      --ha-md-list-item-gap: var(--ha-space-3);
+      --ha-list-item-focus-radius: var(--ha-border-radius-lg);
+      --ha-row-item-gap: var(--ha-space-3);
+      --ha-row-item-padding-inline: var(--ha-space-2);
     }
 
-    ha-md-list-item.no-location {
-      --md-sys-color-on-surface: var(--secondary-text-color);
+    ha-list-item-button::part(headline) {
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    ha-list-item-button.no-location {
+      color: var(--secondary-text-color);
     }
 
     .avatar {
