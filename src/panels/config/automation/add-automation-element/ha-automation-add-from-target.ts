@@ -23,6 +23,7 @@ import { computeDeviceName } from "../../../../common/entity/compute_device_name
 import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/ha-button";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
@@ -68,7 +69,11 @@ import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+import { getTargetIcon } from "../target/get_target_icon";
+import { getTargetText } from "../target/get_target_text";
 import "./ha-automation-add-element-paste";
+
+type TargetType = "floor" | "area" | "device" | "entity" | "label";
 
 interface Level1Entries {
   open: boolean;
@@ -114,6 +119,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @property({ attribute: "automation-element-type" })
   public automationElementType!: AddAutomationElementDialogParams["type"];
+
+  // "<type>________<id>" target strings, most recently selected first.
+  @property({ attribute: false }) public recentTargets?: string[];
 
   // #endregion properties
 
@@ -211,6 +219,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   .clipboardItem=${this.clipboardItem}
                 ></ha-automation-add-element-paste>
               </ha-list-base>
+              ${this._renderRecentTargets(this.narrow, this.recentTargets, this.value)}
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
@@ -323,6 +332,98 @@ export default class HaAutomationAddFromTarget extends LitElement {
       return nothing;
     }
   );
+
+  private _renderRecentTargets(
+    narrow: boolean,
+    recentTargets?: string[],
+    value?: SingleHassServiceTarget
+  ) {
+    const targets = (recentTargets ?? [])
+      .map(
+        (target) => target.split(TARGET_SEPARATOR, 2) as [TargetType, string]
+      )
+      .filter(([type, id]) => id && this._targetExists(type, id));
+
+    if (!targets.length) {
+      return nothing;
+    }
+
+    const selected = this._getSelectedTargetId(value);
+
+    return html`<ha-section-title>
+        ${this._i18n.localize("ui.panel.config.automation.editor.recently_used")}
+        <ha-button
+          class="clear-recent"
+          appearance="plain"
+          variant="neutral"
+          size="s"
+          @click=${this._clearRecentTargets}
+        >
+          ${this._i18n.localize("ui.common.clear")}
+        </ha-button>
+      </ha-section-title>
+      <ha-list-base>
+        ${targets.map(([type, id]) => {
+          const target = `${type}${TARGET_SEPARATOR}${id}`;
+          return html`<ha-list-item-button
+            .target=${target}
+            @click=${this._selectItem}
+            class=${selected === target ? "selected" : ""}
+          >
+            <div slot="start" class="target-icon">
+              ${getTargetIcon(
+                this._registries,
+                this.states,
+                type,
+                id,
+                this._configEntryLookup,
+                this._getLabel
+              )}
+            </div>
+            <div slot="headline">
+              ${getTargetText(
+                this._registries,
+                this.states,
+                this._i18n.localize,
+                type,
+                id,
+                this._getLabel
+              )}
+            </div>
+            <span slot="end" class="target-type"
+              >${this._i18n.localize(
+                `ui.components.target-picker.type.${type}`
+              )}</span
+            >
+            ${narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
+          </ha-list-item-button>`;
+        })}
+      </ha-list-base>`;
+  }
+
+  private _clearRecentTargets() {
+    fireEvent(this, "clear-recent-targets");
+  }
+
+  private _targetExists(type: TargetType, id: string): boolean {
+    switch (type) {
+      case "entity":
+        return id in this.states;
+      case "device":
+        return id in this._registries.devices;
+      case "area":
+        return id in this._registries.areas;
+      case "floor":
+        return id in this._registries.floors;
+      case "label":
+        return !!this._getLabel(id);
+      default:
+        return false;
+    }
+  }
+
+  private _getLabel = (id: string) =>
+    this._labelRegistry?.find(({ label_id }) => label_id === id);
 
   private _renderFloors = memoizeOne(
     (
@@ -1557,6 +1658,48 @@ export default class HaAutomationAddFromTarget extends LitElement {
       top: 0;
       position: sticky;
       z-index: 1;
+      /* Sized off the px spacing scale, never off font metrics: with
+         --ha-font-size-scale applied, font-size-m * line-height-normal is
+         fractional, which gives the header a subpixel height and lands the
+         Clear button's edges on half pixels. 8 + 24 + 8 is always whole. */
+      line-height: var(--ha-space-6);
+    }
+
+    /* Icons vary (state, domain, floor, svg); a fixed box keeps labels aligned. */
+    .target-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      /* 24px icon + the 4px padding the other sections' icons carry */
+      width: var(--ha-space-8);
+      height: var(--ha-space-8);
+    }
+    .target-icon > * {
+      padding: 0;
+      flex: none;
+    }
+
+    .target-type {
+      font-size: var(--ha-font-size-s);
+      white-space: nowrap;
+    }
+
+    ha-list-item-button.selected::part(end) {
+      color: var(--ha-color-on-primary-normal);
+    }
+
+    ha-button.clear-recent {
+      /* :host turns wa's quiet fill blue for the tree items; the button
+         should keep the neutral hover it has everywhere else. */
+      --wa-color-neutral-fill-quiet: var(--ha-color-fill-neutral-quiet-hover);
+      margin-inline-start: auto;
+      margin-inline-end: calc(-1 * var(--ha-space-2));
+      /* The same whole-pixel line box the title's text gets, so the button
+         neither grows the header nor sits off-grid inside it. */
+      --ha-button-height: var(--ha-space-6);
+      --wa-form-control-padding-inline: var(--ha-space-2);
+      font-size: var(--ha-font-size-s);
     }
 
     wa-tree-item::part(item) {
@@ -1670,5 +1813,6 @@ declare global {
   }
   interface HASSDomEvents {
     "time-location-group-selected": { value: string };
+    "clear-recent-targets": undefined;
   }
 }

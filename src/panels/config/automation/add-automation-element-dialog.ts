@@ -8,6 +8,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
+import { storage } from "../../../common/decorators/storage";
 import { ensureArray } from "../../../common/array/ensure-array";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -123,6 +124,7 @@ import "./add-automation-element/ha-automation-add-element-paste";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
+import { findElementGroupKey } from "./add-automation-element/element-group";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import {
   ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
@@ -184,6 +186,18 @@ const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "integrationGroups"];
 
 const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
+const MAX_RECENT = 5;
+
+// Only targets that point at a concrete registry item are remembered; the
+// structural buckets ("unassigned devices", a domain group, ...) are not.
+const RECENT_TARGET_TYPES = new Set([
+  "floor",
+  "area",
+  "device",
+  "entity",
+  "label",
+]);
+
 // Group keys surfaced as their own section in the "by target" tab because
 // their elements have no target (time/calendar/schedule, sun). Picking one
 // drills into its items, like selecting the matching group in the "by type" tab.
@@ -244,6 +258,16 @@ class DialogAddAutomationElement
   @state() private _loadItemsError = false;
 
   @state() private _openedFromQuery = false;
+
+  @state()
+  @storage({ key: "automation-recent-targets", state: true, subscribe: false })
+  private _recentTargets?: string[];
+
+  @state()
+  @storage({ key: "automation-recent-elements", state: true, subscribe: false })
+  private _recentElements?: Partial<
+    Record<AddAutomationElementDialogParams["type"], string[]>
+  >;
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
@@ -624,6 +648,20 @@ class DialogAddAutomationElement
           this._manifests
         );
 
+    const recentElements = hideCollections
+      ? []
+      : this._getRecentElements(
+          this._items(
+            automationElementType,
+            this.hass.localize,
+            this.hass.services,
+            this._triggerDescriptions,
+            this._conditionDescriptions,
+            this._manifests
+          ),
+          collections
+        );
+
     return html`
       <div slot="header">
         ${this._renderHeader()}
@@ -710,6 +748,8 @@ class DialogAddAutomationElement
                       : this._triggerDescriptions
                   )}
                   .selectedGroup=${this._selectedGroup}
+                  .recentTargets=${this._recentTargets}
+                  @clear-recent-targets=${this._clearRecentTargets}
                   class=${classMap({
                     "ha-scrollbar": true,
                     hidden:
@@ -738,12 +778,46 @@ class DialogAddAutomationElement
                       @paste-element=${this._paste}
                       divider
                     ></ha-automation-add-element-paste>
+                    ${
+                      recentElements.length
+                        ? html`<ha-section-title>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.recently_used"
+                              )}
+                              <ha-button
+                                class="clear-recent"
+                                appearance="plain"
+                                variant="neutral"
+                                size="s"
+                                @click=${this._clearRecentElements}
+                              >
+                                ${this.hass.localize("ui.common.clear")}
+                              </ha-button>
+                            </ha-section-title>
+                            ${repeat(
+                              recentElements,
+                              ({ item }) => `recent-${item.key}`,
+                              ({ item, groupName }) =>
+                                this._renderRecentButton(item, groupName)
+                            )}`
+                        : nothing
+                    }
                     ${collections.map(
                       (collection) => html`
                         ${
-                          collection.titleKey && collection.groups.length
+                          // The main collection has no title of its own and
+                          // only borrows one so it doesn't read as a
+                          // continuation of the recents above it.
+                          collection.groups.length > 0 &&
+                          (!!collection.titleKey || recentElements.length > 0)
                             ? html`<ha-section-title>
-                                ${this.hass.localize(collection.titleKey)}
+                                ${
+                                  collection.titleKey
+                                    ? this.hass.localize(collection.titleKey)
+                                    : this.hass.localize(
+                                        `ui.panel.config.automation.editor.${automationElementType}s.name`
+                                      )
+                                }
                               </ha-section-title>`
                             : nothing
                         }
@@ -1909,6 +1983,125 @@ class DialogAddAutomationElement
     this.closeDialog();
   }
 
+  /**
+   * A recent is the element itself, not the way to it, so it adds on the spot.
+   * Its category rides along on the end: it is what tells a Sunrise apart from
+   * the half-dozen other rows an install can name the same way.
+   */
+  private _renderRecentButton(
+    item: AddAutomationElementListItem,
+    groupName?: string
+  ) {
+    return html`
+      <ha-list-item-button .value=${item.key} @click=${this._recentSelected}>
+        <div slot="headline">${item.name}</div>
+        ${
+          item.icon
+            ? html`<span slot="start">${item.icon}</span>`
+            : item.iconPath
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.iconPath}
+                ></ha-svg-icon>`
+              : nothing
+        }
+        ${
+          groupName
+            ? html`<span slot="end" class="recent-group">${groupName}</span>`
+            : nothing
+        }
+      </ha-list-item-button>
+    `;
+  }
+
+  private _recentSelected = (ev) => {
+    const key = ev.currentTarget.value;
+    this._rememberSelection(key);
+    this._params!.add(key);
+    this.closeDialog();
+  };
+
+  /**
+   * The remembered elements, resolved against the current item list so their
+   * name and icon read the same as in the category they came from. Anything
+   * that no longer resolves — an element from an integration since removed —
+   * simply drops out.
+   */
+  private _getRecentElements(
+    items: AddAutomationElementListItem[],
+    collections: CollectionGroup[]
+  ) {
+    const recents = this._recentElements?.[this._params!.type];
+    if (!recents?.length) {
+      return [];
+    }
+    return recents
+      .map((key) => {
+        const item = items.find((candidate) => candidate.key === key);
+        return item
+          ? { item, groupName: this._elementGroup(key, collections)?.name }
+          : undefined;
+      })
+      .filter((entry) => !!entry);
+  }
+
+  /**
+   * The category an element sits in, taken from the rendered collections so it
+   * reads exactly as its own row does. Worked out from the element rather than
+   * remembered from the way in, because an element can be added from a
+   * category, from a target or straight out of the search box.
+   */
+  private _elementGroup(key: string, collections: CollectionGroup[]) {
+    const type = this._params!.type;
+    const groupKey = findElementGroupKey(type, TYPES[type].collections, key);
+
+    // A row that is the element itself is no category for it, and a category
+    // this install does not render is none either.
+    return groupKey === key
+      ? undefined
+      : collections
+          .flatMap((collection) => collection.groups)
+          .find((group) => group.key === groupKey);
+  }
+
+  private _clearRecentElements = () => {
+    this._recentElements = {
+      ...this._recentElements,
+      [this._params!.type]: [],
+    };
+  };
+
+  private _clearRecentTargets = () => {
+    this._recentTargets = [];
+  };
+
+  private _rememberSelection(key: string, target?: SingleHassServiceTarget) {
+    const type = this._params!.type;
+
+    this._recentElements = {
+      ...this._recentElements,
+      [type]: [
+        key,
+        ...(this._recentElements?.[type] ?? []).filter(
+          (recent) => recent !== key
+        ),
+      ].slice(0, MAX_RECENT),
+    };
+
+    if (!target) {
+      return;
+    }
+    const [targetType, targetId] = this._extractTypeAndIdFromTarget(target);
+    if (!targetId || !RECENT_TARGET_TYPES.has(targetType)) {
+      return;
+    }
+    const recent = `${targetType}${TARGET_SEPARATOR}${targetId}`;
+    this._recentTargets = [
+      recent,
+      ...(this._recentTargets ?? []).filter((t) => t !== recent),
+    ].slice(0, MAX_RECENT);
+  }
+
   private _selected(ev: ValueChangedEvent<string>) {
     let target: HassServiceTarget | undefined;
     if (
@@ -1918,6 +2111,10 @@ class DialogAddAutomationElement
     ) {
       target = this._selectedTarget;
     }
+    this._rememberSelection(
+      ev.detail.value,
+      target ? this._selectedTarget : undefined
+    );
     this._params!.add(ev.detail.value, target);
     this.closeDialog();
   }
@@ -2159,6 +2356,7 @@ class DialogAddAutomationElement
       (item as AutomationItemComboBoxItem).type &&
       !["floor", "area"].includes((item as AutomationItemComboBoxItem).type)
     ) {
+      this._rememberSelection(item.id);
       this._params!.add(item.id);
       this.closeDialog();
       return;
@@ -2429,6 +2627,24 @@ class DialogAddAutomationElement
           top: 0;
           position: sticky;
           z-index: 1;
+          /* Sized off the px spacing scale, never off font metrics: with
+             --ha-font-size-scale applied, font-size-m * line-height-normal is
+             fractional, which gives the header a subpixel height and lands the
+             Clear button's edges on half pixels. 8 + 24 + 8 is always whole. */
+          line-height: var(--ha-space-6);
+        }
+
+        ha-button.clear-recent {
+          margin-inline-start: auto;
+          margin-inline-end: calc(-1 * var(--ha-space-2));
+          --ha-button-height: var(--ha-space-6);
+          --wa-form-control-padding-inline: var(--ha-space-2);
+          font-size: var(--ha-font-size-s);
+        }
+
+        .recent-group {
+          color: var(--ha-color-on-neutral-quiet);
+          font-size: var(--ha-font-size-s);
         }
 
         ha-automation-add-items {
