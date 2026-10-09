@@ -14,6 +14,7 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { formatTime } from "../../../../common/datetime/format_time";
@@ -596,22 +597,22 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
-  // The color of the zone a person's state names; undefined when away or unknown
-  private _zoneColorForState(entityState: string): string | undefined {
+  // The zone a person's state names; undefined when away or unknown
+  private _zoneForState(entityState: string): HassEntity | undefined {
     if (entityState === "not_home" || entityState === "unknown") {
       return undefined;
     }
-    const zone =
-      entityState === "home"
-        ? this._states[HOME_ZONE_ENTITY_ID]
-        : Object.values(this._states).find(
-            (candidate) =>
-              computeStateDomain(candidate) === "zone" &&
-              computeStateName(candidate) === entityState
-          );
-    if (!zone) {
-      return undefined;
-    }
+    return entityState === "home"
+      ? this._states[HOME_ZONE_ENTITY_ID]
+      : Object.values(this._states).find(
+          (candidate) =>
+            computeStateDomain(candidate) === "zone" &&
+            computeStateName(candidate) === entityState
+        );
+  }
+
+  // The same color as the zone's marker on the map
+  private _zoneColor(zone: HassEntity): string {
     return zoneColor(
       zone.entity_id,
       !!zone.attributes.passive,
@@ -626,9 +627,7 @@ export class HuiMapOverview extends LitElement {
       : activity.slice(0, ACTIVITY_INITIAL_ENTRIES);
     return html`
       <div class="timeline">
-        ${shown.map((entry, index) =>
-          this._renderActivityEntry(stateObj, entry, index === shown.length - 1)
-        )}
+        ${shown.map((entry) => this._renderActivityEntry(stateObj, entry))}
       </div>
       ${
         activity.length > shown.length
@@ -647,43 +646,39 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
-  private _renderActivityEntry(
-    stateObj: HassEntity,
-    entry: ActivityEntry,
-    last: boolean
-  ) {
+  private _renderActivityEntry(stateObj: HassEntity, entry: ActivityEntry) {
     const person = entry.personId ? this._states[entry.personId] : undefined;
     const headline = entry.personId
       ? person
         ? this._personName(person)
         : entry.personId
       : this._formatters.formatEntityState(stateObj, entry.state);
-    const color =
-      entry.personId && !entry.arrived
-        ? undefined
-        : this._zoneColorForState(entry.state);
+    const zone = entry.personId ? undefined : this._zoneForState(entry.state);
+    const tile = zone
+      ? this._renderZoneAvatar(zone)
+      : person
+        ? this._renderAvatar(person)
+        : html`<span class="rail" aria-hidden="true"></span>`;
     return html`
-      <div class=${classMap({ entry: true, last })}>
-        <span
-          class="dot"
-          style=${styleMap({ "--dot-color": color })}
-          aria-hidden="true"
-        ></span>
-        <span class="entry-headline">${headline}</span>
-        <span class="entry-when">
-          ${
-            entry.personId
-              ? html`${this._i18n.localize(
-                  entry.arrived
-                    ? "ui.panel.lovelace.cards.map.overview.entered"
-                    : "ui.panel.lovelace.cards.map.overview.left"
-                )}
-                · `
-              : nothing
-          }
-          ${formatTime(entry.when, this._i18n.locale, this._config)} ·
-          <ha-relative-time .datetime=${entry.when}></ha-relative-time>
-        </span>
+      <div class="entry">
+        ${tile}
+        <div class="entry-text">
+          <span class="entry-headline">${headline}</span>
+          <span class="entry-when">
+            ${
+              entry.personId
+                ? html`${this._i18n.localize(
+                    entry.arrived
+                      ? "ui.panel.lovelace.cards.map.overview.entered"
+                      : "ui.panel.lovelace.cards.map.overview.left"
+                  )}
+                  · `
+                : nothing
+            }
+            ${formatTime(entry.when, this._i18n.locale, this._config)} ·
+            <ha-relative-time .datetime=${entry.when}></ha-relative-time>
+          </span>
+        </div>
       </div>
     `;
   }
@@ -781,7 +776,6 @@ export class HuiMapOverview extends LitElement {
   private _renderEntity(stateObj: HassEntity) {
     const name = this._personName(stateObj);
     const location = getEntityLocation(stateObj, this._states);
-    const picture = stateObj.attributes.entity_picture;
 
     return html`
       <ha-list-item-button
@@ -789,21 +783,7 @@ export class HuiMapOverview extends LitElement {
         class=${classMap({ "no-location": !location })}
         @click=${this._handleItemClick}
       >
-        <div slot="start" class="avatar">
-          ${
-            picture
-              ? html`<img
-                  src=${this._connection.hassUrl(picture)}
-                  alt=""
-                  loading="lazy"
-                />`
-              : computeStateDomain(stateObj) === "person"
-                ? html`<span class="initials"
-                    >${computeUserInitials(this._entityName(stateObj))}</span
-                  >`
-                : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
-          }
-        </div>
+        ${this._renderAvatar(stateObj, "start")}
         <span slot="headline">${name}</span>
         <span slot="supporting-text">
           ${this._formatters.formatEntityState(stateObj)} ·
@@ -818,29 +798,13 @@ export class HuiMapOverview extends LitElement {
 
   private _renderZone(stateObj: HassEntity) {
     const count = Number(stateObj.state);
-    // The same color as the zone's marker on the map
-    const color = zoneColor(
-      stateObj.entity_id,
-      !!stateObj.attributes.passive,
-      this._entityReg,
-      getComputedStyle(this)
-    );
 
     return html`
       <ha-list-item-button
         data-entity-id=${stateObj.entity_id}
         @click=${this._handleItemClick}
       >
-        <div
-          slot="start"
-          class="avatar zone"
-          style=${styleMap({
-            background: color,
-            color: contrastingZoneContent(color),
-          })}
-        >
-          <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
-        </div>
+        ${this._renderZoneAvatar(stateObj, "start")}
         <span slot="headline">${this._entityName(stateObj)}</span>
         <span slot="supporting-text">
           ${
@@ -853,6 +817,44 @@ export class HuiMapOverview extends LitElement {
           }
         </span>
       </ha-list-item-button>
+    `;
+  }
+
+  private _renderAvatar(stateObj: HassEntity, slot?: string) {
+    const picture = stateObj.attributes.entity_picture;
+    return html`
+      <div class="avatar" slot=${ifDefined(slot)} aria-hidden="true">
+        ${
+          picture
+            ? html`<img
+                src=${this._connection.hassUrl(picture)}
+                alt=""
+                loading="lazy"
+              />`
+            : computeStateDomain(stateObj) === "person"
+              ? html`<span class="initials"
+                  >${computeUserInitials(this._entityName(stateObj))}</span
+                >`
+              : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
+        }
+      </div>
+    `;
+  }
+
+  private _renderZoneAvatar(zone: HassEntity, slot?: string) {
+    const color = this._zoneColor(zone);
+    return html`
+      <div
+        class="avatar zone"
+        slot=${ifDefined(slot)}
+        aria-hidden="true"
+        style=${styleMap({
+          background: color,
+          color: contrastingZoneContent(color),
+        })}
+      >
+        <ha-state-icon .stateObj=${zone}></ha-state-icon>
+      </div>
     `;
   }
 
@@ -908,6 +910,7 @@ export class HuiMapOverview extends LitElement {
     }
 
     .panel {
+      --avatar-size: 48px;
       pointer-events: auto;
       box-sizing: border-box;
       width: 100%;
@@ -1052,8 +1055,9 @@ export class HuiMapOverview extends LitElement {
 
     .avatar {
       position: relative;
-      width: 48px;
-      height: 48px;
+      flex: none;
+      width: var(--avatar-size);
+      height: var(--avatar-size);
       border-radius: var(--ha-border-radius-lg);
       overflow: visible;
       display: flex;
@@ -1148,41 +1152,34 @@ export class HuiMapOverview extends LitElement {
     }
 
     .timeline {
-      margin-top: var(--ha-space-2);
-      --rail-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-4);
+      margin-top: var(--ha-space-3);
     }
 
     .entry {
-      position: relative;
       display: flex;
-      flex-direction: column;
-      padding-inline-start: calc(var(--rail-size) + var(--ha-space-3));
-      padding-bottom: var(--ha-space-4);
+      align-items: center;
+      gap: var(--ha-space-3);
     }
-    .entry.last {
-      padding-bottom: 0;
-    }
-    .entry::before {
-      content: "";
-      position: absolute;
-      inset-inline-start: calc(var(--rail-size) / 2 - 1px);
-      top: var(--rail-size);
-      bottom: 0;
-      width: 2px;
+
+    /* Centered under the tiles */
+    .rail {
+      flex: none;
+      align-self: stretch;
+      width: var(--ha-border-width-md);
+      margin-inline: calc((var(--avatar-size) - var(--ha-border-width-md)) / 2);
+      border-radius: var(--ha-border-radius-pill);
       background: var(--divider-color);
     }
-    .entry.last::before {
-      display: none;
+
+    .entry-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
     }
-    .dot {
-      position: absolute;
-      inset-inline-start: 0;
-      top: 4px;
-      width: var(--rail-size);
-      height: var(--rail-size);
-      border-radius: var(--ha-border-radius-circle);
-      background: var(--dot-color, var(--secondary-text-color));
-    }
+
     .entry-headline {
       font-weight: var(--ha-font-weight-medium);
       color: var(--primary-text-color);
