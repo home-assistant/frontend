@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getConfigSubpageTitle } from "../../src/data/panel";
-import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../src/data/page_navigation";
 import type { HomeAssistant } from "../../src/types";
 
 const translations: Record<string, string> = {

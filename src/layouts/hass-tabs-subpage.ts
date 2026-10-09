@@ -29,6 +29,7 @@ import {
   internationalizationContext,
   narrowViewportContext,
 } from "../data/context";
+import type { PageNavigation } from "../data/page_navigation";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
 
@@ -36,25 +37,6 @@ const normalizePathname = (pathname: string): string =>
   pathname.endsWith("/") && pathname.length > 1
     ? pathname.slice(0, -1)
     : pathname;
-
-export interface PageNavigation {
-  path: string;
-  translationKey?: string;
-  component?: string | string[];
-  name?: string;
-  core?: boolean;
-  /** Hide from non-admin users in filtered navigation and quick bar. */
-  adminOnly?: boolean;
-  iconPath?: string;
-  iconSecondaryPath?: string;
-  iconViewBox?: string;
-  description?: string;
-  iconColor?: string;
-  // Shown next to the name of the tab
-  badge?: string;
-  info?: any;
-  filter?: (hass: Pick<HomeAssistant, "entities">) => boolean;
-}
 
 @customElement("hass-tabs-subpage")
 export class HassTabsSubpage extends LitElement {

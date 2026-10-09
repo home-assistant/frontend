@@ -13,7 +13,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
 import type { InfraredDevice } from "../../../../../data/infrared";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../../../data/page_navigation";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 

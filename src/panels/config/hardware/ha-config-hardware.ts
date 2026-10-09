@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../data/page_navigation";
 import type { HomeAssistant } from "../../../types";
 
 export const hardwareTabs = (hass: HomeAssistant): PageNavigation[] => {

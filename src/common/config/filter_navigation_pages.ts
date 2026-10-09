@@ -1,4 +1,4 @@
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../data/page_navigation";
 import type { HomeAssistant } from "../../types";
 import { canShowPage } from "./can_show_page";
 
