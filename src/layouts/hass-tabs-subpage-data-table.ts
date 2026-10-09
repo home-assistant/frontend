@@ -786,7 +786,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       width: 100%;
       height: 100%;
       --data-table-border-width: 0;
-      --data-table-empty-row-height: var(--safe-area-inset-bottom, 0px);
+      --data-table-empty-row-height: max(
+        0px,
+        var(--safe-area-inset-bottom, 0px) - var(--ha-bottom-bar-height, 0px)
+      );
       /* Same insets as the content padding of hass-tabs-subpage */
       --data-table-inset-right: var(--safe-area-inset-right, 0px);
     }
@@ -805,16 +808,19 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       display: block;
     }
     /* Last content row should keep the same padding above the fab as the fab
-       has to the bottom (16px standard fab bottom padding) + the safe-area inset. */
+       has to the bottom (16px standard fab bottom padding) + the safe-area inset
+       not already covered by a bottom bar. */
     :host([has-fab]) ha-data-table {
       --data-table-empty-row-height: calc(
-        48px + 16px * 2 + var(--safe-area-inset-bottom, 0px)
+        48px + 16px * 2 +
+          max(
+            0px,
+            var(--safe-area-inset-bottom, 0px) - var(
+                --ha-bottom-bar-height,
+                0px
+              )
+          )
       );
-    }
-    /* In narrow view with tabs shown at the bottom, the tab bar already
-       accounts for safe-area-inset-bottom. No extra empty-row height is needed. */
-    :host([narrow][show-tabs]:not([has-fab])) ha-data-table {
-      --data-table-empty-row-height: 0px;
     }
     /* Reserve space for fab + doubled narrow-mode bottom padding (28px * 2)
        when using narrow layout with bottom tabs. */

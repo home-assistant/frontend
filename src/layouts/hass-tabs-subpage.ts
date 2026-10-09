@@ -298,6 +298,11 @@ export class HassTabsSubpage extends LitElement {
           width: 100%;
           position: fixed;
         }
+        :host([narrow][show-tabs]) {
+          --ha-bottom-bar-height: calc(
+            var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
+          );
+        }
 
         .container {
           display: flex;
@@ -409,19 +414,23 @@ export class HassTabsSubpage extends LitElement {
           padding-right: var(--safe-area-inset-right);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
+          margin-bottom: var(--ha-bottom-bar-height, 0px);
         }
         :host([narrow]) .content {
           padding-left: var(--safe-area-inset-left);
         }
-        :host([narrow][show-tabs]) .content {
-          /* Bottom bar reuses header height */
-          margin-bottom: calc(
-            var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
-          );
-        }
 
         .content .fab-bottom-space {
-          height: calc(64px + var(--safe-area-inset-bottom, 0px));
+          height: calc(
+            64px +
+              max(
+                0px,
+                var(--safe-area-inset-bottom, 0px) - var(
+                    --ha-bottom-bar-height,
+                    0px
+                  )
+              )
+          );
         }
 
         :host([narrow][show-tabs]) .content .fab-bottom-space {
@@ -433,7 +442,13 @@ export class HassTabsSubpage extends LitElement {
           right: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-end: calc(16px + var(--safe-area-inset-right));
           inset-inline-start: initial;
-          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+          bottom: calc(
+            16px +
+              max(
+                var(--safe-area-inset-bottom, 0px),
+                var(--ha-bottom-bar-height, 0px)
+              )
+          );
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
@@ -442,13 +457,7 @@ export class HassTabsSubpage extends LitElement {
           --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow][show-tabs]) #fab {
-          bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
-        }
-        #fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-          inset-inline-end: 24px;
-          inset-inline-start: initial;
+          bottom: calc(28px + var(--ha-bottom-bar-height, 0px));
         }
 
         .pane {

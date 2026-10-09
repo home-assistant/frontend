@@ -8,6 +8,9 @@ export const mainStyles = css`
     /* for header */
     --header-height: 56px;
 
+    /* Space taken by bottom chrome, including the safe-area inset it covers */
+    --ha-bottom-bar-height: 0px;
+
     /* opacity for dark text on a light background */
     --dark-divider-opacity: 0.12;
     --dark-disabled-opacity: 0.38; /* or hint text or icon */
