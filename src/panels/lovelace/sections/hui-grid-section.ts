@@ -97,7 +97,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         @item-removed=${this._cardRemoved}
         invert-swap
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div
+          class="container ${classMap({ "edit-mode": editMode })}"
+          @card-visibility-changed=${this._cardVisibilityChanged}
+        >
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -121,6 +124,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                   class="card ${classMap({
                     "fit-rows": typeof rows === "number",
                     "full-width": columns === "full",
+                    hidden: !editMode && card.hidden,
                   })}"
                   .sortableData=${cardPath}
                 >
@@ -165,6 +169,11 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         </div>
       </ha-sortable>
     `;
+  }
+
+  private _cardVisibilityChanged() {
+    // Re-render, so the hidden class follows the card's visibility
+    this.requestUpdate();
   }
 
   private _cardMoved(ev) {
@@ -268,7 +277,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           display: block;
         }
 
-        .card:has(> *[hidden]) {
+        /* A class instead of :has(), which older browsers like the one on
+           some Chromecasts don't support. */
+        .card.hidden {
           display: none;
         }
 
