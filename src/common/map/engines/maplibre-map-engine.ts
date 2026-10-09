@@ -702,6 +702,35 @@ export class MapLibreMapEngine implements MapEngine {
       return;
     }
     const map = this._map!;
+    if ("center" in fit) {
+      // cameraForBounds cannot solve a zero-area bound; center on it instead
+      if (this._clusterOptions) {
+        this._groupingZoom = fit.zoom;
+        try {
+          this._rebuildClusters(true);
+        } finally {
+          this._groupingZoom = undefined;
+        }
+      }
+      // Padding as an offset, not map padding, which would stick
+      const { top, right, bottom, left } = fit.padding;
+      const camera = {
+        center: [fit.center[1], fit.center[0]] as [number, number],
+        zoom: fit.zoom,
+        offset: [(left - right) / 2, (top - bottom) / 2] as [number, number],
+        animate: options?.animate,
+      };
+      // flyTo drops the offset under reduced motion (it jumps); easeTo keeps it
+      if (
+        options?.fly &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        map.flyTo(camera);
+      } else {
+        map.easeTo(camera);
+      }
+      return;
+    }
     // Regroup now for the zoom the fit lands on
     const zoom = this._clusterOptions
       ? map.cameraForBounds(fit.bounds, fit.options)?.zoom
@@ -721,7 +750,23 @@ export class MapLibreMapEngine implements MapEngine {
     });
   }
 
-  private _fitFor(points: MapLatLng[], options?: MapFitOptions) {
+  private _fitFor(
+    points: MapLatLng[],
+    options?: MapFitOptions
+  ):
+    | {
+        center: MapLatLng;
+        zoom: number;
+        padding: { top: number; right: number; bottom: number; left: number };
+      }
+    | {
+        bounds: [[number, number], [number, number]];
+        options: {
+          maxZoom: number | undefined;
+          padding: { top: number; right: number; bottom: number; left: number };
+        };
+      }
+    | undefined {
     if (!this._map || !this._maplibre || !points.length) {
       return undefined;
     }
@@ -749,11 +794,9 @@ export class MapLibreMapEngine implements MapEngine {
     if (minLat === maxLat && minLng === maxLng) {
       // Zero-area bounds: center on the point, keeping the zoom unless given
       return {
-        bounds: [
-          [minLng, minLat],
-          [minLng, minLat],
-        ] as [[number, number], [number, number]],
-        options: { maxZoom: maxZoom ?? this._map.getZoom(), padding },
+        center: [minLat, minLng] as MapLatLng,
+        zoom: maxZoom ?? this._map.getZoom(),
+        padding,
       };
     }
     const pad = options?.pad ?? 0.5;

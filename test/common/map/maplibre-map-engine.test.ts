@@ -164,6 +164,8 @@ const fakes = vi.hoisted(() => {
 
     easeTo = vi.fn();
 
+    flyTo = vi.fn();
+
     jumpTo = vi.fn();
 
     resize = vi.fn(() => {
@@ -738,12 +740,15 @@ describe("MapLibreMapEngine", () => {
       const { engine, map, ready } = await createEngine();
       await ready;
 
-      engine.fitBounds([[52, 4]], { maxZoom: 15, padding: { bottom: 200 } });
+      engine.fitBounds(
+        [
+          [52, 4],
+          [53, 5],
+        ],
+        { maxZoom: 15, padding: { bottom: 200 } }
+      );
       expect(map.fitBounds).toHaveBeenCalledOnce();
-      const [bounds, options] = map.fitBounds.mock.calls[0];
-      // A single point centers on itself at the requested zoom
-      expect(bounds[0]).toEqual([4, 52]);
-      expect(bounds[1]).toEqual([4, 52]);
+      const [, options] = map.fitBounds.mock.calls[0];
       expect(options.maxZoom).toBe(14);
       expect(options.padding).toEqual({
         top: 0,
@@ -751,6 +756,52 @@ describe("MapLibreMapEngine", () => {
         bottom: 200,
         left: 0,
       });
+    });
+
+    it("centers on a single point instead of fitting it", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Centered, not fitted; padding becomes a transient offset
+      engine.fitBounds([[52, 4]], { maxZoom: 15, padding: { bottom: 200 } });
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.easeTo).toHaveBeenCalledWith(
+        expect.objectContaining({
+          center: [4, 52],
+          zoom: 14,
+          offset: [0, -100],
+        })
+      );
+    });
+
+    it("flies to a single point when the fit asked to fly", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      engine.fitBounds([[52, 4]], { maxZoom: 15, fly: true, animate: true });
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.easeTo).not.toHaveBeenCalled();
+      expect(map.flyTo).toHaveBeenCalledWith(
+        expect.objectContaining({ center: [4, 52], zoom: 14, animate: true })
+      );
+    });
+
+    it("eases to a fly fit under reduced motion to keep the offset", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // flyTo jumps and drops the offset under reduced motion, so ease instead
+      viewport.matches = true;
+      engine.fitBounds([[52, 4]], {
+        maxZoom: 15,
+        fly: true,
+        animate: true,
+        padding: { bottom: 200 },
+      });
+      expect(map.flyTo).not.toHaveBeenCalled();
+      expect(map.easeTo).toHaveBeenCalledWith(
+        expect.objectContaining({ center: [4, 52], offset: [0, -100] })
+      );
     });
 
     it("keeps padded bounds within the poles", async () => {
