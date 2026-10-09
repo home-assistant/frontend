@@ -9,6 +9,7 @@ import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
   CacheFirst,
+  NetworkFirst,
   NetworkOnly,
   StaleWhileRevalidate,
 } from "workbox-strategies";
@@ -18,6 +19,8 @@ declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
 
 const noFallBackRegEx =
   /\/(api|static|auth|frontend_latest|frontend_es5|local)\/.*/;
+
+const NAVIGATION_TIMEOUT_SECONDS = 3;
 
 // Camera / image proxy endpoints that carry credentials in the URL.
 // We pre-validate the credential in the service worker so obviously invalid
@@ -84,6 +87,29 @@ const ignoreTokenPlugin = {
     const url = new URL(request.url);
     url.searchParams.delete("token");
     return url.href;
+  },
+};
+
+// A proxy answers 5xx while core restarts; the cached shell reconnects on its
+// own. Runs on the final response, so it also covers preloaded navigations.
+const serverErrorFallbackPlugin = {
+  handlerWillRespond: async ({
+    request,
+    response,
+  }: {
+    request: Request;
+    response: Response;
+  }) => {
+    if (response.status < 500) {
+      return response;
+    }
+    const options = { cacheName: cacheNames.runtime, ignoreSearch: true };
+    const cached =
+      (await caches.match(request, options)) ??
+      (noFallBackRegEx.test(request.url)
+        ? undefined
+        : await caches.match("/", options));
+    return cached ?? response;
   },
 };
 
@@ -193,10 +219,16 @@ const initRouting = () => {
   // Get manifest and onboarding from network.
   registerRoute(/\/(?:manifest\.json|onboarding\.html)/, new NetworkOnly());
 
-  // For the root "/" we ignore search
+  // Every navigation gets the same index.html, which imports this build's
+  // hashed bundles. A stale cached copy imports deleted files, so the cache
+  // is only the offline fallback.
   registerRoute(
-    /\/(\?.*)?$/,
-    new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
+    ({ request }) => request.mode === "navigate",
+    new NetworkFirst({
+      networkTimeoutSeconds: NAVIGATION_TIMEOUT_SECONDS,
+      matchOptions: { ignoreSearch: true },
+      plugins: [serverErrorFallbackPlugin],
+    })
   );
 
   // For rest of the files (on Home Assistant domain only) try both cache and network.
@@ -339,25 +371,27 @@ const catchHandler: RouteHandler = async (options) => {
 };
 
 self.addEventListener("install", (event) => {
-  // Delete all runtime caching, so that index.html has to be refetched.
-  // And add the new index.html back to the runtime cache
-  const cacheName = cacheNames.runtime;
+  // Cached indexes import the previous build's bundles.
   event.waitUntil(
-    caches.delete(cacheName).then(() =>
-      caches.open(cacheName).then((cache) => {
-        cache.add("/");
-      })
-    )
+    (async () => {
+      await caches.delete(cacheNames.runtime);
+      try {
+        const cache = await caches.open(cacheNames.runtime);
+        await cache.add("/");
+      } catch (_err) {
+        // Offline or restarting; the first navigation fills it.
+      }
+    })()
   );
 });
 
-self.addEventListener("activate", () => {
-  // Attach the service worker to any page of the app
-  // that didn't have a service worker loaded.
-  // Happens the first time they open the app without any
-  // service worker registered.
-  // This will serve code split bundles from SW.
-  clients.claim();
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    Promise.all([
+      self.registration.navigationPreload?.enable(),
+      clients.claim(),
+    ])
+  );
 });
 
 self.addEventListener("message", (message) => {
