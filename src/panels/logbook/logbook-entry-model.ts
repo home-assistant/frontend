@@ -13,6 +13,7 @@ import {
   parseTriggerSource,
 } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
+import { getTraceUrl } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 
 export type LogbookEntryCategory = "entity" | "automation" | "integration";
@@ -135,9 +136,7 @@ export const computeTraceLink = (
   contextId?: string
 ): string | undefined => {
   const traceContext = contextId ? traceContexts[contextId] : undefined;
-  return traceContext
-    ? `/config/${traceContext.domain}/trace/${encodeURIComponent(traceContext.item_id)}?run_id=${traceContext.run_id}`
-    : undefined;
+  return traceContext ? getTraceUrl(traceContext) : undefined;
 };
 
 // Unavailable is flagged with an orange badge by the row, not a color change.
