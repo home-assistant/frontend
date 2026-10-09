@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ShowToastParams } from "../../src/managers/notification-manager";
 import {
   registerServiceWorker,
+  reloadOnControllerChange,
   supportsServiceWorker,
 } from "../../src/util/register-service-worker";
 
@@ -52,6 +53,57 @@ describe("supportsServiceWorker", () => {
     Reflect.deleteProperty(navigator, "serviceWorker");
 
     expect(supportsServiceWorker()).toBe(false);
+  });
+});
+
+describe("reloadOnControllerChange", () => {
+  let serviceWorker: FakeServiceWorkerContainer;
+  let reload: ReturnType<typeof vi.fn<() => void>>;
+
+  const changeController = () => {
+    serviceWorker.controller = new FakeWorker() as unknown as ServiceWorker;
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+  };
+
+  beforeEach(() => {
+    serviceWorker = new FakeServiceWorkerContainer();
+    reload = vi.fn<() => void>();
+  });
+
+  it("reloads once when a new worker takes over a controlled page", () => {
+    serviceWorker.controller = new FakeWorker() as unknown as ServiceWorker;
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("does not reload for the first install's claim", () => {
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+
+    expect(reload).not.toHaveBeenCalled();
+  });
+
+  it("reloads for an update after the first install's claim", () => {
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
   });
 });
 

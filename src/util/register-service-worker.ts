@@ -7,6 +7,29 @@ export const supportsServiceWorker = () =>
   "serviceWorker" in navigator &&
   (location.protocol === "https:" || location.hostname === "localhost");
 
+/**
+ * Reload once when a new worker takes over. The claim after a first install
+ * is skipped: that page already runs the build it registered.
+ */
+export const reloadOnControllerChange = (
+  container: ServiceWorkerContainer,
+  reload: () => void = () => location.reload()
+) => {
+  let claimed = Boolean(container.controller);
+  let reloading = false;
+  container.addEventListener("controllerchange", () => {
+    if (!claimed) {
+      claimed = true;
+      return;
+    }
+    if (reloading) {
+      return;
+    }
+    reloading = true;
+    reload();
+  });
+};
+
 export const registerServiceWorker = async (
   rootEl: HTMLElement,
   notifyUpdate = true
@@ -15,10 +38,7 @@ export const registerServiceWorker = async (
     return;
   }
 
-  // If the active service worker changes, refresh the page because the cache has changed
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    location.reload();
-  });
+  reloadOnControllerChange(navigator.serviceWorker);
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
 
