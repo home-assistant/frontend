@@ -7,6 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-alert";
 import type { HistoryStates } from "../../../data/history";
+import { isConnectionLost } from "../../../data/websocket_api";
 import {
   limitedHistoryFromStateObj,
   subscribeHistoryStatesTimeWindow,
@@ -189,7 +190,10 @@ export class HuiGraphHeaderFooter
       [this._config.entity]
     ).catch((err) => {
       this._subscribed = undefined;
-      this._error = err;
+      // A lost connection is retried by the hass update after reconnecting
+      if (!isConnectionLost(err)) {
+        this._error = err;
+      }
       return undefined;
     });
     this._setRedrawTimer();

@@ -9,6 +9,7 @@ import "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
 import "../../components/ha-alert";
 import type { HistoryResult } from "../../data/history";
+import { isConnectionLost } from "../../data/websocket_api";
 import {
   computeHistory,
   subscribeHistoryStatesTimeWindow,
@@ -270,7 +271,10 @@ export class MoreInfoHistory extends LitElement {
       [this.entityId]
     ).catch((err) => {
       this._subscribed = undefined;
-      this._error = err;
+      // A lost connection is retried by the hass update after reconnecting
+      if (!isConnectionLost(err)) {
+        this._error = err;
+      }
       return undefined;
     });
     this._setUpdateTimer();

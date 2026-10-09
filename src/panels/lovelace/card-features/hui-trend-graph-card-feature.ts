@@ -11,6 +11,7 @@ import {
   limitedHistoryFromStateObj,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
+import { isConnectionLost } from "../../../data/websocket_api";
 import type { HomeAssistant } from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
@@ -264,7 +265,10 @@ class HuiHistoryChartCardFeature
       [this.context!.entity_id!]
     ).catch((err) => {
       this._subscribed = undefined;
-      this._error = err;
+      // A lost connection is retried by the hass update after reconnecting
+      if (!isConnectionLost(err)) {
+        this._error = err;
+      }
       return undefined;
     });
   }

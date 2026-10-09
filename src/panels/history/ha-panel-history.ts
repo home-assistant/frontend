@@ -69,6 +69,7 @@ import {
 } from "../../data/history";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
+import { isConnectionLost } from "../../data/websocket_api";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -552,7 +553,24 @@ class HaPanelHistory extends LitElement {
       this._endDate,
       entityIds
     );
-    this._subscribed.catch(() => {
+    this._subscribed.catch((err) => {
+      // A newer subscription replaced this one
+      if (generation !== this._historyGeneration) {
+        return;
+      }
+      if (isConnectionLost(err)) {
+        // Keep loading and subscribe again once the connection is back
+        const connection = this.hass.connection;
+        const onReady = () => {
+          connection.removeEventListener("ready", onReady);
+          if (generation === this._historyGeneration) {
+            this._subscribed = undefined;
+            this._getHistory();
+          }
+        };
+        connection.addEventListener("ready", onReady);
+        return;
+      }
       this._isLoading = false;
       this._stateHistory = { line: [], timeline: [] };
       this._unsubscribeHistory();

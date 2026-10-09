@@ -18,6 +18,7 @@ import {
   subscribeHistoryStatesTimeWindow,
   type HistoryResult,
 } from "../../../data/history";
+import { isConnectionLost } from "../../../data/websocket_api";
 import { fetchStatistics } from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
@@ -184,7 +185,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this._entityIds
     ).catch((err) => {
       this._subscribed = undefined;
-      this._error = err;
+      // A lost connection is retried by the hass update after reconnecting
+      if (!isConnectionLost(err)) {
+        this._error = err;
+      }
       return undefined;
     });
 

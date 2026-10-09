@@ -11,6 +11,7 @@ import { subscribeLogbook } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
 import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
+import { isConnectionLost } from "../../data/websocket_api";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 import type { LogbookNameDetail } from "./logbook-entry-model";
@@ -101,6 +102,9 @@ export class HaLogbook extends LitElement {
   private _logbookSubscriptionId = 0;
 
   private _readyListenerAttached = false;
+
+  // Set when the subscribe was rejected because the connection dropped
+  private _resubscribeOnReady = false;
 
   public getEntries(): LogbookEntry[] {
     return this._logbookEntries || [];
@@ -245,7 +249,7 @@ export class HaLogbook extends LitElement {
    */
   private _unsubscribe(loading: boolean): void {
     if (this._unsubLogbook) {
-      this._unsubLogbook.then((unsub) => unsub());
+      this._unsubLogbook.then((unsub) => unsub()).catch(() => undefined);
       this._unsubLogbook = undefined;
       this._pendingStreamMessages = [];
     }
@@ -294,9 +298,10 @@ export class HaLogbook extends LitElement {
     // The old subscription died with the dropped connection and isn't restored
     // server-side. Drop the stale handle and resubscribe from scratch, else the
     // replayed history would duplicate the entries we already have.
-    if (!this._unsubLogbook) {
+    if (!this._unsubLogbook && !this._resubscribeOnReady) {
       return;
     }
+    this._resubscribeOnReady = false;
     this._unsubLogbook = undefined;
     this._logbookEntries = undefined;
     this._pendingStreamMessages = [];
@@ -361,6 +366,10 @@ export class HaLogbook extends LitElement {
       await this._unsubLogbook;
     } catch (err: any) {
       this._unsubLogbook = undefined;
+      if (isConnectionLost(err)) {
+        this._resubscribeOnReady = true;
+        return;
+      }
       this._error = err;
     }
   }

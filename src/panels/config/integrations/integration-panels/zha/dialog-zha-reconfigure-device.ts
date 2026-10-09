@@ -413,7 +413,7 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
+      this._subscribed.then((unsub) => unsub()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
@@ -436,6 +436,13 @@ class DialogZHAReconfigureDevice extends LitElement {
       }
     );
     this._subscribed = subscription;
+    // Not retried, subscribing starts the reconfiguration again.
+    subscription.catch(() => {
+      if (this._subscribed === subscription) {
+        this._subscribed = undefined;
+        this._status = "failed";
+      }
+    });
   }
 
   private _toggleDetails() {

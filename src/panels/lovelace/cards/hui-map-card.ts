@@ -44,6 +44,7 @@ import {
   zoneColor,
 } from "../../../common/map/entity-map-colors";
 import type { HistoryStates } from "../../../data/history";
+import { isConnectionLost } from "../../../data/websocket_api";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { Themes } from "../../../data/ws-themes";
 import { fullEntitiesContext, uiContext } from "../../../data/context";
@@ -633,7 +634,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       false
     ).catch((err) => {
       this._subscribed = undefined;
-      this._error = err;
+      // A lost connection is retried by the hass update after reconnecting
+      if (!isConnectionLost(err)) {
+        this._error = err;
+      }
       return undefined;
     });
   }
