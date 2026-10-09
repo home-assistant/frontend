@@ -1,5 +1,8 @@
+import { ContextProvider } from "@lit/context";
 import { LitElement } from "lit";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { narrowViewportContext } from "../../src/data/context";
+import type { PageNavigation } from "../../src/data/page_navigation";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import type { HassTabsSubpage } from "../../src/layouts/hass-tabs-subpage";
 
@@ -14,20 +17,28 @@ await import("../../src/layouts/hass-tabs-subpage");
 
 let host: HTMLDivElement | undefined;
 
-const mount = async (backPath: string) => {
+const mountElement = async (
+  props: Partial<HassTabsSubpage>,
+  narrow = false
+) => {
   host = document.createElement("div");
-  provideHass(host, { localize: (key: string) => key });
+  provideHass(host, { localize: (key: string) => `localized:${key}` });
+  new ContextProvider(host, {
+    context: narrowViewportContext,
+    initialValue: narrow,
+  });
   document.body.append(host);
   const element = document.createElement(
     "hass-tabs-subpage"
   ) as HassTabsSubpage;
-  Object.assign(element, {
-    route: { prefix: "", path: "" },
-    tabs: [],
-    backPath,
-  });
+  Object.assign(element, { route: { prefix: "", path: "" }, tabs: [] }, props);
   host.append(element);
   await element.updateComplete;
+  return element;
+};
+
+const mount = async (backPath: string) => {
+  const element = await mountElement({ backPath });
   return element.shadowRoot!.querySelector("ha-icon-button-arrow-prev") as
     (LitElement & { href?: string }) | null;
 };
@@ -51,4 +62,53 @@ describe("hass-tabs-subpage back path", () => {
       expect(backButton!.href).toBeUndefined();
     }
   );
+});
+
+describe("hass-tabs-subpage tabs", () => {
+  const areas: PageNavigation = {
+    path: "/config/areas/dashboard",
+    translationKey: "areas",
+    core: true,
+  };
+  const floors: PageNavigation = {
+    path: "/config/floors",
+    name: "Floors",
+    core: true,
+  };
+
+  it("uses the tab matching the route as narrow title", async () => {
+    const element = await mountElement(
+      {
+        tabs: [areas, floors],
+        route: { prefix: "/config/floors", path: "" },
+      },
+      true
+    );
+    const title = () =>
+      element.shadowRoot!.querySelector(".main-title")!.textContent!.trim();
+    expect(title()).toEqual("Floors");
+
+    element.route = { prefix: "/config/areas", path: "/dashboard" };
+    await element.updateComplete;
+    expect(title()).toEqual("localized:areas");
+  });
+
+  it.each<[string, PageNavigation[], boolean]>([
+    ["one tab", [areas], false],
+    ["two tabs", [areas, floors], true],
+    [
+      "a tab hidden by its integration",
+      [areas, { ...floors, core: false, component: "not_loaded" }],
+      false,
+    ],
+    [
+      "a tab hidden by its filter",
+      [areas, { ...floors, filter: () => false }],
+      false,
+    ],
+  ])("shows tabs with %s", async (_label, tabs, expected) => {
+    const element = await mountElement({ tabs });
+    expect(element.showTabs).toBe(expected);
+    expect(element.hasAttribute("show-tabs")).toBe(expected);
+  });
 });
