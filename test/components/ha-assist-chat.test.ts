@@ -10,7 +10,7 @@ import {
 // metadata that are not available in unit tests.
 vi.mock("../../src/util/common-translation", () => ({
   findAvailableLanguage: (language: string) =>
-    ({ en: "en", "en-US": "en", nl: "nl", pl: "pl" })[language],
+    ({ en: "en", "en-US": "en", nl: "nl", pl: "pl", zh: "zh-Hant" })[language],
   getTranslation: vi.fn(),
 }));
 
@@ -65,5 +65,15 @@ describe("greetingTranslationLanguage", () => {
 
   it("returns undefined when the pipeline language has no available translation", () => {
     expect(greetingTranslationLanguage("xx", "en")).toBeUndefined();
+  });
+
+  // "zh" resolves to Traditional Chinese, which greeted Simplified Chinese
+  // users in the wrong script (#54736)
+  it("returns undefined when the interface uses a variant of the pipeline language", () => {
+    expect(greetingTranslationLanguage("zh", "zh-Hans")).toBeUndefined();
+  });
+
+  it("still translates a bare pipeline language for another interface language", () => {
+    expect(greetingTranslationLanguage("zh", "en")).toBe("zh-Hant");
   });
 });
