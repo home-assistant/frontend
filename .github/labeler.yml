@@ -253,7 +253,7 @@ System:
       - any-glob-to-any-file:
           - "src/panels/config/{core,hardware,info,logs,network,repairs,storage}/**"
           - src/panels/config/dashboard/ha-config-updates.ts
-          - "src/dialogs/{repairs-flow,restart,system-log-report}/**"
+          - "src/dialogs/{repairs-flow,restart}/**"
           - "src/data/{analytics,entity_id_format,error_log,hardware,network,repairs,system_health,system_log,system_log_report,update}.ts"
 
 "Tests: E2E":
