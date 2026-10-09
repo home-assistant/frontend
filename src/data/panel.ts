@@ -109,8 +109,8 @@ export const getConfigSubpageTitle = (
 ): string | undefined => {
   const sections = Object.entries(configSections);
 
-  // Prefer pages with a full translation key or a name. The dashboard
-  // sections also list pages like /config/integrations under a broader title.
+  // Prefer pages with a full translation key or a name. The Settings page
+  // entries list pages like /config/integrations again with a short key.
   for (const [, pages] of sections) {
     const pageNav = pages.find((nav) => path.startsWith(nav.path));
     if (!pageNav) {

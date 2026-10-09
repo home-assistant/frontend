@@ -15,9 +15,17 @@ import { e2ePanelRouteAssertions } from "./ha-test-panels";
 // ── Config dashboard links ───────────────────────────────────────────────────
 
 export const configLinks: LinkSmokeCase[] = [
-  { href: "/config/integrations", label: "Devices & services" },
-  { href: "/config/automation", label: "Automations & scenes" },
-  { href: "/config/areas", label: "Areas, labels & zones" },
+  { href: "/config/integrations", label: "Integrations" },
+  { href: "/config/devices", label: "Devices" },
+  { href: "/config/entities", label: "Entities" },
+  { href: "/config/helpers", label: "Helpers" },
+  { href: "/config/automation", label: "Automations" },
+  { href: "/config/scene", label: "Scenes" },
+  { href: "/config/script", label: "Scripts" },
+  { href: "/config/blueprint", label: "Blueprints" },
+  { href: "/config/areas", label: "Areas" },
+  { href: "/config/labels", label: "Labels" },
+  { href: "/config/zone", label: "Zones" },
   { href: "/config/apps", label: "Apps" },
   { href: "/config/lovelace/dashboards", label: "Dashboards" },
   { href: "/config/connectivity", label: "Connectivity" },

@@ -57,6 +57,7 @@ export const demoConfig: HassConfig = {
     "date",
     "fan",
     "automation",
+    "blueprint",
     "weather",
     "climate",
     "stt",

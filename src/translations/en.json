@@ -2825,13 +2825,37 @@
         },
         "header": "Configure Home Assistant",
         "dashboard": {
-          "devices": {
-            "main": "Devices & services",
-            "secondary": "Integrations, devices, entities, and helpers"
+          "integrations": {
+            "main": "Integrations",
+            "secondary": "Connect your devices and services"
           },
-          "automations": {
-            "main": "Automations & scenes",
-            "secondary": "Automations, scenes, scripts, and blueprints"
+          "device_list": {
+            "main": "Devices",
+            "secondary": "Browse and manage your devices"
+          },
+          "entities": {
+            "main": "Entities",
+            "secondary": "Manage sensors, switches, and other entities"
+          },
+          "helpers": {
+            "main": "Helpers",
+            "secondary": "Create toggles, timers, and other building blocks"
+          },
+          "automation_list": {
+            "main": "Automations",
+            "secondary": "Make your home respond to events"
+          },
+          "scenes": {
+            "main": "Scenes",
+            "secondary": "Capture and restore the state of your devices"
+          },
+          "scripts": {
+            "main": "Scripts",
+            "secondary": "Run sequences of actions on demand"
+          },
+          "blueprints": {
+            "main": "Blueprints",
+            "secondary": "Create automations and scripts from reusable templates"
           },
           "backup": {
             "main": "Backup",
@@ -2869,9 +2893,17 @@
             "main": "People",
             "secondary": "Manage who can access your home"
           },
-          "areas": {
-            "main": "Areas, labels & zones",
-            "secondary": "Manage locations in and around your house"
+          "area_list": {
+            "main": "Areas",
+            "secondary": "Organize your devices by room and floor"
+          },
+          "labels": {
+            "main": "Labels",
+            "secondary": "Group your devices, entities, and automations"
+          },
+          "zones": {
+            "main": "Zones",
+            "secondary": "Define locations like home, work, or school"
           },
           "companion": {
             "main": "Companion app",

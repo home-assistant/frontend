@@ -121,7 +121,7 @@ import {
   getLabelsTableColumn,
   getTriggeredAtTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../config-sections";
+import { configPageTabs } from "../config-sections";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAssistantsSortableKey,
@@ -500,7 +500,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         back-path="/config"
         id="entity_id"
         .route=${this.route}
-        .tabs=${configSections.automations}
+        .tabs=${configPageTabs["/config/automation"]}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.automation.picker.search",
           { number: automations.length }
