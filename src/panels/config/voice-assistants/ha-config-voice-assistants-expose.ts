@@ -14,7 +14,6 @@ import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { EntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import {
   generateEntityDomainFilter,
@@ -247,6 +246,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _filteredEntities = memoize(
     (
       localize: LocalizeFunc,
+      formatEntityName: HomeAssistant["formatEntityName"],
       entities: Record<string, ExtEntityRegistryEntry>,
       exposedEntities: Record<string, ExposeEntitySettings>,
       devices: HomeAssistant["devices"],
@@ -329,7 +329,7 @@ export class VoiceAssistantsExpose extends LitElement {
           entity_id: entityState.entity_id,
           entity: entityState,
           name:
-            computeStateName(entityState) ||
+            formatEntityName(entityState) ||
             this.hass.localize(
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
@@ -376,7 +376,7 @@ export class VoiceAssistantsExpose extends LitElement {
             result[entityId] = {
               entity_id: entityState.entity_id,
               entity: entityState,
-              name: computeStateName(entityState),
+              name: formatEntityName(entityState),
               area: area ? area.name : undefined,
               assistants: [
                 ...(exposedEntities
@@ -486,6 +486,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
     const filteredEntities = this._filteredEntities(
       this.hass.localize,
+      this.hass.formatEntityName,
       this._extEntities,
       this.exposedEntities,
       this.hass.devices,
