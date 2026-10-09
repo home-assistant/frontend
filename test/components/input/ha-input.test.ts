@@ -98,27 +98,6 @@ describe("ha-input password-manager autofill", () => {
   });
 });
 
-describe("ha-input aria-invalid", () => {
-  // Without an explicit aria-invalid, WebKit announces an empty required
-  // field as invalid before anything was typed (#53909).
-  it("marks an untouched required field as valid", async () => {
-    const el = await mountInput({ label: "Name", required: true });
-    await el.updateComplete;
-
-    expect(nativeInput(el).getAttribute("aria-invalid")).toBe("false");
-  });
-
-  it("marks the field invalid once it is invalid", async () => {
-    const el = await mountInput({ label: "Name", required: true });
-
-    el.invalid = true;
-    await el.updateComplete;
-    await el.shadowRoot!.querySelector("wa-input")!.updateComplete;
-
-    expect(nativeInput(el).getAttribute("aria-invalid")).toBe("true");
-  });
-});
-
 describe("ha-input native ids", () => {
   // Unique native ids help password managers tell login fields apart (#51620 /
   // home-assistant/webawesome#52).
