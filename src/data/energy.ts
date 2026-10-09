@@ -1319,15 +1319,30 @@ const getEnergyGasUnit = (
   if (unitClass === "energy") {
     // A gas statistic that is also an individual device is read by the device
     // charts in kWh, so keep kWh there to not mislabel the values.
-    const deviceStatIds = new Set(
-      prefs.device_consumption.map((device) => device.stat_consumption)
-    );
-    const isDevice = prefs.energy_sources.some(
-      (s) => s.type === "gas" && deviceStatIds.has(s.stat_energy_from)
+    const kWhStatIds = new Set([
+      ...prefs.device_consumption.map((device) => device.stat_consumption),
+      ...prefs.energy_sources.flatMap((source) => {
+        if (source.type === "solar") {
+          return [source.stat_energy_from];
+        }
+        if (source.type === "battery") {
+          return [source.stat_energy_from, source.stat_energy_to];
+        }
+        if (source.type === "grid") {
+          return [source.stat_energy_from, source.stat_energy_to].filter(
+            (id): id is string => id !== null
+          );
+        }
+        return [];
+      }),
+    ]);
+    const isSharedWithKWh = prefs.energy_sources.some(
+      (source) =>
+        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
     );
     const first = units[0];
     if (
-      !isDevice &&
+      !isSharedWithKWh &&
       ENERGY_UNITS.includes(first as any) &&
       units.every((u) => u === first)
     ) {
