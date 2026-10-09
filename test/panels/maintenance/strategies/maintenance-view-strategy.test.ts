@@ -101,6 +101,28 @@ describe("filterLowBatteryEntities", () => {
     ).toEqual(["binary_sensor.low_battery"]);
   });
 
+  it("binary sensor problems filtered", () => {
+    const hass = createMockHass({
+      "binary_sensor.has_problem": createMockEntityState(
+        "binary_sensor.has_problem",
+        "on",
+        { device_class: "problem" }
+      ),
+      "binary_sensor.no_problem": createMockEntityState(
+        "binary_sensor.no_problem",
+        "off",
+        { device_class: "problem" }
+      ),
+    });
+
+    expect(
+      filterLowBatteryEntities(hass.states, hass.entities, [
+        "binary_sensor.has_problem",
+        "binary_sensor.no_problem",
+      ])
+    ).toEqual([]);
+  });
+
   it("updates the device lookup when the entity registry changes", () => {
     const states = {
       "sensor.battery": createMockEntityState("sensor.battery", "10", {
@@ -166,8 +188,13 @@ describe("filterProblemEntities", () => {
         "off",
         { device_class: "problem" }
       ),
-      "binary_sensor.other": createMockEntityState(
-        "binary_sensor.other",
+      "binary_sensor.other_on": createMockEntityState(
+        "binary_sensor.other_on",
+        "on",
+        { device_class: "other" }
+      ),
+      "binary_sensor.other_off": createMockEntityState(
+        "binary_sensor.other_off",
         "off",
         { device_class: "other" }
       ),
@@ -176,7 +203,8 @@ describe("filterProblemEntities", () => {
       filterProblemEntities(hass.states, [
         "binary_sensor.has_problem",
         "binary_sensor.no_problem",
-        "binary_sensor.other",
+        "binary_sensor.other_on",
+        "binary_sensor.other_off",
       ])
     ).toEqual(["binary_sensor.has_problem"]);
   });
