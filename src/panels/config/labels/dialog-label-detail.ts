@@ -2,10 +2,8 @@ import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import {
-  THEME_COLORS,
-  cssColorToHex,
-} from "../../../common/color/compute-color";
+import { THEME_COLORS } from "../../../common/color/compute-color";
+import { cssColorToHex } from "../../../common/color/hex";
 import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
