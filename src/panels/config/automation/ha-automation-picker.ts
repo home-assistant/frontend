@@ -869,7 +869,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_entityReg")) {
+    // The filtered list holds entity IDs, so also refresh it when automations
+    // are added or removed
+    if (changedProps.has("_entityReg") || changedProps.has("automations")) {
       this._applyFilters();
     }
   }
@@ -1634,7 +1636,7 @@ ${rejected
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

@@ -573,6 +573,10 @@ export const flattenTriggers = (
   const flatTriggers: Trigger[] = [];
 
   ensureArray(triggers).forEach((t) => {
+    // Incomplete YAML can leave null entries in the trigger list
+    if (!t || typeof t !== "object") {
+      return;
+    }
     if ("triggers" in t) {
       if (t.triggers) {
         flatTriggers.push(...flattenTriggers(t.triggers));
@@ -697,7 +701,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Trigger | Trigger[]) => boolean;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   config: Trigger;
   description?: TriggerDescription;
   yamlMode: boolean;
@@ -715,7 +719,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Condition | Condition[]) => boolean;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   config: Condition;
   description?: ConditionDescription;
   yamlMode: boolean;
@@ -734,7 +738,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   copy: () => void;
   insertAfter: (value: Action | Action[]) => boolean;
   run: () => void;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   config: {
     action: Action;
   };

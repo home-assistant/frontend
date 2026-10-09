@@ -305,9 +305,9 @@ export function createMatterNetworkChartData(
     });
   });
 
-  // Only a hub gets an edge to HA, and it is a real path. A node whose route we
-  // cannot see gets nothing: inventing an edge to HA reads as a physical link.
-  // It keeps the HA node's own color rather than a transport hue.
+  // Only a hub or a wired node gets an edge to HA, and it is a real path. A node
+  // whose route we cannot see gets nothing: inventing an edge to HA reads as a
+  // physical link.
   // `symbol: "none"` is what keeps the arrowhead off these edges -- ha-network-graph
   // keys arrow suppression on `reverseValue`, not on `value` -- so it must stay.
   const haLink = (target: string, network: string): NetworkLink => ({
@@ -320,16 +320,26 @@ export function createMatterNetworkChartData(
       // the same hue as the radio links behind this hub, so one transport
       // reads as one colour all the way back to Home Assistant
       color: style.getPropertyValue(networkToColorVar(network)),
-      type: "solid",
+      type:
+        nodeCategories.get(target) === CATEGORY_OFFLINE ? "dashed" : "solid",
     },
   });
 
-  // HA reaches the mesh through the border routers and Wi-Fi access points
-  topology.nodes
-    .filter((node) => node.kind === "border_router" || node.kind === "wifi_ap")
-    .forEach((node) =>
-      links.push(haLink(node.id, node.kind === "wifi_ap" ? "wifi" : "thread"))
-    );
+  // HA reaches the mesh through the border routers and Wi-Fi access points,
+  // and a wired node directly over the LAN
+  topology.nodes.forEach((node) => {
+    const network =
+      node.kind === "border_router"
+        ? "thread"
+        : node.kind === "wifi_ap"
+          ? "wifi"
+          : node.network_type === "ethernet"
+            ? "ethernet"
+            : undefined;
+    if (network) {
+      links.push(haLink(node.id, network));
+    }
+  });
 
   // keep the strongest link of every node in the force layout so
   // nodes hang near their best connection instead of floating free

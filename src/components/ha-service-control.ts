@@ -79,6 +79,10 @@ const isFullWidthSelector = (selector?: Selector): boolean =>
     FULL_WIDTH_SELECTOR_TYPES.has(selectorType)
   );
 
+// A switch fits next to its label, even when the editor is narrow.
+const isBooleanSelector = (selector?: Selector): boolean =>
+  !!selector && "boolean" in selector;
+
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
   selector?: Selector;
@@ -693,7 +697,10 @@ export class HaServiceControl extends LitElement {
 
     return dataField.selector
       ? html`<ha-settings-row
-          .narrow=${this.narrow || isFullWidthSelector(selector)}
+          .narrow=${
+            (this.narrow && !isBooleanSelector(selector)) ||
+            isFullWidthSelector(selector)
+          }
         >
           ${
             !showOptional
@@ -1028,7 +1035,6 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
-      --ha-entities-picker-entity-min-width: 0;
       border-top: var(
         --service-control-items-border-top,
         1px solid var(--divider-color)

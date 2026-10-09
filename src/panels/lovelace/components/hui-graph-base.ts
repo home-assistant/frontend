@@ -1,9 +1,9 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
-import { listenMediaQuery } from "../../../common/dom/media_query";
+import { consume } from "../../../common/decorators/consume";
 import { parseAnimationDuration } from "../../../common/util/parse-animation-duration";
+import { reducedMotionContext } from "../../../data/context";
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
 
@@ -32,9 +32,8 @@ export class HuiGraphBase extends LitElement {
   private _displayCoordinates?: number[][];
 
   @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
   private _reducedMotion = false;
-
-  private _unsubMediaQuery?: MediaQueriesListener;
 
   private _animationFrame?: number;
 
@@ -121,18 +120,6 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMediaQuery = listenMediaQuery(
-      "(prefers-reduced-motion: reduce)",
-      (matches) => {
-        if (this._reducedMotion !== matches) {
-          this._reducedMotion = matches;
-        }
-      }
-    );
-  }
-
   public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.coordinates) {
       return;
@@ -145,8 +132,6 @@ export class HuiGraphBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubMediaQuery?.();
-    this._unsubMediaQuery = undefined;
     this._cancelAnimation();
   }
 

@@ -64,7 +64,11 @@ import {
   startHassioAddon,
 } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
-import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
+import {
+  listSerialIntegrations,
+  listSerialPortsWithUsage,
+  type SerialPortUsage,
+} from "../../data/usb";
 import { showAddIntegrationDialog } from "../../panels/config/integrations/show-add-integration-dialog";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";
@@ -679,21 +683,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       <p>${localize("ui.panel.config.devices.esphome.setup_adapters_intro")}</p>
       <ha-list-nav>
         <ha-list-item-button
-          href=${documentationUrl(this._hassConfig!, "/connect/zbt-2/")}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <span slot="headline">
-            ${localize("ui.panel.config.devices.esphome.setup_adapter_zbt2")}
-          </span>
-          <span slot="supporting-text">
-            ${localize(
-              "ui.panel.config.devices.esphome.setup_adapter_zbt2_description"
-            )}
-          </span>
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-list-item-button>
-        <ha-list-item-button
           href=${documentationUrl(this._hassConfig!, "/connect/zwa-2/")}
           target="_blank"
           rel="noreferrer noopener"
@@ -712,9 +701,21 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _setupSerialPort = (ev: Event) => {
+  private _setupSerialPort = async (ev: Event) => {
     ev.stopPropagation();
-    showAddIntegrationDialog(this);
+    if (!this._api) {
+      return;
+    }
+    const domains = await listSerialIntegrations(this._api).catch(
+      () => undefined
+    );
+    if (!this.isConnected) {
+      return;
+    }
+    showAddIntegrationDialog(
+      this,
+      domains ? { integrationFilter: { domains } } : undefined
+    );
   };
 
   private _dialogTitle(): string {

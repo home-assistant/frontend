@@ -170,7 +170,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.locale !== this.hass!.locale
+      oldHass.locale !== this.hass!.locale ||
+      oldHass.formatEntityName !== this.hass!.formatEntityName
     ) {
       return true;
     }
@@ -221,8 +222,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }

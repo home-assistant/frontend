@@ -17,10 +17,7 @@ class InputHelperText extends LitElement {
       padding-right: 16px;
       padding-inline-start: 16px;
       padding-inline-end: 16px;
-      letter-spacing: var(
-        --mdc-typography-caption-letter-spacing,
-        0.0333333333em
-      );
+      letter-spacing: 0.0333333333em;
       line-height: normal;
     }
   `;

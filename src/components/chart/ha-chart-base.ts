@@ -183,6 +183,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   @state() private _isZoomed = false;
 
+  // Separate from _isZoomed, whose touch handling reruns graph layouts
+  @state() private _isGraphRoamed = false;
+
   @state() private _zoomRatio = 1;
 
   @state() private _minutesDifference = 24 * 60;
@@ -528,6 +531,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
+      this._disposeSonification();
       if (this._compareCustomLegendOptions(previousOptions, this.options)) {
         // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
@@ -585,7 +589,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             class="chart-controls ${classMap({ small: this.smallControls })}"
           >
             ${
-              this._isZoomed && !this.hideResetButton
+              (this._isZoomed || this._isGraphRoamed) && !this.hideResetButton
                 ? html`<ha-icon-button
                     class="zoom-reset"
                     .path=${mdiRestart}
@@ -855,6 +859,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this._zoomRatio = 1;
         fireEvent(this, "chart-sankeyroam", { zoom: 1 });
       }
+      this._isGraphRoamed = false;
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
@@ -887,6 +892,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
+      });
+
+      this.chart.on("graphroam", () => {
+        this._isGraphRoamed = this._getGraphRoams().some(
+          ({ zoom, x, y }) =>
+            Math.abs(zoom - 1) > 1e-6 || Math.abs(x) > 0.5 || Math.abs(y) > 0.5
+        );
       });
 
       if (!this.options?.dataZoom) {
@@ -1027,6 +1039,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       LegendComponentOption | undefined;
+    const hiddenCount = this._hiddenDatasets.size;
     Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
       if (selected === false) {
         this._getAllIdsFromLegend(options, stat).forEach((id) =>
@@ -1034,7 +1047,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         );
       }
     });
-    this.requestUpdate("_hiddenDatasets");
+    // Flagging this rebuilds and downsamples every series, so only when needed
+    if (this._hiddenDatasets.size !== hiddenCount) {
+      this.requestUpdate("_hiddenDatasets");
+    }
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
@@ -1486,7 +1502,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   private _handleZoomReset() {
-    this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    // A dataZoom action reruns the layout of every series, graphs included
+    if (this._isZoomed) {
+      this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    }
     // Reset sankey roam zoom
     const option = this.chart?.getOption();
     const sankeySeries = (option?.series as any[])?.filter(
@@ -1503,6 +1522,35 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this._isZoomed = false;
       fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
+    this._getGraphRoams().forEach(({ series, zoom, x, y }) => {
+      this.chart!.dispatchAction({
+        type: "graphRoam",
+        seriesId: series.id,
+        dx: -x,
+        dy: -y,
+        zoom: 1 / zoom,
+        originX: 0,
+        originY: 0,
+      });
+      // The action stores an absolute center, which a later re-fit would keep
+      series.option.center = null;
+      series.option.zoom = 1;
+    });
+  }
+
+  private _getGraphRoams(): {
+    series: any;
+    zoom: number;
+    x: number;
+    y: number;
+  }[] {
+    const graphSeries: any[] =
+      // @ts-ignore private method but no other way to get the roam transform
+      this.chart?.getModel().getSeriesByType("graph") ?? [];
+    return graphSeries.flatMap((series) => {
+      const roam = series.coordinateSystem?.getRoamTransform?.();
+      return roam ? [{ series, zoom: roam[0], x: roam[4], y: roam[5] }] : [];
+    });
   }
 
   private _updateSankeyRoam() {
@@ -2046,9 +2094,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       height: 100%;
       --ha-button-height: 24px;
       --ha-chip-label-weight: 500;
-      --md-assist-chip-leading-space: var(--ha-space-2);
-      --md-assist-chip-trailing-space: var(--ha-space-2);
-      --md-assist-chip-icon-label-space: var(--ha-space-1);
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }

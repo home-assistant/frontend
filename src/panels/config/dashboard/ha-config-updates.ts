@@ -171,9 +171,6 @@ class HaConfigUpdates extends LitElement {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        ha-list-item-button {
-          --md-list-item-leading-icon-size: 40px;
-        }
         ha-list-item-button ha-icon-next {
           color: var(--secondary-text-color);
           height: 24px;

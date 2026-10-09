@@ -46,6 +46,7 @@ import "../ha-code-editor";
 import "../ha-icon-button";
 import "../ha-tab-group";
 import "../ha-tab-group-tab";
+import { childTraceLinkStyles, renderChildTraceLink } from "./trace-child-link";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
 
@@ -243,6 +244,7 @@ export class HaTracePathDetails extends LitElement {
             error,
             template_errors,
             changed_variables,
+            child_id,
             ...rest
           } = trace as any;
 
@@ -276,6 +278,15 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
+            ${
+              child_id
+                ? html`${renderChildTraceLink(
+                      this.hass,
+                      this._entityReg,
+                      child_id
+                    )}<br />`
+                : nothing
+            }
             ${
               error
                 ? html`<div class="error">
@@ -605,6 +616,7 @@ export class HaTracePathDetails extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      childTraceLinkStyles,
       css`
         .padded-box {
           margin: 16px;

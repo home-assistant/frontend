@@ -33,16 +33,11 @@ export const haTopAppBarFixedStyles = css`
     width: 100%;
     z-index: 4;
     padding-top: var(--safe-area-inset-top);
-    padding-right: var(--safe-area-inset-right);
     transition:
       box-shadow var(--ha-animation-duration-normal) ease,
       width var(--ha-animation-duration-normal) ease,
       padding-left var(--ha-animation-duration-normal) ease,
       padding-right var(--ha-animation-duration-normal) ease;
-  }
-
-  :host([narrow]) .top-app-bar {
-    padding-left: var(--safe-area-inset-left);
   }
 
   .top-app-bar.scrolled:not(.pane-header) {
@@ -52,7 +47,7 @@ export const haTopAppBarFixedStyles = css`
   .row {
     box-sizing: border-box;
     display: flex;
-    width: calc(100% + var(--safe-area-inset-right, 0px));
+    width: 100%;
     padding-right: var(--safe-area-inset-right, 0px);
     align-items: center;
     height: var(--header-height);
@@ -61,11 +56,6 @@ export const haTopAppBarFixedStyles = css`
 
   :host([narrow]) .row,
   :host([narrow]) .sub-row {
-    width: calc(
-      100% + var(--safe-area-inset-left, 0px) +
-        var(--safe-area-inset-right, 0px)
-    );
-    margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
     padding-left: var(--safe-area-inset-left, 0px);
   }
 
@@ -76,7 +66,7 @@ export const haTopAppBarFixedStyles = css`
   .sub-row {
     box-sizing: border-box;
     display: block;
-    width: calc(100% + var(--safe-area-inset-right, 0px));
+    width: 100%;
     padding-right: var(--safe-area-inset-right, 0px);
     overflow: hidden;
     border-bottom: var(--app-header-border-bottom);

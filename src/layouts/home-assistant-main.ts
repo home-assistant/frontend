@@ -6,6 +6,8 @@ import { styleMap } from "lit/directives/style-map";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
+import { storage } from "../common/decorators/storage";
+import { DEBUG_SAFE_AREA_TOOL_STORAGE_KEY } from "../common/util/debug-safe-area";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
 import { narrowViewportContext } from "../data/context";
@@ -41,6 +43,13 @@ export class HomeAssistantMain extends LitElement {
   @state() private _restartRequiredBarHeight = 0;
 
   private _restartRequiredBarLoaded = false;
+
+  @storage({
+    key: DEBUG_SAFE_AREA_TOOL_STORAGE_KEY,
+    state: true,
+    subscribe: true,
+  })
+  private _debugSafeAreaTool = false;
 
   private _narrowViewportProvider = new ContextProvider(this, {
     context: narrowViewportContext,
@@ -99,6 +108,11 @@ export class HomeAssistantMain extends LitElement {
           ? html`<ha-restart-required-bar
               @restart-required-bar-resized=${this._restartRequiredBarResized}
             ></ha-restart-required-bar>`
+          : nothing
+      }
+      ${
+        this._debugSafeAreaTool
+          ? html`<ha-debug-safe-area-tool></ha-debug-safe-area-tool>`
           : nothing
       }
     `;
@@ -161,6 +175,10 @@ export class HomeAssistantMain extends LitElement {
 
     if (changedProps.has("route") && this._sidebarNarrow) {
       this._drawerOpen = false;
+    }
+
+    if (this._debugSafeAreaTool) {
+      import("../components/ha-debug-safe-area-tool");
     }
   }
 

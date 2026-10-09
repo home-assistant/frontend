@@ -369,7 +369,7 @@ class HuiWaterFlowSankeyCard
   private _getEntityLabel(entityId: string): string {
     const stateObj = this._states[entityId];
     if (!stateObj) return entityId;
-    return stateObj.attributes.friendly_name || entityId;
+    return this._formatEntityName(stateObj) || entityId;
   }
 
   static styles = css`

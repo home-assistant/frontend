@@ -5,8 +5,8 @@ import {
   mdiClipboardList,
   mdiFormatListBulletedType,
   mdiLightningBolt,
+  mdiMap,
   mdiPlayBoxMultiple,
-  mdiTooltipAccount,
 } from "@mdi/js";
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
@@ -107,22 +107,48 @@ export const getConfigSubpageTitle = (
   path: string,
   configSections: Record<string, PageNavigation[]>
 ): string | undefined => {
-  // Search through all config section groups for a matching path
-  for (const sectionGroup of Object.values(configSections)) {
-    const pageNav = sectionGroup.find((nav) => path.startsWith(nav.path));
-    if (pageNav) {
-      if (pageNav.translationKey) {
-        const localized = hass.localize(pageNav.translationKey as LocalizeKeys);
-        if (localized) {
-          return localized;
-        }
-      }
+  const sections = Object.entries(configSections);
 
-      if (pageNav.name) {
-        return pageNav.name;
+  // Prefer pages with a full translation key or a name. The dashboard
+  // sections also list pages like /config/integrations under a broader title.
+  for (const [, pages] of sections) {
+    const pageNav = pages.find((nav) => path.startsWith(nav.path));
+    if (!pageNav) {
+      continue;
+    }
+
+    if (pageNav.translationKey?.includes(".")) {
+      const localized = hass.localize(pageNav.translationKey as LocalizeKeys);
+      if (localized) {
+        return localized;
       }
     }
+
+    if (pageNav.name) {
+      return pageNav.name;
+    }
   }
+
+  // Some pages are only listed with a short translation key. Expand it the
+  // same way their navigation does.
+  for (const [section, pages] of sections) {
+    const shortKey = pages.find((nav) =>
+      path.startsWith(nav.path)
+    )?.translationKey;
+    if (!shortKey || shortKey.includes(".")) {
+      continue;
+    }
+
+    const translationKey =
+      section === "general"
+        ? `ui.panel.config.${shortKey}.caption`
+        : `ui.panel.config.dashboard.${shortKey}.main`;
+    const localized = hass.localize(translationKey as LocalizeKeys);
+    if (localized) {
+      return localized;
+    }
+  }
+
   return undefined;
 };
 
@@ -137,19 +163,31 @@ export const getPanelIcon = (panel: PanelInfo): string | undefined => {
   return panel.icon || undefined;
 };
 
-export const PANEL_ICON_PATHS = {
-  calendar: mdiCalendar,
-  energy: mdiLightningBolt,
-  history: mdiChartBox,
-  logbook: mdiFormatListBulletedType,
-  map: mdiTooltipAccount,
-  profile: mdiAccount,
-  "media-browser": mdiPlayBoxMultiple,
-  todo: mdiClipboardList,
+// Built-in panels render their stock icon from a bundled path, so the sidebar
+// does not wait for the icon set to load.
+const BUILT_IN_PANEL_ICONS: Record<string, { icon?: string; path: string }> = {
+  calendar: { icon: "mdi:calendar", path: mdiCalendar },
+  energy: { icon: "mdi:lightning-bolt", path: mdiLightningBolt },
+  history: { icon: "mdi:chart-box", path: mdiChartBox },
+  logbook: {
+    icon: "mdi:format-list-bulleted-type",
+    path: mdiFormatListBulletedType,
+  },
+  map: { icon: "mdi:map", path: mdiMap },
+  profile: { path: mdiAccount },
+  "media-browser": { icon: "mdi:play-box-multiple", path: mdiPlayBoxMultiple },
+  todo: { icon: "mdi:clipboard-list", path: mdiClipboardList },
 };
 
-export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
-  PANEL_ICON_PATHS[panel.url_path];
+export const getPanelIconPath = (panel: PanelInfo): string | undefined => {
+  const builtIn = BUILT_IN_PANEL_ICONS[panel.url_path];
+  if (!builtIn) {
+    return undefined;
+  }
+
+  // An icon the user picked for the panel always wins.
+  return !panel.icon || panel.icon === builtIn.icon ? builtIn.path : undefined;
+};
 
 export const FIXED_PANELS = [PROFILE_PANEL, "config", NOT_FOUND_PANEL];
 

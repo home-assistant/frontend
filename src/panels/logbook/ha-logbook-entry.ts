@@ -312,7 +312,7 @@ class HaLogbookEntry extends LitElement {
     return (
       entityName ||
       (entityId && entityId in this.hass.states
-        ? this.hass.states[entityId].attributes.friendly_name || entityId
+        ? this.hass.formatEntityName(this.hass.states[entityId])
         : entityId)
     );
   }
@@ -365,10 +365,7 @@ class HaLogbookEntry extends LitElement {
           const messageEnd = messageParts.splice(i);
           messageEnd.shift();
           return html`${messageParts.join(" ")}
-          ${this._entityName(
-            entityId,
-            this.hass.states[entityId].attributes.friendly_name
-          )}
+          ${this.hass.formatEntityName(this.hass.states[entityId])}
           ${messageEnd.join(" ")}`;
         }
       }

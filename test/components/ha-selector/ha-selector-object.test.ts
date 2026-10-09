@@ -13,13 +13,13 @@ vi.mock("../../../src/components/ha-input-helper-text", () => {
   return {};
 });
 
-vi.mock("../../../src/components/ha-md-list", () => {
-  customElements.define("ha-md-list", class extends HTMLElement {});
+vi.mock("../../../src/components/list/ha-list-base", () => {
+  customElements.define("ha-list-base", class extends HTMLElement {});
   return {};
 });
 
-vi.mock("../../../src/components/ha-md-list-item", () => {
-  customElements.define("ha-md-list-item", class extends HTMLElement {});
+vi.mock("../../../src/components/item/ha-list-item-base", () => {
+  customElements.define("ha-list-item-base", class extends HTMLElement {});
   return {};
 });
 

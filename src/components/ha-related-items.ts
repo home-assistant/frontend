@@ -116,8 +116,8 @@ export class HaRelatedItems extends LitElement {
       .filter((entity) => entity)
       .sort((a, b) =>
         caseInsensitiveStringCompare(
-          a.attributes.friendly_name ?? a.entity_id,
-          b.attributes.friendly_name ?? b.entity_id,
+          this.hass.formatEntityName(a),
+          this.hass.formatEntityName(b),
           this.hass.language
         )
       );
@@ -394,7 +394,7 @@ export class HaRelatedItems extends LitElement {
   private _renderEntityRow(entity: HassEntity) {
     return html`
       <ha-list-item-button
-        .headline=${entity.attributes.friendly_name || entity.entity_id}
+        .headline=${this.hass.formatEntityName(entity)}
         data-entity-id=${entity.entity_id}
         @click=${this._openMoreInfo}
       >

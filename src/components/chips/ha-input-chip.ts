@@ -17,15 +17,15 @@ export class HaInputChip extends HaChipBase {
       css`
         :host {
           --ha-button-border-radius: 16px;
-          --ha-chip-icon-size: var(--md-input-chip-icon-size, 18px);
+          --ha-chip-icon-size: var(--ha-input-chip-icon-size, 18px);
         }
         :host([selected]) {
           --ha-chip-container-color: var(
-            --md-input-chip-selected-container-color,
+            --ha-input-chip-selected-container-color,
             rgba(var(--rgb-primary-text-color), 0.15)
           );
           --ha-chip-outline-width: var(
-            --md-input-chip-selected-outline-width,
+            --ha-input-chip-selected-outline-width,
             0px
           );
           --ha-chip-container-opacity: var(

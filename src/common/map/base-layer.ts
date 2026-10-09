@@ -1,10 +1,6 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 import type { Map as LeafletMap, TileLayerOptions } from "leaflet";
-import type {
-  setRTLTextPlugin,
-  setWorkerUrl,
-  StyleSpecification,
-} from "maplibre-gl";
+import type { setWorkerUrl, StyleSpecification } from "maplibre-gl";
 import { deepEqual } from "../util/deep-equal";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import type { ResolvedMapStyle } from "./map-styles";
@@ -23,10 +19,6 @@ const SHIPPED_STYLES = {
   light: "/static/map/light.json",
   dark: "/static/map/dark.json",
 } as const;
-
-// Without it Arabic and Hebrew labels render reversed. Loaded by MapLibre's
-// worker, hence a URL rather than an import.
-export const RTL_TEXT_PLUGIN_URL = "/static/map/mapbox-gl-rtl-text.js";
 
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
 // OSM serves no @2x variant.
@@ -160,20 +152,6 @@ export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
   }
   workerUrlSet = true;
   setUrl(new URL(__MAPLIBRE_WORKER_URL__, location.href).href);
-};
-
-// Global to MapLibre, and it throws when set twice.
-let rtlTextPluginRequested = false;
-export const ensureRTLTextPlugin = (setPlugin: typeof setRTLTextPlugin) => {
-  if (rtlTextPluginRequested) {
-    return;
-  }
-  rtlTextPluginRequested = true;
-  setPlugin(new URL(RTL_TEXT_PLUGIN_URL, location.href).href, true).catch(
-    () => {
-      // RTL labels stay reversed; everything else still renders.
-    }
-  );
 };
 
 const createVectorLayer = async (
@@ -390,7 +368,6 @@ export const createBaseLayer = async (
         import("maplibre-gl"),
       ]);
       ensureWorkerUrl(maplibre.setWorkerUrl);
-      ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
       vectorLayer = await createVectorLayer(
         createLayer,
         leaflet,

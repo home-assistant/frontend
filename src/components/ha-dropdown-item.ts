@@ -35,6 +35,7 @@ export class HaDropdownItem extends DropdownItem {
       css`
         :host {
           min-height: var(--ha-space-10);
+          overflow-wrap: break-word;
         }
 
         #check {
@@ -58,6 +59,13 @@ export class HaDropdownItem extends DropdownItem {
         }
         :host([selected]:hover) {
           background-color: var(--ha-color-fill-primary-quiet-hover);
+        }
+
+        /* Long submenus, like the label list on a phone, scroll instead of
+           running off the screen. */
+        #submenu[popover] {
+          max-height: calc(100dvh - var(--ha-space-4));
+          overflow-y: auto;
         }
       `,
     ];

@@ -25,13 +25,15 @@ export class HaTab extends LitElement {
         aria-describedby=${ifDefined(this.badge ? "badge" : undefined)}
         @keydown=${this._handleKeyDown}
       >
-        <slot name="icon"></slot>
-        <span class="name">${this.name}</span>
-        ${
-          this.badge
-            ? html`<span class="badge" id="badge">${this.badge}</span>`
-            : nothing
-        }
+        <span class="content">
+          <slot name="icon"></slot>
+          <span class="name">${this.name}</span>
+          ${
+            this.badge
+              ? html`<span class="badge" id="badge">${this.badge}</span>`
+              : nothing
+          }
+        </span>
         <ha-ripple></ha-ripple>
       </div>
     `;
@@ -45,9 +47,8 @@ export class HaTab extends LitElement {
 
   static styles = css`
     div {
-      padding: 0 32px;
+      padding: 0;
       display: flex;
-      flex-direction: column;
       text-align: center;
       box-sizing: border-box;
       align-items: center;
@@ -59,9 +60,26 @@ export class HaTab extends LitElement {
       outline: none;
     }
 
-    :host(:not([narrow])) div {
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    :host(:not([narrow])) .content {
       flex-direction: row;
       gap: var(--ha-space-2);
+      flex-shrink: 0;
+    }
+
+    :host(:not([narrow])) div::before,
+    :host(:not([narrow])) div::after {
+      content: "";
+      width: var(--ha-space-8);
+      min-width: 0;
     }
 
     .badge {
@@ -78,6 +96,7 @@ export class HaTab extends LitElement {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
       max-width: 100%;
     }
 
@@ -108,13 +127,18 @@ export class HaTab extends LitElement {
       margin-bottom: 0;
     }
 
-    div:focus-visible:before {
-      position: absolute;
-      display: block;
-      content: "";
-      inset: 0;
-      background-color: var(--secondary-text-color);
-      opacity: 0.08;
+    div:focus-visible {
+      background-color: rgba(var(--rgb-secondary-text-color), 0.08);
+    }
+
+    @supports (color: color-mix(in srgb, black, transparent)) {
+      div:focus-visible {
+        background-color: color-mix(
+          in srgb,
+          var(--secondary-text-color) 8%,
+          transparent
+        );
+      }
     }
   `;
 }

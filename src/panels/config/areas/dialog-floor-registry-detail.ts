@@ -75,8 +75,8 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
     this._aliases = this._params.entry?.aliases || [];
     this._icon = this._params.entry?.icon || null;
     this._level = this._params.entry?.level ?? null;
-    this._addedAreas.clear();
-    this._removedAreas.clear();
+    this._addedAreas = new Set();
+    this._removedAreas = new Set();
     this._open = true;
     this._initDirtyTracking({ type: "deep" }, this._currentState());
   }
@@ -99,8 +99,6 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
   private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
-    this._addedAreas.clear();
-    this._removedAreas.clear();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

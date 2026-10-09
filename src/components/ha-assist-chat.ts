@@ -82,6 +82,14 @@ export const greetingTranslationLanguage = (
   if (!pipelineLanguage || pipelineLanguage === interfaceLanguage) {
     return undefined;
   }
+  // A bare pipeline language ("zh") covers the interface's variant of it
+  // ("zh-Hans"), which a lookup of the bare language may not pick
+  if (
+    !pipelineLanguage.includes("-") &&
+    interfaceLanguage?.startsWith(`${pipelineLanguage}-`)
+  ) {
+    return undefined;
+  }
   const language = findAvailableLanguage(pipelineLanguage);
   return language && language !== interfaceLanguage ? language : undefined;
 };

@@ -1,6 +1,7 @@
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
+import type { MarketplaceTab } from "./ha-marketplace-dashboard";
 
 export const STATUS_ORDER = [
   "pending-restart",
@@ -10,15 +11,73 @@ export const STATUS_ORDER = [
   "default",
 ] as const satisfies readonly RepositoryBase["status"][];
 
+// New and available are never installed, so the installed tab only has these
+const INSTALLED_STATUS_ORDER = [
+  "pending-restart",
+  "pending-upgrade",
+  "installed",
+] as const satisfies readonly RepositoryBase["status"][];
+
 export const STATUS_FILTER = "status";
 export const TYPE_FILTER = "type";
+
+export const SOURCE_FILTER = "source";
 const SORT_PARAM = "sort";
 const DIRECTION_PARAM = "direction";
 
+// Where a repository comes from, the community catalog or added from a link
+export const SOURCE_ORDER = ["catalog", "custom"] as const;
+
+type RepositorySource = (typeof SOURCE_ORDER)[number];
+
+const repositorySource = (repository: RepositoryBase): RepositorySource =>
+  repository.custom ? "custom" : "catalog";
+
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
-  Record<typeof STATUS_FILTER | typeof TYPE_FILTER, string[]>
+  Record<
+    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
+    string[]
+  >
 >;
+
+export const statusesOfTab = (
+  tab: MarketplaceTab
+): readonly (typeof STATUS_ORDER)[number][] =>
+  tab === "installed" ? INSTALLED_STATUS_ORDER : STATUS_ORDER;
+
+// The filters are kept for every tab. A status picked on another tab that this
+// one can't list is left out here, instead of leaving the table empty.
+export const filtersOfTab = (
+  filters: RepositoryFilters,
+  tab: MarketplaceTab
+): RepositoryFilters => {
+  const statuses: readonly string[] = statusesOfTab(tab);
+
+  return {
+    ...filters,
+    [STATUS_FILTER]: filters[STATUS_FILTER]?.filter((status) =>
+      statuses.includes(status)
+    ),
+  };
+};
+
+// The status pane only sends what this tab lists, so statuses picked on another
+// tab that this one can't list are kept for when that tab is opened again
+export const statusFilterOfTab = (
+  filters: RepositoryFilters,
+  tab: MarketplaceTab,
+  picked: string[] = []
+): string[] => {
+  const statuses: readonly string[] = statusesOfTab(tab);
+
+  return [
+    ...(filters[STATUS_FILTER]?.filter(
+      (status) => !statuses.includes(status)
+    ) ?? []),
+    ...picked,
+  ];
+};
 
 const matchesFilters = (
   repository: RepositoryBase,
@@ -36,6 +95,12 @@ const matchesFilters = (
 
   const types = filters[TYPE_FILTER];
   if (types?.length && !types.includes(repository.category)) {
+    return false;
+  }
+
+  const sources = filters[SOURCE_FILTER];
+
+  if (sources?.length && !sources.includes(repositorySource(repository))) {
     return false;
   }
 
@@ -77,6 +142,9 @@ export const filterRepositories = (
       translated_category: localize(
         `ui.panel.marketplace.common.type.${repository.category}`
       ),
+      translated_source: localize(
+        `ui.panel.marketplace.repository_source.${repositorySource(repository)}`
+      ),
       // A date as text or 0 without one, only numbers sort among each other
       last_updated_timestamp: timestamp(repository.last_updated),
     }));
@@ -94,7 +162,8 @@ export const browseUrl = ({ sorting, filters }: BrowseSettings): string => {
     params.set(SORT_PARAM, sorting.column);
     params.set(DIRECTION_PARAM, sorting.direction);
   }
-  for (const filter of [STATUS_FILTER, TYPE_FILTER] as const) {
+
+  for (const filter of [STATUS_FILTER, TYPE_FILTER, SOURCE_FILTER] as const) {
     if (filters[filter]?.length) {
       params.set(filter, filters[filter].join(","));
     }
@@ -110,7 +179,9 @@ export const browseSettingsFromUrl = (
 ): BrowseSettings | undefined => {
   const params = new URLSearchParams(search);
   if (
-    ![SORT_PARAM, STATUS_FILTER, TYPE_FILTER].some((key) => params.has(key))
+    ![SORT_PARAM, STATUS_FILTER, TYPE_FILTER, SOURCE_FILTER].some((key) =>
+      params.has(key)
+    )
   ) {
     return undefined;
   }
@@ -127,6 +198,7 @@ export const browseSettingsFromUrl = (
     filters: {
       [STATUS_FILTER]: values(STATUS_FILTER),
       [TYPE_FILTER]: values(TYPE_FILTER),
+      [SOURCE_FILTER]: values(SOURCE_FILTER),
     },
   };
 };

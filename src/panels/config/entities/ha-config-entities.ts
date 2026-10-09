@@ -1691,7 +1691,7 @@ ${rejected
           overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

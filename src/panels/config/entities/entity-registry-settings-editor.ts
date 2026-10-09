@@ -10,13 +10,10 @@ import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
-import {
-  computeDeviceName,
-  computeDeviceNameDisplay,
-} from "../../../common/entity/compute_device_name";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { isDeviceName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
@@ -278,7 +275,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._name = this.entry.name || this._originalName;
-    this._useDeviceName = !!this._device && !this._isOwnName(this.entry.name);
+    this._useDeviceName = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -1760,19 +1757,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _hasOwnName(): boolean {
-    return this._isOwnName(this._computeName());
-  }
-
-  // Only a user-set name needs the check, original_name is already unprefixed
-  private _isOwnName(name: string | null): boolean {
-    if (name === null) {
-      return !!this._originalName;
-    }
-    if (!name) {
+    if (this._device && this._useDeviceName) {
       return false;
     }
-    const deviceName = this._device && computeDeviceName(this._device);
-    return !deviceName || !isDeviceName(name, deviceName);
+    return !!(this._computeName() ?? this._originalName);
+  }
+
+  private get _entryName(): string | undefined {
+    return computeEntityEntryName(this.entry, this.hass.devices);
   }
 
   private get _useDeviceArea(): boolean {
@@ -1802,7 +1794,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return this.entry.name;
     }
     if (this._device && this._useDeviceName) {
-      if (!this._isOwnName(this.entry.name)) {
+      if (!this._entryName) {
         return this.entry.name;
       }
       return this._originalName ? "" : null;

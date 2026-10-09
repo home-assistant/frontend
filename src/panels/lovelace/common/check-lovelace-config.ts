@@ -58,5 +58,10 @@ export const checkSectionConfig = (
 
     delete updatedSection.title;
   }
+
+  if (!isStrategySection(updatedSection) && updatedSection.sections) {
+    updatedSection.sections = updatedSection.sections.map(checkSectionConfig);
+  }
+
   return updatedSection;
 };

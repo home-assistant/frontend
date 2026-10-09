@@ -17,8 +17,8 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import "../components/hui-card-edit-mode";
-import { moveCard } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { moveAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
@@ -44,9 +44,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
-
-  @property({ attribute: false }) public viewIndex?: number;
+  @property({ attribute: false }) public path?: LovelacePath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -99,7 +97,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         @item-removed=${this._cardRemoved}
         invert-swap
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div
+          class="container ${classMap({ "edit-mode": editMode })}"
+          @card-visibility-changed=${this._cardVisibilityChanged}
+        >
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -110,11 +111,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
               const { rows, columns } = computeCardGridSize(gridOptions);
 
-              const cardPath: LovelaceCardPath = [
-                this.viewIndex!,
-                this.index!,
-                idx,
-              ];
+              const cardPath: LovelacePath | undefined = editMode
+                ? [...this.path!, "cards", idx]
+                : undefined;
               return html`
                 <div
                   style=${styleMap({
@@ -125,6 +124,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                   class="card ${classMap({
                     "fit-rows": typeof rows === "number",
                     "full-width": columns === "full",
+                    hidden: !editMode && card.hidden,
                   })}"
                   .sortableData=${cardPath}
                 >
@@ -133,7 +133,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                       ? html`
                           <hui-card-edit-mode
                             .lovelace=${this.lovelace!}
-                            .path=${cardPath}
+                            .path=${cardPath!}
                             .hiddenOverlay=${this._dragging}
                             .noEdit=${this.importOnly}
                             .noDuplicate=${this.importOnly}
@@ -171,22 +171,30 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     `;
   }
 
+  private _cardVisibilityChanged() {
+    // Re-render, so the hidden class follows the card's visibility
+    this.requestUpdate();
+  }
+
   private _cardMoved(ev) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
-    const newConfig = moveCard(
+    const newConfig = moveAtPath(
       this.lovelace!.config,
-      [this.viewIndex!, this.index!, oldIndex],
-      [this.viewIndex!, this.index!, newIndex]
+      [...this.path!, "cards", oldIndex],
+      [...this.path!, "cards", newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }
 
   private _cardAdded(ev) {
+    ev.stopPropagation();
     const { index, data } = ev.detail;
-    const oldPath = data as LovelaceCardPath;
-    const newPath = [this.viewIndex!, this.index!, index] as LovelaceCardPath;
-    const newConfig = moveCard(this.lovelace!.config, oldPath, newPath);
+    const newConfig = moveAtPath(this.lovelace!.config, data as LovelacePath, [
+      ...this.path!,
+      "cards",
+      index,
+    ]);
     this.lovelace!.saveConfig(newConfig);
   }
 
@@ -204,7 +212,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   }
 
   private _addCard() {
-    fireEvent(this, "ll-create-card", { suggested: ["tile", "heading"] });
+    fireEvent(this, "ll-create-card", {
+      path: [...this.path!, "cards"],
+      suggested: ["tile", "heading"],
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -266,7 +277,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           display: block;
         }
 
-        .card:has(> *[hidden]) {
+        /* A class instead of :has(), which older browsers like the one on
+           some Chromecasts don't support. */
+        .card.hidden {
           display: none;
         }
 

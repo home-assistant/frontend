@@ -1,6 +1,7 @@
 import { MockBaseEntity } from "./base-entity";
 import type { EntityInput } from "./types";
 import { MockAlarmControlPanelEntity } from "./alarm-control-panel-entity";
+import { MockAutomationEntity } from "./automation-entity";
 import { MockClimateEntity } from "./climate-entity";
 import { MockCoverEntity } from "./cover-entity";
 import { MockFanEntity } from "./fan-entity";
@@ -22,7 +23,7 @@ import { MockWaterHeaterEntity } from "./water-heater-entity";
 type EntityConstructor = new (input: EntityInput) => MockBaseEntity;
 
 const TYPES: Record<string, EntityConstructor> = {
-  automation: MockToggleEntity,
+  automation: MockAutomationEntity,
   alarm_control_panel: MockAlarmControlPanelEntity,
   climate: MockClimateEntity,
   cover: MockCoverEntity,

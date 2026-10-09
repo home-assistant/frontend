@@ -109,7 +109,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     if (!stateObj) {
       return html`
         <hui-warning-element
-          .label=${createEntityNotFoundWarning(this.hass, this._config.entity!)}
+          .label=${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         ></hui-warning-element>
       `;
     }

@@ -112,6 +112,36 @@ const fakes = vi.hoisted(() => {
     }
   }
 
+  class FakeAttributionControl {
+    static all: FakeAttributionControl[] = [];
+
+    element?: HTMLElement;
+
+    constructor(public options: { compact?: boolean }) {
+      FakeAttributionControl.all.push(this);
+    }
+
+    onAdd() {
+      const element = document.createElement("details");
+      element.className = "maplibregl-ctrl maplibregl-ctrl-attrib";
+      const button = document.createElement("summary");
+      button.className = "maplibregl-ctrl-attrib-button";
+      button.addEventListener("click", () =>
+        element.classList.toggle("maplibregl-compact-show")
+      );
+      element.append(button);
+      if (this.options.compact) {
+        element.classList.add("maplibregl-compact", "maplibregl-compact-show");
+      }
+      this.element = element;
+      return element;
+    }
+
+    onRemove() {
+      this.element?.remove();
+    }
+  }
+
   class FakeMap {
     static instances: FakeMap[] = [];
 
@@ -134,6 +164,8 @@ const fakes = vi.hoisted(() => {
 
     easeTo = vi.fn();
 
+    flyTo = vi.fn();
+
     jumpTo = vi.fn();
 
     resize = vi.fn(() => {
@@ -144,9 +176,16 @@ const fakes = vi.hoisted(() => {
 
     remove = vi.fn();
 
-    addControl = vi.fn();
+    addControl = vi.fn((control: { onAdd?: () => HTMLElement }) => {
+      const element = control.onAdd?.();
+      if (element) {
+        this._container.append(element);
+      }
+    });
 
-    removeControl = vi.fn();
+    removeControl = vi.fn((control: { onRemove?: () => void }) =>
+      control.onRemove?.()
+    );
 
     setStyle = vi.fn(
       (
@@ -321,16 +360,16 @@ const fakes = vi.hoisted(() => {
     }
   }
 
-  return { baseStyle, FakeMap, FakeMarker, FakePopup };
+  return { baseStyle, FakeMap, FakeMarker, FakePopup, FakeAttributionControl };
 });
 
 vi.mock("maplibre-gl", () => ({
   Map: fakes.FakeMap,
   Marker: fakes.FakeMarker,
   Popup: fakes.FakePopup,
+  AttributionControl: fakes.FakeAttributionControl,
   NavigationControl: vi.fn(),
   ScaleControl: vi.fn(),
-  setRTLTextPlugin: vi.fn(),
   setWorkerUrl: vi.fn(),
 }));
 
@@ -338,7 +377,6 @@ const loadStyle = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   loadStyle,
-  ensureRTLTextPlugin: vi.fn(),
   ensureWorkerUrl: vi.fn(),
 }));
 
@@ -363,6 +401,19 @@ const flush = () =>
   new Promise<void>((resolve) => {
     setTimeout(resolve, 0);
   });
+
+const fakeAttribution = fakes.FakeAttributionControl;
+
+const viewport = {
+  matches: false,
+  listeners: new Set<Listener>(),
+  addEventListener: (_type: string, listener: Listener) => {
+    viewport.listeners.add(listener);
+  },
+  removeEventListener: (_type: string, listener: Listener) => {
+    viewport.listeners.delete(listener);
+  },
+};
 
 const createEngine = async (events: Partial<MapEngineEvents> = {}) => {
   const container = document.createElement("div");
@@ -392,10 +443,71 @@ describe("MapLibreMapEngine", () => {
     fakeMap.startLoaded = true;
     fakeMap.failNextSetStyle = false;
     fakeMarker.all.length = 0;
+    fakeAttribution.all.length = 0;
+    viewport.matches = false;
+    viewport.listeners.clear();
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => viewport)
+    );
     tokenListeners.clear();
     refreshMapTilesToken.mockClear();
     loadStyle.mockReset();
     loadStyle.mockImplementation(async () => baseStyle());
+  });
+
+  describe("attribution", () => {
+    const attribution = (map: InstanceType<typeof fakeMap>) =>
+      map.getContainer().querySelector(".maplibregl-ctrl-attrib")!;
+    const shown = (map: InstanceType<typeof fakeMap>) =>
+      attribution(map).classList.contains("maplibregl-compact-show");
+
+    const narrowWithFakeTimers = async () => {
+      const created = await createEngine();
+      await created.ready;
+      vi.useFakeTimers();
+      viewport.matches = true;
+      viewport.listeners.forEach((listener) => listener());
+      return created.map;
+    };
+
+    it("collapses the opened compact attribution by itself", async () => {
+      const map = await narrowWithFakeTimers();
+      expect(shown(map)).toBe(true);
+
+      vi.advanceTimersByTime(4999);
+      expect(shown(map)).toBe(true);
+      vi.advanceTimersByTime(1);
+      expect(shown(map)).toBe(false);
+    });
+
+    it("leaves an attribution the user opened alone", async () => {
+      const map = await narrowWithFakeTimers();
+      vi.advanceTimersByTime(5000);
+      expect(shown(map)).toBe(false);
+
+      attribution(map)
+        .querySelector<HTMLElement>(".maplibregl-ctrl-attrib-button")!
+        .click();
+      await Promise.resolve();
+      expect(shown(map)).toBe(true);
+      vi.advanceTimersByTime(5000);
+      expect(shown(map)).toBe(true);
+    });
+
+    it("forces a compact attribution on a narrow viewport only", async () => {
+      const { map, ready } = await createEngine();
+      await ready;
+      expect(fakeAttribution.all).toHaveLength(1);
+      expect(fakeAttribution.all[0].options.compact).toBeUndefined();
+
+      viewport.matches = true;
+      viewport.listeners.forEach((listener) => listener());
+      expect(map.removeControl).toHaveBeenCalledWith(fakeAttribution.all[0]);
+      expect(fakeAttribution.all).toHaveLength(2);
+      expect(fakeAttribution.all[1].options.compact).toBe(true);
+      expect(attribution(map)).toBe(fakeAttribution.all[1].element);
+    });
   });
 
   afterEach(() => {
@@ -626,12 +738,15 @@ describe("MapLibreMapEngine", () => {
       const { engine, map, ready } = await createEngine();
       await ready;
 
-      engine.fitBounds([[52, 4]], { maxZoom: 15, padding: { bottom: 200 } });
+      engine.fitBounds(
+        [
+          [52, 4],
+          [53, 5],
+        ],
+        { maxZoom: 15, padding: { bottom: 200 } }
+      );
       expect(map.fitBounds).toHaveBeenCalledOnce();
-      const [bounds, options] = map.fitBounds.mock.calls[0];
-      // A single point centers on itself at the requested zoom
-      expect(bounds[0]).toEqual([4, 52]);
-      expect(bounds[1]).toEqual([4, 52]);
+      const [, options] = map.fitBounds.mock.calls[0];
       expect(options.maxZoom).toBe(14);
       expect(options.padding).toEqual({
         top: 0,
@@ -639,6 +754,52 @@ describe("MapLibreMapEngine", () => {
         bottom: 200,
         left: 0,
       });
+    });
+
+    it("centers on a single point instead of fitting it", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Centered, not fitted; padding becomes a transient offset
+      engine.fitBounds([[52, 4]], { maxZoom: 15, padding: { bottom: 200 } });
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.easeTo).toHaveBeenCalledWith(
+        expect.objectContaining({
+          center: [4, 52],
+          zoom: 14,
+          offset: [0, -100],
+        })
+      );
+    });
+
+    it("flies to a single point when the fit asked to fly", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      engine.fitBounds([[52, 4]], { maxZoom: 15, fly: true, animate: true });
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.easeTo).not.toHaveBeenCalled();
+      expect(map.flyTo).toHaveBeenCalledWith(
+        expect.objectContaining({ center: [4, 52], zoom: 14, animate: true })
+      );
+    });
+
+    it("eases to a fly fit under reduced motion to keep the offset", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // flyTo jumps and drops the offset under reduced motion, so ease instead
+      viewport.matches = true;
+      engine.fitBounds([[52, 4]], {
+        maxZoom: 15,
+        fly: true,
+        animate: true,
+        padding: { bottom: 200 },
+      });
+      expect(map.flyTo).not.toHaveBeenCalled();
+      expect(map.easeTo).toHaveBeenCalledWith(
+        expect.objectContaining({ center: [4, 52], offset: [0, -100] })
+      );
     });
 
     it("keeps padded bounds within the poles", async () => {
@@ -1161,7 +1322,7 @@ describe("MapLibreMapEngine", () => {
       ).toBe(true);
     });
 
-    it("leaves clusters elsewhere on the map alone when one is activated", async () => {
+    it("regroups clusters elsewhere on the map too when one is activated", async () => {
       vi.useFakeTimers();
       const { engine, map, ready } = await createEngine();
       await ready;
@@ -1177,11 +1338,17 @@ describe("MapLibreMapEngine", () => {
 
       (iconBuilder.mock.results[0].value.element as HTMLElement).click();
       expect(map.fitBounds).toHaveBeenCalledOnce();
-      // The activated pair parted; the other bubble is the very same marker
-      expect(fakeMarker.all).toHaveLength(3);
-      expect(fakeMarker.all).toContain(other);
-      expect(other.onMap).toBe(true);
-      expect((other.options.element as HTMLElement).style.visibility).toBe("");
+      // Both pairs part: the fit regroups everything for the landing zoom
+      expect(fakeMarker.all).toHaveLength(4);
+      expect(fakeMarker.all).not.toContain(other);
+      const far = fakeMarker.all.filter((marker) => marker.lngLat![0] >= 5);
+      expect(far).toHaveLength(2);
+      far.forEach((marker) => {
+        expect(marker.onMap).toBe(true);
+        expect((marker.options.element as HTMLElement).style.visibility).toBe(
+          ""
+        );
+      });
       expect(iconBuilder).toHaveBeenCalledTimes(2);
     });
 
