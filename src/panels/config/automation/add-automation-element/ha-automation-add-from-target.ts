@@ -15,6 +15,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -367,8 +368,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
           const target = `${type}${TARGET_SEPARATOR}${id}`;
           return html`<ha-list-item-button
             .target=${target}
-            @click=${this._selectItem}
-            class=${selected === target ? "selected" : ""}
+            @click=${this._selectRecentTarget}
+            class=${selected === target ? "recent selected" : "recent"}
           >
             <div slot="start" class="target-icon">
               ${getTargetIcon(
@@ -988,7 +989,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         .lazy=${lazy}
         @wa-lazy-load=${this._expandItem}
         @wa-collapse=${this._collapseItem}
-        .expanded=${open}
+        .expanded=${live(open)}
         .title=${label}
       >
         ${icon?.()} ${label} ${children || nothing}
@@ -1452,6 +1453,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
+  // A recent skips the way down to its target, so on desktop the tree opens
+  // and scrolls to it, as a target picked from search does. On mobile the
+  // tree gives way to the target's items anyway.
+  private _selectRecentTarget(ev: CustomEvent) {
+    this._valueChanged((ev.currentTarget as any).target, !this.narrow);
+  }
+
   private _selectTimeLocationGroup(ev: CustomEvent) {
     const value = (ev.currentTarget as any).value;
     if (value) {
@@ -1469,9 +1477,21 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (expand && id) {
       this._expandTreeToItem(type, id);
       await this.updateComplete;
+      // A tree item created already expanded, like an area inside a floor that
+      // opens in the same update, collapses itself again. One more render lets
+      // live() put it back before the selection is scrolled to.
+      this.requestUpdate();
+      await this.updateComplete;
+      // The rows grow open in an animation; scrolling before it ends lands
+      // on where the selection was mid-way, short of it.
+      await Promise.all(
+        [...this.shadowRoot!.querySelectorAll("wa-tree-item[expanded]")]
+          .flatMap((item) => item.shadowRoot?.getAnimations() ?? [])
+          .map((animation) => animation.finished.catch(() => undefined))
+      );
       if (type === "label") {
         this.shadowRoot!.querySelector(
-          "ha-list-item-button.selected"
+          "ha-list-item-button.selected:not(.recent)"
         )?.scrollIntoView({
           block: "center",
         });
