@@ -1079,10 +1079,6 @@ export class HuiMapOverview extends LitElement {
       color: #fff;
     }
 
-    .avatar.zone ha-state-icon {
-      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
-    }
-
     ha-relative-time {
       display: inline;
     }
