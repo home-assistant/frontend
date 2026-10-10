@@ -384,6 +384,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   };
 
   private _removeSelected = () => {
+    let deleteFailed = false;
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.tag.confirm_delete_selected_title"
@@ -404,17 +405,17 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           )
         );
         this._tags = this._tags.filter((tag) => !deletedIds.has(tag.id));
-        if (hasRejectedItems(results)) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.tag.delete_failed_title"
-            ),
-            text: this.hass.localize("ui.panel.config.tag.delete_failed"),
-          });
-        }
+        deleteFailed = hasRejectedItems(results);
         this._dataTable.clearSelection();
         await this._fetchTags();
       },
+    }).then((confirmed) => {
+      if (confirmed && deleteFailed) {
+        showAlertDialog(this, {
+          title: this.hass.localize("ui.panel.config.tag.delete_failed_title"),
+          text: this.hass.localize("ui.panel.config.tag.delete_failed"),
+        });
+      }
     });
   };
 

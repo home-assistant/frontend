@@ -4036,7 +4036,7 @@
           "confirm_delete_selected_title": "Delete selected tags?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
           "delete_failed_title": "Delete failed",
-          "delete_failed": "Some tags failed to delete successfully. Check system logs for more information.",
+          "delete_failed": "Some tags could not be deleted. Check system logs for more information.",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
