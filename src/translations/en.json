@@ -2713,6 +2713,14 @@
         "action": "Take survey"
       }
     },
+    "restart_required": {
+      "restart_message": "Home Assistant needs to be restarted to apply installed updates or changed settings.",
+      "reboot_message": "The system needs to be rebooted to apply installed updates or changed settings.",
+      "sources": "Requested by: {integrations}",
+      "later": "Later",
+      "restart": "Restart",
+      "reboot": "Reboot"
+    },
     "sidebar": {
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",

@@ -79,5 +79,17 @@ export const mockFrontend = (hass: MockHomeAssistant) => {
   });
   hass.mockWS("frontend/get_system_data", () => ({ value: null }));
   hass.mockWS("repairs/list_issues", () => ({ issues: [] }));
+  hass.mockWS("subscribe_system_state", (_msg, _currentHass, onChange) => {
+    onChange?.({
+      home_assistant_restart_dismissed: false,
+      home_assistant_restart_required: false,
+      home_assistant_restart_sources: [],
+      host_reboot_dismissed: false,
+      host_reboot_required: false,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return () => {};
+  });
+  hass.mockWS("dismiss_system_state", () => null);
   hass.mockWS("frontend/get_themes", (_msg, currentHass) => currentHass.themes);
 };

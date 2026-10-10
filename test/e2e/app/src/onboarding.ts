@@ -65,6 +65,13 @@ const subscriptionResults: Record<string, unknown> = {
     notifications: {},
   },
   subscribe_entities: { a: {} },
+  subscribe_system_state: {
+    home_assistant_restart_dismissed: false,
+    home_assistant_restart_required: false,
+    home_assistant_restart_sources: [],
+    host_reboot_dismissed: false,
+    host_reboot_required: false,
+  },
 };
 
 const commandResults: Record<string, unknown> = {
