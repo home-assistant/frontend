@@ -214,6 +214,9 @@ class ZHAAddDevicesPage extends LitElement {
     if (!this.hass) {
       return;
     }
+    // "Search again" lands here with the previous subscription still open,
+    // close it so the backend can end its debug logging session
+    this._unsubscribe();
     this._active = true;
     const data: any = { type: "zha/devices/permit", duration: 254 };
     if (this._ieeeAddress) {
