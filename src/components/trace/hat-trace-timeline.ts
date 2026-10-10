@@ -26,6 +26,7 @@ import type {
   ParallelAction,
   RepeatAction,
   SequenceAction,
+  WaitForTriggerAction,
 } from "../../data/script";
 import { getActionType } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
@@ -37,6 +38,7 @@ import type {
   IfActionTraceStep,
   TraceId,
   TriggerTraceStep,
+  WaitActionTraceStep,
 } from "../../data/trace";
 import { getDataFromPath, isTriggerPath } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
@@ -297,6 +299,14 @@ class ActionRenderer {
 
     if (actionType === "if") {
       return this._handleIf(index);
+    }
+
+    if (
+      actionType === "wait_for_trigger" &&
+      ((data as WaitForTriggerAction).on_trigger ||
+        (data as WaitForTriggerAction).on_timeout)
+    ) {
+      return this._handleWaitForTrigger(index);
     }
 
     if (actionType === "sequence") {
@@ -571,6 +581,52 @@ class ActionRenderer {
         parts[startLevel + 1] === "condition" ||
         parts.length < startLevel + 2
       ) {
+        continue;
+      }
+
+      i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
+    }
+
+    return i;
+  }
+
+  private _handleWaitForTrigger(index: number): number {
+    const waitPath = this.keys[index];
+    const startLevel = waitPath.split("/").length;
+
+    const waitTrace = this._getItem(index)[0] as WaitActionTraceStep;
+    const waitConfig = this._getDataFromPath(waitPath) as WaitForTriggerAction;
+    const name =
+      waitConfig.alias ||
+      describeAction(this.hass, this.entityReg, waitConfig, "wait_for_trigger");
+    const choice = waitTrace.result?.wait?.trigger
+      ? "on_trigger"
+      : waitTrace.result?.timeout
+        ? "on_timeout"
+        : undefined;
+
+    this._renderEntry(
+      waitPath,
+      choice
+        ? `${name}: ${this.hass.localize(
+            `ui.panel.config.automation.editor.actions.type.wait_for_trigger.${choice}`
+          )}`
+        : name,
+      undefined,
+      waitConfig.enabled === false
+    );
+
+    let i = index + 1;
+    while (i < this.keys.length) {
+      const path = this.keys[i];
+      const parts = path.split("/");
+
+      if (parts.length <= startLevel) {
+        return i;
+      }
+
+      if (!["on_trigger", "on_timeout"].includes(parts[startLevel])) {
+        i++;
         continue;
       }
 
