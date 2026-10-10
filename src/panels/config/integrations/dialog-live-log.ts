@@ -21,6 +21,8 @@ const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g;
 // Stay close to the bottom to keep following new lines
 const SCROLL_FOLLOW_MARGIN = 40;
 
+const MAX_LOG_LINES = 5000;
+
 @customElement("dialog-live-log")
 class DialogLiveLog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -83,19 +85,42 @@ class DialogLiveLog extends LitElement {
   }
 
   private _addLines(lines: string[]) {
-    const newLines = lines.flatMap((line) => line.split("\n"));
+    const newLines = lines
+      .flatMap((line) => line.split("\n"))
+      .slice(-MAX_LOG_LINES);
     if (!newLines.length) {
       return;
     }
-    const log = this._logElement;
-    const follow =
-      !log ||
-      log.scrollHeight - log.scrollTop - log.clientHeight <
+    const logElement = this._logElement;
+    const scrollTopBeforeUpdate = logElement ? logElement.scrollTop : 0;
+    const shouldFollowNewLines =
+      !logElement ||
+      logElement.scrollHeight - logElement.scrollTop - logElement.clientHeight <
         SCROLL_FOLLOW_MARGIN;
+
     this._lines.push(...newLines);
+    const excessLineCount = this._lines.length - MAX_LOG_LINES;
+    if (excessLineCount > 0) {
+      this._lines.splice(0, excessLineCount);
+    }
     this._lineCount = this._lines.length;
-    this._ansiToHtml?.parseLinesToColoredPre(newLines);
-    if (follow) {
+    if (this._ansiToHtml) {
+      this._ansiToHtml.parseLinesToColoredPre(newLines);
+    }
+
+    if (excessLineCount > 0) {
+      const scrollHeightBeforeTrimming = logElement ? logElement.scrollHeight : 0;
+      if (this._ansiToHtml) {
+        this._ansiToHtml.trimLines(MAX_LOG_LINES);
+      }
+      if (logElement && !shouldFollowNewLines) {
+        const removedHeight = scrollHeightBeforeTrimming - logElement.scrollHeight;
+        const scrollTopAfterTrimming = scrollTopBeforeUpdate - removedHeight;
+        logElement.scrollTop = scrollTopAfterTrimming > 0 ? scrollTopAfterTrimming : 0;
+      }
+    }
+
+    if (shouldFollowNewLines) {
       requestAnimationFrame(() => {
         if (this._logElement) {
           this._logElement.scrollTop = this._logElement.scrollHeight;
@@ -174,6 +199,7 @@ class DialogLiveLog extends LitElement {
         .log {
           height: 60vh;
           overflow: auto;
+          overflow-anchor: none;
           direction: ltr;
           font-family: var(--ha-font-family-code);
           font-size: var(--ha-font-size-s);
