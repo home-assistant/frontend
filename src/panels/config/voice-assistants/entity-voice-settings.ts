@@ -40,6 +40,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
+import { showsLocalGoogleAssistant } from "./expose/available-assistants";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
@@ -48,6 +49,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public entityId!: string;
 
   @property({ attribute: false }) public exposed!: ExposeEntitySettings;
+
+  @property({ attribute: false }) public locked?: ExposeEntitySettings;
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
 
@@ -58,7 +61,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @state() private _googleEntity?: GoogleEntity;
 
   @state() private _unsupported: Partial<
-    Record<"cloud.google_assistant" | "cloud.alexa" | "conversation", boolean>
+    Record<
+      | "cloud.google_assistant"
+      | "cloud.alexa"
+      | "conversation"
+      | "google_assistant",
+      boolean
+    >
   > = {};
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -127,7 +136,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       this._cloudStatus.prefs.alexa_enabled === true;
 
     const showAssistants = [...Object.keys(voiceAssistants)];
-    const uiAssistants = [...showAssistants];
+    let uiAssistants = [...showAssistants];
 
     const alexaManual =
       alexaEnabled &&
@@ -145,7 +154,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         showAssistants.indexOf("cloud.google_assistant"),
         1
       );
-      uiAssistants.splice(showAssistants.indexOf("cloud.google_assistant"), 1);
+      uiAssistants.splice(uiAssistants.indexOf("cloud.google_assistant"), 1);
     } else if (googleManual) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.google_assistant"), 1);
     }
@@ -157,7 +166,16 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.alexa"), 1);
     }
 
+    if (!showsLocalGoogleAssistant(this.hass, this._cloudStatus)) {
+      showAssistants.splice(showAssistants.indexOf("google_assistant"), 1);
+      uiAssistants.splice(uiAssistants.indexOf("google_assistant"), 1);
+    }
+
     const uiExposed = uiAssistants.some((key) => this.exposed[key]);
+
+    uiAssistants = uiAssistants.filter(
+      (assistant) => !this.locked?.[assistant]
+    );
 
     let manFilterFuncs:
       | {
@@ -178,15 +196,18 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       googleManual && manFilterFuncs!.google(this.entityId);
 
     const anyExposed = uiExposed || manExposedAlexa || manExposedGoogle;
+    const anyLocked = showAssistants.some((key) => this.locked?.[key]);
 
     const exposedToAlexa =
       showAssistants.includes("cloud.alexa") &&
       (alexaManual ? manExposedAlexa : this.exposed["cloud.alexa"]);
     const exposedToGoogle =
-      showAssistants.includes("cloud.google_assistant") &&
-      (googleManual
-        ? manExposedGoogle
-        : this.exposed["cloud.google_assistant"]);
+      (showAssistants.includes("cloud.google_assistant") &&
+        (googleManual
+          ? manExposedGoogle
+          : this.exposed["cloud.google_assistant"])) ||
+      (showAssistants.includes("google_assistant") &&
+        Boolean(this.exposed.google_assistant));
     const exposedToAssist = this.exposed.conversation;
 
     return html`
@@ -202,7 +223,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ></ha-switch>
       </ha-row-item>
       ${
-        anyExposed
+        anyExposed || anyLocked
           ? showAssistants.map((key) => {
               const supported = !this._unsupported[key];
 
@@ -215,7 +236,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
               const manualConfig =
                 (alexaManual && key === "cloud.alexa") ||
-                (googleManual && key === "cloud.google_assistant");
+                (googleManual && key === "cloud.google_assistant") ||
+                Boolean(this.locked?.[key]);
 
               const support2fa =
                 key === "cloud.google_assistant" &&

@@ -2220,7 +2220,9 @@
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
-        "view_entity": "More info about entity"
+        "view_entity": "More info about entity",
+        "load_error": "Failed to load voice assistant settings for this entity.",
+        "retry": "Retry"
       },
       "restart": {
         "heading": "Restart Home Assistant",
@@ -2855,7 +2857,8 @@
           },
           "voice_assistants": {
             "main": "Voice assistants",
-            "secondary": "Manage your voice assistants"
+            "secondary": "Manage your voice assistants",
+            "google_assistant_local": "Google Assistant (local)"
           },
           "energy": {
             "main": "Energy",
