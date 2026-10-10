@@ -344,8 +344,8 @@ importers:
         specifier: 3.50.0
         version: 3.50.0
       cropperjs:
-        specifier: 1.6.3
-        version: 1.6.3
+        specifier: 1.7.0
+        version: 1.7.0
       culori:
         specifier: 4.0.2
         version: 4.0.2
@@ -4392,8 +4392,8 @@ packages:
   crelt@1.0.7:
     resolution: {integrity: sha512-aK6BbWfhf4U/wCcLHKPJl/xa6VkVstRaPywWtMKGwuOLc/wZTyQYuoxgvZnNsBvv7Kg3YTBQYYBCggcviQczuA==}
 
-  cropperjs@1.6.3:
-    resolution: {integrity: sha512-BRb0PRIzjbfM5n+i6L2D85pSbXI/w6cnnwb9W9cRKgAmbiP+OjDeq+Irhd86IujZDXm/7JWECfscllFIdrlmfw==}
+  cropperjs@1.7.0:
+    resolution: {integrity: sha512-AkGnZxr7xAJBa63ObXq5ZKLkh9c8wisC+Ym8VzIDn3KZ+6qRTbBnOl2w2dFOTMzLP5IcfOpEK9PICDywNXhncg==}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -11978,7 +11978,7 @@ snapshots:
 
   crelt@1.0.7: {}
 
-  cropperjs@1.6.3: {}
+  cropperjs@1.7.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
