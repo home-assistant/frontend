@@ -7556,6 +7556,16 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
+            "show_live_log": "Show live log",
+            "live_log": {
+              "title": "Live log",
+              "waiting": "Waiting for log messages from {integration}…",
+              "unsupported": "This version of Home Assistant can't stream the log.",
+              "no_matches": "No log lines match the filters",
+              "pause": "[%key:ui::card::timer::actions::pause%]",
+              "resume": "Resume",
+              "paused": "Paused"
+            },
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
