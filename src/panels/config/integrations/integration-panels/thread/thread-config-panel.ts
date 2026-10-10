@@ -834,6 +834,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       .card-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+      }
+      .card-header ha-icon-button {
+        margin-block: calc(var(--ha-space-3) * -1);
       }
 
       .send-to-phone-description {
