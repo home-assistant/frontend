@@ -394,7 +394,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
-      confirm: async () => {
+      action: async () => {
         const results = await Promise.allSettled(
           this._selected.map((id) => deleteTag(this.hass, id))
         );
