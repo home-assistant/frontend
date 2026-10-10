@@ -970,7 +970,7 @@ export class HuiEnergySourcesTableCard
       text-transform: inherit;
     }
     .mdc-data-table {
-      background-color: var(--ha-card-background, var(--card-background-color));
+      background: var(--ha-card-background, var(--card-background-color));
       border-radius: var(--ha-border-radius-sm);
       border: 0;
       box-sizing: border-box;
@@ -1018,7 +1018,7 @@ export class HuiEnergySourcesTableCard
       white-space: nowrap;
     }
     .mdc-data-table__header-cell {
-      background-color: var(--ha-card-background, var(--card-background-color));
+      background: var(--ha-card-background, var(--card-background-color));
       font-family: var(--ha-font-family-body);
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);

@@ -659,6 +659,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       haStyleScrollbar,
       themeBackgroundStyles,
       css`
+        :host::before {
+          background: var(
+            --lovelace-background,
+            var(--sidebar-background-color, var(--primary-background-color))
+          );
+        }
         :host {
           overflow: visible;
           height: 100%;
@@ -684,6 +690,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             var(--primary-text-color)
           );
           border-bottom: 1px solid var(--divider-color);
+          background-color: var(
+            --sidebar-menu-button-background-color,
+            inherit
+          );
           font-size: var(--ha-font-size-xl);
           align-items: center;
           overflow: hidden;

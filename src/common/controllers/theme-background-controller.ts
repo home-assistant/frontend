@@ -1,29 +1,30 @@
 import { css } from "lit";
-import type { ReactiveController, ReactiveControllerHost } from "lit";
-import type { HomeAssistant } from "../../types";
+import type { ReactiveControllerHost } from "lit";
+import { uiContext } from "../../data/context";
+import { ContextSubscriptionController } from "../decorators/consume";
 
-type Host = ReactiveControllerHost & HTMLElement & { hass?: HomeAssistant };
+export class ThemeBackgroundController {
+  private _themes?: unknown;
 
-export class ThemeBackgroundController implements ReactiveController {
-  private _themes?: HomeAssistant["themes"];
+  private _selectedTheme?: unknown;
 
-  private _selectedTheme?: HomeAssistant["selectedTheme"];
-
-  constructor(private _host: Host) {
-    _host.addController(this);
+  constructor(private _host: ReactiveControllerHost & HTMLElement) {
+    new ContextSubscriptionController(
+      _host,
+      uiContext,
+      ({ themes, selectedTheme }) => {
+        if (themes === this._themes && selectedTheme === this._selectedTheme) {
+          return;
+        }
+        this._themes = themes;
+        this._selectedTheme = selectedTheme;
+        this._host.requestUpdate();
+        this._host.updateComplete.then(() => this._apply());
+      }
+    );
   }
 
-  hostUpdate() {
-    const hass = this._host.hass;
-    if (
-      !hass ||
-      (hass.themes === this._themes &&
-        hass.selectedTheme === this._selectedTheme)
-    ) {
-      return;
-    }
-    this._themes = hass.themes;
-    this._selectedTheme = hass.selectedTheme;
+  private _apply() {
     const background = getComputedStyle(this._host).getPropertyValue(
       "--lovelace-background"
     );
