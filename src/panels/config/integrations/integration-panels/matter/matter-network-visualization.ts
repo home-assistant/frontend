@@ -336,7 +336,9 @@ export class MatterNetworkVisualization extends LitElement {
               "ui.panel.config.matter.visualization.network"
             )}:</b
           >
-          ${this._localizeDynamic("network_type", "bridged")}`;
+          ${this.hass.localize(
+            "ui.panel.config.matter.visualization.bridged"
+          )}`;
       }
       const conn = this._getConnection(source, target);
       if (!conn) {

@@ -8875,6 +8875,7 @@
             "online": "Online",
             "unknown_device": "Unknown device",
             "unknown_devices": "Unknown devices",
+            "bridged": "Bridged",
             "bridged_device": "Bridged device",
             "bridged_by": "Bridged by",
             "node": "Node {node_id}",
@@ -8912,7 +8913,6 @@
             "thread": "Thread",
             "wifi": "Wi-Fi",
             "ethernet": "Ethernet",
-            "bridged": "Bridged",
             "unknown": "Unknown"
           },
           "node_type": {

@@ -152,7 +152,7 @@ export function createMatterNetworkChartData(
     style.getPropertyValue(networkToColorVar("wifi")),
     style.getPropertyValue("--error-color"),
     style.getPropertyValue("--disabled-color"),
-    style.getPropertyValue("--pink-color"),
+    style.getPropertyValue("--blue-grey-color"),
   ];
   const categories = [
     {
