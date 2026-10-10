@@ -607,7 +607,10 @@
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
-          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
+          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]",
+          "location_address": "[%key:ui::panel::page-onboarding::core-config::location_address%]",
+          "osm_privacy_policy": "[%key:ui::panel::page-onboarding::core-config::osm_privacy_policy%]",
+          "search_error": "Unable to search for this location. Try again."
         },
         "period": {
           "periods": {
