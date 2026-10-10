@@ -11,9 +11,15 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../common/controllers/theme-background-controller";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public header?: string;
@@ -81,6 +87,7 @@ class HassSubpage extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      themeBackgroundStyles,
       haStyleScrollbar,
       css`
         :host {
@@ -88,19 +95,6 @@ class HassSubpage extends LitElement {
           height: 100%;
           overflow: hidden;
           position: relative;
-          isolation: isolate;
-        }
-
-        :host::before {
-          content: "";
-          position: fixed;
-          inset: 0;
-          z-index: -1;
-          pointer-events: none;
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
 
         :host([narrow]) {

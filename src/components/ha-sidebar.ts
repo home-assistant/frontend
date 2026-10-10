@@ -45,6 +45,7 @@ import "./ha-tooltip";
 import "./item/ha-list-item-button";
 import "./list/ha-list-nav";
 import "./user/ha-user-badge";
+import { themeBackgroundStyles } from "../common/controllers/theme-background-controller";
 
 const SORT_VALUE_URL_PATHS = {
   energy: 1,
@@ -656,6 +657,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return [
       ...super.styles,
       haStyleScrollbar,
+      themeBackgroundStyles,
       css`
         :host {
           overflow: visible;
@@ -665,7 +667,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           overflow: hidden;
           overscroll-behavior: contain;
           user-select: none;
-          background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
           padding-bottom: var(--safe-area-inset-bottom, 0px);
@@ -683,10 +684,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             var(--primary-text-color)
           );
           border-bottom: 1px solid var(--divider-color);
-          background-color: var(
-            --sidebar-menu-button-background-color,
-            inherit
-          );
           font-size: var(--ha-font-size-xl);
           align-items: center;
           overflow: hidden;

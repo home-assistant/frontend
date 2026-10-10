@@ -56,6 +56,10 @@ import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { csvDownload, csvSafeString } from "../../util/csv";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../common/controllers/theme-background-controller";
 
 const EMPTY_STATES: HomeAssistant["states"] = {};
 
@@ -66,6 +70,8 @@ interface LogbookState {
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -579,6 +585,7 @@ export class HaPanelLogbook extends LitElement {
 
   static get styles() {
     return [
+      themeBackgroundStyles,
       haStyle,
       css`
         :host {
@@ -586,19 +593,6 @@ export class HaPanelLogbook extends LitElement {
           --ha-generic-picker-max-width: 400px;
           /* The target picker chips need more room than a plain filter list. */
           --ha-filter-pane-width: 340px;
-          isolation: isolate;
-        }
-
-        :host::before {
-          content: "";
-          position: fixed;
-          inset: 0;
-          z-index: -1;
-          pointer-events: none;
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
 
         .content {
