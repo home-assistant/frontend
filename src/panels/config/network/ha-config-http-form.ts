@@ -20,6 +20,7 @@ import {
   fetchHttpConfig,
   HTTP_CONFIG_FIELDS,
   saveHttpConfig,
+  SSL_PROFILES,
 } from "../../../data/http";
 import type {
   ActiveConfigType,
@@ -76,20 +77,17 @@ const SCHEMA = memoizeOne(
             name: "ssl_profile",
             selector: {
               select: {
-                options: [
-                  {
-                    value: "modern",
-                    label: localize(
-                      "ui.panel.config.network.http.ssl_profile_modern"
-                    ),
-                  },
-                  {
-                    value: "intermediate",
-                    label: localize(
-                      "ui.panel.config.network.http.ssl_profile_intermediate"
-                    ),
-                  },
-                ],
+                mode: "box",
+                box_max_columns: 1,
+                options: SSL_PROFILES.map((profile) => ({
+                  value: profile,
+                  label: localize(
+                    `ui.panel.config.network.http.ssl_profile_${profile}`
+                  ),
+                  description: localize(
+                    `ui.panel.config.network.http.ssl_profile_${profile}_description`
+                  ),
+                })),
               },
             },
           },
