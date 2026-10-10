@@ -398,6 +398,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         const results = await Promise.allSettled(
           this._selected.map((id) => deleteTag(this.hass, id))
         );
+        const deletedIds = new Set(
+          this._selected.filter(
+            (_id, index) => results[index].status === "fulfilled"
+          )
+        );
+        this._tags = this._tags.filter((tag) => !deletedIds.has(tag.id));
         if (hasRejectedItems(results)) {
           showAlertDialog(this, {
             title: this.hass.localize(
