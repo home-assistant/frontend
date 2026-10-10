@@ -54,8 +54,11 @@ export const hasWaterSource = (prefs: EnergyPreferences): boolean =>
 export const hasWaterDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water?.length ?? 0) > 0;
 
+export const trackedDevices = (prefs: EnergyPreferences) =>
+  prefs.device_consumption.filter((device) => !device.is_home_total);
+
 export const hasDeviceConsumption = (prefs: EnergyPreferences): boolean =>
-  prefs.device_consumption.length > 0;
+  trackedDevices(prefs).length > 0;
 
 export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => {
@@ -68,7 +71,7 @@ export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
   });
 
 export const hasPowerDevices = (prefs: EnergyPreferences): boolean =>
-  prefs.device_consumption.some((device) => device.stat_rate);
+  trackedDevices(prefs).some((device) => device.stat_rate);
 
 export const hasWaterRateDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water ?? []).some((device) => device.stat_rate);

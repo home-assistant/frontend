@@ -26,6 +26,8 @@ import {
   getEnergyDataCollection,
   EMPTY_PREFERENCES,
   CompareMode,
+  getSummedData,
+  computeConsumptionData,
 } from "../../src/data/energy";
 import type { EnergySource } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
@@ -33,6 +35,8 @@ import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_re
 import { StatisticMeanType } from "../../src/data/recorder";
 import type { StatisticsMetaData } from "../../src/data/recorder";
 import { createMockEntityState, createMockHass } from "../fixtures/hass";
+import { generateEnergyData } from "../fixtures/energy";
+import { generateStatistics } from "../fixtures/statistics";
 
 const checkConsumptionResult = (
   input: {
@@ -1844,5 +1848,59 @@ describe("computeEnergyDeviceLabels", () => {
       ),
       { "sensor.washer_power": "Washer Power" }
     );
+  });
+});
+
+describe("Home total device", () => {
+  const build = (flag: boolean) => {
+    const base = generateEnergyData(8, { days: 1, gapChance: 0 });
+    const totalStats = generateStatistics(9, {
+      ids: ["sensor.home_total"],
+      period: "hour",
+      days: 1,
+      gapChance: 0,
+      sumStatistics: true,
+    });
+    return {
+      ...base,
+      prefs: {
+        ...base.prefs,
+        device_consumption: [
+          {
+            stat_consumption: "sensor.home_total",
+            ...(flag ? { is_home_total: true } : {}),
+          },
+        ],
+      },
+      stats: { ...base.stats, ...totalStats },
+    };
+  };
+
+  it("uses the declared sensor as used_total", () => {
+    const { summedData } = getSummedData(build(true));
+    const { consumption } = computeConsumptionData(summedData, undefined);
+    const homeTotal = summedData.home_total!;
+
+    Object.entries(homeTotal).forEach(([t, value]) => {
+      assert.equal(consumption.used_total[Number(t)], value);
+    });
+    assert.closeTo(
+      consumption.total.used_total,
+      Object.values(homeTotal).reduce((a, b) => a + b, 0),
+      1e-9
+    );
+  });
+
+  it("keeps the computed used_total without the flag", () => {
+    const baseline = computeConsumptionData(
+      getSummedData(generateEnergyData(8, { days: 1, gapChance: 0 }))
+        .summedData,
+      undefined
+    );
+    const { summedData } = getSummedData(build(false));
+    const { consumption } = computeConsumptionData(summedData, undefined);
+
+    assert.isUndefined(summedData.home_total);
+    assert.deepEqual(consumption.used_total, baseline.consumption.used_total);
   });
 });

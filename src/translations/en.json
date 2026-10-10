@@ -4593,7 +4593,9 @@
               "selected_stat_intro": "Select the sensor that measures the device's electricity usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
-              "no_upstream_devices": "No eligible upstream devices"
+              "no_upstream_devices": "No eligible upstream devices",
+              "home_total": "Home total consumption",
+              "home_total_helper": "Use this device as the total of the whole home. It replaces the calculated home value in the Energy dashboard and is not shown as a separate device."
             }
           },
           "device_consumption_water": {

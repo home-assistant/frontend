@@ -8,7 +8,11 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { isEnergyCardVisible } from "./energy-cards";
+import {
+  hasDeviceConsumption,
+  isEnergyCardVisible,
+  trackedDevices,
+} from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import {
   LARGE_SCREEN_CONDITION,
@@ -62,8 +66,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     // No energy sources available
     if (
       !prefs ||
-      (prefs.device_consumption.length === 0 &&
-        prefs.energy_sources.length === 0)
+      (!hasDeviceConsumption(prefs) && prefs.energy_sources.length === 0)
     ) {
       return view;
     }
@@ -262,7 +265,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     }
     if (isEnergyCardVisible("electricity", "energy-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
-        prefs.device_consumption,
+        trackedDevices(prefs),
         hass,
         (d) => d.stat_consumption
       );

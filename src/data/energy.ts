@@ -123,6 +123,7 @@ export interface DeviceConsumptionEnergyPreference {
   stat_rate?: string;
   name?: string;
   included_in_stat?: string;
+  is_home_total?: boolean;
 }
 
 export interface PowerConfig {
@@ -1401,12 +1402,14 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  home_total?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    home_total?: number;
   };
   timestamps: number[];
 }
@@ -1454,6 +1457,7 @@ const getSummedDataPartial = (
     solar?: string[];
     to_battery?: string[];
     from_battery?: string[];
+    home_total?: string[];
   } = {};
 
   for (const source of data.prefs.energy_sources) {
@@ -1498,6 +1502,8 @@ const getSummedDataPartial = (
     }
   }
 
+  const homeTotal = data.prefs.device_consumption.find((d) => d.is_home_total);
+  if (homeTotal) statIds.home_total = [homeTotal.stat_consumption];
   const summedData: EnergySumData = { total: {}, timestamps: [] };
   const timestamps = new Set<number>();
   Object.entries(statIds).forEach(([key, subStatIds]) => {
@@ -1593,8 +1599,9 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
-    outData.used_total[t] = used_total;
-    total.used_total += used_total;
+    const homeUsed = data.home_total?.[t];
+    outData.used_total[t] = homeUsed ?? used_total;
+    total.used_total += outData.used_total[t];
     outData.grid_to_battery[t] = grid_to_battery;
     total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;

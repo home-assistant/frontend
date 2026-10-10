@@ -89,7 +89,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
 
     if (
       !prefs ||
-      (prefs.device_consumption.length === 0 &&
+      (!hasDeviceConsumption(prefs) &&
         prefs.energy_sources.length === 0 &&
         !hasWaterDevices(prefs))
     ) {
