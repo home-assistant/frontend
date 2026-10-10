@@ -4034,7 +4034,7 @@
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
           "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected tags?",
-          "confirm_delete_selected": "The {count} selected tags will be permanently deleted.",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
           "delete_failed_title": "Delete failed",
           "delete_failed": "Some tags failed to delete successfully. Check system logs for more information.",
           "automation_title": "Tag {name} is scanned",
