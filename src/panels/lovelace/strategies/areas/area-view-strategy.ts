@@ -81,7 +81,7 @@ export class AreaViewStrategy extends ReactiveElement {
       config.groups_options
     );
 
-    const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
+    const computeTileCard = computeAreaTileCardConfig(hass, true);
 
     const {
       lights,
