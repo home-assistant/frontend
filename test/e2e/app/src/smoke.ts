@@ -231,7 +231,7 @@ const CONFIG_ROUTES = routeCases([
   ["/config/mqtt", "mqtt-config-panel"],
   ["/config/radio-frequency", "radio-frequency-config-dashboard-router"],
   ["/config/ssdp", "ssdp-config-panel"],
-  ["/config/thread", "thread-config-panel"],
+  ["/config/thread", "thread-config-router"],
   ["/config/zeroconf", "zeroconf-config-panel"],
   ["/config/zha", "zha-config-dashboard-router"],
   ["/config/zwave_js", "zwave_js-config-router"],
