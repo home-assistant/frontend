@@ -60,7 +60,7 @@ const generateSumStatistics = (
   end: Date,
   period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
-  maxDiff: number
+  maxDiff: number | ((start: Date, end: Date) => number)
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
   let currentDate = new Date(start);
@@ -69,7 +69,9 @@ const generateSumStatistics = (
   const now = new Date();
   while (end > currentDate && currentDate < now) {
     const nextDate = getNextDate(currentDate, period);
-    const add = Math.random() * maxDiff;
+    const bound =
+      typeof maxDiff === "function" ? maxDiff(currentDate, nextDate) : maxDiff;
+    const add = Math.random() * bound;
     sum += add;
     statistics.push({
       start: currentDate.getTime(),
@@ -136,6 +138,15 @@ const statisticsFunctions: Record<
     period: "5minute" | "hour" | "day" | "month"
   ) => StatisticValue[]
 > = {
+  "sensor.energy_water": (_id, start, end, period = "hour") =>
+    generateSumStatistics(
+      start,
+      end,
+      period,
+      4000,
+      (bucketStart, bucketEnd) =>
+        (20 * (bucketEnd.getTime() - bucketStart.getTime())) / 3600000
+    ),
   "sensor.energy_consumption_tarif_1": (
     _id: string,
     start: Date,
@@ -301,6 +312,11 @@ const statisticsFunctions: Record<
     return [...morning, ...production, ...evening, ...rest];
   },
 };
+// Prices are per source unit; water uses litres (4 currency units per m³).
+const derivedCosts: Record<string, { source: string; price: number }> = {
+  "sensor.energy_water_cost": { source: "sensor.energy_water", price: 0.004 },
+};
+
 export const mockRecorder = (mockHass: MockHomeAssistant) => {
   mockHass.mockWS(
     "recorder/get_statistics_metadata",
@@ -317,10 +333,23 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
       const end = end_time ? new Date(end_time) : new Date();
 
       const statistics: Record<string, StatisticValue[]> = {};
+      const cache: Record<string, StatisticValue[]> = {};
+      const getStats = (id: string) => {
+        cache[id] ??= statisticsFunctions[id](id, start, end, period);
+        return cache[id];
+      };
 
       statistic_ids.forEach((id: string) => {
-        if (id in statisticsFunctions) {
-          statistics[id] = statisticsFunctions[id](id, start, end, period);
+        if (id in derivedCosts) {
+          const { source, price } = derivedCosts[id];
+          let cost = 0;
+          statistics[id] = getStats(source).map((statistic) => {
+            const change = statistic.change! * price;
+            cost += change;
+            return { ...statistic, change, state: cost, sum: cost };
+          });
+        } else if (id in statisticsFunctions) {
+          statistics[id] = getStats(id);
         } else {
           const entityState = hass.states[id];
           const state = entityState ? Number(entityState.state) : 1;
