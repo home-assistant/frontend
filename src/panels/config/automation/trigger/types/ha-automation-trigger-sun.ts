@@ -39,7 +39,7 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
             ],
           ],
         },
-        { name: "offset", selector: { text: {} } },
+        { name: "offset", selector: { duration: { mode: "offset" } } },
       ] as const
   );
 
