@@ -407,7 +407,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         this._tags = this._tags.filter((tag) => !deletedIds.has(tag.id));
         deleteFailed = hasRejectedItems(results);
         this._dataTable.clearSelection();
-        await this._fetchTags();
       },
     }).then((confirmed) => {
       if (confirmed && deleteFailed) {
