@@ -366,7 +366,9 @@ export function generateEnergyDevicesDetailGraphData(
   const data = energyData.stats;
   const compareData = energyData.statsCompare;
 
-  const devices = energyData.prefs.device_consumption;
+  const devices = energyData.prefs.device_consumption.filter(
+    (d) => !d.is_home_total
+  );
 
   const ctx: ProcessContext = {
     localize,
@@ -393,7 +395,7 @@ export function generateEnergyDevicesDetailGraphData(
   });
 
   const growthValues = {};
-  energyData.prefs.device_consumption.forEach((device) => {
+  devices.forEach((device) => {
     const value =
       device.stat_consumption in data
         ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
@@ -402,7 +404,7 @@ export function generateEnergyDevicesDetailGraphData(
     growthValues[device.stat_consumption] = value;
   });
   const growthValuesExChildren = {};
-  energyData.prefs.device_consumption.forEach((device) => {
+  devices.forEach((device) => {
     growthValuesExChildren[device.stat_consumption] = (
       childMap[device.stat_consumption] || []
     ).reduce(
@@ -411,9 +413,7 @@ export function generateEnergyDevicesDetailGraphData(
     );
   });
 
-  const sorted_devices = energyData.prefs.device_consumption.map(
-    (device) => device.stat_consumption
-  );
+  const sorted_devices = devices.map((device) => device.stat_consumption);
   sorted_devices.sort(
     (a, b) => growthValuesExChildren[b] - growthValuesExChildren[a]
   );
@@ -447,7 +447,7 @@ export function generateEnergyDevicesDetailGraphData(
       ctx,
       computedStyles,
       compareData,
-      energyData.prefs.device_consumption,
+      devices,
       sorted_devices,
       childMap,
       trackY,
@@ -489,7 +489,7 @@ export function generateEnergyDevicesDetailGraphData(
     ctx,
     computedStyles,
     data,
-    energyData.prefs.device_consumption,
+    devices,
     sorted_devices,
     childMap,
     trackY

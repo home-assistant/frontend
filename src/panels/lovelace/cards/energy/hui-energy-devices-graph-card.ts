@@ -388,17 +388,20 @@ export class HuiEnergyDevicesGraphCard
     const computedStyle = getComputedStyle(this);
 
     this._compoundStats = energyData.prefs.device_consumption
+      .filter((d) => !d.is_home_total)
       .map((d) => d.included_in_stat)
       .filter(Boolean) as string[];
 
     this._deviceLabels = computeEnergyDeviceLabels(
       this._states,
       this._formatters.formatEntityName,
-      energyData.prefs.device_consumption,
+      energyData.prefs.device_consumption.filter((d) => !d.is_home_total),
       energyData.statsMetadata
     );
 
-    const devices = energyData.prefs.device_consumption;
+    const devices = energyData.prefs.device_consumption.filter(
+      (d) => !d.is_home_total
+    );
     const devicesTotals: Record<string, number> = {};
     devices.forEach((device) => {
       devicesTotals[device.stat_consumption] =

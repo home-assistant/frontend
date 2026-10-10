@@ -324,7 +324,7 @@ class HuiPowerSankeyCard
       links: deviceLinks,
       untrackedConsumption,
     } = buildSankeyDeviceNodes({
-      devices: prefs.device_consumption,
+      devices: prefs.device_consumption.filter((d) => !d.is_home_total),
       computedStyle,
       localize: this._i18n.localize,
       rootNodeId: "home",

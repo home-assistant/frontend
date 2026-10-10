@@ -8,8 +8,11 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/input/ha-input";
+import "../../../../components/ha-switch";
+import "../../../../components/ha-settings-row";
 import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
+import type { HaSwitch } from "../../../../components/ha-switch";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import {
   computeEnergyLabel,
@@ -54,6 +57,8 @@ export class DialogEnergyDeviceSettings
 
   private _excludeListPower?: string[];
 
+  private _otherHasTotal = false;
+
   private _possibleParents: DeviceConsumptionEnergyPreference[] = [];
 
   public async showDialog(
@@ -62,6 +67,11 @@ export class DialogEnergyDeviceSettings
     this._params = params;
     this._device = this._params.device;
     this._computePossibleParents();
+    this._otherHasTotal = params.device_consumptions.some(
+      (d) =>
+        d.is_home_total &&
+        d.stat_consumption !== params.device?.stat_consumption
+    );
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
@@ -184,6 +194,20 @@ export class DialogEnergyDeviceSettings
         >
         </ha-input>
 
+        <ha-settings-row slim>
+          <span slot="heading">
+            ${this.hass.localize("ui.panel.config.energy.device_consumption.dialog.home_total")}
+          </span>
+          <span slot="description">
+            ${this.hass.localize("ui.panel.config.energy.device_consumption.dialog.home_total_helper")}
+          </span>
+          <ha-switch
+            .checked=${!!this._device?.is_home_total}
+            .disabled=${!this._device || this._otherHasTotal}
+            @change=${this._homeTotalChanged}
+          ></ha-switch>
+        </ha-settings-row>
+
         <ha-energy-upstream-device-picker
           .hass=${this.hass}
           .label=${this.hass.localize(
@@ -198,7 +222,7 @@ export class DialogEnergyDeviceSettings
           .emptyLabel=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
           )}
-          .disabled=${!this._device}
+          .disabled=${!this._device || !!this._device.is_home_total}
           @value-changed=${this._parentChanged}
         ></ha-energy-upstream-device-picker>
 
@@ -288,6 +312,20 @@ export class DialogEnergyDeviceSettings
     this._updateDirtyState(this._device);
   }
 
+  private _homeTotalChanged(ev: Event) {
+    const newDevice = {
+      ...this._device!,
+      is_home_total: (ev.target as HaSwitch).checked,
+    } as DeviceConsumptionEnergyPreference;
+    if (newDevice.is_home_total) {
+      delete newDevice.included_in_stat;
+    } else {
+      delete newDevice.is_home_total;
+    }
+    this._device = newDevice;
+    this._updateDirtyState(this._device);
+  }
+
   private async _save() {
     try {
       await this._params!.saveCallback(this._device!);
@@ -318,6 +356,12 @@ export class DialogEnergyDeviceSettings
           margin-top: var(--ha-space-4);
           --ha-input-padding-bottom: 0;
           width: 100%;
+        }
+        ha-settings-row {
+          width: 100%;
+          margin-top: var(--ha-space-4);
+          display: block;
+          padding: 0;
         }
       `,
     ];
