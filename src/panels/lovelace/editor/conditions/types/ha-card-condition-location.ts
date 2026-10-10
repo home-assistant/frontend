@@ -10,8 +10,10 @@ import {
   optional,
   string,
 } from "superstruct";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { slugify } from "../../../../../common/string/slugify";
 import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/ha-alert";
@@ -144,6 +146,10 @@ export class HaCardConditionLocation extends LitElement {
   // Stays set after the first edit, so the alert keeps explaining the change.
   @state() private _migrated = false;
 
+  // The zone states `_data` was built from, including zones it names that
+  // don't exist, so hass updates that change no zone skip the migration.
+  private _zoneStates?: Map<string, HassEntity | undefined>;
+
   public static get defaultConfig(): LocationCondition {
     return { condition: "location", target: {} };
   }
@@ -158,15 +164,45 @@ export class HaCardConditionLocation extends LitElement {
     }
     if (this.condition.locations === undefined) {
       this._data = this.condition;
+      this._zoneStates = undefined;
       return;
     }
     this._migrated = true;
-    // Redo on state changes so a renamed or added zone is picked up, but keep
-    // the same object when nothing changed so the form doesn't re-render.
+    // Redo only when a zone state or the entity registry changes, so a
+    // renamed, added or removed zone is picked up.
+    if (
+      !changedProps.has("condition") &&
+      changedProps.get("hass")?.entities === this.hass.entities &&
+      !this._zonesChanged()
+    ) {
+      return;
+    }
     const data = migrateLocationCondition(this.condition, this.hass);
+    this._zoneStates = new Map();
+    for (const entityId of [
+      ...Object.keys(this.hass.states).filter(
+        (id) => computeDomain(id) === "zone"
+      ),
+      ...ensureArray(data.target?.entity_id ?? []),
+    ]) {
+      this._zoneStates.set(entityId, this.hass.states[entityId]);
+    }
+    // Keep the same object when nothing changed so the form doesn't re-render.
     if (!deepEqual(data, this._data)) {
       this._data = data;
     }
+  }
+
+  private _zonesChanged(): boolean {
+    if (!this._zoneStates) {
+      return true;
+    }
+    for (const [entityId, stateObj] of this._zoneStates) {
+      if (this.hass.states[entityId] !== stateObj) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected render() {

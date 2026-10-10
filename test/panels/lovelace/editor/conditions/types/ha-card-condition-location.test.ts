@@ -258,6 +258,43 @@ describe("ha-card-condition-location", () => {
       });
     });
 
+    it("skips hass updates that change no zone", () => {
+      const store1 = { ...HASS.states["zone.store_1"] };
+      const hass = {
+        ...HASS,
+        states: { ...HASS.states, "zone.store_1": store1 },
+      } as unknown as HomeAssistant;
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Store 1"],
+      });
+      editor.hass = hass;
+      open(editor);
+
+      // Renamed in place, so only a new migration would see it.
+      store1.attributes = { friendly_name: "Shop 1" };
+      editor.hass = {
+        ...hass,
+        states: {
+          ...hass.states,
+          "person.me": { ...HASS.states["person.me"], state: "not_home" },
+        },
+      } as unknown as HomeAssistant;
+      (editor as any).willUpdate(new Map([["hass", hass]]));
+      expect((editor as any)._data).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.store_1"] },
+      });
+
+      // A registry update redoes it.
+      editor.hass = { ...editor.hass, entities: {} } as HomeAssistant;
+      (editor as any).willUpdate(new Map([["hass", hass]]));
+      expect((editor as any)._data).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.store_1_2"] },
+      });
+    });
+
     it("shows the alert without writing the config when opened", () => {
       const editor = createEditor({
         condition: "location",
