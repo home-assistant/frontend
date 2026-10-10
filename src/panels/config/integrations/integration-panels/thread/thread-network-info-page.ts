@@ -13,6 +13,7 @@ import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { getWsErrorMessage } from "../../../../../util/ws-error";
 
 @customElement("thread-network-info-page")
 class ThreadNetworkInfoPage extends LitElement {
@@ -28,6 +29,8 @@ class ThreadNetworkInfoPage extends LitElement {
 
   @state() private _loaded = false;
 
+  @state() private _error?: string;
+
   @state() private _dataset?: ThreadDataSet;
 
   @state() private _otbrInfo?: OTBRInfo;
@@ -38,21 +41,36 @@ class ThreadNetworkInfoPage extends LitElement {
   }
 
   private async _fetchData(): Promise<void> {
-    const { datasets } = await listThreadDataSets(this.hass);
-    const dataset = datasets.find((item) => item.dataset_id === this.datasetId);
-    if (dataset && isComponentLoaded(this.hass.config, "otbr")) {
-      try {
-        const otbrInfo = await getOTBRInfo(this.hass);
-        const otbr = findOTBRInfoForDataset(otbrInfo, dataset);
-        if (otbr?.active_dataset_tlvs?.includes(dataset.extended_pan_id)) {
-          this._otbrInfo = otbr;
-        }
-      } catch (_err) {
-        this._otbrInfo = undefined;
+    try {
+      const { datasets } = await listThreadDataSets(this.hass);
+      const dataset = datasets.find(
+        (item) => item.dataset_id === this.datasetId
+      );
+      if (dataset) {
+        this._otbrInfo = await this._fetchOTBRInfo(dataset);
       }
+      this._dataset = dataset;
+    } catch (err: unknown) {
+      this._error =
+        getWsErrorMessage(err) ?? this.hass.localize("ui.common.unknown_error");
     }
-    this._dataset = dataset;
     this._loaded = true;
+  }
+
+  private async _fetchOTBRInfo(
+    dataset: ThreadDataSet
+  ): Promise<OTBRInfo | undefined> {
+    if (!isComponentLoaded(this.hass.config, "otbr")) {
+      return undefined;
+    }
+
+    const otbrInfo = await getOTBRInfo(this.hass).catch(() => undefined);
+    const otbr = findOTBRInfoForDataset(otbrInfo, dataset);
+    if (!otbr?.active_dataset_tlvs?.includes(dataset.extended_pan_id)) {
+      return undefined;
+    }
+
+    return otbr;
   }
 
   protected render(): TemplateResult {
@@ -60,9 +78,10 @@ class ThreadNetworkInfoPage extends LitElement {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          .error=${this.hass.localize(
-            "ui.panel.config.thread.network_info.not_found"
-          )}
+          .error=${
+            this._error ??
+            this.hass.localize("ui.panel.config.thread.network_info.not_found")
+          }
         ></hass-error-screen>
       `;
     }
