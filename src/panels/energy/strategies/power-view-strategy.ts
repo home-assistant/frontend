@@ -120,7 +120,7 @@ export class PowerViewStrategy extends ReactiveElement {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         trackedDevices(prefs),
         hass,
-        (d) => d.stat_consumption
+        (d) => d.stat_rate
       );
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),

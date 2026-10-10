@@ -1599,9 +1599,9 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
-    const homeUsed = data.home_total ? (data.home_total[t] ?? 0) : used_total;
-    outData.used_total[t] = homeUsed;
-    total.used_total += homeUsed;
+    const homeUsed = data.home_total?.[t];
+    outData.used_total[t] = homeUsed ?? used_total;
+    total.used_total += outData.used_total[t];
     outData.grid_to_battery[t] = grid_to_battery;
     total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;
