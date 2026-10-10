@@ -220,7 +220,7 @@ class ZHADeviceNeighbors extends LitElement {
       zhaDevicePageCardStyles,
       css`
         ha-data-table {
-          --data-table-background-color: var(--card-background-color);
+          --data-table-background: var(--card-background-color);
           --data-table-border-width: 0;
           --ha-border-radius-sm: 0;
         }

@@ -1275,7 +1275,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table {
-          background: var(--data-table-background-color);
+          background: var(--data-table-background);
           border-radius: var(--ha-border-radius-sm);
           border-width: 1px;
           border-style: solid;
@@ -1551,7 +1551,7 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
-          background: var(--data-table-background-color);
+          background: var(--data-table-background);
         }
 
         .group-header ha-icon-button {
@@ -1656,7 +1656,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row:has(.group-header) {
-          background: var(--data-table-background-color);
+          background: var(--data-table-background);
         }
 
         .mdc-data-table__table.auto-height .scroller {
