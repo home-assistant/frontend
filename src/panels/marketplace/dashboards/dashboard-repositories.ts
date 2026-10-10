@@ -1,4 +1,8 @@
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  createMarketplaceBrowseQueryString,
+  decodeMarketplaceBrowseQueryParams,
+} from "../../../common/url/marketplace-query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
@@ -22,8 +26,6 @@ export const STATUS_FILTER = "status";
 export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
-const SORT_PARAM = "sort";
-const DIRECTION_PARAM = "direction";
 
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
@@ -150,55 +152,54 @@ export const filterRepositories = (
     }));
 
 // How to browse, the way a link says it, like
-// /marketplace/browse?sort=stars&direction=desc&status=new
+// /marketplace/browse?status=new&search=card&sort=stars&direction=desc
 export interface BrowseSettings {
+  search?: string;
   sorting?: { column: string; direction: "asc" | "desc" };
   filters: RepositoryFilters;
 }
 
-export const browseUrl = ({ sorting, filters }: BrowseSettings): string => {
-  const params = new URLSearchParams();
-  if (sorting) {
-    params.set(SORT_PARAM, sorting.column);
-    params.set(DIRECTION_PARAM, sorting.direction);
-  }
-
-  for (const filter of [STATUS_FILTER, TYPE_FILTER, SOURCE_FILTER] as const) {
-    if (filters[filter]?.length) {
-      params.set(filter, filters[filter].join(","));
-    }
-  }
-
-  const query = params.toString();
+export const browseUrl = ({
+  search,
+  sorting,
+  filters,
+}: BrowseSettings): string => {
+  const query = createMarketplaceBrowseQueryString({
+    ...filters,
+    search,
+    sort: sorting?.column,
+    direction: sorting?.direction,
+  });
   return query ? `/marketplace/browse?${query}` : "/marketplace/browse";
 };
 
 // Nothing about browsing in the link keeps what was picked before
 export const browseSettingsFromUrl = (
-  search: string
+  query: string
 ): BrowseSettings | undefined => {
-  const params = new URLSearchParams(search);
+  const { search, sort, direction, ...lists } =
+    decodeMarketplaceBrowseQueryParams(query);
+
+  const filters: RepositoryFilters = {
+    [STATUS_FILTER]: lists.status?.filter(Boolean),
+    [TYPE_FILTER]: lists.type?.filter(Boolean),
+    [SOURCE_FILTER]: lists.source?.filter(Boolean),
+  };
+
   if (
-    ![SORT_PARAM, STATUS_FILTER, TYPE_FILTER, SOURCE_FILTER].some((key) =>
-      params.has(key)
-    )
+    !search &&
+    !sort &&
+    !Object.values(filters).some((values) => values?.length)
   ) {
     return undefined;
   }
 
-  const column = params.get(SORT_PARAM);
-  const values = (key: string) => params.get(key)?.split(",").filter(Boolean);
   return {
-    sorting: column
-      ? {
-          column,
-          direction: params.get(DIRECTION_PARAM) === "asc" ? "asc" : "desc",
-        }
+    search,
+    sorting: sort
+      ? // Ascending unless the link says otherwise, like picking a sort in the table
+        { column: sort, direction: direction === "desc" ? "desc" : "asc" }
       : undefined,
-    filters: {
-      [STATUS_FILTER]: values(STATUS_FILTER),
-      [TYPE_FILTER]: values(TYPE_FILTER),
-      [SOURCE_FILTER]: values(SOURCE_FILTER),
-    },
+    filters,
   };
 };

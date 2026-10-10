@@ -161,6 +161,7 @@ describe("filterRepositories", () => {
 describe("browseUrl", () => {
   it("links to what browseSettingsFromUrl reads back", () => {
     const settings = {
+      search: "mushroom card",
       sorting: { column: "stars", direction: "desc" as const },
       filters: { status: ["new"], type: ["theme"], source: ["custom"] },
     };
@@ -169,6 +170,19 @@ describe("browseUrl", () => {
 
     expect(url.pathname).toBe("/marketplace/browse");
     expect(browseSettingsFromUrl(url.search)).toEqual(settings);
+  });
+
+  it("sorts ascending when the link gives no direction", () => {
+    expect(browseSettingsFromUrl("?sort=name")?.sorting).toEqual({
+      column: "name",
+      direction: "asc",
+    });
+  });
+
+  it("keeps what was picked for a link that says nothing about browsing", () => {
+    expect(
+      browseSettingsFromUrl("?owner=hacs&repository=integration")
+    ).toBeUndefined();
   });
 });
 
