@@ -146,8 +146,9 @@ export class HaCardConditionLocation extends LitElement {
   // Stays set after the first edit, so the alert keeps explaining the change.
   @state() private _migrated = false;
 
-  // The zone states `_data` was built from, including zones it names that
-  // don't exist, so hass updates that change no zone skip the migration.
+  // The zone states `_data` was built from, including registered zones and
+  // zones it names that have no state, so hass updates that change no zone
+  // skip the migration.
   private _zoneStates?: Map<string, HassEntity | undefined>;
 
   public static get defaultConfig(): LocationCondition {
@@ -180,11 +181,13 @@ export class HaCardConditionLocation extends LitElement {
     const data = migrateLocationCondition(this.condition, this.hass);
     this._zoneStates = new Map();
     for (const entityId of [
-      ...Object.keys(this.hass.states).filter(
-        (id) => computeDomain(id) === "zone"
-      ),
+      ...Object.keys(this.hass.states),
+      ...Object.keys(this.hass.entities),
       ...ensureArray(data.target?.entity_id ?? []),
     ]) {
+      if (computeDomain(entityId) !== "zone") {
+        continue;
+      }
       this._zoneStates.set(entityId, this.hass.states[entityId]);
     }
     // Keep the same object when nothing changed so the form doesn't re-render.

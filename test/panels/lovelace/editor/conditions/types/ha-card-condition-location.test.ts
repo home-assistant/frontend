@@ -281,6 +281,31 @@ describe("ha-card-condition-location", () => {
       });
     });
 
+    it("picks up a registered zone when its state returns", () => {
+      const editor = createEditor({
+        condition: "location",
+        locations: ["Reloading"],
+      });
+      open(editor);
+
+      editor.hass = {
+        ...HASS,
+        states: {
+          ...HASS.states,
+          "zone.reloading": {
+            entity_id: "zone.reloading",
+            state: "0",
+            attributes: { friendly_name: "Reloading" },
+          },
+        },
+      } as unknown as HomeAssistant;
+      (editor as any).willUpdate(new Map([["hass", HASS]]));
+      expect((editor as any)._data).toEqual({
+        condition: "location",
+        target: { entity_id: ["zone.reloading"] },
+      });
+    });
+
     it("shows the alert without writing the config when opened", () => {
       const editor = createEditor({
         condition: "location",
