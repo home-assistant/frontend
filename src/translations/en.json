@@ -1272,7 +1272,8 @@
       "web-rtc-player": {
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
-        "connect_failed": "Failed to connect the WebRTC stream: {message}"
+        "connect_failed": "Failed to connect the WebRTC stream: {message}",
+        "microphone_failed": "Could not access the microphone: {message}"
       },
       "siren": {
         "more_controls": "More controls",
@@ -1999,7 +2000,14 @@
         },
         "camera": {
           "download_snapshot": "Download snapshot",
-          "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
+          "failed_to_download": "Failed to download snapshot. Please check the logs for more information.",
+          "start_talking": "Start talking",
+          "stop_talking": "Stop talking",
+          "microphone_not_secure": "[%key:ui::dialogs::voice_command::not_supported_microphone_browser%]",
+          "microphone_webrtc_only": "Talking to this camera is only possible when the stream uses WebRTC.",
+          "microphone_denied": "Microphone access was denied. Allow it in your browser settings to talk to this camera.",
+          "microphone_app_failed": "Could not start talking to the camera: {message}",
+          "microphone_app_stopped": "Talking to the camera stopped unexpectedly."
         },
         "timer": {
           "edit_mode": "Edit presets",
