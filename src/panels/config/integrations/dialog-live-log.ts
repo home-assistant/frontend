@@ -399,19 +399,25 @@ class DialogLiveLog extends LitElement {
                     class="line-limit"
                     type="number"
                     appearance="outlined"
-                    inset-label
-                    required
                     .min=${1}
                     .step=${1}
                     .value=${String(this._lineLimit)}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.live_log.lines"
-                    )}
                     .validationMessage=${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.live_log.invalid_line_limit"
                     )}
                     @change=${this._lineLimitChanged}
-                  ></ha-input>
+                  >
+                    <span slot="label" class="line-limit-label">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.live_log.lines"
+                      )}
+                    </span>
+                    <span slot="start" aria-hidden="true">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.live_log.lines"
+                      )}
+                    </span>
+                  </ha-input>
                   <ha-chip-set>
                     ${LOG_LEVELS.map(
                       (level) => html`
@@ -537,8 +543,22 @@ class DialogLiveLog extends LitElement {
           flex: 1 1 200px;
         }
         .line-limit {
-          flex: 0 0 120px;
+          flex: 0 0 140px;
           min-width: 0;
+        }
+        .line-limit::part(wa-base) {
+          height: 40px;
+        }
+        .line-limit [slot="start"] {
+          color: var(--secondary-text-color);
+        }
+        .line-limit-label {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
         }
         .toolbar-buttons {
           display: flex;
