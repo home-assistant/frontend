@@ -19,6 +19,8 @@ import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-app-icon";
 import "../../../components/ha-button";
+import "../../../components/ha-combo-box-item";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-generic-picker";
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
@@ -29,6 +31,11 @@ import {
   fetchHassioAddonsInfo,
   type HassioAddonInfo,
 } from "../../../data/hassio/addon";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+  type IntegrationManifest,
+} from "../../../data/integration";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
@@ -86,9 +93,13 @@ export class HaConfigLogs extends LitElement {
 
   @query("system-log-card") private systemLog?: SystemLogCard;
 
-  @query("ha-generic-picker") private providerPicker?: HaGenericPicker;
+  @query("#provider-picker") private providerPicker?: HaGenericPicker;
 
   @state() private _selectedLogProvider = "core";
+
+  @state() private _integration?: string;
+
+  @state() private _integrationManifest?: IntegrationManifest;
 
   @state() private _logProviders = logProviders;
 
@@ -118,6 +129,22 @@ export class HaConfigLogs extends LitElement {
           .value=${this._filter}
           .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
         ></ha-input-search>
+        ${
+          this._selectedLogProvider === "core"
+            ? html`<ha-generic-picker
+                class="integration-picker"
+                .hass=${this.hass}
+                .value=${this._integration}
+                .placeholder=${this.hass.localize(
+                  "ui.panel.config.logs.filter_integration"
+                )}
+                .getItems=${this._getIntegrationItems}
+                .rowRenderer=${this._integrationRenderer}
+                .valueRenderer=${this._integrationValueRenderer}
+                @value-changed=${this._integrationChanged}
+              ></ha-generic-picker>`
+            : nothing
+        }
       </div>
     `;
 
@@ -134,6 +161,7 @@ export class HaConfigLogs extends LitElement {
           isComponentLoaded(this.hass.config, "hassio") && this._logProviders
             ? html`
                 <ha-generic-picker
+                  id="provider-picker"
                   slot="toolbar-icon"
                   .hass=${this.hass}
                   .getItems=${this._getLogProviderItems}
@@ -174,6 +202,11 @@ export class HaConfigLogs extends LitElement {
                       )!.name
                     }
                     .filter=${this._filter}
+                    .integration=${this._integration}
+                    .integrationLoggers=${this._getIntegrationLoggers(
+                      this._integration,
+                      this._integrationManifest
+                    )}
                     @switch-log-view=${this._showDetail}
                   ></system-log-card>
                 `
@@ -186,6 +219,11 @@ export class HaConfigLogs extends LitElement {
                   }
                   .filter=${this._filter}
                   .provider=${this._selectedLogProvider}
+                  .integration=${
+                    this._selectedLogProvider === "core"
+                      ? this._integration
+                      : undefined
+                  }
                   @switch-log-view=${this._showDetail}
                   allow-switch
                 ></error-log-card>`
@@ -211,10 +249,48 @@ export class HaConfigLogs extends LitElement {
     }
     this._selectedLogProvider = provider;
     this._filter = "";
+    this._setIntegration(undefined);
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
 
+  private _integrationChanged(ev: ValueChangedEvent<string | undefined>) {
+    ev.stopPropagation();
+    const integration = ev.detail.value || undefined;
+    if (integration === this._integration) {
+      return;
+    }
+    this._setIntegration(integration);
+    const params = new URLSearchParams();
+    if (isComponentLoaded(this.hass.config, "hassio")) {
+      params.set("provider", this._selectedLogProvider);
+    }
+    if (integration) {
+      params.set("integration", integration);
+    }
+    const search = params.toString();
+    navigate(`/config/logs${search ? `?${search}` : ""}`, { replace: true });
+  }
+
+  private _setIntegration(integration: string | undefined) {
+    this._integration = integration;
+    this._integrationManifest = undefined;
+    if (!integration) {
+      return;
+    }
+    fetchIntegrationManifest(this.hass, integration).then(
+      (manifest) => {
+        if (this._integration === integration) {
+          this._integrationManifest = manifest;
+        }
+      },
+      () => {
+        // Filter on the integration's own logger only
+      }
+    );
+  }
+
   private async _init() {
+    const integration = extractSearchParam("integration");
     if (isComponentLoaded(this.hass.config, "hassio")) {
       await this._getInstalledAddons();
     }
@@ -242,6 +318,15 @@ export class HaConfigLogs extends LitElement {
         });
       }
     }
+    if (
+      integration &&
+      this._selectedLogProvider === "core" &&
+      this._getLoadedIntegrations(this.hass.config.components).includes(
+        integration
+      )
+    ) {
+      this._setIntegration(integration);
+    }
   }
 
   private async _getInstalledAddons() {
@@ -263,6 +348,55 @@ export class HaConfigLogs extends LitElement {
       // Ignore, nothing the user can do anyway
     }
   }
+
+  private _getLoadedIntegrations = memoizeOne((components: string[]) =>
+    components.filter((component) => !component.includes("."))
+  );
+
+  private _getIntegrationItems = (): PickerComboBoxItem[] =>
+    this._getLoadedIntegrations(this.hass.config.components).map((domain) => {
+      const name = domainToName(this.hass.localize, domain);
+      return {
+        id: domain,
+        primary: name,
+        icon: domain,
+        sorting_label: name,
+      };
+    });
+
+  private _getIntegrationLoggers = memoizeOne(
+    (
+      integration: string | undefined,
+      manifest: IntegrationManifest | undefined
+    ): string[] | undefined =>
+      integration
+        ? [
+            `homeassistant.components.${integration}`,
+            `custom_components.${integration}`,
+            ...(manifest?.loggers ?? []),
+          ]
+        : undefined
+  );
+
+  private _integrationRenderer = (item: PickerComboBoxItem) => html`
+    <ha-combo-box-item>
+      <ha-domain-icon
+        slot="start"
+        .domain=${item.id}
+        brand-fallback
+      ></ha-domain-icon>
+      <span slot="headline">${item.primary}</span>
+    </ha-combo-box-item>
+  `;
+
+  private _integrationValueRenderer = (domain: string) => html`
+    <ha-domain-icon
+      slot="start"
+      .domain=${domain}
+      brand-fallback
+    ></ha-domain-icon>
+    <span slot="headline">${domainToName(this.hass.localize, domain)}</span>
+  `;
 
   private _getLogProviderItems = (): LogProviderPickerItem[] =>
     this._logProviders.map((provider) => ({
@@ -358,10 +492,21 @@ export class HaConfigLogs extends LitElement {
           top: 0;
           z-index: 2;
         }
-        .search ha-input-search {
+        .search {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: var(--ha-space-3);
           padding: var(--ha-space-3);
           background: var(--sidebar-background-color);
           border-bottom: 1px solid var(--divider-color);
+        }
+        .search ha-input-search {
+          flex: 2 1 240px;
+        }
+        .search ha-generic-picker.integration-picker {
+          flex: 1 1 200px;
+          max-width: none;
         }
         .content {
           direction: ltr;

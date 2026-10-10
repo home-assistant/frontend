@@ -4786,6 +4786,10 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
+          "no_issues_integration": "No issues found for {integration}",
+          "filter_integration": "[%key:ui::components::related-items::integration%]",
+          "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
+          "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
           "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
           "loading_log": "Loading log…",
@@ -7556,6 +7560,16 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
+            "show_live_log": "Show live log",
+            "live_log": {
+              "title": "Live log",
+              "waiting": "Waiting for log messages from {integration}…",
+              "unsupported": "This version of Home Assistant can't stream the log.",
+              "no_matches": "No log lines match the filters",
+              "pause": "[%key:ui::card::timer::actions::pause%]",
+              "resume": "Resume",
+              "paused": "Paused"
+            },
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",

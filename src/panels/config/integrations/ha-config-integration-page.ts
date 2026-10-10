@@ -68,6 +68,7 @@ import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showLiveLogDialog } from "./show-dialog-live-log";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { multiTermSearch } from "../../../resources/fuseMultiTerm";
@@ -733,14 +734,24 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                     )}
-                    <ha-button
-                      size="s"
-                      variant="warning"
-                      slot="action"
-                      @click=${this._handleDisableDebugLogging}
-                    >
-                      ${this.hass.localize("ui.common.disable")}
-                    </ha-button>
+                    <div slot="action" class="debug-actions">
+                      <ha-button
+                        size="s"
+                        variant="warning"
+                        @click=${this._showLiveLog}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.show_live_log"
+                        )}
+                      </ha-button>
+                      <ha-button
+                        size="s"
+                        variant="warning"
+                        @click=${this._handleDisableDebugLogging}
+                      >
+                        ${this.hass.localize("ui.common.disable")}
+                      </ha-button>
+                    </div>
                   </ha-alert>
                 </div>`
               : nothing
@@ -1247,6 +1258,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _showLiveLog() {
+    showLiveLogDialog(this, {
+      domain: this.domain,
+      name: domainToName(this.hass.localize, this.domain, this._manifest),
+    });
+  }
+
   private async _handleDisableDebugLogging(ev: Event) {
     // Stop propagation since otherwise we end up here twice while we await the log level change
     // and trigger two identical debug log downloads.
@@ -1470,6 +1488,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .section {
           width: 100%;
+        }
+        .debug-actions {
+          display: flex;
+          gap: var(--ha-space-2);
+        }
+        .debug-actions ha-button::part(label) {
+          white-space: nowrap;
         }
         .section-header {
           margin-inline-start: 16px;
