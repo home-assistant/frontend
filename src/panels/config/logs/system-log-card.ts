@@ -41,6 +41,10 @@ export class SystemLogCard extends LitElement {
 
   @property() public header?: string;
 
+  @property() public integration?: string;
+
+  @property({ attribute: false }) public integrationLoggers?: string[];
+
   public loaded = false;
 
   @state() private _items?: LoggedError[];
@@ -70,8 +74,22 @@ export class SystemLogCard extends LitElement {
   }
 
   private _getFilteredItems = memoizeOne(
-    (localize: LocalizeFunc, items: LoggedError[], filter: string) =>
+    (
+      localize: LocalizeFunc,
+      items: LoggedError[],
+      filter: string,
+      loggers: string[] | undefined
+    ) =>
       items.filter((item: LoggedError) => {
+        if (
+          loggers &&
+          !loggers.some(
+            (logger) =>
+              item.name === logger || item.name.startsWith(`${logger}.`)
+          )
+        ) {
+          return false;
+        }
         if (filter) {
           const integration = getLoggedErrorIntegration(item);
           return (
@@ -99,7 +117,8 @@ export class SystemLogCard extends LitElement {
       ? this._getFilteredItems(
           this.hass.localize,
           this._items,
-          this.filter.toLowerCase()
+          this.filter.toLowerCase(),
+          this.integration ? this.integrationLoggers : undefined
         )
       : [];
     const integrations = filteredItems.length
@@ -181,12 +200,25 @@ export class SystemLogCard extends LitElement {
                             ${this.hass.localize("ui.panel.config.logs.no_issues")}
                           </div>
                         `
-                      : filteredItems.length === 0 && this.filter
+                      : filteredItems.length === 0 &&
+                          (this.filter || this.integration)
                         ? html`<div class="card-content">
-                            ${this.hass.localize(
-                              "ui.panel.config.logs.no_issues_search",
-                              { term: this.filter }
-                            )}
+                            ${
+                              this.filter
+                                ? this.hass.localize(
+                                    "ui.panel.config.logs.no_issues_search",
+                                    { term: this.filter }
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.logs.no_issues_integration",
+                                    {
+                                      integration: domainToName(
+                                        this.hass.localize,
+                                        this.integration!
+                                      ),
+                                    }
+                                  )
+                            }
                           </div>`
                         : html`<ha-list
                             >${filteredItems.map(
