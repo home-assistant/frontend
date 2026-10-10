@@ -249,10 +249,11 @@ export class HaSourcesPicker extends LitElement {
       border-top: 1px solid var(--divider-color);
     }
 
-    /* An expanded panel sizes itself to the space that is left over. */
+    /* An expanded panel sizes itself to the space that is left over, but
+         keeps room for its list when the targets fill the pane. */
     .filters.expanded {
       flex: 1 1 auto;
-      min-height: 0;
+      min-height: min(360px, 100%);
     }
   `;
 }
