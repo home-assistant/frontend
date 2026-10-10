@@ -2,9 +2,7 @@ import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
-import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare, stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
@@ -30,6 +28,7 @@ import type {
 } from "../cards/types";
 import type { EntityConfig } from "../entity-rows/types";
 import type { ButtonsHeaderFooterConfig } from "../header-footer/types";
+import { stripNamePrefix } from "./strip-name-prefix";
 
 const HIDE_DOMAIN = new Set([
   "ai_task",
@@ -218,10 +217,7 @@ export const computeCards = (
       if (
         titlePrefix &&
         stateObj &&
-        (name = stripPrefixFromEntityName(
-          computeStateName(stateObj),
-          titlePrefix
-        ))
+        (name = stripNamePrefix(hass.formatEntityName(stateObj), titlePrefix))
       ) {
         conf.name = name;
       }
@@ -231,10 +227,7 @@ export const computeCards = (
       const entityConf =
         titlePrefix &&
         stateObj &&
-        (name = stripPrefixFromEntityName(
-          computeStateName(stateObj),
-          titlePrefix
-        ))
+        (name = stripNamePrefix(hass.formatEntityName(stateObj), titlePrefix))
           ? {
               entity: entityId,
               name,
@@ -263,14 +256,14 @@ export const computeCards = (
     return stringCompare(
       typeof a === "string"
         ? states[a]
-          ? computeStateName(states[a])
+          ? hass.formatEntityName(states[a])
           : ""
         : states[a.entity]
           ? hass.formatEntityName(states[a.entity], a.name)
           : "",
       typeof b === "string"
         ? states[b]
-          ? computeStateName(states[b])
+          ? hass.formatEntityName(states[b])
           : ""
         : states[b.entity]
           ? hass.formatEntityName(states[b.entity], b.name)
@@ -395,9 +388,7 @@ export const generateViewConfig = (
               ).trim()
             );
           }
-          const initials = computeUserInitials(
-            stateObj.attributes.friendly_name || ""
-          );
+          const initials = computeUserInitials(hass.formatEntityName(stateObj));
           image = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' width='50' height='50' style='background-color:${backgroundColor}'%3E%3Cg%3E%3Ctext font-family='roboto' x='50%25' y='50%25' text-anchor='middle' stroke='${foregroundColor}' font-size='1.3em' dy='.3em'%3E${initials}%3C/text%3E%3C/g%3E%3C/svg%3E`;
         }
 
@@ -456,8 +447,8 @@ export const generateViewConfig = (
           hass,
           ungroupedEntitites[domain].sort((a, b) =>
             stringCompare(
-              computeStateName(entities[a]),
-              computeStateName(entities[b])
+              hass.formatEntityName(entities[a]),
+              hass.formatEntityName(entities[b])
             )
           ),
           {
@@ -538,7 +529,7 @@ export const generateDefaultViewConfig = (
   for (const groupEntity of splittedByGroups.groups) {
     groupCards.push(
       ...computeCards(hass, groupEntity.attributes.entity_id, {
-        title: computeStateName(groupEntity),
+        title: hass.formatEntityName(groupEntity),
         show_header_toggle: groupEntity.attributes.control !== "hidden",
       })
     );

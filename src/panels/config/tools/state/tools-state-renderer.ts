@@ -169,9 +169,7 @@ class HaPanelDevStateRenderer extends LitElement {
     const areaId = entry?.area_id || device?.area_id;
     const area = areaId ? this._registries?.areas?.[areaId] : undefined;
 
-    const displayName = entry
-      ? computeEntityEntryName(entry, this._registries.devices, item)
-      : undefined;
+    const displayName = entry ? computeEntityEntryName(entry, item) : undefined;
     const deviceName = device ? computeDeviceName(device) : undefined;
     const areaName = area ? computeAreaName(area) : undefined;
 

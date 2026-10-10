@@ -4,17 +4,11 @@ import type {
   EntityRegistryEntry,
 } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
-import { computeDeviceName } from "./compute_device_name";
 import { computeStateName } from "./compute_state_name";
-import {
-  isDeviceName,
-  stripPrefixFromEntityName,
-} from "./strip_prefix_from_entity_name";
 
 export const computeEntityName = (
   stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"]
+  entities: HomeAssistant["entities"]
 ): string | undefined => {
   const entry = entities[stateObj.entity_id] as
     EntityRegistryDisplayEntry | undefined;
@@ -23,12 +17,11 @@ export const computeEntityName = (
     // Fall back to state name if not in the entity registry (friendly name)
     return computeStateName(stateObj);
   }
-  return computeEntityEntryName(entry, devices);
+  return computeEntityEntryName(entry);
 };
 
 export const computeEntityEntryName = (
   entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
-  devices: HomeAssistant["devices"],
   fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
@@ -37,39 +30,16 @@ export const computeEntityEntryName = (
       ? String(entry.original_name)
       : undefined);
 
-  const device = entry.device_id ? devices[entry.device_id] : undefined;
-
-  if (!device) {
-    if (name) {
-      return name;
-    }
-    if (fallbackStateObj) {
-      return computeStateName(fallbackStateObj);
-    }
-    return undefined;
+  if (name) {
+    return name;
   }
-
-  const deviceName = computeDeviceName(device);
-
-  if (entry.name == null || entry.next_name_part !== "device") {
-    return name || undefined;
+  if (!entry.device_id && fallbackStateObj) {
+    return computeStateName(fallbackStateObj);
   }
-
-  // An empty entity name or one that is only the device name means the entity uses the device name
-  if (!name || (deviceName && isDeviceName(name, deviceName))) {
-    return undefined;
-  }
-
-  // Remove the device name from the entity name if it starts with it
-  if (deviceName && name) {
-    return stripPrefixFromEntityName(name, deviceName) || name;
-  }
-
-  return name;
+  return undefined;
 };
 
 export const entityUseDeviceName = (
   stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"]
-): boolean => !computeEntityName(stateObj, entities, devices);
+  entities: HomeAssistant["entities"]
+): boolean => !computeEntityName(stateObj, entities);

@@ -1,8 +1,6 @@
 import { computeDomain } from "../../../../../common/entity/compute_domain";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
-import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
@@ -19,6 +17,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../../card-features/types";
 import type { TileCardConfig } from "../../../cards/types";
+import { stripNamePrefix } from "../../../common/strip-name-prefix";
 
 export const AREA_STRATEGY_GROUPS = [
   "lights",
@@ -390,8 +389,8 @@ export const computeAreaTileCardConfig =
       additionalCardConfig.features = [feature];
     }
 
-    const name = computeStateName(stateObj);
-    const stripedName = stripPrefixFromEntityName(name, prefix.toLowerCase());
+    const name = hass.formatEntityName(stateObj);
+    const stripedName = stripNamePrefix(name, prefix.toLowerCase());
 
     return {
       type: "tile",

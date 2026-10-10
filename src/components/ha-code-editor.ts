@@ -755,8 +755,7 @@ export class HaCodeEditor extends ReactiveElement {
 
     const entityName = computeEntityName(
       this._states![key],
-      this._registries!.entities,
-      this._registries!.devices
+      this._registries!.entities
     );
     const deviceName = context.device
       ? computeDeviceName(context.device)

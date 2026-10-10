@@ -186,7 +186,7 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
-    const name = computeEntityEntryName(this.entry, this.hass.devices);
+    const name = computeEntityEntryName(this.entry);
     const confirmationText = await getDeleteConfirmationText(
       this.hass,
       this.entry,
