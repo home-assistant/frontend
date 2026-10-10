@@ -1,7 +1,9 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
+import { mdiArrowCollapseDown, mdiCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
@@ -9,6 +11,7 @@ import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-svg-icon";
 import { subscribeIntegrationLog } from "../../../data/error_log";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -32,6 +35,10 @@ class DialogLiveLog extends LitElement {
   @state() private _lineCount = 0;
 
   @state() private _unsupported = false;
+
+  @state() private _live = false;
+
+  @state() private _newLogsIndicator = false;
 
   @query(".log") private _logElement?: HTMLElement;
 
@@ -57,6 +64,8 @@ class DialogLiveLog extends LitElement {
     this._lines = [];
     this._lineCount = 0;
     this._unsupported = false;
+    this._live = false;
+    this._newLogsIndicator = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -71,15 +80,40 @@ class DialogLiveLog extends LitElement {
       this._params!.domain,
       (lines) => this._addLines(lines)
     );
-    this._unsub.catch(() => {
-      this._unsub = undefined;
-      this._unsupported = true;
-    });
+    this._unsub.then(
+      () => {
+        this._live = true;
+      },
+      () => {
+        this._unsub = undefined;
+        this._unsupported = true;
+      }
+    );
   }
 
   private _unsubscribe() {
     this._unsub?.then((unsub) => unsub());
     this._unsub = undefined;
+    this._live = false;
+  }
+
+  private _isScrolledToBottom(): boolean {
+    const log = this._logElement;
+    return (
+      !log ||
+      log.scrollHeight - log.scrollTop - log.clientHeight < SCROLL_FOLLOW_MARGIN
+    );
+  }
+
+  private _handleScroll() {
+    if (this._newLogsIndicator && this._isScrolledToBottom()) {
+      this._newLogsIndicator = false;
+    }
+  }
+
+  private _scrollToBottom() {
+    this._newLogsIndicator = false;
+    this._logElement?.scrollTo(0, this._logElement.scrollHeight);
   }
 
   private _addLines(lines: string[]) {
@@ -87,11 +121,7 @@ class DialogLiveLog extends LitElement {
     if (!newLines.length) {
       return;
     }
-    const log = this._logElement;
-    const follow =
-      !log ||
-      log.scrollHeight - log.scrollTop - log.clientHeight <
-        SCROLL_FOLLOW_MARGIN;
+    const follow = this._isScrolledToBottom();
     this._lines.push(...newLines);
     this._lineCount = this._lines.length;
     this._ansiToHtml?.parseLinesToColoredPre(newLines);
@@ -101,6 +131,8 @@ class DialogLiveLog extends LitElement {
           this._logElement.scrollTop = this._logElement.scrollHeight;
         }
       });
+    } else {
+      this._newLogsIndicator = true;
     }
   }
 
@@ -135,18 +167,46 @@ class DialogLiveLog extends LitElement {
                   "ui.panel.config.integrations.config_entry.live_log.unsupported"
                 )}
               </ha-alert>`
-            : html`<div class="log">
+            : html`<div class="log-container">
+                <div class="log" @scroll=${this._handleScroll}>
+                  ${
+                    this._lineCount
+                      ? nothing
+                      : html`<div class="waiting">
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.live_log.waiting",
+                            { integration: this._params.name }
+                          )}
+                        </div>`
+                  }
+                  <ha-ansi-to-html></ha-ansi-to-html>
+                </div>
+                <ha-button
+                  class="new-logs-indicator ${classMap({
+                    visible: this._newLogsIndicator,
+                  })}"
+                  size="s"
+                  appearance="filled"
+                  @click=${this._scrollToBottom}
+                >
+                  <ha-svg-icon
+                    .path=${mdiArrowCollapseDown}
+                    slot="start"
+                  ></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.config.logs.scroll_down_button")}
+                  <ha-svg-icon
+                    .path=${mdiArrowCollapseDown}
+                    slot="end"
+                  ></ha-svg-icon>
+                </ha-button>
                 ${
-                  this._lineCount
-                    ? nothing
-                    : html`<div class="waiting">
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.live_log.waiting",
-                          { integration: this._params.name }
-                        )}
+                  this._live
+                    ? html`<div class="live-indicator">
+                        <ha-svg-icon .path=${mdiCircle}></ha-svg-icon>
+                        Live
                       </div>`
+                    : nothing
                 }
-                <ha-ansi-to-html></ha-ansi-to-html>
               </div>`
         }
         <ha-dialog-footer slot="footer">
@@ -171,12 +231,52 @@ class DialogLiveLog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        .log-container {
+          position: relative;
+        }
         .log {
           height: 60vh;
+          padding-bottom: var(--ha-space-8);
+          box-sizing: border-box;
           overflow: auto;
           direction: ltr;
           font-family: var(--ha-font-family-code);
           font-size: var(--ha-font-size-s);
+        }
+        .new-logs-indicator {
+          overflow: hidden;
+          position: absolute;
+          bottom: 4px;
+          inset-inline-start: 4px;
+          height: 0;
+          transition: height 0.4s ease-out;
+        }
+        .new-logs-indicator.visible {
+          height: 32px;
+        }
+        @keyframes breathe {
+          from {
+            opacity: 0.8;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+        .live-indicator {
+          position: absolute;
+          bottom: 0;
+          inset-inline-end: 16px;
+          border-top-right-radius: 8px;
+          border-top-left-radius: 8px;
+          background-color: var(--primary-color);
+          color: var(--text-primary-color);
+          padding: 4px 8px;
+          opacity: 0.8;
+        }
+        .live-indicator ha-svg-icon {
+          animation: breathe 1s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
+          height: 14px;
+          width: 14px;
         }
         .waiting {
           color: var(--secondary-text-color);
