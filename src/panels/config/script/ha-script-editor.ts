@@ -167,6 +167,9 @@ export class HaScriptEditor extends SubscribeMixin(
 
     const useBlueprint = "use_blueprint" in this.config;
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
+    const yamlModeLabel = this.hass.localize(
+      `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
+    );
 
     return html`
       <hass-subpage
@@ -224,6 +227,22 @@ export class HaScriptEditor extends SubscribeMixin(
                     })
                   </span>
                 </ha-tooltip>`
+            : nothing
+        }
+        ${
+          !this.narrow
+            ? html`
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  id="button-yaml-mode"
+                  .label=${yamlModeLabel}
+                  .path=${mdiPlaylistEdit}
+                  @click=${this._toggleYamlMode}
+                ></ha-icon-button>
+                <ha-tooltip placement="bottom" for="button-yaml-mode">
+                  ${yamlModeLabel}
+                </ha-tooltip>
+              `
             : nothing
         }
         ${
@@ -387,13 +406,19 @@ export class HaScriptEditor extends SubscribeMixin(
                 `
               : nothing
           }
-
-          <ha-dropdown-item value="toggle_yaml_mode">
-            ${this.hass.localize(
-              `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-dropdown-item>
+          ${
+            this.narrow
+              ? html`<ha-dropdown-item value="toggle_yaml_mode">
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
+                  )}
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiPlaylistEdit}
+                  ></ha-svg-icon>
+                </ha-dropdown-item>`
+              : nothing
+          }
 
           <wa-divider></wa-divider>
 
@@ -1107,6 +1132,14 @@ export class HaScriptEditor extends SubscribeMixin(
     this._undoRedoController.redo();
   }
 
+  private _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      return;
+    }
+    this.switchUiMode();
+  }
+
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
@@ -1149,11 +1182,7 @@ export class HaScriptEditor extends SubscribeMixin(
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "delete":
         this._deleteConfirm();
