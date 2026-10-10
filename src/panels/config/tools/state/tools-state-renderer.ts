@@ -15,7 +15,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-svg-icon";
 import {
@@ -169,7 +170,7 @@ class HaPanelDevStateRenderer extends LitElement {
     const areaId = entry?.area_id || device?.area_id;
     const area = areaId ? this._registries?.areas?.[areaId] : undefined;
 
-    const displayName = entry ? computeEntityEntryName(entry, item) : undefined;
+    const displayName = entry ? computeEntityEntryName(entry) : undefined;
     const deviceName = device ? computeDeviceName(device) : undefined;
     const areaName = area ? computeAreaName(area) : undefined;
 
@@ -215,7 +216,7 @@ class HaPanelDevStateRenderer extends LitElement {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <span class="secondary">
-                  ${displayName || deviceName || item.attributes.friendly_name}
+                  ${displayName || deviceName || computeStateName(item)}
                 </span>
               </div>
             </div>

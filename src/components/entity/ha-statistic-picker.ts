@@ -296,13 +296,7 @@ export class HaStatisticPicker extends LitElement {
           hass,
           stateObj
         );
-        const searchLabels = computeEntitySearchLabels(
-          stateObj,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        );
+        const searchLabels = computeEntitySearchLabels(stateObj, hass);
 
         const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
         output.push({
@@ -396,13 +390,7 @@ export class HaStatisticPicker extends LitElement {
         this.hass,
         stateObj
       );
-      const searchLabels = computeEntitySearchLabels(
-        stateObj,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const searchLabels = computeEntitySearchLabels(stateObj, this.hass);
 
       const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
       return {

@@ -35,7 +35,7 @@ import {
   computeDeviceName,
   getDuplicatedDeviceNames,
 } from "../../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
@@ -180,9 +180,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         const areaId = entry?.area_id || device?.area_id;
         const area = areaId ? areas[areaId] : undefined;
 
-        const entityName = entry
-          ? computeEntityEntryName(entry, item.state)
-          : undefined;
+        const entityName = entry ? computeEntityEntryName(entry) : undefined;
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
         const deviceFullName = deviceName
