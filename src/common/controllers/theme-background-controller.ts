@@ -37,7 +37,7 @@ export class ThemeBackgroundController {
 
 export const themeBackgroundStyles = css`
   :host {
-    display: block
+    display: block;
     position: relative;
     isolation: isolate;
   }
