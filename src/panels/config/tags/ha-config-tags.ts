@@ -7,13 +7,17 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
+import "../../../components/chips/ha-assist-chip";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -34,6 +38,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -61,6 +66,11 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   @state() private _loading = true;
 
   @state() private _loadFailed = false;
+
+  @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
@@ -210,6 +220,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         @retry-load=${this._retryFetchTags}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         has-fab
         clickable
         @row-click=${this._editTag}
@@ -221,6 +234,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
+        <ha-assist-chip
+          slot="selection-bar"
+          .label=${this.hass.localize("ui.panel.config.tag.delete_selected")}
+          .disabled=${!this._selected.length}
+          @click=${this._removeSelected}
+        ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addTag}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.tag.add_tag")}
@@ -357,6 +376,41 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       return false;
     }
   }
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _removeSelected = () => {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.tag.confirm_delete_selected_title"
+      ),
+      text: this.hass.localize("ui.panel.config.tag.confirm_delete_selected", {
+        count: this._selected.length,
+      }),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      confirm: async () => {
+        const results = await Promise.allSettled(
+          this._selected.map((id) => deleteTag(this.hass, id))
+        );
+        if (hasRejectedItems(results)) {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.tag.delete_failed_title"
+            ),
+            text: this.hass.localize("ui.panel.config.tag.delete_failed"),
+          });
+        }
+        this._dataTable.clearSelection();
+        await this._fetchTags();
+      },
+    });
+  };
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
