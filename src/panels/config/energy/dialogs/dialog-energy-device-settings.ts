@@ -204,6 +204,7 @@ export class DialogEnergyDeviceSettings
           <ha-switch
             .checked=${!!this._device?.is_home_total}
             .disabled=${!this._device || this._otherHasTotal}
+            .ariaLabel=${this.hass.localize("ui.panel.config.energy.device_consumption.dialog.home_total")}
             @change=${this._homeTotalChanged}
           ></ha-switch>
         </ha-settings-row>

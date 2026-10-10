@@ -8,7 +8,11 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasWaterSource, isEnergyCardVisible } from "./energy-cards";
+import {
+  hasDeviceConsumption,
+  hasWaterSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -54,8 +58,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     // No energy sources available
     if (
       !prefs ||
-      (prefs.device_consumption.length === 0 &&
-        prefs.energy_sources.length === 0)
+      (!hasDeviceConsumption(prefs) && prefs.energy_sources.length === 0)
     ) {
       return view;
     }

@@ -1409,6 +1409,7 @@ export interface EnergySumData {
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    home_total?: number;
   };
   timestamps: number[];
 }
