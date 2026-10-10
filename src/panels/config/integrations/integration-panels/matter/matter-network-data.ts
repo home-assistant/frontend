@@ -1,3 +1,4 @@
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
@@ -18,12 +19,22 @@ const CATEGORY_END_DEVICE = 3;
 const CATEGORY_WIFI_AP = 4;
 const CATEGORY_OFFLINE = 5;
 const CATEGORY_UNKNOWN = 6;
+const CATEGORY_BRIDGED = 7;
 
 const ROUTER_ROLES = new Set(["leader", "router", "reed"]);
 
 // HA is not a Matter node; the frontend synthesizes it as the graph root.
 export const HOME_ASSISTANT_NODE_ID = "ha";
 const HOME_ASSISTANT_LABEL = "Home Assistant";
+
+// bridged devices are not Matter nodes, so they are synthesized from the
+// device registry under an id that cannot collide with a topology node
+const BRIDGED_DEVICE_NODE_PREFIX = "bridged_";
+
+export const getBridgedDeviceId = (nodeId: string): string | undefined =>
+  nodeId.startsWith(BRIDGED_DEVICE_NODE_PREFIX)
+    ? nodeId.slice(BRIDGED_DEVICE_NODE_PREFIX.length)
+    : undefined;
 
 // 0 is never returned: a falsy link value re-enables the direction arrow
 // in ha-network-graph
@@ -141,6 +152,7 @@ export function createMatterNetworkChartData(
     style.getPropertyValue(networkToColorVar("wifi")),
     style.getPropertyValue("--error-color"),
     style.getPropertyValue("--disabled-color"),
+    style.getPropertyValue("--pink-color"),
   ];
   const categories = [
     {
@@ -179,6 +191,13 @@ export function createMatterNetworkChartData(
       ),
       symbol: "circle",
       itemStyle: { color: categoryColors[CATEGORY_UNKNOWN] },
+    },
+    {
+      name: hass.localize(
+        "ui.panel.config.matter.visualization.bridged_device"
+      ),
+      symbol: "circle",
+      itemStyle: { color: categoryColors[CATEGORY_BRIDGED] },
     },
   ];
 
@@ -340,6 +359,55 @@ export function createMatterNetworkChartData(
       links.push(haLink(node.id, network));
     }
   });
+
+  // a bridge exposes the devices behind it as endpoints of its own node, so
+  // the topology never lists them; core registers each as a device whose
+  // via_device is the bridge
+  const bridgeNodeIds = new Map<string, string>();
+  topology.nodes.forEach((node) => {
+    if (node.is_bridge && node.ha_device_id) {
+      bridgeNodeIds.set(node.ha_device_id, node.id);
+    }
+  });
+  if (bridgeNodeIds.size) {
+    Object.values(hass.devices).forEach((device) => {
+      const bridgeId = device.via_device_id
+        ? bridgeNodeIds.get(device.via_device_id)
+        : undefined;
+      if (!bridgeId || device.disabled_by) {
+        return;
+      }
+      const id = `${BRIDGED_DEVICE_NODE_PREFIX}${device.id}`;
+      const area = getDeviceArea(device, hass.areas, hass.devices);
+      nodes.push({
+        id,
+        name: computeDeviceName(device) || id,
+        context: area?.name,
+        category: CATEGORY_BRIDGED,
+        value: 1,
+        symbol: "circle",
+        symbolSize: 15,
+        itemStyle: { color: categoryColors[CATEGORY_BRIDGED] },
+        polarDistance: 0.9,
+      });
+      // not a radio link, so no strength and no arrow; it stays in the force
+      // layout so the devices gather around their bridge
+      links.push({
+        source: bridgeId,
+        target: id,
+        value: 0,
+        symbol: "none",
+        lineStyle: {
+          width: 1,
+          color: categoryColors[CATEGORY_BRIDGED],
+          type:
+            nodeCategories.get(bridgeId) === CATEGORY_OFFLINE
+              ? "dashed"
+              : "solid",
+        },
+      });
+    });
+  }
 
   // keep the strongest link of every node in the force layout so
   // nodes hang near their best connection instead of floating free
