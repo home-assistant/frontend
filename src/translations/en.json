@@ -4188,6 +4188,7 @@
               "editor": "Template editor",
               "result": "Result",
               "result_placeholder": "Your template result will appear here.",
+              "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
               "layout_stacked": "Drag to resize, click for stacked view",
               "layout_side_by_side": "Drag to resize, click for side-by-side view",
               "reset": "Reset to demo template",
@@ -4324,7 +4325,8 @@
                   "valid": "Configuration will not prevent Home Assistant from starting!",
                   "invalid": "Configuration invalid!",
                   "warnings": "Configuration warnings",
-                  "errors": "Configuration errors"
+                  "errors": "Configuration errors",
+                  "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
                 },
                 "reloading": {
                   "all": "All YAML configuration",
