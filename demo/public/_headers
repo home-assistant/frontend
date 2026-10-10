@@ -16,3 +16,10 @@
 
 /frontend_latest/*
   Cache-Control: public, max-age: 604800, s-maxage=604800
+  Access-Control-Allow-Origin: *
+
+/embed.js
+  Access-Control-Allow-Origin: *
+
+/static/*
+  Access-Control-Allow-Origin: *
