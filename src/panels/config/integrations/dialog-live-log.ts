@@ -11,7 +11,10 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/chips/ha-chip-set";
@@ -26,6 +29,8 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { subscribeIntegrationLog } from "../../../data/error_log";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -38,7 +43,7 @@ const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g;
 // Stay close to the bottom to keep following new lines
 const SCROLL_FOLLOW_MARGIN = 40;
 
-const MAX_LOG_LINES = 5000;
+const DEFAULT_LOG_LINE_LIMIT = 5000;
 
 const LOG_LEVELS = ["debug", "info", "warning", "error"] as const;
 
@@ -62,6 +67,8 @@ class DialogLiveLog extends LitElement {
   @state() private _open = false;
 
   @state() private _lineCount = 0;
+
+  @state() private _lineLimit = DEFAULT_LOG_LINE_LIMIT;
 
   @state() private _unsupported = false;
 
@@ -92,6 +99,8 @@ class DialogLiveLog extends LitElement {
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
+  private _followFrame?: number;
+
   public showDialog(params: LiveLogDialogParams) {
     this._params = params;
     this._open = true;
@@ -109,6 +118,7 @@ class DialogLiveLog extends LitElement {
     this._shownCount = 0;
     this._lastLevel = undefined;
     this._lineCount = 0;
+    this._lineLimit = DEFAULT_LOG_LINE_LIMIT;
     this._unsupported = false;
     this._live = false;
     this._newLogsIndicator = false;
@@ -143,6 +153,8 @@ class DialogLiveLog extends LitElement {
   }
 
   private _unsubscribe() {
+    this._cancelFollowBottom();
+    this._debounceSearch.cancel();
     this._unsub?.then((unsub) => unsub());
     this._unsub = undefined;
     this._live = false;
@@ -168,11 +180,40 @@ class DialogLiveLog extends LitElement {
   }
 
   private _followBottom() {
-    requestAnimationFrame(() => {
-      if (this._logElement) {
-        this._logElement.scrollTop = this._logElement.scrollHeight;
+    this._cancelFollowBottom();
+    const logElement = this._logElement;
+    const scrollTopBeforeFrame = logElement ? logElement.scrollTop : 0;
+    this._followFrame = requestAnimationFrame(() => {
+      this._followFrame = undefined;
+      if (logElement && logElement.scrollTop === scrollTopBeforeFrame) {
+        logElement.scrollTop = logElement.scrollHeight;
       }
     });
+  }
+
+  private _cancelFollowBottom() {
+    if (this._followFrame !== undefined) {
+      cancelAnimationFrame(this._followFrame);
+      this._followFrame = undefined;
+    }
+  }
+
+  private _lineLimitChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const input = ev.currentTarget;
+    const value = input.value?.trim() ?? "";
+    const limit = Number(value);
+    input.invalid =
+      !/^\d+$/.test(value) || !Number.isSafeInteger(limit) || limit < 1;
+    if (input.invalid || limit === this._lineLimit) {
+      return;
+    }
+    const follow = !this._paused && this._isScrolledToBottom();
+    this._lineLimit = limit;
+    this._trimLines();
+    this._lineCount = this._lines.length;
+    if (follow) {
+      this._followBottom();
+    }
   }
 
   private _parseLevel(text: string): LogLevel | undefined {
@@ -191,7 +232,7 @@ class DialogLiveLog extends LitElement {
     const newLines = lines
       .flatMap((line) => line.split("\n"))
       .map((text) => ({ text, level: this._parseLevel(text) }))
-      .slice(-MAX_LOG_LINES);
+      .slice(-this._lineLimit);
     if (!newLines.length) {
       return;
     }
@@ -205,7 +246,7 @@ class DialogLiveLog extends LitElement {
   }
 
   private _trimLines() {
-    const excessLineCount = this._lines.length - MAX_LOG_LINES;
+    const excessLineCount = this._lines.length - this._lineLimit;
     if (excessLineCount <= 0) {
       return;
     }
@@ -220,8 +261,8 @@ class DialogLiveLog extends LitElement {
       .filter((line) => !line.level || this._levels.has(line.level)).length;
     if (this._ansiToHtml) {
       this._ansiToHtml.trimLines(renderedLineCount);
-      this._noMatches =
-        this._shownCount > 0 && !this._ansiToHtml.filterLines(this._search);
+      const hasMatches = this._ansiToHtml.filterLines(this._search);
+      this._noMatches = this._shownCount > 0 && !hasMatches;
     }
     if (logElement) {
       const removedHeight =
@@ -299,7 +340,9 @@ class DialogLiveLog extends LitElement {
 
   private _togglePause() {
     this._paused = !this._paused;
-    if (!this._paused) {
+    if (this._paused) {
+      this._cancelFollowBottom();
+    } else {
       this._showNewLines();
     }
   }
@@ -352,6 +395,23 @@ class DialogLiveLog extends LitElement {
                     )}
                     @input=${this._searchChanged}
                   ></ha-input-search>
+                  <ha-input
+                    class="line-limit"
+                    type="number"
+                    appearance="outlined"
+                    inset-label
+                    required
+                    .min=${1}
+                    .step=${1}
+                    .value=${String(this._lineLimit)}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.live_log.lines"
+                    )}
+                    .validationMessage=${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.live_log.invalid_line_limit"
+                    )}
+                    @change=${this._lineLimitChanged}
+                  ></ha-input>
                   <ha-chip-set>
                     ${LOG_LEVELS.map(
                       (level) => html`
@@ -475,6 +535,10 @@ class DialogLiveLog extends LitElement {
         }
         .toolbar ha-input-search {
           flex: 1 1 200px;
+        }
+        .line-limit {
+          flex: 0 0 120px;
+          min-width: 0;
         }
         .toolbar-buttons {
           display: flex;
