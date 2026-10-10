@@ -734,29 +734,25 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                     )}
-                    <ha-button
-                      size="s"
-                      variant="warning"
-                      slot="action"
-                      @click=${this._handleDisableDebugLogging}
-                    >
-                      ${this.hass.localize("ui.common.disable")}
-                    </ha-button>
+                    <div slot="action" class="debug-actions">
+                      <ha-button
+                        size="s"
+                        variant="warning"
+                        @click=${this._showLiveLog}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.show_live_log"
+                        )}
+                      </ha-button>
+                      <ha-button
+                        size="s"
+                        variant="warning"
+                        @click=${this._handleDisableDebugLogging}
+                      >
+                        ${this.hass.localize("ui.common.disable")}
+                      </ha-button>
+                    </div>
                   </ha-alert>
-                  <ha-button
-                    class="live-log"
-                    appearance="filled"
-                    variant="warning"
-                    @click=${this._showLiveLog}
-                  >
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiTextBoxOutline}
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.show_live_log"
-                    )}
-                  </ha-button>
                 </div>`
               : nothing
           }
@@ -1493,8 +1489,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .section {
           width: 100%;
         }
-        .live-log {
-          margin-top: var(--ha-space-2);
+        .debug-actions {
+          display: flex;
+          gap: var(--ha-space-2);
+        }
+        .debug-actions ha-button::part(label) {
+          white-space: nowrap;
         }
         .section-header {
           margin-inline-start: 16px;

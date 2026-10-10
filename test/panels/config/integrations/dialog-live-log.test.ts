@@ -3,6 +3,11 @@ import { subscribeIntegrationLog } from "../../../../src/data/error_log";
 import "../../../../src/panels/config/integrations/dialog-live-log";
 
 vi.mock("../../../../src/components/ha-alert", () => ({}));
+vi.mock("../../../../src/components/chips/ha-chip-set", () => ({}));
+vi.mock("../../../../src/components/chips/ha-filter-chip", () => ({}));
+vi.mock("../../../../src/components/ha-icon-button", () => ({}));
+vi.mock("../../../../src/components/ha-svg-icon", () => ({}));
+vi.mock("../../../../src/components/input/ha-input-search", () => ({}));
 vi.mock("../../../../src/components/ha-button", () => ({}));
 vi.mock("../../../../src/components/ha-dialog", () => ({}));
 vi.mock("../../../../src/components/ha-dialog-footer", () => ({}));
@@ -83,7 +88,7 @@ const expectRetainedLines = (
   renderedLog: HTMLPreElement,
   expectedLines: string[]
 ) => {
-  const storedLines = dialog["_lines"];
+  const storedLines = dialog["_lines"].map((line) => line.text);
   const renderedRows = renderedLog.querySelectorAll("div");
   const renderedLines = Array.from(renderedRows, (row) => row.textContent);
 

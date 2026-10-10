@@ -7560,7 +7560,11 @@
             "live_log": {
               "title": "Live log",
               "waiting": "Waiting for log messages from {integration}…",
-              "unsupported": "This version of Home Assistant can't stream the log."
+              "unsupported": "This version of Home Assistant can't stream the log.",
+              "no_matches": "No log lines match the filters",
+              "pause": "[%key:ui::card::timer::actions::pause%]",
+              "resume": "Resume",
+              "paused": "Paused"
             },
             "state": {
               "loaded": "Loaded",
