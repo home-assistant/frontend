@@ -72,7 +72,7 @@ function missingZoneId(
  * Convert `locations` (zone names matched against the person state) to a
  * zone target matched against the person `in_zones` attribute.
  */
-function migrateLocationCondition(
+export function migrateLocationCondition(
   condition: LocationCondition,
   hass: HomeAssistant
 ): LocationCondition {

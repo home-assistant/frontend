@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { HaCardConditionLocation } from "../../../../../../src/panels/lovelace/editor/conditions/types/ha-card-condition-location";
+import {
+  HaCardConditionLocation,
+  migrateLocationCondition,
+} from "../../../../../../src/panels/lovelace/editor/conditions/types/ha-card-condition-location";
 import type { LocationCondition } from "../../../../../../src/panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../../../../../src/types";
 
@@ -73,6 +76,11 @@ const shown = (editor: HaCardConditionLocation): LocationCondition => {
   return (editor as any)._data;
 };
 
+const migrate = (
+  condition: Omit<LocationCondition, "condition">,
+  hass = HASS
+) => migrateLocationCondition({ condition: "location", ...condition }, hass);
+
 const formChange = (value: Partial<LocationCondition>) => ({
   detail: { value: { condition: "location", ...value } },
   stopPropagation: () => undefined,
@@ -127,11 +135,7 @@ describe("ha-card-condition-location", () => {
 
   describe("migration", () => {
     it("maps zone names, home and not_home", () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["home", "Store 2", "not_home"],
-      });
-      expect(shown(editor)).toEqual({
+      expect(migrate({ locations: ["home", "Store 2", "not_home"] })).toEqual({
         condition: "location",
         target: {
           entity_id: ["zone.home", "zone.store_2", "zone.store_2_south"],
@@ -141,11 +145,7 @@ describe("ha-card-condition-location", () => {
     });
 
     it("keeps zones named home or not_home", () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["home", "not_home"],
-      });
-      editor.hass = {
+      const hass = {
         ...HASS,
         states: {
           ...HASS.states,
@@ -161,7 +161,7 @@ describe("ha-card-condition-location", () => {
           },
         },
       } as unknown as HomeAssistant;
-      expect(shown(editor)).toEqual({
+      expect(migrate({ locations: ["home", "not_home"] }, hass)).toEqual({
         condition: "location",
         target: {
           entity_id: ["zone.home", "zone.lowercase_home", "zone.not_home"],
@@ -171,13 +171,13 @@ describe("ha-card-condition-location", () => {
     });
 
     it("merges into an existing target and away", () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["Store 1"],
-        target: { entity_id: "zone.store_2", label_id: "store" },
-        away: true,
-      });
-      expect(shown(editor)).toEqual({
+      expect(
+        migrate({
+          locations: ["Store 1"],
+          target: { entity_id: "zone.store_2", label_id: "store" },
+          away: true,
+        })
+      ).toEqual({
         condition: "location",
         target: {
           entity_id: ["zone.store_2", "zone.store_1"],
@@ -188,11 +188,7 @@ describe("ha-card-condition-location", () => {
     });
 
     it("keeps names that match no zone", () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["Store 1", "Old store"],
-      });
-      expect(shown(editor)).toEqual({
+      expect(migrate({ locations: ["Store 1", "Old store"] })).toEqual({
         condition: "location",
         target: { entity_id: ["zone.store_1", "zone.old_store"] },
       });
@@ -200,33 +196,23 @@ describe("ha-card-condition-location", () => {
 
     it("does not reuse the ID of a zone with another name", () => {
       // zone.store is "Shop" and zone.store_2 is "Store 2".
-      const editor = createEditor({
-        condition: "location",
-        locations: ["Store"],
-      });
-      expect(shown(editor)).toEqual({
+      expect(migrate({ locations: ["Store"] })).toEqual({
         condition: "location",
         target: { entity_id: ["zone.store_3"] },
       });
     });
 
     it("does not reuse the ID of a registered zone without a state", () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["Reloading"],
-      });
-      expect(shown(editor)).toEqual({
+      expect(migrate({ locations: ["Reloading"] })).toEqual({
         condition: "location",
         target: { entity_id: ["zone.reloading_2"] },
       });
     });
 
     it("keeps missing names that slugify the same apart", () => {
-      const editor = createEditor({
-        condition: "location",
-        locations: ["Old store", "Old-store", "Old store"],
-      });
-      expect(shown(editor)).toEqual({
+      expect(
+        migrate({ locations: ["Old store", "Old-store", "Old store"] })
+      ).toEqual({
         condition: "location",
         target: { entity_id: ["zone.old_store", "zone.old_store_2"] },
       });
