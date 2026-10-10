@@ -40,9 +40,15 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../common/controllers/theme-background-controller";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends SubscribeMixin(LitElement) {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -394,6 +400,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return [
+      themeBackgroundStyles,
       haStyle,
       css`
         :host {

@@ -252,7 +252,6 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
         100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
       );
       box-sizing: border-box;
-      background-color: var(--primary-background-color);
       color: var(--primary-text-color);
     }
 

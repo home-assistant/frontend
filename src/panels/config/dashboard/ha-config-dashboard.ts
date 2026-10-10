@@ -48,6 +48,10 @@ import { configSections } from "../config-sections";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../../common/controllers/theme-background-controller";
 
 type DashboardSummary<Key extends string, Item> = Record<Key, Item[]> & {
   total: number;
@@ -147,6 +151,8 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends SubscribeMixin(LitElement) {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -417,8 +423,13 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return [
+      themeBackgroundStyles,
       haStyle,
       css`
+        :host {
+          display: block;
+        }
+
         ha-config-section {
           margin: auto;
           margin-top: -32px;

@@ -41,6 +41,10 @@ import "./ha-bar-media-player";
 import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../common/controllers/theme-background-controller";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -54,6 +58,8 @@ const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -328,8 +334,13 @@ class PanelMediaBrowser extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      themeBackgroundStyles,
       haStyle,
       css`
+        :host {
+          display: block;
+        }
+
         ha-media-manage-button {
           --mdc-theme-primary: var(--app-header-text-color);
         }

@@ -51,9 +51,15 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/cards/hui-card";
 import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../common/controllers/theme-background-controller";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -405,6 +411,7 @@ class PanelTodo extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      themeBackgroundStyles,
       haStyle,
       css`
         :host {

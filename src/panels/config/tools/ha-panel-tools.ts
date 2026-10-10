@@ -14,6 +14,10 @@ import "../../../components/ha-top-app-bar-fixed";
 import type { HomeAssistant, Route } from "../../../types";
 import "./tools-router";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../../common/controllers/theme-background-controller";
 
 const TOOLS_TABS = [
   {
@@ -48,6 +52,8 @@ const TOOLS_TABS = [
 
 @customElement("ha-panel-tools")
 class PanelTools extends LitElement {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -141,27 +147,34 @@ class PanelTools extends LitElement {
     navigate("/config");
   }
 
-  static readonly styles: CSSResultGroup = css`
-    tools-router {
-      display: block;
-      height: 100%;
-    }
-    ha-tab-group {
-      --ha-tab-active-text-color: var(--app-header-text-color, white);
-      --ha-tab-indicator-color: var(--app-header-text-color, white);
-      --ha-tab-track-color: transparent;
-    }
-    ha-tab-group-tab::part(base) {
-      padding: 0;
-    }
-    ha-tab-group-tab a {
-      color: inherit;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      padding: 1em 1.5em;
-    }
-  `;
+  static readonly styles: CSSResultGroup = [
+    themeBackgroundStyles,
+    css`
+      :host {
+        display: block;
+      }
+
+      tools-router {
+        display: block;
+        height: 100%;
+      }
+      ha-tab-group {
+        --ha-tab-active-text-color: var(--app-header-text-color, white);
+        --ha-tab-indicator-color: var(--app-header-text-color, white);
+        --ha-tab-track-color: transparent;
+      }
+      ha-tab-group-tab::part(base) {
+        padding: 0;
+      }
+      ha-tab-group-tab a {
+        color: inherit;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 1em 1.5em;
+      }
+    `,
+  ];
 }
 
 declare global {

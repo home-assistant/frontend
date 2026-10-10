@@ -257,7 +257,6 @@ export class HaConfigAppsInstalled extends LitElement {
       :host {
         display: block;
         height: 100%;
-        background-color: var(--primary-background-color);
       }
 
       ha-card {
@@ -277,10 +276,13 @@ export class HaConfigAppsInstalled extends LitElement {
         position: sticky;
         top: 0;
         z-index: 2;
-        background-color: var(--primary-background-color);
         padding: 0 var(--ha-space-4);
         box-sizing: border-box;
         border-bottom: 1px solid var(--divider-color);
+        background: var(
+          --app-toolbar-background,
+          var(--lovelace-background, var(--primary-background-color))
+        );
       }
 
       ha-input-search {

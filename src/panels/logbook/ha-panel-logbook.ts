@@ -56,6 +56,10 @@ import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { csvDownload, csvSafeString } from "../../util/csv";
+import {
+  ThemeBackgroundController,
+  themeBackgroundStyles,
+} from "../../common/controllers/theme-background-controller";
 
 const EMPTY_STATES: HomeAssistant["states"] = {};
 
@@ -66,6 +70,8 @@ interface LogbookState {
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
+  protected readonly _themeBackground = new ThemeBackgroundController(this);
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -579,6 +585,7 @@ export class HaPanelLogbook extends LitElement {
 
   static get styles() {
     return [
+      themeBackgroundStyles,
       haStyle,
       css`
         :host {
@@ -622,7 +629,10 @@ export class HaPanelLogbook extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
+          background: var(
+            --app-toolbar-background,
+            var(--lovelace-background, var(--primary-background-color))
+          );
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
           overflow-x: auto;

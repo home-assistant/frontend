@@ -681,7 +681,6 @@ export class HaScriptTrace extends LitElement {
           align-items: center;
           justify-content: center;
           height: var(--header-height);
-          background-color: var(--primary-background-color);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
@@ -692,7 +691,6 @@ export class HaScriptTrace extends LitElement {
           min-height: 0;
           display: flex;
           overflow: hidden;
-          background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
@@ -716,7 +714,6 @@ export class HaScriptTrace extends LitElement {
         }
 
         .graph {
-          background-color: var(--primary-background-color);
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
@@ -743,10 +740,8 @@ export class HaScriptTrace extends LitElement {
           min-width: 0;
           min-height: 0;
           overflow-y: auto;
-          background-color: var(--card-background-color);
         }
         ha-tab-group {
-          background-color: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
         }
