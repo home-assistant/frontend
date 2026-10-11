@@ -16,6 +16,7 @@ export class HaAuthForm extends HaForm {
 
   protected getFormProperties(): Record<string, any> {
     return {
+      ...super.getFormProperties(),
       localize: this._localize,
       localizeBaseKey,
     };

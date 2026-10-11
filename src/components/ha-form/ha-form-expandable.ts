@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import "../ha-expansion-panel";
+import "../ha-markdown";
 import "./ha-form";
 import type { HaForm } from "./ha-form";
 import type {
@@ -20,6 +21,9 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public schema!: HaFormExpandableSchema;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
 
   @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
@@ -44,7 +48,15 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
 
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);
-    return description ? html`<p>${description}</p>` : nothing;
+    if (!description) {
+      return nothing;
+    }
+    return this.markdownHelpers
+      ? html`<ha-markdown
+          class="description"
+          .content=${description}
+        ></ha-markdown>`
+      : html`<p>${description}</p>`;
   }
 
   private _computeLabel = (
@@ -106,6 +118,7 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
             .data=${this.data}
             .schema=${this.schema.schema}
             .disabled=${this.disabled}
+            .markdownHelpers=${this.markdownHelpers}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
             .localizeValue=${this.localizeValue}
@@ -126,7 +139,8 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
     .content {
       padding: 12px;
     }
-    .content p {
+    .content p,
+    .content ha-markdown {
       margin: 0 0 24px;
     }
     ha-expansion-panel {

@@ -5,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { NumberSelector } from "../../data/selector";
 import { isSafari } from "../../util/is_safari";
 import "../ha-input-helper-text";
+import "../ha-markdown";
 import "../ha-slider";
 import "../input/ha-input";
 import type { HaInput } from "../input/ha-input";
@@ -20,6 +21,9 @@ export class HaNumberSelector extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
 
   @property({ attribute: false })
   public localizeValue?: (key: string) => string;
@@ -50,6 +54,9 @@ export class HaNumberSelector extends LitElement {
       this.selector.number?.mode === "box" ||
       this.selector.number?.min === undefined ||
       this.selector.number?.max === undefined;
+    const helper = this.markdownHelpers ? undefined : this.helper;
+    const markdownHelper =
+      this.markdownHelpers && this.helper ? this.helper : undefined;
 
     let sliderStep;
 
@@ -129,7 +136,7 @@ export class HaNumberSelector extends LitElement {
           .max=${this.selector.number?.max}
           .value=${this._valueStr ?? ""}
           .step=${this.selector.number?.step ?? 1}
-          .hint=${isBox ? this.helper : undefined}
+          .hint=${isBox ? helper : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
           .validationMessage=${this.selector.number?.validation_message}
@@ -138,12 +145,26 @@ export class HaNumberSelector extends LitElement {
           .withoutSpinButtons=${!isBox}
           @input=${this._handleInputChange}
         >
+          ${
+            isBox && markdownHelper
+              ? html`<ha-markdown
+                  slot="hint"
+                  .content=${markdownHelper}
+                ></ha-markdown>`
+              : nothing
+          }
           ${unit ? html`<span slot="end">${unit}</span>` : nothing}
         </ha-input>
       </div>
       ${
         !isBox && this.helper
-          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          ? html`<ha-input-helper-text
+              >${
+                markdownHelper
+                  ? html`<ha-markdown .content=${markdownHelper}></ha-markdown>`
+                  : this.helper
+              }</ha-input-helper-text
+            >`
           : nothing
       }
     `;
@@ -189,6 +210,9 @@ export class HaNumberSelector extends LitElement {
     }
     ha-input.single {
       flex: 1;
+    }
+    ha-markdown {
+      margin-top: var(--ha-space-2);
     }
   `;
 }

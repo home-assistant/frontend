@@ -4,6 +4,7 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
 import type { ValueChangedEvent } from "../../types";
+import "../ha-markdown";
 import "../ha-textarea";
 import "../input/ha-input";
 import "../input/ha-input-multi";
@@ -19,6 +20,9 @@ export class HaTextSelector extends LitElement {
   @property() public placeholder?: string;
 
   @property() public helper?: string;
+
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
 
   @property({ attribute: false }) public selector!: StringSelector;
 
@@ -45,6 +49,10 @@ export class HaTextSelector extends LitElement {
   }
 
   protected render() {
+    const helper = this.markdownHelpers ? undefined : this.helper;
+    const markdownHelper =
+      this.markdownHelpers && this.helper ? this.helper : undefined;
+
     if (this.selector.text?.multiple) {
       return html`
         <ha-input-multi
@@ -54,13 +62,21 @@ export class HaTextSelector extends LitElement {
           .inputType=${this.selector.text?.type}
           .inputSuffix=${this.selector.text?.suffix}
           .inputPrefix=${this.selector.text?.prefix}
-          .helper=${this.helper}
+          .helper=${helper}
           .autocomplete=${this.selector.text?.autocomplete}
           .pattern=${this.selector.text?.pattern}
           .validationMessage=${this.selector.text?.validation_message}
           @value-changed=${this._handleChange}
         >
         </ha-input-multi>
+        ${
+          markdownHelper
+            ? html`<ha-markdown
+                class="helper"
+                .content=${markdownHelper}
+              ></ha-markdown>`
+            : nothing
+        }
       `;
     }
     if (this.selector.text?.multiline) {
@@ -69,7 +85,7 @@ export class HaTextSelector extends LitElement {
         .label=${this.label}
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
-        .hint=${this.helper}
+        .hint=${helper}
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
@@ -77,13 +93,22 @@ export class HaTextSelector extends LitElement {
         spellcheck="false"
         .required=${this.required}
         resize="auto"
-      ></ha-textarea>`;
+      >
+        ${
+          markdownHelper
+            ? html`<ha-markdown
+                slot="hint"
+                .content=${markdownHelper}
+              ></ha-markdown>`
+            : nothing
+        }
+      </ha-textarea>`;
     }
     return html`<ha-input
       .name=${this.name}
       .value=${this.value || ""}
       .placeholder=${this.placeholder || this.selector.text?.placeholder || ""}
-      .hint=${this.helper}
+      .hint=${helper}
       .disabled=${this.disabled}
       .type=${this.selector.text?.type}
       .pattern=${this.selector.text?.pattern}
@@ -96,6 +121,14 @@ export class HaTextSelector extends LitElement {
       .autocomplete=${this.selector.text?.autocomplete}
       .passwordToggle=${this.selector.text?.type === "password"}
     >
+      ${
+        markdownHelper
+          ? html`<ha-markdown
+              slot="hint"
+              .content=${markdownHelper}
+            ></ha-markdown>`
+          : nothing
+      }
       ${
         this.selector.text?.prefix
           ? html`<span slot="start">${this.selector.text.prefix}</span>`
@@ -135,6 +168,15 @@ export class HaTextSelector extends LitElement {
     ha-textarea,
     ha-input {
       width: 100%;
+    }
+    ha-markdown {
+      margin-top: var(--ha-space-2);
+    }
+    ha-markdown.helper {
+      display: block;
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      padding-inline: var(--ha-space-3);
     }
   `;
 }

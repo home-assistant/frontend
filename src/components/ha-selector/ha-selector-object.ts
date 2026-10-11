@@ -14,6 +14,7 @@ import type { ObjectSelector } from "../../data/selector";
 import { formatSelectorValue } from "../../data/selector/format_selector_value";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
 import type { HomeAssistant } from "../../types";
+import "../ha-markdown";
 import { computeInitialHaFormData } from "../ha-form/compute-initial-ha-form-data";
 import type { HaFormSchema } from "../ha-form/types";
 import "../ha-input-helper-text";
@@ -41,6 +42,9 @@ export class HaObjectSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
 
   @property({ attribute: false }) public localizeValue?: (
     key: string
@@ -205,7 +209,16 @@ export class HaObjectSelector extends LitElement {
       ></ha-yaml-editor>
       ${
         this.helper
-          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          ? html`<ha-input-helper-text
+              >${
+                this.markdownHelpers
+                  ? html`<ha-markdown
+                      class="helper"
+                      .content=${this.helper}
+                    ></ha-markdown>`
+                  : this.helper
+              }</ha-input-helper-text
+            >`
           : ""
       } `;
   }
@@ -258,6 +271,7 @@ export class HaObjectSelector extends LitElement {
       data,
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
+      markdownHelpers: this.markdownHelpers,
       submitText: this.hass.localize("ui.common.add"),
     });
 
@@ -286,6 +300,7 @@ export class HaObjectSelector extends LitElement {
       data: item,
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
+      markdownHelpers: this.markdownHelpers,
       submitText: this.hass.localize("ui.common.save"),
     });
 
@@ -346,6 +361,9 @@ export class HaObjectSelector extends LitElement {
   static get styles() {
     return [
       css`
+        ha-markdown {
+          margin-top: var(--ha-space-2);
+        }
         ha-list-base {
           --ha-list-gap: var(--ha-space-2);
           --ha-list-padding: var(--ha-space-2) 0;

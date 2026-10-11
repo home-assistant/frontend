@@ -86,6 +86,14 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  /**
+   * Render helper text through `ha-markdown` (HTML sanitized) instead of
+   * plain hint text, for surfaces whose helpers are trusted,
+   * developer-authored Markdown (e.g. app configuration translations).
+   */
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
+
   @property({ attribute: false }) public computeError?: (
     schema: any,
     error
@@ -112,7 +120,9 @@ export class HaForm extends LitElement implements HaFormElement {
   @property({ attribute: false }) public context?: Record<string, any>;
 
   protected getFormProperties(): Record<string, any> {
-    return {};
+    return {
+      markdownHelpers: this.markdownHelpers,
+    };
   }
 
   static shadowRootOptions: ShadowRootInit = {
@@ -244,6 +254,7 @@ export class HaForm extends LitElement implements HaFormElement {
                     .disabled=${item.disabled || this.disabled || false}
                     .placeholder=${item.required ? undefined : item.default}
                     .helper=${this._computeHelper(item)}
+                    .markdownHelpers=${this.markdownHelpers}
                     .localizeValue=${this.localizeValue}
                     .required=${item.required || false}
                     .context=${this._generateContext(item)}

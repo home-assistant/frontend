@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-markdown";
 import "../ha-switch";
 import "../ha-input-helper-text";
 
@@ -14,9 +15,16 @@ export class HaBooleanSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
+
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
+    const helper = this.markdownHelpers ? undefined : this.helper;
+    const markdownHelper =
+      this.markdownHelpers && this.helper ? this.helper : undefined;
+
     return html`
       <ha-switch
         .checked=${this.value ?? this.placeholder === true}
@@ -24,7 +32,15 @@ export class HaBooleanSelector extends LitElement {
         .disabled=${this.disabled}
       >
         <p class="primary">${this.label}</p>
-        ${this.helper ? html`<p class="secondary">${this.helper}</p>` : nothing}
+        ${helper ? html`<p class="secondary">${helper}</p>` : nothing}
+        ${
+          markdownHelper
+            ? html`<ha-markdown
+                class="secondary"
+                .content=${markdownHelper}
+              ></ha-markdown>`
+            : nothing
+        }
       </ha-switch>
     `;
   }
@@ -69,6 +85,11 @@ export class HaBooleanSelector extends LitElement {
       color: var(--secondary-text-color);
       font-size: 0.875rem;
       font-weight: var(--ha-font-weight-normal);
+    }
+    ha-markdown.secondary {
+      display: block;
+      padding-top: 0;
+      margin-top: var(--ha-space-1);
     }
   `;
 }

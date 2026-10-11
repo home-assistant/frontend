@@ -41,6 +41,9 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
+
   @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
     data?: HaFormDataContainer
@@ -127,6 +130,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
                 .data=${this.data}
                 .schema=${schema}
                 .disabled=${this.disabled}
+                .markdownHelpers=${this.markdownHelpers}
                 .computeLabel=${this.computeLabel}
                 .computeHelper=${this.computeHelper}
                 .localizeValue=${this.localizeValue}

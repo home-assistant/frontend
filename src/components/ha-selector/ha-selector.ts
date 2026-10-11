@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
@@ -9,6 +9,7 @@ import {
   handleLegacyEntitySelector,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import "../ha-markdown";
 
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
@@ -76,6 +77,18 @@ const LOAD_ELEMENTS = {
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
+// Selector components that render their own helper text, including the
+// Markdown variant. ha-selector passes `helper` and `markdownHelpers` through
+// untouched and leaves the placement to them. The object fields list
+// intentionally omits the option-level helper, so its rendering stays
+// entirely bespoke.
+const SELF_MANAGED_HELPER_SELECTORS = new Set([
+  "object",
+  "text",
+  "number",
+  "boolean",
+]);
+
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -100,6 +113,9 @@ export class HaSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  @property({ attribute: "markdown-helpers", type: Boolean })
+  public markdownHelpers = false;
 
   @property({ attribute: false }) public context?: Record<string, any>;
 
@@ -155,6 +171,10 @@ export class HaSelector extends LitElement {
   });
 
   protected render() {
+    const selfManagedHelper = SELF_MANAGED_HELPER_SELECTORS.has(this._type);
+    const helper =
+      !selfManagedHelper && this.markdownHelpers ? undefined : this.helper;
+
     return html`
       ${dynamicElement(`ha-selector-${this._type}`, {
         hass: this.hass,
@@ -166,13 +186,32 @@ export class HaSelector extends LitElement {
         placeholder: this.placeholder,
         disabled: this.disabled,
         required: this.required,
-        helper: this.helper,
+        helper,
         context: this.context,
         localizeValue: this.localizeValue,
+        markdownHelpers: this.markdownHelpers,
         id: "selector",
       })}
+      ${
+        this.markdownHelpers && !selfManagedHelper && this.helper
+          ? html`<ha-markdown
+              class="helper"
+              .content=${this.helper}
+            ></ha-markdown>`
+          : nothing
+      }
     `;
   }
+
+  static styles = css`
+    .helper {
+      display: block;
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      padding-inline: var(--ha-space-3);
+      margin-top: var(--ha-space-2);
+    }
+  `;
 }
 
 declare global {

@@ -404,6 +404,7 @@ export class DialogForm
               .hass=${this.hass}
               .computeLabel=${level.params.computeLabel}
               .computeHelper=${level.params.computeHelper}
+              .markdownHelpers=${!!level.params.markdownHelpers}
               .data=${level.data}
               .schema=${level.params.schema}
               .error=${level.error}

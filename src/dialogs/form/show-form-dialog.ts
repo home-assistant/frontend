@@ -15,6 +15,7 @@ export interface FormDialogParams {
   cancel?: () => void;
   computeLabel?: (schema, data) => string | undefined;
   computeHelper?: (schema) => string | undefined;
+  markdownHelpers?: boolean;
   submitText?: string;
   cancelText?: string;
 }
