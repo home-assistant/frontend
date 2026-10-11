@@ -23,6 +23,8 @@ export class HaChooseSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ attribute: false }) public context?: Record<string, any>;
+
   @property({ attribute: false })
   public localizeValue?: (key: string) => string;
 
@@ -82,6 +84,7 @@ export class HaChooseSelector extends LitElement {
         .value=${value}
         .disabled=${this.disabled}
         .required=${this.required}
+        .context=${this.context}
         @value-changed=${this._handleValueChanged}
         .helper=${this.helper}
         .localizeValue=${this.localizeValue}
