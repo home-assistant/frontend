@@ -72,6 +72,7 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
             @value-changed=${this._configChanged}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
+            .markdownHelpers=${true}
             .schema=${this._createSchema(this._config, this._showOptional)}
           ></ha-form>
         </div>

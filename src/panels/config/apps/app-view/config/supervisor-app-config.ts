@@ -307,6 +307,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
                   @value-changed=${this._configChanged}
                   .computeLabel=${this.computeLabel}
                   .computeHelper=${this.computeHelper}
+                  .markdownHelpers=${true}
                   .schema=${this._convertSchema(
                     this._showOptional
                       ? this.addon.schema!
