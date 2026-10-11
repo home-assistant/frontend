@@ -153,7 +153,7 @@
     "@lokalise/node-api": "16.6.0",
     "@octokit/auth-oauth-device": "8.0.5",
     "@octokit/rest": "22.0.1",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.0",
     "@rsdoctor/rspack-plugin": "1.6.4",
     "@rspack/core": "2.2.8",
     "@rspack/dev-server": "2.2.1",
