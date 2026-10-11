@@ -427,9 +427,7 @@ export class HaPlatformCondition extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const field =
-        this.description &&
-        Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
+      const field = this.description?.fields[key];
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
