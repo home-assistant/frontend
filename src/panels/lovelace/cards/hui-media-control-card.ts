@@ -532,7 +532,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _stateObj(): MediaPlayerEntity | undefined {
-    return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
+    // The card can update with hass before setConfig is called
+    if (!this._config) {
+      return undefined;
+    }
+    return this.hass!.states[this._config.entity] as MediaPlayerEntity;
   }
 
   private _handleSeek(): void {
