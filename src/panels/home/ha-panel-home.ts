@@ -52,6 +52,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _config: FrontendSystemData["home"] = {};
 
+  // True only after the home config loaded successfully. The banner — and any
+  // save of the config — must wait for it: with an empty or failed load,
+  // dismissing would overwrite the stored favourites and shortcuts (#54822).
+  @state() private _configLoaded = false;
+
   @state() private _securityConfig: SecurityFrontendSystemData = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
@@ -83,6 +88,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private get _showBanner(): boolean {
+    // Don't show until the stored config loaded: an empty pre-load or
+    // post-reject config would otherwise offer a dismiss that wipes it.
+    if (!this._configLoaded) {
+      return false;
+    }
     // Don't show if already dismissed
     if (this._config.welcome_banner_dismissed) {
       return false;
@@ -198,8 +208,10 @@ class PanelHome extends SubscribeMixin(LitElement) {
       // eslint-disable-next-line no-console
       console.error("Failed to load home configuration:", homeResult.reason);
       this._config = {};
+      this._configLoaded = false;
     } else {
       this._config = homeResult.value || {};
+      this._configLoaded = true;
     }
 
     if (securityResult.status === "rejected") {
@@ -382,6 +394,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _learnMore() {
     showNewOverviewDialog(this, {
       dismiss: async () => {
+        // Never persist an unloaded config: without the loaded favourites
+        // and shortcuts this save would wipe them from storage (#54822).
+        if (!this._configLoaded) {
+          return;
+        }
         const newConfig = {
           ...this._config,
           welcome_banner_dismissed: true,
