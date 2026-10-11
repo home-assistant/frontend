@@ -46,10 +46,10 @@ import {
   entitiesContext,
   internationalizationContext,
 } from "../data/context";
+import type { PageNavigation } from "../data/page_navigation";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
-import type { PageNavigation } from "./hass-tabs-subpage";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {

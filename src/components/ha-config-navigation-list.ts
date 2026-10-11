@@ -5,7 +5,7 @@ import "./ha-icon-next";
 import "./ha-svg-icon";
 import "./item/ha-list-item-button";
 import "./list/ha-list-nav";
-import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../data/page_navigation";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-config-navigation-list")

@@ -17,7 +17,7 @@ import {
   type RadioFrequencyTransmitter,
 } from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../../../data/page_navigation";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 

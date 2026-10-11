@@ -44,7 +44,7 @@ import type { HaIconButton } from "../../../components/ha-icon-button";
 
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../data/page_navigation";
 import type { HomeAssistantUI, Route } from "../../../types";
 import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 import "../components/ha-marketplace-discover";
