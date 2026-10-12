@@ -45,7 +45,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-const openLogDialog = async () => {
+const mountDialog = async () => {
   dialog = document.createElement("dialog-live-log");
   Object.assign(dialog, {
     params: { domain: "test", name: "Test" },
@@ -54,6 +54,10 @@ const openLogDialog = async () => {
   });
   document.body.append(dialog);
   await dialog.updateComplete;
+};
+
+const openLogDialog = async () => {
+  await mountDialog();
 
   const logRenderer = dialog.shadowRoot!.querySelector("ha-ansi-to-html")!;
   await logRenderer.updateComplete;
@@ -505,6 +509,32 @@ describe("dialog-live-log connection", () => {
       "ready",
       connectionListeners.ready
     );
+  });
+});
+
+describe("dialog-live-log subscription errors", () => {
+  it("shows unsupported when the backend doesn't know the command", async () => {
+    vi.mocked(subscribeIntegrationLog).mockRejectedValueOnce({
+      code: "unknown_command",
+      message: "Unknown command.",
+    });
+    await mountDialog();
+    await dialog.updateComplete;
+
+    expect(dialog.shadowRoot!.querySelector("ha-alert")).not.toBeNull();
+  });
+
+  it("subscribes again on ready when the subscription failed on a lost connection", async () => {
+    vi.mocked(subscribeIntegrationLog).mockRejectedValueOnce(3);
+    await openLogDialog();
+    await dialog.updateComplete;
+    expect(dialog.shadowRoot!.querySelector("ha-alert")).toBeNull();
+
+    connectionListeners.ready();
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(subscribeIntegrationLog).toHaveBeenCalledTimes(2);
+    expect(dialog["_live"]).toBe(true);
   });
 });
 

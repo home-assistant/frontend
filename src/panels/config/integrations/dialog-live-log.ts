@@ -1,5 +1,8 @@
 import type { ContextType } from "@lit/context";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  ERR_CONNECTION_LOST,
+  type UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import {
   mdiArrowCollapseDown,
@@ -37,6 +40,7 @@ import {
   internationalizationContext,
 } from "../../../data/context";
 import { subscribeIntegrationLog } from "../../../data/error_log";
+import { ERR_UNKNOWN_COMMAND } from "../../../data/websocket_api";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { fileDownload } from "../../../util/file_download";
@@ -106,6 +110,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
+  private _resubscribeOnReady = false;
+
   private _followFrame?: number;
 
   connectedCallback() {
@@ -137,10 +143,18 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           this._live = true;
         }
       },
-      () => {
-        if (this._unsub === unsub) {
-          this._unsub = undefined;
+      (err) => {
+        if (this._unsub !== unsub) {
+          return;
+        }
+        this._unsub = undefined;
+        if (err?.code === ERR_UNKNOWN_COMMAND) {
           this._unsupported = true;
+        } else if (
+          err === ERR_CONNECTION_LOST ||
+          err?.error?.code === ERR_CONNECTION_LOST
+        ) {
+          this._resubscribeOnReady = true;
         }
       }
     );
@@ -153,10 +167,11 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
   private _handleConnectionReady = () => {
     // The subscription died with the connection and the backend sends the
     // backlog again, so start over instead of appending duplicates
-    if (!this._unsub) {
+    if (!this._unsub && !this._resubscribeOnReady) {
       return;
     }
     this._unsub = undefined;
+    this._resubscribeOnReady = false;
     this._cancelFollowBottom();
     this._lines = [];
     this._shownCount = 0;
