@@ -7951,6 +7951,7 @@
           "network_info": {
             "title": "Network information",
             "description": "View channel and dataset details",
+            "nav_label": "Network information for {name}",
             "network_name": "Network name",
             "channel": "Channel",
             "pan_id": "PAN ID",

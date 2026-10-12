@@ -364,7 +364,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         network.dataset
           ? html`<ha-list-nav
               .ariaLabel=${this.hass.localize(
-                "ui.panel.config.thread.network_info.title"
+                "ui.panel.config.thread.network_info.nav_label",
+                {
+                  name: network.name || network.dataset.extended_pan_id,
+                }
               )}
             >
               <ha-list-item-button
