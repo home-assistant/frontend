@@ -95,8 +95,8 @@ export class HaTab extends LitElement {
       font-size: var(--ha-font-size-s);
       line-height: var(--ha-line-height-normal);
       white-space: nowrap;
-      color: var(--text-primary-color);
-      background-color: var(--warning-color);
+      color: var(--ha-color-on-primary-normal);
+      background-color: var(--ha-color-fill-primary-normal-resting);
     }
 
     .icon {
@@ -112,7 +112,7 @@ export class HaTab extends LitElement {
       width: var(--ha-space-2);
       height: var(--ha-space-2);
       border-radius: var(--ha-border-radius-pill);
-      background-color: var(--warning-color);
+      background-color: var(--ha-color-fill-primary-loud-resting);
     }
 
     /* Hidden from view but still read out through aria-describedby */
