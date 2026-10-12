@@ -10174,12 +10174,21 @@
               },
               "location": {
                 "label": "Location",
-                "migrated": {
-                  "title": "Location condition updated",
-                  "description": "This condition used zone names, and is now shown with zones instead. It matches the zones in the person's in_zones attribute, so it is true in any zone they are in, not only the zone shown as their state. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition."
-                },
+                "migrated": "This condition used zone names, and is now shown with zones instead. It matches the same way as before. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition.",
                 "target": "Zones",
-                "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in any of the selected zones, or in any zone with the selected labels, areas, or floors.",
+                "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in one of the selected zones, or in a zone with the selected labels, areas, or floors. Match sets which zones count.",
+                "match_mode": "Match",
+                "match_mode_options": {
+                  "any_zone": {
+                    "label": "Any zone they are in",
+                    "description": "True when the person is in any of these zones, even if another zone is shown as their state. Includes passive zones."
+                  },
+                  "active_zone": {
+                    "label": "Zone shown as their state",
+                    "description": "True only when one of these zones is shown as the person's state. Passive zones never match."
+                  }
+                },
+                "passive_zones": "{zones} {count, plural,\n one {is a passive zone, so it never matches}\n other {are passive zones, so they never match}\n}. Passive zones never become a person's state.",
                 "away": "Away",
                 "away_helper": "This condition will also be true if the person entity of the user viewing this dashboard is away. Passive zones don't change this, so a person who is only in passive zones is away."
               },

@@ -43,6 +43,14 @@ describe("validateConditionalConfig", () => {
       ["target", { condition: "location", target: { label_id: "store" } }],
       ["empty target", { condition: "location", target: {} }],
       ["away", { condition: "location", away: true }],
+      [
+        "a match mode",
+        { condition: "location", target: {}, match_mode: "active_zone" },
+      ],
+      [
+        "locations and away",
+        { condition: "location", locations: ["home"], away: true },
+      ],
     ])("should return true with %s", (_name, condition) => {
       expect(validateConditionalConfig([condition] as any)).toBe(true);
     });
@@ -59,6 +67,18 @@ describe("validateConditionalConfig", () => {
         { condition: "location", target: { zone_id: "zone.home" } },
       ],
       ["a non-boolean away", { condition: "location", away: "yes" }],
+      [
+        "an unknown match mode",
+        { condition: "location", target: {}, match_mode: "nearest" },
+      ],
+      [
+        "locations with a target",
+        { condition: "location", locations: ["home"], target: {} },
+      ],
+      [
+        "locations with a match mode",
+        { condition: "location", locations: ["home"], match_mode: "any_zone" },
+      ],
       [
         "a non-boolean away with a target",
         { condition: "location", target: {}, away: "yes" },
@@ -353,6 +373,88 @@ describe("checkConditionsMet", () => {
           {}
         )
       ).toBe(false);
+    });
+
+    describe("active_zone", () => {
+      const createActiveZoneHass = (state: string, inZones: string[]) =>
+        ({
+          states: {
+            "person.me": {
+              entity_id: "person.me",
+              state,
+              attributes: { user_id: "user1", in_zones: inZones },
+            },
+            "zone.home": {
+              entity_id: "zone.home",
+              state: "0",
+              attributes: { friendly_name: "Home" },
+            },
+            "zone.store_1": {
+              entity_id: "zone.store_1",
+              state: "0",
+              attributes: { friendly_name: "Store" },
+            },
+            "zone.work": {
+              entity_id: "zone.work",
+              state: "0",
+              attributes: { friendly_name: "Work" },
+            },
+            // Passive, and named like zone.work.
+            "zone.work_campus": {
+              entity_id: "zone.work_campus",
+              state: "0",
+              attributes: { friendly_name: "Work", passive: true },
+            },
+          },
+          entities: {
+            "zone.store_1": { entity_id: "zone.store_1", labels: ["store"] },
+          },
+          devices: {},
+          areas: {},
+          user: { id: "user1" },
+        }) as unknown as HomeAssistant;
+
+      const check = (hass: HomeAssistant, target: Record<string, unknown>) =>
+        checkConditionsMet(
+          [{ condition: "location", target, match_mode: "active_zone" }],
+          hass,
+          {}
+        );
+
+      it("matches the zone shown as the person state", () => {
+        const hass = createActiveZoneHass("Store", ["zone.store_1"]);
+        expect(check(hass, { entity_id: "zone.store_1" })).toBe(true);
+        expect(check(hass, { label_id: "store" })).toBe(true);
+      });
+
+      it("matches home", () => {
+        const hass = createActiveZoneHass("home", ["zone.home"]);
+        expect(check(hass, { entity_id: "zone.home" })).toBe(true);
+      });
+
+      it("does not match a zone that is not the active zone", () => {
+        const hass = createActiveZoneHass("Work", [
+          "zone.work",
+          "zone.store_1",
+        ]);
+        expect(check(hass, { entity_id: "zone.store_1" })).toBe(false);
+        expect(
+          checkConditionsMet(
+            [{ condition: "location", target: { entity_id: "zone.store_1" } }],
+            hass,
+            {}
+          )
+        ).toBe(true);
+      });
+
+      it("never matches a passive zone", () => {
+        const hass = createActiveZoneHass("Work", [
+          "zone.work",
+          "zone.work_campus",
+        ]);
+        expect(check(hass, { entity_id: "zone.work_campus" })).toBe(false);
+        expect(check(hass, { entity_id: "zone.work" })).toBe(true);
+      });
     });
   });
 });

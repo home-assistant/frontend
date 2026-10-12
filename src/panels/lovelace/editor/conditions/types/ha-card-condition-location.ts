@@ -1,10 +1,12 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
   boolean,
+  enums,
   literal,
   object,
   optional,
@@ -14,32 +16,32 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { formatListWithAnds } from "../../../../../common/string/format-list";
 import { slugify } from "../../../../../common/string/slugify";
 import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { targetStruct } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
-import type { LocationCondition } from "../../../common/validate-condition";
+import {
+  LOCATION_MATCH_MODES,
+  resolveLocationZones,
+  type LocationCondition,
+} from "../../../common/validate-condition";
 
 const locationConditionStruct = object({
   condition: literal("location"),
   locations: optional(array(string())),
   target: optional(targetStruct),
+  match_mode: optional(enums(LOCATION_MATCH_MODES)),
   away: optional(boolean()),
 });
 
-const SCHEMA: HaFormSchema[] = [
-  {
-    name: "target",
-    selector: { target: { entity: { domain: "zone" } } },
-  },
-  {
-    name: "away",
-    selector: { boolean: {} },
-  },
-];
+const LOCALIZE_PREFIX =
+  "ui.panel.lovelace.editor.condition-editor.condition.location";
 
 /**
  * Pick an unused zone ID for a name that matches no zone, adding `_2`, `_3`
@@ -69,8 +71,8 @@ function missingZoneId(
 }
 
 /**
- * Convert `locations` (zone names matched against the person state) to a
- * zone target matched against the person `in_zones` attribute.
+ * Convert `locations` (zone names) to a zone target. `active_zone` matches
+ * the person state like `locations` did, so the condition behaves the same.
  */
 export function migrateLocationCondition(
   condition: LocationCondition,
@@ -94,9 +96,8 @@ export function migrateLocationCondition(
     }
   }
 
-  // Merge into any `target` and `away` already set in YAML.
-  const target = { ...condition.target };
-  const entityIds = new Set(ensureArray(target.entity_id ?? []));
+  // Validation rejects `locations` with `target`, but `away` can be set too.
+  const entityIds = new Set<string>();
   let away = condition.away === true;
   const missingIds = new Set<string>();
   for (const name of new Set(condition.locations ?? [])) {
@@ -120,11 +121,11 @@ export function migrateLocationCondition(
       entityIds.add(entityId);
     }
   }
-  if (entityIds.size) {
-    target.entity_id = [...entityIds];
-  }
-
-  const migrated: LocationCondition = { condition: "location", target };
+  const migrated: LocationCondition = {
+    condition: "location",
+    target: entityIds.size ? { entity_id: [...entityIds] } : {},
+    match_mode: "active_zone",
+  };
   if (away) {
     migrated.away = true;
   }
@@ -156,7 +157,14 @@ export class HaCardConditionLocation extends LitElement {
   }
 
   protected static validateUIConfig(condition: LocationCondition) {
-    return assert(condition, locationConditionStruct);
+    assert(condition, locationConditionStruct);
+    // Converting would drop the target, so leave this invalid mix to YAML.
+    if (
+      condition.locations !== undefined &&
+      (condition.target !== undefined || condition.match_mode !== undefined)
+    ) {
+      throw new Error("locations can't be combined with target or match_mode");
+    }
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -208,36 +216,91 @@ export class HaCardConditionLocation extends LitElement {
     return false;
   }
 
+  private _schema = memoizeOne((localize: LocalizeFunc): HaFormSchema[] => [
+    {
+      name: "target",
+      selector: { target: { entity: { domain: "zone" } } },
+    },
+    {
+      name: "match_mode",
+      required: true,
+      selector: {
+        select: {
+          mode: "box",
+          box_max_columns: 1,
+          options: LOCATION_MATCH_MODES.map((mode) => ({
+            value: mode,
+            label: localize(
+              `${LOCALIZE_PREFIX}.match_mode_options.${mode}.label`
+            ),
+            description: localize(
+              `${LOCALIZE_PREFIX}.match_mode_options.${mode}.description`
+            ),
+          })),
+        },
+      },
+    },
+    {
+      name: "away",
+      selector: { boolean: {} },
+    },
+  ]);
+
+  // Shows the `any_zone` default as selected.
+  private _formData = memoizeOne(
+    (data: LocationCondition): LocationCondition => ({
+      match_mode: "any_zone",
+      ...data,
+    })
+  );
+
+  /** Selected passive zones, which never match `active_zone`. */
+  private _passiveZones(): string[] {
+    if (this._data?.match_mode !== "active_zone" || !this._data.target) {
+      return [];
+    }
+    return resolveLocationZones(this.hass, this._data.target)
+      .map((zoneId) => this.hass.states[zoneId])
+      .filter((stateObj) => stateObj?.attributes.passive)
+      .map((stateObj) => computeStateName(stateObj));
+  }
+
   protected render() {
     if (!this._data) {
       return nothing;
     }
+    const passiveZones = this._passiveZones();
     return html`
       ${
         this._migrated
           ? html`
-              <ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.condition.location.migrated.title"
-                )}
-              >
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.condition.location.migrated.description"
-                )}
+              <ha-alert alert-type="info">
+                ${this.hass.localize(`${LOCALIZE_PREFIX}.migrated`)}
               </ha-alert>
             `
           : nothing
       }
       <ha-form
         .hass=${this.hass}
-        .data=${this._data}
-        .schema=${SCHEMA}
+        .data=${this._formData(this._data)}
+        .schema=${this._schema(this.hass.localize)}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
       ></ha-form>
+      ${
+        passiveZones.length
+          ? html`
+              <ha-alert alert-type="warning">
+                ${this.hass.localize(`${LOCALIZE_PREFIX}.passive_zones`, {
+                  count: passiveZones.length,
+                  zones: formatListWithAnds(this.hass.locale, passiveZones),
+                })}
+              </ha-alert>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -250,6 +313,12 @@ export class HaCardConditionLocation extends LitElement {
       target: value.target ?? {},
     };
     delete condition.locations;
+    // `any_zone` is the default, so it's left out.
+    if (value.match_mode === "active_zone") {
+      condition.match_mode = "active_zone";
+    } else {
+      delete condition.match_mode;
+    }
     if (value.away) {
       condition.away = true;
     } else {
@@ -260,14 +329,10 @@ export class HaCardConditionLocation extends LitElement {
   }
 
   private _computeLabelCallback = (schema: HaFormSchema): string =>
-    this.hass.localize(
-      `ui.panel.lovelace.editor.condition-editor.condition.location.${schema.name}`
-    );
+    this.hass.localize(`${LOCALIZE_PREFIX}.${schema.name}`);
 
   private _computeHelperCallback = (schema: HaFormSchema): string =>
-    this.hass.localize(
-      `ui.panel.lovelace.editor.condition-editor.condition.location.${schema.name}_helper`
-    );
+    this.hass.localize(`${LOCALIZE_PREFIX}.${schema.name}_helper`);
 
   static styles = css`
     :host {
@@ -276,6 +341,10 @@ export class HaCardConditionLocation extends LitElement {
     ha-alert {
       display: block;
       margin-bottom: var(--ha-space-2, 8px);
+    }
+    ha-form + ha-alert {
+      margin-top: var(--ha-space-2, 8px);
+      margin-bottom: 0;
     }
   `;
 }

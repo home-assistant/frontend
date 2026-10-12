@@ -131,12 +131,70 @@ describe("ha-card-condition-location", () => {
         away: true,
       });
     });
+
+    it("keeps active_zone and leaves out the any_zone default", async () => {
+      const editor = createEditor({ condition: "location", target: {} });
+      let value = nextValue(editor);
+      (editor as any)._valueChanged(
+        formChange({ target: {}, match_mode: "active_zone" })
+      );
+      expect(await value).toEqual({
+        condition: "location",
+        target: {},
+        match_mode: "active_zone",
+      });
+
+      editor.condition = { ...editor.condition, match_mode: "active_zone" };
+      value = nextValue(editor);
+      (editor as any)._valueChanged(
+        formChange({ target: {}, match_mode: "any_zone" })
+      );
+      expect(await value).toEqual({ condition: "location", target: {} });
+    });
+  });
+
+  describe("passive zone warning", () => {
+    const hass = {
+      ...HASS,
+      states: {
+        ...HASS.states,
+        "zone.gym": {
+          entity_id: "zone.gym",
+          state: "0",
+          attributes: { friendly_name: "Gym", passive: true },
+        },
+      },
+      entities: {},
+      devices: {},
+      areas: {},
+    } as unknown as HomeAssistant;
+
+    const passiveZones = (condition: Partial<LocationCondition>) => {
+      const editor = createEditor({ condition: "location", ...condition });
+      editor.hass = hass;
+      open(editor);
+      return (editor as any)._passiveZones();
+    };
+
+    it("lists selected passive zones for active_zone", () => {
+      expect(
+        passiveZones({
+          target: { entity_id: ["zone.gym", "zone.store_1"] },
+          match_mode: "active_zone",
+        })
+      ).toEqual(["Gym"]);
+    });
+
+    it("lists nothing for any_zone", () => {
+      expect(passiveZones({ target: { entity_id: "zone.gym" } })).toEqual([]);
+    });
   });
 
   describe("migration", () => {
     it("maps zone names, home and not_home", () => {
       expect(migrate({ locations: ["home", "Store 2", "not_home"] })).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: {
           entity_id: ["zone.home", "zone.store_2", "zone.store_2_south"],
         },
@@ -163,6 +221,7 @@ describe("ha-card-condition-location", () => {
       } as unknown as HomeAssistant;
       expect(migrate({ locations: ["home", "not_home"] }, hass)).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: {
           entity_id: ["zone.home", "zone.lowercase_home", "zone.not_home"],
         },
@@ -170,19 +229,20 @@ describe("ha-card-condition-location", () => {
       });
     });
 
-    it("merges into an existing target and away", () => {
-      expect(
-        migrate({
-          locations: ["Store 1"],
-          target: { entity_id: "zone.store_2", label_id: "store" },
-          away: true,
-        })
-      ).toEqual({
+    it("keeps away", () => {
+      expect(migrate({ locations: ["Store 1"], away: true })).toEqual({
         condition: "location",
-        target: {
-          entity_id: ["zone.store_2", "zone.store_1"],
-          label_id: "store",
-        },
+        match_mode: "active_zone",
+        target: { entity_id: ["zone.store_1"] },
+        away: true,
+      });
+    });
+
+    it("leaves the target empty when only not_home is set", () => {
+      expect(migrate({ locations: ["not_home"] })).toEqual({
+        condition: "location",
+        match_mode: "active_zone",
+        target: {},
         away: true,
       });
     });
@@ -190,6 +250,7 @@ describe("ha-card-condition-location", () => {
     it("keeps names that match no zone", () => {
       expect(migrate({ locations: ["Store 1", "Old store"] })).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.store_1", "zone.old_store"] },
       });
     });
@@ -198,6 +259,7 @@ describe("ha-card-condition-location", () => {
       // zone.store is "Shop" and zone.store_2 is "Store 2".
       expect(migrate({ locations: ["Store"] })).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.store_3"] },
       });
     });
@@ -205,6 +267,7 @@ describe("ha-card-condition-location", () => {
     it("does not reuse the ID of a registered zone without a state", () => {
       expect(migrate({ locations: ["Reloading"] })).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.reloading_2"] },
       });
     });
@@ -214,6 +277,7 @@ describe("ha-card-condition-location", () => {
         migrate({ locations: ["Old store", "Old-store", "Old store"] })
       ).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.old_store", "zone.old_store_2"] },
       });
     });
@@ -240,6 +304,7 @@ describe("ha-card-condition-location", () => {
       (editor as any).willUpdate(new Map([["hass", HASS]]));
       expect((editor as any)._data).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.store_1_2"] },
       });
     });
@@ -269,6 +334,7 @@ describe("ha-card-condition-location", () => {
       (editor as any).willUpdate(new Map([["hass", hass]]));
       expect((editor as any)._data).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.store_1"] },
       });
 
@@ -277,6 +343,7 @@ describe("ha-card-condition-location", () => {
       (editor as any).willUpdate(new Map([["hass", hass]]));
       expect((editor as any)._data).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.store_1_2"] },
       });
     });
@@ -302,6 +369,7 @@ describe("ha-card-condition-location", () => {
       (editor as any).willUpdate(new Map([["hass", HASS]]));
       expect((editor as any)._data).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.reloading"] },
       });
     });
@@ -329,6 +397,7 @@ describe("ha-card-condition-location", () => {
       );
       expect(await value).toEqual({
         condition: "location",
+        match_mode: "active_zone",
         target: { entity_id: ["zone.home"] },
         away: true,
       });
@@ -361,7 +430,23 @@ describe("ha-card-condition-location", () => {
       expect(() => validate(condition)).not.toThrow();
     });
 
+    it("accepts a match mode", () => {
+      expect(() =>
+        validate({
+          condition: "location",
+          target: {},
+          match_mode: "active_zone",
+        })
+      ).not.toThrow();
+    });
+
     it.each([
+      ["an unknown match mode", { target: {}, match_mode: "nearest" }],
+      ["locations with a target", { locations: ["home"], target: {} }],
+      [
+        "locations with a match mode",
+        { locations: ["home"], match_mode: "active_zone" },
+      ],
       ["a target that is not an object", { target: "zone.home" }],
       ["an unknown target key", { target: { zone_id: "zone.home" } }],
       ["a non-boolean away", { target: {}, away: "yes" }],
