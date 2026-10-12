@@ -615,7 +615,6 @@ export class HaServiceControl extends LitElement {
                 >
                   <ha-service-section-icon
                     slot="icons"
-                    .hass=${this.hass}
                     .service=${this._value!.action}
                     .section=${dataField.key}
                   ></ha-service-section-icon>

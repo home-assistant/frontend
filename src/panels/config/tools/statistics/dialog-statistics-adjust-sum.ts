@@ -270,7 +270,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         .label=${this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
         )}
-        .hass=${this.hass}
         .selector=${this._dateTimeSelector}
         .value=${this._moment}
         @value-changed=${this._dateTimeSelectorChanged}
@@ -394,7 +393,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         .label=${this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
-        .hass=${this.hass}
         .selector=${this._amountSelector(unit || undefined, this._precision)}
         .value=${this._amount}
         .disabled=${this._busy}

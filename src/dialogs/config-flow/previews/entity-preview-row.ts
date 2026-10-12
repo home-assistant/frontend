@@ -182,7 +182,6 @@ class EntityPreviewRow extends LitElement {
             noValue
               ? this.hass.formatEntityState(stateObj)
               : html`<hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   capitalize
                 ></hui-timestamp-display>`
@@ -319,7 +318,6 @@ class EntityPreviewRow extends LitElement {
           showSensor
             ? html`
                 <hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${
                     stateObj.attributes.device_class ===

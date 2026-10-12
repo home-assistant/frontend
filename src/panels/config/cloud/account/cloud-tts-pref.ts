@@ -111,7 +111,6 @@ export class CloudTTSPref extends LitElement {
           <ha-card outlined>
             <div class="card-header">
               <voice-assistant-brand-icon
-                .hass=${this.hass}
                 .voiceAssistantId=${"conversation"}
               ></voice-assistant-brand-icon>
               ${this.hass.localize(
@@ -312,7 +311,7 @@ export class CloudTTSPref extends LitElement {
               </ha-button>
             </div>
           </ha-card>
-          <ha-tip .hass=${this.hass}>
+          <ha-tip>
             ${this.hass.localize("ui.panel.config.cloud.account.tts.tip")}
           </ha-tip>
         </div>

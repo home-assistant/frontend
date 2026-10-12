@@ -399,7 +399,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return html`
       <div class="add-target-wrapper">
         <ha-generic-picker
-          .hass=${this.hass}
           popover-placement="bottom-start"
           .disabled=${this.disabled}
           .autofocus=${this.autofocus}

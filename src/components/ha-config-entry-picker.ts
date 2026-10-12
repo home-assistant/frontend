@@ -56,7 +56,6 @@ class HaConfigEntryPicker extends LitElement {
     }
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .label=${
           this.label === undefined && this.hass
             ? this.hass.localize(
