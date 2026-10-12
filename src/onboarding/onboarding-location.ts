@@ -1,5 +1,6 @@
 import {
   mdiCrosshairsGps,
+  mdiHome,
   mdiMagnify,
   mdiMapMarker,
   mdiMapSearchOutline,
@@ -246,6 +247,7 @@ class OnboardingLocation extends LitElement {
         return [
           {
             id: LOCATION_MARKER_ID,
+            iconPath: mdiHome,
             latitude: (location || AMSTERDAM)[0],
             longitude: (location || AMSTERDAM)[1],
             location_editable: true,
@@ -256,7 +258,7 @@ class OnboardingLocation extends LitElement {
         ? places.map((place) => ({
             id: String(place.place_id),
             iconPath:
-              place.place_id === highlightedMarker ? undefined : mdiMapMarker,
+              place.place_id === highlightedMarker ? mdiHome : mdiMapMarker,
             latitude:
               location && place.place_id === highlightedMarker
                 ? location[0]
