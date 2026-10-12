@@ -39,7 +39,8 @@ export class PendingValueSync {
   /**
    * Run the service call for the scheduled change. Once no change is
    * pending anymore, `resync` is called if a state update was skipped or the
-   * call failed.
+   * call failed. Errors are not rethrown, as `callService` already notifies
+   * the user when the call fails.
    */
   public async run(
     call: () => Promise<unknown>,
@@ -49,9 +50,8 @@ export class PendingValueSync {
     this._inFlight++;
     try {
       await call();
-    } catch (err) {
+    } catch (_err) {
       this._needsResync = true;
-      throw err;
     } finally {
       this._inFlight--;
       if (!this.pending && this._needsResync) {

@@ -83,16 +83,17 @@ describe("PendingValueSync", () => {
     expect(resync).toHaveBeenCalledTimes(1);
   });
 
-  it("resyncs and rethrows when the service call fails", async () => {
+  it("resyncs when the service call fails", async () => {
     const sync = new PendingValueSync();
+    const call = deferred();
     const resync = vi.fn();
-    const error = new Error("failed");
 
     sync.schedule();
+    const run = sync.run(() => call.promise, resync);
 
-    await expect(sync.run(() => Promise.reject(error), resync)).rejects.toBe(
-      error
-    );
+    call.reject(new Error("failed"));
+    await run;
+
     expect(resync).toHaveBeenCalledTimes(1);
     expect(sync.pending).toBe(false);
   });
