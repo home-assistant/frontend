@@ -195,6 +195,7 @@ export default class HaAutomationSidebar extends LitElement {
     if (this.narrow) {
       return html`
         <ha-snap-bottom-sheet
+          dismissable
           .minHeight=${COLLAPSED_SHEET_HEIGHT}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.sidebar_label"
