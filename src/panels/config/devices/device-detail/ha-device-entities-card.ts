@@ -63,7 +63,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     const mainEntities: EntityRegistryStateEntry[] = [];
     const additionalEntities: EntityRegistryStateEntry[] = [];
     enabledEntities.forEach((entry) => {
-      if (computeEntityEntryName(entry, this.hass.devices)) {
+      if (computeEntityEntryName(entry)) {
         additionalEntities.push(entry);
       } else {
         mainEntities.push(entry);

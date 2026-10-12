@@ -348,9 +348,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
   // Same composition as the backend's computed name alias
   private _computedName(entry: ExtEntityRegistryEntry): string {
-    if (entry.name) {
-      return entry.name;
-    }
     return computeEntityEntryNameList(
       entry,
       [{ type: "parent_device" }, { type: "device" }, { type: "entity" }],

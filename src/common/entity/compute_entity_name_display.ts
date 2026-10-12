@@ -15,7 +15,11 @@ import {
 import { computeFloorName } from "./compute_floor_name";
 import { computeStateName } from "./compute_state_name";
 import { getEntityEntryContext } from "./context/get_entity_context";
-import type { EntityNameItem, EntityNameOptions } from "./entity_name_config";
+import {
+  DEFAULT_ENTITY_NAME,
+  type EntityNameItem,
+  type EntityNameOptions,
+} from "./entity_name_config";
 
 const DEFAULT_SEPARATOR = " ";
 
@@ -75,14 +79,24 @@ export const computeEntityNameDisplay = (
     return name;
   }
 
-  // If no name config is provided, fall back to the friendly name
+  const separator = options?.separator ?? DEFAULT_SEPARATOR;
+
   if (!name) {
-    return computeStateName(stateObj);
+    return (
+      computeEntityNameList(
+        stateObj,
+        DEFAULT_ENTITY_NAME,
+        entities,
+        devices,
+        areas,
+        floors
+      )
+        .filter((n) => n)
+        .join(separator) || computeStateName(stateObj)
+    );
   }
 
   let items = ensureArray(name);
-
-  const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
   // If all items are text, just join them
   const textOnlyName = computeTextOnlyName(items, options);
@@ -90,7 +104,7 @@ export const computeEntityNameDisplay = (
     return textOnlyName;
   }
 
-  const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
+  const useDeviceName = entityUseDeviceName(stateObj, entities);
 
   // If entity uses device name, and device is not already included, replace it with device name
   if (useDeviceName) {
@@ -116,6 +130,24 @@ export const computeEntityNameDisplay = (
   }
 
   return names.filter((n) => n).join(separator);
+};
+
+export const computeDefaultEntityNameItems = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+): EntityNameItem[] => {
+  const names = computeEntityNameList(
+    stateObj,
+    DEFAULT_ENTITY_NAME,
+    entities,
+    devices,
+    areas,
+    floors
+  );
+  return DEFAULT_ENTITY_NAME.filter((_item, idx) => names[idx]);
 };
 
 export interface EntityNameListOptions {
@@ -171,7 +203,7 @@ export const computeEntityEntryNameList = (
     areas,
     floors
   );
-  const entityName = computeEntityEntryName(entry, devices);
+  const entityName = computeEntityEntryName(entry);
   const keepAllParts = options?.keepAllParts ?? false;
 
   // Same rule as the backend: an owner only adds its name part while the

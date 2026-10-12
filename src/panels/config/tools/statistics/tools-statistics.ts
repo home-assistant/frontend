@@ -181,7 +181,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         const area = areaId ? areas[areaId] : undefined;
 
         const entityName = entry
-          ? computeEntityEntryName(entry, devices, item.state)
+          ? computeEntityEntryName(entry, item.state)
           : undefined;
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;

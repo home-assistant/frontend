@@ -236,7 +236,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _confirmDeleteEntry(): Promise<void> {
-    let name = computeEntityEntryName(this.entry, this.hass.devices);
+    let name = computeEntityEntryName(this.entry);
     if (!name) {
       const { device } = getEntityEntryContext(
         this.entry,
