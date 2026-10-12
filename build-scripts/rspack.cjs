@@ -115,7 +115,10 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
-  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  // pnpm links node_modules/lit-html into its store; rspack compares real paths
+  const litHtmlRoot = fs.realpathSync(
+    path.resolve(__dirname, "../node_modules/lit-html")
+  );
   const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
   const litDisableDevModeLoader = path.join(
     __dirname,
