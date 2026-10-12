@@ -1336,7 +1336,9 @@ export class HaDataTable extends LitElement {
       .querySelectorAll<HTMLElement & { group: string }>(".group-header-row")
       .forEach((row) => {
         const top = row.getBoundingClientRect().top - scrollerTop;
-        if (top <= 0 && top > currentTop) {
+        // Rows can sit at fractional positions, so a header less than a
+        // pixel below the top counts as reached
+        if (top < 1 && top > currentTop) {
           currentTop = top;
           group = row.group;
         }
