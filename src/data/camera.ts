@@ -22,7 +22,6 @@ interface CameraEntityAttributes extends HassEntityAttributeBase {
   access_token?: string;
   brand?: string;
   motion_detection?: boolean;
-  has_two_way_audio?: boolean;
 }
 
 export interface CameraEntity extends HassEntityBase {
@@ -205,6 +204,7 @@ export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
 
 export interface CameraCapabilities {
   frontend_stream_types: StreamType[];
+  supports_two_way_audio: boolean;
 }
 
 export const fetchCameraCapabilities = async (

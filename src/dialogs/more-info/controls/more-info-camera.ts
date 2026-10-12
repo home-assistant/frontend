@@ -45,6 +45,8 @@ class MoreInfoCamera extends LitElement {
 
   @state() private _streamType?: CameraStreamType;
 
+  @state() private _supportsTwoWayAudio = false;
+
   @query("ha-camera-stream") private _cameraStream?: HaCameraStream;
 
   @query(".microphone-meter") private _microphoneMeter?: HTMLElement;
@@ -110,12 +112,9 @@ class MoreInfoCamera extends LitElement {
         controls
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
+        @camera-capabilities-changed=${this._capabilitiesChanged}
       ></ha-camera-stream>
-      ${
-        this.stateObj.attributes.has_two_way_audio
-          ? this._renderMicrophoneButton()
-          : nothing
-      }
+      ${this._supportsTwoWayAudio ? this._renderMicrophoneButton() : nothing}
     `;
   }
 
@@ -271,6 +270,13 @@ class MoreInfoCamera extends LitElement {
     ev: HASSDomEvent<HASSDomEvents["stream-type-changed"]>
   ) {
     this._streamType = ev.detail.type;
+  }
+
+  private _capabilitiesChanged(
+    ev: HASSDomEvent<HASSDomEvents["camera-capabilities-changed"]>
+  ) {
+    this._supportsTwoWayAudio =
+      ev.detail.capabilities?.supports_two_way_audio ?? false;
   }
 
   private _microphoneChanged(

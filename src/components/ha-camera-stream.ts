@@ -133,6 +133,11 @@ export class HaCameraStream extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
+    if ((changedProps as PropertyValues).has("_capabilities")) {
+      fireEvent(this, "camera-capabilities-changed", {
+        capabilities: this._capabilities,
+      });
+    }
     const visibleStreamType = this._currentStreams().find(
       (stream) => stream.visible
     )?.type;
@@ -226,7 +231,10 @@ export class HaCameraStream extends LitElement {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
     if (!supportsFeature(this.stateObj!, CameraEntityFeature.STREAM)) {
-      this._capabilities = { frontend_stream_types: [] };
+      this._capabilities = {
+        frontend_stream_types: [],
+        supports_two_way_audio: false,
+      };
       return;
     }
     this._capabilities = await fetchCameraCapabilities(
@@ -372,6 +380,7 @@ declare global {
   interface HASSDomEvents {
     load: undefined;
     "stream-type-changed": { type?: CameraStreamType };
+    "camera-capabilities-changed": { capabilities?: CameraCapabilities };
     streams: {
       hasAudio: boolean;
       hasVideo: boolean;
