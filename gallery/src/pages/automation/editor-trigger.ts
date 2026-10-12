@@ -8,7 +8,6 @@ import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockTags } from "../../../../demo/src/stubs/tags";
-import "../../../../src/components/ha-formfield";
 import type { Trigger } from "../../../../src/data/automation";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../../../src/panels/config/automation/trigger/ha-automation-trigger";
@@ -146,13 +145,12 @@ export class DemoAutomationEditorTrigger extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="options">
-        <ha-formfield label="Disabled">
-          <ha-switch
-            .name=${"disabled"}
-            .checked=${this._disabled}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
+        <ha-switch
+          .name=${"disabled"}
+          .checked=${this._disabled}
+          @change=${this._handleOptionChange}
+          >Disabled</ha-switch
+        >
       </div>
       ${SCHEMAS.map(
         (info, sampleIdx) => html`
@@ -193,7 +191,7 @@ export class DemoAutomationEditorTrigger extends LitElement {
       max-width: 800px;
       margin: 16px auto;
     }
-    .options ha-formfield {
+    .options ha-switch {
       margin-right: 16px;
     }
   `;

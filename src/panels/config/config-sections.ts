@@ -50,7 +50,9 @@ const getHasDomainCheck = (domain: string) => {
   const checkRegistry = memoizeOne((entries: HomeAssistant["entities"]) =>
     Object.values(entries).some((entry) => entry.entity_id.startsWith(prefix))
   );
-  return (hass: HomeAssistant) => checkRegistry(hass.entities);
+
+  return (hass: Pick<HomeAssistant, "entities">) =>
+    checkRegistry(hass.entities);
 };
 
 export const configSections: Record<string, PageNavigation[]> = {

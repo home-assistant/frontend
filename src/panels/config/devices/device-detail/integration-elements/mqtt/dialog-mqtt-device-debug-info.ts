@@ -5,7 +5,6 @@ import { computeDeviceNameDisplay } from "../../../../../../common/entity/comput
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-dialog-footer";
-import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-button";
@@ -69,31 +68,23 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           )}
         </h4>
         <div>
-          <ha-formfield
-            .label=${this.hass!.localize(
+          <ha-switch
+            .checked=${this._showDeserialized}
+            @change=${this._showDeserializedChanged}
+            autofocus
+            >${this.hass!.localize(
               "ui.dialogs.mqtt_device_debug_info.deserialize"
-            )}
+            )}</ha-switch
           >
-            <ha-switch
-              .checked=${this._showDeserialized}
-              @change=${this._showDeserializedChanged}
-              autofocus
-            >
-            </ha-switch>
-          </ha-formfield>
         </div>
         <div>
-          <ha-formfield
-            .label=${this.hass!.localize(
+          <ha-switch
+            .checked=${this._showAsYaml}
+            @change=${this._showAsYamlChanged}
+            >${this.hass!.localize(
               "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
-            )}
+            )}</ha-switch
           >
-            <ha-switch
-              .checked=${this._showAsYaml}
-              @change=${this._showAsYamlChanged}
-            >
-            </ha-switch>
-          </ha-formfield>
         </div>
         <h4>
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.entities")}

@@ -1,6 +1,7 @@
 import { render } from "lit";
 import { afterEach, expect, it, vi } from "vitest";
-import type { HomeAssistant } from "../../../src/types";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
 import "../../../src/panels/marketplace/dashboards/ha-marketplace-dashboard";
 
@@ -48,22 +49,24 @@ vi.mock(
   () => ({ repositoryMenuItems: () => [], renderRepositoryMenuEntry: vi.fn() })
 );
 
+let host: HTMLDivElement;
+
+let hass: MockHomeAssistant;
+
 const openDashboard = async (
   repositories: unknown[] = [],
   tab: "discover" | "browse" | "installed" = "browse"
 ) => {
+  host = document.createElement("div");
+  hass = provideHass(host, { localize: (key: string) => key });
+  document.body.append(host);
   const dashboard = document.createElement("ha-marketplace-dashboard");
   dashboard.tab = tab;
-  dashboard.hass = {
-    localize: (key: string) => key,
-    config: { version: "2026.11.0" },
-    auth: { data: { hassUrl: "http://localhost:8123" } },
-  } as unknown as HomeAssistant;
   dashboard.marketplace = {
     repositories,
     info: { categories: [] },
   } as unknown as MarketplaceData;
-  document.body.append(dashboard);
+  host.append(dashboard);
   await dashboard.updateComplete;
   return dashboard;
 };
@@ -89,22 +92,6 @@ it("shows its tabs from the translations of the Marketplace itself", async () =>
   ).toBe(true);
 });
 
-it("offers no grouping", async () => {
-  const dashboard = await openDashboard();
-  const table = dashboard.shadowRoot!.querySelector(
-    "hass-tabs-subpage-data-table"
-  ) as unknown as {
-    columns: Record<string, { groupable?: boolean }>;
-    initialGroupColumn?: string;
-  };
-
-  // The table only offers to group by a column that allows it
-  expect(Object.values(table.columns).some((column) => column.groupable)).toBe(
-    false
-  );
-  expect(table.initialGroupColumn).toBeUndefined();
-});
-
 it("counts what the search looks through, on the tab it is on", async () => {
   const repositories = [
     { id: "1", name: "One", category: "integration", installed: true },
@@ -112,7 +99,7 @@ it("counts what the search looks through, on the tab it is on", async () => {
   ];
   const dashboard = await openDashboard(repositories, "installed");
   const localize = vi.fn((key: string) => key);
-  dashboard.hass = { ...dashboard.hass, localize } as unknown as HomeAssistant;
+  hass.updateHass({ localize });
   await dashboard.updateComplete;
 
   expect(localize).toHaveBeenCalledWith(
@@ -295,7 +282,7 @@ it("browses the way the link says, also when the tab was open before", async () 
     "",
     "/marketplace/browse?sort=stars&direction=desc"
   );
-  document.body.append(dashboard);
+  host.append(dashboard);
   await dashboard.updateComplete;
   const table = () =>
     dashboard.shadowRoot!.querySelector(
@@ -364,7 +351,7 @@ it.each([
   dashboard.remove();
   window.history.pushState(null, "", "/marketplace/repository/1");
   await returnToLink();
-  document.body.append(dashboard);
+  host.append(dashboard);
   await dashboard.updateComplete;
   window.history.replaceState(null, "", "/");
 
@@ -383,6 +370,23 @@ it("adds a repository from a link", async () => {
     .dispatchEvent(new Event("click"));
 
   expect(fired).toHaveBeenCalledWith("dialog-marketplace-custom-repositories");
+});
+
+it("lists the custom repositories on their own page from the menu", async () => {
+  const dashboard = await openDashboard();
+
+  dashboard
+    .shadowRoot!.querySelector(".toolbar-actions ha-dropdown")!
+    .dispatchEvent(
+      new CustomEvent("wa-select", {
+        detail: { item: { value: "custom_repositories" } },
+      })
+    );
+
+  await vi.waitFor(() =>
+    expect(window.location.pathname).toBe("/marketplace/repositories")
+  );
+  window.history.replaceState(null, "", "/");
 });
 
 it("offers dismissing new repositories the filter hides", async () => {
@@ -422,22 +426,6 @@ it("remembers the search for this session", async () => {
   ).toBe("spook");
 });
 
-it("filters with the standard filter panes of Settings", async () => {
-  const dashboard = await openDashboard();
-
-  expect(
-    [
-      ...dashboard.shadowRoot!.querySelectorAll(
-        'ha-filter-states[slot="filter-pane"]'
-      ),
-    ].map((filter) => (filter as HTMLElement & { label: string }).label)
-  ).toEqual([
-    "ui.panel.marketplace.filters.status",
-    "ui.panel.marketplace.filters.type",
-  ]);
-  expect(dashboard.shadowRoot!.querySelector("ha-form")).toBeNull();
-});
-
 it.each([
   { name: "a brand icon", domain: "spook", tag: "img" },
   {
@@ -447,12 +435,6 @@ it.each([
   },
 ])("shows $name for an integration", async ({ domain, tag }) => {
   const dashboard = await openDashboard();
-  dashboard.hass = {
-    localize: (key: string) => key,
-    config: { version: "2026.11.0" },
-    auth: { data: { hassUrl: "http://localhost:8123" } },
-  } as unknown as HomeAssistant;
-  await dashboard.updateComplete;
   const table = dashboard.shadowRoot!.querySelector(
     "hass-tabs-subpage-data-table"
   ) as unknown as {

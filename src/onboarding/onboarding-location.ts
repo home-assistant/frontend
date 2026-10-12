@@ -504,27 +504,12 @@ class OnboardingLocation extends LitElement {
           margin: 0;
           padding: 4px 16px 12px 16px;
           color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-          font-family: var(
-            --mdc-typography-caption-font-family,
-            var(--mdc-typography-font-family, var(--ha-font-family-body))
-          );
-          font-size: var(
-            --mdc-typography-caption-font-size,
-            var(--ha-font-size-xs)
-          );
-          font-weight: var(
-            --mdc-typography-caption-font-weight,
-            var(--ha-font-weight-normal)
-          );
-          letter-spacing: var(
-            --mdc-typography-caption-letter-spacing,
-            0.0333333333em
-          );
-          text-decoration: var(
-            --mdc-typography-caption-text-decoration,
-            inherit
-          );
-          text-transform: var(--mdc-typography-caption-text-transform, inherit);
+          font-family: var(--ha-font-family-body);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          letter-spacing: 0.0333333333em;
+          text-decoration: inherit;
+          text-transform: inherit;
         }
         .attribution a {
           color: inherit;

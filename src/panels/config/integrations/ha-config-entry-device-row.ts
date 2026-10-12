@@ -387,8 +387,8 @@ class HaConfigEntryDeviceRow extends LitElement {
         --ha-row-item-padding-inline: 56px 16px;
       }
       ha-icon-button,
-      ha-icon-next,
-      ha-svg-icon {
+      ha-list-item-button > ha-icon-next,
+      ha-list-item-button > ha-svg-icon {
         color: var(--ha-color-fill-neutral-loud-resting);
       }
       :host([is-child]) ha-list-item-button {

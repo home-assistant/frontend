@@ -72,6 +72,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -205,9 +206,7 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-automation-condition-summary
         slot="header"
         .label=${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg, {
-            hideTriggerIds: true,
-          })
+          describeCondition(this.condition, this.hass, this._entityReg)
         )}
         .condition=${this.condition}
         .description=${this.conditionDescriptions[this.condition.condition]}
@@ -230,7 +229,9 @@ export default class HaAutomationConditionRow extends LitElement {
         class="event-chip"
         aria-live="polite"
       >
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
       </ha-automation-row-event-chip>
 
       <ha-automation-row-event-chip
@@ -540,6 +541,19 @@ export default class HaAutomationConditionRow extends LitElement {
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
     }
+    if (
+      changedProperties.has("condition") &&
+      this._warnings &&
+      this._yamlMode &&
+      isConfigObject(this.condition) &&
+      typeof this.condition.condition === "string"
+    ) {
+      this._warnings = getUiSupportWarnings(
+        this.hass.localize,
+        `ha-automation-condition-${this.condition.condition}`,
+        this.condition
+      );
+    }
   }
 
   protected updated(changedProperties: PropertyValues<this>) {
@@ -629,6 +643,7 @@ export default class HaAutomationConditionRow extends LitElement {
     }
 
     const condition = this.condition;
+    const { enabled: _enabled, ...testedCondition } = condition;
     requestAnimationFrame(() => {
       // @ts-ignore is supported in all browsers except firefox
       if (this.scrollIntoViewIfNeeded) {
@@ -642,7 +657,7 @@ export default class HaAutomationConditionRow extends LitElement {
     let validateResult: Record<"conditions", InvalidConfig | ValidConfig>;
     try {
       validateResult = await validateConfig(this.hass, {
-        conditions: condition,
+        conditions: testedCondition,
       });
     } catch (err: any) {
       showAlertDialog(this, {
@@ -672,7 +687,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
     let result: { result: boolean };
     try {
-      result = await testCondition(this.hass, condition);
+      result = await testCondition(this.hass, testedCondition);
     } catch (err: any) {
       if (this.condition !== condition) {
         return;
@@ -797,7 +812,13 @@ export default class HaAutomationConditionRow extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.cut_to_clipboard"
       ),
-      duration: 2000,
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
     });
   };
 
@@ -860,7 +881,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
@@ -906,8 +927,10 @@ export default class HaAutomationConditionRow extends LitElement {
         this._renameCondition();
       },
       editNote: this._editNoteCondition,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,

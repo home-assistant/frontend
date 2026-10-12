@@ -876,7 +876,7 @@ class ErrorLogCard extends LitElement {
 
     ha-assist-chip {
       --ha-assist-chip-container-shape: 10px;
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     @keyframes breathe {

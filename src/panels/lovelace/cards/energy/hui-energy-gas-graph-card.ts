@@ -1,26 +1,40 @@
 import { endOfToday, isToday, startOfToday } from "date-fns";
-import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
+import { preserveUnchangedRecord } from "../../../../common/util/preserve-unchanged-record";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
+import {
+  configContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+  uiContext,
+} from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
-  getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { FrontendLocaleData } from "../../../../data/translation";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGasGraphCardConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import { generateEnergyGasGraphData } from "./energy-gas-graph-data";
@@ -28,16 +42,11 @@ import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
 
 @customElement("hui-energy-gas-graph-card")
-export class HuiEnergyGasGraphCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-graph-card-editor");
     return document.createElement("hui-energy-graph-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyGasGraphCardConfig;
 
@@ -67,16 +76,72 @@ export class HuiEnergyGasGraphCard
 
   @state() private _total?: number;
 
-  private _energyData?: EnergyData;
+  @state() private _gasStatIds?: string[];
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => this._getStatistics(data)),
-    ];
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, string>>({
+    transformer: function (this: HuiEnergyGasGraphCard, states) {
+      const units: Record<string, string> = {};
+      this._gasStatIds?.forEach((statId) => {
+        const unit = states[statId]?.attributes.unit_of_measurement;
+        if (unit !== undefined) {
+          units[statId] = unit;
+        }
+      });
+      return preserveUnchangedRecord(this._gasUnits, units, (a, b) => a === b);
+    },
+    watch: ["_gasStatIds"],
+  })
+  private _gasUnits?: Record<string, string>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  @transform<HomeAssistant["entities"], Record<string, number>>({
+    transformer: function (this: HuiEnergyGasGraphCard, entities) {
+      const precisions: Record<string, number> = {};
+      this._gasStatIds?.forEach((statId) => {
+        const precision = entities[statId]?.display_precision;
+        if (precision !== undefined) {
+          precisions[statId] = precision;
+        }
+      });
+      return preserveUnchangedRecord(
+        this._gasPrecisions,
+        precisions,
+        (a, b) => a === b
+      );
+    },
+    watch: ["_gasStatIds"],
+  })
+  private _gasPrecisions?: Record<string, number>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: HomeAssistantUI;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => this._getStatistics(data),
+    });
   }
 
   public getCardSize(): Promise<number> | number {
@@ -90,53 +155,10 @@ export class HuiEnergyGasGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    if (
-      hasConfigChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    ) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass");
-    if (!oldHass) {
-      return true;
-    }
-
-    if (
-      this._energyData &&
-      energySourcesByType(this._energyData.prefs).gas?.some((source) => {
-        const statId = source.stat_energy_from;
-        return (
-          this.hass.entities[statId]?.display_precision !==
-            oldHass.entities[statId]?.display_precision ||
-          this.hass.states[statId]?.attributes.unit_of_measurement !==
-            oldHass.states[statId]?.attributes.unit_of_measurement
-        );
-      })
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
   private get _displayPrecision(): number | undefined {
-    if (!this._energyData) {
-      return undefined;
-    }
-
-    const gasDisplayPrecisions = energySourcesByType(this._energyData.prefs)
-      .gas?.filter(
-        (source) =>
-          this.hass.states[source.stat_energy_from]?.attributes
-            .unit_of_measurement === this._unit
-      )
-      .map(
-        (source) =>
-          this.hass.entities[source.stat_energy_from]?.display_precision
-      )
+    const gasDisplayPrecisions = this._gasStatIds
+      ?.filter((statId) => this._gasUnits?.[statId] === this._unit)
+      .map((statId) => this._gasPrecisions?.[statId])
       .filter((precision): precision is number => precision !== undefined);
 
     return gasDisplayPrecisions?.length
@@ -156,7 +178,7 @@ export class HuiEnergyGasGraphCard
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -173,7 +195,7 @@ export class HuiEnergyGasGraphCard
                       >
                         ${formatNumber(
                           this._total,
-                          this.hass.locale,
+                          this._i18n.locale,
                           this._gasFormatOptions
                         )}
                         ${this._unit}
@@ -189,13 +211,12 @@ export class HuiEnergyGasGraphCard
           })}"
         >
           <ha-chart-base
-            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale,
-              this.hass.config,
+              this._i18n.locale,
+              this._hassConfig,
               this._unit,
               this._compareStart,
               this._compareEnd,
@@ -208,10 +229,10 @@ export class HuiEnergyGasGraphCard
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
-                      ? this.hass.localize(
+                      ? this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data"
                         )
-                      : this.hass.localize(
+                      : this._i18n.localize(
                           "ui.panel.lovelace.cards.energy.no_data_period"
                         )
                   }
@@ -224,10 +245,10 @@ export class HuiEnergyGasGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    this.hass.localize(
+    this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
       {
-        num: formatNumber(total, this.hass.locale, this._gasFormatOptions),
+        num: formatNumber(total, this._i18n.locale, this._gasFormatOptions),
         unit: this._unit,
       }
     );
@@ -258,10 +279,14 @@ export class HuiEnergyGasGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    this._energyData = energyData;
+    this._gasStatIds = energySourcesByType(energyData.prefs).gas?.map(
+      (source) => source.stat_energy_from
+    );
 
     const result = generateEnergyGasGraphData({
-      hass: this.hass,
+      states: this._states,
+      formatEntityName: this._formatters.formatEntityName,
+      darkMode: this._ui.themes.darkMode,
       energyData,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),

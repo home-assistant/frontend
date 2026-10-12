@@ -119,9 +119,7 @@ export default class HaAutomationOptionRow extends LitElement {
     if (typeof conditions[0] === "string") {
       str += conditions[0];
     } else {
-      str += describeCondition(conditions[0], this.hass, this._entityReg, {
-        hideTriggerIds: withTriggerReferences,
-      });
+      str += describeCondition(conditions[0], this.hass, this._entityReg);
     }
     // When chips are rendered, the additional-condition count follows them.
     if (conditions.length > 1 && !withTriggerReferences) {

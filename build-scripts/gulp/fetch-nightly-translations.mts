@@ -1,7 +1,6 @@
 // Task to download the latest Lokalise translations from the nightly workflow artifacts
 
 import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
-import { retry } from "@octokit/plugin-retry";
 import { Octokit } from "@octokit/rest";
 import { deleteAsync } from "del";
 import { mkdir, readFile, writeFile } from "fs/promises";
@@ -10,11 +9,20 @@ import jszip from "jszip";
 import path from "path";
 import process from "process";
 import { extract } from "tar";
+import {
+  RetryableError,
+  withRetry,
+} from "../../.github/scripts/github-retry.mts";
+
+type Artifact = Awaited<
+  ReturnType<Octokit["rest"]["actions"]["listArtifactsForRepo"]>
+>["data"]["artifacts"][number];
 
 const MAX_AGE = 24; // hours
 const OWNER = "home-assistant";
 const REPO = "frontend";
-const WORKFLOW_NAME = "nightly.yaml";
+
+const BRANCH = "dev";
 const ARTIFACT_NAME = "translations";
 const CLIENT_ID = "Iv1.3914e28cb27834d1";
 const EXTRACT_DIR = "translations";
@@ -36,11 +44,16 @@ gulp.task("fetch-nightly-translations", async function () {
 
   // Read current translations artifact info if it exists,
   // and stop if they are not old enough
-  let currentArtifact;
+  let currentArtifact: Artifact | null;
   try {
-    currentArtifact = JSON.parse(await readFile(ARTIFACT_FILE, "utf-8"));
+    const artifact: Artifact = JSON.parse(
+      await readFile(ARTIFACT_FILE, "utf-8")
+    );
+
+    currentArtifact = artifact;
+
     const currentAge =
-      (Date.now() - Date.parse(currentArtifact.created_at)) / 3600000;
+      (Date.now() - Date.parse(artifact.created_at ?? "")) / 3600000;
     if (currentAge < MAX_AGE) {
       console.log(
         "Keeping current translations (only %s hours old)",
@@ -63,19 +76,19 @@ gulp.task("fetch-nightly-translations", async function () {
     }
     console.warn(
       "Failed to fetch nightly translations, continuing with English only:",
-      err?.message || err
+      err instanceof Error ? err.message : err
     );
   }
 });
 
-async function fetchTranslations(currentArtifact) {
+async function fetchTranslations(currentArtifact: Artifact | null) {
   // To store file writing promises
   const createExtractDir = mkdir(EXTRACT_DIR, { recursive: true });
-  const writings = [];
+  const writings: Promise<void>[] = [];
 
   // Authenticate to GitHub using GitHub action token if it exists,
   // otherwise look for a saved user token or generate a new one if none
-  let tokenAuth;
+  let tokenAuth: { token: string };
   if (process.env.GITHUB_TOKEN) {
     tokenAuth = { token: process.env.GITHUB_TOKEN };
   } else {
@@ -104,69 +117,86 @@ async function fetchTranslations(currentArtifact) {
       });
       tokenAuth = await auth({ type: "oauth" });
       writings.push(
-        createExtractDir.then(
+        createExtractDir.then(() =>
           writeFile(TOKEN_FILE, JSON.stringify(tokenAuth, null, 2))
         )
       );
     }
   }
 
-  // Authenticate with token and request workflow runs from GitHub
   console.log("Fetching new translations...");
-  const octokit = new (Octokit.plugin(retry))({
+
+  // Authenticate with token and find the newest translations artifact
+  const octokit = new Octokit({
     userAgent: "Fetch Nightly Translations",
     auth: tokenAuth.token,
   });
 
-  const workflowRunsResponse = await octokit.rest.actions.listWorkflowRuns({
-    owner: OWNER,
-    repo: REPO,
-    workflow_id: WORKFLOW_NAME,
-    status: "success",
-    event: "schedule",
-    per_page: 1,
-    exclude_pull_requests: true,
-  });
-  if (workflowRunsResponse.data.total_count === 0) {
-    throw Error("No successful nightly workflow runs found");
-  }
-  const latestNightlyRun = workflowRunsResponse.data.workflow_runs[0];
+  // Only the nightly workflow uploads this artifact. Requiring a run from this
+  // repository's own branch excludes artifacts uploaded by fork pull requests.
+  const latestArtifact = await withRetry(
+    "translations artifact lookup",
+    async () => {
+      const { data } = await octokit.rest.actions.listArtifactsForRepo({
+        owner: OWNER,
+        repo: REPO,
+        name: ARTIFACT_NAME,
+        per_page: 10,
+      });
 
-  // Stop if current is already the latest, otherwise Find the translations artifact
-  if (currentArtifact?.workflow_run.id === latestNightlyRun.id) {
+      const artifact = data.artifacts.find(
+        ({ expired, workflow_run: run }) =>
+          !expired &&
+          run?.head_branch === BRANCH &&
+          run.head_repository_id === run.repository_id
+      );
+
+      if (!artifact) {
+        throw new RetryableError(
+          `No ${ARTIFACT_NAME} artifact found from ${BRANCH}`
+        );
+      }
+
+      return artifact;
+    }
+  );
+
+  console.log(
+    "Latest translations artifact is %s from workflow run %s (%s)",
+    latestArtifact.id,
+    latestArtifact.workflow_run?.id,
+    latestArtifact.created_at
+  );
+
+  // Stop if current is already the latest
+  if (currentArtifact?.id === latestArtifact.id) {
     console.log("Stopping because current translations are still the latest");
     return;
   }
-  const latestArtifact = (
-    await octokit.actions.listWorkflowRunArtifacts({
-      owner: OWNER,
-      repo: REPO,
-      run_id: latestNightlyRun.id,
-    })
-  ).data.artifacts.find((artifact) => artifact.name === ARTIFACT_NAME);
-  if (!latestArtifact) {
-    throw Error("Latest nightly workflow run has no translations artifact");
-  }
 
   // Remove the current translations
-  const deleteCurrent = Promise.all(writings).then(
+  const deleteCurrent = Promise.all(writings).then(() =>
     deleteAsync([`${EXTRACT_DIR}/*`, `!${ARTIFACT_FILE}`, `!${TOKEN_FILE}`])
   );
 
   // Get the download URL and follow the redirect to download (stored as ArrayBuffer)
-  const downloadResponse = await octokit.actions.downloadArtifact({
-    owner: OWNER,
-    repo: REPO,
-    artifact_id: latestArtifact.id,
-    archive_format: "zip",
-  });
-  if (downloadResponse.status !== 200) {
+  const downloadResponse = await withRetry("translations download", () =>
+    octokit.rest.actions.downloadArtifact({
+      owner: OWNER,
+      repo: REPO,
+      artifact_id: latestArtifact.id,
+      archive_format: "zip",
+    })
+  );
+
+  // Octokit types the redirect, but fetch follows it to the archive
+  if ((downloadResponse.status as number) !== 200) {
     throw Error("Failure downloading translations artifact");
   }
 
   // Artifact is a tarball, but GitHub adds it to a zip file
   console.log("Unpacking downloaded translations...");
-  const zip = await jszip.loadAsync(downloadResponse.data);
+  const zip = await jszip.loadAsync(downloadResponse.data as ArrayBuffer);
   await deleteCurrent;
   const extractStream = zip.file(/.*/)[0].nodeStream().pipe(extract());
   await new Promise((resolve, reject) => {

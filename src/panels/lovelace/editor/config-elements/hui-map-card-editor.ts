@@ -108,6 +108,7 @@ const cardConfigStruct = assign(
     default_zoom: optional(number()),
     auto_fit: optional(boolean()),
     fit_zones: optional(boolean()),
+    show_zone_radius: optional(boolean()),
     cluster: optional(boolean()),
     dark_mode: optional(boolean()), // legacy option
     theme_mode: optional(string()),
@@ -202,6 +203,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                 { name: "scale_ruler", selector: { boolean: {} } },
                 { name: "auto_fit", selector: { boolean: {} } },
                 { name: "fit_zones", selector: { boolean: {} } },
+                {
+                  name: "show_zone_radius",
+                  selector: { boolean: {} },
+                },
                 { name: "cluster", default: true, selector: { boolean: {} } },
               ],
             },
@@ -589,6 +594,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       case "scale_ruler":
       case "auto_fit":
       case "fit_zones":
+      case "show_zone_radius":
       case "cluster":
       case "show_all":
         return this.hass!.localize(
@@ -606,6 +612,11 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   ) => {
     switch (schema.name) {
       case "map_style":
+      case "scale_ruler":
+      case "auto_fit":
+      case "fit_zones":
+      case "show_zone_radius":
+      case "cluster":
       case "show_all":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}_helper`

@@ -313,9 +313,7 @@ class HaConfigSubEntryRow extends LitElement {
       margin: 16px;
       margin-top: 0;
     }
-    ha-icon-button,
-    ha-icon-next,
-    ha-svg-icon {
+    ha-icon-button {
       color: var(--ha-color-fill-neutral-loud-resting);
     }
     ha-list-item-base.has-subentries {

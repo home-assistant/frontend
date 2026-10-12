@@ -1078,12 +1078,7 @@ ${rejected
         return;
       }
       const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
-      showScriptEditor({
-        ...config,
-        alias: `${config?.alias} (${this.hass.localize(
-          "ui.panel.config.script.picker.duplicate"
-        )})`,
-      });
+      showScriptEditor({ ...config, alias: undefined });
     } catch (err: any) {
       if (err.status_code === 404) {
         const response = await getScriptStateConfig(
@@ -1396,7 +1391,7 @@ ${rejected
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

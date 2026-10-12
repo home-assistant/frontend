@@ -24,6 +24,7 @@ import {
 import { conditionDescriptionsContext } from "../../../../../data/context";
 import { domainToName } from "../../../../../data/integration";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
+import { checkElementUiSupport } from "../../ui-support";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
 import "../../condition/types/ha-automation-condition-and";
@@ -62,6 +63,19 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
     return { condition: "state" };
+  }
+
+  public static checkUiSupport(
+    localize: LocalizeFunc,
+    action: Condition
+  ): Error | undefined {
+    return typeof action.condition === "string"
+      ? checkElementUiSupport(
+          localize,
+          `ha-automation-condition-${action.condition}`,
+          action
+        )
+      : undefined;
   }
 
   protected render() {

@@ -1,19 +1,28 @@
 import { differenceInDays, subHours } from "date-fns";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { theme2hex } from "../../../common/color/convert-color";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityStates,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-tooltip";
+import { apiContext, formattersContext } from "../../../data/context";
 import {
-  getEnergyDataCollection,
   getSuggestedPeriod,
   validateEnergyCollectionKey,
 } from "../../../data/energy";
+import { EnergyCollectionController } from "../../../data/energy-collection-controller";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -24,9 +33,12 @@ import {
   getDisplayUnit,
   getStatisticMetadata,
 } from "../../../data/recorder";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+} from "../../../types";
 import { findEntities } from "../common/find-entities";
-import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { getSuggestedMax } from "./energy/common/energy-chart-options";
@@ -62,8 +74,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: StatisticsGraphCardConfig;
 
   @state() private _statistics?: Statistics;
@@ -74,11 +84,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _entities: GraphEntityConfig[] = [];
 
-  private _entityIds: string[] = [];
+  @state() private _entityIds: string[] = [];
 
   private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
-
-  private _names: Record<string, string> = {};
 
   private _colors: Record<string, string | undefined> = {};
 
@@ -86,15 +94,44 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _statTypes?: StatisticType[];
 
-  private _energySub?: UnsubscribeFunc;
-
   @state() private _energyStart?: Date;
 
   @state() private _energyEnd?: Date;
 
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _stateObjs?: Record<string, HassEntity>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () =>
+        this._config?.energy_date_selection ? this._config : undefined,
+      onData: (data) => {
+        this._energyStart = data.start;
+        this._energyEnd = data.end;
+        this._getStatistics();
+      },
+    });
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeEnergy();
     if (this._interval) {
       clearInterval(this._interval);
       this._interval = undefined;
@@ -107,34 +144,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return;
     }
     if (this._config?.energy_date_selection) {
-      this._subscribeEnergy(true);
+      this._fetchInitialStatistics();
     } else if (this._interval === undefined) {
       this._setFetchStatisticsTimer(true);
     }
-  }
-
-  private _subscribeEnergy(performFetch = false) {
-    if (!this._energySub) {
-      if (performFetch) {
-        this._fetchInitialStatistics();
-      }
-      this._energySub = getEnergyDataCollection(this.hass!, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._energyStart = data.start;
-        this._energyEnd = data.end;
-        this._getStatistics();
-      });
-    }
-  }
-
-  private _unsubscribeEnergy() {
-    if (this._energySub) {
-      this._energySub();
-      this._energySub = undefined;
-    }
-    this._energyStart = undefined;
-    this._energyEnd = undefined;
   }
 
   public getCardSize(): number {
@@ -179,28 +192,32 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       this._statTypes = config.stat_types;
     }
     this._config = config;
-    this._computeNames();
     this._computeColors();
   }
 
-  private _computeNames() {
-    if (!this.hass || !this._config) {
-      return;
+  private _computeNames = memoizeOne(
+    (
+      entities: GraphEntityConfig[],
+      stateObjs: Record<string, HassEntity> | undefined,
+      formatEntityName: HomeAssistantFormatters["formatEntityName"],
+      metadata: Record<string, StatisticsMetaData> | undefined
+    ) => {
+      const names: Record<string, string> = {};
+      entities.forEach((config) => {
+        const stateObj = stateObjs?.[config.entity];
+        if (stateObj) {
+          names[config.entity] =
+            formatEntityName(stateObj, config.name) || config.entity;
+        } else {
+          names[config.entity] =
+            (typeof config.name === "string" ? config.name : undefined) ||
+            metadata?.[config.entity]?.name ||
+            config.entity;
+        }
+      });
+      return names;
     }
-    this._names = {};
-    this._entities.forEach((config) => {
-      const stateObj = this.hass!.states[config.entity];
-      if (stateObj) {
-        this._names[config.entity] =
-          this.hass!.formatEntityName(stateObj, config.name) || config.entity;
-      } else {
-        this._names[config.entity] =
-          (typeof config.name === "string" ? config.name : undefined) ||
-          this._metadata?.[config.entity]?.name ||
-          config.entity;
-      }
-    });
-  }
+  );
 
   private _computeColors() {
     if (!this._config) {
@@ -215,24 +232,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     });
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
-      hasConfigOrEntitiesChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    );
-  }
-
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (
-      changedProps.has("hass") ||
-      changedProps.has("_config") ||
-      changedProps.has("_metadata")
-    ) {
-      this._computeNames();
-    }
-
     if (!this._config || !changedProps.has("_config")) {
       return;
     }
@@ -240,25 +241,21 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     const oldConfig = changedProps.get("_config") as
       StatisticsGraphCardConfig | undefined;
 
-    if (this.hass) {
-      if (this._config.energy_date_selection && !this._energySub) {
-        this._subscribeEnergy(true);
-        return;
-      }
-      if (!this._config.energy_date_selection && this._energySub) {
-        this._unsubscribeEnergy();
-        this._setFetchStatisticsTimer();
-        return;
-      }
-      if (
-        this._config.energy_date_selection &&
-        this._energySub &&
-        changedProps.has("_config") &&
-        oldConfig?.collection_key !== this._config.collection_key
-      ) {
-        this._unsubscribeEnergy();
-        this._subscribeEnergy();
-      }
+    if (
+      this._config.energy_date_selection &&
+      !oldConfig?.energy_date_selection
+    ) {
+      this._fetchInitialStatistics();
+      return;
+    }
+    if (
+      !this._config.energy_date_selection &&
+      oldConfig?.energy_date_selection
+    ) {
+      this._energyStart = undefined;
+      this._energyEnd = undefined;
+      this._setFetchStatisticsTimer();
+      return;
     }
 
     if (
@@ -320,7 +317,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -349,12 +346,12 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
                   <a
                     id=${this._historyLinkId}
                     href=${configUrl}
-                    aria-label=${this.hass.localize("panel.history")}
+                    aria-label=${this._localize("panel.history")}
                   >
                     <ha-icon-next></ha-icon-next>
                   </a>
                   <ha-tooltip for=${this._historyLinkId} placement="left">
-                    ${this.hass.localize("panel.history")}
+                    ${this._localize("panel.history")}
                   </ha-tooltip>
                 </h1>
               `
@@ -367,14 +364,18 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           })}"
         >
           <statistics-chart
-            .hass=${this.hass}
             .isLoadingData=${!this._statistics}
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
             .period=${this._period}
             .chartType=${this._config.chart_type || "line"}
             .statTypes=${this._statTypes!}
-            .names=${this._names}
+            .names=${this._computeNames(
+              this._entities,
+              this._stateObjs,
+              this._formatEntityName,
+              this._metadata
+            )}
             .unit=${this._unit}
             .minYAxis=${this._config.min_y_axis}
             .maxYAxis=${this._config.max_y_axis}
@@ -407,7 +408,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
     const statsMetadataArray = await getStatisticMetadata(
-      this.hass!,
+      this._api.callWS,
       statisticIds
     );
     const statisticsMetaData = {};
@@ -430,8 +431,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       if (this._config!.unit && this._metadata) {
         const metadata = Object.values(this._metadata).find(
           (metaData) =>
-            getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
-            this._config!.unit
+            getDisplayUnit(
+              this._stateObjs ?? {},
+              metaData?.statistic_id,
+              metaData
+            ) === this._config!.unit
         );
         if (metadata) {
           unitClass = metadata.unit_class;
@@ -442,13 +446,16 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         const metadata = this._metadata[this._entityIds[0]];
         unitClass = metadata?.unit_class;
         this._unit = unitClass
-          ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
-            undefined
+          ? getDisplayUnit(
+              this._stateObjs ?? {},
+              metadata.statistic_id,
+              metadata
+            ) || undefined
           : undefined;
       }
       const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
       const statistics = await fetchStatistics(
-        this.hass!,
+        this._api.callWS,
         startDate,
         endDate,
         this._entityIds,
