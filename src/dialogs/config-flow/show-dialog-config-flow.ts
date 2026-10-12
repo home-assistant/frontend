@@ -145,8 +145,8 @@ export const showConfigFlowDialog = (
       );
     },
 
-    renderShowFormStepFieldLocalizeValue(hass, step, key) {
-      return hass.localize(`component.${step.handler}.selector.${key}`);
+    renderShowFormStepFieldLocalizeValue(hass, step, key, values) {
+      return hass.localize(`component.${step.handler}.selector.${key}`, values);
     },
 
     renderShowFormStepSubmitButton(hass, step) {
