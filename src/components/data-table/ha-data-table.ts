@@ -208,7 +208,7 @@ export class HaDataTable extends LitElement {
 
   // Position and width of the sticky group header, applied directly on scroll
   // to avoid re-rendering the table on every frame
-  private _stickyGroupPosition = { top: 0, offset: 0, width: 0, scrollLeft: 0 };
+  private _stickyGroupPosition = { top: 0, width: 0, scrollLeft: 0 };
 
   private _stickyGroupFrame?: number;
 
@@ -1305,7 +1305,9 @@ export class HaDataTable extends LitElement {
   /**
    * The virtualizer positions rows absolutely, so `position: sticky` can't be
    * used. Instead, an overlay copy of the current group header is shown at the
-   * top of the scroller and pushed up by the next group header.
+   * top of the scroller, and the next group header slides under it. The
+   * overlay doesn't move with the scroll, as browsers scroll off the main
+   * thread and it would lag behind the rows.
    */
   private _updateStickyGroup() {
     const scroller = this._scroller;
@@ -1322,22 +1324,14 @@ export class HaDataTable extends LitElement {
     const scrollerTop = scroller.getBoundingClientRect().top;
     let group: string | undefined;
     let currentTop = -Infinity;
-    let nextTop = Infinity;
-    let nextHeight = 0;
 
     scroller
       .querySelectorAll<HTMLElement & { group: string }>(".group-header-row")
       .forEach((row) => {
-        const rect = row.getBoundingClientRect();
-        const top = rect.top - scrollerTop;
-        if (top <= 0) {
-          if (top > currentTop) {
-            currentTop = top;
-            group = row.group;
-          }
-        } else if (top < nextTop) {
-          nextTop = top;
-          nextHeight = rect.height;
+        const top = row.getBoundingClientRect().top - scrollerTop;
+        if (top <= 0 && top > currentTop) {
+          currentTop = top;
+          group = row.group;
         }
       });
 
@@ -1359,8 +1353,6 @@ export class HaDataTable extends LitElement {
     this._stickyGroup = group;
     this._stickyGroupPosition = {
       top: scroller.offsetTop,
-      // Push the sticky header up when the next group header reaches it
-      offset: nextTop < nextHeight ? nextTop - nextHeight : 0,
       width: scroller.clientWidth,
       scrollLeft: scroller.scrollLeft,
     };
@@ -1372,11 +1364,9 @@ export class HaDataTable extends LitElement {
     if (!header) {
       return;
     }
-    const { top, offset, width, scrollLeft } = this._stickyGroupPosition;
+    const { top, width, scrollLeft } = this._stickyGroupPosition;
     header.style.width = `${width}px`;
-    header.style.transform = `translateY(${top + offset}px)`;
-    // Clip the part pushed above the scroller
-    header.style.clipPath = `inset(${-offset}px 0 0 0)`;
+    header.style.transform = `translateY(${top}px)`;
     // Follow the horizontal scroll of the group header rows it covers
     if (this._stickyGroupHeaderCell) {
       this._stickyGroupHeaderCell.style.transform = `translateX(${-scrollLeft}px)`;
