@@ -4305,7 +4305,8 @@
                   "adjust": "Adjust",
                   "outliers": "Outliers",
                   "sum_adjusted": "Statistic sum adjusted",
-                  "error_sum_adjusted": "Error adjusting sum: {message}"
+                  "error_sum_adjusted": "Error adjusting sum: {message}",
+                  "error_loading_statistics": "Error loading statistics: {message}"
                 }
               },
               "adjust_sum": "Adjust sum",
