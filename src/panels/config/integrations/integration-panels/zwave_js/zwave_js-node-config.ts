@@ -207,7 +207,7 @@ class ZWaveJSNodeConfig extends LitElement {
           </div>
           ${Object.entries(
             groupBy(Object.entries(this._config), ([_, item]) =>
-              item.endpoint.toString()
+              String(item.endpoint ?? 0)
             )
           ).map(
             ([endpoint, configParamEntries]) =>
@@ -687,7 +687,7 @@ class ZWaveJSNodeConfig extends LitElement {
         this.hass,
         this.deviceId,
         target.property,
-        target.endpoint,
+        target.endpoint ?? 0,
         value,
         target.propertyKey ? target.propertyKey : undefined
       );
