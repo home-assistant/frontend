@@ -338,6 +338,19 @@ describe("checkConditionsMet", () => {
       expect(checkConditionsMet(conditions, hass, {})).toBe(true);
     });
 
+    it("drops a cached zone that loses its state", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+
+      // Same registries, but zone.store_1 has no state any more.
+      const { "zone.store_1": _store1, ...states } = hass.states;
+      const removed = { ...hass, states } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, removed, {})).toBe(false);
+    });
+
     it("re-checks in_zones when the person moves", () => {
       const conditions = [
         { condition: "location", target: { label_id: "store" } },
@@ -399,6 +412,12 @@ describe("checkConditionsMet", () => {
               state: "0",
               attributes: { friendly_name: "Work" },
             },
+            // Named like zone.store_1.
+            "zone.store_2": {
+              entity_id: "zone.store_2",
+              state: "0",
+              attributes: { friendly_name: "Store" },
+            },
             // Passive, and named like zone.work.
             "zone.work_campus": {
               entity_id: "zone.work_campus",
@@ -445,6 +464,12 @@ describe("checkConditionsMet", () => {
             {}
           )
         ).toBe(true);
+      });
+
+      it("does not match another zone with the same name", () => {
+        const hass = createActiveZoneHass("Store", ["zone.store_2"]);
+        expect(check(hass, { entity_id: "zone.store_1" })).toBe(false);
+        expect(check(hass, { entity_id: "zone.store_2" })).toBe(true);
       });
 
       it("never matches a passive zone", () => {

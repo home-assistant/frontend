@@ -156,14 +156,19 @@ export class HaCardConditionLocation extends LitElement {
     return { condition: "location", target: {} };
   }
 
-  protected static validateUIConfig(condition: LocationCondition) {
+  protected static validateUIConfig(
+    condition: LocationCondition,
+    hass: HomeAssistant
+  ) {
     assert(condition, locationConditionStruct);
     // Converting would drop the target, so leave this invalid mix to YAML.
     if (
       condition.locations !== undefined &&
       (condition.target !== undefined || condition.match_mode !== undefined)
     ) {
-      throw new Error("locations can't be combined with target or match_mode");
+      throw new Error(
+        hass.localize("ui.errors.config.location_locations_combined")
+      );
     }
   }
 

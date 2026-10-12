@@ -42,6 +42,7 @@ const HASS = {
       attributes: { friendly_name: "Store 1" },
     },
   },
+  localize: (key: string) => key,
   // Registered, but without a state (for example while zones reload).
   entities: {
     "zone.reloading": { entity_id: "zone.reloading" },
@@ -87,7 +88,7 @@ const formChange = (value: Partial<LocationCondition>) => ({
 });
 
 const validate = (condition: unknown) =>
-  (HaCardConditionLocation as any).validateUIConfig(condition);
+  (HaCardConditionLocation as any).validateUIConfig(condition, HASS);
 
 describe("ha-card-condition-location", () => {
   describe("value changes", () => {
@@ -442,16 +443,20 @@ describe("ha-card-condition-location", () => {
 
     it.each([
       ["an unknown match mode", { target: {}, match_mode: "nearest" }],
-      ["locations with a target", { locations: ["home"], target: {} }],
-      [
-        "locations with a match mode",
-        { locations: ["home"], match_mode: "active_zone" },
-      ],
       ["a target that is not an object", { target: "zone.home" }],
       ["an unknown target key", { target: { zone_id: "zone.home" } }],
       ["a non-boolean away", { target: {}, away: "yes" }],
     ])("rejects %s", (_name, condition) => {
       expect(() => validate({ condition: "location", ...condition })).toThrow();
+    });
+
+    it.each([
+      ["a target", { locations: ["home"], target: {} }],
+      ["a match mode", { locations: ["home"], match_mode: "active_zone" }],
+    ])("rejects locations with %s", (_name, condition) => {
+      expect(() => validate({ condition: "location", ...condition })).toThrow(
+        "ui.errors.config.location_locations_combined"
+      );
     });
   });
 });

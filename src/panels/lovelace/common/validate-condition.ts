@@ -313,16 +313,19 @@ function checkLocationCondition(
   if (!isValidTarget(condition.target)) {
     return false;
   }
-  if (condition.match_mode === "active_zone") {
-    return resolveLocationZones(hass, condition.target).some(
-      (zoneId) => activeZoneState(hass, zoneId) === stateObj.state
-    );
-  }
   const inZones = stateObj.attributes.in_zones;
   if (!Array.isArray(inZones) || inZones.length === 0) {
     return false;
   }
   const zones = resolveLocationZones(hass, condition.target);
+  if (condition.match_mode === "active_zone") {
+    // Zone names aren't unique, so find the zone the person is in that set
+    // their state, rather than comparing the selected zones' names.
+    const activeZone = inZones.find(
+      (zoneId) => activeZoneState(hass, zoneId) === stateObj.state
+    );
+    return activeZone !== undefined && zones.includes(activeZone);
+  }
   return inZones.some((zone) => zones.includes(zone));
 }
 
@@ -392,7 +395,9 @@ export function resolveLocationZones(
     cached.entities === hass.entities &&
     cached.devices === hass.devices &&
     cached.areas === hass.areas &&
-    (cached.states === undefined || cached.states === hass.states)
+    (cached.states === undefined || cached.states === hass.states) &&
+    // Resolving leaves out zones without a state, so drop one that lost it.
+    cached.zones.every((zoneId) => zoneId in hass.states)
   ) {
     return cached.zones;
   }
