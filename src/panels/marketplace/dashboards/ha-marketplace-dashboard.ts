@@ -263,7 +263,10 @@ export class HaMarketplaceDashboard extends LitElement {
   // keeps the page of a tab, so a link often lands on a page that is open.
   private _applyLink = () => {
     // Leaving the tab gets here too, before the router swaps the page
-    if (!this._showsTableOfUrl()) {
+    if (
+      this.tab === "discover" ||
+      !["/marketplace/browse", "/marketplace/installed"].includes(currentPath())
+    ) {
       return;
     }
 
