@@ -212,6 +212,11 @@ export class HaDataTable extends LitElement {
 
   private _stickyGroupFrame?: number;
 
+  // Resizing doesn't scroll, but changes the width of the sticky group header
+  private _resizeObserver = new ResizeObserver(() =>
+    this._scheduleStickyGroupUpdate()
+  );
+
   private _firstVisibleIndex = 0;
 
   @state() private _collapsedGroups: string[] = [];
@@ -258,6 +263,7 @@ export class HaDataTable extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._resizeObserver.observe(this);
     if (this._filteredData?.length) {
       // Force update of location of rows
       this._filteredData = [...this._filteredData];
@@ -270,6 +276,7 @@ export class HaDataTable extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._resizeObserver.disconnect();
     if (this._stickyGroupFrame !== undefined) {
       cancelAnimationFrame(this._stickyGroupFrame);
       this._stickyGroupFrame = undefined;
