@@ -8903,7 +8903,8 @@
             "add_to_apple_home": "Add to Apple Home",
             "share_with_app": "Share with app",
             "share_failed": "Couldn't share the device. Try again, or close this dialog to get a new code.",
-            "share_expired": "This code has expired. Close this dialog and share the device again to get a new one."
+            "share_expired": "This code has expired.",
+            "new_code": "New code"
           },
           "lock": {
             "manage": "Manage access",

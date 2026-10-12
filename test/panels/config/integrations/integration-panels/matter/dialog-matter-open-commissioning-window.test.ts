@@ -220,6 +220,20 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(internals()["_shareExpired"]).toBe(true);
     });
 
+    it("opens a new window in place once the old one has run out", async () => {
+      await openedWindow();
+      internals()["_windowOpenedAt"] = Date.now() - 300_000;
+      await share();
+      const fresh = { ...window_, setup_manual_code: "11111111111" };
+      openMatterCommissioningWindow.mockResolvedValue(fresh);
+
+      await start();
+
+      expect(openMatterCommissioningWindow).toHaveBeenCalledTimes(2);
+      expect(internals()["_shareExpired"]).toBe(false);
+      expect(commissionParams()).toBe(fresh);
+    });
+
     it("keeps the dialog open when the code is copied during a share", async () => {
       shareMatterDeviceExternal.mockReturnValue(
         new Promise(() => {

@@ -106,6 +106,19 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                             ? "ui.panel.config.matter.open_commissioning_window.share_expired"
                             : "ui.panel.config.matter.open_commissioning_window.share_failed"
                         )}
+                        ${
+                          this._shareExpired
+                            ? html`<ha-button
+                                slot="action"
+                                appearance="plain"
+                                @click=${this._start}
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.matter.open_commissioning_window.new_code"
+                                )}
+                              </ha-button>`
+                            : nothing
+                        }
                       </ha-alert>`
                     : nothing
                 }
@@ -262,6 +275,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     }
     this._status = "started";
     this._commissionParams = undefined;
+    this._shareFailed = false;
+    this._shareExpired = false;
     const deviceId = this.device_id!;
     this._opening.add(deviceId);
     try {
