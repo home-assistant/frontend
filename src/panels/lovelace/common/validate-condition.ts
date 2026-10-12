@@ -384,8 +384,22 @@ interface ResolvedZones {
 // registries, so only redo it when one of them changes.
 const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
 
-/** Zone entity IDs selected directly or through a label, area or floor. */
+/**
+ * Zone entity IDs selected directly or through a label, area or floor, that
+ * currently have a state.
+ */
 export function resolveLocationZones(
+  hass: HomeAssistant,
+  target: HassServiceTarget
+): string[] {
+  // Checked on every call rather than cached, so a zone that loses its state
+  // is dropped and a directly selected zone that appears later is picked up.
+  return resolveTargetZones(hass, target).filter(
+    (zoneId) => zoneId in hass.states
+  );
+}
+
+function resolveTargetZones(
   hass: HomeAssistant,
   target: HassServiceTarget
 ): string[] {
@@ -395,9 +409,7 @@ export function resolveLocationZones(
     cached.entities === hass.entities &&
     cached.devices === hass.devices &&
     cached.areas === hass.areas &&
-    (cached.states === undefined || cached.states === hass.states) &&
-    // Resolving leaves out zones without a state, so drop one that lost it.
-    cached.zones.every((zoneId) => zoneId in hass.states)
+    (cached.states === undefined || cached.states === hass.states)
   ) {
     return cached.zones;
   }

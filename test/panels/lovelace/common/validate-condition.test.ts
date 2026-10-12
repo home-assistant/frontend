@@ -351,6 +351,19 @@ describe("checkConditionsMet", () => {
       expect(checkConditionsMet(conditions, removed, {})).toBe(false);
     });
 
+    it("does not match a directly selected zone without a state", () => {
+      const conditions = [
+        { condition: "location", target: { entity_id: "zone.store_1" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      const { "zone.store_1": _store1, ...states } = hass.states;
+      const removed = { ...hass, states } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, removed, {})).toBe(false);
+
+      // Picked up when the state is back.
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+    });
+
     it("re-checks in_zones when the person moves", () => {
       const conditions = [
         { condition: "location", target: { label_id: "store" } },
