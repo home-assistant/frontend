@@ -161,6 +161,7 @@ export class HaPictureUpload extends LitElement {
 
   private async _cropFile(file: File, mediaId?: string) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
+      this._pickedFile = undefined;
       showAlertDialog(this, {
         text: this._i18n.localize(
           "ui.components.picture-upload.unsupported_format"
@@ -194,6 +195,7 @@ export class HaPictureUpload extends LitElement {
 
   private async _uploadFile(file: File) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
+      this._pickedFile = undefined;
       showAlertDialog(this, {
         text: this._i18n.localize(
           "ui.components.picture-upload.unsupported_format"

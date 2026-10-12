@@ -151,7 +151,8 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
     const params = this.params!;
     canvas.toBlob(
       (blob) => {
-        if (!blob) {
+        // The dialog may have been closed while the blob was being created.
+        if (!blob || !this.isConnected) {
           return;
         }
         const file = new File([blob], params.file.name, {
