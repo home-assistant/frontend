@@ -405,13 +405,12 @@ export class HaEntityNamePicker extends LitElement {
       if (!stateObj) {
         return DEFAULT_NAME_WITHOUT_ENTITY;
       }
-      return computeDefaultEntityNameItems(
-        stateObj,
+      return computeDefaultEntityNameItems(stateObj, {
         entities,
         devices,
         areas,
-        floors
-      );
+        floors,
+      });
     }
   );
 

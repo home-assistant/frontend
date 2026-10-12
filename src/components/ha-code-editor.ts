@@ -33,7 +33,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { computeDeviceName } from "../common/entity/compute_device_name";
-import { computeEntityName } from "../common/entity/compute_entity_name";
+import { computeEntityNameParts } from "../common/entity/compute_entity_name_display";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
@@ -753,10 +753,10 @@ export class HaCodeEditor extends ReactiveElement {
       this._states![key]
     );
 
-    const entityName = computeEntityName(
+    const entityName = computeEntityNameParts(
       this._states![key],
-      this._registries!.entities
-    );
+      this._registries!
+    ).entity;
     const deviceName = context.device
       ? computeDeviceName(context.device)
       : undefined;

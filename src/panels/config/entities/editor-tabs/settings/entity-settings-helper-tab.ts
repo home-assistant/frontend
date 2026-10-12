@@ -5,7 +5,7 @@ import { consume } from "../../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name_display";
 import "../../../../../components/ha-button";
 import {
   dirtyStateContext,

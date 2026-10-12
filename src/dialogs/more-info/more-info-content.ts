@@ -4,8 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
+import {
+  computeEntityNameParts,
+  type EntityNameItem,
+} from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import "../../components/ha-badge";
@@ -137,7 +139,7 @@ class MoreInfoContent extends LitElement {
           if (!stateObj) {
             return null;
           }
-          const entityName = computeEntityName(stateObj, hass.entities);
+          const entityName = computeEntityNameParts(stateObj, hass).entity;
           const { area, device } = getEntityContext(
             stateObj,
             hass.entities,
