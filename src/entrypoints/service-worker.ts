@@ -13,14 +13,17 @@ import {
   NetworkOnly,
   StaleWhileRevalidate,
 } from "workbox-strategies";
+import {
+  createNavigationFallbackPlugin,
+  noFallBackRegEx,
+} from "../util/service-worker-navigation";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
 
-const noFallBackRegEx =
-  /\/(api|static|auth|frontend_latest|frontend_es5|local)\/.*/;
-
+const NAVIGATION_CACHE = "navigation-cache";
 const NAVIGATION_TIMEOUT_SECONDS = 3;
+const NAVIGATION_MAX_ENTRIES = 50;
 
 // Camera / image proxy endpoints that carry credentials in the URL.
 // We pre-validate the credential in the service worker so obviously invalid
@@ -87,29 +90,6 @@ const ignoreTokenPlugin = {
     const url = new URL(request.url);
     url.searchParams.delete("token");
     return url.href;
-  },
-};
-
-// A proxy answers 5xx while core restarts; the cached shell reconnects on its
-// own. Runs on the final response, so it also covers preloaded navigations.
-const serverErrorFallbackPlugin = {
-  handlerWillRespond: async ({
-    request,
-    response,
-  }: {
-    request: Request;
-    response: Response;
-  }) => {
-    if (response.status < 500) {
-      return response;
-    }
-    const options = { cacheName: cacheNames.runtime, ignoreSearch: true };
-    const cached =
-      (await caches.match(request, options)) ??
-      (noFallBackRegEx.test(request.url)
-        ? undefined
-        : await caches.match("/", options));
-    return cached ?? response;
   },
 };
 
@@ -219,15 +199,22 @@ const initRouting = () => {
   // Get manifest and onboarding from network.
   registerRoute(/\/(?:manifest\.json|onboarding\.html)/, new NetworkOnly());
 
-  // Every navigation gets the same index.html, which imports this build's
-  // hashed bundles. A stale cached copy imports deleted files, so the cache
-  // is only the offline fallback.
+  // Core serves the same index.html for "/" and every registered panel path.
+  // It imports this build's hashed bundles, and a stale cached copy imports
+  // deleted files, so the cache is only the offline fallback. Entries are
+  // keyed by path without the query, so logins and view params don't add up.
   registerRoute(
     ({ request }) => request.mode === "navigate",
     new NetworkFirst({
+      cacheName: NAVIGATION_CACHE,
       networkTimeoutSeconds: NAVIGATION_TIMEOUT_SECONDS,
-      matchOptions: { ignoreSearch: true },
-      plugins: [serverErrorFallbackPlugin],
+      plugins: [
+        createNavigationFallbackPlugin(NAVIGATION_CACHE),
+        new ExpirationPlugin({
+          maxEntries: NAVIGATION_MAX_ENTRIES,
+          purgeOnQuotaError: true,
+        }),
+      ],
     })
   );
 
@@ -367,16 +354,22 @@ const catchHandler: RouteHandler = async (options) => {
   // eslint-disable-next-line no-console
   console.log("Using fallback for:", url);
 
-  return (await caches.match("/", { ignoreSearch: true })) || Response.error();
+  return (
+    (await caches.match("/", { cacheName: NAVIGATION_CACHE })) ||
+    Response.error()
+  );
 };
 
 self.addEventListener("install", (event) => {
   // Cached indexes import the previous build's bundles.
   event.waitUntil(
     (async () => {
-      await caches.delete(cacheNames.runtime);
+      await Promise.all([
+        caches.delete(cacheNames.runtime),
+        caches.delete(NAVIGATION_CACHE),
+      ]);
       try {
-        const cache = await caches.open(cacheNames.runtime);
+        const cache = await caches.open(NAVIGATION_CACHE);
         await cache.add("/");
       } catch (_err) {
         // Offline or restarting; the first navigation fills it.
