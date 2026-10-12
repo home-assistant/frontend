@@ -1,5 +1,5 @@
 import { describe, test } from "vitest";
-import { generateEnergyGasGraphData } from "../../src/panels/lovelace/cards/energy/energy-gas-graph-data";
+import { generateEnergyGasHeatGraphData } from "../../src/panels/lovelace/cards/energy/energy-gas-heat-graph-data";
 import type { EnergyPreferences } from "../../src/data/energy";
 import { createMockComputedStyle } from "../fixtures/computed-style";
 import { createMockHass } from "../fixtures/hass";
@@ -47,10 +47,10 @@ const large = generateEnergyData(3, {
   prefs: gasPrefs(4),
 });
 
-describe("generateEnergyGasGraphData", () => {
+describe("generateEnergyGasHeatGraphData", () => {
   test("small (1 day hourly, 2 sources)", async ({ bench }) => {
     await bench("small (1 day hourly, 2 sources)", () => {
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData: small,
         computedStyles,
@@ -61,7 +61,7 @@ describe("generateEnergyGasGraphData", () => {
 
   test("medium (month hourly + compare, 3 sources)", async ({ bench }) => {
     await bench("medium (month hourly + compare, 3 sources)", () => {
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData: medium,
         computedStyles,
@@ -72,7 +72,7 @@ describe("generateEnergyGasGraphData", () => {
 
   test("large (month 5-minute + compare, 4 sources)", async ({ bench }) => {
     await bench("large (month 5-minute + compare, 4 sources)", () => {
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData: large,
         computedStyles,

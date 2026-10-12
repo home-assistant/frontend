@@ -253,7 +253,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     (p) => hasGasSource(p)
   ),
 
-  // --- District heat ---
+  // --- Heat ---
   entry(
     "heat",
     "energy-heat-graph",

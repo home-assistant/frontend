@@ -82,14 +82,14 @@ describe("getReferencedStatisticIds", () => {
       energy_sources: [
         {
           type: "heat",
-          stat_energy_from: "sensor.district_heat",
-          stat_cost: "external:district_heat_cost",
+          stat_energy_from: "sensor.heat",
+          stat_cost: "external:heat_cost",
           entity_energy_price: null,
           number_energy_price: null,
         },
         {
           type: "heat",
-          stat_energy_from: "sensor.district_heat_second",
+          stat_energy_from: "sensor.heat_second",
           stat_cost: null,
           entity_energy_price: null,
           number_energy_price: null,
@@ -100,16 +100,16 @@ describe("getReferencedStatisticIds", () => {
     };
     const info = {
       cost_sensors: {
-        "sensor.district_heat_second": "sensor.district_heat_second_cost",
+        "sensor.heat_second": "sensor.heat_second_cost",
       },
       solar_forecast_domains: [],
     };
 
     expect(getReferencedStatisticIds(prefs, info)).toEqual([
-      "sensor.district_heat",
-      "external:district_heat_cost",
-      "sensor.district_heat_second",
-      "sensor.district_heat_second_cost",
+      "sensor.heat",
+      "external:heat_cost",
+      "sensor.heat_second",
+      "sensor.heat_second_cost",
     ]);
   });
 });

@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from "vitest";
 import type { BarSeriesOption } from "echarts/charts";
-import { generateEnergyGasGraphData } from "../../../../../src/panels/lovelace/cards/energy/energy-gas-graph-data";
+import { generateEnergyGasHeatGraphData } from "../../../../../src/panels/lovelace/cards/energy/energy-gas-heat-graph-data";
 import type { EnergyPreferences } from "../../../../../src/data/energy";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
@@ -43,13 +43,13 @@ const gasOnlyPrefs = (sources: number): EnergyPreferences => ({
 // Fixed "now" so the end fallback is deterministic.
 const now = new Date("2024-01-31T23:59:59Z");
 
-describe("generateEnergyGasGraphData", () => {
-  it("uses energy units for district heat sources", () => {
+describe("generateEnergyGasHeatGraphData", () => {
+  it("uses energy units for heat sources", () => {
     const prefs: EnergyPreferences = {
       energy_sources: [
         {
           type: "heat",
-          stat_energy_from: "sensor.district_heat_consumption",
+          stat_energy_from: "sensor.heat_consumption",
           stat_cost: null,
           entity_energy_price: null,
           number_energy_price: null,
@@ -63,7 +63,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs,
     });
 
-    const result = generateEnergyGasGraphData({
+    const result = generateEnergyGasHeatGraphData({
       hass: makeHass(),
       energyData,
       computedStyles,
@@ -73,7 +73,7 @@ describe("generateEnergyGasGraphData", () => {
 
     expect(result.unit).toBe("kWh");
     expect(result.chartData).toHaveLength(1);
-    expect(result.chartData[0].id).toBe("sensor.district_heat_consumption");
+    expect(result.chartData[0].id).toBe("sensor.heat_consumption");
   });
 
   it("matches snapshot for a single gas source (no compare)", () => {
@@ -83,7 +83,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs: gasOnlyPrefs(1),
     });
     expect(
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -99,7 +99,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs: gasOnlyPrefs(3),
     });
     expect(
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -116,7 +116,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs: gasOnlyPrefs(2),
     });
     expect(
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -132,7 +132,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs: gasOnlyPrefs(2),
     });
     expect(
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         darkMode: true,
         energyData,
@@ -170,7 +170,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs,
     });
     expect(
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         states: {
           "sensor.gas_from_state": createMockEntityState(
@@ -193,7 +193,7 @@ describe("generateEnergyGasGraphData", () => {
       prefs: generateEnergyPreferences({ grid: true, solar: true }),
     });
     expect(
-      generateEnergyGasGraphData({
+      generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -210,7 +210,7 @@ describe("generateEnergyGasGraphData", () => {
     });
     // Force the missing-end branch.
     (energyData as { end?: Date }).end = undefined;
-    const result = generateEnergyGasGraphData({
+    const result = generateEnergyGasHeatGraphData({
       ...baseParams,
       energyData,
       computedStyles,
@@ -228,7 +228,7 @@ describe("generateEnergyGasGraphData", () => {
     });
     expect(
       digestResult(
-        generateEnergyGasGraphData({
+        generateEnergyGasHeatGraphData({
           ...baseParams,
           energyData,
           computedStyles,
@@ -275,7 +275,7 @@ describe("generateEnergyGasGraphData", () => {
         }),
         [10]
       );
-      const result = generateEnergyGasGraphData({
+      const result = generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -306,7 +306,7 @@ describe("generateEnergyGasGraphData", () => {
         }),
         [2, 14]
       );
-      const result = generateEnergyGasGraphData({
+      const result = generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -329,7 +329,7 @@ describe("generateEnergyGasGraphData", () => {
         }),
         []
       );
-      const result = generateEnergyGasGraphData({
+      const result = generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,
@@ -356,7 +356,7 @@ describe("generateEnergyGasGraphData", () => {
         startCompare: new Date(base.start.getTime() - dayMs),
         endCompare: new Date(base.start.getTime()),
       };
-      const result = generateEnergyGasGraphData({
+      const result = generateEnergyGasHeatGraphData({
         ...baseParams,
         energyData,
         computedStyles,

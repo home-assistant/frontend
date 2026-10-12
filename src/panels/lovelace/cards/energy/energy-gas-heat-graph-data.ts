@@ -18,7 +18,7 @@ import {
   getCompareTransform,
 } from "./common/energy-chart-options";
 
-export interface EnergyGasGraphDataParams {
+export interface EnergyGasHeatGraphDataParams {
   states: HassEntities;
   formatEntityName: HomeAssistant["formatEntityName"];
   darkMode: boolean;
@@ -29,7 +29,7 @@ export interface EnergyGasGraphDataParams {
   now: Date;
 }
 
-export interface EnergyGasGraphData {
+export interface EnergyGasHeatGraphData {
   chartData: BarSeriesOption[];
   start: Date;
   end: Date;
@@ -47,9 +47,9 @@ export interface EnergyGasGraphData {
  * states and names) is injected so the transform is deterministic and
  * benchmarkable.
  */
-export function generateEnergyGasGraphData(
-  params: EnergyGasGraphDataParams
-): EnergyGasGraphData {
+export function generateEnergyGasHeatGraphData(
+  params: EnergyGasHeatGraphDataParams
+): EnergyGasHeatGraphData {
   const { energyData, computedStyles, now } = params;
   const sourceType = params.sourceType || "gas";
 
@@ -168,7 +168,7 @@ function processTotal(
 }
 
 function processDataSet(
-  { states, formatEntityName, darkMode }: EnergyGasGraphDataParams,
+  { states, formatEntityName, darkMode }: EnergyGasHeatGraphDataParams,
   compareTransform: (ts: Date) => Date,
   period: ReturnType<typeof getSuggestedPeriod>,
   statistics: Statistics,

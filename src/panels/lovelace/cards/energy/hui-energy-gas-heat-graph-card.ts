@@ -37,12 +37,12 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyGasGraphCardConfig } from "../types";
 import { getCommonOptions } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
-import { generateEnergyGasGraphData } from "./energy-gas-graph-data";
+import { generateEnergyGasHeatGraphData } from "./energy-gas-heat-graph-data";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
 
 @customElement("hui-energy-gas-graph-card")
-export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
+export class HuiEnergyGasHeatGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-graph-card-editor");
     return document.createElement("hui-energy-graph-card-editor");
@@ -92,7 +92,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
   @state()
   @consume({ context: statesContext, subscribe: true })
   @transform<HassEntities, Record<string, string>>({
-    transformer: function (this: HuiEnergyGasGraphCard, states) {
+    transformer: function (this: HuiEnergyGasHeatGraphCard, states) {
       const units: Record<string, string> = {};
       this._gasStatIds?.forEach((statId) => {
         const unit = states[statId]?.attributes.unit_of_measurement;
@@ -109,7 +109,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
   @state()
   @consume({ context: entitiesContext, subscribe: true })
   @transform<HomeAssistant["entities"], Record<string, number>>({
-    transformer: function (this: HuiEnergyGasGraphCard, entities) {
+    transformer: function (this: HuiEnergyGasHeatGraphCard, entities) {
       const precisions: Record<string, number> = {};
       this._gasStatIds?.forEach((statId) => {
         const precision = entities[statId]?.display_precision;
@@ -286,7 +286,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       (source) => source.stat_energy_from
     );
 
-    const result = generateEnergyGasGraphData({
+    const result = generateEnergyGasHeatGraphData({
       states: this._states,
       formatEntityName: this._formatters.formatEntityName,
       darkMode: this._ui.themes.darkMode,
@@ -342,6 +342,6 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-energy-gas-graph-card": HuiEnergyGasGraphCard;
+    "hui-energy-gas-graph-card": HuiEnergyGasHeatGraphCard;
   }
 }

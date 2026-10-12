@@ -4391,7 +4391,7 @@
           "tabs": {
             "electricity": "Electricity",
             "gas": "Gas",
-            "heat": "District heat",
+            "heat": "Heat",
             "water": "Water"
           },
           "customise": {
@@ -4560,18 +4560,18 @@
             }
           },
           "heat": {
-            "title": "District heat",
-            "sub": "Let Home Assistant monitor your district heat usage.",
+            "title": "Heat consumption",
+            "sub": "Let Home Assistant monitor your heat usage.",
             "learn_more": "More information on how to get started",
-            "edit_source": "Edit district heat source",
-            "delete_source": "Remove district heat source",
-            "add_source": "Add district heat source",
+            "edit_source": "Edit heat source",
+            "delete_source": "Remove heat source",
+            "add_source": "Add heat source",
             "dialog": {
-              "header": "Configure district heat",
-              "paragraph": "District heat consumption is measured as the amount of energy delivered to your home.",
+              "header": "Configure heat",
+              "paragraph": "Heat consumption is measured as the amount of energy used for heating your home.",
               "note_para": "Pick an energy statistic measured in either of {unit}.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
-              "cost_para": "Select how Home Assistant should keep track of the costs of consumed district heat.",
+              "cost_para": "Select how Home Assistant should keep track of the costs of consumed heat.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
@@ -4581,7 +4581,7 @@
               "cost_entity_helper_energy": "energy",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "gas_usage": "District heat consumption"
+              "gas_usage": "Heat consumption"
             }
           },
           "water": {
@@ -9698,7 +9698,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
-              "heat_total": "District heat total",
+              "heat_total": "Heat total",
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
@@ -12341,7 +12341,7 @@
           "overview": "Summary",
           "electricity": "Electricity",
           "gas": "Gas",
-          "heat": "District heat",
+          "heat": "Heat",
           "water": "Water",
           "now": "Now"
         },
@@ -12363,7 +12363,7 @@
           "energy_usage_graph_title": "Electricity",
           "energy_solar_graph_title": "Solar production",
           "energy_gas_graph_title": "Gas consumption",
-          "energy_heat_graph_title": "District heat consumption",
+          "energy_heat_graph_title": "Heat consumption",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Totals",

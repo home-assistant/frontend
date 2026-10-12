@@ -93,7 +93,7 @@ describe("catalog applicability", () => {
     expect(applicableEnergyCardKeys("electricity", gasOnly)).toEqual([]);
   });
 
-  it("lists the district heat graph and table for heat sources", () => {
+  it("lists the heat graph and table for heat sources", () => {
     const heatOnly = makePrefs({ energy_sources: [HEAT] });
     expect(applicableEnergyCardKeys("heat", heatOnly)).toEqual([
       "heat.energy-heat-graph",

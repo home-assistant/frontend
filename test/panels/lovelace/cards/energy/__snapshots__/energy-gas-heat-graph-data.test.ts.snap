@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generateEnergyGasGraphData > handles no gas sources (empty placeholder dataset) 1`] = `
+exports[`generateEnergyGasHeatGraphData > handles no gas sources (empty placeholder dataset) 1`] = `
 {
   "chartData": [],
   "compareEnd": undefined,
@@ -13,7 +13,7 @@ exports[`generateEnergyGasGraphData > handles no gas sources (empty placeholder 
 }
 `;
 
-exports[`generateEnergyGasGraphData > large 5-minute payload digest is stable (compare) 1`] = `
+exports[`generateEnergyGasHeatGraphData > large 5-minute payload digest is stable (compare) 1`] = `
 {
   "keys": [
     "chartData",
@@ -31,7 +31,7 @@ exports[`generateEnergyGasGraphData > large 5-minute payload digest is stable (c
 }
 `;
 
-exports[`generateEnergyGasGraphData > matches snapshot for a single gas source (no compare) 1`] = `
+exports[`generateEnergyGasHeatGraphData > matches snapshot for a single gas source (no compare) 1`] = `
 {
   "chartData": [
     {
@@ -786,7 +786,7 @@ exports[`generateEnergyGasGraphData > matches snapshot for a single gas source (
 }
 `;
 
-exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources (color brightening by idx) 1`] = `
+exports[`generateEnergyGasHeatGraphData > matches snapshot for multiple gas sources (color brightening by idx) 1`] = `
 {
   "chartData": [
     {
@@ -2089,7 +2089,7 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
 }
 `;
 
-exports[`generateEnergyGasGraphData > matches snapshot in dark mode 1`] = `
+exports[`generateEnergyGasHeatGraphData > matches snapshot in dark mode 1`] = `
 {
   "chartData": [
     {
@@ -3133,7 +3133,7 @@ exports[`generateEnergyGasGraphData > matches snapshot in dark mode 1`] = `
 }
 `;
 
-exports[`generateEnergyGasGraphData > matches snapshot with compare data 1`] = `
+exports[`generateEnergyGasHeatGraphData > matches snapshot with compare data 1`] = `
 {
   "chartData": [
     {
@@ -6863,7 +6863,7 @@ exports[`generateEnergyGasGraphData > matches snapshot with compare data 1`] = `
 }
 `;
 
-exports[`generateEnergyGasGraphData > uses the source name when provided, and the entity name from hass.states 1`] = `
+exports[`generateEnergyGasHeatGraphData > uses the source name when provided, and the entity name from hass.states 1`] = `
 {
   "chartData": [
     {

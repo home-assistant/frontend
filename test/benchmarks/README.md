@@ -85,7 +85,7 @@ component (`_processDataSet`, `_processTotal`, `_processStatistics`,
 - `src/panels/lovelace/cards/energy/hui-energy-usage-graph-card.ts`
 - `src/panels/lovelace/cards/energy/hui-energy-solar-graph-card.ts`
 - `src/panels/lovelace/cards/energy/hui-energy-devices-detail-graph-card.ts`
-- `src/panels/lovelace/cards/energy/hui-energy-gas-graph-card.ts`
+- `src/panels/lovelace/cards/energy/hui-energy-gas-heat-graph-card.ts`
 - `src/panels/lovelace/cards/energy/hui-energy-water-graph-card.ts`
 - `src/panels/lovelace/cards/energy/hui-power-sources-graph-card.ts`
 
