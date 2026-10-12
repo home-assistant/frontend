@@ -1,7 +1,11 @@
 import {
   mdiChartBoxOutline,
+  mdiChevronLeft,
+  mdiChevronRight,
   mdiDotsVertical,
   mdiDownload,
+  mdiFilterVariantRemove,
+  mdiHomeClock,
   mdiImagePlus,
   mdiRestart,
   mdiTuneVariant,
@@ -14,10 +18,15 @@ import type {
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { shiftDateRange } from "../../common/datetime/calc_date";
+import { formatDateVeryShort } from "../../common/datetime/format_date";
+import { formatTime } from "../../common/datetime/format_time";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { mainWindow } from "../../common/dom/get_main_window";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -33,18 +42,20 @@ import {
 } from "../../common/url/search-params";
 import { shallowEqual } from "../../common/util/shallow-equal";
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
+import "../../components/chart/ha-chart-zoom-slider";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/date-picker/ha-date-range-nav";
+import "../../components/date-picker/ha-date-range-picker";
+import type { HaDateRangePicker } from "../../components/date-picker/ha-date-range-picker";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
 import "../../components/ha-filter-pane";
-import type { HaFilterPane } from "../../components/ha-filter-pane";
 import "../../components/ha-filter-pane-chip";
 import "../../components/ha-icon-button";
+import "../../components/ha-ripple";
 import type { SourceFilters } from "../../components/ha-sources-picker";
 import {
   applySourceFilters,
@@ -99,7 +110,8 @@ class HaPanelHistory extends LitElement {
 
   @state() private _isLoading = false;
 
-  @state() private _chartsZoomed = false;
+  // The zoom window shared by all charts, in percent of the date range.
+  @state() private _zoomRange: [number, number] = [0, 100];
 
   @state() private _filters: SourceFilters = {};
 
@@ -112,8 +124,6 @@ class HaPanelHistory extends LitElement {
 
   @state() private _showSources?: boolean;
 
-  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
-
   @state() private _entitySources?: EntitySources;
 
   @state() private _stateHistory?: HistoryResult;
@@ -124,6 +134,8 @@ class HaPanelHistory extends LitElement {
 
   @state()
   private _showBack?: boolean;
+
+  @query("ha-date-range-picker") private _datePicker?: HaDateRangePicker;
 
   @query("state-history-charts")
   private _stateHistoryCharts?: StateHistoryCharts;
@@ -179,6 +191,80 @@ class HaPanelHistory extends LitElement {
         })
       : this.hass.localize("ui.panel.history.sources");
 
+    const hasCharts = !loading && hasTargets && hasResults;
+    const [zoomStart, zoomEnd] = this._zoomRange;
+    const clearLabel = this.hass.localize(
+      "ui.components.subpage-data-table.clear_filter"
+    );
+    const resetLabel = this.hass.localize(
+      "ui.components.history_charts.zoom_reset"
+    );
+    // The label counts the entities the sources resolve to, which is what the
+    // charts show; the badge counts the filters applied to them.
+    const sources = html`<ha-filter-pane-chip
+        .label=${sourcesLabel}
+        .path=${mdiTuneVariant}
+        .count=${filterCount}
+        .active=${sourceCount > 0}
+        .disabled=${this._isLoading}
+        @click=${this._openSources}
+      ></ha-filter-pane-chip>
+      ${
+        sourceCount
+          ? html`<ha-icon-button
+              .path=${mdiFilterVariantRemove}
+              .label=${clearLabel}
+              title=${clearLabel}
+              .disabled=${this._isLoading}
+              @click=${this._clearSources}
+            ></ha-icon-button>`
+          : nothing
+      }`;
+    const date = this._renderDateRange();
+    const reset = hasCharts
+      ? html`<ha-icon-button
+          .label=${resetLabel}
+          title=${resetLabel}
+          .path=${mdiRestart}
+          .disabled=${zoomStart === 0 && zoomEnd === 100}
+          @click=${this._resetZoom}
+        ></ha-icon-button>`
+      : nothing;
+    const menu = html`<ha-dropdown
+      placement="top-end"
+      @wa-select=${this._handleMenuAction}
+    >
+      <ha-icon-button
+        slot="trigger"
+        .label=${this.hass.localize("ui.common.menu")}
+        .path=${mdiDotsVertical}
+      ></ha-icon-button>
+      <ha-dropdown-item value="download" .disabled=${this._isLoading}>
+        ${this.hass.localize("ui.panel.history.download_data")}
+        <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+      </ha-dropdown-item>
+      <ha-dropdown-item value="add-card" .disabled=${this._isLoading}>
+        ${this.hass.localize("ui.panel.history.add_card")}
+        <ha-svg-icon slot="icon" .path=${mdiImagePlus}></ha-svg-icon>
+      </ha-dropdown-item>
+    </ha-dropdown>`;
+    // The date range with the menu, then the sources, then the slider with
+    // its reset button.
+    const controls = html`<div class="controls-row">${date}${menu}</div>
+      <div class="controls-row">${sources}</div>
+      ${
+        hasCharts
+          ? html`<div class="controls-row">
+              ${reset}
+              <ha-chart-zoom-slider
+                .start=${zoomStart}
+                .end=${zoomEnd}
+                @zoom-slider-changed=${this._zoomSliderChanged}
+              ></ha-chart-zoom-slider>
+            </div>`
+          : nothing
+      }`;
+
     return html`
       <ha-top-app-bar-fixed
         .narrow=${this.narrow}
@@ -187,122 +273,209 @@ class HaPanelHistory extends LitElement {
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
+        <div class="content">
+          <div class="results ha-scrollbar">
+            ${
+              loading
+                ? html`<div class="progress-wrapper">
+                    <ha-spinner></ha-spinner>
+                  </div>`
+                : !hasTargets || !hasResults
+                  ? this._renderEmptyState(hasTargets)
+                  : html`
+                      <state-history-charts
+                        .hass=${this.hass}
+                        .historyData=${this._mungedStateHistory}
+                        .startTime=${this._startDate}
+                        .endTime=${this._endDate}
+                        .narrow=${this.narrow}
+                        sync-charts
+                        inside-labels
+                        @history-charts-zoom=${this._chartsZoomChanged}
+                      >
+                      </state-history-charts>
+                    `
+            }
+          </div>
+          <div class="controls">${controls}</div>
+        </div>
         ${
-          this._chartsZoomed && !loading
-            ? html`<ha-icon-button
-                slot="actionItems"
-                .label=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-                .path=${mdiRestart}
-                @click=${this._resetZoom}
-              ></ha-icon-button>`
+          this._showSources
+            ? html`<ha-filter-pane
+                narrow
+                .label=${sourcesLabel}
+                .path=${mdiTuneVariant}
+                .count=${sourceCount}
+                .resultCount=${hasTargets ? entityIds.length : undefined}
+                .disabled=${this._isLoading}
+                @close-filter-pane=${this._closeSources}
+                @clear-filter=${this._clearSources}
+              >
+                <ha-sources-picker
+                  .hass=${this.hass}
+                  .value=${this._targetPickerValue}
+                  .filters=${this._filters}
+                  .entitySources=${this._entitySources}
+                  .disabled=${this._isLoading}
+                  .description=${this.hass.localize(
+                    "ui.panel.history.no_targets"
+                  )}
+                  @value-changed=${this._targetsChanged}
+                  @source-filters-changed=${this._filtersChanged}
+                ></ha-sources-picker>
+              </ha-filter-pane>`
             : nothing
         }
-        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-
-          <ha-dropdown-item value="download" .disabled=${this._isLoading}>
-            ${this.hass.localize("ui.panel.history.download_data")}
-            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-          </ha-dropdown-item>
-
-          <ha-dropdown-item value="add-card" .disabled=${this._isLoading}>
-            ${this.hass.localize("ui.panel.history.add_card")}
-            <ha-svg-icon slot="icon" .path=${mdiImagePlus}></ha-svg-icon>
-          </ha-dropdown-item>
-        </ha-dropdown>
-
-        <div class="content">
-          <div class="main">
-            ${
-              this._sourcesShown()
-                ? html`<ha-filter-pane
-                    .narrow=${this.narrow}
-                    .label=${sourcesLabel}
-                    .path=${mdiTuneVariant}
-                    .count=${sourceCount}
-                    .resultCount=${hasTargets ? entityIds.length : undefined}
-                    .disabled=${this._isLoading}
-                    @close-filter-pane=${this._closeSources}
-                    @clear-filter=${this._clearSources}
-                  >
-                    <ha-sources-picker
-                      .hass=${this.hass}
-                      .value=${this._targetPickerValue}
-                      .filters=${this._filters}
-                      .entitySources=${this._entitySources}
-                      .disabled=${this._isLoading}
-                      .description=${this.hass.localize(
-                        "ui.panel.history.no_targets"
-                      )}
-                      @value-changed=${this._targetsChanged}
-                      @source-filters-changed=${this._filtersChanged}
-                    ></ha-sources-picker>
-                  </ha-filter-pane>`
-                : nothing
-            }
-            <div class="content-column">
-              <div class="toolbar">
-                ${
-                  this._sourcesShown() && !this.narrow
-                    ? nothing
-                    : html`<ha-filter-pane-chip
-                        .label=${sourcesLabel}
-                        .path=${mdiTuneVariant}
-                        .count=${filterCount}
-                        .active=${sourceCount > 0}
-                        .disabled=${this._isLoading}
-                        @click=${this._toggleSources}
-                      ></ha-filter-pane-chip>`
-                }
-                <ha-date-range-nav
-                  .disabled=${this._isLoading}
-                  .startDate=${this._startDate}
-                  .endDate=${this._endDate}
-                  extended-presets
-                  time-picker
-                  @value-changed=${this._dateRangeChanged}
-                ></ha-date-range-nav>
-              </div>
-              <div class="results ha-scrollbar">
-                ${
-                  loading
-                    ? html`<div class="progress-wrapper">
-                        <ha-spinner></ha-spinner>
-                      </div>`
-                    : !hasTargets || !hasResults
-                      ? this._renderEmptyState(hasTargets)
-                      : html`
-                          <state-history-charts
-                            .hass=${this.hass}
-                            .historyData=${this._mungedStateHistory}
-                            .startTime=${this._startDate}
-                            .endTime=${this._endDate}
-                            .narrow=${this.narrow}
-                            sync-charts
-                            inside-labels
-                            @history-charts-zoomed=${this._chartsZoomedChanged}
-                          >
-                          </state-history-charts>
-                        `
-                }
-              </div>
-            </div>
-          </div>
-        </div>
       </ha-top-app-bar-fixed>
     `;
   }
 
-  private _chartsZoomedChanged(
-    ev: HASSDomEvent<HASSDomEvents["history-charts-zoomed"]>
+  // Laid out like the energy dashboard's period selector: the picker's
+  // calendar button, the range as a title that also opens the picker, and
+  // buttons to jump to now and step back and forth.
+  private _renderDateRange() {
+    const [start, end] = this._getVisibleRange() ?? [
+      this._startDate,
+      this._endDate,
+    ];
+    const { locale, config } = this.hass;
+    const title =
+      start.toDateString() === end.toDateString()
+        ? formatDateVeryShort(start, locale, config)
+        : `${formatDateVeryShort(start, locale, config)}–${formatDateVeryShort(end, locale, config)}`;
+    const rtl = mainWindow.document.dir === "rtl";
+    const nowLabel = this.hass.localize("ui.panel.history.now");
+    return html`<div class="date-range">
+      <ha-date-range-picker
+        minimal
+        backdrop
+        time-picker
+        extended-presets
+        popover-placement="top-start"
+        .disabled=${this._isLoading}
+        .startDate=${this._startDate}
+        .endDate=${this._endDate}
+        @value-changed=${this._dateRangeChanged}
+      ></ha-date-range-picker>
+      <div
+        class="date-range-label"
+        role="button"
+        tabindex="0"
+        @click=${this._openDatePicker}
+        @keydown=${this._handleDateLabelKeydown}
+      >
+        <ha-ripple></ha-ripple>
+        <div class="date-range-title">${title}</div>
+        <div class="date-range-subtitle">
+          ${formatTime(start, locale, config)} –
+          ${formatTime(end, locale, config)}
+        </div>
+        <ha-spinner
+          class=${classMap({ loading: true, "is-loading": this._isLoading })}
+          size="small"
+        ></ha-spinner>
+      </div>
+      ${
+        this.narrow
+          ? html`<ha-icon-button
+              .path=${mdiHomeClock}
+              .label=${nowLabel}
+              .disabled=${this._isLoading}
+              @click=${this._pickNow}
+            ></ha-icon-button>`
+          : html`<ha-button
+              appearance="filled"
+              size="s"
+              .disabled=${this._isLoading}
+              @click=${this._pickNow}
+            >
+              ${nowLabel}
+            </ha-button>`
+      }
+      <ha-icon-button
+        .path=${rtl ? mdiChevronRight : mdiChevronLeft}
+        .label=${this.hass.localize("ui.common.previous")}
+        .disabled=${this._isLoading}
+        @click=${this._pickPrevious}
+      ></ha-icon-button>
+      <ha-icon-button
+        .path=${rtl ? mdiChevronLeft : mdiChevronRight}
+        .label=${this.hass.localize("ui.common.next")}
+        .disabled=${this._isLoading}
+        @click=${this._pickNext}
+      ></ha-icon-button>
+    </div>`;
+  }
+
+  private _openDatePicker() {
+    this._datePicker?.open();
+  }
+
+  private _handleDateLabelKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._openDatePicker();
+    }
+  }
+
+  private _pickPrevious() {
+    this._shiftDateRange(false);
+  }
+
+  private _pickNext() {
+    this._shiftDateRange(true);
+  }
+
+  private _shiftDateRange(forward: boolean) {
+    const { start, end } = shiftDateRange(
+      this._startDate,
+      this._endDate,
+      forward,
+      this.hass.locale,
+      this.hass.config
+    );
+    this._startDate = start;
+    this._endDate = end;
+    this._updatePath();
+  }
+
+  // Keeps the range's length and moves it to end at the next full hour.
+  private _pickNow() {
+    const length = this._endDate.getTime() - this._startDate.getTime();
+    const end = new Date();
+    end.setHours(end.getHours() + 1, 0, 0, 0);
+    this._startDate = new Date(end.getTime() - length);
+    this._endDate = end;
+    this._updatePath();
+  }
+
+  // The time span the zoomed charts show, for the date range to display. The
+  // charts run from the start date to the end date, or to now when the end is
+  // still to come.
+  private _getVisibleRange(): [Date, Date] | undefined {
+    const [start, end] = this._zoomRange;
+    if (start === 0 && end === 100) {
+      return undefined;
+    }
+    const from = this._startDate.getTime();
+    const to = Math.min(this._endDate.getTime(), Date.now());
+    const at = (percent: number) =>
+      new Date(from + ((to - from) * percent) / 100);
+    return [at(start), at(end)];
+  }
+
+  private _chartsZoomChanged(
+    ev: HASSDomEvent<HASSDomEvents["history-charts-zoom"]>
   ) {
-    this._chartsZoomed = ev.detail.zoomed;
+    this._zoomRange = [ev.detail.start, ev.detail.end];
+  }
+
+  private _zoomSliderChanged(
+    ev: HASSDomEvent<HASSDomEvents["zoom-slider-changed"]>
+  ) {
+    const { start, end } = ev.detail;
+    this._zoomRange = [start, end];
+    this._stateHistoryCharts?.zoom(start, end);
   }
 
   private _resetZoom() {
@@ -408,19 +581,7 @@ class HaPanelHistory extends LitElement {
     }
   }
 
-  private _sourcesShown(): boolean {
-    return this._showSources ?? !this.narrow;
-  }
-
-  private _toggleSources() {
-    this._showSources = !this._sourcesShown();
-  }
-
   private _openSources() {
-    if (this._sourcesShown()) {
-      this._filterPane?.highlight();
-      return;
-    }
     this._showSources = true;
   }
 
@@ -499,7 +660,7 @@ class HaPanelHistory extends LitElement {
 
     this._isLoading = true;
     // The charts are rebuilt once loaded, so they start unzoomed.
-    this._chartsZoomed = false;
+    this._zoomRange = [0, 100];
 
     if (this._subscribed) {
       this._unsubscribeHistory();
@@ -789,6 +950,7 @@ class HaPanelHistory extends LitElement {
         }
 
         .content {
+          position: relative;
           display: flex;
           flex-direction: column;
           height: calc(
@@ -801,47 +963,143 @@ class HaPanelHistory extends LitElement {
           overflow: hidden;
         }
 
-        .main {
-          display: flex;
-          flex: 1;
-          min-height: 0;
-        }
-
-        .content-column {
+        /* All the page's controls, floating over the bottom of the results,
+           which leave room for them. Styled like a dashboard view footer. */
+        .controls {
+          position: absolute;
+          inset-inline: var(--ha-space-4);
+          bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom, 0px));
+          max-width: 720px;
+          margin-inline: auto;
           display: flex;
           flex-direction: column;
+          gap: var(--ha-space-1);
+          padding: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-xl);
+          background-color: var(--card-background-color);
+          box-shadow: var(--ha-box-shadow-l);
+        }
+
+        :host([narrow]) .controls {
+          inset-inline: var(--ha-space-2);
+          bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
+        }
+
+        .controls-row {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          min-width: 0;
+        }
+
+        .controls-row > * {
+          flex-shrink: 0;
+        }
+
+        /* The icon buttons across the rows: clear, reset and the menu. */
+        .controls-row ha-icon-button {
+          --ha-icon-button-size: 40px;
+          --mdc-icon-size: 24px;
+          color: var(--secondary-text-color);
+        }
+
+        .controls-row ha-chart-zoom-slider {
+          flex: 1;
+          flex-shrink: 1;
+          min-width: 0;
+        }
+
+        .controls-row ha-chart-zoom-slider {
+          margin-inline: var(--ha-space-1);
+        }
+
+        .controls-row ha-filter-pane-chip {
+          flex: 1;
+          flex-shrink: 1;
+          min-width: 0;
+        }
+
+        /* Matches the energy dashboard's period selector. */
+        .date-range {
+          display: flex;
+          align-items: center;
           flex: 1;
           min-width: 0;
         }
 
-        .toolbar {
+        .date-range-label {
+          position: relative;
+          flex: 1;
+          min-width: 0;
+          min-height: var(--ha-space-10);
+          padding: 2px var(--ha-space-2) 2px 0;
           display: flex;
-          align-items: center;
-          gap: var(--ha-space-4);
-          box-sizing: border-box;
-          height: 56px;
-          flex-shrink: 0;
-          padding: 0 16px;
-          background: var(--primary-background-color);
-          border-bottom: 1px solid var(--divider-color);
-          direction: var(--direction);
-          overflow-x: auto;
-          scrollbar-width: none;
+          flex-direction: column;
+          justify-content: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          cursor: pointer;
+          border-radius: var(--ha-border-radius-lg);
         }
 
-        .toolbar::-webkit-scrollbar {
-          display: none;
+        .date-range-title {
+          font-size: var(--ha-font-size-xl);
+          line-height: var(--ha-line-height-condensed);
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-text-color);
         }
 
-        .toolbar > * {
+        .date-range-subtitle {
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--secondary-text-color);
+        }
+
+        :host([narrow]) .date-range-title {
+          font-size: var(--ha-font-size-m);
+        }
+
+        :host([narrow]) .date-range-subtitle {
+          font-size: var(--ha-font-size-s);
+        }
+
+        .date-range-label .loading {
+          position: absolute;
+          inset-inline-end: var(--ha-space-2);
+          top: 50%;
+          transform: translateY(-50%);
+          opacity: 0;
+          transition: opacity var(--ha-animation-duration-normal) ease-in-out;
+        }
+
+        .date-range-label .loading.is-loading {
+          opacity: 1;
+        }
+
+        .date-range ha-button {
           flex-shrink: 0;
+          margin-inline-start: var(--ha-space-2);
+          --ha-button-theme-color: currentColor;
+        }
+
+        .date-range ha-ripple {
+          border-radius: var(--ha-border-radius-lg);
         }
 
         .results {
           flex: 1;
           min-width: 0;
           overflow: hidden auto;
+          /* Keeps the charts' own z-index (a hovered chart rises above its
+             neighbours) below the controls. */
+          isolation: isolate;
           padding: var(--ha-space-4);
+          /* Centres the charts within the widest page content (a dashboard at
+             its default column count), keeping the scrollbar at the edge. */
+          padding-inline: max(var(--ha-space-4), (100% - 2000px) / 2);
+          /* Room to scroll the last chart out from under the controls. */
+          padding-bottom: 176px;
         }
 
         /* Narrow screens: keep the vertical rhythm but give the charts the

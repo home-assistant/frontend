@@ -47,7 +47,7 @@ declare global {
       end: number;
       chartIndex: number;
     };
-    "history-charts-zoomed": { zoomed: boolean };
+    "history-charts-zoom": { start: number; end: number };
   }
 }
 
@@ -115,8 +115,6 @@ export class StateHistoryCharts extends LitElement {
   @state() private _childYWidths: number[] = [];
 
   @state() private _chartCount = 0;
-
-  private _hasZoomedCharts = false;
 
   @queryAll("state-history-chart-line, state-history-chart-timeline")
   private _chartComponents!: NodeListOf<
@@ -209,6 +207,7 @@ export class StateHistoryCharts extends LitElement {
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
           ?hide-reset-button=${this.syncCharts}
+          ?hide-zoom-slider=${this.syncCharts}
         ></state-history-chart-line>
       </div> `;
     }
@@ -229,6 +228,7 @@ export class StateHistoryCharts extends LitElement {
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
         ?hide-reset-button=${this.syncCharts}
+        ?hide-zoom-slider=${this.syncCharts}
       ></state-history-chart-timeline>
     </div> `;
   };
@@ -327,7 +327,7 @@ export class StateHistoryCharts extends LitElement {
 
     const { start, end, chartIndex } = e.detail;
 
-    this._setHasZoomedCharts(start !== 0 || end !== 100);
+    fireEvent(this, "history-charts-zoom", { start, end });
     this._syncZoomToAllCharts(start, end, chartIndex);
   }
 
@@ -353,18 +353,14 @@ export class StateHistoryCharts extends LitElement {
     });
   }
 
-  // The reset button lives with the page controls, since it resets all the
-  // synced charts together.
-  private _setHasZoomedCharts(zoomed: boolean) {
-    if (this._hasZoomedCharts !== zoomed) {
-      this._hasZoomedCharts = zoomed;
-      fireEvent(this, "history-charts-zoomed", { zoomed });
-    }
+  /** Zooms all synced charts, as the page's shared zoom slider does. */
+  public zoom(start: number, end: number) {
+    this._syncZoomToAllCharts(start, end);
   }
 
   /** Resets the zoom of all synced charts. */
   public resetZoom() {
-    this._setHasZoomedCharts(false);
+    fireEvent(this, "history-charts-zoom", { start: 0, end: 100 });
     this._isSyncing = true;
 
     requestAnimationFrame(() => {
@@ -373,7 +369,7 @@ export class StateHistoryCharts extends LitElement {
           chartComponent.renderRoot?.querySelector("ha-chart-base");
 
         if (chartBase) {
-          chartBase.zoom(0, 100);
+          chartBase.zoom(0, 100, true);
         }
       });
       this._isSyncing = false;

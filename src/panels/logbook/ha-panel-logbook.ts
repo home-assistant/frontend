@@ -644,9 +644,14 @@ export class HaPanelLogbook extends LitElement {
           flex-shrink: 0;
         }
 
+        /* As wide as the widest page content (a dashboard at its default
+           column count), so a large screen keeps it readable. */
         ha-logbook {
           flex: 1;
           min-height: 0;
+          width: 100%;
+          max-width: 2000px;
+          margin-inline: auto;
         }
       `,
     ];

@@ -12261,6 +12261,7 @@
         "download_data_error": "Unable to download data",
         "add_card": "Add current view as card",
         "add_card_error": "Unable to add card",
+        "now": "[%key:ui::panel::lovelace::components::energy_period_selector::now%]",
         "error_no_data": "You need to select some data sources first."
       },
       "marketplace": {

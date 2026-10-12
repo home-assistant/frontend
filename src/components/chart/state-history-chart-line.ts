@@ -96,6 +96,9 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "hide-reset-button", type: Boolean })
   public hideResetButton?: boolean;
 
+  @property({ attribute: "hide-zoom-slider", type: Boolean })
+  public hideZoomSlider = false;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -127,6 +130,7 @@ export class StateHistoryChartLine extends LitElement {
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
+        .hideZoomSlider=${this.hideZoomSlider}
         .clickLabelForMoreInfo=${this.clickForMoreInfo}
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
