@@ -14,11 +14,15 @@ import {
   configContext,
   formattersContext,
   internationalizationContext,
+  registriesContext,
   statesContext,
   uiContext,
 } from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
-import { validateEnergyCollectionKey } from "../../../../data/energy";
+import {
+  computeEnergyStatisticArea,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import { isExternalStatistic } from "../../../../data/recorder";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -29,6 +33,7 @@ import type {
   HomeAssistantConfig,
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
+  HomeAssistantRegistries,
   HomeAssistantUI,
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -106,6 +111,9 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: HomeAssistantRegistries;
 
   @consume({ context: uiContext, subscribe: true })
   private _ui!: HomeAssistantUI;
@@ -237,7 +245,8 @@ export class HuiEnergyDevicesDetailGraphCard
         compareEnd,
         this._formatTotal,
         false,
-        yAxisFractionDigits
+        yAxisFractionDigits,
+        this._getSeriesArea
       );
 
       const selected = legendData
@@ -310,6 +319,9 @@ export class HuiEnergyDevicesDetailGraphCard
   private _getStatIdFromId(id: string): string {
     return getStatIdFromId(id);
   }
+
+  private _getSeriesArea = (seriesId: string): string | undefined =>
+    computeEnergyStatisticArea(this._registries, getStatIdFromId(seriesId));
 
   static styles = css`
     .card-header {

@@ -291,7 +291,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .path=${TRIGGER_ICONS[type]}
               ></ha-svg-icon>`
             : html`<ha-trigger-icon
-                .hass=${this.hass}
                 .trigger=${
                   (this.trigger as Exclude<Trigger, TriggerList>).trigger
                 }

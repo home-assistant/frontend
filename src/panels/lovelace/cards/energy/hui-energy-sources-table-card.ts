@@ -383,6 +383,8 @@ export class HuiEnergySourcesTableCard
 
     let totalGrid = 0;
     let totalGridCost = 0;
+    let gridImportIdx = 0;
+    let gridExportIdx = 0;
     let totalBattery = 0;
 
     let hasGridCost = false;
@@ -774,9 +776,10 @@ export class HuiEnergySourcesTableCard
                     )
                   : ""
               }
-              ${types.grid?.map((source, idx) => {
+              ${types.grid?.map((source) => {
                 const importResult = (() => {
                   if (!source.stat_energy_from) return nothing;
+                  const idx = gridImportIdx++;
 
                   const cost_stat =
                     source.stat_cost ||
@@ -831,6 +834,7 @@ export class HuiEnergySourcesTableCard
 
                 const exportResult = (() => {
                   if (!source.stat_energy_to) return nothing;
+                  const idx = gridExportIdx++;
 
                   const cost_stat =
                     source.stat_compensation ||

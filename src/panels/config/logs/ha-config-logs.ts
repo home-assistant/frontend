@@ -163,7 +163,6 @@ export class HaConfigLogs extends LitElement {
                 <ha-generic-picker
                   id="provider-picker"
                   slot="toolbar-icon"
-                  .hass=${this.hass}
                   .getItems=${this._getLogProviderItems}
                   value=""
                   .rowRenderer=${this._providerRenderer}

@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { BackupConfig } from "../../src/data/backup";
+import type { LocalizeFunc } from "../../src/common/translations/localize";
+import type { BackupAgentErrors, BackupConfig } from "../../src/data/backup";
 import {
   BackupScheduleRecurrence,
   CLOUD_AGENT,
   cloudBackupEnabled,
   cloudBackupHealth,
   isSupportedBackupFile,
+  localizeBackupAgentError,
 } from "../../src/data/backup";
 
 const NOW = "2026-01-01T00:00:00.000Z";
@@ -165,5 +167,61 @@ describe("cloudBackupHealth", () => {
         })
       )
     ).toBe("success");
+  });
+});
+
+describe("localizeBackupAgentError", () => {
+  const AGENT_ID = "onedrive.mock_drive_id";
+
+  const errors: BackupAgentErrors = {
+    agent_errors: { [AGENT_ID]: "Backup abc123 not found" },
+    agent_error_translations: {
+      [AGENT_ID]: {
+        translation_domain: "backup",
+        translation_key: "backup_not_found",
+        translation_placeholders: { backup_id: "abc123" },
+      },
+    },
+  };
+
+  it("returns the translated message and forwards the placeholders", () => {
+    const localize = vi.fn(() => "Sicherung abc123 nicht gefunden");
+
+    expect(
+      localizeBackupAgentError(
+        localize as unknown as LocalizeFunc,
+        errors,
+        AGENT_ID
+      )
+    ).toBe("Sicherung abc123 nicht gefunden");
+    expect(localize).toHaveBeenCalledWith(
+      "component.backup.exceptions.backup_not_found.message",
+      { backup_id: "abc123" }
+    );
+  });
+
+  it("falls back to the plain message when the translation is missing", () => {
+    const localize = vi.fn(() => "");
+
+    expect(
+      localizeBackupAgentError(
+        localize as unknown as LocalizeFunc,
+        errors,
+        AGENT_ID
+      )
+    ).toBe("Backup abc123 not found");
+  });
+
+  it("returns the plain message when the error has no translation", () => {
+    const localize = vi.fn(() => "unused");
+
+    expect(
+      localizeBackupAgentError(
+        localize as unknown as LocalizeFunc,
+        { ...errors, agent_error_translations: {} },
+        AGENT_ID
+      )
+    ).toBe("Backup abc123 not found");
+    expect(localize).not.toHaveBeenCalled();
   });
 });

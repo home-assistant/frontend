@@ -32,7 +32,6 @@ class HaTracePicker extends LitElement {
   protected render() {
     return html` <ha-generic-picker
       name="trace"
-      .hass=${this.hass}
       .label=${this.hass.localize(
         "ui.panel.config.automation.trace.select_trace"
       )}

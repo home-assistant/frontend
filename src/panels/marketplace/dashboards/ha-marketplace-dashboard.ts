@@ -4,8 +4,10 @@ import {
   mdiCheckCircleOutline,
   mdiCompassOutline,
   mdiDotsVertical,
+  mdiDownload,
   mdiLinkPlus,
   mdiOpenInNew,
+  mdiStar,
   mdiStore,
   mdiViewGridOutline,
 } from "@mdi/js";
@@ -23,7 +25,14 @@ import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
 import { mainWindow } from "../../../common/dom/get_main_window";
-import { navigate, updateHistoryState } from "../../../common/navigate";
+import {
+  navigate,
+  replaceCurrentUrl,
+  updateHistoryState,
+} from "../../../common/navigate";
+import { formatNumber } from "../../../common/number/format_number";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import { currentPath } from "../../../common/url/current-path";
 import type {
   DataTableColumnContainer,
   SortingDirection,
@@ -68,6 +77,7 @@ import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import { dismissNewMarketplaceRepositories } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
+  browseQuery,
   browseSettingsFromUrl,
   filterRepositories,
   filtersOfTab,
@@ -92,6 +102,8 @@ const defaultKeyData = {
 
 // From the Marketplace translations, a direct visit does not load those of Settings
 export type MarketplaceTab = "discover" | "browse" | "installed";
+
+const compact = { notation: "compact" } as const;
 
 const marketplaceTabs = (
   localize: LocalizeFunc,
@@ -250,25 +262,69 @@ export class HaMarketplaceDashboard extends LitElement {
   // Links, like See all on Discover, say in the URL how to browse. The router
   // keeps the page of a tab, so a link often lands on a page that is open.
   private _applyLink = () => {
+    // Leaving the tab gets here too, before the router swaps the page
+    if (
+      this.tab === "discover" ||
+      !["/marketplace/browse", "/marketplace/installed"].includes(currentPath())
+    ) {
+      return;
+    }
+
     const search = mainWindow.location.search;
-    if (mainWindow.history.state?.[APPLIED_LINK_STATE] === search) {
-      return;
+
+    const settings =
+      mainWindow.history.state?.[APPLIED_LINK_STATE] === search
+        ? undefined
+        : browseSettingsFromUrl(search);
+
+    if (settings) {
+      this._linksApplied++;
+      // A search left behind would hide part of what the link promised
+      this._activeSearch = settings.search ?? "";
+      this._filters = settings.filters;
+
+      if (settings.sorting) {
+        this._activeSorting = settings.sorting;
+      }
     }
 
-    const settings = browseSettingsFromUrl(search);
-    if (!settings) {
-      return;
-    }
-
-    updateHistoryState({ [APPLIED_LINK_STATE]: search });
-    this._linksApplied++;
-    // A search left behind would hide part of what the link promised
-    this._activeSearch = "";
-    this._filters = settings.filters;
-    if (settings.sorting) {
-      this._activeSorting = settings.sorting;
-    }
+    this._writeUrl();
   };
+
+  private _showsTableOfUrl(): boolean {
+    return (
+      this.tab !== "discover" && currentPath() === `/marketplace/${this.tab}`
+    );
+  }
+
+  // The link says what the table shows, so a My link or a copied one shares it.
+  // It counts as applied, what was picked stays when coming back to it.
+  private _writeUrl() {
+    if (!this._showsTableOfUrl()) {
+      return;
+    }
+
+    const queryString = browseQuery({
+      search: this._activeSearch,
+      sorting: this._activeSorting?.direction
+        ? {
+            column: this._activeSorting.column,
+            direction: this._activeSorting.direction,
+          }
+        : undefined,
+      filters: filtersOfTab(this._filters, this.tab),
+    });
+
+    const search = queryString ? `?${queryString}` : "";
+
+    if (mainWindow.location.search !== search) {
+      replaceCurrentUrl(constructUrlCurrentPath(queryString));
+    }
+
+    if (mainWindow.history.state?.[APPLIED_LINK_STATE] !== search) {
+      updateHistoryState({ [APPLIED_LINK_STATE]: search });
+    }
+  }
 
   protected render(): TemplateResult {
     const tabs = this._tabs(
@@ -522,14 +578,29 @@ export class HaMarketplaceDashboard extends LitElement {
         title: localizeFunc("ui.panel.marketplace.column.downloads"),
         sortable: true,
         hidden: false,
-        template: (repository: RepositoryBase) =>
-          html`${repository.downloads || "-"}`,
+        template: (repository: RepositoryBase) => {
+          if (!repository.downloads) {
+            return narrow ? nothing : "-";
+          }
+
+          return html`${
+            narrow
+              ? html`<ha-svg-icon .path=${mdiDownload}></ha-svg-icon>`
+              : nothing
+          }${formatNumber(repository.downloads, this._i18n.locale, compact)}`;
+        },
       },
       stars: {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.stars"),
         sortable: true,
         hidden: false,
+        template: (repository: RepositoryBase) =>
+          html`${
+            narrow
+              ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>`
+              : nothing
+          }${formatNumber(repository.stars, this._i18n.locale, compact)}`,
       },
       last_updated: {
         ...defaultKeyData,
@@ -539,6 +610,10 @@ export class HaMarketplaceDashboard extends LitElement {
         type: "numeric",
         hidden: false,
         template: (repository: RepositoryBase) => {
+          // A bare relative time has no context on narrow rows, the overview shows it
+          if (narrow) {
+            return nothing;
+          }
           if (!repository.last_updated) {
             return "-";
           }
@@ -762,22 +837,27 @@ export class HaMarketplaceDashboard extends LitElement {
         ev.detail.value
       ),
     };
+    this._writeUrl();
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+    this._writeUrl();
   }
 
   private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+    this._writeUrl();
   }
 
   private _handleSearchFilterChanged(ev: CustomEvent) {
     this._activeSearch = ev.detail.value;
+    this._writeUrl();
   }
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+    this._writeUrl();
   }
 
   private _handleGroupingChanged(
@@ -799,6 +879,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _handleClearFilter() {
     this._filters = {};
+    this._writeUrl();
   }
 
   static get styles(): CSSResultGroup {

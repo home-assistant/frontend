@@ -20,7 +20,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-floor-icon";
@@ -771,14 +771,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
       .map((entityId) => {
         const stateObj = this.states[entityId];
 
-        const [entityName, deviceName] = computeEntityNameList(
-          stateObj,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          this._registries.entities,
-          this._registries.devices,
-          this._registries.areas,
-          this._registries.floors
-        );
+        const { entity: entityName, device: deviceName } =
+          computeEntityNameParts(stateObj, this._registries);
 
         let label = entityName || deviceName || entityId;
 

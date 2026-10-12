@@ -1643,6 +1643,11 @@ export class HaDataTable extends LitElement {
           text-overflow: ellipsis;
           margin-top: 2px;
         }
+        .secondary ha-svg-icon {
+          --mdc-icon-size: 16px;
+          vertical-align: text-bottom;
+          margin-inline-end: 2px;
+        }
         .scroller {
           flex: 1;
           min-height: 0;

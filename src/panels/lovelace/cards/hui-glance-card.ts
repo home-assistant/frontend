@@ -316,7 +316,6 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                     stateObj.state !== UNKNOWN
                       ? html`
                           <hui-timestamp-display
-                            .hass=${this.hass}
                             .ts=${new Date(stateObj.state)}
                             .format=${
                               entityConf.time_format ??

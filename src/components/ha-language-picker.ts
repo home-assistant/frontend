@@ -150,7 +150,6 @@ export class HaLanguagePicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${

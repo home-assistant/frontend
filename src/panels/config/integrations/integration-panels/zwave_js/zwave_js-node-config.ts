@@ -207,7 +207,7 @@ class ZWaveJSNodeConfig extends LitElement {
           </div>
           ${Object.entries(
             groupBy(Object.entries(this._config), ([_, item]) =>
-              item.endpoint.toString()
+              String(item.endpoint ?? 0)
             )
           ).map(
             ([endpoint, configParamEntries]) =>
@@ -390,7 +390,6 @@ class ZWaveJSNodeConfig extends LitElement {
         return html`
           ${labelAndDescription}
           <ha-generic-picker
-            .hass=${this.hass}
             .value=${item.value?.toString()}
             allow-custom-value
             hide-clear-icon
@@ -458,7 +457,6 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-generic-picker
-          .hass=${this.hass}
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}
@@ -687,7 +685,7 @@ class ZWaveJSNodeConfig extends LitElement {
         this.hass,
         this.deviceId,
         target.property,
-        target.endpoint,
+        target.endpoint ?? 0,
         value,
         target.propertyKey ? target.propertyKey : undefined
       );
