@@ -135,7 +135,11 @@ class ThreadNetworkInfoPage extends LitElement {
   private _renderOTBRRows() {
     if (this._otbrLoading) {
       return html`<ha-list-item-base>
-        <span slot="headline">${this.hass.localize("ui.common.loading")}</span>
+        <span slot="headline"
+          >${this.hass.localize(
+            "ui.panel.config.thread.network_info.loading_otbr"
+          )}</span
+        >
         <ha-spinner slot="end" size="small"></ha-spinner>
       </ha-list-item-base>`;
     }

@@ -7958,6 +7958,7 @@
             "dataset_id": "Dataset ID",
             "otbr_url": "OpenThread border router URL",
             "active_dataset_tlvs": "Active dataset TLVs",
+            "loading_otbr": "Loading border router details…",
             "not_found": "Network not found"
           },
           "thread_network_delete_credentials": "Delete Thread network credentials",
