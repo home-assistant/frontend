@@ -507,3 +507,22 @@ describe("dialog-live-log connection", () => {
     );
   });
 });
+
+describe("dialog-live-log search", () => {
+  const search = async (value: string) => {
+    const input = dialog.shadowRoot!.querySelector("ha-input-search")!;
+    input.value = value;
+    input.dispatchEvent(new Event("input"));
+    await vi.advanceTimersByTimeAsync(150);
+  };
+
+  it("keeps the reading position while searching and scrolls down when cleared", async () => {
+    const { scrollContainer } = await openDialogWithFullLog();
+
+    await search("line 1");
+    expect(scrollContainer.scrollTo).not.toHaveBeenCalled();
+
+    await search("");
+    expect(scrollContainer.scrollTo).toHaveBeenCalledTimes(1);
+  });
+});

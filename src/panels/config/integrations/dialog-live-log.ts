@@ -351,7 +351,9 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
       this._noMatches =
         this._shownCount > 0 && !this._ansiToHtml.filterLines(this._search);
     }
-    this._scrollToBottom();
+    if (!this._search) {
+      this._scrollToBottom();
+    }
   }, 150);
 
   private _togglePause() {
