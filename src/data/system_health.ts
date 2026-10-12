@@ -83,6 +83,7 @@ export const subscribeSystemHealthInfo = (
   callback: (info: SystemHealthInfo | undefined) => void
 ) => {
   let data = {};
+  let unsubscribed = false;
 
   const unsubProm = hass.connection.subscribeMessage<SystemHealthEvent>(
     (updateEvent) => {
@@ -92,7 +93,7 @@ export const subscribeSystemHealthInfo = (
         return;
       }
       if (updateEvent.type === "finish") {
-        unsubProm.then((unsub) => unsub());
+        unsubscribeOnce();
         callback(undefined);
         return;
       }
@@ -116,5 +117,16 @@ export const subscribeSystemHealthInfo = (
     }
   );
 
-  return unsubProm;
+  // Callers unsubscribe from the callback, which can run again before the
+  // unsubscribe completes. A second unsubscribe fails in the backend.
+  const unsubscribeOnce = async () => {
+    if (unsubscribed) {
+      return;
+    }
+    unsubscribed = true;
+    const unsub = await unsubProm;
+    await unsub();
+  };
+
+  return unsubProm.then(() => unsubscribeOnce);
 };
