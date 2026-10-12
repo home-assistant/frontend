@@ -148,6 +148,10 @@ const walkLeafTriggers = (
     });
     return changed ? mapped : triggers;
   }
+  // Incomplete YAML can leave null entries in the trigger list
+  if (!triggers || typeof triggers !== "object") {
+    return triggers;
+  }
   if (isTriggerList(triggers)) {
     const newInner = triggers.triggers
       ? (walkLeafTriggers(triggers.triggers, callback) as Trigger | Trigger[])
@@ -387,6 +391,9 @@ export const updateTriggerCondition = (
  * triggers are stripped the same way.
  */
 export const stripGeneratedTriggerIds = (trigger: Trigger): Trigger => {
+  if (!trigger || typeof trigger !== "object") {
+    return trigger;
+  }
   if (isTriggerList(trigger)) {
     if (!trigger.triggers) {
       return trigger;

@@ -355,7 +355,7 @@ export class HuiDialogEditCard
 
   private _cardConfigInSection = memoizeOne(
     (cardConfig: LovelaceCardConfig) => {
-      const { cards, title, ...containerConfig } = this
+      const { cards, badges, sections, title, ...containerConfig } = this
         ._sectionConfig as LovelaceSectionConfig;
 
       return {

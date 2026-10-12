@@ -147,7 +147,7 @@ export class HAFullCalendar extends LitElement {
           ? html`
               ${
                 this.error
-                  ? html`<hui-warning .hass=${this.hass} severity="warning"
+                  ? html`<hui-warning severity="warning"
                       >${this.error}</hui-warning
                     >`
                   : ""

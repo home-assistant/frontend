@@ -22,6 +22,7 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type {
+  Condition,
   ConditionSidebarConfig,
   LegacyCondition,
 } from "../../../../data/automation";
@@ -36,6 +37,7 @@ import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
@@ -72,6 +74,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         this.yamlMode = this.config.yamlMode;
         if (this.yamlMode) {
           this.editor?.yamlEditor?.setValue(this.config.config);
+          this._warnings = this._checkUiSupport(this.config.config);
         }
       }
     }
@@ -361,7 +364,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this.yamlMode) {
       this.yamlMode = true;
     }
@@ -386,10 +389,26 @@ export default class HaAutomationSidebarCondition extends LitElement {
     ev.stopPropagation();
 
     this.config?.save?.(ev.detail.value);
+    this._warnings = this._checkUiSupport(ev.detail.value);
+  }
+
+  private _checkUiSupport(condition: Condition): string[] | undefined {
+    if (
+      !this.config.uiSupported ||
+      !isConfigObject(condition) ||
+      typeof condition.condition !== "string"
+    ) {
+      return undefined;
+    }
+    return getUiSupportWarnings(
+      this.hass.localize,
+      `ha-automation-condition-${condition.condition}`,
+      condition
+    );
   }
 
   private _toggleYamlMode = () => {
-    fireEvent(this, "toggle-yaml-mode");
+    fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
   };
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {

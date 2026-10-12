@@ -176,8 +176,12 @@ export class HaInput extends WaInputMixin(LitElement) {
       return false;
     }
 
+    // Compare against wa-input, not our own value: a value set right before
+    // (like clearing the field and focusing it again) only reaches the native
+    // input on the next render, and must not be overwritten by the old text.
     const nativeValue = native.value;
-    if ((this.value ?? "") === nativeValue) {
+    const currentValue = this._input ? this._input.value : this.value;
+    if ((currentValue ?? "") === nativeValue) {
       return false;
     }
 
@@ -210,6 +214,22 @@ export class HaInput extends WaInputMixin(LitElement) {
       this._syncStartSlotWidth();
       this._observeStartSlot();
     }
+  }
+
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    this._syncAriaInvalid();
+  }
+
+  // wa-input never sets aria-invalid on its native input. Without it, WebKit
+  // falls back to the native validity, so screen readers announce an empty
+  // required field as invalid before anything was typed.
+  private async _syncAriaInvalid(): Promise<void> {
+    await this._input?.updateComplete;
+    this._getNativeInput()?.setAttribute(
+      "aria-invalid",
+      this.invalid || this._invalid ? "true" : "false"
+    );
   }
 
   public override disconnectedCallback(): void {
@@ -423,7 +443,8 @@ export class HaInput extends WaInputMixin(LitElement) {
 
       wa-input.label-raised::part(label),
       :host(:focus-within) wa-input::part(label),
-      :host([type="date"]) wa-input::part(label) {
+      :host([type="date"]) wa-input::part(label),
+      :host([type="color"]) wa-input::part(label) {
         padding-top: var(--ha-space-3);
         font-size: var(--ha-font-size-xs);
       }

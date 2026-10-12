@@ -33,8 +33,10 @@ import { describeAction } from "../../data/script_i18n";
 import type {
   ActionTraceStep,
   AutomationTraceExtended,
+  CallServiceActionTraceStep,
   ChooseActionTraceStep,
   IfActionTraceStep,
+  TraceId,
   TriggerTraceStep,
   WaitActionTraceStep,
 } from "../../data/trace";
@@ -42,6 +44,7 @@ import { getDataFromPath, isTriggerPath } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
+import { childTraceLinkStyles, renderChildTraceLink } from "./trace-child-link";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -318,7 +321,8 @@ class ActionRenderer {
       path,
       describeAction(this.hass, this.entityReg, data, actionType),
       undefined,
-      data.enabled === false
+      data.enabled === false,
+      (value as CallServiceActionTraceStep).child_id
     );
 
     let i = index + 1;
@@ -695,7 +699,8 @@ class ActionRenderer {
     path: string,
     description: string,
     icon = mdiRecordCircleOutline,
-    disabled = false
+    disabled = false,
+    childId?: TraceId
   ) {
     this.entries.push(html`
       <ha-timeline .icon=${icon} data-path=${path} .notEnabled=${disabled}>
@@ -706,6 +711,14 @@ class ActionRenderer {
                   "ui.panel.config.automation.trace.messages.disabled"
                 )}</span
               >`
+            : ""
+        }${
+          childId
+            ? html`<br />${renderChildTraceLink(
+                  this.hass,
+                  this.entityReg,
+                  childId
+                )}`
             : ""
         }
       </ha-timeline>
@@ -952,6 +965,7 @@ export class HaAutomationTracer extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      childTraceLinkStyles,
       css`
         ha-timeline[lastItem].condition {
           --timeline-ball-color: var(--error-color);

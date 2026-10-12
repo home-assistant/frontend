@@ -68,7 +68,7 @@ const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
 
 const TIMESTAMP_CONTENTS = [...TIMESTAMP_STATE_PROPS, "last_triggered"];
 
-const TIMESTAMP_DOMAIN_CONTENTS = {
+const TIMESTAMP_DOMAIN_CONTENTS: Record<string, string[] | undefined> = {
   calendar: ["start_time", "end_time"],
   input_datetime: ["timestamp"],
   sun: [
@@ -106,10 +106,11 @@ export const stateContentHasTimestamp = (
       }
     }
   }
+  const domainContents = TIMESTAMP_DOMAIN_CONTENTS[domain];
   return (
-    TIMESTAMP_DOMAIN_CONTENTS[domain] &&
-    content &&
-    contentArray.some((c) => TIMESTAMP_DOMAIN_CONTENTS[domain].includes(c))
+    !!content &&
+    !!domainContents &&
+    contentArray.some((c) => domainContents.includes(c))
   );
 };
 

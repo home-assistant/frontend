@@ -14,6 +14,7 @@ import {
   listAssistPipelines,
 } from "../../data/assist_pipeline";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { CloudStatus } from "../../data/cloud";
 import { fetchCloudStatus } from "../../data/cloud";
 import type { LanguageScore, LanguageScores } from "../../data/conversation";
 import { getLanguageScores, listAgents } from "../../data/conversation";
@@ -257,7 +258,14 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     if (!isComponentLoaded(this.hass.config, "cloud")) {
       return false;
     }
-    const cloudStatus = await fetchCloudStatus(this.hass);
+    // Fall back to a local pipeline when the cloud status can't be fetched,
+    // instead of leaving the step blank.
+    let cloudStatus: CloudStatus;
+    try {
+      cloudStatus = await fetchCloudStatus(this.hass);
+    } catch (_err: any) {
+      return false;
+    }
     if (!cloudStatus.logged_in || !cloudStatus.active_subscription) {
       return false;
     }

@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import { computeEntityNameParts } from "../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../common/entity/state_color";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -13,11 +13,20 @@ import {
   parseTriggerSource,
 } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
+import { getTraceUrl } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 
 export type LogbookEntryCategory = "entity" | "automation" | "integration";
 
 const TRIGGER_DOMAINS = ["automation", "script"];
+
+// The fixed messages core uses to describe a run: "triggered" (optionally
+// "by" a source) for automations, "started" for scripts.
+const isRunMessage = (domain: string, message: string | undefined) =>
+  message === undefined ||
+  (domain === "script"
+    ? message === "started"
+    : message === "triggered" || message.startsWith("triggered by "));
 
 const stripEntityId = (message: string, entityId?: string) =>
   entityId ? message.replace(entityId, " ") : message;
@@ -60,20 +69,12 @@ export const entityDisplay = (
     return {};
   }
 
-  const [entityName, deviceName, parentDeviceName, areaName] =
-    computeEntityNameList(
-      stateObj,
-      [
-        { type: "entity" },
-        { type: "device" },
-        { type: "parent_device" },
-        { type: "area" },
-      ],
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
-    );
+  const {
+    entity: entityName,
+    device: deviceName,
+    parent_device: parentDeviceName,
+    area: areaName,
+  } = computeEntityNameParts(stateObj, hass);
 
   const primary = entityName || deviceName || entityId;
 
@@ -127,9 +128,7 @@ export const computeTraceLink = (
   contextId?: string
 ): string | undefined => {
   const traceContext = contextId ? traceContexts[contextId] : undefined;
-  return traceContext
-    ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
-    : undefined;
+  return traceContext ? getTraceUrl(traceContext) : undefined;
 };
 
 // Unavailable is flagged with an orange badge by the row, not a color change.
@@ -326,10 +325,13 @@ const computeLogbookValue = (
     };
   }
   // Core sends run rows (carrying the automation/script entity) with a raw
-  // English message; use our own label. Domain-only entries (e.g. logbook.log)
-  // keep their custom message.
+  // English message; use our own label. Other messages, like logbook.log on an
+  // automation or script, keep their custom text.
   const isAutomationRun =
-    item.entity_id && domain && TRIGGER_DOMAINS.includes(domain);
+    item.entity_id &&
+    domain &&
+    TRIGGER_DOMAINS.includes(domain) &&
+    isRunMessage(domain, item.message);
   if (isAutomationRun) {
     return {
       text: hass.localize(

@@ -53,7 +53,8 @@ import type {
   AutomationTrace,
   AutomationTraceExtended,
 } from "../../../data/trace";
-import { loadTrace, loadTraces } from "../../../data/trace";
+import { getTracePath, loadTrace, loadTraces } from "../../../data/trace";
+import { TraceRunController } from "../../../data/trace-run-controller";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -108,8 +109,14 @@ export class HaAutomationTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
-  // Numbers the trace list requests, so only the latest one updates the page.
-  private _traceListRequest = 0;
+  private _runNavigation = new TraceRunController(this, {
+    tracePath: () => getTracePath("automation", this.automationId),
+    shownRunId: () => this._runId,
+    loadRun: (runId) => {
+      this._selected = undefined;
+      this._loadTraces(runId);
+    },
+  });
 
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
@@ -441,6 +448,7 @@ export class HaAutomationTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
+      this._runNavigation.writeRunIdToUrl(this._runId);
     }
 
     if (
@@ -482,18 +490,21 @@ export class HaAutomationTrace extends LitElement {
 
   private _pickOlderTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex + 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex + 1].run_id);
   }
 
   private _pickNewerTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex - 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex - 1].run_id);
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.detail.value;
+    this._pickRun(ev.detail.value);
+  }
+
+  private _pickRun(runId: string) {
+    this._runNavigation.cancelLinkRequest();
+    this._runId = runId;
     this._selected = undefined;
   }
 
@@ -515,17 +526,17 @@ export class HaAutomationTrace extends LitElement {
   );
 
   private _refreshTraces() {
-    this._loadTraces();
+    // Keep the run of a link that is still loading.
+    this._loadTraces(this._runNavigation.requestedRunId);
   }
 
   private async _loadTraces(runId?: string) {
-    const request = ++this._traceListRequest;
+    const request = this._runNavigation.startListRequest(runId);
     const traces = await loadTraces(this.hass, "automation", this.automationId);
-    // A newer request replaced this one, for example after switching to
-    // another automation and back.
-    if (request !== this._traceListRequest) {
+    if (!this._runNavigation.isLatestListRequest(request)) {
       return;
     }
+    this._runNavigation.endListRequest();
     this._traces = traces;
     // Newest will be on top.
     this._traces.reverse();
@@ -554,7 +565,7 @@ export class HaAutomationTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
-      if (request !== this._traceListRequest) {
+      if (!this._runNavigation.isLatestListRequest(request)) {
         return;
       }
     }
@@ -566,6 +577,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTrace() {
+    const request = this._runNavigation.startTraceRequest();
     const runId = this._runId!;
     const trace = await loadTrace(
       this.hass,
@@ -581,8 +593,11 @@ export class HaAutomationTrace extends LitElement {
         )
       : [];
 
-    // Another run was picked while this one was loading.
-    if (runId !== this._runId) {
+    // Another run was picked, or the same run loaded again, meanwhile.
+    if (
+      !this._runNavigation.isLatestTraceRequest(request) ||
+      runId !== this._runId
+    ) {
       return;
     }
     this._logbookEntries = logbookEntries;

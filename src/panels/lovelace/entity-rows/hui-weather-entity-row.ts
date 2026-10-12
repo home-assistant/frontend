@@ -105,8 +105,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -265,6 +265,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
+        }
+
+        .attributes > div {
+          direction: ltr;
         }
 
         .secondary {
