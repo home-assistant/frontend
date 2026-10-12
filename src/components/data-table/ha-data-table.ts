@@ -1423,6 +1423,9 @@ export class HaDataTable extends LitElement {
       (item) => item?.append && item.groupHeader === groupName
     );
     if (index !== -1) {
+      // The header isn't rendered, but element() still returns a proxy for
+      // any index in the items: its scrollIntoView() pins that index in the
+      // virtualizer's layout, which renders it and aligns it to the top
       scroller.element(index)?.scrollIntoView({ block: "start" });
     }
   };
