@@ -265,7 +265,6 @@ class DialogMatterAddDevice extends LitElement {
         @pairing-code-changed=${this._handlePairingCodeChanged}
         @step-selected=${this._handleStepSelected}
         @device-added-changed=${this._handleDeviceAddedChanged}
-        .hass=${this.hass}
       >
         ${dynamicElement(
           `matter-add-device-${this._step.replaceAll("_", "-")}`,

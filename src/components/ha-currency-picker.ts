@@ -229,7 +229,6 @@ export class HaCurrencyPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${
           this.hass?.localize("ui.components.currency-picker.no_currencies") ||

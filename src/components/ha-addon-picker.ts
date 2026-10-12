@@ -87,7 +87,6 @@ class HaAddonPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${label}
         .valueRenderer=${this._valueRenderer}

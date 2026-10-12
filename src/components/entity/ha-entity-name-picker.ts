@@ -205,7 +205,6 @@ export class HaEntityNamePicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .getItems=${this._getFilteredItems}
