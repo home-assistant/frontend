@@ -3,8 +3,8 @@ import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
 
-@customElement("thread-config-router")
-class ThreadConfigRouter extends HassRouterPage {
+@customElement("thread-config-dashboard-router")
+class ThreadConfigDashboardRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -40,6 +40,6 @@ class ThreadConfigRouter extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "thread-config-router": ThreadConfigRouter;
+    "thread-config-dashboard-router": ThreadConfigDashboardRouter;
   }
 }
