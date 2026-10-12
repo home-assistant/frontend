@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import {
@@ -9,13 +10,13 @@ import {
   mdiWrapDisabled,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { consume } from "../../../common/decorators/consume";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-filter-chip";
@@ -31,9 +32,13 @@ import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import {
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { subscribeIntegrationLog } from "../../../data/error_log";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { LiveLogDialogParams } from "./show-dialog-live-log";
 
@@ -59,12 +64,14 @@ interface LogLine {
 }
 
 @customElement("dialog-live-log")
-class DialogLiveLog extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _params?: LiveLogDialogParams;
-
-  @state() private _open = false;
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @state() private _lineCount = 0;
 
@@ -101,56 +108,65 @@ class DialogLiveLog extends LitElement {
 
   private _followFrame?: number;
 
-  public showDialog(params: LiveLogDialogParams) {
-    this._params = params;
-    this._open = true;
+  connectedCallback() {
+    super.connectedCallback();
+    const connection = this._connection.connection;
+    connection.addEventListener("ready", this._handleConnectionReady);
+    connection.addEventListener("disconnected", this._handleDisconnected);
     this._subscribe();
-  }
-
-  public closeDialog() {
-    this._open = false;
-  }
-
-  private _dialogClosed() {
-    this._unsubscribe();
-    this._params = undefined;
-    this._lines = [];
-    this._shownCount = 0;
-    this._lastLevel = undefined;
-    this._lineCount = 0;
-    this._lineLimit = DEFAULT_LOG_LINE_LIMIT;
-    this._unsupported = false;
-    this._live = false;
-    this._newLogsIndicator = false;
-    this._levels = new Set(LOG_LEVELS);
-    this._search = "";
-    this._paused = false;
-    this._wrapLines = true;
-    this._noMatches = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    const connection = this._connection.connection;
+    connection.removeEventListener("ready", this._handleConnectionReady);
+    connection.removeEventListener("disconnected", this._handleDisconnected);
     this._unsubscribe();
   }
 
   private _subscribe() {
-    this._unsub = subscribeIntegrationLog(
-      this.hass,
-      this._params!.domain,
+    const unsub = subscribeIntegrationLog(
+      this._connection.connection,
+      this.params!.domain,
       (lines) => this._addLines(lines)
     );
-    this._unsub.then(
+    this._unsub = unsub;
+    unsub.then(
       () => {
-        this._live = true;
+        if (this._unsub === unsub) {
+          this._live = true;
+        }
       },
       () => {
-        this._unsub = undefined;
-        this._unsupported = true;
+        if (this._unsub === unsub) {
+          this._unsub = undefined;
+          this._unsupported = true;
+        }
       }
     );
   }
+
+  private _handleDisconnected = () => {
+    this._live = false;
+  };
+
+  private _handleConnectionReady = () => {
+    // The subscription died with the connection and the backend sends the
+    // backlog again, so start over instead of appending duplicates
+    if (!this._unsub) {
+      return;
+    }
+    this._unsub = undefined;
+    this._cancelFollowBottom();
+    this._lines = [];
+    this._shownCount = 0;
+    this._lastLevel = undefined;
+    this._lineCount = 0;
+    this._newLogsIndicator = false;
+    this._noMatches = false;
+    this._ansiToHtml?.clear();
+    this._subscribe();
+  };
 
   private _unsubscribe() {
     this._cancelFollowBottom();
@@ -360,29 +376,28 @@ class DialogLiveLog extends LitElement {
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
     fileDownload(
       url,
-      `home-assistant_${this._params!.domain}_${timeString}.log`
+      `home-assistant_${this.params!.domain}_${timeString}.log`
     );
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
     return html`
       <ha-dialog
-        .open=${this._open}
-        header-title=${this.hass.localize(
+        open
+        header-title=${this._i18n.localize(
           "ui.panel.config.integrations.config_entry.live_log.title"
         )}
-        header-subtitle=${this._params.name}
+        header-subtitle=${this.params.name}
         width="large"
         flexcontent
-        @closed=${this._dialogClosed}
       >
         ${
           this._unsupported
             ? html`<ha-alert alert-type="error">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.config.integrations.config_entry.live_log.unsupported"
                 )}
               </ha-alert>`
@@ -390,7 +405,7 @@ class DialogLiveLog extends LitElement {
                   <ha-input-search
                     appearance="outlined"
                     .value=${this._search}
-                    .placeholder=${this.hass.localize(
+                    .placeholder=${this._i18n.localize(
                       "ui.panel.config.logs.search"
                     )}
                     @input=${this._searchChanged}
@@ -402,18 +417,18 @@ class DialogLiveLog extends LitElement {
                     .min=${1}
                     .step=${1}
                     .value=${String(this._lineLimit)}
-                    .validationMessage=${this.hass.localize(
+                    .validationMessage=${this._i18n.localize(
                       "ui.panel.config.integrations.config_entry.live_log.invalid_line_limit"
                     )}
                     @change=${this._lineLimitChanged}
                   >
                     <span slot="label" class="line-limit-label">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.integrations.config_entry.live_log.lines"
                       )}
                     </span>
                     <span slot="start" aria-hidden="true">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.integrations.config_entry.live_log.lines"
                       )}
                     </span>
@@ -424,7 +439,7 @@ class DialogLiveLog extends LitElement {
                         <ha-filter-chip
                           data-level=${level}
                           .selected=${this._levels.has(level)}
-                          .label=${this.hass.localize(
+                          .label=${this._i18n.localize(
                             `ui.panel.config.logs.level.${level}`
                           )}
                           @click=${this._toggleLevel}
@@ -435,14 +450,14 @@ class DialogLiveLog extends LitElement {
                   <div class="toolbar-buttons">
                     <ha-icon-button
                       .path=${this._paused ? mdiPlay : mdiPause}
-                      .label=${this.hass.localize(
+                      .label=${this._i18n.localize(
                         `ui.panel.config.integrations.config_entry.live_log.${this._paused ? "resume" : "pause"}`
                       )}
                       @click=${this._togglePause}
                     ></ha-icon-button>
                     <ha-icon-button
                       .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
-                      .label=${this.hass.localize(
+                      .label=${this._i18n.localize(
                         `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
                       )}
                       @click=${this._toggleLineWrap}
@@ -455,16 +470,16 @@ class DialogLiveLog extends LitElement {
                       this._lineCount
                         ? nothing
                         : html`<div class="waiting">
-                            ${this.hass.localize(
+                            ${this._i18n.localize(
                               "ui.panel.config.integrations.config_entry.live_log.waiting",
-                              { integration: this._params.name }
+                              { integration: this.params.name }
                             )}
                           </div>`
                     }
                     ${
                       this._noMatches
                         ? html`<div class="waiting">
-                            ${this.hass.localize(
+                            ${this._i18n.localize(
                               "ui.panel.config.integrations.config_entry.live_log.no_matches"
                             )}
                           </div>`
@@ -486,7 +501,7 @@ class DialogLiveLog extends LitElement {
                       .path=${mdiArrowCollapseDown}
                       slot="start"
                     ></ha-svg-icon>
-                    ${this.hass.localize("ui.panel.config.logs.scroll_down_button")}
+                    ${this._i18n.localize("ui.panel.config.logs.scroll_down_button")}
                     <ha-svg-icon
                       .path=${mdiArrowCollapseDown}
                       slot="end"
@@ -497,7 +512,7 @@ class DialogLiveLog extends LitElement {
                       ? html`<div class="live-indicator">
                           ${
                             this._paused
-                              ? this.hass.localize(
+                              ? this._i18n.localize(
                                   "ui.panel.config.integrations.config_entry.live_log.paused"
                                 )
                               : html`<ha-svg-icon
@@ -517,10 +532,10 @@ class DialogLiveLog extends LitElement {
             .disabled=${!this._lineCount}
             @click=${this._download}
           >
-            ${this.hass.localize("ui.common.download")}
+            ${this._i18n.localize("ui.common.download")}
           </ha-button>
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            ${this.hass.localize("ui.common.close")}
+            ${this._i18n.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

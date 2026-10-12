@@ -23,6 +23,15 @@ const ANIMATION_FRAME_DURATION = 16;
 
 let dialog: HTMLElementTagNameMap["dialog-live-log"];
 
+const connectionListeners: Record<string, () => void> = {};
+
+const connection = {
+  addEventListener: vi.fn((event: string, listener: () => void) => {
+    connectionListeners[event] = listener;
+  }),
+  removeEventListener: vi.fn(),
+};
+
 beforeEach(() => {
   vi.useFakeTimers();
 });
@@ -38,9 +47,12 @@ afterEach(() => {
 
 const openLogDialog = async () => {
   dialog = document.createElement("dialog-live-log");
-  Object.assign(dialog, { hass: { localize: (key: string) => key } });
+  Object.assign(dialog, {
+    params: { domain: "test", name: "Test" },
+    _i18n: { localize: (key: string) => key },
+    _connection: { connection },
+  });
   document.body.append(dialog);
-  dialog.showDialog({ domain: "test", name: "Test" });
   await dialog.updateComplete;
 
   const logRenderer = dialog.shadowRoot!.querySelector("ha-ansi-to-html")!;
@@ -452,4 +464,46 @@ describe("configurable live log retention", () => {
       expect(subscribeIntegrationLog).toHaveBeenCalledTimes(1);
     }
   );
+});
+
+describe("dialog-live-log connection", () => {
+  it("subscribes again without duplicating the backlog after a reconnect", async () => {
+    const { receiveLogLines, renderedLog } = await openLogDialog();
+    receiveLogLines(["backlog 1", "backlog 2"]);
+    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+
+    connectionListeners.disconnected();
+    await dialog.updateComplete;
+    expect(dialog["_live"]).toBe(false);
+
+    connectionListeners.ready();
+    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+    expect(subscribeIntegrationLog).toHaveBeenCalledTimes(2);
+    expect(dialog["_live"]).toBe(true);
+
+    const receiveAfterReconnect = vi.mocked(subscribeIntegrationLog).mock
+      .calls[1][2];
+    receiveAfterReconnect(["backlog 1", "backlog 2", "new"]);
+    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+    expect(getRenderedLines(renderedLog)).toEqual([
+      "backlog 1",
+      "backlog 2",
+      "new",
+    ]);
+  });
+
+  it("unsubscribes and stops listening to the connection when removed", async () => {
+    await openLogDialog();
+    const unsub = await vi.mocked(subscribeIntegrationLog).mock.results[0]
+      .value;
+
+    dialog.remove();
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(unsub).toHaveBeenCalled();
+    expect(connection.removeEventListener).toHaveBeenCalledWith(
+      "ready",
+      connectionListeners.ready
+    );
+  });
 });
