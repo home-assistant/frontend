@@ -212,9 +212,9 @@ class HaPanelConfig extends HassRouterPage {
           import("./integrations/integration-panels/matter/matter-config-panel"),
       },
       thread: {
-        tag: "thread-config-panel",
+        tag: "thread-config-dashboard-router",
         load: () =>
-          import("./integrations/integration-panels/thread/thread-config-panel"),
+          import("./integrations/integration-panels/thread/thread-config-dashboard-router"),
       },
       bluetooth: {
         tag: "bluetooth-config-dashboard-router",
