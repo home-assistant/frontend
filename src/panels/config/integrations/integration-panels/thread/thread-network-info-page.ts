@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/list/ha-list-base";
 import type { OTBRInfo } from "../../../../../data/otbr";
@@ -35,21 +36,20 @@ class ThreadNetworkInfoPage extends LitElement {
 
   @state() private _otbrInfo?: OTBRInfo;
 
-  protected firstUpdated(changedProperties: PropertyValues<this>) {
+  @state() private _otbrLoading = false;
+
+  protected async firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    this._fetchData();
+    await this._fetchThreadDataSet();
+    this._fetchOTBRInfo();
   }
 
-  private async _fetchData(): Promise<void> {
+  private async _fetchThreadDataSet(): Promise<void> {
     try {
       const { datasets } = await listThreadDataSets(this.hass);
-      const dataset = datasets.find(
+      this._dataset = datasets.find(
         (item) => item.dataset_id === this.datasetId
       );
-      if (dataset) {
-        this._otbrInfo = await this._fetchOTBRInfo(dataset);
-      }
-      this._dataset = dataset;
     } catch (err: unknown) {
       this._error =
         getWsErrorMessage(err) ?? this.hass.localize("ui.common.unknown_error");
@@ -57,20 +57,18 @@ class ThreadNetworkInfoPage extends LitElement {
     this._loaded = true;
   }
 
-  private async _fetchOTBRInfo(
-    dataset: ThreadDataSet
-  ): Promise<OTBRInfo | undefined> {
-    if (!isComponentLoaded(this.hass.config, "otbr")) {
-      return undefined;
+  private async _fetchOTBRInfo(): Promise<void> {
+    if (!this._dataset || !isComponentLoaded(this.hass.config, "otbr")) {
+      return;
     }
 
+    this._otbrLoading = true;
     const otbrInfo = await getOTBRInfo(this.hass).catch(() => undefined);
-    const otbr = findOTBRInfoForDataset(otbrInfo, dataset);
-    if (!otbr?.active_dataset_tlvs?.includes(dataset.extended_pan_id)) {
-      return undefined;
+    const otbr = findOTBRInfoForDataset(otbrInfo, this._dataset);
+    if (otbr?.active_dataset_tlvs?.includes(this._dataset.extended_pan_id)) {
+      this._otbrInfo = otbr;
     }
-
-    return otbr;
+    this._otbrLoading = false;
   }
 
   protected render(): TemplateResult {
@@ -129,24 +127,31 @@ class ThreadNetworkInfoPage extends LitElement {
           this.hass.localize("ui.panel.config.thread.network_info.dataset_id"),
           dataset.dataset_id
         )}
-        ${
-          this._otbrInfo
-            ? html`${this._renderRow(
-                this.hass.localize(
-                  "ui.panel.config.thread.network_info.otbr_url"
-                ),
-                this._otbrInfo.url
-              )}
-              ${this._renderRow(
-                this.hass.localize(
-                  "ui.panel.config.thread.network_info.active_dataset_tlvs"
-                ),
-                this._otbrInfo.active_dataset_tlvs
-              )}`
-            : nothing
-        }
+        ${this._renderOTBRRows()}
       </ha-list-base>
     </ha-card>`;
+  }
+
+  private _renderOTBRRows() {
+    if (this._otbrLoading) {
+      return html`<ha-list-item-base>
+        <span slot="headline">${this.hass.localize("ui.common.loading")}</span>
+        <ha-spinner slot="end" size="small"></ha-spinner>
+      </ha-list-item-base>`;
+    }
+    if (!this._otbrInfo) {
+      return nothing;
+    }
+    return html`${this._renderRow(
+      this.hass.localize("ui.panel.config.thread.network_info.otbr_url"),
+      this._otbrInfo.url
+    )}
+    ${this._renderRow(
+      this.hass.localize(
+        "ui.panel.config.thread.network_info.active_dataset_tlvs"
+      ),
+      this._otbrInfo.active_dataset_tlvs
+    )}`;
   }
 
   private _renderRow(label: string, value: string | number | null) {
