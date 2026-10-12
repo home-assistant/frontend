@@ -200,12 +200,15 @@ export class HaDataTable extends LitElement {
 
   @query(".sticky-group-header") private _stickyGroupHeader?: HTMLElement;
 
+  @query(".sticky-group-header .group-header")
+  private _stickyGroupHeaderCell?: HTMLElement;
+
   // Group pinned to the top of the scroller while its own header is scrolled out of view
   @state() private _stickyGroup?: string;
 
-  // Vertical position and width of the sticky group header, applied directly
-  // on scroll to avoid re-rendering the table on every frame
-  private _stickyGroupPosition = { top: 0, offset: 0, width: 0 };
+  // Position and width of the sticky group header, applied directly on scroll
+  // to avoid re-rendering the table on every frame
+  private _stickyGroupPosition = { top: 0, offset: 0, width: 0, scrollLeft: 0 };
 
   private _stickyGroupFrame?: number;
 
@@ -685,7 +688,9 @@ export class HaDataTable extends LitElement {
               : html`
                   <lit-virtualizer
                     scroller
-                    class="mdc-data-table__content scroller ha-scrollbar"
+                    class="mdc-data-table__content scroller ha-scrollbar ${classMap(
+                      { grouped: Boolean(this.groupColumn) && !this.autoHeight }
+                    )}"
                     tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
                     @scroll=${this._saveScrollPos}
                     @visibilityChanged=${this._handleVisibilityChanged}
@@ -1357,6 +1362,7 @@ export class HaDataTable extends LitElement {
       // Push the sticky header up when the next group header reaches it
       offset: nextTop < nextHeight ? nextTop - nextHeight : 0,
       width: scroller.clientWidth,
+      scrollLeft: scroller.scrollLeft,
     };
     this._positionStickyGroupHeader();
   }
@@ -1366,11 +1372,15 @@ export class HaDataTable extends LitElement {
     if (!header) {
       return;
     }
-    const { top, offset, width } = this._stickyGroupPosition;
+    const { top, offset, width, scrollLeft } = this._stickyGroupPosition;
     header.style.width = `${width}px`;
     header.style.transform = `translateY(${top + offset}px)`;
     // Clip the part pushed above the scroller
     header.style.clipPath = `inset(${-offset}px 0 0 0)`;
+    // Follow the horizontal scroll of the group header rows it covers
+    if (this._stickyGroupHeaderCell) {
+      this._stickyGroupHeaderCell.style.transform = `translateX(${-scrollLeft}px)`;
+    }
   }
 
   @eventOptions({ passive: true })
@@ -1388,12 +1398,28 @@ export class HaDataTable extends LitElement {
     const groupName = ev.currentTarget.group;
     this._collapseGroup(ev);
     await this.updateComplete;
-    // Keep the toggled group in view, its rows may have been above the viewport
-    const index = this._scroller?.items.findIndex(
+    const scroller = this._scroller;
+    if (!scroller) {
+      return;
+    }
+    // Keep the toggled group in view, its rows may have been above the viewport.
+    // Scroll a rendered header to the very top ourselves, as scrollIntoView
+    // would leave room for the sticky header (scroll-padding-top).
+    const row = Array.from(
+      scroller.querySelectorAll<HTMLElement & { group: string }>(
+        ".group-header-row"
+      )
+    ).find((headerRow) => headerRow.group === groupName);
+    if (row) {
+      scroller.scrollTop +=
+        row.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+      return;
+    }
+    const index = scroller.items.findIndex(
       (item) => item?.append && item.groupHeader === groupName
     );
-    if (index !== undefined && index !== -1) {
-      this._scroller!.element(index)?.scrollIntoView({ block: "start" });
+    if (index !== -1) {
+      scroller.element(index)?.scrollIntoView({ block: "start" });
     }
   };
 
@@ -1766,6 +1792,11 @@ export class HaDataTable extends LitElement {
         .sticky-group-header .group-header {
           /* Don't paint over the bottom divider */
           background-color: transparent;
+        }
+
+        /* Keep focused rows clear of the sticky group header */
+        lit-virtualizer.grouped {
+          scroll-padding-top: var(--data-table-row-height, 52px);
         }
 
         :host {
