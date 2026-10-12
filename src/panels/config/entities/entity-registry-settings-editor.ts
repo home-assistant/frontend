@@ -11,7 +11,7 @@ import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -1764,7 +1764,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _entryName(): string | undefined {
-    return computeEntityEntryName(this.entry, this.hass.devices);
+    return computeEntityEntryName(this.entry);
   }
 
   private get _useDeviceArea(): boolean {
