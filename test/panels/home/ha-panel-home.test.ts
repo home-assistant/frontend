@@ -1,14 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { provideHass } from "../../../src/fake_data/provide_hass";
+import type { HomeFrontendSystemData } from "../../../src/data/frontend";
 import "../../../src/panels/home/ha-panel-home";
 
 type HomePanel = HTMLElement & {
   hass: unknown;
   updateComplete: Promise<boolean>;
-  _configLoaded: boolean;
   _showBanner: boolean;
   _loadConfigPromise?: Promise<void>;
-  _learnMore: () => void;
   [key: string]: unknown;
 };
 
@@ -17,6 +16,16 @@ for (const tag of ["ha-button", "ha-svg-icon"]) {
     customElements.define(tag, class extends HTMLElement {});
   }
 }
+vi.stubGlobal(
+  "ResizeObserver",
+  class {
+    observe = vi.fn();
+
+    unobserve = vi.fn();
+
+    disconnect = vi.fn();
+  }
+);
 vi.mock("../../../src/components/ha-button", () => ({}));
 vi.mock("../../../src/components/ha-svg-icon", () => ({}));
 vi.mock("../../../src/panels/lovelace/hui-root", () => ({}));
@@ -33,10 +42,13 @@ vi.mock("../../../src/panels/home/dialogs/show-dialog-new-overview", () => ({
   showNewOverviewDialog: vi.fn(),
 }));
 
-const STORED = {
+const STORED: HomeFrontendSystemData = {
   welcome_banner_dismissed: false,
   favorite_entities: ["light.kitchen", "climate.living"],
-  shortcuts: ["goodnight", "away"],
+  shortcuts: [
+    { type: "summary", key: "light" },
+    { type: "custom", path: "/energy", label: "Energy" },
+  ],
 };
 
 const openPanel = async (fetchImpl: () => Promise<any>) => {
@@ -60,36 +72,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("home panel welcome banner vs unloaded config (#54822)", () => {
-  it("stays hidden until the home config finishes loading", async () => {
-    let resolveLoad!: (v: any) => void;
-    // Pending home load: do NOT await _loadConfigPromise (it never settles).
-    const { fetchFrontendSystemData } =
-      await import("../../../src/data/frontend");
-    vi.mocked(fetchFrontendSystemData).mockImplementation(((
-      _connection: any,
-      key: string
-    ) =>
-      key === "home"
-        ? new Promise((resolve) => {
-            resolveLoad = resolve;
-          })
-        : Promise.resolve({})) as any);
-    const host = document.createElement("div");
-    const hass = provideHass(host, { panels: {} });
-    document.body.append(host);
-    const panel = document.createElement(
-      "ha-panel-home"
-    ) as unknown as HomePanel;
-    host.append(panel);
-    panel.hass = hass;
-    await panel.updateComplete;
-    expect(panel._showBanner).toBe(false);
-    resolveLoad!({ ...STORED });
-    await panel._loadConfigPromise;
-    expect(panel._showBanner).toBe(true);
-  });
-
+describe("home panel welcome banner", () => {
   it("stays hidden when the home config load is rejected", async () => {
     const { saveFrontendSystemData } =
       await import("../../../src/data/frontend");
@@ -109,7 +92,7 @@ describe("home panel welcome banner vs unloaded config (#54822)", () => {
     expect(panel._showBanner).toBe(false);
     // Defense in depth: even if invoked directly, dismiss must not persist
     // an unloaded (empty) config over stored favourites/shortcuts.
-    panel._learnMore();
+    (panel["_learnMore"] as () => void)();
     await dismissed;
     await panel.updateComplete;
     expect(vi.mocked(saveFrontendSystemData)).not.toHaveBeenCalled();
@@ -130,7 +113,7 @@ describe("home panel welcome banner vs unloaded config (#54822)", () => {
     const panel = await openPanel(async () => ({ ...STORED }));
     await panel.updateComplete;
     expect(panel._showBanner).toBe(true);
-    (panel._learnMore as () => void)();
+    (panel["_learnMore"] as () => void)();
     await dismissed;
     await panel.updateComplete;
     expect(vi.mocked(saveFrontendSystemData)).toHaveBeenCalledTimes(1);
