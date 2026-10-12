@@ -7567,6 +7567,8 @@
             "show_live_log": "Show live log",
             "live_log": {
               "title": "Live log",
+              "lines": "Lines",
+              "invalid_line_limit": "Enter a positive whole number.",
               "waiting": "Waiting for log messages from {integration}…",
               "unsupported": "This version of Home Assistant can't stream the log.",
               "no_matches": "No log lines match the filters",
