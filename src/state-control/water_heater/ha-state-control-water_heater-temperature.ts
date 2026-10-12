@@ -14,6 +14,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
+import { PendingValueSync } from "../../common/util/pending-value-sync";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
@@ -61,11 +62,17 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
+  private _pendingSync = new PendingValueSync();
+
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._targetTemperature = this.stateObj.attributes.temperature;
+    if (changedProp.has("stateObj") && this._pendingSync.shouldSync()) {
+      this._syncTargetTemperature();
     }
+  }
+
+  private _syncTargetTemperature() {
+    this._targetTemperature = this.stateObj.attributes.temperature;
   }
 
   private get _step() {
@@ -99,10 +106,14 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   private _debouncedCallService = debounce(() => this._callService(), 1000);
 
   private _callService() {
-    this._api.callService("water_heater", "set_temperature", {
+    const data = {
       entity_id: this.stateObj!.entity_id,
       temperature: this._targetTemperature,
-    });
+    };
+    return this._pendingSync.run(
+      () => this._api.callService("water_heater", "set_temperature", data),
+      () => this._syncTargetTemperature()
+    );
   }
 
   private _handleButton(ev) {
@@ -113,6 +124,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     temp = clamp(temp, this._min, this._max);
 
     this._targetTemperature = temp;
+    this._pendingSync.schedule();
     this._debouncedCallService();
   }
 
