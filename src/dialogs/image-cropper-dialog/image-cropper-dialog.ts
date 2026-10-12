@@ -32,8 +32,13 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
 
   @state() private _isTargetAspectRatio?: boolean;
 
+  private _cropped = false;
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    if (!this._cropped) {
+      this.params?.cancelCallback?.();
+    }
     this._cropper?.destroy();
     this._cropper = undefined;
   }
@@ -152,6 +157,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
         const file = new File([blob], params.file.name, {
           type: params.options.type || params.file.type,
         });
+        this._cropped = true;
         params.croppedCallback(file);
         this.closeDialog();
       },
@@ -161,6 +167,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
   }
 
   private _useOriginal() {
+    this._cropped = true;
     this.params!.croppedCallback(this.params!.file);
     this.closeDialog();
   }
