@@ -6,6 +6,10 @@ export const componentPages: GalleryPageSmokeCase[] = [
   { name: "ha-bar", selector: "demo-components-ha-bar" },
   { name: "ha-button", selector: "demo-components-ha-button" },
   { name: "ha-chips", selector: "demo-components-ha-chips" },
+  {
+    name: "ha-color-temp-brightness-picker",
+    selector: "demo-components-ha-color-temp-brightness-picker",
+  },
   { name: "ha-control-button", selector: "demo-components-ha-control-button" },
   {
     name: "ha-control-circular-slider",
