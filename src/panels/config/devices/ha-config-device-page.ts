@@ -1087,7 +1087,6 @@ export class HaConfigDevicePage extends LitElement {
                           : nothing
                       }
                       <ha-battery-icon
-                        .hass=${this.hass}
                         .batteryStateObj=${battery}
                         .batteryChargingStateObj=${batteryChargingState}
                       ></ha-battery-icon>

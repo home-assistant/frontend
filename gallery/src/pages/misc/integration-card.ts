@@ -290,7 +290,6 @@ export class DemoIntegrationCard extends LitElement {
               class=${classMap({
                 highlight: info.highlight !== undefined,
               })}
-              .hass=${this.hass}
               domain="esphome"
               .items=${info.items}
               .manifest=${createManifest(
@@ -313,7 +312,6 @@ export class DemoIntegrationCard extends LitElement {
         <!-- One that is standalone to see how it increases height if height
            not defined by other cards. -->
         <ha-integration-card
-          .hass=${this.hass}
           domain="esphome"
           .items=${[
             loadedEntry,

@@ -359,7 +359,6 @@ export default class HaAutomationActionRow extends LitElement {
               <ha-service-icon
                 slot="leading-icon"
                 class="action-icon"
-                .hass=${this.hass}
                 .service=${this.action.action}
               ></ha-service-icon>
             `

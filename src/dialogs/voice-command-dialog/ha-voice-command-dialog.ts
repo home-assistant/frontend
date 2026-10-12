@@ -190,7 +190,6 @@ export class HaVoiceCommandDialog extends LitElement {
             : this._pipeline
               ? html`
                   <ha-assist-chat
-                    .hass=${this.hass}
                     .pipeline=${this._pipeline}
                     .startListening=${this._startListening}
                     .initialPrompt=${this._prompt}

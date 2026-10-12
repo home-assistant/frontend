@@ -559,6 +559,10 @@ export class HaMarketplaceDashboard extends LitElement {
         type: "numeric",
         hidden: false,
         template: (repository: RepositoryBase) => {
+          // A bare relative time has no context on narrow rows, the overview shows it
+          if (narrow) {
+            return nothing;
+          }
           if (!repository.last_updated) {
             return "-";
           }

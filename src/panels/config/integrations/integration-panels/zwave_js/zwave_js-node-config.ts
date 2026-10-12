@@ -390,7 +390,6 @@ class ZWaveJSNodeConfig extends LitElement {
         return html`
           ${labelAndDescription}
           <ha-generic-picker
-            .hass=${this.hass}
             .value=${item.value?.toString()}
             allow-custom-value
             hide-clear-icon
@@ -458,7 +457,6 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-generic-picker
-          .hass=${this.hass}
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}

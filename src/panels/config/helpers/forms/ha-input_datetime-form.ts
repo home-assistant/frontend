@@ -76,7 +76,6 @@ class HaInputDateTimeForm extends LitElement {
           .disabled=${this.disabled}
         ></ha-input>
         <ha-icon-picker
-          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}

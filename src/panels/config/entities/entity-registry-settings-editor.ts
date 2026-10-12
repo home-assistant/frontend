@@ -810,7 +810,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         domain === "calendar"
           ? html`
               <ha-color-picker
-                .hass=${this.hass}
                 .value=${this._calendarColor ?? ""}
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.calendar_color"

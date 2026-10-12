@@ -1462,7 +1462,6 @@ class DialogAddAutomationElement
           result.push({
             icon: html`
               <ha-service-icon
-                .hass=${this.hass}
                 .service=${`${dmn}.${service}`}
               ></ha-service-icon>
             `,
@@ -1775,12 +1774,7 @@ class DialogAddAutomationElement
   ): AddAutomationElementListItem {
     const triggerName = getTriggerObjectId(trigger);
     return {
-      icon: html`
-        <ha-trigger-icon
-          .hass=${this.hass}
-          .trigger=${trigger}
-        ></ha-trigger-icon>
-      `,
+      icon: html` <ha-trigger-icon .trigger=${trigger}></ha-trigger-icon> `,
       key: `${DYNAMIC_PREFIX}${trigger}`,
       name:
         localize(`component.${domain}.triggers.${triggerName}.name`) || trigger,
@@ -1798,10 +1792,7 @@ class DialogAddAutomationElement
     const conditionName = getConditionObjectId(condition);
     return {
       icon: html`
-        <ha-condition-icon
-          .hass=${this.hass}
-          .condition=${condition}
-        ></ha-condition-icon>
+        <ha-condition-icon .condition=${condition}></ha-condition-icon>
       `,
       key: `${DYNAMIC_PREFIX}${condition}`,
       name:
@@ -1835,7 +1826,6 @@ class DialogAddAutomationElement
       items[domain].items.push({
         icon: html`
           <ha-service-icon
-            .hass=${this.hass}
             .service=${`${domain}.${serviceName}`}
           ></ha-service-icon>
         `,

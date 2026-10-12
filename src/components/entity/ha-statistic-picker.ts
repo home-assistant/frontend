@@ -511,7 +511,6 @@ export class HaStatisticPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .disabled=${this.disabled}
