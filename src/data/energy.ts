@@ -26,10 +26,12 @@ import {
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
+import { computeAreaName } from "../common/entity/compute_area_name";
+import { getEntityAreaId } from "../common/entity/context/get_entity_context";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
   StatisticPeriod,
@@ -341,6 +343,19 @@ export const computeEnergyLabel = (
     statisticId,
     statisticsMetaData
   );
+};
+
+export const computeEnergyStatisticArea = (
+  registries: HomeAssistantRegistries,
+  statisticId: string
+): string | undefined => {
+  const areaId = getEntityAreaId(
+    statisticId,
+    registries.entities,
+    registries.devices
+  );
+  const area = areaId ? registries.areas[areaId] : undefined;
+  return area ? computeAreaName(area) : undefined;
 };
 
 /**

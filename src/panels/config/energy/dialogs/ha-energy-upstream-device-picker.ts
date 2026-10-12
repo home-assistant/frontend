@@ -5,7 +5,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  computeEntityNameList,
+  computeEntityNameParts,
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -67,14 +67,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const { area: areaName } = computeEntityNameParts(stateObj, this.hass);
 
       return {
         id: statisticId,
@@ -88,13 +81,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
         ),
         secondary: areaName,
         stateObj,
-        search_labels: computeEntitySearchLabels(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        ),
+        search_labels: computeEntitySearchLabels(stateObj, this.hass),
       };
     }
 
