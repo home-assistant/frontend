@@ -67,4 +67,4 @@ test/e2e/app/dist/
 .serena
 
 test/benchmarks/results/
-
+.yarn/*
