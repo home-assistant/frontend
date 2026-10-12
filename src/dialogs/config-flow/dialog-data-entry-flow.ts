@@ -721,9 +721,16 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
       return;
     }
     this._progress = undefined;
+    let catchingUp = true;
+    let fetchPending = true;
     const unsubs = [
       subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
         if (ev.data.flow_id !== this._step?.flow_id) {
+          return;
+        }
+        if (catchingUp) {
+          // Two concurrent fetches can both advance the flow, so let the catch-up below fetch again
+          fetchPending = true;
           return;
         }
         this._processStep(
@@ -736,9 +743,48 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
         this._progress = Math.ceil(ev.data.progress * 100);
       }),
     ];
-    this._unsubDataEntryFlowProgress = async () => {
+    const unsubscribe = async () => {
       (await Promise.all(unsubs)).map((unsub) => unsub());
     };
+    this._unsubDataEntryFlowProgress = unsubscribe;
+
+    // The backend fires the progressed event even if we have not subscribed yet,
+    // so fetch the flow once in case its progress task already finished
+    try {
+      await Promise.all(unsubs);
+      while (fetchPending) {
+        fetchPending = false;
+        const step = this._step;
+        if (
+          this._unsubDataEntryFlowProgress !== unsubscribe ||
+          !step ||
+          (step.type !== "external" && step.type !== "progress")
+        ) {
+          break;
+        }
+        // eslint-disable-next-line no-await-in-loop
+        const current = await this._params!.flowConfig.fetchFlow(
+          this.hass,
+          step.flow_id
+        );
+        if (
+          this._step === step &&
+          !(
+            current.type === step.type &&
+            "step_id" in current &&
+            current.step_id === step.step_id
+          )
+        ) {
+          this._progress = undefined;
+          // eslint-disable-next-line no-await-in-loop
+          await this._processStep(current);
+        }
+      }
+    } catch (_err) {
+      // Keep waiting for the progressed event
+    } finally {
+      catchingUp = false;
+    }
   }
 
   private _focusFormStep = async (): Promise<void> => {
