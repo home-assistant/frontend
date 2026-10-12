@@ -34,6 +34,8 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
 
   private _cropped = false;
 
+  private _closing = false;
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (!this._cropped) {
@@ -98,6 +100,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
           "ui.dialogs.image_cropper.crop_image"
         )}
         .preventScrimClose=${this.isDirtyState}
+        @wa-hide=${this._handleHide}
       >
         <div
           class="container ${classMap({
@@ -143,6 +146,14 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
     `;
   }
 
+  private _handleHide(ev: Event) {
+    // Ignore hide events from nested overlays and blocked dismissals.
+    if (ev.eventPhase !== Event.AT_TARGET || ev.defaultPrevented) {
+      return;
+    }
+    this._closing = true;
+  }
+
   private _cropImage() {
     const canvas = this._cropper?.getCroppedCanvas();
     if (!canvas) {
@@ -151,8 +162,8 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
     const params = this.params!;
     canvas.toBlob(
       (blob) => {
-        // The dialog may have been closed while the blob was being created.
-        if (!blob || !this.isConnected) {
+        // The dialog may have started closing while the blob was being created.
+        if (!blob || this._closing || !this.isConnected) {
           return;
         }
         const file = new File([blob], params.file.name, {
