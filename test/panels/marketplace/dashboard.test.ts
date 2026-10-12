@@ -358,6 +358,38 @@ it.each([
   expect(statusFilter().value).toEqual(statuses);
 });
 
+it("links to what is picked, so a My link shares it", async () => {
+  window.history.pushState(null, "", "/marketplace/browse?status=new");
+  const dashboard = await openDashboard();
+
+  const table = dashboard.shadowRoot!.querySelector(
+    "hass-tabs-subpage-data-table"
+  )!;
+
+  dashboard.shadowRoot!.querySelector("ha-filter-states")!.dispatchEvent(
+    new CustomEvent("data-table-filter-changed", {
+      detail: { value: ["installed"] },
+    })
+  );
+  table.dispatchEvent(
+    new CustomEvent("search-changed", { detail: { value: "spook" } })
+  );
+
+  const params = new URLSearchParams(window.location.search);
+  expect(params.get("status")).toBe("installed");
+  expect(params.get("search")).toBe("spook");
+
+  // Leaving the tab, the page that opens has its own link
+  window.history.pushState(null, "", "/marketplace/repository/1");
+  table.dispatchEvent(
+    new CustomEvent("search-changed", { detail: { value: "card" } })
+  );
+  expect(window.location.search).toBe("");
+  window.history.replaceState(null, "", "/");
+  dashboard.remove();
+  sessionStorage.clear();
+});
+
 it("adds a repository from a link", async () => {
   const dashboard = await openDashboard();
   const fired = vi.fn();

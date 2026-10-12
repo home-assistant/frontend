@@ -159,17 +159,20 @@ export interface BrowseSettings {
   filters: RepositoryFilters;
 }
 
-export const browseUrl = ({
+export const browseQuery = ({
   search,
   sorting,
   filters,
-}: BrowseSettings): string => {
-  const query = createMarketplaceBrowseQueryString({
+}: BrowseSettings): string =>
+  createMarketplaceBrowseQueryString({
     ...filters,
     search,
     sort: sorting?.column,
     direction: sorting?.direction,
   });
+
+export const browseUrl = (settings: BrowseSettings): string => {
+  const query = browseQuery(settings);
   return query ? `/marketplace/browse?${query}` : "/marketplace/browse";
 };
 
