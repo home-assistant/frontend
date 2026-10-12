@@ -208,6 +208,7 @@ export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
 
 export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
+  source_type?: "gas" | "heat";
 }
 
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {

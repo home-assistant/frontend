@@ -3,6 +3,7 @@ import {
   mdiDownload,
   mdiFire,
   mdiLightningBolt,
+  mdiRadiator,
   mdiViewDashboardEdit,
   mdiWater,
 } from "@mdi/js";
@@ -58,6 +59,12 @@ const TABS: PageNavigation[] = [
     path: "/config/energy/gas",
     translationKey: "ui.panel.config.energy.tabs.gas",
     iconPath: mdiFire,
+    iconColor: "#F1C447",
+  },
+  {
+    path: "/config/energy/heat",
+    translationKey: "ui.panel.config.energy.tabs.heat",
+    iconPath: mdiRadiator,
     iconColor: "#F1C447",
   },
   {
@@ -189,6 +196,17 @@ class HaConfigEnergy extends LitElement {
       case "gas":
         return html`
           <ha-energy-gas-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-gas-settings>
+        `;
+      case "heat":
+        return html`
+          <ha-energy-gas-settings
+            source-type="heat"
             .hass=${this.hass}
             .preferences=${this._preferences!}
             .statsMetadata=${this._statsMetadata}

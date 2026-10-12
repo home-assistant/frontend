@@ -246,7 +246,9 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
 
   private _formatTotal = (total: number) =>
     this._i18n.localize(
-      "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
+      this._config?.source_type === "heat"
+        ? "ui.panel.lovelace.cards.energy.energy_heat_graph.total_consumed"
+        : "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
       {
         num: formatNumber(total, this._i18n.locale, this._gasFormatOptions),
         unit: this._unit,
@@ -279,7 +281,8 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    this._gasStatIds = energySourcesByType(energyData.prefs).gas?.map(
+    const sourceType = this._config?.source_type || "gas";
+    this._gasStatIds = energySourcesByType(energyData.prefs)[sourceType]?.map(
       (source) => source.stat_energy_from
     );
 
@@ -290,6 +293,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       energyData,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
+      sourceType: this._config?.source_type,
     });
 
     this._start = result.start;

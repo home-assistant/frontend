@@ -53,7 +53,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
       <p>
         ${this.hass.localize("ui.panel.energy.setup.step", {
           step: this._step + 1,
-          steps: 6,
+          steps: 7,
         })}
       </p>
       ${
@@ -83,12 +83,19 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
                     @value-changed=${this._prefsChanged}
                   ></ha-energy-gas-settings>`
                 : this._step === 4
-                  ? html`<ha-energy-water-settings
+                  ? html`<ha-energy-gas-settings
+                      source-type="heat"
+                      .hass=${this.hass}
+                      .preferences=${this._preferences}
+                      @value-changed=${this._prefsChanged}
+                    ></ha-energy-gas-settings>`
+                  : this._step === 5
+                    ? html`<ha-energy-water-settings
                       .hass=${this.hass}
                       .preferences=${this._preferences}
                       @value-changed=${this._prefsChanged}
                     ></ha-energy-water-settings>`
-                  : html`<ha-energy-device-settings
+                    : html`<ha-energy-device-settings
                       .hass=${this.hass}
                       .preferences=${this._preferences}
                       @value-changed=${this._prefsChanged}
@@ -103,7 +110,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
             : html`<div></div>`
         }
         ${
-          this._step < 4
+          this._step < 6
             ? html`<ha-button @click=${this._next}
                 >${this.hass.localize("ui.panel.energy.setup.next")}</ha-button
               >`
@@ -131,7 +138,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   }
 
   private _next() {
-    if (this._step === 5) {
+    if (this._step === 6) {
       return;
     }
     this._step++;

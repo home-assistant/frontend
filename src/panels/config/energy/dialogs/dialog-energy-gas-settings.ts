@@ -13,9 +13,13 @@ import "../../../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import "../../../../components/input/ha-input";
-import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
+import type {
+  GasSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import {
   emptyGasEnergyPreference,
+  emptyHeatEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
@@ -29,13 +33,14 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
 
 type CostType = "no-costs" | "number" | "entity" | "statistic";
 
 interface GasFormState {
-  source: GasSourceTypeEnergyPreference;
+  source: GasSourceTypeEnergyPreference | HeatSourceTypeEnergyPreference;
   costs: CostType;
 }
 
@@ -54,7 +59,8 @@ export class DialogEnergyGasSettings
 
   @state() private _open = false;
 
-  @state() private _source?: GasSourceTypeEnergyPreference;
+  @state()
+  private _source?: GasSourceTypeEnergyPreference | HeatSourceTypeEnergyPreference;
 
   @state() private _costs?: CostType;
 
@@ -78,7 +84,9 @@ export class DialogEnergyGasSettings
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : emptyGasEnergyPreference();
+      : params.source_type === "heat"
+        ? emptyHeatEnergyPreference()
+        : emptyGasEnergyPreference();
     this._pickedDisplayUnit = getDisplayUnit(
       this.hass.states,
       params.source?.stat_energy_from,
@@ -102,12 +110,21 @@ export class DialogEnergyGasSettings
     this._flow_rate_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate")
     ).units;
-    this._excludeList = this._params.gas_sources
+    const configuredSources =
+      params.source_type === "heat"
+        ? (params.heat_sources ?? [])
+        : params.gas_sources;
+    this._excludeList = configuredSources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
-    this._excludeListFlowRate = this._params.gas_sources
+    this._excludeListFlowRate = params.gas_sources
       .map((entry) => entry.stat_rate)
-      .filter((id) => id && id !== this._source?.stat_rate) as string[];
+      .filter(
+        (id) =>
+          id &&
+          id !==
+            (this._source?.type === "gas" ? this._source.stat_rate : undefined)
+      ) as string[];
 
     this._open = true;
     this._initDirtyTracking(
@@ -136,8 +153,11 @@ export class DialogEnergyGasSettings
       return nothing;
     }
 
+    const sourceType = this._source.type;
     const pickableUnit =
-      this._params.allowedGasUnitClass === undefined
+      sourceType === "heat"
+        ? this._energy_units?.join(", ") || ""
+        : this._params.allowedGasUnitClass === undefined
         ? [...(this._gas_units || []), ...(this._energy_units || [])].join(", ")
         : this._params.allowedGasUnitClass === "energy"
           ? this._energy_units?.join(", ") || ""
@@ -151,7 +171,8 @@ export class DialogEnergyGasSettings
       this._pickedDisplayUnit &&
       this._energy_units?.includes(this._pickedDisplayUnit)
         ? "energy"
-        : this._pickedDisplayUnit &&
+        : sourceType === "gas" &&
+            this._pickedDisplayUnit &&
             this._gas_units?.includes(this._pickedDisplayUnit)
           ? "volume"
           : undefined;
@@ -163,19 +184,17 @@ export class DialogEnergyGasSettings
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.energy.gas.dialog.header"
-        )}
+        header-title=${this._localize("dialog.header")}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
         <div>
           <p>
-            ${this.hass.localize("ui.panel.config.energy.gas.dialog.paragraph")}
+            ${this._localize("dialog.paragraph")}
           </p>
           <p>
-            ${this.hass.localize("ui.panel.config.energy.gas.dialog.note_para")}
+            ${this._localize("dialog.note_para")}
           </p>
         </div>
 
@@ -183,41 +202,37 @@ export class DialogEnergyGasSettings
           .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${
-            this._params.allowedGasUnitClass || gasUnitClasses
+            sourceType === "heat"
+              ? ["energy"]
+              : this._params.allowedGasUnitClass || gasUnitClasses
           }
-          .includeDeviceClass=${gasDeviceClasses}
+          .includeDeviceClass=${sourceType === "heat" ? ["energy"] : gasDeviceClasses}
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.gas_usage"
-          )}
+          .label=${this._localize("dialog.gas_usage")}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.entity_para",
-            { unit: pickableUnit }
-          )}
+          .helper=${this._localize("dialog.entity_para", {
+            unit: pickableUnit,
+          })}
           autofocus
         ></ha-statistic-picker>
 
-        <ha-statistic-picker
+        ${sourceType === "gas"
+          ? html`<ha-statistic-picker
           .hass=${this.hass}
           .includeUnitClass=${flowRateUnitClasses}
-          .value=${this._source.stat_rate}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.gas_flow_rate"
-          )}
+          .value=${this._source.type === "gas" ? this._source.stat_rate : undefined}
+          .label=${this._localize("dialog.gas_flow_rate")}
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.flow_rate_para",
-            { unit: this._flow_rate_units?.join(", ") || "" }
-          )}
-        ></ha-statistic-picker>
+          .helper=${this._localize("dialog.flow_rate_para", {
+            unit: this._flow_rate_units?.join(", ") || "",
+          })}
+        ></ha-statistic-picker>`
+          : nothing}
 
         <ha-input
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.display_name"
-          )}
+          .label=${this._localize("dialog.display_name")}
           type="text"
           .disabled=${!this._source?.stat_energy_from}
           .value=${this._source?.name || ""}
@@ -236,28 +251,22 @@ export class DialogEnergyGasSettings
         </ha-input>
 
         <ha-radio-group
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.cost_para"
-          )}
+          .label=${this._localize("dialog.cost_para")}
           .value=${this._costs}
           name="costs"
           @change=${this._handleCostChanged}
         >
           <ha-radio-option value="no-costs">
-            ${this.hass.localize("ui.panel.config.energy.gas.dialog.no_cost")}
+            ${this._localize("dialog.no_cost")}
           </ha-radio-option>
           <ha-radio-option value="statistic">
-            ${this.hass.localize("ui.panel.config.energy.gas.dialog.cost_stat")}
+            ${this._localize("dialog.cost_stat")}
           </ha-radio-option>
           <ha-radio-option value="entity" .disabled=${externalSource}>
-            ${this.hass.localize(
-              "ui.panel.config.energy.gas.dialog.cost_entity"
-            )}
+            ${this._localize("dialog.cost_entity")}
           </ha-radio-option>
           <ha-radio-option value="number" .disabled=${externalSource}>
-            ${this.hass.localize(
-              "ui.panel.config.energy.gas.dialog.cost_number"
-            )}
+            ${this._localize("dialog.cost_number")}
           </ha-radio-option>
         </ha-radio-group>
         ${
@@ -267,9 +276,7 @@ export class DialogEnergyGasSettings
                 .hass=${this.hass}
                 statistic-types="sum"
                 .value=${this._source.stat_cost}
-                .label=${`${this.hass.localize(
-                  "ui.panel.config.energy.gas.dialog.cost_stat_input"
-                )} (${this.hass.config.currency})`}
+                .label=${`${this._localize("dialog.cost_stat_input")} (${this.hass.config.currency})`}
                 @value-changed=${this._priceStatChanged}
               ></ha-statistic-picker>`
             : this._costs === "entity"
@@ -277,28 +284,22 @@ export class DialogEnergyGasSettings
                   class="price-options"
                   include-domains='["sensor", "input_number"]'
                   .value=${this._source.entity_energy_price}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.gas.dialog.cost_entity_input"
-                  )}
+                  .label=${this._localize("dialog.cost_entity_input")}
                   .helper=${
                     pickedUnitClass
                       ? html`<ha-markdown
-                          .content=${this.hass.localize(
-                            "ui.panel.config.energy.gas.dialog.cost_entity_helper",
+                          .content=${this._localize(
+                            "dialog.cost_entity_helper",
                             pickedUnitClass === "energy"
                               ? {
                                   currency: this.hass.config.currency,
-                                  class: this.hass.localize(
-                                    "ui.panel.config.energy.gas.dialog.cost_entity_helper_energy"
-                                  ),
+                                  class: this._localize("dialog.cost_entity_helper_energy"),
                                   unit1: "kWh",
                                   unit2: "Wh",
                                 }
                               : {
                                   currency: this.hass.config.currency,
-                                  class: this.hass.localize(
-                                    "ui.panel.config.energy.gas.dialog.cost_entity_helper_volume"
-                                  ),
+                                  class: this._localize("dialog.cost_entity_helper_volume"),
                                   unit1: "m³",
                                   unit2: "ft³",
                                 }
@@ -310,9 +311,7 @@ export class DialogEnergyGasSettings
                 ></ha-entity-picker>`
               : this._costs === "number"
                 ? html`<ha-input
-                    .label=${`${this.hass.localize(
-                      "ui.panel.config.energy.gas.dialog.cost_number_input"
-                    )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+                    .label=${`${this._localize("dialog.cost_number_input")} ${unitPrice ? ` (${unitPrice})` : ""}`}
                     class="price-options"
                     step="any"
                     type="number"
@@ -360,6 +359,18 @@ export class DialogEnergyGasSettings
     this._updateFormDirtyState();
   }
 
+  private _localize(
+    key: string,
+    placeholders?: Record<string, string | number>
+  ): string {
+    const sourceType =
+      this._source?.type || this._params?.source_type || "gas";
+    return this.hass.localize(
+      `ui.panel.config.energy.${sourceType}.${key}` as LocalizeKeys,
+      placeholders
+    );
+  }
+
   private _numberPriceChanged(ev: InputEvent) {
     this._source = {
       ...this._source!,
@@ -391,8 +402,11 @@ export class DialogEnergyGasSettings
   }
 
   private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
+    if (this._source?.type !== "gas") {
+      return;
+    }
     this._source = {
-      ...this._source!,
+      ...this._source,
       stat_rate: ev.detail.value || undefined,
     };
     this._updateFormDirtyState();

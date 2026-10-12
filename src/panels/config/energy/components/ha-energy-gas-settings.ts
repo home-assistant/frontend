@@ -1,8 +1,9 @@
-import { mdiDelete, mdiFire, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiFire, mdiPencil, mdiPlus, mdiRadiator } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
@@ -11,6 +12,7 @@ import type {
   EnergyPreferencesValidation,
   EnergyValidationIssue,
   GasSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
   getEnergyGasUnitClass,
@@ -29,9 +31,15 @@ import { showEnergySettingsGasDialog } from "../dialogs/show-dialogs-energy";
 import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
+type GasOrHeatSource =
+  | GasSourceTypeEnergyPreference
+  | HeatSourceTypeEnergyPreference;
+
 @customElement("ha-energy-gas-settings")
 export class EnergyGasSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: "source-type" }) public sourceType: "gas" | "heat" = "gas";
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
@@ -43,11 +51,11 @@ export class EnergyGasSettings extends LitElement {
   public validationResult?: EnergyPreferencesValidation;
 
   protected render(): TemplateResult {
-    const gasSources: GasSourceTypeEnergyPreference[] = [];
+    const gasSources: GasOrHeatSource[] = [];
     const gasValidation: EnergyValidationIssue[][] = [];
 
     this.preferences.energy_sources.forEach((source, idx) => {
-      if (source.type !== "gas") {
+      if (source.type !== this.sourceType) {
         return;
       }
       gasSources.push(source);
@@ -60,18 +68,23 @@ export class EnergyGasSettings extends LitElement {
     return html`
       <ha-card>
         <h1 class="card-header">
-          <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.gas.title")}
+          <ha-svg-icon
+            .path=${this.sourceType === "heat" ? mdiRadiator : mdiFire}
+          ></ha-svg-icon>
+          ${this._localize("title")}
         </h1>
 
         <div class="card-content">
           <p>
-            ${this.hass.localize("ui.panel.config.energy.gas.sub")}
+            ${this._localize("sub")}
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href=${documentationUrl(this.hass, "/docs/energy/gas/")}
-              >${this.hass.localize("ui.panel.config.energy.gas.learn_more")}</a
+              href=${documentationUrl(
+                this.hass,
+                this.sourceType === "heat" ? "/docs/energy/" : "/docs/energy/gas/"
+              )}
+              >${this._localize("learn_more")}</a
             >
           </p>
           ${gasValidation.map(
@@ -97,7 +110,7 @@ export class EnergyGasSettings extends LitElement {
                                   .icon=${entityState.attributes.icon}
                                 ></ha-icon>`
                               : html`<ha-svg-icon
-                                  .path=${mdiFire}
+                                  .path=${this.sourceType === "heat" ? mdiRadiator : mdiFire}
                                 ></ha-svg-icon>`
                           }
                           <span class="content"
@@ -112,16 +125,12 @@ export class EnergyGasSettings extends LitElement {
                             }</span
                           >
                           <ha-icon-button
-                            .label=${this.hass.localize(
-                              "ui.panel.config.energy.gas.edit_gas_source"
-                            )}
+                            .label=${this._localize("edit_source")}
                             @click=${this._editSource}
                             .path=${mdiPencil}
                           ></ha-icon-button>
                           <ha-icon-button
-                            .label=${this.hass.localize(
-                              "ui.panel.config.energy.gas.delete_gas_source"
-                            )}
+                            .label=${this._localize("delete_source")}
                             @click=${this._deleteSource}
                             .path=${mdiDelete}
                           ></ha-icon-button>
@@ -135,9 +144,7 @@ export class EnergyGasSettings extends LitElement {
           <div class="row">
             <ha-button @click=${this._addSource} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
-              >${this.hass.localize(
-                "ui.panel.config.energy.gas.add_gas_source"
-              )}</ha-button
+              >${this._localize("add_source")}</ha-button
             >
           </div>
         </div>
@@ -147,17 +154,26 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
+      source_type: this.sourceType,
       statsMetadata: this.statsMetadata,
-      allowedGasUnitClass: getEnergyGasUnitClass(
-        this.preferences,
-        undefined,
-        this.statsMetadata
-      ),
+      allowedGasUnitClass:
+        this.sourceType === "gas"
+          ? getEnergyGasUnitClass(
+              this.preferences,
+              undefined,
+              this.statsMetadata
+            )
+          : "energy",
       gas_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "gas"
       ) as GasSourceTypeEnergyPreference[],
+      heat_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "heat"
+      ) as HeatSourceTypeEnergyPreference[],
       saveCallback: async (source) => {
-        delete source.unit_of_measurement;
+        if ("unit_of_measurement" in source) {
+          delete source.unit_of_measurement;
+        }
         await this._savePreferences({
           ...this.preferences,
           energy_sources: this.preferences.energy_sources.concat(source),
@@ -167,19 +183,25 @@ export class EnergyGasSettings extends LitElement {
   }
 
   private _editSource(ev) {
-    const origSource: GasSourceTypeEnergyPreference =
-      ev.currentTarget.closest(".row").source;
+    const origSource: GasOrHeatSource = ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
+      source_type: this.sourceType,
       source: { ...origSource },
       statsMetadata: this.statsMetadata,
-      allowedGasUnitClass: getEnergyGasUnitClass(
-        this.preferences,
-        origSource.stat_energy_from,
-        this.statsMetadata
-      ),
+      allowedGasUnitClass:
+        this.sourceType === "gas"
+          ? getEnergyGasUnitClass(
+              this.preferences,
+              origSource.stat_energy_from,
+              this.statsMetadata
+            )
+          : "energy",
       gas_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "gas"
       ) as GasSourceTypeEnergyPreference[],
+      heat_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "heat"
+      ) as HeatSourceTypeEnergyPreference[],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,
@@ -192,8 +214,7 @@ export class EnergyGasSettings extends LitElement {
   }
 
   private async _deleteSource(ev) {
-    const sourceToDelete: GasSourceTypeEnergyPreference =
-      ev.currentTarget.closest(".row").source;
+    const sourceToDelete: GasOrHeatSource = ev.currentTarget.closest(".row").source;
 
     if (
       !(await showConfirmationDialog(this, {
@@ -218,6 +239,12 @@ export class EnergyGasSettings extends LitElement {
   private async _savePreferences(preferences: EnergyPreferences) {
     const result = await saveEnergyPreferences(this.hass, preferences);
     fireEvent(this, "value-changed", { value: result });
+  }
+
+  private _localize(key: string): string {
+    return this.hass.localize(
+      `ui.panel.config.energy.${this.sourceType}.${key}` as LocalizeKeys
+    );
   }
 
   static get styles(): CSSResultGroup {

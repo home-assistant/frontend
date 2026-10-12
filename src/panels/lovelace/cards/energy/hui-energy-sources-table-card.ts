@@ -48,6 +48,7 @@ const colorPropertyMap = {
   battery_out: "--energy-battery-out-color",
   solar: "--energy-solar-color",
   gas: "--energy-gas-color",
+  heat: "--energy-gas-color",
   water: "--energy-water-color",
 };
 
@@ -115,7 +116,11 @@ export class HuiEnergySourcesTableCard
     transformer: function (this: HuiEnergySourcesTableCard, states) {
       const next: Record<string, string | undefined> = {};
       if (this._data) {
-        for (const source of energySourcesByType(this._data.prefs).gas ?? []) {
+        const sourcesByType = energySourcesByType(this._data.prefs);
+        for (const source of [
+          ...(sourcesByType.gas ?? []),
+          ...(sourcesByType.heat ?? []),
+        ]) {
           next[source.stat_energy_from] =
             states?.[source.stat_energy_from]?.attributes.unit_of_measurement;
         }
@@ -132,7 +137,11 @@ export class HuiEnergySourcesTableCard
     transformer: function (this: HuiEnergySourcesTableCard, entities) {
       const next: Record<string, number | undefined> = {};
       if (this._data) {
-        for (const source of energySourcesByType(this._data.prefs).gas ?? []) {
+        const sourcesByType = energySourcesByType(this._data.prefs);
+        for (const source of [
+          ...(sourcesByType.gas ?? []),
+          ...(sourcesByType.heat ?? []),
+        ]) {
           next[source.stat_energy_from] =
             entities?.[source.stat_energy_from]?.display_precision;
         }
@@ -181,7 +190,8 @@ export class HuiEnergySourcesTableCard
     name?: string
   ) {
     const displayPrecision =
-      type === "gas" && this._gasUnits?.[statId] === energyUnit
+      (type === "gas" || type === "heat") &&
+      this._gasUnits?.[statId] === energyUnit
         ? this._gasDisplayPrecisions?.[statId]
         : undefined;
 
@@ -395,24 +405,29 @@ export class HuiEnergySourcesTableCard
 
     const totals = {
       gas: 0,
+      heat: 0,
       water: 0,
       solar: 0,
     };
     const totalsCompare = {
       gas: 0,
+      heat: 0,
       water: 0,
       solar: 0,
     };
     const totalCosts = {
       gas: 0,
+      heat: 0,
       water: 0,
     };
     const totalCostsCompare = {
       gas: 0,
+      heat: 0,
       water: 0,
     };
     const hasCosts = {
       gas: false,
+      heat: false,
       water: false,
     };
 
@@ -445,6 +460,12 @@ export class HuiEnergySourcesTableCard
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       ) ||
+      types.heat?.some(
+        (source) =>
+          source.stat_cost ||
+          source.entity_energy_price ||
+          source.number_energy_price
+      ) ||
       types.water?.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
@@ -454,14 +475,19 @@ export class HuiEnergySourcesTableCard
     const units = {
       solar: "kWh",
       gas: this._data.gasUnit,
+      heat: "kWh",
       water: this._data.waterUnit,
     };
 
-    const gasDisplayPrecisions = types.gas
-      ?.filter(
-        (source) => this._gasUnits?.[source.stat_energy_from] === units.gas
+    const gasDisplayPrecisions = [...(types.gas || []), ...(types.heat || [])]
+      .filter(
+        (source) =>
+          this._gasUnits?.[source.stat_energy_from] ===
+          (source.type === "heat" ? units.heat : units.gas)
       )
-      .map((source) => this._gasDisplayPrecisions?.[source.stat_energy_from])
+      .map(
+        (source) => this._gasDisplayPrecisions?.[source.stat_energy_from]
+      )
       .filter((precision): precision is number => precision !== undefined);
 
     const gasDisplayPrecision = gasDisplayPrecisions?.length
@@ -526,7 +552,9 @@ export class HuiEnergySourcesTableCard
 
     const showOnlyTotals = this._config.show_only_totals;
 
-    const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
+    const _renderSimpleCategory = (
+      type: "solar" | "gas" | "heat" | "water"
+    ) =>
       html` ${types[type]?.map((source, idx) => {
         const cost_stat =
           type in hasCosts &&
@@ -601,7 +629,9 @@ export class HuiEnergySourcesTableCard
                   }
                 : undefined,
               false,
-              type === "gas" ? gasFormatOptions : undefined
+              type === "gas" || type === "heat"
+                ? gasFormatOptions
+                : undefined
             )
           : ""
       }`;
@@ -924,9 +954,11 @@ export class HuiEnergySourcesTableCard
                     )
                   : ""
               }
-              ${_renderSimpleCategory("gas")} ${_renderSimpleCategory("water")}
+              ${_renderSimpleCategory("gas")}
+              ${_renderSimpleCategory("heat")}
+              ${_renderSimpleCategory("water")}
               ${
-                [hasCosts.gas, hasCosts.water, hasGridCost].filter(Boolean)
+                [hasCosts.gas, hasCosts.heat, hasCosts.water, hasGridCost].filter(Boolean)
                   .length > 1
                   ? this._renderTotalRow(
                       this._i18n.localize(
@@ -935,8 +967,12 @@ export class HuiEnergySourcesTableCard
                       null,
                       null,
                       "",
-                      totalCosts.gas + totalGridCost + totalCosts.water,
+                      totalCosts.gas +
+                        totalCosts.heat +
+                        totalGridCost +
+                        totalCosts.water,
                       totalCostsCompare.gas +
+                        totalCostsCompare.heat +
                         totalGridCostCompare +
                         totalCostsCompare.water,
                       showCosts,

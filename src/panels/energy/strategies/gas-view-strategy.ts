@@ -7,7 +7,11 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasGasSource, isEnergyCardVisible } from "./energy-cards";
+import {
+  hasGasSource,
+  hasHeatSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
@@ -22,6 +26,7 @@ export class GasViewStrategy extends ReactiveElement {
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
     const hidden = _config.hidden_cards;
+    const sourceType = _config.source_type || "gas";
 
     const view: LovelaceViewConfig = {
       type: "sections",
@@ -52,7 +57,11 @@ export class GasViewStrategy extends ReactiveElement {
     const prefs = energyCollection.prefs;
 
     // No gas sources available
-    if (!prefs || !hasGasSource(prefs)) {
+    const hasSource =
+      sourceType === "heat"
+        ? prefs && hasHeatSource(prefs)
+        : prefs && hasGasSource(prefs);
+    if (!hasSource) {
       return view;
     }
 
@@ -66,25 +75,32 @@ export class GasViewStrategy extends ReactiveElement {
       },
     });
 
-    if (isEnergyCardVisible("gas", "energy-gas-graph", prefs, hidden)) {
+    const graphCardType =
+      sourceType === "heat" ? "energy-heat-graph" : "energy-gas-graph";
+    if (isEnergyCardVisible(sourceType, graphCardType, prefs!, hidden)) {
       section.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
+        title: hass.localize(
+          sourceType === "heat"
+            ? "ui.panel.energy.cards.energy_heat_graph_title"
+            : "ui.panel.energy.cards.energy_gas_graph_title"
+        ),
         type: "energy-gas-graph",
         collection_key: collectionKey,
+        source_type: sourceType,
         grid_options: {
           columns: 24,
         },
       });
     }
 
-    if (isEnergyCardVisible("gas", "energy-sources-table", prefs, hidden)) {
+    if (isEnergyCardVisible(sourceType, "energy-sources-table", prefs!, hidden)) {
       section.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"
         ),
         type: "energy-sources-table",
         collection_key: collectionKey,
-        types: ["gas"],
+        types: [sourceType],
         grid_options: {
           columns: 12,
         },

@@ -42,6 +42,7 @@ const VIEW_GROUPS: { view: EnergyViewPath; labelKey: LocalizeKeys }[] = [
   },
   { view: "electricity", labelKey: "ui.panel.config.energy.tabs.electricity" },
   { view: "gas", labelKey: "ui.panel.config.energy.tabs.gas" },
+  { view: "heat", labelKey: "ui.panel.config.energy.tabs.heat" },
   { view: "water", labelKey: "ui.panel.config.energy.tabs.water" },
   { view: "now", labelKey: "ui.panel.config.energy.customise.groups.now" },
 ];

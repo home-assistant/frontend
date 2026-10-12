@@ -24,6 +24,7 @@ import {
   getEnergyLiveDayPeriod,
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
+  getReferencedStatisticIds,
   EMPTY_PREFERENCES,
   CompareMode,
 } from "../../src/data/energy";
@@ -74,6 +75,44 @@ const checkConsumptionResult = (
   }
   return result;
 };
+
+describe("getReferencedStatisticIds", () => {
+  it("includes heat consumption and cost statistics", () => {
+    const prefs = {
+      energy_sources: [
+        {
+          type: "heat",
+          stat_energy_from: "sensor.district_heat",
+          stat_cost: "external:district_heat_cost",
+          entity_energy_price: null,
+          number_energy_price: null,
+        },
+        {
+          type: "heat",
+          stat_energy_from: "sensor.district_heat_second",
+          stat_cost: null,
+          entity_energy_price: null,
+          number_energy_price: null,
+        },
+      ],
+      device_consumption: [],
+      device_consumption_water: [],
+    };
+    const info = {
+      cost_sensors: {
+        "sensor.district_heat_second": "sensor.district_heat_second_cost",
+      },
+      solar_forecast_domains: [],
+    };
+
+    expect(getReferencedStatisticIds(prefs, info)).toEqual([
+      "sensor.district_heat",
+      "external:district_heat_cost",
+      "sensor.district_heat_second",
+      "sensor.district_heat_second_cost",
+    ]);
+  });
+});
 
 describe("Energy Short Format Test", () => {
   // Create default to not have to specify a not relevant TimeFormat over and over again.

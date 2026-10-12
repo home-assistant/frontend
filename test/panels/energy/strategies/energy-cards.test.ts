@@ -35,6 +35,7 @@ const GRID_RETURN = source({
 });
 const SOLAR = source({ type: "solar", stat_energy_from: "sensor.solar" });
 const GAS = source({ type: "gas", stat_energy_from: "sensor.gas" });
+const HEAT = source({ type: "heat", stat_energy_from: "sensor.heat" });
 const WATER = source({ type: "water", stat_energy_from: "sensor.water" });
 const GAS_RATE = source({
   type: "gas",
@@ -90,6 +91,22 @@ describe("catalog applicability", () => {
     ]);
     // No electricity sources -> no electricity cards apply.
     expect(applicableEnergyCardKeys("electricity", gasOnly)).toEqual([]);
+  });
+
+  it("lists the district heat graph and table for heat sources", () => {
+    const heatOnly = makePrefs({ energy_sources: [HEAT] });
+    expect(applicableEnergyCardKeys("heat", heatOnly)).toEqual([
+      "heat.energy-heat-graph",
+      "heat.energy-sources-table",
+    ]);
+
+    const overviewHeatCard = ENERGY_CARD_CATALOG.find(
+      (card) => card.key === "overview.energy-heat-graph"
+    )!;
+    expect(overviewHeatCard.isApplicable(heatOnly)).toBe(true);
+    expect(
+      overviewHeatCard.isApplicable(makePrefs({ energy_sources: [GAS] }))
+    ).toBe(false);
   });
 
   it("gates the solar graph and gauges on their sources", () => {

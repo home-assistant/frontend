@@ -5,6 +5,7 @@ import type {
   EnergyGasUnitClass,
   EnergyInfo,
   GasSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
@@ -34,11 +35,15 @@ export interface EnergySettingsBatteryDialogParams {
 }
 
 export interface EnergySettingsGasDialogParams {
-  source?: GasSourceTypeEnergyPreference;
+  source?: GasSourceTypeEnergyPreference | HeatSourceTypeEnergyPreference;
+  source_type?: "gas" | "heat";
   allowedGasUnitClass?: EnergyGasUnitClass;
   gas_sources: GasSourceTypeEnergyPreference[];
+  heat_sources?: HeatSourceTypeEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
+  saveCallback: (
+    source: GasSourceTypeEnergyPreference | HeatSourceTypeEnergyPreference
+  ) => Promise<void>;
 }
 
 export interface EnergySettingsWaterDialogParams {

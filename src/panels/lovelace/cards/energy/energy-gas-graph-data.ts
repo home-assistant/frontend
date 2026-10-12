@@ -5,6 +5,7 @@ import { fillDataGapsAndRoundCaps } from "../../../../components/chart/round-cap
 import type {
   EnergyData,
   GasSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { getSuggestedPeriod } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
@@ -23,6 +24,7 @@ export interface EnergyGasGraphDataParams {
   darkMode: boolean;
   energyData: EnergyData;
   computedStyles: CSSStyleDeclaration;
+  sourceType?: "gas" | "heat";
   /** Current time, injected so the transform is deterministic. */
   now: Date;
 }
@@ -49,6 +51,7 @@ export function generateEnergyGasGraphData(
   params: EnergyGasGraphDataParams
 ): EnergyGasGraphData {
   const { energyData, computedStyles, now } = params;
+  const sourceType = params.sourceType || "gas";
 
   const start = energyData.start;
   const end = energyData.end || now;
@@ -56,12 +59,17 @@ export function generateEnergyGasGraphData(
   const compareStart = energyData.startCompare;
   const compareEnd = energyData.endCompare;
 
-  const gasSources: GasSourceTypeEnergyPreference[] =
-    energyData.prefs.energy_sources.filter(
-      (source) => source.type === "gas"
-    ) as GasSourceTypeEnergyPreference[];
+  const gasSources: (
+    | GasSourceTypeEnergyPreference
+    | HeatSourceTypeEnergyPreference
+  )[] = energyData.prefs.energy_sources.filter(
+    (
+      source
+    ): source is GasSourceTypeEnergyPreference | HeatSourceTypeEnergyPreference =>
+      source.type === sourceType
+  );
 
-  const unit = energyData.gasUnit;
+  const unit = sourceType === "gas" ? energyData.gasUnit : "kWh";
 
   const datasets: BarSeriesOption[] = [];
 
@@ -141,7 +149,10 @@ export function generateEnergyGasGraphData(
 
 function processTotal(
   statistics: Statistics,
-  gasSources: GasSourceTypeEnergyPreference[]
+  gasSources: (
+    | GasSourceTypeEnergyPreference
+    | HeatSourceTypeEnergyPreference
+  )[]
 ) {
   return gasSources.reduce(
     (sum, source) =>
@@ -162,7 +173,10 @@ function processDataSet(
   period: ReturnType<typeof getSuggestedPeriod>,
   statistics: Statistics,
   statisticsMetaData: Record<string, StatisticsMetaData>,
-  gasSources: GasSourceTypeEnergyPreference[],
+  gasSources: (
+    | GasSourceTypeEnergyPreference
+    | HeatSourceTypeEnergyPreference
+  )[],
   computedStyles: CSSStyleDeclaration,
   trackY: (v: number) => void,
   compare = false

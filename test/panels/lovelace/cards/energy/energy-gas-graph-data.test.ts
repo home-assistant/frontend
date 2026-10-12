@@ -44,6 +44,38 @@ const gasOnlyPrefs = (sources: number): EnergyPreferences => ({
 const now = new Date("2024-01-31T23:59:59Z");
 
 describe("generateEnergyGasGraphData", () => {
+  it("uses energy units for district heat sources", () => {
+    const prefs: EnergyPreferences = {
+      energy_sources: [
+        {
+          type: "heat",
+          stat_energy_from: "sensor.district_heat_consumption",
+          stat_cost: null,
+          entity_energy_price: null,
+          number_energy_price: null,
+        },
+      ],
+      device_consumption: [],
+      device_consumption_water: [],
+    };
+    const energyData = generateEnergyData(1, {
+      days: 2,
+      prefs,
+    });
+
+    const result = generateEnergyGasGraphData({
+      hass: makeHass(),
+      energyData,
+      computedStyles,
+      now,
+      sourceType: "heat",
+    });
+
+    expect(result.unit).toBe("kWh");
+    expect(result.chartData).toHaveLength(1);
+    expect(result.chartData[0].id).toBe("sensor.district_heat_consumption");
+  });
+
   it("matches snapshot for a single gas source (no compare)", () => {
     const energyData = generateEnergyData(1, {
       days: 2,
