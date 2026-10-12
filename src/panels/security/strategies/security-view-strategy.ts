@@ -118,7 +118,7 @@ const processAreasForSecurity = (
     const areaSecurityEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, false);
 
     for (const entityId of areaSecurityEntities) {
       areaCards.push(computeTileCard(entityId));
@@ -159,7 +159,7 @@ const processUnassignedEntities = (
   );
   const unassignedLights = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+  const computeTileCard = computeAreaTileCardConfig(hass, false);
 
   for (const entityId of unassignedLights) {
     areaCards.push(computeTileCard(entityId));

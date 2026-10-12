@@ -17,7 +17,6 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../../card-features/types";
 import type { TileCardConfig } from "../../../cards/types";
-import { stripNamePrefix } from "../../../common/strip-name-prefix";
 
 export const AREA_STRATEGY_GROUPS = [
   "lights",
@@ -331,10 +330,8 @@ export const getAreaGroupedEntities = (
 };
 
 export const computeAreaTileCardConfig =
-  (hass: HomeAssistant, prefix: string, includeFeature?: boolean) =>
+  (hass: HomeAssistant, includeFeature?: boolean) =>
   (entity: string): LovelaceCardConfig => {
-    const stateObj = hass.states[entity];
-
     const context: LovelaceCardFeatureContext = {
       entity_id: entity,
     };
@@ -389,13 +386,9 @@ export const computeAreaTileCardConfig =
       additionalCardConfig.features = [feature];
     }
 
-    const name = hass.formatEntityName(stateObj);
-    const stripedName = stripNamePrefix(name, prefix.toLowerCase());
-
     return {
       type: "tile",
       entity: entity,
-      name: stripedName,
       ...additionalCardConfig,
     };
   };
