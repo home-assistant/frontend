@@ -17,6 +17,7 @@ import "../../../../components/chart/ha-chart-tooltip-marker";
 import {
   formattersContext,
   internationalizationContext,
+  registriesContext,
   statesContext,
   uiContext,
 } from "../../../../data/context";
@@ -24,6 +25,7 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
   computeEnergyDeviceLabels,
+  computeEnergyStatisticArea,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -38,6 +40,7 @@ import type {
   HomeAssistant,
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
+  HomeAssistantRegistries,
   HomeAssistantUI,
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -109,6 +112,9 @@ export class HuiEnergyDevicesGraphCard
 
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: HomeAssistantRegistries;
 
   @consume({ context: uiContext, subscribe: true })
   private _ui!: HomeAssistantUI;
@@ -212,12 +218,22 @@ export class HuiEnergyDevicesGraphCard
 
   private _renderTooltip = (params: any) => {
     const deviceName = this._getDeviceName(params.name);
+    const area = computeEnergyStatisticArea(this._registries, params.name);
     const value = `${formatNumber(
       params.value[0] as number,
       this._i18n.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
     return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
+      ${
+        area
+          ? html`<div
+              style="text-align: center; color: var(--secondary-text-color);"
+            >
+              ${area}
+            </div>`
+          : nothing
+      }
       <ha-chart-tooltip-marker
         .color=${String(params.color ?? "")}
       ></ha-chart-tooltip-marker>

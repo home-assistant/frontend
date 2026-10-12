@@ -177,7 +177,6 @@ class StateDisplay extends LitElement {
       ) {
         return html`
           <hui-timestamp-display
-            .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
             .format=${
               this.timeFormat ||
@@ -221,7 +220,6 @@ class StateDisplay extends LitElement {
 
     if (relativeDateTime || relativeDateTime === 0) {
       return html`<hui-timestamp-display
-        .hass=${this.hass}
         .ts=${new Date(relativeDateTime)}
         .format=${this.timeFormat}
         capitalize

@@ -141,9 +141,20 @@ export interface BackupAddon {
 
 export interface BackupContentExtended extends BackupContent, BackupData {}
 
-export interface BackupInfo {
-  backups: BackupContentExtended[];
+export interface BackupAgentErrorTranslation {
+  translation_domain: string;
+  translation_key: string;
+  translation_placeholders: Record<string, string> | null;
+}
+
+export interface BackupAgentErrors {
   agent_errors: Record<string, string>;
+  // Only contains the agents whose error has a translation
+  agent_error_translations: Record<string, BackupAgentErrorTranslation>;
+}
+
+export interface BackupInfo extends BackupAgentErrors {
+  backups: BackupContentExtended[];
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
   last_action_event: ManagerStateEvent | null;
@@ -152,8 +163,7 @@ export interface BackupInfo {
   state: BackupManagerState;
 }
 
-export interface BackupDetails {
-  agent_errors: Record<string, string>;
+export interface BackupDetails extends BackupAgentErrors {
   backup: BackupContentExtended;
 }
 
@@ -181,6 +191,22 @@ export interface RestoreBackupParams {
   restore_folders?: string[];
   restore_homeassistant?: boolean;
 }
+
+export const localizeBackupAgentError = (
+  localize: LocalizeFunc,
+  errors: BackupAgentErrors,
+  agentId: string
+): string => {
+  const translation = errors.agent_error_translations[agentId];
+  return (
+    (translation &&
+      localize(
+        `component.${translation.translation_domain}.exceptions.${translation.translation_key}.message`,
+        translation.translation_placeholders ?? undefined
+      )) ||
+    errors.agent_errors[agentId]
+  );
+};
 
 export type CloudBackupHealth = "success" | "failed" | "old" | "none";
 
@@ -237,7 +263,7 @@ export const fetchBackupAgentsInfo = (
 export const deleteBackup = (
   hass: HomeAssistant,
   id: string
-): Promise<{ agent_errors: Record<string, string> }> =>
+): Promise<BackupAgentErrors> =>
   hass.callWS({
     type: "backup/delete",
     backup_id: id,

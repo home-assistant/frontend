@@ -4,8 +4,10 @@ import {
   mdiCheckCircleOutline,
   mdiCompassOutline,
   mdiDotsVertical,
+  mdiDownload,
   mdiLinkPlus,
   mdiOpenInNew,
+  mdiStar,
   mdiStore,
   mdiViewGridOutline,
 } from "@mdi/js";
@@ -24,6 +26,7 @@ import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { navigate, updateHistoryState } from "../../../common/navigate";
+import { formatNumber } from "../../../common/number/format_number";
 import type {
   DataTableColumnContainer,
   SortingDirection,
@@ -92,6 +95,8 @@ const defaultKeyData = {
 
 // From the Marketplace translations, a direct visit does not load those of Settings
 export type MarketplaceTab = "discover" | "browse" | "installed";
+
+const compact = { notation: "compact" } as const;
 
 const marketplaceTabs = (
   localize: LocalizeFunc,
@@ -522,14 +527,29 @@ export class HaMarketplaceDashboard extends LitElement {
         title: localizeFunc("ui.panel.marketplace.column.downloads"),
         sortable: true,
         hidden: false,
-        template: (repository: RepositoryBase) =>
-          html`${repository.downloads || "-"}`,
+        template: (repository: RepositoryBase) => {
+          if (!repository.downloads) {
+            return narrow ? nothing : "-";
+          }
+
+          return html`${
+            narrow
+              ? html`<ha-svg-icon .path=${mdiDownload}></ha-svg-icon>`
+              : nothing
+          }${formatNumber(repository.downloads, this._i18n.locale, compact)}`;
+        },
       },
       stars: {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.stars"),
         sortable: true,
         hidden: false,
+        template: (repository: RepositoryBase) =>
+          html`${
+            narrow
+              ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>`
+              : nothing
+          }${formatNumber(repository.stars, this._i18n.locale, compact)}`,
       },
       last_updated: {
         ...defaultKeyData,
@@ -539,6 +559,10 @@ export class HaMarketplaceDashboard extends LitElement {
         type: "numeric",
         hidden: false,
         template: (repository: RepositoryBase) => {
+          // A bare relative time has no context on narrow rows, the overview shows it
+          if (narrow) {
+            return nothing;
+          }
           if (!repository.last_updated) {
             return "-";
           }

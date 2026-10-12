@@ -130,7 +130,6 @@ export class HaNavigationPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this._loading ? undefined : this.value}
         allow-custom-value
         .placeholder=${this.label}

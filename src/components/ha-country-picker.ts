@@ -347,7 +347,6 @@ export class HaCountryPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${
           this.hass?.localize("ui.components.country-picker.no_countries") ||

@@ -156,7 +156,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
               </li>
               <li>
                 <mqtt-discovery-payload
-                  .hass=${this.hass}
                   .payload=${entity.discovery_data.payload}
                   .showAsYaml=${this._showAsYaml}
                   .summary=${"Payload"}
@@ -229,7 +228,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
               </li>
               <li>
                 <mqtt-discovery-payload
-                  .hass=${this.hass}
                   .payload=${trigger.discovery_data?.payload ?? ""}
                   .showAsYaml=${this._showAsYaml}
                   .summary=${"Payload"}
