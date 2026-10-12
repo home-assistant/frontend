@@ -284,8 +284,10 @@ export class HaDataTable extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues<this>) {
-    // The sticky group header may have just been rendered
+    // The sticky group header may have just been rendered, and the items may
+    // have changed (filter, sort, collapse) without the visible range changing
     this._positionStickyGroupHeader();
+    this._scheduleStickyGroupUpdate();
 
     if (!this._headerRow) {
       return;
@@ -722,6 +724,8 @@ export class HaDataTable extends LitElement {
                       ? html`<div
                           class="mdc-data-table__row sticky-group-header"
                           aria-hidden="true"
+                          .group=${this._stickyGroup}
+                          @click=${this._collapseStickyGroup}
                         >
                           ${this._renderGroupHeader(
                             this._stickyGroup,
@@ -1057,12 +1061,13 @@ export class HaDataTable extends LitElement {
     sticky = false
   ) {
     // The sticky copy is hidden from assistive technology, so its button is
-    // made inert; clicks fall through to the header cell.
+    // made inert. It handles clicks on its whole row instead, as its cell
+    // shifts with horizontal scrolling.
     return html`<div
       class="mdc-data-table__cell group-header"
       role="cell"
       .group=${groupName}
-      @click=${sticky ? this._collapseStickyGroup : this._collapseGroup}
+      @click=${sticky ? nothing : this._collapseGroup}
     >
       <ha-icon-button
         .path=${mdiChevronUp}
