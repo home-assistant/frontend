@@ -232,12 +232,18 @@ export const manualEditorStyles = css`
   }
 
   .has-bottom-sheet {
-    --automation-bottom-sheet-height: 50dvh;
+    --automation-bottom-sheet-height: 50vh;
     /* The backdrop covers the editor when the sheet is at full height */
     --automation-bottom-sheet-covered-height: min(
-      var(--automation-bottom-sheet-settled-height, 100dvh),
+      var(--automation-bottom-sheet-settled-height, 100vh),
       var(--automation-bottom-sheet-height)
     );
+  }
+  /* A custom property can't fall back from dvh to vh by being declared twice */
+  @supports (height: 1dvh) {
+    .has-bottom-sheet {
+      --automation-bottom-sheet-height: 50dvh;
+    }
   }
   .has-bottom-sheet .content {
     padding-bottom: calc(
