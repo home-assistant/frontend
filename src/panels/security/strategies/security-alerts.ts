@@ -1,5 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { ensureArray } from "../../../common/array/ensure-array";
+import {
+  computeAlertActiveStates,
+  isAlertActive,
+} from "../../../common/entity/alert_active";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type {
   SecurityAlertEntityConfig,
@@ -55,26 +58,15 @@ export const computeDefaultSecurityAlertSeverity = (
 export const computeDefaultSecurityAlertVisibility = (
   entityId: string
 ): StateCondition[] => {
-  const condition: StateCondition = {
-    condition: "state",
-    entity: entityId,
-  };
+  const states = computeAlertActiveStates(entityId);
 
-  switch (computeDomain(entityId)) {
-    case "alarm_control_panel":
-      condition.state = "triggered";
-      break;
-    case "cover":
-      condition.state = "open";
-      break;
-    case "lock":
-      condition.state = ["jammed", "unlocked", "open"];
-      break;
-    default:
-      condition.state = "on";
-  }
-
-  return [condition];
+  return [
+    {
+      condition: "state",
+      entity: entityId,
+      state: states.length === 1 ? states[0] : states,
+    },
+  ];
 };
 
 export const resolveSecurityAlertSeverity = (
@@ -88,8 +80,8 @@ export const isSecurityAlertActive = (
   entityId: string
 ): boolean => {
   const stateObj = states[entityId];
-  const [{ state }] = computeDefaultSecurityAlertVisibility(entityId);
-  return !!stateObj && !!state && ensureArray(state).includes(stateObj.state);
+
+  return !!stateObj && isAlertActive(stateObj);
 };
 
 export const filterSecurityAlertEntities = (
