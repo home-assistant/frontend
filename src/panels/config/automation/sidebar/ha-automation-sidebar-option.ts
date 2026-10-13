@@ -187,7 +187,9 @@ export default class HaAutomationSidebarOption extends LitElement {
           : html`<div class="description">${description}</div>`
       }
       ${
-        !this.config.defaultOption && this.config.note?.trim()
+        !this.config.defaultOption &&
+        this.config.note?.trim() &&
+        !this.config.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
               .note=${this.config.note}
