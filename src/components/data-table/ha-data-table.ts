@@ -415,6 +415,12 @@ export class HaDataTable extends LitElement {
     }
   }
 
+  private _memRenderRow = memoizeOne(
+    (columns: DataTableColumnContainer, narrow: boolean) =>
+      (row: DataTableRowData, index: number) =>
+        this._renderRow(columns, narrow, row, index)
+  );
+
   private _sortedColumns = memoizeOne(
     (columns: DataTableColumnContainer, columnOrder?: string[]) => {
       if (!columnOrder || !columnOrder.length) {
@@ -450,8 +456,7 @@ export class HaDataTable extends LitElement {
   protected render() {
     const columns = this._sortedColumns(this.columns, this.columnOrder);
 
-    const renderRow = (row: DataTableRowData, index: number) =>
-      this._renderRow(columns, this.narrow, row, index);
+    const renderRow = this._memRenderRow(columns, this.narrow);
 
     const filteredDataLength = this._filteredData?.length || 0;
 
