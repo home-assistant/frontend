@@ -35,7 +35,7 @@ import {
   computeDeviceName,
   getDuplicatedDeviceNames,
 } from "../../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
@@ -180,9 +180,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         const areaId = entry?.area_id || device?.area_id;
         const area = areaId ? areas[areaId] : undefined;
 
-        const entityName = entry
-          ? computeEntityEntryName(entry, devices, item.state)
-          : undefined;
+        const entityName = entry ? computeEntityEntryName(entry) : undefined;
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
         const deviceFullName = deviceName
@@ -840,6 +838,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           width: 100%;
           flex-grow: 1;
           --data-table-border-width: 0;
+          /* Same insets as the content padding of ha-top-app-bar-fixed */
+          --data-table-inset-right: var(--safe-area-inset-right, 0px);
+        }
+        :host([narrow]) ha-data-table {
+          --data-table-inset-left: var(--safe-area-inset-left, 0px);
         }
 
         :host([narrow]) {
@@ -852,11 +855,18 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 56px;
           width: 100%;
           justify-content: space-between;
-          padding: 0 var(--ha-space-4);
+          padding-left: calc(
+            var(--ha-space-4) + var(--data-table-inset-left, 0px)
+          );
+          padding-right: calc(
+            var(--ha-space-4) + var(--data-table-inset-right, 0px)
+          );
           gap: var(--ha-space-4);
           box-sizing: border-box;
           background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
+          overflow-x: auto;
+          scrollbar-width: none;
         }
         ha-input-search {
           flex: 1;
@@ -864,31 +874,22 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         .search-toolbar {
           display: flex;
           align-items: center;
+          padding: 0 var(--ha-space-4);
           color: var(--secondary-text-color);
         }
 
         .narrow-header-row {
-          --header-row-inset-start: var(--safe-area-inset-left, 0px);
-          --header-row-inset-end: var(--safe-area-inset-right, 0px);
           display: flex;
           align-items: center;
           gap: var(--ha-space-4);
-          padding: 0;
-          padding-inline-start: calc(
-            var(--ha-space-4) + var(--header-row-inset-start)
+          padding-left: calc(
+            var(--ha-space-4) + var(--data-table-inset-left, 0px)
+          );
+          padding-right: calc(
+            var(--ha-space-4) + var(--data-table-inset-right, 0px)
           );
           overflow-x: scroll;
           scrollbar-width: none;
-        }
-
-        .narrow-header-row:dir(rtl) {
-          --header-row-inset-start: var(--safe-area-inset-right, 0px);
-          --header-row-inset-end: var(--safe-area-inset-left, 0px);
-        }
-
-        .narrow-header-row::after {
-          content: "";
-          flex: 0 0 var(--header-row-inset-end);
         }
 
         .selection-bar {
@@ -931,8 +932,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
 
         .select-mode-chip {
-          --md-assist-chip-icon-label-space: 0;
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-icon-label-space: 0;
+          --ha-assist-chip-trailing-space: 8px;
         }
 
         ha-dialog {
@@ -946,7 +947,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
 
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

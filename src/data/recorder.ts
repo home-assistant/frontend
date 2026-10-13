@@ -115,8 +115,26 @@ export interface StatisticsValidationResultMeanTypeChanged {
 
 export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
+export const ENERGY_UNITS = [
+  "J",
+  "kJ",
+  "MJ",
+  "GJ",
+  "mWh",
+  "Wh",
+  "kWh",
+  "MWh",
+  "GWh",
+  "TWh",
+  "cal",
+  "kcal",
+  "Mcal",
+  "Gcal",
+  "thm",
+] as const;
+
 export interface StatisticsUnitConfiguration {
-  energy?: "Wh" | "kWh" | "MWh" | "GJ";
+  energy?: (typeof ENERGY_UNITS)[number];
   power?: "W" | "kW";
   pressure?:
     "Pa" | "hPa" | "kPa" | "bar" | "cbar" | "mbar" | "inHg" | "psi" | "mmHg";
@@ -161,16 +179,16 @@ export const getRecorderEntityOptions = (
   });
 
 export const getStatisticMetadata = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   statistic_ids?: string[]
 ) =>
-  hass.callWS<StatisticsMetaData[]>({
+  callWS<StatisticsMetaData[]>({
     type: "recorder/get_statistics_metadata",
     statistic_ids,
   });
 
 export const fetchStatistics = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
@@ -178,7 +196,7 @@ export const fetchStatistics = (
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
 ) =>
-  hass.callWS<Statistics>({
+  callWS<Statistics>({
     type: "recorder/statistics_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime?.toISOString(),
@@ -342,26 +360,27 @@ export const adjustStatisticsSum = (
 };
 
 export const getStatisticLabel = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
   statisticsId: string,
   statisticsMetaData: StatisticsMetaData | undefined
 ): string => {
-  const entity = hass.states[statisticsId];
+  const entity = states[statisticsId];
   if (entity) {
-    return hass.formatEntityName(entity, DEFAULT_ENTITY_NAME);
+    return formatEntityName(entity, DEFAULT_ENTITY_NAME);
   }
   // External statistics have no entity to resolve a name against.
   return statisticsMetaData?.name || statisticsId;
 };
 
 export const getDisplayUnit = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   statisticsId: string | undefined,
   statisticsMetaData: StatisticsMetaData | undefined
 ): string | null | undefined => {
   let unit: string | undefined;
   if (statisticsId) {
-    unit = hass.states[statisticsId]?.attributes.unit_of_measurement;
+    unit = states[statisticsId]?.attributes.unit_of_measurement;
   }
   return unit === undefined
     ? statisticsMetaData?.statistics_unit_of_measurement

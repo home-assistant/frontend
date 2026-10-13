@@ -414,7 +414,6 @@ export class HaBackupOverviewProgress extends LitElement {
 
     return html`
       <ha-backup-summary-card
-        .hass=${this.hass}
         .heading=${this._heading}
         .description=${this._description}
         status="none"

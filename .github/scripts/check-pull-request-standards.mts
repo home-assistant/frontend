@@ -13,6 +13,7 @@ import type {
   GitHubScriptArgs,
   PullRequestPayload,
 } from "./github-script.d.ts";
+import { withRetry } from "./github-retry.mts";
 
 export default async function checkPullRequestStandards({
   github,
@@ -31,10 +32,12 @@ export default async function checkPullRequestStandards({
     return;
   }
   try {
-    await github.rest.orgs.checkMembershipForUser({
-      org: "home-assistant",
-      username: pr.user.login,
-    });
+    await withRetry("organization membership check", () =>
+      github.rest.orgs.checkMembershipForUser({
+        org: "home-assistant",
+        username: pr.user.login,
+      })
+    );
     core.info(`Skipping organization member: ${pr.user.login}`);
     return;
   } catch (_error) {
@@ -88,7 +91,9 @@ export default async function checkPullRequestStandards({
            }
          }`;
     try {
-      await github.graphql(mutation, { id: subjectId });
+      await withRetry(`comment ${minimized ? "minimize" : "restore"}`, () =>
+        github.graphql(mutation, { id: subjectId })
+      );
     } catch (error) {
       core.info(
         `Could not ${minimized ? "minimize" : "restore"} comment: ${error instanceof Error ? error.message : error}`
@@ -132,12 +137,14 @@ export default async function checkPullRequestStandards({
 
   const isValid = problems.length === 0;
 
-  const comments = await github.paginate(github.rest.issues.listComments, {
-    owner,
-    repo,
-    issue_number,
-    per_page: 100,
-  });
+  const comments = await withRetry("comment list", () =>
+    github.paginate(github.rest.issues.listComments, {
+      owner,
+      repo,
+      issue_number,
+      per_page: 100,
+    })
+  );
 
   const existing = comments.find((c) => c.body?.includes(marker));
   const hasLabel = pr.labels.some((l) => l.name === label);
@@ -147,12 +154,14 @@ export default async function checkPullRequestStandards({
 
     if (hasLabel) {
       await ignoreMissing(() =>
-        github.rest.issues.removeLabel({
-          owner,
-          repo,
-          issue_number,
-          name: label,
-        })
+        withRetry("label removal", () =>
+          github.rest.issues.removeLabel({
+            owner,
+            repo,
+            issue_number,
+            name: label,
+          })
+        )
       );
     }
     if (existing) {
@@ -164,12 +173,14 @@ export default async function checkPullRequestStandards({
   core.info(`Pull request standards not met:\n- ${problems.join("\n- ")}`);
 
   if (!hasLabel) {
-    await github.rest.issues.addLabels({
-      owner,
-      repo,
-      issue_number,
-      labels: [label],
-    });
+    await withRetry("label addition", () =>
+      github.rest.issues.addLabels({
+        owner,
+        repo,
+        issue_number,
+        labels: [label],
+      })
+    );
   }
 
   const message =
@@ -185,14 +196,17 @@ export default async function checkPullRequestStandards({
     `for more on creating a great pull request (see point 6).`;
 
   if (existing) {
-    await github.rest.issues.updateComment({
-      owner,
-      repo,
-      comment_id: existing.id,
-      body: message,
-    });
+    await withRetry("comment update", () =>
+      github.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: existing.id,
+        body: message,
+      })
+    );
     await setMinimized(existing.node_id, false);
   } else {
+    // Not retried, as a retry after GitHub created the comment would post it twice
     await github.rest.issues.createComment({
       owner,
       repo,

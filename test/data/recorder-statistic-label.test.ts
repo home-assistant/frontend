@@ -52,10 +52,14 @@ const hassWithRegistry = () =>
   );
 
 describe("getStatisticLabel", () => {
+  const { states, formatEntityName } = createMockHass();
+
   it("composes the name from the registry rather than friendly_name", () => {
+    const hass = hassWithRegistry();
     expect(
       getStatisticLabel(
-        hassWithRegistry(),
+        hass.states,
+        hass.formatEntityName,
         "sensor.dishwasher_energy",
         metadata("sensor.dishwasher_energy", "Recorder name")
       )
@@ -67,7 +71,8 @@ describe("getStatisticLabel", () => {
   it("uses the metadata name when there is no entity", () => {
     expect(
       getStatisticLabel(
-        createMockHass(),
+        states,
+        formatEntityName,
         "energy:solar_production",
         metadata("energy:solar_production", "Solar production")
       )
@@ -77,7 +82,8 @@ describe("getStatisticLabel", () => {
   it("falls back to the statistic id when metadata has no name", () => {
     expect(
       getStatisticLabel(
-        createMockHass(),
+        states,
+        formatEntityName,
         "energy:solar_production",
         metadata("energy:solar_production", null)
       )
@@ -86,7 +92,12 @@ describe("getStatisticLabel", () => {
 
   it("falls back to the statistic id when there is no metadata", () => {
     expect(
-      getStatisticLabel(createMockHass(), "energy:solar_production", undefined)
+      getStatisticLabel(
+        states,
+        formatEntityName,
+        "energy:solar_production",
+        undefined
+      )
     ).toBe("energy:solar_production");
   });
 });

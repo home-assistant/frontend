@@ -7,6 +7,7 @@ import type { LovelaceViewSidebarConfig } from "../../../data/lovelace/config/vi
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HomeAssistant } from "../../../types";
 import "../sections/hui-section";
+import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
@@ -22,7 +23,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
 
   @property({ attribute: false }) public config?: LovelaceViewSidebarConfig;
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   private _visible = true;
 
@@ -63,12 +64,12 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
         ${repeat(
           this.config?.sections ?? [],
           (section) => this._getSectionKey(section),
-          (section) => html`
+          (section, idx) => html`
             <hui-section
               .config=${section}
               .hass=${this.hass}
               .preview=${this.lovelace.editMode}
-              .viewIndex=${this.viewIndex}
+              .path=${[...this.path, "sidebar", "sections", idx]}
             ></hui-section>
           `
         )}

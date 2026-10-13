@@ -172,8 +172,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     if (this._config.image_entity) {
       stateObj = this.hass.states[this._config.image_entity];
       if (!stateObj) {
-        return html`<hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.image_entity)}
+        return html`<hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>`;
       }
     }
@@ -221,7 +221,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       >
         <img
           alt=${ifDefined(
-            this._config.alt_text || stateObj?.attributes.friendly_name
+            this._config.alt_text ||
+              (stateObj ? this.hass.formatEntityName(stateObj) : undefined)
           )}
           src=${this._reconnectImg ? nothing : live(this.hass.hassUrl(image))}
         />

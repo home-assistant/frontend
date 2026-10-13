@@ -3,7 +3,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -47,7 +46,7 @@ class DialogVoiceSettings extends LitElement {
     }
 
     const title =
-      computeStateName(this.hass.states[this._params.entityId]) ||
+      this.hass.formatEntityName(this.hass.states[this._params.entityId]) ||
       this.hass.localize("ui.panel.config.entities.picker.unnamed_entity");
 
     return html`

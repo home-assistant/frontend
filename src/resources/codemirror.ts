@@ -282,13 +282,12 @@ export const haTheme = EditorView.theme({
     margin: "4px",
     background: "none",
     color: "var(--primary-color)",
-    fontFamily:
-      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, var(--ha-font-family-body)))",
-    fontSize: "var(--mdc-typography-button-font-size, 0.875rem)",
+    fontFamily: "var(--ha-font-family-body)",
+    fontSize: "0.875rem",
     height: "36px",
-    fontWeight: "var(--mdc-typography-button-font-weight, 500)",
+    fontWeight: "500",
     borderRadius: "4px",
-    letterSpacing: "var(--mdc-typography-button-letter-spacing, 0.0892857em)",
+    letterSpacing: "0.0892857em",
   },
 
   ".cm-textfield": {
@@ -387,7 +386,7 @@ export const haTheme = EditorView.theme({
   ".cm-lint-marker-warning": { color: "var(--warning-color)" },
   ".cm-lint-marker-info": { color: "var(--info-color, var(--primary-color))" },
   ".cm-diagnostic": {
-    fontFamily: "var(--mdc-typography-font-family, var(--ha-font-family-body))",
+    fontFamily: "var(--ha-font-family-body)",
   },
   ".cm-diagnostic.cm-diagnostic-error": {
     borderLeft: "3px solid var(--error-color)",

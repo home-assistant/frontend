@@ -1,10 +1,13 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import type { ContextType } from "@lit/context";
 import {
   mdiCheckCircleOutline,
   mdiCompassOutline,
   mdiDotsVertical,
+  mdiDownload,
   mdiLinkPlus,
   mdiOpenInNew,
+  mdiStar,
   mdiStore,
   mdiViewGridOutline,
 } from "@mdi/js";
@@ -14,10 +17,22 @@ import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
+import { transform } from "../../../common/decorators/transform";
 import { mainWindow } from "../../../common/dom/get_main_window";
-import { navigate, updateHistoryState } from "../../../common/navigate";
+import {
+  navigate,
+  replaceCurrentUrl,
+  updateHistoryState,
+} from "../../../common/navigate";
+import { formatNumber } from "../../../common/number/format_number";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import { currentPath } from "../../../common/url/current-path";
 import type {
   DataTableColumnContainer,
   SortingDirection,
@@ -39,8 +54,8 @@ import type { HaIconButton } from "../../../components/ha-icon-button";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant, Route } from "../../../types";
-import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace-custom-repositories";
+import type { HomeAssistantUI, Route } from "../../../types";
+import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 import "../components/ha-marketplace-discover";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import {
@@ -48,6 +63,12 @@ import {
   repositoryMenuItems,
 } from "../components/ha-marketplace-repository-overflow-menu";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../../data/context";
 import type {
   RepositoryBase,
   RepositoryType,
@@ -56,10 +77,16 @@ import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import { dismissNewMarketplaceRepositories } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
+  browseQuery,
   browseSettingsFromUrl,
   filterRepositories,
+  filtersOfTab,
+  SOURCE_FILTER,
+  SOURCE_ORDER,
   STATUS_FILTER,
   STATUS_ORDER,
+  statusesOfTab,
+  statusFilterOfTab,
   TYPE_FILTER,
 } from "./dashboard-repositories";
 import type { RepositoryFilters } from "./dashboard-repositories";
@@ -73,17 +100,10 @@ const defaultKeyData = {
   hidden: true,
 };
 
-// The backend reports why the Marketplace is disabled, mapped so it can be shown
-// as a translated sentence.
-const DISABLED_REASONS = ["invalid_token", "rate_limit", "removed"] as const;
-
-type DisabledReason = (typeof DISABLED_REASONS)[number];
-
-const isKnownDisabledReason = (reason: string): reason is DisabledReason =>
-  DISABLED_REASONS.includes(reason as DisabledReason);
-
 // From the Marketplace translations, a direct visit does not load those of Settings
 export type MarketplaceTab = "discover" | "browse" | "installed";
+
+const compact = { notation: "compact" } as const;
 
 const marketplaceTabs = (
   localize: LocalizeFunc,
@@ -128,8 +148,6 @@ const repositoriesOfTab = (
 export class HaMarketplaceDashboard extends LitElement {
   @property({ attribute: false }) public marketplace!: MarketplaceData;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public tab: MarketplaceTab = "browse";
 
   @property({ attribute: false }) public route!: Route;
@@ -138,6 +156,24 @@ export class HaMarketplaceDashboard extends LitElement {
   public narrow!: boolean;
 
   @property({ attribute: false }) public isWide!: boolean;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @storage({
     storage: "sessionStorage",
@@ -153,6 +189,20 @@ export class HaMarketplaceDashboard extends LitElement {
     subscribe: false,
   })
   private _activeSorting?: { column: string; direction: SortingDirection };
+
+  @storage({
+    key: "marketplace-dashboard-table-grouping",
+    state: true,
+    subscribe: false,
+  })
+  private _activeGrouping?: string = "translated_status";
+
+  @storage({
+    key: "marketplace-dashboard-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed: string[] = [];
 
   @storage({
     storage: "sessionStorage",
@@ -212,29 +262,73 @@ export class HaMarketplaceDashboard extends LitElement {
   // Links, like See all on Discover, say in the URL how to browse. The router
   // keeps the page of a tab, so a link often lands on a page that is open.
   private _applyLink = () => {
+    // Leaving the tab gets here too, before the router swaps the page
+    if (
+      this.tab === "discover" ||
+      !["/marketplace/browse", "/marketplace/installed"].includes(currentPath())
+    ) {
+      return;
+    }
+
     const search = mainWindow.location.search;
-    if (mainWindow.history.state?.[APPLIED_LINK_STATE] === search) {
-      return;
+
+    const settings =
+      mainWindow.history.state?.[APPLIED_LINK_STATE] === search
+        ? undefined
+        : browseSettingsFromUrl(search);
+
+    if (settings) {
+      this._linksApplied++;
+      // A search left behind would hide part of what the link promised
+      this._activeSearch = settings.search ?? "";
+      this._filters = settings.filters;
+
+      if (settings.sorting) {
+        this._activeSorting = settings.sorting;
+      }
     }
 
-    const settings = browseSettingsFromUrl(search);
-    if (!settings) {
-      return;
-    }
-
-    updateHistoryState({ [APPLIED_LINK_STATE]: search });
-    this._linksApplied++;
-    // A search left behind would hide part of what the link promised
-    this._activeSearch = "";
-    this._filters = settings.filters;
-    if (settings.sorting) {
-      this._activeSorting = settings.sorting;
-    }
+    this._writeUrl();
   };
+
+  private _showsTableOfUrl(): boolean {
+    return (
+      this.tab !== "discover" && currentPath() === `/marketplace/${this.tab}`
+    );
+  }
+
+  // The link says what the table shows, so a My link or a copied one shares it.
+  // It counts as applied, what was picked stays when coming back to it.
+  private _writeUrl() {
+    if (!this._showsTableOfUrl()) {
+      return;
+    }
+
+    const queryString = browseQuery({
+      search: this._activeSearch,
+      sorting: this._activeSorting?.direction
+        ? {
+            column: this._activeSorting.column,
+            direction: this._activeSorting.direction,
+          }
+        : undefined,
+      filters: filtersOfTab(this._filters, this.tab),
+    });
+
+    const search = queryString ? `?${queryString}` : "";
+
+    if (mainWindow.location.search !== search) {
+      replaceCurrentUrl(constructUrlCurrentPath(queryString));
+    }
+
+    if (mainWindow.history.state?.[APPLIED_LINK_STATE] !== search) {
+      updateHistoryState({ [APPLIED_LINK_STATE]: search });
+    }
+  }
 
   protected render(): TemplateResult {
     const tabs = this._tabs(
-      this.hass.localize,
+      this._i18n.localize,
       this.marketplace.repositories.filter(
         (repository) => repository.pending_upgrade
       ).length
@@ -243,24 +337,23 @@ export class HaMarketplaceDashboard extends LitElement {
     if (this.tab === "discover") {
       return html`<hass-tabs-subpage
         .tabs=${tabs}
-        .hass=${this.hass}
-        .localizeFunc=${this.hass.localize}
+        .localizeFunc=${this._i18n.localize}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
       >
         ${this._renderToolbar()}
         <ha-marketplace-discover
-          .hass=${this.hass}
           .marketplace=${this.marketplace}
         ></ha-marketplace-discover>
       </hass-tabs-subpage>`;
     }
 
+    const filters = this._filtersOfTab(this._filters, this.tab);
     const repositories = this._filterRepositories(
       this._repositoriesOfTab(this.marketplace.repositories, this.tab),
-      this.hass.localize,
-      this._filters
+      this._i18n.localize,
+      filters
     );
 
     return html`${keyed(
@@ -268,20 +361,19 @@ export class HaMarketplaceDashboard extends LitElement {
         html`<hass-tabs-subpage-data-table
           .tabs=${tabs}
           .columns=${this._columns(
-            this.hass.localize,
+            this._i18n.localize,
             this.narrow,
-            this.hass.themes?.darkMode,
+            this._darkMode,
             // Everything on the installed tab is, a mark would say nothing
             this.tab !== "installed"
           )}
           .data=${repositories}
-          .searchLabel=${this.hass.localize(
+          .searchLabel=${this._i18n.localize(
             "ui.panel.marketplace.dashboard.search",
             { number: repositories.length }
           )}
-          .hass=${this.hass}
           .isWide=${this.isWide}
-          .localizeFunc=${this.hass.localize}
+          .localizeFunc=${this._i18n.localize}
           .narrow=${this.narrow}
           .route=${this.route}
           back-path="/config"
@@ -289,15 +381,22 @@ export class HaMarketplaceDashboard extends LitElement {
           .filter=${this._activeSearch || ""}
           has-filters
           .filters=${
-            Object.values(this._filters).filter((values) => values?.length)
-              .length
+            Object.values(filters).filter((values) => values?.length).length
           }
-          .noDataText=${this.hass.localize("ui.panel.marketplace.dashboard.no_data")}
+          .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
           .empty=${!this.marketplace.repositories.length}
           .initialSorting=${this._activeSorting}
+          .initialGroupColumn=${this._activeGrouping}
+          .initialCollapsedGroups=${this._activeCollapsed}
+          .groupOrder=${this._groupOrder(
+            this._activeGrouping,
+            this._i18n.localize
+          )}
           .columnOrder=${this._orderTableColumns}
           .hiddenColumns=${this._hiddenTableColumns}
           @columns-changed=${this._handleColumnsChanged}
+          @grouping-changed=${this._handleGroupingChanged}
+          @collapsed-changed=${this._handleCollapseChanged}
           @row-click=${this._handleRowClicked}
           @clear-filter=${this._handleClearFilter}
           @search-changed=${this._handleSearchFilterChanged}
@@ -310,41 +409,49 @@ export class HaMarketplaceDashboard extends LitElement {
               : html`<div class="empty" slot="empty">
                   <ha-svg-icon .path=${mdiStore}></ha-svg-icon>
                   <h1>
-                    ${this.hass.localize("ui.panel.marketplace.dashboard.empty_header")}
+                    ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_header")}
                   </h1>
                   <p>
-                    ${this.hass.localize("ui.panel.marketplace.dashboard.empty_text")}
+                    ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_text")}
                   </p>
                   <ha-button
-                    href=${documentationUrl(this.hass, "/integrations/marketplace")}
+                    href=${documentationUrl(this._config, "/integrations/marketplace")}
                     target="_blank"
                     appearance="plain"
                     rel="noreferrer"
                     size="s"
                   >
-                    ${this.hass.localize("ui.panel.marketplace.common.learn_more")}
+                    ${this._i18n.localize("ui.panel.marketplace.common.learn_more")}
                     <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                   </ha-button>
                 </div>`
           }
           <ha-filter-states
             slot="filter-pane"
-            .label=${this.hass.localize("ui.panel.marketplace.filters.status")}
-            .value=${this._filters[STATUS_FILTER]}
-            .states=${this._statusStates(this.hass.localize)}
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
+            .value=${filters[STATUS_FILTER]}
+            .states=${this._statusStates(this._i18n.localize, this.tab)}
             .narrow=${this.narrow}
             @data-table-filter-changed=${this._statusFilterChanged}
           ></ha-filter-states>
           <ha-filter-states
             slot="filter-pane"
-            .label=${this.hass.localize("ui.panel.marketplace.filters.type")}
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.type")}
             .value=${this._filters[TYPE_FILTER]}
             .states=${this._typeStates(
-              this.hass.localize,
+              this._i18n.localize,
               this.marketplace.info.categories
             )}
             .narrow=${this.narrow}
             @data-table-filter-changed=${this._typeFilterChanged}
+          ></ha-filter-states>
+          <ha-filter-states
+            slot="filter-pane"
+            .label=${this._i18n.localize("ui.panel.marketplace.filters.source")}
+            .value=${this._filters[SOURCE_FILTER]}
+            .states=${this._sourceStates(this._i18n.localize)}
+            .narrow=${this.narrow}
+            @data-table-filter-changed=${this._sourceFilterChanged}
           ></ha-filter-states>
         </hass-tabs-subpage-data-table>`
       )}
@@ -358,8 +465,9 @@ export class HaMarketplaceDashboard extends LitElement {
           this._overflowMenuRepository
             ? repositoryMenuItems(
                 this,
+                this._api,
                 this._overflowMenuRepository,
-                this.hass.localize
+                this._i18n.localize
               ).map(renderRepositoryMenuEntry)
             : nothing
         }
@@ -371,7 +479,8 @@ export class HaMarketplaceDashboard extends LitElement {
     const repositoriesContainsNew = this.marketplace.repositories.some(
       (repository) => repository.new
     );
-    const addFromLink = this.hass.localize(
+
+    const addFromLink = this._i18n.localize(
       "ui.panel.marketplace.tabs.add_from_link"
     );
 
@@ -383,13 +492,13 @@ export class HaMarketplaceDashboard extends LitElement {
               class="add-from-link"
               .label=${addFromLink}
               .path=${mdiLinkPlus}
-              @click=${this._showCustomRepositories}
+              @click=${this._addFromLink}
             ></ha-icon-button>`
           : html`<ha-button
               class="add-from-link"
               appearance="outlined"
               size="s"
-              @click=${this._showCustomRepositories}
+              @click=${this._addFromLink}
             >
               <ha-svg-icon slot="start" .path=${mdiLinkPlus}></ha-svg-icon>
               ${addFromLink}
@@ -398,19 +507,19 @@ export class HaMarketplaceDashboard extends LitElement {
       <ha-dropdown @wa-select=${this._handleMenuAction}>
         <ha-icon-button
           slot="trigger"
-          .label=${this.hass.localize("ui.common.menu")}
+          .label=${this._i18n.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         <ha-dropdown-item value="documentation">
-          ${this.hass.localize("ui.panel.marketplace.menu.documentation")}
+          ${this._i18n.localize("ui.panel.marketplace.menu.documentation")}
         </ha-dropdown-item>
         <ha-dropdown-item value="custom_repositories">
-          ${this.hass.localize("ui.panel.marketplace.menu.custom_repositories")}
+          ${this._i18n.localize("ui.panel.marketplace.menu.custom_repositories")}
         </ha-dropdown-item>
         ${
           repositoriesContainsNew
             ? html`<ha-dropdown-item value="dismiss_new">
-                ${this.hass.localize("ui.panel.marketplace.menu.dismiss")}
+                ${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
               </ha-dropdown-item>`
             : nothing
         }
@@ -423,6 +532,8 @@ export class HaMarketplaceDashboard extends LitElement {
   private _repositoriesOfTab = memoize(repositoriesOfTab);
 
   private _filterRepositories = memoize(filterRepositories);
+
+  private _filtersOfTab = memoize(filtersOfTab);
 
   private _columns = memoize(
     (
@@ -441,7 +552,7 @@ export class HaMarketplaceDashboard extends LitElement {
         template: (repository: RepositoryBase) =>
           renderRepositoryIcon(repository, {
             darkMode,
-            hassUrl: this.hass.auth.data.hassUrl,
+            hassUrl: this._config.auth.data.hassUrl,
             installedLabel: markInstalled
               ? localizeFunc("ui.panel.marketplace.repository_status.installed")
               : undefined,
@@ -467,14 +578,29 @@ export class HaMarketplaceDashboard extends LitElement {
         title: localizeFunc("ui.panel.marketplace.column.downloads"),
         sortable: true,
         hidden: false,
-        template: (repository: RepositoryBase) =>
-          html`${repository.downloads || "-"}`,
+        template: (repository: RepositoryBase) => {
+          if (!repository.downloads) {
+            return narrow ? nothing : "-";
+          }
+
+          return html`${
+            narrow
+              ? html`<ha-svg-icon .path=${mdiDownload}></ha-svg-icon>`
+              : nothing
+          }${formatNumber(repository.downloads, this._i18n.locale, compact)}`;
+        },
       },
       stars: {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.stars"),
         sortable: true,
         hidden: false,
+        template: (repository: RepositoryBase) =>
+          html`${
+            narrow
+              ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>`
+              : nothing
+          }${formatNumber(repository.stars, this._i18n.locale, compact)}`,
       },
       last_updated: {
         ...defaultKeyData,
@@ -484,13 +610,17 @@ export class HaMarketplaceDashboard extends LitElement {
         type: "numeric",
         hidden: false,
         template: (repository: RepositoryBase) => {
+          // A bare relative time has no context on narrow rows, the overview shows it
+          if (narrow) {
+            return nothing;
+          }
           if (!repository.last_updated) {
             return "-";
           }
           try {
             return relativeTime(
               new Date(repository.last_updated),
-              this.hass.locale
+              this._i18n.locale
             );
           } catch {
             return "-";
@@ -519,6 +649,7 @@ export class HaMarketplaceDashboard extends LitElement {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.status"),
         sortable: true,
+        groupable: true,
         hidden: false,
         defaultHidden: true,
       },
@@ -526,7 +657,16 @@ export class HaMarketplaceDashboard extends LitElement {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.type"),
         sortable: true,
+        groupable: true,
         hidden: false,
+      },
+      translated_source: {
+        ...defaultKeyData,
+        title: localizeFunc("ui.panel.marketplace.column.source"),
+        sortable: true,
+        groupable: true,
+        hidden: false,
+        defaultHidden: true,
       },
       description: defaultKeyData,
       authors: defaultKeyData,
@@ -545,7 +685,7 @@ export class HaMarketplaceDashboard extends LitElement {
         template: (repository: RepositoryBase) => html`
           <ha-icon-button
             data-repository-id=${repository.id}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .label=${this._i18n.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._showOverflowRepositoryMenu}
           ></ha-icon-button>
@@ -576,7 +716,7 @@ export class HaMarketplaceDashboard extends LitElement {
         this._openDocumentation();
         break;
       case "custom_repositories":
-        this._showCustomRepositories();
+        navigate("/marketplace/repositories");
         break;
       case "dismiss_new":
         this._dismissNew();
@@ -589,7 +729,12 @@ export class HaMarketplaceDashboard extends LitElement {
       return;
     }
 
-    repositoryMenuItems(this, this._overflowMenuRepository, this.hass.localize)
+    repositoryMenuItems(
+      this,
+      this._api,
+      this._overflowMenuRepository,
+      this._i18n.localize
+    )
       .filter(
         (entry): entry is MarketplaceRepositoryMenuItem => "value" in entry
       )
@@ -612,52 +757,36 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _openDocumentation() {
     window.open(
-      documentationUrl(this.hass, "/integrations/marketplace"),
+      documentationUrl(this._config, "/integrations/marketplace"),
       "_blank",
       "noreferrer=true"
     );
   }
 
-  private _showCustomRepositories() {
-    const disabledReason = this.marketplace.info.disabled_reason;
-    if (disabledReason) {
-      showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.marketplace.dialog.disabled.title"),
-        text: isKnownDisabledReason(disabledReason)
-          ? this.hass.localize(
-              `ui.panel.marketplace.dialog.disabled.reason.${disabledReason}`
-            )
-          : this.hass.localize(
-              "ui.panel.marketplace.dialog.disabled.reason.unknown"
-            ),
-      });
-      return;
-    }
-
-    showMarketplaceCustomRepositoriesDialog(this, {
-      marketplace: this.marketplace,
-    });
+  private _addFromLink() {
+    showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
   private async _dismissNew() {
     try {
       await dismissNewMarketplaceRepositories(
-        this.hass,
+        this._api,
         this.marketplace.info.categories
       );
     } catch (err: unknown) {
       showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.marketplace.dialog.error.title"),
-        text: marketplaceErrorMessage(err, this.hass.localize),
+        title: this._i18n.localize("ui.panel.marketplace.dialog.error.title"),
+        text: marketplaceErrorMessage(err, this._i18n.localize),
       });
     }
   }
 
-  private _statusStates = memoize((localize: LocalizeFunc) =>
-    STATUS_ORDER.map((status) => ({
-      value: status,
-      label: localize(`ui.panel.marketplace.repository_status.${status}`),
-    }))
+  private _statusStates = memoize(
+    (localize: LocalizeFunc, tab: MarketplaceTab) =>
+      statusesOfTab(tab).map((status) => ({
+        value: status,
+        label: localize(`ui.panel.marketplace.repository_status.${status}`),
+      }))
   );
 
   private _typeStates = memoize(
@@ -668,24 +797,79 @@ export class HaMarketplaceDashboard extends LitElement {
       }))
   );
 
+  private _sourceStates = memoize((localize: LocalizeFunc) =>
+    SOURCE_ORDER.map((source) => ({
+      value: source,
+      label: localize(`ui.panel.marketplace.repository_source.${source}`),
+    }))
+  );
+
+  // Statuses and sources group in the order of their filters, not alphabetically
+  private _groupOrder = memoize(
+    (grouping: string | undefined, localize: LocalizeFunc) => {
+      if (grouping === "translated_status") {
+        return STATUS_ORDER.map((status) =>
+          localize(`ui.panel.marketplace.repository_status.${status}`)
+        );
+      }
+
+      if (grouping === "translated_source") {
+        return SOURCE_ORDER.map((source) =>
+          localize(`ui.panel.marketplace.repository_source.${source}`)
+        );
+      }
+
+      return undefined;
+    }
+  );
+
   private _handleRowClicked(ev: CustomEvent) {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
-  private _statusFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [STATUS_FILTER]: ev.detail.value };
+  // The pane's own clear button sends no value
+  private _statusFilterChanged(ev: HASSDomEvent<{ value?: string[] }>) {
+    this._filters = {
+      ...this._filters,
+      [STATUS_FILTER]: statusFilterOfTab(
+        this._filters,
+        this.tab,
+        ev.detail.value
+      ),
+    };
+    this._writeUrl();
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+    this._writeUrl();
+  }
+
+  private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
+    this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+    this._writeUrl();
   }
 
   private _handleSearchFilterChanged(ev: CustomEvent) {
     this._activeSearch = ev.detail.value;
+    this._writeUrl();
   }
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+    this._writeUrl();
+  }
+
+  private _handleGroupingChanged(
+    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
+  ) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(
+    ev: HASSDomEvent<HASSDomEvents["collapsed-changed"]>
+  ) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {
@@ -695,6 +879,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _handleClearFilter() {
     this._filters = {};
+    this._writeUrl();
   }
 
   static get styles(): CSSResultGroup {

@@ -20,8 +20,11 @@ import "../../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
@@ -29,6 +32,7 @@ import {
   OTBRCreateNetwork,
   OTBRSetChannel,
   OTBRSetNetwork,
+  findOTBRInfoForDataset,
   getOTBRInfo,
 } from "../../../../../data/otbr";
 import type { ThreadDataSet, ThreadRouter } from "../../../../../data/thread";
@@ -54,7 +58,6 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
-import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
 import { showThreadEphemeralKeyDialog } from "./show-dialog-thread-ephemeral-key";
 
 export interface ThreadNetwork {
@@ -195,11 +198,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           )
         : [];
     const otbrForNetwork =
-      this._otbrInfo &&
       network.dataset &&
-      ((network.dataset.preferred_extended_address &&
-        this._otbrInfo[network.dataset.preferred_extended_address]) ||
-        otbrsOnNetwork[0]);
+      findOTBRInfoForDataset(this._otbrInfo, network.dataset);
     const sharingOtbrs = otbrsOnNetwork.filter(
       (otbr) => otbr.ephemeral_key_supported
     );
@@ -227,17 +227,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                         @click=${this._shareCredentials}
                       ></ha-icon-button>`
                     : ""
-                }
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.thread.thread_network_info"
-                  )}
-                  .otbr=${otbrForNetwork}
-                  .network=${network}
-                  .path=${mdiInformationOutline}
-                  @click=${this._showDatasetInfo}
-                ></ha-icon-button
-                >${
+                }${
                   !network.dataset.preferred && !network.routers?.length
                     ? html`<ha-icon-button
                         .label=${this.hass.localize(
@@ -404,6 +394,38 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             </div> `
       }
       ${
+        network.dataset
+          ? html`<ha-list-nav
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.config.thread.network_info.nav_label",
+                {
+                  name: network.name || network.dataset.extended_pan_id,
+                }
+              )}
+            >
+              <ha-list-item-button
+                href=${`/config/thread/network-info/${network.dataset.dataset_id}${window.location.search}`}
+              >
+                <ha-svg-icon
+                  slot="start"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <div slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.thread.network_info.title"
+                  )}
+                </div>
+                <div slot="supporting-text">
+                  ${this.hass.localize(
+                    "ui.panel.config.thread.network_info.description"
+                  )}
+                </div>
+                <ha-icon-next slot="end"></ha-icon-next>
+              </ha-list-item-button>
+            </ha-list-nav>`
+          : nothing
+      }
+      ${
         network.dataset && !network.dataset.preferred
           ? html`<div class="card-actions">
               <ha-button
@@ -474,12 +496,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     showThreadEphemeralKeyDialog(this, {
       extendedAddress: otbr.extended_address,
     });
-  }
-
-  private async _showDatasetInfo(ev: Event) {
-    const network = (ev.currentTarget as any).network as ThreadNetwork;
-    const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    showThreadDatasetDialog(this, { network, otbrInfo: otbr });
   }
 
   private _importExternalThreadCredentials() {
@@ -847,6 +863,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       }
       ha-card {
         margin-bottom: 16px;
+        overflow: hidden;
+      }
+      ha-list-nav {
+        border-top: 1px solid var(--divider-color);
       }
       h3 {
         margin-top: var(--ha-space-8);
@@ -857,6 +877,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       .card-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+      }
+      .card-header ha-icon-button {
+        margin-block: calc(var(--ha-space-3) * -1);
       }
 
       .send-to-phone-description {

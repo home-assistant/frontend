@@ -169,18 +169,17 @@ export class HaConfigEntryRow extends LitElement {
 
     const subEntries = this.data.subEntries;
 
-    return html` <div class="config-entry-wrapper">
-      <ha-row-item
-        class=${classMap({
-          config_entry: true,
-          "state-not-loaded": item!.state === "not_loaded",
-          "state-failed-unload": item!.state === "failed_unload",
-          "state-setup": item!.state === "setup_in_progress",
-          "state-error": ERROR_STATES.includes(item!.state),
-          "state-disabled": item.disabled_by !== null,
-          "has-subentries": this._expanded && subEntries.length > 0,
-        })}
-      >
+    return html` <div
+      class=${classMap({
+        "config-entry-wrapper": true,
+        "state-not-loaded": !item.disabled_by && item.state === "not_loaded",
+        "state-failed-unload": item!.state === "failed_unload",
+        "state-setup": item!.state === "setup_in_progress",
+        "state-error": ERROR_STATES.includes(item!.state),
+        "state-disabled": item.disabled_by !== null,
+      })}
+    >
+      <ha-row-item>
         ${
           subEntries.length || ownDevices.length
             ? html`<ha-icon-button
@@ -892,10 +891,7 @@ export class HaConfigEntryRow extends LitElement {
         color: var(--ha-color-fill-neutral-loud-resting);
       }
       ha-icon-button.link {
-        color: var(
-          --md-list-item-trailing-icon-color,
-          var(--md-sys-color-on-surface-variant, #49454f)
-        );
+        color: var(--ha-color-text-secondary);
       }
       .toggle-devices-row {
         overflow: hidden;
@@ -908,13 +904,46 @@ export class HaConfigEntryRow extends LitElement {
       ha-dropdown a {
         text-decoration: none;
       }
+      .state-error {
+        --state-message-color: var(--ha-color-on-danger-normal);
+        background-color: var(--ha-color-fill-danger-quiet-resting);
+      }
+      .state-failed-unload {
+        --state-message-color: var(--ha-color-on-warning-normal);
+      }
+      .state-not-loaded {
+        --state-message-color: var(--ha-color-text-primary);
+      }
+      .state-failed-unload,
+      .state-not-loaded {
+        background-color: var(--ha-color-fill-warning-quiet-resting);
+      }
+      .state-setup {
+        --state-message-color: var(--ha-color-text-secondary);
+      }
+      .state-disabled [slot="headline"],
+      .state-disabled [slot="supporting-text"] {
+        color: var(--ha-color-text-disabled);
+      }
       .message {
         display: flex;
         align-items: center;
         gap: var(--ha-space-2);
+        font-weight: var(--ha-font-weight-bold);
+      }
+      .message ha-svg-icon {
+        flex-shrink: 0;
+        color: var(--state-message-color);
       }
       .message div {
+        flex: 1;
         white-space: normal;
+        overflow-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 7;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     `,
   ];

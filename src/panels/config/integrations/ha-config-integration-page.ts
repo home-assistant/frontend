@@ -1525,15 +1525,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           animation: unset;
         }
         ha-list-base {
-          border: 1px solid var(--divider-color);
+          border: var(--ha-border-width-sm) solid var(--divider-color);
           border-radius: var(--ha-border-radius-md);
           overflow: hidden;
         }
         ha-list-base.discovered {
-          background-color: rgba(var(--rgb-success-color), 0.2);
+          background-color: var(--ha-color-fill-success-quiet-resting);
         }
         ha-list-base.attention {
-          background-color: rgba(var(--rgb-warning-color), 0.2);
+          background-color: var(--ha-color-fill-warning-quiet-resting);
+        }
+        ha-list-item-base + ha-list-item-base {
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
         }
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
@@ -1561,47 +1564,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .warning {
           color: var(--error-color);
-        }
-        .state-failed-unload {
-          --state-message-color: var(--warning-color);
-          --text-on-state-color: var(--primary-text-color);
-        }
-        .state-failed::after {
-          background-color: var(--warning-color);
-        }
-        .state-not-loaded {
-          --state-message-color: var(--primary-text-color);
-        }
-        .state-setup {
-          --state-message-color: var(--secondary-text-color);
-        }
-        .message {
-          font-weight: var(--ha-font-weight-bold);
-          display: flex;
-          align-items: center;
-        }
-        .message ha-svg-icon {
-          color: var(--state-message-color);
-        }
-        .message div {
-          flex: 1;
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
-          padding-top: 2px;
-          padding-right: 2px;
-          padding-inline-end: 2px;
-          padding-inline-start: initial;
-          overflow-wrap: break-word;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 7;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .state-disabled [slot="headline"],
-        .state-disabled [slot="supporting-text"] {
-          opacity: var(--md-list-item-disabled-opacity, 0.3);
         }
         ha-list-base {
           margin-top: 8px;

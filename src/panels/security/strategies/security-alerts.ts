@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type {
   SecurityAlertEntityConfig,
@@ -6,10 +7,7 @@ import type {
 } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
 import type { AlertCardConfig } from "../../lovelace/cards/types";
-import {
-  checkConditionsMet,
-  type StateCondition,
-} from "../../lovelace/common/validate-condition";
+import type { StateCondition } from "../../lovelace/common/validate-condition";
 
 const DANGER_BINARY_SENSOR_DEVICE_CLASSES = [
   "carbon_monoxide",
@@ -86,10 +84,13 @@ export const resolveSecurityAlertSeverity = (
   alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
 
 export const isSecurityAlertActive = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityId: string
-): boolean =>
-  checkConditionsMet(computeDefaultSecurityAlertVisibility(entityId), hass, {});
+): boolean => {
+  const stateObj = states[entityId];
+  const [{ state }] = computeDefaultSecurityAlertVisibility(entityId);
+  return !!stateObj && !!state && ensureArray(state).includes(stateObj.state);
+};
 
 export const filterSecurityAlertEntities = (
   alertEntities: SecurityAlertEntityConfig[],

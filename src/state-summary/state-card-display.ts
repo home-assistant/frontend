@@ -48,7 +48,6 @@ class StateCardDisplay extends LitElement {
             this.stateObj.state !== UNAVAILABLE &&
             this.stateObj.state !== UNKNOWN
               ? html`<hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(this.stateObj.state)}
                   .format=${
                     this.stateObj.attributes.device_class ===

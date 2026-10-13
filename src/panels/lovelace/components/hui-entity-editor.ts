@@ -8,6 +8,8 @@ import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
@@ -45,7 +47,7 @@ export class HuiEntityEditor extends LitElement {
       : { primary: item.entity, secondary: undefined };
 
     return html`
-      <ha-md-list-item class="item">
+      <ha-list-item-base class="item">
         <ha-svg-icon
           class="handle"
           .path=${mdiDragHorizontalVariant}
@@ -75,7 +77,7 @@ export class HuiEntityEditor extends LitElement {
           .path=${mdiClose}
           @click=${this._deleteItem}
         ></ha-icon-button>
-      </ha-md-list-item>
+      </ha-list-item-base>
     `;
   }
 
@@ -123,11 +125,11 @@ export class HuiEntityEditor extends LitElement {
                   draggable-selector=".item"
                   @item-moved=${this._entityMoved}
                 >
-                  <ha-md-list>
+                  <ha-list-base>
                     ${this.entities.map((item, index) =>
                       this._renderItem(item, index)
                     )}
-                  </ha-md-list>
+                  </ha-list-base>
                 </ha-sortable>
               </div>
             `
@@ -230,25 +232,23 @@ export class HuiEntityEditor extends LitElement {
       margin-inline-start: var(--ha-space-1);
       margin-bottom: var(--ha-space-1);
     }
-    ha-md-list {
-      gap: 8px;
-      padding-top: 0;
-      display: flex;
-      flex-direction: column;
+    ha-list-base {
+      --ha-list-gap: var(--ha-space-2);
+      --ha-list-padding: 0 0 var(--ha-space-2);
     }
-    ha-md-list:has(> *) {
+    ha-list-base:has(> *) {
       margin-bottom: var(--ha-space-2);
     }
-    ha-md-list-item {
+    ha-list-item-base {
       border: 1px solid var(--divider-color);
-      border-radius: 8px;
-      --ha-md-list-item-gap: 0;
-      --md-list-item-top-space: 0;
-      --md-list-item-bottom-space: 0;
-      --md-list-item-leading-space: 12px;
-      --md-list-item-trailing-space: 4px;
-      --md-list-item-two-line-container-height: 48px;
-      --md-list-item-one-line-container-height: 48px;
+      border-radius: var(--ha-border-radius-md);
+      --ha-row-item-gap: 0;
+      --ha-row-item-padding-block: 0;
+      --ha-row-item-padding-inline: var(--ha-space-3) var(--ha-space-1);
+    }
+    ha-list-item-base::part(start),
+    ha-list-item-base::part(end) {
+      color: var(--ha-color-text-secondary);
     }
     .handle {
       cursor: move;
@@ -259,8 +259,8 @@ export class HuiEntityEditor extends LitElement {
       margin-bottom: 8px;
       display: block;
     }
-    ha-md-list-item .label,
-    ha-md-list-item .description {
+    ha-list-item-base .label,
+    ha-list-item-base .description {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;

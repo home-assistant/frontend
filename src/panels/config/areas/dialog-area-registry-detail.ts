@@ -185,7 +185,6 @@ class DialogAreaDetail
       ></ha-input>
 
       <ha-icon-picker
-        .hass=${this.hass}
         .value=${this._icon}
         @value-changed=${this._iconChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
@@ -366,7 +365,6 @@ class DialogAreaDetail
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${
           entry

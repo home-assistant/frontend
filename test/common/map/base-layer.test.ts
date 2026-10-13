@@ -40,11 +40,9 @@ vi.mock("../../../src/data/map_tiles", () => ({
 const emitToken = (token: string) =>
   tokenListeners.forEach((listener) => listener(token));
 
-const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
-
 const setWorkerUrl = vi.hoisted(() => vi.fn());
 
-vi.mock("maplibre-gl", () => ({ setRTLTextPlugin, setWorkerUrl }));
+vi.mock("maplibre-gl", () => ({ setWorkerUrl }));
 
 // What the build wrote out, which loadStyle fetches instead of building.
 const COLORFUL = { palette: "colorful", shipped: "light" } as const;
@@ -254,18 +252,6 @@ describe("createBaseLayer", () => {
     );
     expect(setWorkerUrl.mock.invocationCallOrder[0]).toBeLessThan(
       maplibreGL.mock.invocationCallOrder[0]
-    );
-  });
-
-  it("registers the RTL text plugin once, lazily, from our own host", async () => {
-    const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-
-    expect(setRTLTextPlugin).toHaveBeenCalledOnce();
-    expect(setRTLTextPlugin).toHaveBeenCalledWith(
-      `${location.origin}/static/map/mapbox-gl-rtl-text.js`,
-      true
     );
   });
 
