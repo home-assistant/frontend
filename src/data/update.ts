@@ -232,7 +232,7 @@ export const checkForEntityUpdates = async (
 // When update is not available and there is no latest_version show "Unavailable"
 export const computeUpdateStateDisplay = (
   stateObj: UpdateEntity,
-  hass: HomeAssistant
+  hass: Pick<HomeAssistant, "localize" | "locale" | "formatEntityState">
 ): string => {
   const state = stateObj.state;
   const attributes = stateObj.attributes;
