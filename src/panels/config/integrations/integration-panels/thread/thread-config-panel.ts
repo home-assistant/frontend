@@ -195,15 +195,19 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           )
         : [];
     const otbrForNetwork =
-      otbrsOnNetwork.find(
+      this._otbrInfo &&
+      network.dataset &&
+      ((network.dataset.preferred_extended_address &&
+        this._otbrInfo[network.dataset.preferred_extended_address]) ||
+        otbrsOnNetwork[0]);
+    const sharingOtbrs = otbrsOnNetwork.filter(
+      (otbr) => otbr.ephemeral_key_supported
+    );
+    const otbrForSharing =
+      sharingOtbrs.find(
         (otbr) =>
           otbr.extended_address === network.dataset?.preferred_extended_address
-      ) || otbrsOnNetwork[0];
-    // Any border router on the network can share its credentials, so fall back
-    // to one that supports it when the preferred router does not
-    const otbrForSharing = otbrForNetwork?.ephemeral_key_supported
-      ? otbrForNetwork
-      : otbrsOnNetwork.find((otbr) => otbr.ephemeral_key_supported);
+      ) || sharingOtbrs[0];
     const canImportKeychain =
       this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
