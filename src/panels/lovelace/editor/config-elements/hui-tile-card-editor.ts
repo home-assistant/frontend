@@ -1,4 +1,4 @@
-import { mdiListBox, mdiTextShort } from "@mdi/js";
+import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -37,6 +37,11 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import {
+  tileContentConfigFromForm,
+  tileContentFormData,
+  tileContentSchema,
+} from "./content-schema";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
 import { tileInteractionsSchema } from "./interactions-schema";
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
@@ -95,94 +100,7 @@ export class HuiTileCardEditor
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
-        {
-          name: "content",
-          flatten: true,
-          type: "expandable",
-          iconPath: mdiTextShort,
-          schema: [
-            {
-              name: "name",
-              selector: {
-                entity_name: {},
-              },
-              context: { entity: "entity" },
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "icon",
-                  selector: {
-                    icon: {},
-                  },
-                  context: { icon_entity: "entity" },
-                },
-                {
-                  name: "color",
-                  selector: {
-                    ui_color: {
-                      default_color: "state",
-                      include_state: true,
-                    },
-                  },
-                },
-                {
-                  name: "show_entity_picture",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-                {
-                  name: "hide_state",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-              ],
-            },
-            {
-              name: "state_content",
-              visible: { field: "hide_state", operator: "not_eq", value: true },
-              selector: {
-                ui_state_content: {
-                  allow_context: true,
-                },
-              },
-              context: {
-                filter_entity: "entity",
-              },
-            },
-            {
-              name: "time_format",
-              visible: showTimeFormat,
-              selector: {
-                ui_time_format: {},
-              },
-            },
-            {
-              name: "content_layout",
-              required: true,
-              selector: {
-                select: {
-                  mode: "box",
-                  options: ["horizontal", "vertical"].map((value) => ({
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
-                    ),
-                    value,
-                    image: {
-                      src: `/static/images/form/tile_content_layout_${value}.svg`,
-                      src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
-                      flip_rtl: true,
-                    },
-                  })),
-                },
-              },
-            },
-          ],
-        },
+        tileContentSchema(localize, showTimeFormat),
         tileInteractionsSchema(entityId),
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -243,10 +161,7 @@ export class HuiTileCardEditor
 
     const featuresSchema = this._featuresSchema(this.hass.localize, vertical);
 
-    const data = {
-      ...this._config,
-      content_layout: vertical ? "vertical" : "horizontal",
-    };
+    const data = tileContentFormData(this._config);
 
     // Default features position to bottom and force it to bottom in vertical mode
     if (!data.features_position || vertical) {
@@ -309,24 +224,10 @@ export class HuiTileCardEditor
 
     const newConfig = ev.detail.value as TileCardConfig;
 
-    let config: TileCardConfig = {
+    let config: TileCardConfig = tileContentConfigFromForm({
       features: this._config.features,
       ...newConfig,
-    };
-
-    if (config.hide_state) {
-      delete config.state_content;
-    }
-
-    if (!config.state_content) {
-      delete config.state_content;
-    }
-
-    // Convert content_layout to vertical
-    if (config.content_layout) {
-      config.vertical = config.content_layout === "vertical";
-      delete config.content_layout;
-    }
+    });
 
     config = orderProperties(config, fieldOrder);
 

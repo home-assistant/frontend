@@ -1,4 +1,3 @@
-import { mdiTextShort } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -14,6 +13,7 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -22,12 +22,18 @@ import type {
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { AlertBadgeConfig } from "../../badges/types";
+import { ALERT_BADGE_DEFAULT_CONFIG } from "../../badges/hui-alert-badge";
 import { timeFormatConfigStruct } from "../../components/types";
 import type { LovelaceBadgeEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import { alertSchema } from "./alert-schema";
+import {
+  badgeContentConfigFromForm,
+  badgeContentFormData,
+  badgeContentSchema,
+} from "./content-schema";
 import { badgeInteractionsSchema } from "./interactions-schema";
 
 const badgeConfigStruct = assign(
@@ -40,6 +46,9 @@ const badgeConfigStruct = assign(
     clear_color: optional(string()),
     pulse: optional(boolean()),
     show_entity_picture: optional(boolean()),
+    show_name: optional(boolean()),
+    show_state: optional(boolean()),
+    show_icon: optional(boolean()),
     state_content: optional(union([string(), array(string())])),
     time_format: optional(timeFormatConfigStruct),
     tap_action: optional(actionConfigStruct),
@@ -59,11 +68,11 @@ export class HuiAlertBadgeEditor
 
   public setConfig(config: AlertBadgeConfig): void {
     assert(config, badgeConfigStruct);
-    this._config = config;
+    this._config = { ...ALERT_BADGE_DEFAULT_CONFIG, ...config };
   }
 
   private _schema = memoizeOne(
-    (showTimeFormat: boolean) =>
+    (localize: LocalizeFunc, showTimeFormat: boolean) =>
       [
         {
           name: "entity",
@@ -71,47 +80,12 @@ export class HuiAlertBadgeEditor
           selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
         },
         alertSchema(),
-        {
-          name: "content",
-          flatten: true,
-          type: "expandable",
-          iconPath: mdiTextShort,
-          schema: [
-            {
-              name: "name",
-              selector: { entity_name: {} },
-              context: { entity: "entity" },
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "icon",
-                  selector: { icon: {} },
-                  context: { icon_entity: "entity" },
-                },
-                {
-                  name: "show_entity_picture",
-                  selector: { boolean: {} },
-                },
-              ],
-            },
-            {
-              name: "state_content",
-              selector: { ui_state_content: { allow_name: true } },
-              context: { filter_entity: "entity" },
-            },
-            {
-              name: "time_format",
-              visible: showTimeFormat,
-              selector: { ui_time_format: {} },
-            },
-          ],
-        },
+        badgeContentSchema(localize, showTimeFormat, false),
         badgeInteractionsSchema(),
       ] as const satisfies readonly HaFormSchema[]
   );
+
+  private _formData = memoizeOne(badgeContentFormData<AlertBadgeConfig>);
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -121,6 +95,7 @@ export class HuiAlertBadgeEditor
     const entityId = this._config.entity;
 
     const schema = this._schema(
+      this.hass.localize,
       stateContentHasTimestamp(
         entityId,
         this.hass.states[entityId],
@@ -131,7 +106,7 @@ export class HuiAlertBadgeEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._formData(this._config)}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -143,11 +118,7 @@ export class HuiAlertBadgeEditor
   private _valueChanged(ev: ValueChangedEvent<AlertBadgeConfig>): void {
     ev.stopPropagation();
 
-    const config = { ...ev.detail.value };
-
-    if (!config.state_content) {
-      delete config.state_content;
-    }
+    const config = badgeContentConfigFromForm(ev.detail.value);
 
     fireEvent(this, "config-changed", { config });
   }
@@ -168,8 +139,9 @@ export class HuiAlertBadgeEditor
         );
       case "show_entity_picture":
       case "state_content":
+      case "displayed_elements":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.${schema.name}`
+          `ui.panel.lovelace.editor.badge.entity.${schema.name}`
         );
       default:
         return this.hass!.localize(

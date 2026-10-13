@@ -107,15 +107,17 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 1;
+    return this._config?.vertical ? 2 : 1;
   }
 
   public getGridOptions(): LovelaceGridOptions {
+    const vertical = Boolean(this._config?.vertical);
+
     return {
       columns: 6,
-      rows: 1,
-      min_columns: 6,
-      min_rows: 1,
+      rows: vertical ? 2 : 1,
+      min_columns: vertical ? 3 : 6,
+      min_rows: vertical ? 2 : 1,
     };
   }
 
@@ -154,6 +156,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
         })}
       >
         <ha-tile-container
+          .vertical=${Boolean(this._config.vertical)}
           .interactive=${hasTileCardAction(this._config)}
           .actionHandlerOptions=${{
             hasHold: hasAction(this._config.hold_action),
@@ -188,18 +191,22 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
                 this._config.name
               )}</span
             >
-            <span slot="secondary">
-              ${
-                this._config.state_content
-                  ? html`<state-display
-                      .stateObj=${stateObj}
-                      .hass=${this.hass}
-                      .content=${this._config.state_content}
-                      .timeFormat=${this._config.time_format}
-                    ></state-display>`
-                  : this._renderDefaultSecondary(stateObj)
-              }
-            </span>
+            ${
+              this._config.hide_state
+                ? nothing
+                : html`<span slot="secondary">
+                    ${
+                      this._config.state_content
+                        ? html`<state-display
+                            .stateObj=${stateObj}
+                            .hass=${this.hass}
+                            .content=${this._config.state_content}
+                            .timeFormat=${this._config.time_format}
+                          ></state-display>`
+                        : this._renderDefaultSecondary(stateObj)
+                    }
+                  </span>`
+            }
           </ha-tile-info>
         </ha-tile-container>
       </ha-card>

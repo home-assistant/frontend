@@ -1,4 +1,3 @@
-import { mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -20,7 +19,7 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import {
   DEFAULT_CONFIG,
   DISPLAY_TYPES,
@@ -32,6 +31,11 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
+import {
+  badgeContentConfigFromForm,
+  badgeContentFormData,
+  badgeContentSchema,
+} from "./content-schema";
 import { badgeInteractionsSchema } from "./interactions-schema";
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import { timeFormatConfigStruct } from "../../components/types";
@@ -78,116 +82,12 @@ export class HuiEntityBadgeEditor
     (localize: LocalizeFunc, showTimeFormat: boolean) =>
       [
         { name: "entity", selector: { entity: {} } },
-        {
-          name: "content",
-          type: "expandable",
-          flatten: true,
-          iconPath: mdiTextShort,
-          schema: [
-            {
-              name: "name",
-              selector: {
-                entity_name: {},
-              },
-              context: { entity: "entity" },
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "color",
-                  selector: {
-                    ui_color: {
-                      default_color: "state",
-                      include_state: true,
-                    },
-                  },
-                },
-                {
-                  name: "icon",
-                  selector: {
-                    icon: {},
-                  },
-                  context: { icon_entity: "entity" },
-                },
-                {
-                  name: "show_entity_picture",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-              ],
-            },
-            {
-              name: "displayed_elements",
-              selector: {
-                select: {
-                  mode: "list",
-                  multiple: true,
-                  options: [
-                    {
-                      value: "name",
-                      label: localize(
-                        `ui.panel.lovelace.editor.badge.entity.displayed_elements_options.name`
-                      ),
-                    },
-                    {
-                      value: "state",
-                      label: localize(
-                        `ui.panel.lovelace.editor.badge.entity.displayed_elements_options.state`
-                      ),
-                    },
-                    {
-                      value: "icon",
-                      label: localize(
-                        `ui.panel.lovelace.editor.badge.entity.displayed_elements_options.icon`
-                      ),
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              name: "state_content",
-              selector: {
-                ui_state_content: {
-                  allow_name: true,
-                },
-              },
-              context: {
-                filter_entity: "entity",
-              },
-            },
-            ...(showTimeFormat
-              ? ([
-                  {
-                    name: "time_format",
-                    selector: {
-                      ui_time_format: {},
-                    },
-                  },
-                ] as const satisfies readonly HaFormSchema[])
-              : []),
-          ],
-        },
+        badgeContentSchema(localize, showTimeFormat),
         badgeInteractionsSchema(),
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  _displayedElements = memoizeOne((config: EntityBadgeConfig) => {
-    const elements: string[] = [];
-    if (config.show_name) {
-      elements.push("name");
-    }
-    if (config.show_state) {
-      elements.push("state");
-    }
-    if (config.show_icon) {
-      elements.push("icon");
-    }
-    return elements;
-  });
+  private _formData = memoizeOne(badgeContentFormData<EntityBadgeConfig>);
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -206,10 +106,7 @@ export class HuiEntityBadgeEditor
 
     const schema = this._schema(this.hass!.localize, showTimeFormat);
 
-    const data = {
-      ...this._config,
-      displayed_elements: this._displayedElements(this._config),
-    };
+    const data = this._formData(this._config);
 
     return html`
       <ha-form
@@ -223,24 +120,13 @@ export class HuiEntityBadgeEditor
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<EntityBadgeConfig>): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
     }
 
-    const config = { ...ev.detail.value } as EntityBadgeConfig;
-
-    if (!config.state_content) {
-      delete config.state_content;
-    }
-
-    if (config.displayed_elements) {
-      config.show_name = config.displayed_elements.includes("name");
-      config.show_state = config.displayed_elements.includes("state");
-      config.show_icon = config.displayed_elements.includes("icon");
-      delete config.displayed_elements;
-    }
+    const config = badgeContentConfigFromForm(ev.detail.value);
 
     fireEvent(this, "config-changed", { config });
   }

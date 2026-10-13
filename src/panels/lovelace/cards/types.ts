@@ -748,8 +748,10 @@ export interface AlertCardConfig extends LovelaceCardConfig, TileActionsConfig {
   clear_color?: string;
   pulse?: boolean;
   show_entity_picture?: boolean;
+  hide_state?: boolean;
   state_content?: string | string[];
   time_format?: TimestampRenderingFormat;
+  vertical?: boolean;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

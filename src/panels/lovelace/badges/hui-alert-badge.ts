@@ -37,6 +37,13 @@ import { hasAction } from "../common/has-action";
 import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import type { AlertBadgeConfig } from "./types";
 
+export const ALERT_BADGE_DEFAULT_CONFIG: Partial<AlertBadgeConfig> = {
+  type: "alert",
+  show_name: true,
+  show_state: true,
+  show_icon: true,
+};
+
 @customElement("hui-alert-badge")
 export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   public static async getConfigElement(): Promise<LovelaceBadgeEditor> {
@@ -59,6 +66,10 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     );
 
     return { type: "alert", entity: entity || "" };
+  }
+
+  public static getDefaultConfig(): Partial<AlertBadgeConfig> {
+    return ALERT_BADGE_DEFAULT_CONFIG;
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -99,7 +110,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       );
     }
 
-    this._config = config;
+    this._config = { ...ALERT_BADGE_DEFAULT_CONFIG, ...config };
   }
 
   protected render() {
@@ -139,10 +150,25 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       ? getTileImageUrl(this._connection, stateObj, 32)
       : undefined;
 
+    const { show_name: showName, show_state: showState } = this._config;
+
+    const content = showState
+      ? html`<state-display
+          .stateObj=${stateObj}
+          .hass=${this.hass}
+          .content=${this._config.state_content}
+          .timeFormat=${this._config.time_format}
+          .name=${name}
+        ></state-display>`
+      : showName
+        ? name
+        : undefined;
+
     return html`
       <ha-badge
         .type=${hasTileCardAction(this._config) ? "button" : "badge"}
-        .label=${name}
+        .label=${showState && showName ? name : undefined}
+        .iconOnly=${!content}
         class=${classMap({ alert: true, pulse, "no-color": !hasColor })}
         style=${styleMap({
           "--ha-alert-color":
@@ -155,21 +181,17 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
         })}
       >
         ${
-          imageUrl
-            ? html`<img slot="icon" src=${imageUrl} aria-hidden />`
-            : html`<ha-state-icon
-                slot="icon"
-                .stateObj=${stateObj}
-                .icon=${this._config.icon}
-              ></ha-state-icon>`
+          !this._config.show_icon
+            ? nothing
+            : imageUrl
+              ? html`<img slot="icon" src=${imageUrl} aria-hidden />`
+              : html`<ha-state-icon
+                  slot="icon"
+                  .stateObj=${stateObj}
+                  .icon=${this._config.icon}
+                ></ha-state-icon>`
         }
-        <state-display
-          .stateObj=${stateObj}
-          .hass=${this.hass}
-          .content=${this._config.state_content}
-          .timeFormat=${this._config.time_format}
-          .name=${name}
-        ></state-display>
+        ${content}
       </ha-badge>
     `;
   }
