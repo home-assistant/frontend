@@ -1,4 +1,4 @@
-import { mdiGestureTap, mdiTextShort } from "@mdi/js";
+import { mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -28,11 +28,11 @@ import {
 } from "../../badges/hui-entity-badge";
 import type { EntityBadgeConfig } from "../../badges/types";
 import type { LovelaceBadgeEditor } from "../../types";
-import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
+import { badgeInteractionsSchema } from "./interactions-schema";
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import { timeFormatConfigStruct } from "../../components/types";
 
@@ -171,39 +171,7 @@ export class HuiEntityBadgeEditor
               : []),
           ],
         },
-        {
-          name: "interactions",
-          type: "expandable",
-          flatten: true,
-          iconPath: mdiGestureTap,
-          schema: [
-            {
-              name: "tap_action",
-              selector: {
-                ui_action: {
-                  default_action: "more-info",
-                },
-              },
-              context: ACTION_RELATED_CONTEXT,
-            },
-            {
-              name: "",
-              type: "optional_actions",
-              flatten: true,
-              schema: (["hold_action", "double_tap_action"] as const).map(
-                (action) => ({
-                  name: action,
-                  selector: {
-                    ui_action: {
-                      default_action: "none" as const,
-                    },
-                  },
-                  context: ACTION_RELATED_CONTEXT,
-                })
-              ),
-            },
-          ],
-        },
+        badgeInteractionsSchema(),
       ] as const satisfies readonly HaFormSchema[]
   );
 
