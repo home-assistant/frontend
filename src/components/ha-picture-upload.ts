@@ -70,6 +70,8 @@ export class HaPictureUpload extends LitElement {
 
   @state() private _uploading = false;
 
+  @state() private _pickedFile?: File;
+
   public render(): TemplateResult {
     if (!this.value) {
       const secondary =
@@ -105,6 +107,7 @@ export class HaPictureUpload extends LitElement {
             )
           }
           .uploading=${this._uploading}
+          .value=${this._pickedFile}
           @file-picked=${this._handleFilePicked}
           @change=${this._handleFileCleared}
           accept="image/png, image/jpeg, image/gif"
@@ -143,6 +146,7 @@ export class HaPictureUpload extends LitElement {
 
   private async _handleFilePicked(ev) {
     const file = ev.detail.files[0];
+    this._pickedFile = file;
     if (this.crop) {
       this._cropFile(file);
     } else {
@@ -152,10 +156,12 @@ export class HaPictureUpload extends LitElement {
 
   private async _handleFileCleared() {
     this.value = null;
+    this._pickedFile = undefined;
   }
 
   private async _cropFile(file: File, mediaId?: string) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
+      this._pickedFile = undefined;
       showAlertDialog(this, {
         text: this._i18n.localize(
           "ui.components.picture-upload.unsupported_format"
@@ -181,11 +187,15 @@ export class HaPictureUpload extends LitElement {
           this._uploadFile(croppedFile);
         }
       },
+      cancelCallback: () => {
+        this._pickedFile = undefined;
+      },
     });
   }
 
   private async _uploadFile(file: File) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
+      this._pickedFile = undefined;
       showAlertDialog(this, {
         text: this._i18n.localize(
           "ui.components.picture-upload.unsupported_format"
@@ -234,6 +244,7 @@ export class HaPictureUpload extends LitElement {
       });
     } finally {
       this._uploading = false;
+      this._pickedFile = undefined;
       fireEvent(this, "uploading-changed", { uploading: false });
     }
   }

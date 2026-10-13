@@ -1,10 +1,13 @@
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { internationalizationContext } from "../data/context";
 import type { FrontendLocaleData } from "../data/translation";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
@@ -201,7 +204,9 @@ export const getCurrencyOptions = (
 
 @customElement("ha-currency-picker")
 export class HaCurrencyPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property() public value?: string;
 
@@ -213,7 +218,7 @@ export class HaCurrencyPicker extends LitElement {
 
   private _getCurrencyOptions = memoizeOne(getCurrencyOptions);
 
-  private _getItems = () => this._getCurrencyOptions(this.hass?.locale);
+  private _getItems = () => this._getCurrencyOptions(this._i18n?.locale);
 
   private _getCurrencyName = (currency?: string) =>
     this._getItems().find((c) => c.id === currency)?.primary;
@@ -224,14 +229,14 @@ export class HaCurrencyPicker extends LitElement {
   protected render() {
     const label =
       this.label ??
-      (this.hass?.localize("ui.components.currency-picker.currency") ||
+      (this._i18n?.localize("ui.components.currency-picker.currency") ||
         "Currency");
 
     return html`
       <ha-generic-picker
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${
-          this.hass?.localize("ui.components.currency-picker.no_currencies") ||
+          this._i18n?.localize("ui.components.currency-picker.no_currencies") ||
           "No currencies available"
         }
         .label=${label}
@@ -263,9 +268,11 @@ export class HaCurrencyPicker extends LitElement {
 
   private _notFoundLabel = (search: string) => {
     const term = html`<b>'${search}'</b>`;
-    return this.hass
-      ? this.hass.localize("ui.components.currency-picker.no_match", { term })
-      : html`No currencies found for ${term}`;
+    return (
+      this._i18n?.localize("ui.components.currency-picker.no_match", {
+        term,
+      }) || html`No currencies found for ${term}`
+    );
   };
 }
 
