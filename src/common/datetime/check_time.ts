@@ -85,7 +85,7 @@ export const parseTimeString = (timeString: string, timezone: string): Date => {
  * @returns true if current time matches the condition
  */
 export const checkTimeInRange = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "locale" | "config">,
   { after, before, weekdays }: Omit<TimeCondition, "condition">
 ): boolean => {
   const timezone =
