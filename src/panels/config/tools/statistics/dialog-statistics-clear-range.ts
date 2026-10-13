@@ -16,7 +16,7 @@ import {
 } from "../../../../data/context";
 import type { Statistics, StatisticType } from "../../../../data/recorder";
 import {
-  clearStatisticsRange,
+  clearStatistics,
   fetchStatistics,
   StatisticMeanType,
 } from "../../../../data/recorder";
@@ -210,12 +210,10 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
     this._busy = true;
     this._error = undefined;
     try {
-      await clearStatisticsRange(
-        this._api,
-        [this.params!.statistic.statistic_id],
-        this._start,
-        this._end
-      );
+      await clearStatistics(this._api, [this.params!.statistic.statistic_id], {
+        start: this._start,
+        end: this._end,
+      });
     } catch (err: any) {
       this._busy = false;
       this._error = err.message || err;
