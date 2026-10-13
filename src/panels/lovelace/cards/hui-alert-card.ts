@@ -17,12 +17,37 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { AlertCardConfig } from "./types";
 
 @customElement("hui-alert-card")
 export class HuiAlertCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-alert-card-editor");
+
+    return document.createElement("hui-alert-card-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): AlertCardConfig {
+    const [entity] = findEntities(hass, 1, entities, entitiesFallback, [
+      "binary_sensor",
+      "alarm_control_panel",
+    ]);
+
+    return { type: "alert", entity: entity || "", color: "red" };
+  }
+
   @state() private _config?: AlertCardConfig;
 
   @state()

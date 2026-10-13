@@ -10340,6 +10340,12 @@
               "available_states": "Available states",
               "description": "This card allows you to arm and disarm your alarm control panel integrations."
             },
+            "alert": {
+              "name": "Alert",
+              "description": "This card highlights an entity that needs attention, with an optional color and pulsing background.",
+              "pulse": "Pulse",
+              "pulse_helper": "Animates the colored background. When reduced motion is on, the background stays tinted instead."
+            },
             "area": {
               "name": "Area",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
