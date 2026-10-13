@@ -232,7 +232,7 @@ export const checkForEntityUpdates = async (
 // When update is not available and there is no latest_version show "Unavailable"
 export const computeUpdateStateDisplay = (
   stateObj: UpdateEntity,
-  hass: HomeAssistant
+  options: Pick<HomeAssistant, "localize" | "locale" | "formatEntityState">
 ): string => {
   const state = stateObj.state;
   const attributes = stateObj.attributes;
@@ -245,14 +245,14 @@ export const computeUpdateStateDisplay = (
       supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
       attributes.update_percentage !== null;
     if (supportsProgress) {
-      return hass.localize("ui.card.update.installing_with_progress", {
-        progress: formatNumber(attributes.update_percentage!, hass.locale, {
+      return options.localize("ui.card.update.installing_with_progress", {
+        progress: formatNumber(attributes.update_percentage!, options.locale, {
           maximumFractionDigits: attributes.display_precision,
           minimumFractionDigits: attributes.display_precision,
         }),
       });
     }
-    return hass.localize("ui.card.update.installing");
+    return options.localize("ui.card.update.installing");
   }
 
   if (state === "off") {
@@ -262,10 +262,10 @@ export const computeUpdateStateDisplay = (
     if (isSkipped) {
       return attributes.latest_version!;
     }
-    return hass.formatEntityState(stateObj);
+    return options.formatEntityState(stateObj);
   }
 
-  return hass.formatEntityState(stateObj);
+  return options.formatEntityState(stateObj);
 };
 
 export type UpdateType =

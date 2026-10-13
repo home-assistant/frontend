@@ -165,7 +165,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                 <div class="secondary">
                   <state-display
                     .stateObj=${stateObj}
-                    .hass=${this.hass}
                     .content=${this._config.secondary_info}
                     .timeFormat=${this._config.time_format}
                     .name=${name}

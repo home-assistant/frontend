@@ -14,11 +14,12 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { assert } from "superstruct";
-import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -52,15 +53,15 @@ import "../condition/ha-automation-condition";
 import type HaAutomationCondition from "../condition/ha-automation-condition";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 import { optionStruct } from "../structs";
-import "../trigger/ha-automation-trigger-references";
 import {
   editorStyles,
   indentStyle,
   overflowStyles,
   rowStyles,
 } from "../styles";
-import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import "../trigger/ha-automation-trigger-references";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 
 @customElement("ha-automation-option-row")
@@ -746,10 +747,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }
