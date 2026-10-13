@@ -109,7 +109,11 @@ export class AITaskPref extends LitElement {
                 "ui.panel.config.ai_task.gen_data_description"
               )}
             </span>
-            ${this._renderPicker("gen_data_entity_id", filterGenData)}
+            ${this._renderPicker(
+              "gen_data_entity_id",
+              filterGenData,
+              this.hass.localize("ui.panel.config.ai_task.gen_data_settings")
+            )}
           </ha-settings-row>
           <ha-settings-row .narrow=${this.narrow}>
             <span slot="heading">
@@ -120,7 +124,11 @@ export class AITaskPref extends LitElement {
                 "ui.panel.config.ai_task.gen_image_description"
               )}
             </span>
-            ${this._renderPicker("gen_image_entity_id", filterGenImage)}
+            ${this._renderPicker(
+              "gen_image_entity_id",
+              filterGenImage,
+              this.hass.localize("ui.panel.config.ai_task.gen_image_settings")
+            )}
           </ha-settings-row>
         </div>
         <div class="card-actions">
@@ -134,7 +142,8 @@ export class AITaskPref extends LitElement {
 
   private _renderPicker(
     key: keyof AITaskPreferences,
-    entityFilter: (entity: HassEntity) => boolean
+    entityFilter: (entity: HassEntity) => boolean,
+    settingsLabel: string
   ) {
     const configFlow = this._configFlows[key];
     return html`
@@ -145,7 +154,7 @@ export class AITaskPref extends LitElement {
             this._prefs === undefined &&
             isComponentLoaded(this.hass.config, "ai_task")
           }
-          .value=${this._entityId(key)}
+          .value=${this._entityId(key) ?? undefined}
           .entityFilter=${entityFilter}
           @value-changed=${this._handlePrefChange}
         ></ha-entity-picker>
@@ -153,7 +162,7 @@ export class AITaskPref extends LitElement {
           configFlow
             ? html`<ha-icon-button
                 data-name=${key}
-                .label=${this.hass.localize("ui.panel.config.ai_task.settings")}
+                .label=${settingsLabel}
                 .path=${mdiCog}
                 @click=${this._openConfigFlow}
               ></ha-icon-button>`
@@ -164,11 +173,13 @@ export class AITaskPref extends LitElement {
   }
 
   private _entityId(key: keyof AITaskPreferences) {
-    return this[`_${key}`] || this._prefs?.[key];
+    const value = this[`_${key}`];
+    return value === undefined ? this._prefs?.[key] : value;
   }
 
   private async _updateConfigFlow(key: keyof AITaskPreferences) {
     const entityId = this._entityId(key);
+    this._configFlows = { ...this._configFlows, [key]: undefined };
     let configFlow: EntityConfigFlow | undefined;
     try {
       configFlow = entityId

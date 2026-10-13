@@ -104,6 +104,7 @@ export class HaConversationAgentPicker extends LitElement {
 
   private async _fetchConfigFlow() {
     const entityId = this.value;
+    this._configFlow = undefined;
     let configFlow: EntityConfigFlow | undefined;
     try {
       configFlow = entityId

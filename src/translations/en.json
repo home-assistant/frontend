@@ -3050,7 +3050,8 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images.",
-          "settings": "Task settings"
+          "gen_data_settings": "Data generation settings",
+          "gen_image_settings": "Image generation settings"
         },
         "mcp": {
           "header": "Model Context Protocol",
