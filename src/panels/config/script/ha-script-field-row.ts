@@ -27,6 +27,7 @@ import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "../automation/editor-toast";
+import { scrollRowIntoView } from "../automation/scroll-row-into-view";
 import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
@@ -438,10 +439,7 @@ export default class HaScriptFieldRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }
