@@ -28,7 +28,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 
-// No countdown is shown, so treat the code as expired early enough for the app to start pairing.
+// No countdown is shown, so leave the app time to start pairing.
 const EXPIRY_MARGIN_SECONDS = 30;
 
 @customElement("dialog-matter-open-commissioning-window")
@@ -302,7 +302,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           requestedAt +
           (params.commissioning_timeout - EXPIRY_MARGIN_SECONDS) * 1000 -
           Date.now();
-        // Show the expired state without waiting for a Share tap.
+        // Otherwise a dead code only shows as dead on a Share tap.
         this._expiryTimer = window.setTimeout(() => {
           this._shareExpired = true;
         }, delay);

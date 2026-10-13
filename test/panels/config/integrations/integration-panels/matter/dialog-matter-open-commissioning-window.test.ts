@@ -269,7 +269,7 @@ describe("dialog-matter-open-commissioning-window", () => {
     });
 
     describe("expiry", () => {
-      /** Draws the template directly: the dialog is never connected. */
+      /** The dialog is never connected, so the template is drawn by hand. */
       const renderer = () => {
         dialog.hass = {
           ...dialog.hass,
