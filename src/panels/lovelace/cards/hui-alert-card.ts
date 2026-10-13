@@ -1,13 +1,12 @@
 import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
-import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
   DEFAULT_ALERT_COLOR,
@@ -23,13 +22,23 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
+import {
+  getTileActionDefaults,
+  getTileIconActionConfig,
+  getTileImageUrl,
+  hasTileCardAction,
+  hasTileIconAction,
+} from "./tile/tile-card-helpers";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { AlertCardConfig } from "./types";
 
@@ -56,6 +65,8 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
 
     return { type: "alert", entity: entity || "" };
   }
+
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: AlertCardConfig;
 
@@ -84,7 +95,11 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
         `Specify an entity from within the ${ALERT_DOMAINS.join(", ")} domains`
       );
     }
-    this._config = config;
+
+    this._config = {
+      ...getTileActionDefaults(config.entity),
+      ...config,
+    };
   }
 
   public getCardSize(): number {
@@ -101,7 +116,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this._formatters) {
+    if (!this._config || !this._formatters || !this.hass) {
       return nothing;
     }
 
@@ -109,11 +124,6 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return nothing;
     }
-
-    const stateDisplay = this._formatters.formatEntityState(stateObj);
-    const areaName = this._formatters.formatEntityName(stateObj, {
-      type: "area",
-    });
 
     const active = isAlertActive(stateObj);
 
@@ -123,6 +133,10 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
 
     const pulse = active && this._config.pulse === true;
     const hasColor = color !== undefined && color !== "none";
+
+    const imageUrl = this._config.show_entity_picture
+      ? getTileImageUrl(this.hass, stateObj)
+      : undefined;
 
     return html`
       <ha-card
@@ -136,24 +150,51 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
         })}
       >
         <ha-tile-container
-          .interactive=${true}
-          .actionHandlerOptions=${{ hasHold: false, hasDoubleClick: false }}
+          .interactive=${hasTileCardAction(this._config)}
+          .actionHandlerOptions=${{
+            hasHold: hasAction(this._config.hold_action),
+            hasDoubleClick: hasAction(this._config.double_tap_action),
+          }}
           @action=${this._handleAction}
         >
-          <ha-tile-icon slot="icon">
-            <ha-state-icon slot="icon" .stateObj=${stateObj}></ha-state-icon>
+          <ha-tile-icon
+            slot="icon"
+            .interactive=${hasTileIconAction(this._config)}
+            .actionHandlerOptions=${{
+              hasHold: hasAction(this._config.icon_hold_action),
+              hasDoubleClick: hasAction(this._config.icon_double_tap_action),
+            }}
+            .imageUrl=${imageUrl}
+            @action=${this._handleIconAction}
+          >
+            ${
+              imageUrl
+                ? nothing
+                : html`<ha-state-icon
+                    slot="icon"
+                    .icon=${this._config.icon}
+                    .stateObj=${stateObj}
+                  ></ha-state-icon>`
+            }
           </ha-tile-icon>
           <ha-tile-info slot="info">
             <span slot="primary"
-              >${this._formatters.formatEntityName(stateObj)}</span
+              >${this._formatters.formatEntityName(
+                stateObj,
+                this._config.name
+              )}</span
             >
             <span slot="secondary">
-              ${stateDisplay} ·
-              <ha-relative-time
-                .datetime=${stateObj.last_changed}
-                .format=${"short"}
-              ></ha-relative-time>
-              ${areaName ? html` · ${areaName}` : nothing}
+              ${
+                this._config.state_content
+                  ? html`<state-display
+                      .stateObj=${stateObj}
+                      .hass=${this.hass}
+                      .content=${this._config.state_content}
+                      .timeFormat=${this._config.time_format}
+                    ></state-display>`
+                  : this._renderDefaultSecondary(stateObj)
+              }
             </span>
           </ha-tile-info>
         </ha-tile-container>
@@ -161,10 +202,33 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private _renderDefaultSecondary(stateObj: HassEntity) {
+    const areaName = this._formatters.formatEntityName(stateObj, {
+      type: "area",
+    });
+
+    return html`
+      ${this._formatters.formatEntityState(stateObj)} ·
+      <ha-relative-time
+        .datetime=${stateObj.last_changed}
+        .format=${"short"}
+      ></ha-relative-time>
+      ${areaName ? html` · ${areaName}` : nothing}
+    `;
+  }
+
   private _handleAction(ev: ActionHandlerEvent): void {
-    if (ev.detail.action === "tap" && this._config) {
-      fireEvent(this, "hass-more-info", { entityId: this._config.entity });
-    }
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _handleIconAction(ev: ActionHandlerEvent): void {
+    ev.stopPropagation();
+    handleAction(
+      this,
+      this.hass!,
+      getTileIconActionConfig(this._config!.entity, this._config!),
+      ev.detail.action!
+    );
   }
 
   static styles = [

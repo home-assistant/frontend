@@ -2,7 +2,7 @@ import type { ContextType } from "@lit/context";
 import { mdiAlertCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -11,7 +11,6 @@ import {
   consumeEntityState,
   consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
-import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
   DEFAULT_ALERT_COLOR,
@@ -25,9 +24,16 @@ import "../../../components/ha-svg-icon";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
+import {
+  getTileImageUrl,
+  hasTileCardAction,
+} from "../cards/tile/tile-card-helpers";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import type { AlertBadgeConfig } from "./types";
 
@@ -54,6 +60,8 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
 
     return { type: "alert", entity: entity || "" };
   }
+
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: AlertBadgeConfig;
 
@@ -91,7 +99,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   }
 
   protected render() {
-    if (!this._config || !this._formatters || !this._localize) {
+    if (!this._config || !this.hass || !this._formatters || !this._localize) {
       return nothing;
     }
 
@@ -115,10 +123,16 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     const pulse = active && this._config.pulse === true;
     const hasColor = color !== undefined && color !== "none";
 
+    const name = this._formatters.formatEntityName(stateObj, this._config.name);
+
+    const imageUrl = this._config.show_entity_picture
+      ? getTileImageUrl(this.hass, stateObj, 32)
+      : undefined;
+
     return html`
       <ha-badge
-        type="button"
-        .label=${this._formatters.formatEntityName(stateObj)}
+        .type=${hasTileCardAction(this._config) ? "button" : "badge"}
+        .label=${name}
         class=${classMap({ alert: true, pulse, "no-color": !hasColor })}
         style=${styleMap({
           "--ha-alert-color":
@@ -126,20 +140,32 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
-          hasHold: false,
-          hasDoubleClick: false,
+          hasHold: hasAction(this._config.hold_action),
+          hasDoubleClick: hasAction(this._config.double_tap_action),
         })}
       >
-        <ha-state-icon slot="icon" .stateObj=${stateObj}></ha-state-icon>
-        ${this._formatters.formatEntityState(stateObj)}
+        ${
+          imageUrl
+            ? html`<img slot="icon" src=${imageUrl} aria-hidden />`
+            : html`<ha-state-icon
+                slot="icon"
+                .stateObj=${stateObj}
+                .icon=${this._config.icon}
+              ></ha-state-icon>`
+        }
+        <state-display
+          .stateObj=${stateObj}
+          .hass=${this.hass}
+          .content=${this._config.state_content}
+          .timeFormat=${this._config.time_format}
+          .name=${name}
+        ></state-display>
       </ha-badge>
     `;
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
-    if (ev.detail.action === "tap" && this._config) {
-      fireEvent(this, "hass-more-info", { entityId: this._config.entity });
-    }
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   static styles = css`
