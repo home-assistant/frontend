@@ -1,17 +1,39 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassConfig,
+  HassEntities,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  configContext,
+  connectionContext,
+  statesContext,
+} from "../../../data/context";
 import {
   type EntityHistoryState,
   limitedHistoryFromStateObj,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+} from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -19,6 +41,11 @@ import type {
   TrendGraphCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsTrendGraphCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
+};
 
 export const supportsTrendGraphCardFeature = (
   hass: HomeAssistant,
@@ -28,8 +55,7 @@ export const supportsTrendGraphCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
+  return supportsTrendGraphCardFeatureFromState(stateObj);
 };
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
@@ -41,12 +67,33 @@ class HuiHistoryChartCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false, hasChanged: () => false })
-  public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: TrendGraphCardFeatureConfig;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
 
   @state() private _coordinates?: [number, number][];
 
@@ -121,8 +168,7 @@ class HuiHistoryChartCardFeature
   }
 
   private _calculateCoordinates() {
-    const entityId = this.context?.entity_id;
-    if (!entityId || !this.hass) {
+    if (!this.context?.entity_id) {
       return;
     }
     const width = this.clientWidth;
@@ -130,7 +176,7 @@ class HuiHistoryChartCardFeature
 
     // History not loaded yet: show the loading state based on the current state.
     if (!this._stateHistory) {
-      const stateObj = this.hass.states[entityId];
+      const stateObj = this._stateObj;
       if (!stateObj) {
         return;
       }
@@ -173,9 +219,9 @@ class HuiHistoryChartCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
-      !supportsTrendGraphCardFeature(this.hass, this.context)
+      !this._stateObj ||
+      !supportsTrendGraphCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -190,9 +236,7 @@ class HuiHistoryChartCardFeature
       return html`
         <div class="container no-history-found">
           <div class="info">
-            ${this.hass!.localize(
-              "ui.components.history_charts.no_history_found"
-            )}
+            ${this._localize("ui.components.history_charts.no_history_found")}
           </div>
         </div>
       `;
@@ -213,20 +257,18 @@ class HuiHistoryChartCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  protected updated(changedProps: PropertyValues) {
     if (
       this.isConnected &&
       !this._subscribed &&
       !this._error &&
       this._config &&
       this.context?.entity_id &&
-      changedProps.has("hass")
+      changedProps.has("_hassConfig")
     ) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        oldHass &&
-        oldHass.config.components !== this.hass!.config.components
-      ) {
+      const oldConfig = changedProps.get("_hassConfig") as
+        HassConfig | undefined;
+      if (oldConfig && oldConfig.components !== this._hassConfig?.components) {
         // Retry subscription when components become available after backend restart
         this._subscribeHistory();
       }
@@ -235,7 +277,10 @@ class HuiHistoryChartCardFeature
 
   private async _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!.config, "history") ||
+      !this._hassConfig ||
+      !isComponentLoaded(this._hassConfig, "history") ||
+      !this._connection ||
+      !this._states ||
       !this.context?.entity_id ||
       !this._config ||
       this._subscribed
@@ -244,14 +289,21 @@ class HuiHistoryChartCardFeature
     }
 
     const hourToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
+    // Read live so a resubscribe after a reconnect sees current states.
+    const currentStates = () => this._states ?? {};
 
     this._subscribed = subscribeHistoryStatesTimeWindow(
-      this.hass!,
+      {
+        connection: this._connection,
+        get states() {
+          return currentStates();
+        },
+      },
       (historyStates) => {
         const entityId = this.context!.entity_id!;
         let history = historyStates[entityId];
         if (!history?.length) {
-          const stateObj = this.hass!.states[entityId];
+          const stateObj = this._stateObj;
           if (stateObj) {
             history = limitedHistoryFromStateObj(stateObj);
           }
