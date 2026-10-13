@@ -10,6 +10,6 @@ export const alertBadgeSuggestions: BadgeSuggestionProvider<AlertBadgeConfig> =
         return [];
       }
 
-      return [{ config: { type: "alert", entity: entityId, color: "red" } }];
+      return [{ config: { type: "alert", entity: entityId } }];
     },
   };
