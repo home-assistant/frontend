@@ -268,27 +268,74 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(commissionParams()).toBe(fresh);
     });
 
-    describe("expiry", () => {
-      /** The dialog is never connected, so the template is drawn by hand. */
-      const renderer = () => {
+    /** The dialog is never connected, so the template is drawn by hand. */
+    const renderer = (
+      config: Record<string, boolean> = {
+        canShareMatterDeviceToAppleHome: true,
+      }
+    ) => {
+      dialog.hass = {
+        ...dialog.hass,
+        auth: {
+          data: { hassUrl: "http://ha.local" },
+          external: { config },
+        },
+      } as unknown as HomeAssistant;
+      const container = document.createElement("div");
+      return () => {
+        render(
+          (internals()["render"] as () => unknown).call(dialog),
+          container,
+          { host: dialog }
+        );
+        return container;
+      };
+    };
+
+    describe("prompt", () => {
+      const prompt = async (config?: Record<string, boolean>) => {
+        await openedWindow();
+        const draw = renderer(config);
         dialog.hass = {
           ...dialog.hass,
-          auth: {
-            data: { hassUrl: "http://ha.local" },
-            external: { config: { canShareMatterDeviceToAppleHome: true } },
-          },
+          localize: (key: string, args?: Record<string, string>) =>
+            args ? `${key} ${JSON.stringify(args)}` : key,
         } as unknown as HomeAssistant;
-        const container = document.createElement("div");
-        return () => {
-          render(
-            (internals()["render"] as () => unknown).call(dialog),
-            container,
-            { host: dialog }
-          );
-          return container;
-        };
+        return draw().querySelector("p")!.textContent!;
       };
 
+      it.each([
+        [
+          "Apple Home",
+          { canShareMatterDeviceToAppleHome: true },
+          "scan_code_add_to_apple_home",
+          "add_to_apple_home",
+        ],
+        [
+          "the chooser",
+          { canShareMatterDeviceToOtherApps: true },
+          "scan_code_share_with_app",
+          "share_with_app",
+        ],
+      ])(
+        "points to the share button for %s",
+        async (_, config, key, button) => {
+          const text = await prompt(config);
+
+          expect(text).toContain(
+            `${key} {"button":"ui.panel.config.matter.open_commissioning_window.${button}"}`
+          );
+        }
+      );
+
+      it("keeps the plain scan prompt in the browser", async () => {
+        const text = await prompt({});
+
+        expect(text).toMatch(/open_commissioning_window\.scan_code\s*$/);
+      });
+    });
+
+    describe("expiry", () => {
       it("marks the code expired 30 seconds before the window ends, without a tap", async () => {
         await openedWindow();
 

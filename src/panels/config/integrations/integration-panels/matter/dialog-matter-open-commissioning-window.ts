@@ -112,9 +112,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       "ui.panel.config.matter.open_commissioning_window.success"
                     )}
                     <br />
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.scan_code"
-                    )}
+                    ${this._scanPrompt(shareTarget)}
                   </p>
                   ${
                     this._shareFailed
@@ -314,6 +312,25 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     } finally {
       this._opening.delete(deviceId);
     }
+  }
+
+  // The QR code dominates the dialog, so say the button skips the scan.
+  private _scanPrompt(target: MatterShareTarget | undefined) {
+    if (!target) {
+      return this.hass.localize(
+        "ui.panel.config.matter.open_commissioning_window.scan_code"
+      );
+    }
+    const button = this._shareLabel(target);
+    return target === "apple_home"
+      ? this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.scan_code_add_to_apple_home",
+          { button }
+        )
+      : this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.scan_code_share_with_app",
+          { button }
+        );
   }
 
   private _shareLabel(target: MatterShareTarget) {
