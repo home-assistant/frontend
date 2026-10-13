@@ -230,7 +230,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       );
       const rows: TemplateResult[] = [];
       for (const stat of data) {
-        const digits = this._fractionDigits(stat.change!);
+        const digits = this._fractionDigits(stat.change);
         rows.push(html`
           <ha-list-item
             twoline
@@ -291,8 +291,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
   }
 
   // Small changes get more digits, so they do not round to zero.
-  private _fractionDigits(value: number): number {
-    if (value === 0 || Math.abs(value) >= 10 ** -this._precision) {
+  private _fractionDigits(value: number | null | undefined): number {
+    if (!value || Math.abs(value) >= 10 ** -this._precision) {
       return this._precision;
     }
     return Math.min(Math.ceil(-Math.log10(Math.abs(value))) + 1, 20);
@@ -300,7 +300,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
   private _setChosenStatistic(ev) {
     const stat = ev.currentTarget.stat;
-    const multiple = 10 ** this._fractionDigits(stat.change!);
+    const multiple = 10 ** this._fractionDigits(stat.change);
     const growth = Math.round(stat.change! * multiple) / multiple;
 
     this._chosenStat = stat;
@@ -409,7 +409,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         )}
         .selector=${this._amountSelector(
           unit || undefined,
-          this._fractionDigits(this._chosenStat!.change!)
+          this._fractionDigits(this._chosenStat!.change)
         )}
         .value=${this._amount}
         .disabled=${this._busy}
