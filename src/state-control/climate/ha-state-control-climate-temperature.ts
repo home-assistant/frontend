@@ -15,6 +15,7 @@ import { clamp } from "../../common/number/clamp";
 import { formatNumber } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { debounce } from "../../common/util/debounce";
+import { PendingValueSync } from "../../common/util/pending-value-sync";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import type { ControlCircularSliderMode } from "../../components/ha-control-circular-slider";
@@ -84,15 +85,28 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
+  private _pendingSync = new PendingValueSync();
+
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._targetTemperature = {
-        value: this.stateObj.attributes.temperature,
-        low: this.stateObj.attributes.target_temp_low,
-        high: this.stateObj.attributes.target_temp_high,
-      };
+    if (!changedProp.has("stateObj")) {
+      return;
     }
+    if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.reset();
+      this._syncTargetTemperature();
+    } else if (this._pendingSync.shouldSync()) {
+      this._syncTargetTemperature();
+    }
+  }
+
+  private _syncTargetTemperature() {
+    this._targetTemperature = {
+      value: this.stateObj.attributes.temperature,
+      low: this.stateObj.attributes.target_temp_low,
+      high: this.stateObj.attributes.target_temp_high,
+    };
   }
 
   private get _step() {
@@ -119,6 +133,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       [target]: value,
     };
     this._selectTargetTemperature = target as Target;
+    this._debouncedCallService.cancel();
     this._callService(target);
   }
 
@@ -139,18 +154,21 @@ export class HaStateControlClimateTemperature extends LitElement {
   );
 
   private _callService(type: string) {
-    if (type === "high" || type === "low") {
-      this._api.callService("climate", "set_temperature", {
-        entity_id: this.stateObj!.entity_id,
-        target_temp_low: this._targetTemperature.low,
-        target_temp_high: this._targetTemperature.high,
-      });
-      return;
-    }
-    this._api.callService("climate", "set_temperature", {
-      entity_id: this.stateObj!.entity_id,
-      temperature: this._targetTemperature.value,
-    });
+    const data =
+      type === "high" || type === "low"
+        ? {
+            entity_id: this.stateObj!.entity_id,
+            target_temp_low: this._targetTemperature.low,
+            target_temp_high: this._targetTemperature.high,
+          }
+        : {
+            entity_id: this.stateObj!.entity_id,
+            temperature: this._targetTemperature.value,
+          };
+    return this._pendingSync.run(
+      () => this._api.callService("climate", "set_temperature", data),
+      () => this._syncTargetTemperature()
+    );
   }
 
   private _handleButton(ev) {
@@ -173,6 +191,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       ...this._targetTemperature,
       [target]: temp,
     };
+    this._pendingSync.schedule();
     this._debouncedCallService(target);
   }
 
