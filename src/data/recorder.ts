@@ -270,6 +270,19 @@ export const clearStatistics = (
     statistic_ids,
   });
 
+export const clearStatisticsRange = (
+  hass: Pick<HomeAssistant, "callWS">,
+  statistic_ids: string[],
+  startTime: Date,
+  endTime: Date
+) =>
+  hass.callWS<undefined>({
+    type: "recorder/clear_statistics_range",
+    statistic_ids,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+  });
+
 export const calculateStatisticSumGrowth = (
   values?: StatisticValue[]
 ): number | null => {

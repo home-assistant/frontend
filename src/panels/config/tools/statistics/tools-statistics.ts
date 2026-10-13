@@ -2,6 +2,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
+  mdiDeleteClock,
   mdiFormatListChecks,
   mdiMenuDown,
   mdiSlopeUphill,
@@ -78,6 +79,7 @@ import type { HomeAssistantRegistries } from "../../../../types";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
+import { showStatisticsClearRangeDialog } from "./show-dialog-statistics-clear-range";
 
 const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,
@@ -304,6 +306,24 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         minWidth: "113px",
         maxWidth: "113px",
         showNarrow: true,
+      },
+      clear_range: {
+        title: "",
+        label: localize(
+          "ui.panel.config.tools.tabs.statistics.clear_range.title"
+        ),
+        type: "icon-button",
+        showNarrow: true,
+        template: (statistic) => html`
+          <ha-icon-button
+            .label=${localize(
+              "ui.panel.config.tools.tabs.statistics.clear_range.title"
+            )}
+            .path=${mdiDeleteClock}
+            .statistic=${statistic}
+            @click=${this._showStatisticsClearRangeDialog}
+          ></ha-icon-button>
+        `,
       },
       actions: {
         title: "",
@@ -724,6 +744,19 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
       statistic: ev.currentTarget.statistic,
+    });
+  }
+
+  private _showStatisticsClearRangeDialog(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { statistic: DisplayedStatisticData }
+    >
+  ) {
+    ev.stopPropagation();
+    const statistic = ev.currentTarget.statistic;
+    showStatisticsClearRangeDialog(this, {
+      statistic,
+      name: statistic.displayName,
     });
   }
 
