@@ -194,11 +194,14 @@ const isLoaded = (el: HaMap) => (el as any)._loaded as boolean;
 const entityHandles = (el: HaMap) =>
   (el as any)._entityHandles as MapMarkerHandle[];
 
-const createMap = async (): Promise<HaMap> => {
+const createMap = async (
+  states: HassEntities = STATES,
+  entities: string[] = Object.keys(states)
+): Promise<HaMap> => {
   const el = document.createElement("ha-map");
-  el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
+  el.entities = entities;
   el.clusterMarkers = false;
-  (el as any)._states = STATES;
+  (el as any)._states = states;
   (el as any)._formatters = FORMATTERS;
   (el as any)._config = {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
@@ -235,6 +238,170 @@ describe("ha-map engine selection", () => {
     expect(engine.addMarker).toHaveBeenCalledTimes(2);
     expect(entityHandles(el)).toHaveLength(2);
   });
+
+  describe.each([
+    { domain: "person", hasGpsCoordinates: true },
+    { domain: "device_tracker", hasGpsCoordinates: true },
+    { domain: "person", hasGpsCoordinates: false },
+  ])(
+    "duplicate zone names for $domain (GPS: $hasGpsCoordinates)",
+    ({ domain, hasGpsCoordinates }) => {
+      it.each([
+        {
+          scenario: "one marker",
+          zoneIds: ["zone.paulus", "zone.anne_therese"],
+          markerNames: ["paulus"],
+        },
+        {
+          scenario: "one marker with reversed zone order",
+          zoneIds: ["zone.anne_therese", "zone.paulus"],
+          markerNames: ["paulus"],
+        },
+        {
+          scenario: "both markers",
+          zoneIds: ["zone.paulus", "zone.anne_therese"],
+          markerNames: ["paulus", "anne_therese"],
+        },
+        {
+          scenario: "both markers with reversed zone order",
+          zoneIds: ["zone.anne_therese", "zone.paulus"],
+          markerNames: ["paulus", "anne_therese"],
+        },
+      ])(
+        "assigns the correct zones for $scenario",
+        async ({ zoneIds, markerNames }) => {
+          const states: HassEntities = {};
+          for (const { name, latitude } of [
+            { name: "paulus", latitude: 52.372 },
+            { name: "anne_therese", latitude: 52.377 },
+          ]) {
+            states[`zone.${name}`] = {
+              ...STATES[`device_tracker.${name}`],
+              entity_id: `zone.${name}`,
+              state: "1",
+              attributes: {
+                friendly_name: "Work",
+                latitude,
+                longitude: 4.89,
+                radius: 100,
+              },
+            };
+            states[`${domain}.${name}`] = {
+              ...STATES[`device_tracker.${name}`],
+              entity_id: `${domain}.${name}`,
+              state: "Work",
+              attributes: hasGpsCoordinates
+                ? { latitude, longitude: 4.89 }
+                : { in_zones: [`zone.${name}`] },
+            };
+          }
+
+          const entities = [
+            ...zoneIds,
+            ...markerNames.map((name) => `${domain}.${name}`),
+          ];
+          const el = await createMap(states, entities);
+          const markerAssignments = entityHandles(el).map(
+            (marker) => marker.clusterData
+          );
+          const expectedAssignments = markerNames.map((name) => ({
+            entityId: `${domain}.${name}`,
+            zoneId: `zone.${name}`,
+          }));
+
+          expect(markerAssignments).toMatchObject(expectedAssignments);
+        }
+      );
+    }
+  );
+
+  describe.each(["person", "device_tracker"])(
+    "reported zone membership for %s",
+    (domain) => {
+      it.each([
+        {
+          scenario:
+            "uses zone IDs even when the coordinates are in another zone",
+          inZones: ["zone.paulus"],
+          visibleZones: ["zone.paulus", "zone.anne_therese"],
+          expectedZoneId: "zone.paulus",
+        },
+        {
+          scenario: "does not infer membership when the reported list is empty",
+          inZones: [],
+          visibleZones: ["zone.paulus", "zone.anne_therese"],
+          expectedZoneId: undefined,
+        },
+        {
+          scenario: "does not substitute a visible zone for a hidden zone",
+          inZones: ["zone.paulus"],
+          visibleZones: ["zone.anne_therese"],
+          expectedZoneId: undefined,
+        },
+        {
+          scenario: "skips missing and passive zones when choosing a zone",
+          inZones: ["zone.missing", "zone.passive", "zone.paulus"],
+          visibleZones: ["zone.passive", "zone.paulus", "zone.anne_therese"],
+          expectedZoneId: "zone.paulus",
+        },
+      ])("$scenario", async ({ inZones, visibleZones, expectedZoneId }) => {
+        const entityId = `${domain}.paulus`;
+        const states: HassEntities = {
+          "zone.paulus": {
+            ...STATES["device_tracker.paulus"],
+            entity_id: "zone.paulus",
+            state: "1",
+            attributes: {
+              friendly_name: "Work",
+              latitude: 52.372,
+              longitude: 4.89,
+              radius: 100,
+            },
+          },
+          "zone.anne_therese": {
+            ...STATES["device_tracker.anne_therese"],
+            entity_id: "zone.anne_therese",
+            state: "0",
+            attributes: {
+              friendly_name: "Work",
+              latitude: 52.377,
+              longitude: 4.895,
+              radius: 100,
+            },
+          },
+          "zone.passive": {
+            ...STATES["device_tracker.paulus"],
+            entity_id: "zone.passive",
+            state: "0",
+            attributes: {
+              friendly_name: "Passive",
+              latitude: 52.372,
+              longitude: 4.89,
+              radius: 100,
+              passive: true,
+            },
+          },
+          [entityId]: {
+            ...STATES["device_tracker.paulus"],
+            entity_id: entityId,
+            state: "Work",
+            attributes: {
+              latitude: 52.377,
+              longitude: 4.895,
+              in_zones: inZones,
+            },
+          },
+        };
+        const el = await createMap(states, [...visibleZones, entityId]);
+        el.renderPassive = true;
+        await el.updateComplete;
+
+        expect(entityHandles(el)).toMatchObject([
+          { clusterData: { entityId, zoneId: expectedZoneId } },
+        ]);
+      });
+    }
+  );
 
   it("sets up while themes are not loaded yet, as during onboarding", async () => {
     const el = document.createElement("ha-map");

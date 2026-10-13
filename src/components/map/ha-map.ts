@@ -17,7 +17,6 @@ import { UNIT_KM } from "../../common/const";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
@@ -1347,8 +1346,6 @@ export class HaMap extends ReactiveElement {
     this._watchRegistry();
 
     const computedStyles = getComputedStyle(this);
-    // A person's state is "home" for the home zone, the zone name otherwise
-    const zoneByState: Record<string, string> = {};
     this._zonePositions = {};
     this._zoneRadii = {};
     for (const entity of this.entities) {
@@ -1359,11 +1356,6 @@ export class HaMap extends ReactiveElement {
         computeStateDomain(stateObj) === "zone" &&
         (this.renderPassive || !stateObj.attributes.passive)
       ) {
-        zoneByState[
-          stateObj.entity_id === "zone.home"
-            ? "home"
-            : computeStateName(stateObj)
-        ] = stateObj.entity_id;
         if (
           typeof stateObj.attributes.latitude === "number" &&
           typeof stateObj.attributes.longitude === "number"
@@ -1522,6 +1514,20 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && (entity.selected ?? false);
       entityMarker.floating = true;
 
+      let zoneId: string | undefined;
+      if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
+        const inZones: string[] | undefined = stateObj.attributes.in_zones;
+        if (Array.isArray(inZones)) {
+          zoneId = inZones.find(
+            (candidate) =>
+              this._zonePositions[candidate] !== undefined &&
+              !states[candidate]?.attributes.passive
+          );
+        } else {
+          zoneId = this._zoneContaining(position);
+        }
+      }
+
       const clusterData: ClusterData = {
         entityId,
         title,
@@ -1531,11 +1537,7 @@ export class HaMap extends ReactiveElement {
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
         selected: entityMarker.selected,
-        zoneId: ["person", "device_tracker"].includes(
-          computeStateDomain(stateObj)
-        )
-          ? (zoneByState[stateObj.state] ?? this._zoneContaining(position))
-          : undefined,
+        zoneId,
       };
 
       const accuracy =
