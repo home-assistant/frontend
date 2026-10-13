@@ -91,6 +91,8 @@ export class HaDateTimeSelector extends LitElement {
          below for its hint while ha-time-input does not. */
       align-items: flex-start;
       flex-direction: row;
+      /* Narrow screens have no room for both fields on one row. */
+      flex-wrap: wrap;
     }
 
     ha-date-input {
