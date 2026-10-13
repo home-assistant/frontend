@@ -257,10 +257,16 @@ export class StateBadge extends LitElement {
           justify-content: center;
         }
         :host(.has-image) {
-          border-radius: var(--state-badge-with-image-border-radius, 50%);
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            var(--ha-picture-border-radius)
+          );
         }
         :host(.has-media-image) {
-          border-radius: var(--state-badge-with-media-image-border-radius, 8%);
+          border-radius: var(
+            --state-badge-with-media-image-border-radius,
+            var(--ha-picture-border-radius)
+          );
         }
         :host(.has-no-radius) {
           border-radius: var(--ha-border-radius-square);

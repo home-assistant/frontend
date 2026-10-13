@@ -123,7 +123,7 @@ export class HaBadge extends LitElement {
     ::slotted(img[slot="icon"]) {
       width: 30px;
       height: 30px;
-      border-radius: var(--ha-avatar-border-radius);
+      border-radius: var(--ha-picture-border-radius);
       object-fit: cover;
       overflow: hidden;
       margin-left: -10px;

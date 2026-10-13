@@ -1993,7 +1993,6 @@ export class HaMap extends ReactiveElement {
     }
     .cluster-bubble ha-entity-marker {
       flex: none;
-      --ha-avatar-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
     .leaflet-bottom {
