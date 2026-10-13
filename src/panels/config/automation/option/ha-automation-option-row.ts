@@ -99,6 +99,9 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  // Unknown because sidebar YAML may not be a valid option
+  private _sidebarOption?: unknown;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
@@ -138,6 +141,19 @@ export default class HaAutomationOptionRow extends LitElement {
               this.option
             )
           : undefined;
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Sync the sidebar with inline edits, skip its own saves to keep focus
+    if (
+      changedProperties.has("option") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.option !== this._sidebarOption
+    ) {
+      this.openSidebar();
     }
   }
 
@@ -513,11 +529,25 @@ export default class HaAutomationOptionRow extends LitElement {
     if (!isConfigObject(value)) {
       return;
     }
-    fireEvent(this, "value-changed", {
-      value: value.sequence
-        ? { ...value, sequence: migrateAutomationAction(value.sequence) }
-        : value,
-    });
+    const option = value.sequence
+      ? { ...value, sequence: this._migrateSequence(value.sequence) }
+      : value;
+    this._sidebarOption = option;
+    fireEvent(this, "value-changed", { value: option });
+  }
+
+  private _migrateSequence(sequence: unknown): unknown {
+    // Migration throws on scalars, leave them for the UI support check
+    if (Array.isArray(sequence)) {
+      return sequence.map((action) =>
+        isConfigObject(action)
+          ? migrateAutomationAction(action as Action)
+          : action
+      );
+    }
+    return isConfigObject(sequence)
+      ? migrateAutomationAction(sequence as Action)
+      : sequence;
   }
 
   private _moveUp() {
@@ -683,6 +713,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
   public openSidebar(option?: Option): void {
     const sidebarOption = option ?? this.option;
+    this._sidebarOption = sidebarOption;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         this._saveYamlOption(value);
