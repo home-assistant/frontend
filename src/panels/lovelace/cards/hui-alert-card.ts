@@ -169,7 +169,8 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
         position: relative;
       }
       @media (prefers-reduced-motion: reduce) {
-        ha-card::before {
+        ha-card::before,
+        ha-card.pulse::before {
           animation: none;
           opacity: var(--ha-alert-pulse-opacity);
         }
