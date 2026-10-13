@@ -1,3 +1,4 @@
+import { render } from "lit";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as MatterData from "../../../../../../src/data/matter";
 import type { MatterCommissioningParameters } from "../../../../../../src/data/matter";
@@ -320,6 +321,41 @@ describe("dialog-matter-open-commissioning-window", () => {
 
         expect(internals()["_sharing"]).toBe(false);
         expect(internals()["_open"]).toBe(true);
+      });
+
+      it("swaps the dead code for a new-code button once it has expired", async () => {
+        await openedWindow();
+        dialog.hass = {
+          ...dialog.hass,
+          auth: { data: { hassUrl: "http://ha.local" } },
+        } as unknown as HomeAssistant;
+        const container = document.createElement("div");
+        const draw = () =>
+          render(
+            (internals()["render"] as () => unknown).call(dialog),
+            container,
+            {
+              host: dialog,
+            }
+          );
+
+        draw();
+        expect(container.querySelector("ha-qr-code")).not.toBeNull();
+        vi.advanceTimersByTime(270_000);
+        draw();
+
+        expect(container.querySelector("ha-qr-code")).toBeNull();
+        expect(container.textContent).not.toContain("copy_code");
+        expect(container.textContent).toContain("ui.common.close");
+        const button =
+          container.querySelector<HTMLElement>("ha-alert ha-button")!;
+        expect(button.textContent).toContain("new_code");
+
+        // `ha-button` forwards `click()` to its inner button, which jsdom does not render.
+        button.dispatchEvent(new MouseEvent("click"));
+        await vi.runOnlyPendingTimersAsync();
+
+        expect(openMatterCommissioningWindow).toHaveBeenCalledTimes(2);
       });
 
       it("stops the clock when the dialog closes", async () => {
