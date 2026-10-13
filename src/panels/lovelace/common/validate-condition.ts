@@ -1,4 +1,7 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type {
+  HassEntity,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
@@ -383,8 +386,6 @@ interface ResolvedZones {
   entities: HomeAssistant["entities"];
   devices: HomeAssistant["devices"];
   areas: HomeAssistant["areas"];
-  /** Set while a registered zone has no state, which leaves it out. */
-  states?: HomeAssistant["states"];
   zones: string[];
 }
 
@@ -416,29 +417,34 @@ function resolveTargetZones(
     cached &&
     cached.entities === hass.entities &&
     cached.devices === hass.devices &&
-    cached.areas === hass.areas &&
-    (cached.states === undefined || cached.states === hass.states)
+    cached.areas === hass.areas
   ) {
     return cached.zones;
   }
+  // Resolving skips entities without a state, such as zones while they
+  // reload. Give registered zones a placeholder state so the result only
+  // depends on the registries; zones without a state are left out per check.
+  let states = hass.states;
+  for (const entityId of Object.keys(hass.entities)) {
+    if (computeDomain(entityId) === "zone" && !(entityId in states)) {
+      if (states === hass.states) {
+        states = { ...hass.states };
+      }
+      states[entityId] = { entity_id: entityId, attributes: {} } as HassEntity;
+    }
+  }
   const zones = resolveEntityIDs(
-    hass,
+    states === hass.states ? hass : { ...hass, states },
     target,
     hass.entities,
     hass.devices,
     hass.areas,
     ZONE_TARGET_SELECTOR
   ).filter((entityId) => computeDomain(entityId) === "zone");
-  // Resolving skips entities without a state, such as zones while they
-  // reload. Until they're back, resolve again on every state change.
-  const missingState = Object.keys(hass.entities).some(
-    (entityId) => computeDomain(entityId) === "zone" && !hass.states[entityId]
-  );
   resolvedZonesCache.set(target, {
     entities: hass.entities,
     devices: hass.devices,
     areas: hass.areas,
-    states: missingState ? hass.states : undefined,
     zones,
   });
   return zones;

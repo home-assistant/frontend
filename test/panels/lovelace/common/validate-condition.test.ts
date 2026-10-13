@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import * as selector from "../../../../src/data/selector";
 import type { VisibilityCondition } from "../../../../src/panels/lovelace/common/validate-condition";
 import {
   addEntityToCondition,
@@ -348,6 +349,25 @@ describe("checkConditionsMet", () => {
 
       // Same registries, state is back.
       expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+    });
+
+    it("keeps the cache while an unrelated zone has no state", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const base = createLocationHass("Store", ["zone.store_1"]);
+      // zone.work is registered but has no state.
+      const { "zone.work": _work, ...states } = base.states;
+      const hass = { ...base, states } as unknown as HomeAssistant;
+      const resolve = vi.spyOn(selector, "resolveEntityIDs");
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+      const moved = {
+        ...hass,
+        states: { ...hass.states },
+      } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, moved, {})).toBe(true);
+      expect(resolve).toHaveBeenCalledTimes(1);
+      resolve.mockRestore();
     });
 
     it("drops a cached zone that loses its state", () => {
