@@ -7,7 +7,10 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consume } from "../../../common/decorators/consume";
-import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
@@ -19,10 +22,8 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-badge";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
-import {
-  formattersContext,
-  internationalizationContext,
-} from "../../../data/context";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -65,8 +66,8 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   private _formatters!: ContextType<typeof formattersContext>;
 
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n!: ContextType<typeof internationalizationContext>;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   public setConfig(config: AlertBadgeConfig): void {
     if (
@@ -89,7 +90,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   }
 
   protected render() {
-    if (!this._config || !this._formatters || !this._i18n) {
+    if (!this._config || !this._formatters || !this._localize) {
       return nothing;
     }
 
@@ -99,7 +100,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       return html`
         <ha-badge .label=${this._config.entity} class="error">
           <ha-svg-icon slot="icon" .path=${mdiAlertCircle}></ha-svg-icon>
-          ${this._i18n.localize("ui.badge.entity.not_found")}
+          ${this._localize("ui.badge.entity.not_found")}
         </ha-badge>
       `;
     }
