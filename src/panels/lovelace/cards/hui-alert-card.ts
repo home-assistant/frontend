@@ -25,7 +25,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
-import type { AlertCardConfig } from "./types";
+import { ALERT_DOMAINS, type AlertCardConfig } from "./types";
 
 @customElement("hui-alert-card")
 export class HuiAlertCard extends LitElement implements LovelaceCard {
@@ -40,10 +40,13 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     entities: string[],
     entitiesFallback: string[]
   ): AlertCardConfig {
-    const [entity] = findEntities(hass, 1, entities, entitiesFallback, [
-      "binary_sensor",
-      "alarm_control_panel",
-    ]);
+    const [entity] = findEntities(
+      hass,
+      1,
+      entities,
+      entitiesFallback,
+      ALERT_DOMAINS
+    );
 
     return { type: "alert", entity: entity || "", color: "red" };
   }

@@ -1,4 +1,5 @@
 import { alarmPanelCardSuggestions } from "./hui-alarm-panel-card-suggestions";
+import { alertCardSuggestions } from "./hui-alert-card-suggestions";
 import { calendarCardSuggestions } from "./hui-calendar-card-suggestions";
 import { gaugeCardSuggestions } from "./hui-gauge-card-suggestions";
 import { historyGraphCardSuggestions } from "./hui-history-graph-card-suggestions";
@@ -19,6 +20,7 @@ export const CARD_SUGGESTION_PROVIDERS: Record<string, CardSuggestionProvider> =
   {
     tile: tileCardSuggestions,
     "alarm-panel": alarmPanelCardSuggestions,
+    alert: alertCardSuggestions,
     calendar: calendarCardSuggestions,
     gauge: gaugeCardSuggestions,
     humidifier: humidifierCardSuggestions,
