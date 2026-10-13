@@ -1213,6 +1213,45 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     }
   );
 
+  it.each([true, false])(
+    "refreshes Home across midnight within the grace period (already loaded: %s)",
+    async (loaded) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-01-01T23:59:58Z"));
+      const { collection, pending } = createCollection();
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const unsub = collection.subscribe(() => undefined);
+      if (loaded) {
+        await complete(pending[0]);
+      }
+      unsub();
+      await vi.advanceTimersByTimeAsync(3000);
+      // Home selects today before subscribing, so the collection's live-day
+      // catch-up sees no further period change.
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const received = vi.fn();
+      const unsubAgain = collection.subscribe(received);
+      await vi.advanceTimersByTimeAsync(0);
+      assert.equal(pending.length, 2);
+      assert.equal(received.mock.calls.length, 0);
+      if (!loaded) {
+        await complete(pending[0]);
+      }
+      // An obsolete completion must not clear the current request's marker.
+      const unsubSecond = collection.subscribe(() => undefined);
+      assert.equal(pending.length, 2);
+      await complete(pending[1]);
+      assert.equal(received.mock.calls.length, 1);
+      assert.equal(
+        collection.state.start.getTime(),
+        startOfDay(new Date()).getTime()
+      );
+      unsubSecond();
+      unsubAgain();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
   it("keeps an in-flight result when the comparison mode is reapplied", async () => {
     vi.useFakeTimers();
     const { collection, pending } = createCollection();

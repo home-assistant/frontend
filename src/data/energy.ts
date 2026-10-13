@@ -1120,6 +1120,7 @@ export const getEnergyDataCollection = (
   energyCollectionKeys.add(collectionKey);
 
   let revision = 0;
+  let pendingRevision: number | undefined;
   let selectionRevision = 0;
   let publishedSelectionRevision: number | undefined;
   let subscriptionId = 0;
@@ -1127,6 +1128,7 @@ export const getEnergyDataCollection = (
 
   const refresh = async (): Promise<void> => {
     const requestRevision = ++revision;
+    pendingRevision = requestRevision;
     const requestSelectionRevision = selectionRevision;
     const { start, end, compare } = collection;
     let prefs = collection.prefs;
@@ -1159,6 +1161,10 @@ export const getEnergyDataCollection = (
         throw err;
       }
       return;
+    } finally {
+      if (pendingRevision === requestRevision) {
+        pendingRevision = undefined;
+      }
     }
 
     if (requestRevision !== revision) {
@@ -1263,13 +1269,8 @@ export const getEnergyDataCollection = (
 
   collection.subscribe = (subscriber: (data: EnergyData) => void) => {
     // Catch up before origSubscribe so the first fetch uses the live day.
-    // Refresh only when state already exists: cold subscribe fetches via
-    // origSubscribe; a re-subscribe inside the 5s unsub grace does not.
-    const needsRefresh =
-      followLiveDay &&
-      applyLiveDayPeriod(new Date()) &&
-      collection.state !== undefined;
     if (followLiveDay) {
+      applyLiveDayPeriod(new Date());
       scheduleUpdatePeriod();
     }
 
@@ -1281,8 +1282,14 @@ export const getEnergyDataCollection = (
     });
     collection._active++;
 
-    if (needsRefresh) {
-      collection.refresh();
+    // Cold subscriptions already start a refresh. During the unsubscribe
+    // grace period, fetch only if neither data nor a request is current.
+    if (
+      (store.state === undefined ||
+        publishedSelectionRevision !== selectionRevision) &&
+      pendingRevision !== revision
+    ) {
+      collection.refresh().catch(() => undefined);
     }
 
     if (collection._refreshTimeout === undefined) {
