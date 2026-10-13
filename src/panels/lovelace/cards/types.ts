@@ -736,12 +736,11 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export const ALERT_DOMAINS = ["binary_sensor", "alarm_control_panel"];
-
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
   color?: string;
+  inactive_color?: string;
   pulse?: boolean;
 }
 

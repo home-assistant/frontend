@@ -8,6 +8,11 @@ import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  ALERT_DOMAINS,
+  isAlertActive,
+} from "../../../common/entity/alert_active";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-relative-time";
@@ -25,7 +30,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
-import { ALERT_DOMAINS, type AlertCardConfig } from "./types";
+import type { AlertCardConfig } from "./types";
 
 @customElement("hui-alert-card")
 export class HuiAlertCard extends LitElement implements LovelaceCard {
@@ -65,9 +70,17 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     if (
       !isValidEntityId(config.entity) ||
       (config.color !== undefined && typeof config.color !== "string") ||
+      (config.inactive_color !== undefined &&
+        typeof config.inactive_color !== "string") ||
       (config.pulse !== undefined && typeof config.pulse !== "boolean")
     ) {
       throw new Error("Invalid configuration");
+    }
+
+    if (!ALERT_DOMAINS.includes(computeDomain(config.entity))) {
+      throw new Error(
+        `Specify an entity from within the ${ALERT_DOMAINS.join(", ")} domains`
+      );
     }
     this._config = config;
   }
@@ -99,18 +112,18 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     const areaName = this._formatters.formatEntityName(stateObj, {
       type: "area",
     });
-    const pulse = this._config.pulse === true;
-    const hasColor =
-      this._config.color !== undefined && this._config.color !== "none";
+
+    const active = isAlertActive(stateObj);
+    const color = active ? this._config.color : this._config.inactive_color;
+    const pulse = active && this._config.pulse === true;
+    const hasColor = color !== undefined && color !== "none";
 
     return html`
       <ha-card
         class=${classMap({ pulse, "no-color": !hasColor })}
         style=${styleMap({
           "--ha-alert-color":
-            this._config.color && hasColor
-              ? computeCssColor(this._config.color)
-              : undefined,
+            color && hasColor ? computeCssColor(color) : undefined,
           "--ha-alert-static-opacity": pulse
             ? undefined
             : "var(--ha-alert-pulse-opacity)",

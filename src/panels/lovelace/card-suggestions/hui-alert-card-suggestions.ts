@@ -1,5 +1,6 @@
+import { ALERT_DOMAINS } from "../../../common/entity/alert_active";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { ALERT_DOMAINS, type AlertCardConfig } from "../cards/types";
+import type { AlertCardConfig } from "../cards/types";
 import type { CardSuggestionProvider } from "./types";
 
 export const alertCardSuggestions: CardSuggestionProvider<AlertCardConfig> = {
