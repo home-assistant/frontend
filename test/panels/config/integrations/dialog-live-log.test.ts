@@ -255,6 +255,24 @@ describe("dialog-live-log high volume", { timeout: 15000 }, () => {
     expect(scrollContainer.scrollTop).toBe(107);
     expect(dialog["_newLogsIndicator"]).toBe(true);
   });
+
+  it("disables the new logs indicator while it is hidden", async () => {
+    const { receiveLogLines, scrollContainer } = await openLogDialog();
+    const indicator = dialog.shadowRoot!.querySelector<
+      HTMLElement & { disabled: boolean }
+    >(".new-logs-indicator")!;
+    expect(indicator.disabled).toBe(true);
+
+    receiveLogLines(createLogLines(0, 50));
+    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+    scrollContainer.scrollTop = 107;
+    scrollContainer.dispatchEvent(new Event("scroll"));
+    receiveLogLines(["new line"]);
+    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+    await dialog.updateComplete;
+
+    expect(indicator.disabled).toBe(false);
+  });
 });
 
 describe("dialog-live-log connection", () => {
@@ -281,6 +299,22 @@ describe("dialog-live-log connection", () => {
       "backlog 2",
       "new",
     ]);
+  });
+
+  it("ignores a failed subscription when removed before it settles", async () => {
+    let rejectSubscription!: (err: unknown) => void;
+    vi.mocked(subscribeIntegrationLog).mockReturnValueOnce(
+      new Promise((_resolve, reject) => {
+        rejectSubscription = reject;
+      })
+    );
+    await mountDialog();
+
+    dialog.remove();
+    rejectSubscription({ code: "unknown_error" });
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(connection.removeEventListener).toHaveBeenCalled();
   });
 
   it("unsubscribes and stops listening to the connection when removed", async () => {

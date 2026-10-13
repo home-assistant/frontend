@@ -156,7 +156,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
   private _unsubscribe() {
     this._cancelFollowBottom();
     this._debounceSearch.cancel();
-    this._unsub?.then((unsub) => unsub());
+    // _subscribe reports subscription errors, so only ignore them here
+    this._unsub?.then((unsub) => unsub()).catch(() => undefined);
     this._unsub = undefined;
     this._live = false;
   }
@@ -364,6 +365,7 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                     })}"
                     size="s"
                     appearance="filled"
+                    .disabled=${!this._newLogsIndicator}
                     @click=${this._scrollToBottom}
                   >
                     <ha-svg-icon
@@ -474,6 +476,14 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           animation: breathe 1s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
           height: 14px;
           width: 14px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .new-logs-indicator {
+            transition: none;
+          }
+          .live-indicator ha-svg-icon {
+            animation: none;
+          }
         }
         .waiting {
           color: var(--secondary-text-color);
