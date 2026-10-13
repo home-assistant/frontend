@@ -475,6 +475,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           color: var(--secondary-text-color);
           font-size: 0.9em;
         }
+
+        ha-alert ha-button[slot="action"] {
+          width: max-content;
+          white-space: nowrap;
+        }
       `,
     ];
   }
