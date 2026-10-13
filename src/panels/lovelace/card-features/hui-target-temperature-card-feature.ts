@@ -13,6 +13,7 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
+import { PendingValueSync } from "../../../common/util/pending-value-sync";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import type { ClimateEntity } from "../../../data/climate";
@@ -107,6 +108,8 @@ class HuiTargetTemperatureCardFeature
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
+  private _pendingSync = new PendingValueSync();
+
   static getStubConfig(): TargetTemperatureCardFeatureConfig {
     return {
       type: "target-temperature",
@@ -122,19 +125,34 @@ class HuiTargetTemperatureCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("_stateObj") && this._stateObj) {
-      this._targetTemperature = {
-        value: this._stateObj.attributes.temperature,
-        low:
-          "target_temp_low" in this._stateObj.attributes
-            ? this._stateObj.attributes.target_temp_low
-            : undefined,
-        high:
-          "target_temp_high" in this._stateObj.attributes
-            ? this._stateObj.attributes.target_temp_high
-            : undefined,
-      };
+    if (!changedProp.has("_stateObj")) {
+      return;
     }
+    const oldStateObj = changedProp.get("_stateObj") as HassEntity | undefined;
+    if (oldStateObj?.entity_id !== this._stateObj?.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.reset();
+      this._syncTargetTemperature();
+    } else if (this._pendingSync.shouldSync()) {
+      this._syncTargetTemperature();
+    }
+  }
+
+  private _syncTargetTemperature() {
+    if (!this._stateObj) {
+      return;
+    }
+    this._targetTemperature = {
+      value: this._stateObj.attributes.temperature,
+      low:
+        "target_temp_low" in this._stateObj.attributes
+          ? this._stateObj.attributes.target_temp_low
+          : undefined,
+      high:
+        "target_temp_high" in this._stateObj.attributes
+          ? this._stateObj.attributes.target_temp_high
+          : undefined,
+    };
   }
 
   private get _step() {
@@ -164,6 +182,7 @@ class HuiTargetTemperatureCardFeature
       ...this._targetTemperature,
       [target]: value,
     };
+    this._pendingSync.schedule();
     this._debouncedCallService(target);
   }
 
@@ -174,18 +193,21 @@ class HuiTargetTemperatureCardFeature
 
   private _callService(type: string) {
     const domain = computeStateDomain(this._stateObj!);
-    if (type === "high" || type === "low") {
-      this._api.callService(domain, "set_temperature", {
-        entity_id: this._stateObj!.entity_id,
-        target_temp_low: this._targetTemperature.low,
-        target_temp_high: this._targetTemperature.high,
-      });
-      return;
-    }
-    this._api.callService(domain, "set_temperature", {
-      entity_id: this._stateObj!.entity_id,
-      temperature: this._targetTemperature.value,
-    });
+    const data =
+      type === "high" || type === "low"
+        ? {
+            entity_id: this._stateObj!.entity_id,
+            target_temp_low: this._targetTemperature.low,
+            target_temp_high: this._targetTemperature.high,
+          }
+        : {
+            entity_id: this._stateObj!.entity_id,
+            temperature: this._targetTemperature.value,
+          };
+    return this._pendingSync.run(
+      () => this._api.callService(domain, "set_temperature", data),
+      () => this._syncTargetTemperature()
+    );
   }
 
   private _supportsTarget() {
@@ -243,7 +265,7 @@ class HuiTargetTemperatureCardFeature
           <ha-control-number-buttons
             .formatOptions=${options}
             .target=${"value"}
-            .value=${this._stateObj.attributes.temperature}
+            .value=${this._targetTemperature.value}
             .unit=${this._hassConfig?.unit_system.temperature}
             .min=${this._min}
             .max=${this._max}

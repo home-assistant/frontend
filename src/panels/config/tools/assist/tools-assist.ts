@@ -133,7 +133,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                 ? html`
                     <ha-language-picker
                       .languages=${this.supportedLanguages}
-                      .hass=${this.hass}
                       .value=${this._language}
                       @value-changed=${this._languageChanged}
                     ></ha-language-picker>

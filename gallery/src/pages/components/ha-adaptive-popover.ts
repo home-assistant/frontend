@@ -9,7 +9,6 @@ import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
 import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import type { HomeAssistant } from "../../../../src/types";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 
 const SCHEMA: HaFormSchema[] = [
@@ -23,12 +22,10 @@ type PopoverType = false | "basic" | "small" | "large" | "form" | "actions";
 export class DemoHaAdaptivePopover extends LitElement {
   @state() private _openPopover: PopoverType = false;
 
-  @state() private _hass?: HomeAssistant;
-
   @state() private _dialogAnchor?: HTMLElement;
 
   protected firstUpdated() {
-    this._hass = provideHass(this);
+    provideHass(this);
   }
 
   protected render() {
@@ -72,7 +69,6 @@ export class DemoHaAdaptivePopover extends LitElement {
         </ha-card>
 
         <ha-adaptive-popover
-          .hass=${this._hass}
           .open=${this._openPopover === "basic"}
           .dialogAnchor=${this._dialogAnchor}
           header-title="Basic adaptive popover"
@@ -86,7 +82,6 @@ export class DemoHaAdaptivePopover extends LitElement {
         </ha-adaptive-popover>
 
         <ha-adaptive-popover
-          .hass=${this._hass}
           .open=${this._openPopover === "small"}
           .dialogAnchor=${this._dialogAnchor}
           width="small"
@@ -97,7 +92,6 @@ export class DemoHaAdaptivePopover extends LitElement {
         </ha-adaptive-popover>
 
         <ha-adaptive-popover
-          .hass=${this._hass}
           .open=${this._openPopover === "large"}
           .dialogAnchor=${this._dialogAnchor}
           width="large"
@@ -108,7 +102,6 @@ export class DemoHaAdaptivePopover extends LitElement {
         </ha-adaptive-popover>
 
         <ha-adaptive-popover
-          .hass=${this._hass}
           .open=${this._openPopover === "form"}
           .dialogAnchor=${this._dialogAnchor}
           header-title="Adaptive popover with form"
@@ -133,7 +126,6 @@ export class DemoHaAdaptivePopover extends LitElement {
         </ha-adaptive-popover>
 
         <ha-adaptive-popover
-          .hass=${this._hass}
           .open=${this._openPopover === "actions"}
           .dialogAnchor=${this._dialogAnchor}
           header-title="Adaptive popover with actions"

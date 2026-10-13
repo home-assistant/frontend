@@ -1,16 +1,20 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { TimerRemainingTimeController } from "../common/controllers/timer-remaining-time-controller";
+import { consume } from "../common/decorators/consume";
+import { formattersContext } from "../data/context";
 import { computeDisplayTimer } from "../data/timer";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-timer-remaining-time")
 class HaTimerRemainingTime extends ReactiveElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
 
   private _remainingTime = new TimerRemainingTimeController(this);
 
@@ -27,9 +31,14 @@ class HaTimerRemainingTime extends ReactiveElement {
 
   protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
+
+    if (!this._formatters) {
+      return;
+    }
+
     this.innerHTML =
       computeDisplayTimer(
-        this.hass.formatEntityState,
+        this._formatters.formatEntityState,
         this.stateObj,
         this._remainingTime.timeRemaining
       ) ?? "-";

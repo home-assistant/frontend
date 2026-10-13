@@ -29,7 +29,7 @@ import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
@@ -81,7 +81,6 @@ import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-  updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
@@ -1088,7 +1087,6 @@ export class HaConfigDevicePage extends LitElement {
                           : nothing
                       }
                       <ha-battery-icon
-                        .hass=${this.hass}
                         .batteryStateObj=${battery}
                         .batteryChargingStateObj=${batteryChargingState}
                       ></ha-battery-icon>
@@ -1479,7 +1477,7 @@ export class HaConfigDevicePage extends LitElement {
   ) {
     const device = devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, devices) ||
+      computeEntityEntryName(entity) ||
       computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
     );
   }
@@ -1579,8 +1577,6 @@ export class HaConfigDevicePage extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        const oldDeviceName = device.name_by_user || device.name;
-        const newDeviceName = updates.name_by_user;
         const disabled =
           updates.disabled_by === "user" && device.disabled_by !== "user";
 
@@ -1656,47 +1652,7 @@ export class HaConfigDevicePage extends LitElement {
               getWsErrorMessage(err) ??
               this.hass.localize("ui.common.unknown_error"),
           });
-          return;
         }
-
-        if (
-          !oldDeviceName ||
-          !newDeviceName ||
-          oldDeviceName === newDeviceName
-        ) {
-          return;
-        }
-        const entities = this._entities(
-          this.deviceId,
-          this._entityReg,
-          this.hass.devices
-        );
-
-        const updateProms = entities.map((entity) => {
-          const name = entity.name || entity.stateName;
-          let newName: string | null | undefined;
-
-          if (entity.has_entity_name && !entity.name) {
-            return undefined;
-          }
-
-          if (
-            entity.has_entity_name &&
-            (entity.name === oldDeviceName || entity.name === newDeviceName)
-          ) {
-            // Use the device name when the entity name matches it
-            newName = "";
-          } else if (name?.includes(oldDeviceName)) {
-            newName = name.replace(oldDeviceName, newDeviceName);
-          } else {
-            return undefined;
-          }
-
-          return updateEntityRegistryEntry(this.hass, entity.entity_id, {
-            name: newName,
-          });
-        });
-        await Promise.all(updateProms);
       },
     });
   };

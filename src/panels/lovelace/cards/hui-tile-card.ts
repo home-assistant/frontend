@@ -292,7 +292,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : html`
           <state-display
             .stateObj=${stateObj}
-            .hass=${this.hass}
             .content=${this._config.state_content}
             .timeFormat=${this._config.time_format}
           >

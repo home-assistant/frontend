@@ -492,7 +492,6 @@ export class HuiSuggestionEntityTree extends LitElement {
             ${
               domain
                 ? html`<ha-domain-icon
-                    .hass=${this.hass}
                     .domain=${domain}
                     brand-fallback
                   ></ha-domain-icon>`
@@ -577,7 +576,6 @@ export class HuiSuggestionEntityTree extends LitElement {
                               <div slot="start" class="leading">
                                 ${this._renderChevron(dExpanded)}
                                 <ha-domain-icon
-                                  .hass=${this.hass}
                                   .domain=${g.domain}
                                   brand-fallback
                                 ></ha-domain-icon>

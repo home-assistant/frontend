@@ -104,6 +104,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -291,7 +292,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .path=${TRIGGER_ICONS[type]}
               ></ha-svg-icon>`
             : html`<ha-trigger-icon
-                .hass=${this.hass}
                 .trigger=${
                   (this.trigger as Exclude<Trigger, TriggerList>).trigger
                 }
@@ -834,10 +834,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180);
     }
   }

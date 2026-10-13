@@ -833,7 +833,9 @@
           "mode_custom": "Custom",
           "add": "Add",
           "search": "Search name",
-          "custom_name": "Custom name"
+          "custom_name": "Custom name",
+          "no_more_parts": "Nothing left to add",
+          "restore": "[%key:ui::dialogs::entity_registry::editor::restore_name%]"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -2670,7 +2672,8 @@
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
         "no_template_editor_support": "Templates not supported in visual editor",
-        "media_query_not_supported": "This media query is not supported by the visual editor."
+        "media_query_not_supported": "This media query is not supported by the visual editor.",
+        "location_locations_combined": "Zone names (locations) can't be combined with target or match_mode."
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
@@ -4032,6 +4035,11 @@
           "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
+          "delete_selected": "Delete selected",
+          "confirm_delete_selected_title": "Delete selected tags?",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
+          "delete_failed_title": "Delete failed",
+          "delete_failed": "Some tags could not be deleted. Check system logs for more information.",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
@@ -4300,7 +4308,8 @@
                   "adjust": "Adjust",
                   "outliers": "Outliers",
                   "sum_adjusted": "Statistic sum adjusted",
-                  "error_sum_adjusted": "Error adjusting sum: {message}"
+                  "error_sum_adjusted": "Error adjusting sum: {message}",
+                  "error_loading_statistics": "Error loading statistics: {message}"
                 }
               },
               "adjust_sum": "Adjust sum",
@@ -4818,6 +4827,7 @@
             "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
           },
           "scroll_down_button": "New logs - Click to scroll",
+          "live": "Live",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
           "haos_boots_title": "Logs of HAOS startup",
@@ -5433,6 +5443,7 @@
             },
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
+            "sidebar_label": "Item editor",
             "copy_to_clipboard": "Copy to clipboard",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
@@ -7729,6 +7740,9 @@
           "option_flow_description": "Set discovery options",
           "config_flow": "Connection",
           "config_flow_description": "Broker connection settings",
+          "not_configured_title": "MQTT is not set up",
+          "not_configured_description": "Connect Home Assistant to an MQTT broker to publish and listen to messages.",
+          "set_up": "Set up MQTT",
           "status_online": "Online",
           "status_offline": "Offline",
           "my_network_title": "My network",
@@ -7937,7 +7951,20 @@
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread adapter has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
-          "thread_network_info": "Thread network information",
+          "network_info": {
+            "title": "Network information",
+            "description": "View channel and dataset details",
+            "nav_label": "Network information for {name}",
+            "network_name": "Network name",
+            "channel": "Channel",
+            "pan_id": "PAN ID",
+            "extended_pan_id": "Extended PAN ID",
+            "dataset_id": "Dataset ID",
+            "otbr_url": "OpenThread border router URL",
+            "active_dataset_tlvs": "Active dataset TLVs",
+            "loading_otbr": "Loading border router details…",
+            "not_found": "Network not found"
+          },
           "thread_network_delete_credentials": "Delete Thread network credentials",
           "thread_network_send_credentials_ha": "Send credentials to Home Assistant",
           "thread_network_send_credentials_ha_description": "Import Thread network credentials from your phone to Home Assistant. Use this if you already have a Thread network set up through another platform, like Apple Home or Google Home.",
@@ -9276,8 +9303,14 @@
               "text": "The address changed. Once Home Assistant has restarted, you can reach it at:",
               "note": "Depending on your network setup, this address may not be reachable from this device."
             },
-            "ssl_profile_modern": "Modern",
-            "ssl_profile_intermediate": "Intermediate",
+            "ssl_profile_modern_v6": "Modern v6",
+            "ssl_profile_modern_v6_description": "TLS 1.3 only. Recommended for most setups. Browsers and apps have supported it since around 2018.",
+            "ssl_profile_intermediate_v6": "Intermediate v6",
+            "ssl_profile_intermediate_v6_description": "TLS 1.2 and newer with current ciphers. Choose this if older devices or apps cannot connect.",
+            "ssl_profile_modern_v4": "Modern v4 (outdated)",
+            "ssl_profile_modern_v4_description": "TLS 1.2 and newer with older ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
+            "ssl_profile_intermediate_v4": "Intermediate v4 (outdated)",
+            "ssl_profile_intermediate_v4_description": "TLS 1.2 and newer with legacy ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
             "sections": {
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
@@ -9305,7 +9338,7 @@
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
               "ssl_peer_certificate": "Absolute path to a client certificate Home Assistant should require for secure connections.",
-              "ssl_profile": "Mozilla SSL profile. Use 'Intermediate' only if integrations have SSL handshake issues.",
+              "ssl_profile": "Mozilla server side TLS profile, named after the guideline version it follows.",
               "cors_allowed_origins": "Origins that may make cross-origin requests. Include the scheme, for example https://example.com.",
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
@@ -10227,8 +10260,23 @@
               },
               "location": {
                 "label": "Location",
-                "locations": "Locations",
-                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones."
+                "migrated": "This condition used zone names, and is now shown with zones instead. It matches the same way as before. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition.",
+                "target": "Zones",
+                "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in one of the selected zones, or in a zone with the selected labels, areas, or floors. Match sets which zones count.",
+                "match_mode": "Match",
+                "match_mode_options": {
+                  "any_zone": {
+                    "label": "Any zone they are in",
+                    "description": "True when the person is in any of these zones, even if another zone is shown as their state. Includes passive zones."
+                  },
+                  "active_zone": {
+                    "label": "Zone shown as their state",
+                    "description": "True only when one of these zones is shown as the person's state. Passive zones never match."
+                  }
+                },
+                "passive_zones": "{zones} {count, plural,\n one {is a passive zone, so it never matches}\n other {are passive zones, so they never match}\n}. Passive zones never become a person's state.",
+                "away": "Away",
+                "away_helper": "This condition will also be true if the person entity of the user viewing this dashboard is away. Passive zones don't change this, so a person who is only in passive zones is away."
               },
               "user": {
                 "label": "User"

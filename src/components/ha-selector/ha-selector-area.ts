@@ -113,7 +113,6 @@ export class HaAreaSelector extends LitElement {
 
     return html`
       <ha-areas-picker
-        .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
         .pickAreaLabel=${this.label}

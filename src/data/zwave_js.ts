@@ -272,7 +272,8 @@ export interface ZWaveJSNodeComment {
 export interface ZWaveJSNodeConfigParam {
   property: number;
   property_key: number | null;
-  endpoint: number;
+  // null means the root endpoint
+  endpoint: number | null;
   value: number | null;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
