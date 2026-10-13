@@ -1,52 +1,55 @@
+import { mdiTextShort } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import memoizeOne from "memoize-one";
 import {
-  ALERT_DOMAINS,
-  DEFAULT_ALERT_COLOR,
-} from "../../../../common/entity/alert_active";
+  array,
+  assert,
+  assign,
+  boolean,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { AlertCardConfig } from "../../cards/types";
+import { timeFormatConfigStruct } from "../../components/types";
 import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
+import { alertSchema } from "./alert-schema";
+import { tileInteractionsSchema } from "./interactions-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
+    name: optional(entityNameStruct),
+    icon: optional(string()),
     alert_color: optional(string()),
     clear_color: optional(string()),
     pulse: optional(boolean()),
+    show_entity_picture: optional(boolean()),
+    state_content: optional(union([string(), array(string())])),
+    time_format: optional(timeFormatConfigStruct),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+    icon_tap_action: optional(actionConfigStruct),
+    icon_hold_action: optional(actionConfigStruct),
+    icon_double_tap_action: optional(actionConfigStruct),
   })
 );
-
-const SCHEMA = [
-  {
-    name: "entity",
-    required: true,
-    selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
-  },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "clear_color",
-        selector: { ui_color: { include_none: true, default_color: "none" } },
-      },
-      {
-        name: "alert_color",
-        selector: {
-          ui_color: { include_none: true, default_color: DEFAULT_ALERT_COLOR },
-        },
-      },
-    ],
-  },
-  { name: "pulse", selector: { boolean: {} } },
-] as const;
 
 @customElement("hui-alert-card-editor")
 export class HuiAlertCardEditor
@@ -62,16 +65,79 @@ export class HuiAlertCardEditor
     this._config = config;
   }
 
+  private _schema = memoizeOne(
+    (entityId: string | undefined, showTimeFormat: boolean) =>
+      [
+        {
+          name: "entity",
+          required: true,
+          selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
+        },
+        alertSchema(),
+        {
+          name: "content",
+          flatten: true,
+          type: "expandable",
+          iconPath: mdiTextShort,
+          schema: [
+            {
+              name: "name",
+              selector: { entity_name: {} },
+              context: { entity: "entity" },
+            },
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "icon",
+                  selector: { icon: {} },
+                  context: { icon_entity: "entity" },
+                },
+                {
+                  name: "show_entity_picture",
+                  selector: { boolean: {} },
+                },
+              ],
+            },
+            {
+              name: "state_content",
+              selector: { ui_state_content: { allow_context: true } },
+              context: { filter_entity: "entity" },
+            },
+            {
+              name: "time_format",
+              visible: showTimeFormat,
+              selector: { ui_time_format: {} },
+            },
+          ],
+        },
+        tileInteractionsSchema(entityId),
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
+    const entityId = this._config.entity;
+
+    const schema = this._schema(
+      entityId,
+      Boolean(this._config.state_content) &&
+        stateContentHasTimestamp(
+          entityId,
+          this.hass.states[entityId],
+          this._config.state_content
+        )
+    );
+
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -81,22 +147,48 @@ export class HuiAlertCardEditor
 
   private _valueChanged(ev: ValueChangedEvent<AlertCardConfig>): void {
     ev.stopPropagation();
-    fireEvent(this, "config-changed", { config: ev.detail.value });
-  }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "entity") {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
-      );
+    const config = { ...ev.detail.value };
+
+    if (!config.state_content) {
+      delete config.state_content;
     }
 
-    return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.alert.${schema.name}`
-    );
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "pulse":
+      case "alert_color":
+      case "clear_color":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.alert.${schema.name}`
+        );
+      case "alert":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.alert.alert_section"
+        );
+      case "icon_tap_action":
+      case "icon_hold_action":
+      case "icon_double_tap_action":
+      case "show_entity_picture":
+      case "state_content":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
   };
 
-  private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     if (
       schema.name === "pulse" ||
       schema.name === "alert_color" ||
