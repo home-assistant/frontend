@@ -239,7 +239,6 @@ export class HaAutomationTrace extends LitElement {
                     @click=${this._pickOlderTrace}
                   ></ha-icon-button>
                   <ha-trace-picker
-                    .hass=${this.hass}
                     .traces=${this._traces}
                     .value=${this._runId}
                     @value-changed=${this._pickTrace}

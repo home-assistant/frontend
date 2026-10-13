@@ -130,7 +130,6 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           { language }
         )}
         <ha-language-picker
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.pipeline.unsupported_language.language_picker"
           )}
