@@ -155,6 +155,15 @@ describe("dialog-matter-open-commissioning-window", () => {
   });
 
   describe("sharing", () => {
+    // The remaining time is in whole seconds, so a real clock can tick it down mid-test.
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     const openedWindow = async () => {
       openMatterCommissioningWindow.mockResolvedValue(window_);
       await dialog.showDialog({ device_id: "dev_a" });
@@ -220,9 +229,9 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(internals()["_shareExpired"]).toBe(true);
     });
 
-    it("refuses a window with less than 30 seconds left", async () => {
+    it("refuses a window with 30 seconds left", async () => {
       await openedWindow();
-      internals()["_windowOpenedAt"] = Date.now() - 271_000;
+      internals()["_windowOpenedAt"] = Date.now() - 270_000;
 
       await share();
 
@@ -230,41 +239,35 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(internals()["_shareExpired"]).toBe(true);
     });
 
-    it("still shares a window with 30 seconds left", async () => {
+    it("still shares a window with 31 seconds left", async () => {
       shareMatterDeviceExternal.mockResolvedValue({});
       await openedWindow();
-      internals()["_windowOpenedAt"] = Date.now() - 270_000;
+      internals()["_windowOpenedAt"] = Date.now() - 269_000;
 
       await share();
 
       expect(shareMatterDeviceExternal.mock.calls[0][1].remaining_seconds).toBe(
-        30
+        31
       );
     });
 
     it("opens a new window in place once the old one has run out", async () => {
+      shareMatterDeviceExternal.mockRejectedValue({ code: "failed" });
       await openedWindow();
-      internals()["_windowOpenedAt"] = Date.now() - 300_000;
       await share();
+      vi.advanceTimersByTime(300_000);
       const fresh = { ...window_, setup_manual_code: "11111111111" };
       openMatterCommissioningWindow.mockResolvedValue(fresh);
 
       await start();
 
       expect(openMatterCommissioningWindow).toHaveBeenCalledTimes(2);
+      expect(internals()["_shareFailed"]).toBe(false);
       expect(internals()["_shareExpired"]).toBe(false);
       expect(commissionParams()).toBe(fresh);
     });
 
     describe("expiry", () => {
-      beforeEach(() => {
-        vi.useFakeTimers();
-      });
-
-      afterEach(() => {
-        vi.useRealTimers();
-      });
-
       it("marks the code expired when the window runs out, without a tap", async () => {
         await openedWindow();
 
@@ -288,16 +291,35 @@ describe("dialog-matter-open-commissioning-window", () => {
         expect(internals()["_shareExpired"]).toBe(true);
       });
 
-      it("drops an earlier failure along with the expiry on a new code", async () => {
-        shareMatterDeviceExternal.mockRejectedValue({ code: "failed" });
-        await openedWindow();
-        await share();
-        vi.advanceTimersByTime(300_000);
-
+      it("sets no clock when the server gives no timeout", async () => {
+        openMatterCommissioningWindow.mockResolvedValue({
+          ...window_,
+          commissioning_timeout: null,
+        });
+        await dialog.showDialog({ device_id: "dev_a" });
         await start();
 
-        expect(internals()["_shareFailed"]).toBe(false);
-        expect(internals()["_shareExpired"]).toBe(false);
+        expect(vi.getTimerCount()).toBe(0);
+      });
+
+      it("frees Share when a new code is fetched during a share", async () => {
+        let settle!: (value: unknown) => void;
+        shareMatterDeviceExternal.mockReturnValue(
+          new Promise((resolve) => {
+            settle = resolve;
+          })
+        );
+        await openedWindow();
+        const pending = share();
+        vi.advanceTimersByTime(270_000);
+        openMatterCommissioningWindow.mockResolvedValue({ ...window_ });
+
+        await start();
+        settle({});
+        await pending;
+
+        expect(internals()["_sharing"]).toBe(false);
+        expect(internals()["_open"]).toBe(true);
       });
 
       it("stops the clock when the dialog closes", async () => {

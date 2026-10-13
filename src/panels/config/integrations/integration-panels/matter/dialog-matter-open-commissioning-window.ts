@@ -28,7 +28,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 
-// No countdown is shown, and a code with seconds left cannot be scanned or typed in time.
+// Treat the code as expired this early: no countdown is shown, and pairing has to start in time.
 const SHARE_MARGIN_SECONDS = 30;
 
 @customElement("dialog-matter-open-commissioning-window")
@@ -281,6 +281,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     this._status = "started";
     this._commissionParams = undefined;
     clearTimeout(this._expiryTimer);
+    // The old share's result is ignored, so it must not keep Share spinning.
+    this._sharing = false;
     this._shareFailed = false;
     this._shareExpired = false;
     const deviceId = this.device_id!;
@@ -297,7 +299,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       this._commissionParams = params;
       this._windowOpenedAt = requestedAt;
       if (params.commissioning_timeout != null) {
-        // Otherwise the dead code only shows as dead once Share is tapped.
+        // Show the expired state without waiting for a Share tap.
         this._expiryTimer = window.setTimeout(
           () => {
             this._shareExpired = true;
@@ -338,7 +340,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       this._windowOpenedAt,
       Date.now()
     );
-    if (remaining !== undefined && remaining < SHARE_MARGIN_SECONDS) {
+    // `<=`: the floored seconds still read the margin when the timer fires.
+    if (remaining !== undefined && remaining <= SHARE_MARGIN_SECONDS) {
       this._shareExpired = true;
       return;
     }
