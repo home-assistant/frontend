@@ -61,8 +61,6 @@ export class HaStateControlClimateHumidity extends LitElement {
     if (!changedProp.has("stateObj")) {
       return;
     }
-    // Drop a pending change when switching entities, so it is not shown for
-    // (or sent to) a different entity.
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
       this._debouncedCallService.cancel();
       this._pendingSync.cancel();

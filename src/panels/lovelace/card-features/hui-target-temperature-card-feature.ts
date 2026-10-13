@@ -129,8 +129,6 @@ class HuiTargetTemperatureCardFeature
       return;
     }
     const oldStateObj = changedProp.get("_stateObj") as HassEntity | undefined;
-    // Drop a pending change when switching entities (or losing the entity),
-    // so it is not shown for (or sent to) a different entity.
     if (oldStateObj?.entity_id !== this._stateObj?.entity_id) {
       this._debouncedCallService.cancel();
       this._pendingSync.cancel();

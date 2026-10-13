@@ -31,7 +31,7 @@ describe("PendingValueSync", () => {
     expect(sync.shouldSync()).toBe(false);
   });
 
-  it("skips state updates while the service call is in flight and resyncs afterwards", async () => {
+  it("skips state updates while the service call is in flight and keeps the local value afterwards", async () => {
     const sync = new PendingValueSync();
     const call = deferred();
     const resync = vi.fn();
@@ -44,17 +44,30 @@ describe("PendingValueSync", () => {
     call.resolve();
     await run;
 
-    expect(resync).toHaveBeenCalledTimes(1);
+    expect(resync).not.toHaveBeenCalled();
     expect(sync.pending).toBe(false);
     expect(sync.shouldSync()).toBe(true);
   });
 
-  it("does not resync when no state update was skipped", async () => {
+  it("does not restore the confirmation of a previous call after the next call succeeds", async () => {
     const sync = new PendingValueSync();
+    const second = deferred();
     const resync = vi.fn();
 
+    // First tap is sent and succeeds
     sync.schedule();
     await sync.run(() => Promise.resolve(), resync);
+
+    // Second tap: the confirmation of the first call arrives during the
+    // debounce and while the second call is in flight
+    sync.schedule();
+    expect(sync.shouldSync()).toBe(false);
+    const run = sync.run(() => second.promise, resync);
+    expect(sync.shouldSync()).toBe(false);
+
+    // The second call resolves before the integration writes its new state
+    second.resolve();
+    await run;
 
     expect(resync).not.toHaveBeenCalled();
   });
@@ -67,20 +80,18 @@ describe("PendingValueSync", () => {
     sync.schedule();
     const run = sync.run(() => call.promise, resync);
 
-    // The user changes the value again while the first call is in flight,
-    // then the state update for the first call arrives.
+    // The user changes the value again while the first call is in flight
     sync.schedule();
-    expect(sync.shouldSync()).toBe(false);
 
     call.resolve();
     await run;
 
-    expect(resync).not.toHaveBeenCalled();
     expect(sync.shouldSync()).toBe(false);
 
     await sync.run(() => Promise.resolve(), resync);
 
-    expect(resync).toHaveBeenCalledTimes(1);
+    expect(resync).not.toHaveBeenCalled();
+    expect(sync.shouldSync()).toBe(true);
   });
 
   it("drops the scheduled change on cancel but keeps tracking calls in flight", async () => {
@@ -104,7 +115,7 @@ describe("PendingValueSync", () => {
     call.resolve();
     await run;
 
-    expect(resync).toHaveBeenCalledTimes(1);
+    expect(resync).not.toHaveBeenCalled();
     expect(sync.pending).toBe(false);
   });
 
@@ -121,5 +132,22 @@ describe("PendingValueSync", () => {
 
     expect(resync).toHaveBeenCalledTimes(1);
     expect(sync.pending).toBe(false);
+  });
+
+  it("does not let a superseded call failure resync the newer change", async () => {
+    const sync = new PendingValueSync();
+    const first = deferred();
+    const resync = vi.fn();
+
+    sync.schedule();
+    const firstRun = sync.run(() => first.promise, resync);
+    sync.schedule();
+    await sync.run(() => Promise.resolve(), resync);
+
+    // The older call fails after the newer one already succeeded
+    first.reject(new Error("failed"));
+    await firstRun;
+
+    expect(resync).not.toHaveBeenCalled();
   });
 });

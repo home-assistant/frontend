@@ -4,16 +4,16 @@
  *
  * Call `schedule()` when the user changes the value and a (debounced) service
  * call is queued, wrap the service call in `run()`, and only copy entity state
- * into the local value when `shouldSync()` returns true. State updates skipped
- * while pending are applied through the `resync` callback once nothing is
- * pending anymore.
+ * into the local value when `shouldSync()` returns true. After a successful
+ * call the local value is kept until the next state update syncs it. When the
+ * call fails, the `resync` callback restores the entity state.
  */
 export class PendingValueSync {
   private _scheduled = false;
 
   private _inFlight = 0;
 
-  private _needsResync = false;
+  private _latestCall = 0;
 
   public get pending(): boolean {
     return this._scheduled || this._inFlight > 0;
@@ -25,46 +25,40 @@ export class PendingValueSync {
   }
 
   /**
-   * Drop the scheduled change and any skipped state update, e.g. when
-   * switching entities. Calls already in flight are still tracked.
+   * Drop the scheduled change, e.g. when switching entities, so it is not
+   * shown for (or sent to) a different entity. Calls already in flight are
+   * still tracked.
    */
   public cancel(): void {
     this._scheduled = false;
-    this._needsResync = false;
   }
 
-  /**
-   * Whether an entity state update may be copied into the local value.
-   * A skipped update is remembered so it can be applied later.
-   */
+  /** Whether an entity state update may be copied into the local value. */
   public shouldSync(): boolean {
-    if (this.pending) {
-      this._needsResync = true;
-      return false;
-    }
-    return true;
+    return !this.pending;
   }
 
   /**
-   * Run the service call for the scheduled change. Once no change is
-   * pending anymore, `resync` is called if a state update was skipped or the
-   * call failed. Errors are not rethrown, as `callService` already notifies
-   * the user when the call fails.
+   * Run the service call for the scheduled change. If the latest call fails
+   * and nothing else is pending, `resync` is called. Errors are not rethrown,
+   * as `callService` already notifies the user when the call fails.
    */
   public async run(
     call: () => Promise<unknown>,
     resync: () => void
   ): Promise<void> {
     this._scheduled = false;
+    const callId = ++this._latestCall;
     this._inFlight++;
+    let failed = false;
     try {
       await call();
     } catch (_err) {
-      this._needsResync = true;
+      failed = true;
     } finally {
       this._inFlight--;
-      if (!this.pending && this._needsResync) {
-        this._needsResync = false;
+      // A newer change supersedes the failed one.
+      if (failed && callId === this._latestCall && !this.pending) {
         resync();
       }
     }
