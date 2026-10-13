@@ -94,29 +94,31 @@ describe("PendingValueSync", () => {
     expect(sync.shouldSync()).toBe(true);
   });
 
-  it("drops the scheduled change on cancel but keeps tracking calls in flight", async () => {
+  it("detaches calls in flight on reset", async () => {
     const sync = new PendingValueSync();
     const call = deferred();
     const resync = vi.fn();
 
     sync.schedule();
-    sync.cancel();
+    sync.reset();
+
+    expect(sync.pending).toBe(false);
+
+    // Switching entities while a call for the previous one is in flight
+    sync.schedule();
+    const run = sync.run(() => call.promise, resync);
+    sync.reset();
 
     expect(sync.pending).toBe(false);
     expect(sync.shouldSync()).toBe(true);
 
+    // A change for the new entity is not overwritten by the old call failing
     sync.schedule();
-    const run = sync.run(() => call.promise, resync);
-    sync.cancel();
-
-    expect(sync.pending).toBe(true);
-    expect(sync.shouldSync()).toBe(false);
-
-    call.resolve();
+    call.reject(new Error("failed"));
     await run;
 
     expect(resync).not.toHaveBeenCalled();
-    expect(sync.pending).toBe(false);
+    expect(sync.pending).toBe(true);
   });
 
   it("resyncs when the service call fails", async () => {
@@ -132,6 +134,22 @@ describe("PendingValueSync", () => {
 
     expect(resync).toHaveBeenCalledTimes(1);
     expect(sync.pending).toBe(false);
+  });
+
+  it("does not resync a failed call when a new change is scheduled", async () => {
+    const sync = new PendingValueSync();
+    const call = deferred();
+    const resync = vi.fn();
+
+    sync.schedule();
+    const run = sync.run(() => call.promise, resync);
+    sync.schedule();
+
+    call.reject(new Error("failed"));
+    await run;
+
+    expect(resync).not.toHaveBeenCalled();
+    expect(sync.pending).toBe(true);
   });
 
   it("does not let a superseded call failure resync the newer change", async () => {

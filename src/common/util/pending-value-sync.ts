@@ -7,16 +7,16 @@
  * into the local value when `shouldSync()` returns true. After a successful
  * call the local value is kept until the next state update syncs it. When the
  * call fails, the `resync` callback restores the entity state.
+ *
+ * Only the latest call is tracked, as it supersedes any earlier ones.
  */
 export class PendingValueSync {
   private _scheduled = false;
 
-  private _inFlight = 0;
-
-  private _latestCall = 0;
+  private _latestCall?: symbol;
 
   public get pending(): boolean {
-    return this._scheduled || this._inFlight > 0;
+    return this._scheduled || this._latestCall !== undefined;
   }
 
   /** Mark that a service call has been scheduled for a local change. */
@@ -25,12 +25,13 @@ export class PendingValueSync {
   }
 
   /**
-   * Drop the scheduled change, e.g. when switching entities, so it is not
+   * Start over, e.g. when switching entities, so a pending change is not
    * shown for (or sent to) a different entity. Calls already in flight are
-   * still tracked.
+   * not aborted, but no longer block state updates or trigger `resync`.
    */
-  public cancel(): void {
+  public reset(): void {
     this._scheduled = false;
+    this._latestCall = undefined;
   }
 
   /** Whether an entity state update may be copied into the local value. */
@@ -40,27 +41,28 @@ export class PendingValueSync {
 
   /**
    * Run the service call for the scheduled change. If the latest call fails
-   * and nothing else is pending, `resync` is called. Errors are not rethrown,
-   * as `callService` already notifies the user when the call fails.
+   * and no new change is scheduled, `resync` is called. Errors are not
+   * rethrown, as `callService` already notifies the user when the call fails.
    */
   public async run(
     call: () => Promise<unknown>,
     resync: () => void
   ): Promise<void> {
+    const thisCall = Symbol("call");
     this._scheduled = false;
-    const callId = ++this._latestCall;
-    this._inFlight++;
+    this._latestCall = thisCall;
     let failed = false;
     try {
       await call();
     } catch (_err) {
       failed = true;
-    } finally {
-      this._inFlight--;
-      // A newer change supersedes the failed one.
-      if (failed && callId === this._latestCall && !this.pending) {
-        resync();
-      }
+    }
+    if (this._latestCall !== thisCall) {
+      return;
+    }
+    this._latestCall = undefined;
+    if (failed && !this._scheduled) {
+      resync();
     }
   }
 }

@@ -131,7 +131,7 @@ class HuiTargetTemperatureCardFeature
     const oldStateObj = changedProp.get("_stateObj") as HassEntity | undefined;
     if (oldStateObj?.entity_id !== this._stateObj?.entity_id) {
       this._debouncedCallService.cancel();
-      this._pendingSync.cancel();
+      this._pendingSync.reset();
       this._syncTargetTemperature();
     } else if (this._pendingSync.shouldSync()) {
       this._syncTargetTemperature();

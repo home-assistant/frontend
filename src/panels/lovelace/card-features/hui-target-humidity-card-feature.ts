@@ -109,13 +109,14 @@ class HuiTargetHumidityCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
+    if (!changedProp.has("_stateObj")) {
+      return;
+    }
     const oldStateObj = changedProp.get("_stateObj") as HassEntity | undefined;
-    if (
-      changedProp.has("_stateObj") &&
-      this._stateObj &&
-      (oldStateObj?.entity_id !== this._stateObj.entity_id ||
-        this._pendingSync.shouldSync())
-    ) {
+    if (oldStateObj?.entity_id !== this._stateObj?.entity_id) {
+      this._pendingSync.reset();
+      this._syncTargetHumidity();
+    } else if (this._pendingSync.shouldSync()) {
       this._syncTargetHumidity();
     }
   }

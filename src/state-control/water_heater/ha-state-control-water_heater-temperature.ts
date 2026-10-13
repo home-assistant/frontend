@@ -71,7 +71,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
       this._debouncedCallService.cancel();
-      this._pendingSync.cancel();
+      this._pendingSync.reset();
       this._syncTargetTemperature();
     } else if (this._pendingSync.shouldSync()) {
       this._syncTargetTemperature();

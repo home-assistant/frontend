@@ -63,7 +63,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
       this._debouncedCallService.cancel();
-      this._pendingSync.cancel();
+      this._pendingSync.reset();
       this._syncTargetHumidity();
     } else if (this._pendingSync.shouldSync()) {
       this._syncTargetHumidity();
