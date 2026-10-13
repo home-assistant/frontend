@@ -130,6 +130,17 @@ describe("getTopologyNodeCategory", () => {
     expect(
       getTopologyNodeCategory(node({ id: "unknown_1", kind: "thread_unknown" }))
     ).toBe(6);
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "8", network_type: "ethernet", is_bridge: true })
+      )
+    ).toBe(7);
+    // an offline bridge reads as offline like any other node
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "9", is_bridge: true, available: false })
+      )
+    ).toBe(5);
   });
 });
 
@@ -284,7 +295,7 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    expect(data.categories).toHaveLength(8);
+    expect(data.categories).toHaveLength(9);
     // Home Assistant root + the 3 topology nodes
     expect(data.nodes).toHaveLength(4);
 
@@ -846,17 +857,25 @@ describe("createMatterNetworkChartData", () => {
         }),
       ]),
       hass,
-      element
+      element,
+      new Set(["3"])
     );
 
-    const bridged = data.nodes.filter((n) => n.category === 7);
+    // the bridge is drawn as an aggregator carrying its bridged device count
+    const bridge = data.nodes.find((n) => n.id === "3")!;
+    expect(bridge.category).toBe(7);
+    expect(bridge.symbol).toMatch(/^image:\/\/data:image\/svg\+xml/);
+    expect(decodeURIComponent(bridge.symbol!)).toContain(">2</text>");
+    expect(data.nodes.find((n) => n.id === "4")!.symbol).toBe("circle");
+
+    const bridged = data.nodes.filter((n) => n.category === 8);
     expect(bridged.map((n) => [n.id, n.name, n.context])).toEqual([
       ["bridged_couch", "Couch", "Living room"],
       ["bridged_window", "Bedroom window", undefined],
     ]);
     expect(getBridgedDeviceId("bridged_couch")).toBe("couch");
     expect(getBridgedDeviceId("3")).toBeUndefined();
-    expect(data.categories).toHaveLength(8);
+    expect(data.categories).toHaveLength(9);
 
     const bridgedLinks = data.links.filter((l) => l.source === "3");
     expect(bridgedLinks.map((l) => l.target)).toEqual([
@@ -885,11 +904,57 @@ describe("createMatterNetworkChartData", () => {
         bridge: { id: "bridge", name: "Gateway" },
         couch: { id: "couch", name: "Couch", via_device_id: "bridge" },
       }),
-      element
+      element,
+      new Set(["3"])
     );
 
     const link = data.links.find((l) => l.target === "bridged_couch")!;
     expect(link.source).toBe("3");
     expect(link.lineStyle?.type).toBe("dashed");
+  });
+
+  it("keeps the devices behind a collapsed bridge out of the graph", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "3",
+          node_id: 3,
+          network_type: "ethernet",
+          is_bridge: true,
+          ha_device_id: "bridge",
+        }),
+      ]),
+      mockHass({
+        bridge: { id: "bridge", name: "Gateway" },
+        couch: { id: "couch", name: "Couch", via_device_id: "bridge" },
+      }),
+      element
+    );
+
+    expect(data.nodes.filter((n) => n.category === 8)).toHaveLength(0);
+    expect(data.links.filter((l) => l.source === "3")).toHaveLength(0);
+    // the count still tells what the bridge would expand to
+    const bridge = data.nodes.find((n) => n.id === "3")!;
+    expect(decodeURIComponent(bridge.symbol!)).toContain(">1</text>");
+  });
+
+  it("draws a bridge without a device without a count", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "3",
+          node_id: 3,
+          network_type: "ethernet",
+          is_bridge: true,
+        }),
+      ]),
+      mockHass(),
+      element
+    );
+
+    const bridge = data.nodes.find((n) => n.id === "3")!;
+    expect(bridge.category).toBe(7);
+    expect(decodeURIComponent(bridge.symbol!)).not.toContain("<text");
+    expect(data.nodes.filter((n) => n.category === 8)).toHaveLength(0);
   });
 });

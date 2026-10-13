@@ -37,6 +37,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import {
   createMatterNetworkChartData,
   getBridgedDeviceId,
+  getBridgedDevices,
   getTopologyNodeName,
   HOME_ASSISTANT_NODE_ID,
 } from "./matter-network-data";
@@ -62,6 +63,9 @@ export class MatterNetworkVisualization extends LitElement {
   @state() private _refreshing = false;
 
   @state() private _searchFilter = "";
+
+  // topology node ids of the bridges whose bridged devices are shown
+  @state() private _expandedBridges: ReadonlySet<string> = new Set();
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -162,7 +166,8 @@ export class MatterNetworkVisualization extends LitElement {
           this.hass.devices,
           this.hass.areas,
           this.hass.themes,
-          this.hass.language
+          this.hass.language,
+          this._expandedBridges
         )}
         .searchableAttributes=${this._getSearchableAttributes}
         .tooltipFormatter=${this._tooltipFormatter}
@@ -218,8 +223,10 @@ export class MatterNetworkVisualization extends LitElement {
       // node/link colors and labels also depend on the theme and language,
       // so both take part in the cache key even though they are read via hass
       _themes: HomeAssistant["themes"],
-      _language: HomeAssistant["language"]
-    ) => createMatterNetworkChartData(topology, this.hass, this)
+      _language: HomeAssistant["language"],
+      expandedBridges: ReadonlySet<string>
+    ) =>
+      createMatterNetworkChartData(topology, this.hass, this, expandedBridges)
   );
 
   private _getTopologyNode(id: string): MatterNetworkTopologyNode | undefined {
@@ -428,6 +435,16 @@ export class MatterNetworkVisualization extends LitElement {
           node.network_name ? html` (${node.network_name})` : nothing
         }`
     );
+    if (node.is_bridge && node.ha_device_id) {
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.bridged_devices"
+            )}:</b
+          >
+          ${getBridgedDevices(node.ha_device_id, this.hass.devices).length}`
+      );
+    }
     if (node.role) {
       lines.push(
         html`<br /><b
@@ -492,6 +509,17 @@ export class MatterNetworkVisualization extends LitElement {
           ${relativeTime(new Date(node.last_seen), this.hass.locale)}`
       );
     }
+    if (node.is_bridge && node.ha_device_id) {
+      lines.push(
+        html`<br /><i
+            >${this.hass.localize(
+              this._expandedBridges.has(id)
+                ? "ui.panel.config.matter.visualization.hide_bridged_devices"
+                : "ui.panel.config.matter.visualization.show_bridged_devices"
+            )}</i
+          >`
+      );
+    }
     return html`<b>${this._getNodeName(id)}</b>${lines}`;
   };
 
@@ -553,12 +581,24 @@ export class MatterNetworkVisualization extends LitElement {
       e.detail.event.target.cursor === "pointer"
     ) {
       const { id } = e.detail.data;
-      const deviceId =
-        getBridgedDeviceId(id) ?? this._getTopologyNode(id)?.ha_device_id;
+      const node = this._getTopologyNode(id);
+      if (node?.is_bridge) {
+        this._toggleBridge(id);
+        return;
+      }
+      const deviceId = getBridgedDeviceId(id) ?? node?.ha_device_id;
       if (deviceId) {
         navigate(`/config/devices/device/${deviceId}`);
       }
     }
+  }
+
+  private _toggleBridge(id: string): void {
+    const expanded = new Set(this._expandedBridges);
+    if (!expanded.delete(id)) {
+      expanded.add(id);
+    }
+    this._expandedBridges = expanded;
   }
 
   static get styles(): CSSResultGroup {
