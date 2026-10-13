@@ -3,6 +3,8 @@ export const PANEL_VIEW_LAYOUT = "panel";
 export const SIDEBAR_VIEW_LAYOUT = "sidebar";
 export const SECTIONS_VIEW_LAYOUT = "sections";
 
+export const DEFAULT_MAX_COLUMNS = 4;
+
 export const CARD_LAYOUTS = [
   MASONRY_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,

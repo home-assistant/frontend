@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiAccessPointNetwork,
   mdiCodeJson,
@@ -10,6 +10,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-spinner";
 import { narrowViewportContext } from "../../../../../data/context";

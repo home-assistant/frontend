@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -10,6 +10,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
@@ -22,7 +23,12 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import { narrowViewportContext } from "../data/context";
+import {
+  configContext,
+  entitiesContext,
+  internationalizationContext,
+  narrowViewportContext,
+} from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
 
@@ -44,13 +50,16 @@ export interface PageNavigation {
   iconViewBox?: string;
   description?: string;
   iconColor?: string;
+  // Shown next to the name of the tab
+  badge?: string;
   info?: any;
-  filter?: (hass: HomeAssistant) => boolean;
+  filter?: (hass: Pick<HomeAssistant, "entities">) => boolean;
 }
 
 @customElement("hass-tabs-subpage")
 export class HassTabsSubpage extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Unread, kept for callers that still pass it until they move to contexts
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
@@ -67,6 +76,18 @@ export class HassTabsSubpage extends LitElement {
   @state()
   @consume({ context: narrowViewportContext, subscribe: true })
   private _narrow = false;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean, reflect: true, attribute: "is-wide" })
   public isWide = false;
@@ -102,9 +123,12 @@ export class HassTabsSubpage extends LitElement {
       _language,
       _userData,
       _narrow,
-      localizeFunc
+      localizeFunc,
+      entities: ContextType<typeof entitiesContext>
     ) => {
-      const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
+      const shownTabs = tabs.filter((page) =>
+        canShowPage({ ...this._hassConfig, entities }, page)
+      );
 
       if (shownTabs.length < 2) {
         this.showTabs = false;
@@ -124,6 +148,7 @@ export class HassTabsSubpage extends LitElement {
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
+              .badge=${page.badge}
               .name=${
                 page.translationKey
                   ? localizeFunc(page.translationKey)
@@ -161,11 +186,12 @@ export class HassTabsSubpage extends LitElement {
     const tabs = this._getTabs(
       this.tabs,
       this._activeTab,
-      this.hass.config.components,
-      this.hass.language,
-      this.hass.userData,
+      this._hassConfig.config.components,
+      this._i18n.language,
+      this._hassConfig.userData,
       this._narrow,
-      this.localizeFunc || this.hass.localize
+      this.localizeFunc || this._i18n.localize,
+      this._entities
     );
     const backPath = sanitizeNavigationPath(this.backPath);
 
@@ -352,7 +378,9 @@ export class HassTabsSubpage extends LitElement {
           position: absolute;
           bottom: 0;
           left: 0;
-          padding: 0 16px;
+          padding: 0 calc(16px + var(--safe-area-inset-right))
+            var(--safe-area-inset-bottom)
+            calc(16px + var(--safe-area-inset-left));
           box-sizing: border-box;
           background-color: var(--sidebar-background-color);
           border-top: 1px solid var(--divider-color);
@@ -360,7 +388,6 @@ export class HassTabsSubpage extends LitElement {
           z-index: 2;
           font-size: var(--ha-font-size-s);
           width: 100%;
-          padding-bottom: var(--safe-area-inset-bottom);
         }
 
         #tabbar:not(.bottom-bar) {
@@ -396,14 +423,13 @@ export class HassTabsSubpage extends LitElement {
         .content {
           position: relative;
           width: 100%;
-          margin-right: var(--safe-area-inset-right);
-          margin-inline-end: var(--safe-area-inset-right);
+          box-sizing: border-box;
+          padding-right: var(--safe-area-inset-right);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
         :host([narrow]) .content {
-          margin-left: var(--safe-area-inset-left);
-          margin-inline-start: var(--safe-area-inset-left);
+          padding-left: var(--safe-area-inset-left);
         }
         :host([narrow][show-tabs]) .content {
           /* Bottom bar reuses header height */

@@ -56,7 +56,6 @@ class HaConfigEntryPicker extends LitElement {
     }
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .label=${
           this.label === undefined && this.hass
             ? this.hass.localize(
@@ -78,7 +77,7 @@ class HaConfigEntryPicker extends LitElement {
   }
 
   private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-    <ha-combo-box-item type="button">
+    <ha-combo-box-item>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
       <ha-domain-icon

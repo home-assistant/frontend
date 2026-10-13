@@ -166,8 +166,8 @@ export class HaIcon extends LitElement {
       return;
     }
 
-    const iconPromise = fetch(`/static/mdi/${chunk}.json`).then((response) =>
-      response.json()
+    const iconPromise = fetch(`${__STATIC_PATH__}mdi/${chunk}.json`).then(
+      (response) => response.json()
     );
     chunks[chunk] = iconPromise;
     this._setPath(iconPromise, iconName, requestedIcon);

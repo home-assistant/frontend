@@ -37,6 +37,7 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: null,
+      parentDevice: null,
       area: null,
       floor: null,
     });
@@ -88,6 +89,7 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device,
+      parentDevice: null,
       area,
       floor,
     });
@@ -144,6 +146,7 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: childDevice,
+      parentDevice,
       area,
       floor,
     });
@@ -184,6 +187,7 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: null,
+      parentDevice: null,
       area,
       floor,
     });
@@ -223,7 +227,37 @@ describe("getEntityContext", () => {
     expect(result).toEqual({
       entity,
       device: null,
+      parentDevice: null,
       area,
+      floor: null,
+    });
+  });
+
+  it("should not resolve a parent device for an entity on a main device", () => {
+    const entity = mockEntity({
+      entity_id: "switch.strip",
+      device_id: "parent_1",
+    });
+    const parentDevice = mockDevice({
+      id: "parent_1",
+    });
+    const stateObj = mockStateObj({
+      entity_id: "switch.strip",
+    });
+
+    const result = getEntityContext(
+      stateObj,
+      { "switch.strip": entity },
+      { parent_1: parentDevice },
+      {},
+      {}
+    );
+
+    expect(result).toEqual({
+      entity,
+      device: parentDevice,
+      parentDevice: null,
+      area: null,
       floor: null,
     });
   });

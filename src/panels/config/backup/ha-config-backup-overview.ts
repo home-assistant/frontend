@@ -11,7 +11,6 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
@@ -24,12 +23,12 @@ import {
   computeBackupAgentName,
   generateBackup,
   generateBackupWithAutomaticSettings,
+  localizeBackupAgentError,
   saveBackupConfig,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showAlertDialog } from "../../lovelace/custom-card-helpers";
@@ -78,6 +77,16 @@ class HaConfigBackupOverview extends LitElement {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
       this._config = this.config;
+    }
+    if (changedProperties.has("info") && this.info) {
+      const domains = new Set(
+        Object.values(this.info.agent_error_translations).map(
+          (translation) => translation.translation_domain
+        )
+      );
+      if (domains.size) {
+        this.hass.loadBackendTranslation("exceptions", [...domains]);
+      }
     }
   }
 
@@ -230,8 +239,8 @@ class HaConfigBackupOverview extends LitElement {
           ${
             this.info && Object.keys(this.info.agent_errors).length
               ? html`
-                  ${Object.entries(this.info.agent_errors).map(
-                    ([agentId, error]) => html`
+                  ${Object.keys(this.info.agent_errors).map(
+                    (agentId) => html`
                       <ha-alert
                         alert-type="error"
                         .title=${this.hass.localize(
@@ -245,7 +254,11 @@ class HaConfigBackupOverview extends LitElement {
                           }
                         )}
                       >
-                        ${error}
+                        ${localizeBackupAgentError(
+                          this.hass.localize,
+                          this.info!,
+                          agentId
+                        )}
                       </ha-alert>
                     `
                   )}

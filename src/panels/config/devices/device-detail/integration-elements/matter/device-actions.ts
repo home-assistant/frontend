@@ -5,6 +5,7 @@ import {
   mdiChatQuestion,
   mdiExportVariant,
 } from "@mdi/js";
+import { isComponentLoaded } from "../../../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../../../common/navigate";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import {
@@ -91,7 +92,10 @@ export const getMatterDeviceActions = async (
     });
   }
 
-  if (nodeDiagnostics.network_type === NetworkType.THREAD) {
+  if (
+    nodeDiagnostics.network_type === NetworkType.THREAD &&
+    isComponentLoaded(hass.config, "thread")
+  ) {
     actions.push({
       label: hass.localize(
         "ui.panel.config.matter.device_actions.view_thread_network"

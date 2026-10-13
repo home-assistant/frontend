@@ -1,4 +1,4 @@
-import { mdiChevronLeft, mdiClose } from "@mdi/js";
+import { mdiChevronLeft, mdiChevronRight, mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -64,6 +64,7 @@ import "./zwave-js-add-node-loading";
 import "./zwave-js-add-node-searching-devices";
 import "./zwave-js-add-node-select-method";
 import "./zwave-js-add-node-select-security-strategy";
+import { mainWindow } from "../../../../../../common/dom/get_main_window";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
@@ -184,7 +185,8 @@ class DialogZWaveJSAddNode extends LitElement {
       (this._step && backButtonStages.includes(this._step)) ||
       (this._step === "search_devices" && this._supportsSmartStart)
     ) {
-      icon = mdiChevronLeft;
+      icon =
+        mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
     }
 
     let titleTranslationKey = "title";
@@ -306,6 +308,7 @@ class DialogZWaveJSAddNode extends LitElement {
     if (this._step === "choose_security_strategy") {
       return html`<zwave-js-add-node-select-security-strategy
         .hass=${this.hass}
+        .inclusionStrategy=${this._inclusionStrategy}
         @z-wave-strategy-selected=${this._setSecurityStrategy}
       ></zwave-js-add-node-select-security-strategy>`;
     }
@@ -529,7 +532,7 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         );
         this._controllerSupportsLongRange =
-          zwaveNetwork?.controller?.supports_long_range;
+          zwaveNetwork?.controller?.supports_long_range ?? undefined;
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -900,7 +903,7 @@ class DialogZWaveJSAddNode extends LitElement {
           this._deviceOptions.name,
           this._deviceOptions.area
         );
-        this._device.id = id;
+        this._device.id = id ?? undefined;
         this._subscribeNewDeviceSearch();
         this._step = "search_smart_start_device";
       } catch (err: any) {
@@ -911,8 +914,6 @@ class DialogZWaveJSAddNode extends LitElement {
       this._step = "rename_device";
       const nameChanged = this._device.name !== this._deviceOptions?.name;
       if (nameChanged || this._deviceOptions?.area) {
-        const oldDeviceName = this._device.name;
-        const newDeviceName = this._deviceOptions!.name;
         try {
           await updateDeviceRegistryEntry(this.hass, this._device.id, {
             name_by_user: this._deviceOptions!.name,
@@ -920,8 +921,6 @@ class DialogZWaveJSAddNode extends LitElement {
           });
 
           if (nameChanged) {
-            // rename entities
-
             const entities = this._entities.filter(
               (entity) => entity.device_id === this._device!.id
             );
@@ -933,33 +932,14 @@ class DialogZWaveJSAddNode extends LitElement {
 
             await Promise.all(
               entities.map((entity) => {
-                const name = entity.name;
-                let newName: string | null | undefined;
                 const newEntityId = entityIdsMapping[entity.entity_id];
 
-                if (entity.has_entity_name && !entity.name) {
-                  newName = undefined;
-                } else if (
-                  entity.has_entity_name &&
-                  (entity.name === oldDeviceName ||
-                    entity.name === newDeviceName)
-                ) {
-                  // clear name if it matches the device name and it uses the device name (entity naming)
-                  newName = null;
-                } else if (name && name.includes(oldDeviceName)) {
-                  newName = name.replace(oldDeviceName, newDeviceName);
-                }
-
-                if (
-                  (newName === undefined && !newEntityId) ||
-                  newEntityId === entity.entity_id
-                ) {
+                if (!newEntityId || newEntityId === entity.entity_id) {
                   return undefined;
                 }
 
                 return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                  name: newName || name,
-                  new_entity_id: newEntityId || undefined,
+                  new_entity_id: newEntityId,
                 });
               })
             );

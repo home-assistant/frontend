@@ -9,6 +9,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
@@ -152,7 +153,6 @@ export class MatterNetworkVisualization extends LitElement {
     }
     return html`
       <ha-network-graph
-        .hass=${this.hass}
         .searchFilter=${this._searchFilter}
         .data=${this._formatNetworkData(
           this._topology,
@@ -189,8 +189,8 @@ export class MatterNetworkVisualization extends LitElement {
     ></ha-input-search>`;
   }
 
-  private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>): void {
+    this._searchFilter = ev.target.value ?? "";
   }
 
   private async _refreshTopology(): Promise<void> {

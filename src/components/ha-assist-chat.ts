@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiChevronDown,
@@ -11,6 +10,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { transform } from "../common/decorators/transform";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -22,6 +22,7 @@ import {
   type ConversationChatLogToolResultDelta,
   type PipelineRunEvent,
 } from "../data/assist_pipeline";
+import type { ChatLogToolResult } from "../data/chat_log";
 import {
   configContext,
   connectionContext,
@@ -58,7 +59,7 @@ interface AssistMessage {
     {
       tool_name: string;
       tool_args: Record<string, unknown>;
-      result?: any;
+      result?: ChatLogToolResult;
     }
   >;
   error?: boolean;
@@ -79,6 +80,14 @@ export const greetingTranslationLanguage = (
   interfaceLanguage: string | undefined
 ): string | undefined => {
   if (!pipelineLanguage || pipelineLanguage === interfaceLanguage) {
+    return undefined;
+  }
+  // A bare pipeline language ("zh") covers the interface's variant of it
+  // ("zh-Hans"), which a lookup of the bare language may not pick
+  if (
+    !pipelineLanguage.includes("-") &&
+    interfaceLanguage?.startsWith(`${pipelineLanguage}-`)
+  ) {
     return undefined;
   }
   const language = findAvailableLanguage(pipelineLanguage);
@@ -834,7 +843,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           } else if (isToolResult(delta)) {
             if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
               progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.tool_result;
+                delta.result;
               this.requestUpdate("_conversation");
             }
           }
@@ -843,7 +852,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           progress.continueConversation =
             event.data.intent_output.continue_conversation;
           const response =
-            event.data.intent_output.response.speech?.plain.speech;
+            event.data.intent_output.response.speech.plain?.speech;
           if (!response) {
             return;
           }
@@ -1061,31 +1070,18 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           position: absolute;
           top: 0;
           left: 0;
-          -webkit-animation: sk-bounce 2s infinite ease-in-out;
           animation: sk-bounce 2s infinite ease-in-out;
         }
         .double-bounce2 {
-          -webkit-animation-delay: -1s;
           animation-delay: -1s;
-        }
-        @-webkit-keyframes sk-bounce {
-          0%,
-          100% {
-            -webkit-transform: scale(0);
-          }
-          50% {
-            -webkit-transform: scale(1);
-          }
         }
         @keyframes sk-bounce {
           0%,
           100% {
             transform: scale(0);
-            -webkit-transform: scale(0);
           }
           50% {
             transform: scale(1);
-            -webkit-transform: scale(1);
           }
         }
 

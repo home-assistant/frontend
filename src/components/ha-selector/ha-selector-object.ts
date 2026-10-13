@@ -4,6 +4,7 @@ import {
   mdiDragHorizontalVariant,
   mdiPencil,
 } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -13,12 +14,13 @@ import type { ObjectSelector } from "../../data/selector";
 import { formatSelectorValue } from "../../data/selector/format_selector_value";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
 import type { HomeAssistant } from "../../types";
+import { computeInitialHaFormData } from "../ha-form/compute-initial-ha-form-data";
 import type { HaFormSchema } from "../ha-form/types";
 import "../ha-input-helper-text";
-import "../ha-md-list";
-import "../ha-md-list-item";
 import "../ha-sortable";
 import "../ha-yaml-editor";
+import "../item/ha-list-item-base";
+import "../list/ha-list-base";
 import type { HaYamlEditor } from "../ha-yaml-editor";
 import { deepEqual } from "../../common/util/deep-equal";
 
@@ -113,7 +115,7 @@ export class HaObjectSelector extends LitElement {
     const reorderable = this.selector.object!.multiple || false;
     const multiple = this.selector.object!.multiple || false;
     return html`
-      <ha-md-list-item class="item">
+      <ha-list-item-base class="item">
         ${
           reorderable
             ? html`
@@ -148,7 +150,7 @@ export class HaObjectSelector extends LitElement {
           .path=${multiple ? mdiDelete : mdiClose}
           @click=${this._deleteItem}
         ></ha-icon-button>
-      </ha-md-list-item>
+      </ha-list-item-base>
     `;
   }
 
@@ -164,9 +166,9 @@ export class HaObjectSelector extends LitElement {
               draggable-selector=".item"
               @item-moved=${this._itemMoved}
             >
-              <ha-md-list>
+              <ha-list-base>
                 ${items.map((item, index) => this._renderItem(item, index))}
-              </ha-md-list>
+              </ha-list-base>
             </ha-sortable>
             <ha-button appearance="filled" @click=${this._addItem}>
               ${this.hass.localize("ui.common.add")}
@@ -180,9 +182,9 @@ export class HaObjectSelector extends LitElement {
         <div class="items-container">
           ${
             this.value
-              ? html`<ha-md-list>
+              ? html`<ha-list-base>
                   ${this._renderItem(this.value, 0)}
-                </ha-md-list>`
+                </ha-list-base>`
               : html`
                   <ha-button appearance="filled" @click=${this._addItem}>
                     ${this.hass.localize("ui.common.add")}
@@ -203,9 +205,7 @@ export class HaObjectSelector extends LitElement {
       ></ha-yaml-editor>
       ${
         this.helper
-          ? html`<ha-input-helper-text .disabled=${this.disabled}
-              >${this.helper}</ha-input-helper-text
-            >`
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : ""
       } `;
   }
@@ -218,6 +218,9 @@ export class HaObjectSelector extends LitElement {
       name: key,
       selector: field.selector,
       required: field.required ?? false,
+      ...("default" in field
+        ? { default: field.default as HaFormSchema["default"] }
+        : {}),
     }));
   });
 
@@ -237,10 +240,22 @@ export class HaObjectSelector extends LitElement {
   private async _addItem(ev) {
     ev.stopPropagation();
 
+    const schema = this._schema(this.selector);
+    const data = {
+      ...computeInitialHaFormData(schema, {
+        skipUnsupportedSelectors: true,
+      }),
+      ...Object.fromEntries(
+        schema
+          .filter((field) => "default" in field)
+          .map((field) => [field.name, deepClone(field.default)])
+      ),
+    };
+
     const newItem = await showFormDialog(this, {
       title: this.hass.localize("ui.common.add"),
-      schema: this._schema(this.selector),
-      data: {},
+      schema,
+      data,
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),
@@ -293,7 +308,7 @@ export class HaObjectSelector extends LitElement {
     const index = ev.currentTarget.index;
 
     if (!this.selector.object!.multiple) {
-      fireEvent(this, "value-changed", { value: undefined });
+      fireEvent(this, "value-changed", { value: "" });
       return;
     }
 
@@ -331,19 +346,20 @@ export class HaObjectSelector extends LitElement {
   static get styles() {
     return [
       css`
-        ha-md-list {
-          gap: var(--ha-space-2);
+        ha-list-base {
+          --ha-list-gap: var(--ha-space-2);
+          --ha-list-padding: var(--ha-space-2) 0;
         }
-        ha-md-list-item {
+        ha-list-item-base {
           border: 1px solid var(--divider-color);
           border-radius: var(--ha-border-radius-md);
-          --ha-md-list-item-gap: 0;
-          --md-list-item-top-space: 0;
-          --md-list-item-bottom-space: 0;
-          --md-list-item-leading-space: 12px;
-          --md-list-item-trailing-space: 4px;
-          --md-list-item-two-line-container-height: 48px;
-          --md-list-item-one-line-container-height: 48px;
+          --ha-row-item-gap: 0;
+          --ha-row-item-padding-block: 0;
+          --ha-row-item-padding-inline: var(--ha-space-3) var(--ha-space-1);
+        }
+        ha-list-item-base::part(start),
+        ha-list-item-base::part(end) {
+          color: var(--ha-color-text-secondary);
         }
         .handle {
           cursor: move;
@@ -354,8 +370,8 @@ export class HaObjectSelector extends LitElement {
           margin-bottom: 8px;
           display: block;
         }
-        ha-md-list-item .label,
-        ha-md-list-item .description {
+        ha-list-item-base .label,
+        ha-list-item-base .description {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;

@@ -2,14 +2,13 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiFilterRemove,
-  mdiRefresh,
   mdiTextBoxOutline,
   mdiTuneVariant,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fromUnixTime } from "date-fns";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -37,6 +36,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
 import "../../components/ha-filter-pane-chip";
 import "../../components/ha-filter-pane";
+import type { HaFilterPane } from "../../components/ha-filter-pane";
 import "../../components/ha-icon-button";
 import {
   applySourceFilters,
@@ -44,6 +44,7 @@ import {
   countTargets,
 } from "../../components/ha-sources-picker";
 import type { SourceFilters } from "../../components/ha-sources-picker";
+import { entityTypesNeedStates } from "../../data/entity/entity_type";
 import "../../components/ha-top-app-bar-fixed";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { EntitySources } from "../../data/entity/entity_sources";
@@ -79,6 +80,8 @@ export class HaPanelLogbook extends LitElement {
   @state() private _filters: SourceFilters = {};
 
   @state() private _showSources?: boolean;
+
+  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
 
   @state() private _entitySources?: EntitySources;
 
@@ -130,11 +133,6 @@ export class HaPanelLogbook extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-dropdown-item value="refresh">
-            ${this.hass.localize("ui.common.refresh")}
-            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-dropdown-item>
-
           <ha-dropdown-item value="download">
             ${this.hass.localize("ui.panel.logbook.download_data")}
             <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
@@ -163,6 +161,7 @@ export class HaPanelLogbook extends LitElement {
                       .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
+                      .entitySources=${this._entitySources}
                       .entityFilter=${this._filterFunc}
                       .description=${this.hass.localize(
                         "ui.panel.logbook.no_targets"
@@ -190,6 +189,7 @@ export class HaPanelLogbook extends LitElement {
                   .startDate=${this._time.range[0]}
                   .endDate=${this._time.range[1]}
                   @value-changed=${this._dateRangeChanged}
+                  extended-presets
                   time-picker
                 ></ha-date-range-nav>
               </div>
@@ -197,7 +197,7 @@ export class HaPanelLogbook extends LitElement {
               <ha-logbook
                 .hass=${this.hass}
                 .time=${this._time}
-                .entityIds=${entityIds}
+                .entityIds=${this._shownEntityIds}
                 .narrow=${this.narrow}
                 show-cause
                 virtualize
@@ -242,6 +242,10 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _openSources() {
+    if (this._sourcesShown()) {
+      this._filterPane?.highlight();
+      return;
+    }
     this._showSources = true;
   }
 
@@ -270,11 +274,15 @@ export class HaPanelLogbook extends LitElement {
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (this.hasUpdated) {
-      return;
+    if (!this.hasUpdated) {
+      this._applyURLParams();
     }
 
-    this._applyURLParams();
+    // On narrow screens, the sources sheet covers the results, so only apply
+    // the sources once it is closed instead of on every source change.
+    if (!this.narrow || !this._sourcesShown()) {
+      this._shownEntityIds = this._getEntityIds();
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -331,8 +339,10 @@ export class HaPanelLogbook extends LitElement {
     return this.__filterEntityIds(
       targetEntities ?? this.__logbookEntityIds(this.hass.states),
       this._filters,
-      // Only the device class filter reads the states.
-      this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      // Only a device class narrows down using the states.
+      entityTypesNeedStates(this._filters.types)
+        ? this.hass.states
+        : EMPTY_STATES,
       this.hass.entities,
       this._entitySources
     );
@@ -385,6 +395,8 @@ export class HaPanelLogbook extends LitElement {
   private __filterEntityIds = memoizeOne(applySourceFilters);
 
   private _lastEntityIds?: string[];
+
+  private _shownEntityIds?: string[];
 
   // A list keyed on the states must keep its identity or ha-logbook resubscribes.
   private _stableEntityIds(entityIds: string[]): string[] {
@@ -498,18 +510,11 @@ export class HaPanelLogbook extends LitElement {
     navigate("/logbook", { replace: true });
   }
 
-  private _refreshLogbook() {
-    this.shadowRoot!.querySelector("ha-logbook")?.refresh();
-  }
-
   private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "download":
         this._downloadData();
-        break;
-      case "refresh":
-        this._refreshLogbook();
         break;
       case "reset":
         this._resetLogbook();
@@ -579,6 +584,8 @@ export class HaPanelLogbook extends LitElement {
         :host {
           --ha-generic-picker-width: min(400px, calc(100vw - 32px));
           --ha-generic-picker-max-width: 400px;
+          /* The target picker chips need more room than a plain filter list. */
+          --ha-filter-pane-width: 340px;
         }
 
         .content {

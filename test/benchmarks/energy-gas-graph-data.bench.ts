@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { generateEnergyGasGraphData } from "../../src/panels/lovelace/cards/energy/energy-gas-graph-data";
 import type { EnergyPreferences } from "../../src/data/energy";
 import { createMockComputedStyle } from "../fixtures/computed-style";
@@ -11,10 +11,8 @@ import { generateEnergyData } from "../fixtures/energy";
 const computedStyles = createMockComputedStyle({
   "--energy-gas-color": "#1b7ea0",
 });
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as any;
+const { states, formatEntityName } = createMockHass();
+const baseParams = { states, formatEntityName, darkMode: false };
 
 const now = new Date("2024-02-15T00:00:00Z");
 
@@ -50,34 +48,36 @@ const large = generateEnergyData(3, {
 });
 
 describe("generateEnergyGasGraphData", () => {
-  bench("small (1 day hourly, 2 sources)", () => {
-    generateEnergyGasGraphData({
-      hass,
-      energyData: small,
-      computedStyles,
-      now,
-    });
-  });
-
-  bench("medium (month hourly + compare, 3 sources)", () => {
-    generateEnergyGasGraphData({
-      hass,
-      energyData: medium,
-      computedStyles,
-      now,
-    });
-  });
-
-  bench(
-    "large (month 5-minute + compare, 4 sources)",
-    () => {
+  test("small (1 day hourly, 2 sources)", async ({ bench }) => {
+    await bench("small (1 day hourly, 2 sources)", () => {
       generateEnergyGasGraphData({
-        hass,
+        ...baseParams,
+        energyData: small,
+        computedStyles,
+        now,
+      });
+    }).run();
+  });
+
+  test("medium (month hourly + compare, 3 sources)", async ({ bench }) => {
+    await bench("medium (month hourly + compare, 3 sources)", () => {
+      generateEnergyGasGraphData({
+        ...baseParams,
+        energyData: medium,
+        computedStyles,
+        now,
+      });
+    }).run();
+  });
+
+  test("large (month 5-minute + compare, 4 sources)", async ({ bench }) => {
+    await bench("large (month 5-minute + compare, 4 sources)", () => {
+      generateEnergyGasGraphData({
+        ...baseParams,
         energyData: large,
         computedStyles,
         now,
       });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

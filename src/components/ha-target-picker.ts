@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import { consume } from "@lit/context";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
@@ -8,6 +7,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
@@ -107,6 +107,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  /**
+   * Entities that pass the filters the page currently has on. Narrows the
+   * counts, unlike `entityFilter`, which says what can be picked at all.
+   */
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -286,6 +293,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -306,6 +314,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -329,6 +338,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -348,6 +358,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -388,7 +399,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return html`
       <div class="add-target-wrapper">
         <ha-generic-picker
-          .hass=${this.hass}
           popover-placement="bottom-start"
           .disabled=${this.disabled}
           .autofocus=${this.autofocus}
@@ -653,6 +663,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._replaceTarget,
       searchString,
       this._configEntryLookup,
+      this.hass.entities,
       this._selectedSection
     );
   };
@@ -668,6 +679,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       replaceTarget: TargetItem | undefined,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
+      _entities: HomeAssistant["entities"],
       filterType?: TargetTypeFloorless
     ) => {
       const replacingEntityId =
@@ -995,8 +1007,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       | PickerComboBoxItem
       | (FloorComboBoxItem & { last?: boolean | undefined })
       | EntityComboBoxItem
-      | DevicePickerItem,
-    index: number
+      | DevicePickerItem
   ) => {
     if (!item) {
       return nothing;
@@ -1023,14 +1034,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-combo-box-item
-        id=${`list-item-${index}`}
-        tabindex="-1"
-        .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
         style=${
           ((item as FloorComboBoxItem).type === "area" && hasFloor) ||
           isChildDeviceRow
-            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            ? "--ha-combo-box-item-padding-inline-start: var(--ha-space-12);"
             : ""
         }
       >

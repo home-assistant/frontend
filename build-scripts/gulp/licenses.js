@@ -29,54 +29,27 @@ const LICENSE_OVERRIDES = [
     // type-fest ships two license files (MIT for code, CC0 for types).
     // We use the MIT license since that covers the bundled code.
     packageName: "type-fest",
-    version: "5.8.0",
+    version: "5.10.0",
     licenseFile: "license-mit",
   },
 ];
 
 // Locate the directory of an installed package matching an exact version.
 //
-// The copy we care about may be hoisted to the top-level node_modules or
-// nested under a dependency when a different version occupies the hoisted
-// slot (e.g. a build-only dependency pulling in an older release). Searching
-// both keeps this check independent of yarn's hoisting decisions, which can
-// shift when unrelated dependencies are added.
+// pnpm stores every installed version under
+// node_modules/.pnpm/<name>@<version>[(peers)]/node_modules/<name>, with the
+// "/" of scoped names replaced by "+". Looking there finds the pinned version
+// whether or not it is the one linked at the top level.
 async function findPackageDir(packageName, version) {
-  const candidateDirs = [path.join(NODE_MODULES, packageName)];
+  const storeDir = path.join(NODE_MODULES, ".pnpm");
+  const prefix = `${packageName.replace("/", "+")}@${version}`;
+  const entries = await readdir(storeDir).catch(() => []);
 
-  // Collect one level of nesting: node_modules/<dep>/node_modules/<pkg> and
-  // node_modules/@scope/<dep>/node_modules/<pkg>.
-  let topLevel = [];
-  try {
-    topLevel = await readdir(NODE_MODULES, { withFileTypes: true });
-  } catch {
-    // node_modules unreadable — fall back to the hoisted candidate only.
-  }
-  for (const entry of topLevel) {
-    if (!entry.isDirectory() || entry.name === packageName) {
+  for (const entry of entries) {
+    if (entry !== prefix && !entry.startsWith(`${prefix}(`)) {
       continue;
     }
-    if (entry.name.startsWith("@")) {
-      const scopeDir = path.join(NODE_MODULES, entry.name);
-      // eslint-disable-next-line no-await-in-loop
-      const scoped = await readdir(scopeDir, { withFileTypes: true }).catch(
-        () => []
-      );
-      for (const dep of scoped) {
-        if (dep.isDirectory()) {
-          candidateDirs.push(
-            path.join(scopeDir, dep.name, "node_modules", packageName)
-          );
-        }
-      }
-    } else {
-      candidateDirs.push(
-        path.join(NODE_MODULES, entry.name, "node_modules", packageName)
-      );
-    }
-  }
-
-  for (const dir of candidateDirs) {
+    const dir = path.join(storeDir, entry, "node_modules", packageName);
     // eslint-disable-next-line no-await-in-loop
     const pkg = await readFile(path.join(dir, "package.json"), "utf-8")
       .then(JSON.parse)

@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import { addDays, differenceInMilliseconds, startOfDay } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { transform } from "../common/decorators/transform";
 import { absoluteTime } from "../common/datetime/absolute_time";
 import { configContext, internationalizationContext } from "../data/context";

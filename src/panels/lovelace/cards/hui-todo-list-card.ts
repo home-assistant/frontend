@@ -40,7 +40,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-markdown-element";
 import "../../../components/ha-relative-time";
-import "../../../components/ha-select";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input";
@@ -376,8 +375,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._entityId)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }

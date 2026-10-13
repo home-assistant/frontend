@@ -3,6 +3,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { DurationUnits } from "../common/datetime/normalize_duration";
 import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -48,6 +49,7 @@ export type Selector =
   | DeviceSelector
   | FloorSelector
   | LegacyDeviceSelector
+  | DeviceClassSelector
   | DurationSelector
   | EntitySelector
   | EntityNameSelector
@@ -67,6 +69,7 @@ export type Selector =
   | QRCodeSelector
   | SelectSelector
   | SelectorSelector
+  | StateClassSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -85,7 +88,22 @@ export type Selector =
   | UiColorSelector
   | UiStateContentSelector
   | UiTimeFormatSelector
+  | UnitOfMeasurementSelector
   | BackupLocationSelector;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type SelectorType = KeysOfUnion<Selector>;
+
+type UnionMemberWithKey<U, K extends PropertyKey> = U extends unknown
+  ? K extends keyof U
+    ? U
+    : never
+  : never;
+
+export type SelectorForType<T extends SelectorType> = UnionMemberWithKey<
+  Selector,
+  T
+>;
 
 export interface ActionSelector {
   action: {
@@ -250,14 +268,30 @@ export interface LegacyDeviceSelector {
   };
 }
 
+export type DurationSelectorMode = "positive" | "signed" | "offset";
+
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
     enable_second?: boolean;
+    mode?: DurationSelectorMode;
   } | null;
 }
+
+export const getDurationSelectorMode = (
+  config: DurationSelector["duration"]
+): DurationSelectorMode =>
+  config?.mode ?? (config?.allow_negative ? "signed" : "positive");
+
+export const getDurationSelectorUnits = (
+  config: DurationSelector["duration"]
+): DurationUnits => ({
+  enableDay: !!config?.enable_day,
+  enableSecond: config?.enable_second ?? true,
+  enableMillisecond: !!config?.enable_millisecond,
+});
 
 interface EntitySelectorFilter {
   integration?: string;
@@ -352,6 +386,10 @@ export interface LocationSelector {
     radius?: boolean;
     radius_readonly?: boolean;
     icon?: string;
+    /** Name whose initials the marker shows when there is no icon */
+    name?: string;
+    /** Marker and radius color; defaults to the theme's zone color */
+    color?: string;
   } | null;
 }
 
@@ -365,9 +403,9 @@ export interface MediaSelector {
   media: {
     accept?: string[];
     image_upload?: boolean;
-    clearable?: boolean;
     hide_content_type?: boolean;
     content_id_helper?: string;
+    multiple?: boolean;
   } | null;
 }
 
@@ -418,6 +456,7 @@ interface ObjectSelectorField {
   label?: string;
   description?: string;
   required?: boolean;
+  default?: unknown;
 }
 
 export interface ObjectSelector {
@@ -484,6 +523,13 @@ export interface SelectSelector {
   } | null;
 }
 
+export interface DeviceClassSelector {
+  device_class: {
+    domain: string;
+    multiple?: boolean;
+  } | null;
+}
+
 export interface SelectorSelector {
   selector: {} | null;
 }
@@ -491,6 +537,13 @@ export interface SelectorSelector {
 export interface SerialPortSelector {
   serial_port: {
     extra_recommended_domains?: string[];
+  } | null;
+}
+
+export interface StateClassSelector {
+  state_class: {
+    multiple?: boolean;
+    state_classes?: string[];
   } | null;
 }
 
@@ -622,6 +675,20 @@ export interface UiTimeFormatSelector {
   ui_time_format: {} | null;
 }
 
+// Maps a context key to the name of another field or blueprint input
+export interface UnitOfMeasurementSelectorContext {
+  filter_device_class?: string;
+  filter_state_class?: string;
+}
+
+export interface UnitOfMeasurementSelector {
+  unit_of_measurement: {
+    device_classes?: string | string[] | null;
+    state_classes?: string | string[] | null;
+    context?: UnitOfMeasurementSelectorContext;
+  } | null;
+}
+
 export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
@@ -629,14 +696,33 @@ export interface EntityNameSelector {
   } | null;
 }
 
+/**
+ * Resolve the context of a selector config, which maps a context key to the
+ * name of another field, to the current values of those fields.
+ */
+export const resolveSelectorContext = (
+  selector: Selector,
+  data: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined => {
+  const config = Object.values(selector)[0] as
+    { context?: Record<string, string> } | null | undefined;
+  if (!config?.context) {
+    return undefined;
+  }
+  const context: Record<string, unknown> = {};
+  for (const [contextKey, fieldName] of Object.entries(config.context)) {
+    context[contextKey] = data?.[fieldName];
+  }
+  return context;
+};
+
 export const expandLabelTarget = (
   hass: HomeAssistant,
   labelId: string,
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
@@ -650,8 +736,7 @@ export const expandLabelTarget = (
         entities,
         devices,
         area.area_id,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newAreas.push(area.area_id);
@@ -665,8 +750,7 @@ export const expandLabelTarget = (
         hass.states,
         Object.values(entities),
         device,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newDevices.push(device.id);
@@ -679,7 +763,7 @@ export const expandLabelTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -695,8 +779,7 @@ export const expandFloorTarget = (
   hass: HomeAssistant,
   floorId: string,
   areas: HomeAssistant["areas"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newAreas: string[] = [];
   Object.values(areas).forEach((area) => {
@@ -707,8 +790,7 @@ export const expandFloorTarget = (
         hass.entities,
         hass.devices,
         area.area_id,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newAreas.push(area.area_id);
@@ -722,8 +804,7 @@ export const expandAreaTarget = (
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
@@ -735,8 +816,7 @@ export const expandAreaTarget = (
         hass.states,
         Object.values(entities),
         device,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newDevices.push(device.id);
@@ -748,7 +828,7 @@ export const expandAreaTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -763,8 +843,7 @@ export const expandDeviceTarget = (
   hass: HomeAssistant,
   deviceId: string,
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   Object.values(entities).forEach((entity) => {
@@ -773,7 +852,7 @@ export const expandDeviceTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -789,8 +868,7 @@ export const areaMeetsTargetSelector = (
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areaId: string,
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ): boolean => {
   const hasMatchingdevice = devicesInEffectiveArea(devices, areaId).some(
     (device) =>
@@ -798,8 +876,7 @@ export const areaMeetsTargetSelector = (
         hass.states,
         Object.values(entities),
         device,
-        targetSelector,
-        entitySources
+        targetSelector
       )
   );
   if (hasMatchingdevice) {
@@ -811,7 +888,7 @@ export const areaMeetsTargetSelector = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -826,16 +903,17 @@ export const deviceMeetsTargetSelector = (
   states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ): boolean => {
-  const deviceIntegrationLookup = entitySources
-    ? getDeviceIntegrationLookup(entitySources, entityRegistry)
-    : undefined;
-
   if (targetSelector.target?.device) {
+    const filterDevices = ensureArray(targetSelector.target.device);
+    const deviceIntegrationLookup = filterDevices.some(
+      (filterDevice) => filterDevice.integration
+    )
+      ? getDeviceIntegrationLookup(entityRegistry)
+      : undefined;
     if (
-      !ensureArray(targetSelector.target.device).some((filterDevice) =>
+      !filterDevices.some((filterDevice) =>
         filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)
       )
     ) {
@@ -850,11 +928,7 @@ export const deviceMeetsTargetSelector = (
     );
     return entities.some((entity) => {
       const entityState = states[entity.entity_id];
-      return entityMeetsTargetSelector(
-        entityState,
-        targetSelector,
-        entitySources
-      );
+      return entityMeetsTargetSelector(entityState, targetSelector);
     });
   }
   return true;
@@ -997,7 +1071,8 @@ export const filterSelectorEntities = (
 
   if (
     filterIntegration &&
-    entitySources?.[entity.entity_id]?.domain !== filterIntegration
+    (entityRegistry?.[entity.entity_id]?.platform ??
+      entitySources?.[entity.entity_id]?.domain) !== filterIntegration
   ) {
     return false;
   }

@@ -10,7 +10,6 @@ import {
 } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
-import "../../../layouts/hass-loading-screen";
 import { ChildPanelReady } from "../../../layouts/panel-ready";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";

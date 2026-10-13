@@ -337,7 +337,7 @@ export class SystemLogCard extends LitElement {
     }
 
     .secondary {
-      display: inline-block;
+      unicode-bidi: isolate;
       direction: var(--direction);
     }
 

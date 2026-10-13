@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -79,6 +78,7 @@ import {
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
@@ -166,9 +166,7 @@ export class HaScriptEditor extends SubscribeMixin(
       : undefined;
 
     const useBlueprint = "use_blueprint" in this.config;
-    const shortcutIcon = isMac
-      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
-      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+    const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
 
     return html`
       <hass-subpage
@@ -430,7 +428,18 @@ export class HaScriptEditor extends SubscribeMixin(
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-script=${this._handleSaveScript}
-                            ></blueprint-script-editor>
+                            >
+                              ${
+                                this.errors
+                                  ? html`<ha-alert
+                                      alert-type="error"
+                                      slot="alerts"
+                                    >
+                                      ${this.errors}
+                                    </ha-alert>`
+                                  : nothing
+                              }
+                            </blueprint-script-editor>
                           `
                         : html`
                             <manual-script-editor
@@ -590,10 +599,11 @@ export class HaScriptEditor extends SubscribeMixin(
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
       }
-      this.config = {
-        ...baseConfig,
-        ...initData,
-      } as ScriptConfig;
+      // Spread the init data first, so a duplicated script keeps its key
+      // order. The defaults only fill in what is missing.
+      const missingDefaults =
+        initData && "sequence" in initData ? {} : baseConfig;
+      this.config = { ...initData, ...missingDefaults } as ScriptConfig;
       this._initDirtyTracking(
         { type: "deep" },
         {
@@ -777,13 +787,14 @@ export class HaScriptEditor extends SubscribeMixin(
     this.errors = undefined;
   }
 
-  protected async confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
+        addHistory,
         config: this.config!,
         domain: "script",
         updateConfig: async (config, entityRegistryUpdate) => {
@@ -804,10 +815,15 @@ export class HaScriptEditor extends SubscribeMixin(
             return;
           }
 
+          this.yamlErrors = undefined;
           resolve(true);
         },
         onClose: () => resolve(false),
-        onDiscard: () => resolve(true),
+        onDiscard: () => {
+          this.yamlErrors = undefined;
+          this._markDirtyStateClean();
+          resolve(true);
+        },
         entityRegistryUpdate: this.entityRegistryUpdate,
         entityRegistryEntry: this.registryEntry,
         title: this.hass.localize(
@@ -869,11 +885,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.currentEntityId = undefined;
       showScriptEditor({
         ...this.config,
-        alias: this.readOnly
-          ? this.config?.alias
-          : `${this.config?.alias} (${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate"
-            )})`,
+        alias: this.readOnly ? this.config?.alias : undefined,
       });
     }
   }

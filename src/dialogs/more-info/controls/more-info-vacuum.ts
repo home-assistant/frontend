@@ -1,6 +1,4 @@
-import { consume } from "@lit/context";
 import {
-  mdiChevronRight,
   mdiFan,
   mdiHomeImportOutline,
   mdiMapMarker,
@@ -15,6 +13,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
@@ -25,6 +24,7 @@ import "../../../components/ha-control-select-menu";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
 import {
   apiContext,
   entitiesContext,
@@ -489,7 +489,7 @@ class MoreInfoVacuum extends LitElement {
                             </p>
                           </div>
                           <div class="icon">
-                            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+                            <ha-icon-next></ha-icon-next>
                           </div>
                         </button>
                       `

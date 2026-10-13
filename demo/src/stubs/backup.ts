@@ -1,7 +1,6 @@
 import type {
   BackupAgentsInfo,
   BackupConfig,
-  BackupContent,
   BackupInfo,
 } from "../../../src/data/backup";
 import { BackupScheduleRecurrence } from "../../../src/data/backup";
@@ -28,9 +27,19 @@ const backupInfo: BackupInfo = {
         "backup.local": { size: 1024 * 1024 * 512, protected: true },
         "cloud.cloud": { size: 1024 * 1024 * 512, protected: true },
       },
-    } as BackupContent,
+      failed_agent_ids: [],
+      failed_addons: [],
+      failed_folders: [],
+      extra_metadata: {},
+      addons: [],
+      database_included: true,
+      folders: [],
+      homeassistant_included: true,
+      homeassistant_version: "2026.9.0",
+    },
   ],
   agent_errors: {},
+  agent_error_translations: {},
   last_attempted_automatic_backup: recent,
   last_completed_automatic_backup: recent,
   last_action_event: { manager_state: "idle" },

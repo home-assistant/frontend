@@ -6,7 +6,6 @@ import {
   type IntegrationManifest,
 } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
-import "./ha-integration-header";
 import "../../../components/ha-card";
 import { brandsUrl } from "../../../util/brands-url";
 import { haStyle } from "../../../resources/styles";

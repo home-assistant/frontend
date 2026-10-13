@@ -1,10 +1,9 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyData,
   EnergyPreferences,
 } from "../../src/data/energy";
-import type { HomeAssistant } from "../../src/types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../../src/panels/lovelace/cards/types";
 import { generateEnergyDevicesDetailGraphData } from "../../src/panels/lovelace/cards/energy/energy-devices-detail-graph-data";
 import { createMockComputedStyle } from "../fixtures/computed-style";
@@ -18,10 +17,7 @@ import { generateStatistics } from "../fixtures/statistics";
 const computedStyles = createMockComputedStyle({
   "--history-unknown-color": "#888888",
 });
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as unknown as HomeAssistant;
+const { localize, locale, states, formatEntityName } = createMockHass();
 const now = new Date("2024-02-01T00:00:00Z");
 const config: EnergyDevicesDetailGraphCardConfig = {
   type: "energy-devices-detail-graph",
@@ -110,7 +106,11 @@ const monthFiveMinute = generateEnergyData(3, {
 // benchmark measures the real computation, not a cache hit.
 const run = (data: EnergyData) =>
   generateEnergyDevicesDetailGraphData({
-    hass,
+    localize,
+    locale,
+    states,
+    formatEntityName,
+    darkMode: false,
     energyData: { ...data },
     config,
     computedStyles,
@@ -119,27 +119,27 @@ const run = (data: EnergyData) =>
   });
 
 describe("generateEnergyDevicesDetailGraphData", () => {
-  bench("day of hourly data", () => {
-    run(dayHourly);
+  test("day of hourly data", async ({ bench }) => {
+    await bench("day of hourly data", () => {
+      run(dayHourly);
+    }).run();
   });
 
-  bench("week of hourly data", () => {
-    run(weekHourly);
+  test("week of hourly data", async ({ bench }) => {
+    await bench("week of hourly data", () => {
+      run(weekHourly);
+    }).run();
   });
 
-  bench(
-    "month of 5-minute data with compare",
-    () => {
+  test("month of 5-minute data with compare", async ({ bench }) => {
+    await bench("month of 5-minute data with compare", () => {
       run(monthFiveMinute);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "month of hourly data, 20 parents x 5 children",
-    () => {
+  test("month of hourly data, 20 parents x 5 children", async ({ bench }) => {
+    await bench("month of hourly data, 20 parents x 5 children", () => {
       run(hierarchyData as EnergyData);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

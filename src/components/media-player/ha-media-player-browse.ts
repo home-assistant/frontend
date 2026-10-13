@@ -20,6 +20,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { getShadowRootHost } from "../../common/dom/get-shadow-root-host";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
@@ -45,6 +46,7 @@ import {
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { getWsErrorMessage } from "../../util/ws-error";
 import { panelIsReady } from "../../layouts/panel-ready";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -470,15 +472,19 @@ export class HaMediaPlayerBrowse extends LitElement {
       ? MediaClassBrowserSettings[currentItem.children_media_class]
       : MediaClassBrowserSettings.directory;
 
+    const canPickCurrent =
+      currentItem?.can_play ||
+      (currentItem && this.accept?.includes("directory"));
+
     return html`
               ${
-                currentItem.can_play || showSearch
+                canPickCurrent || showSearch
                   ? html`
                       <div
                         class="header ${classMap({
                           "no-img": !currentItem.thumbnail,
                           "no-dialog": !this.dialog,
-                          "search-only": !currentItem.can_play,
+                          "search-only": !canPickCurrent,
                         })}"
                         @transitionend=${this._setHeaderHeight}
                       >
@@ -491,7 +497,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             : nothing
                         }
                         ${
-                          currentItem.can_play
+                          canPickCurrent
                             ? html`<div class="header-content">
                                 ${
                                   currentItem.thumbnail
@@ -503,7 +509,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                           ></ha-media-browser-thumbnail>
                                           ${
                                             this.narrow &&
-                                            currentItem?.can_play &&
+                                            canPickCurrent &&
                                             (!this.accept ||
                                               canPlayChildren.has(
                                                 currentItem.media_content_id
@@ -546,7 +552,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     }
                                   </div>
                                   ${
-                                    currentItem.can_play &&
+                                    canPickCurrent &&
                                     (!currentItem.thumbnail || !this.narrow)
                                       ? html`
                                           <ha-button
@@ -917,7 +923,9 @@ export class HaMediaPlayerBrowse extends LitElement {
         title: this.hass.localize(
           "ui.components.media-browser.media_browsing_error"
         ),
-        text: err instanceof Error ? err.message : String(err),
+        text:
+          getWsErrorMessage(err) ??
+          this.hass.localize("ui.common.unknown_error"),
       });
     } finally {
       // Only the most recent search controls the loading state
@@ -1157,14 +1165,9 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
     this._initialReady = true;
-    const root = this.getRootNode();
-    panelIsReady(
-      root instanceof ShadowRoot &&
-        root.host instanceof HTMLElement &&
-        root.host.tagName.startsWith("HA-PANEL-")
-        ? root.host
-        : this
-    );
+
+    const host = getShadowRootHost(this);
+    panelIsReady(host?.tagName.startsWith("HA-PANEL-") ? host : this);
   }
 
   private _setError(error: any) {

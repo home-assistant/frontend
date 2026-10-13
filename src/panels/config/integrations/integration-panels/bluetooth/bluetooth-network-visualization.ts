@@ -8,6 +8,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { throttle } from "../../../../../common/util/throttle";
@@ -136,7 +137,6 @@ export class BluetoothNetworkVisualization extends LitElement {
             : nothing
         }
         <ha-network-graph
-          .hass=${this.hass}
           .searchFilter=${this._searchFilter}
           .data=${this._formatNetworkData(this._data, this._scanners)}
           .searchableAttributes=${this._getSearchableAttributes}
@@ -174,8 +174,8 @@ export class BluetoothNetworkVisualization extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>): void {
+    this._searchFilter = ev.target.value ?? "";
   }
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {

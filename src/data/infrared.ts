@@ -1,6 +1,6 @@
 import { computeDeviceName } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeEntityName } from "../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../common/entity/compute_entity_name_display";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 
@@ -39,8 +39,7 @@ interface InfraredProxyEntity {
 // device class.
 const computeInfraredProxies = (
   entities: HomeAssistant["entities"],
-  states: HomeAssistant["states"],
-  devices: HomeAssistant["devices"]
+  states: HomeAssistant["states"]
 ): InfraredProxyEntity[] => {
   const proxies: InfraredProxyEntity[] = [];
 
@@ -70,7 +69,7 @@ const computeInfraredProxies = (
     proxies.push({
       entity_id: entry.entity_id,
       device_id: entry.device_id ?? null,
-      name: computeEntityName(stateObj, entities, devices) || entry.entity_id,
+      name: computeEntityEntryName(entry) || entry.entity_id,
       type: deviceClass,
       online,
       last_used,
@@ -87,7 +86,7 @@ export const computeInfraredDevices = (
   states: HomeAssistant["states"],
   devices: HomeAssistant["devices"]
 ): InfraredDevice[] => {
-  const proxies = computeInfraredProxies(entities, states, devices);
+  const proxies = computeInfraredProxies(entities, states);
 
   const groups = new Map<string, InfraredProxyEntity[]>();
   for (const proxy of proxies) {

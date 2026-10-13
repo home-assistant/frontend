@@ -24,10 +24,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/item/ha-row-item";
+import "../../../components/list/ha-list-base";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -43,15 +47,15 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
+import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
-import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
-  integrationsWithPanel,
+  getConfigPanelPath,
 } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -73,6 +77,7 @@ import {
   type ConfigEntryData,
 } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import { offerMarketplaceUninstall } from "./offer-marketplace-uninstall";
 
 @customElement("ha-config-entry-row")
 export class HaConfigEntryRow extends LitElement {
@@ -164,18 +169,17 @@ export class HaConfigEntryRow extends LitElement {
 
     const subEntries = this.data.subEntries;
 
-    return html`<ha-md-list>
-      <ha-md-list-item
-        class=${classMap({
-          config_entry: true,
-          "state-not-loaded": item!.state === "not_loaded",
-          "state-failed-unload": item!.state === "failed_unload",
-          "state-setup": item!.state === "setup_in_progress",
-          "state-error": ERROR_STATES.includes(item!.state),
-          "state-disabled": item.disabled_by !== null,
-          "has-subentries": this._expanded && subEntries.length > 0,
-        })}
-      >
+    return html` <div
+      class=${classMap({
+        "config-entry-wrapper": true,
+        "state-not-loaded": !item.disabled_by && item.state === "not_loaded",
+        "state-failed-unload": item!.state === "failed_unload",
+        "state-setup": item!.state === "setup_in_progress",
+        "state-error": ERROR_STATES.includes(item!.state),
+        "state-disabled": item.disabled_by !== null,
+      })}
+    >
+      <ha-row-item>
         ${
           subEntries.length || ownDevices.length
             ? html`<ha-icon-button
@@ -452,90 +456,88 @@ export class HaConfigEntryRow extends LitElement {
               : nothing
           }
         </ha-dropdown>
-      </ha-md-list-item>
-      ${
-        this._expanded
-          ? subEntries.length
-            ? html`${
-                ownDevices.length
-                  ? html`<ha-md-list class="devices">
-                      <ha-md-list-item
-                        @click=${this._toggleOwnDevices}
-                        type="button"
-                        class="toggle-devices-row ${classMap({
-                          expanded: this._devicesExpanded,
-                        })}"
-                      >
-                        <ha-icon-button
-                          class="expand-button ${classMap({
+      </ha-row-item>
+      <ha-list-base>
+        ${
+          this._expanded
+            ? subEntries.length
+              ? html`${
+                  ownDevices.length
+                    ? html`<div class="devices">
+                        <ha-list-item-button
+                          @click=${this._toggleOwnDevices}
+                          class="toggle-devices-row ${classMap({
                             expanded: this._devicesExpanded,
                           })}"
-                          .path=${mdiChevronDown}
-                          slot="start"
                         >
-                        </ha-icon-button>
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.devices_without_subentry"
-                        )}
-                      </ha-md-list-item>
-                      ${
-                        this._devicesExpanded
-                          ? groupDevicesByParent(ownDevices).map(
-                              ({ device, isChild, isLastChild }) =>
-                                html`<ha-config-entry-device-row
-                                  .hass=${this.hass}
-                                  .narrow=${this.narrow}
-                                  .entry=${item}
-                                  .device=${device}
-                                  .entities=${entities}
-                                  .isChild=${isChild}
-                                  .isLastChild=${isLastChild}
-                                ></ha-config-entry-device-row>`
-                            )
-                          : nothing
-                      }
-                    </ha-md-list>`
-                  : nothing
-              }
-              ${subEntries.map(
-                (subEntryData) => html`
-                  <ha-config-sub-entry-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .manifest=${this.manifest}
-                    .diagnosticHandler=${this.diagnosticHandler}
-                    .entities=${this.entities}
-                    .entry=${item}
-                    .data=${subEntryData}
-                    data-entry-id=${item.entry_id}
-                  ></ha-config-sub-entry-row>
-                `
-              )}`
-            : html`
-                ${groupDevicesByParent(ownDevices).map(
-                  ({ device, isChild, isLastChild }) =>
-                    html`<ha-config-entry-device-row
+                          <ha-icon-button
+                            class="expand-button ${classMap({
+                              expanded: this._devicesExpanded,
+                            })}"
+                            .path=${mdiChevronDown}
+                            slot="start"
+                          >
+                          </ha-icon-button>
+                          <span slot="headline"
+                            >${this.hass.localize(
+                              "ui.panel.config.integrations.config_entry.devices_without_subentry"
+                            )}</span
+                          >
+                        </ha-list-item-button>
+                        ${
+                          this._devicesExpanded
+                            ? groupDevicesByParent(ownDevices).map(
+                                ({ device, isChild, isLastChild }) =>
+                                  html`<ha-config-entry-device-row
+                                    .hass=${this.hass}
+                                    .narrow=${this.narrow}
+                                    .entry=${item}
+                                    .device=${device}
+                                    .entities=${entities}
+                                    .isChild=${isChild}
+                                    .isLastChild=${isLastChild}
+                                  ></ha-config-entry-device-row>`
+                              )
+                            : nothing
+                        }
+                      </div>`
+                    : nothing
+                }
+                ${subEntries.map(
+                  (subEntryData) => html`
+                    <ha-config-sub-entry-row
                       .hass=${this.hass}
                       .narrow=${this.narrow}
+                      .manifest=${this.manifest}
+                      .diagnosticHandler=${this.diagnosticHandler}
+                      .entities=${this.entities}
                       .entry=${item}
-                      .device=${device}
-                      .entities=${entities}
-                      .isChild=${isChild}
-                      .isLastChild=${isLastChild}
-                    ></ha-config-entry-device-row>`
-                )}
-              `
-          : nothing
-      }
-    </ha-md-list>`;
+                      .data=${subEntryData}
+                      data-entry-id=${item.entry_id}
+                    ></ha-config-sub-entry-row>
+                  `
+                )}`
+              : html`
+                  ${groupDevicesByParent(ownDevices).map(
+                    ({ device, isChild, isLastChild }) =>
+                      html`<ha-config-entry-device-row
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .entry=${item}
+                        .device=${device}
+                        .entities=${entities}
+                        .isChild=${isChild}
+                        .isLastChild=${isLastChild}
+                      ></ha-config-entry-device-row>`
+                  )}
+                `
+            : nothing
+        }
+      </ha-list-base>
+    </div>`;
   }
 
-  private _configPanel = memoizeOne(
-    (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
-      Object.values(panels).find(
-        (panel) => panel.config_panel_domain === domain
-      )?.url_path || integrationsWithPanel[domain]
-  );
+  private _configPanel = memoizeOne(getConfigPanelPath);
 
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities.filter(
@@ -805,15 +807,30 @@ export class HaConfigEntryRow extends LitElement {
     }
     const result = await deleteConfigEntry(this.hass, entryId);
 
-    if (result.require_restart) {
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.restart_confirm"
-        ),
-      });
+    const restartAlert = result.require_restart
+      ? showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_entry.restart_confirm"
+          ),
+        })
+      : undefined;
+    const credentialPrompt = applicationCredentialsId
+      ? this._removeApplicationCredential(applicationCredentialsId)
+      : undefined;
+
+    // Only a custom integration can come from the Marketplace
+    if (this.manifest?.is_built_in) {
+      return;
     }
-    if (applicationCredentialsId) {
-      this._removeApplicationCredential(applicationCredentialsId);
+
+    // Asked after what deleting the entry asked, uninstalling can take this
+    // row away with the dialogs it opened
+    await Promise.all([restartAlert, credentialPrompt]);
+    if (
+      await offerMarketplaceUninstall(this, this.hass, this.data.entry.domain)
+    ) {
+      // Nothing of the integration is left to show on its page
+      navigate("/config/integrations/dashboard", { replace: true });
     }
   };
 
@@ -854,24 +871,27 @@ export class HaConfigEntryRow extends LitElement {
       .expand-button.expanded {
         transform: rotate(180deg);
       }
-      ha-md-list {
+      .config-entry-wrapper {
         border: 1px solid var(--divider-color);
         border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-        padding: 0;
+        background-color: var(--card-background-color);
       }
       :host([narrow]) {
         margin-left: -12px;
         margin-right: -12px;
       }
-      ha-md-list.devices {
+      .devices {
+        border: 1px solid var(--divider-color);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         margin: 16px;
         margin-top: 0;
+        background-color: var(--card-background-color);
+      }
+      ha-icon-button {
+        color: var(--ha-color-fill-neutral-loud-resting);
       }
       ha-icon-button.link {
-        color: var(
-          --md-list-item-trailing-icon-color,
-          var(--md-sys-color-on-surface-variant, #49454f)
-        );
+        color: var(--ha-color-text-secondary);
       }
       .toggle-devices-row {
         overflow: hidden;
@@ -883,6 +903,47 @@ export class HaConfigEntryRow extends LitElement {
       }
       ha-dropdown a {
         text-decoration: none;
+      }
+      .state-error {
+        --state-message-color: var(--ha-color-on-danger-normal);
+        background-color: var(--ha-color-fill-danger-quiet-resting);
+      }
+      .state-failed-unload {
+        --state-message-color: var(--ha-color-on-warning-normal);
+      }
+      .state-not-loaded {
+        --state-message-color: var(--ha-color-text-primary);
+      }
+      .state-failed-unload,
+      .state-not-loaded {
+        background-color: var(--ha-color-fill-warning-quiet-resting);
+      }
+      .state-setup {
+        --state-message-color: var(--ha-color-text-secondary);
+      }
+      .state-disabled [slot="headline"],
+      .state-disabled [slot="supporting-text"] {
+        color: var(--ha-color-text-disabled);
+      }
+      .message {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-2);
+        font-weight: var(--ha-font-weight-bold);
+      }
+      .message ha-svg-icon {
+        flex-shrink: 0;
+        color: var(--state-message-color);
+      }
+      .message div {
+        flex: 1;
+        white-space: normal;
+        overflow-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 7;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     `,
   ];

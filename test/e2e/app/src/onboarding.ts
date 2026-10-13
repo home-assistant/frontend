@@ -176,13 +176,32 @@ export async function setupOnboardingMocks(
   page: Page
 ): Promise<OnboardingCalls> {
   const calls: OnboardingCalls = { tokenRequests: [] };
+  const completedSteps = new Set<string>();
+
+  // The location step shows a map. This app builds with __DEMO__ true, so its
+  // tiles come from the demo upstreams; answering those here keeps CI off the
+  // live servers.
+  await Promise.all(
+    [
+      "https://vector.openstreetmap.org/**",
+      "https://tiles.versatiles.org/**",
+      "https://tile.openstreetmap.org/**",
+    ].map((upstream) =>
+      page.route(upstream, (route) => route.fulfill({ status: 404, body: "" }))
+    )
+  );
 
   await page.route("**/api/onboarding**", async (route) => {
     const request = route.request();
     const pathname = new URL(request.url()).pathname;
 
     if (pathname === "/api/onboarding") {
-      await route.fulfill({ json: onboardingSteps });
+      await route.fulfill({
+        json: onboardingSteps.map((step) => ({
+          ...step,
+          done: completedSteps.has(step.step),
+        })),
+      });
       return;
     }
     if (pathname === "/api/onboarding/installation_type") {
@@ -192,23 +211,29 @@ export async function setupOnboardingMocks(
       return;
     }
     if (pathname === "/api/onboarding/users") {
+      completedSteps.add("user");
       calls.user = request.postDataJSON() as Record<string, unknown>;
       await route.fulfill({ json: { auth_code: "onboarding-auth-code" } });
       return;
     }
     if (pathname === "/api/onboarding/core_config") {
+      completedSteps.add("core_config");
       calls.coreConfigCompleted = true;
       await route.fulfill({ json: {} });
       return;
     }
     if (pathname === "/api/onboarding/analytics") {
+      completedSteps.add("analytics");
       calls.analyticsCompleted = true;
       await route.fulfill({ json: {} });
       return;
     }
     if (pathname === "/api/onboarding/integration") {
+      completedSteps.add("integration");
       calls.integration = request.postDataJSON() as Record<string, unknown>;
-      await route.fulfill({ json: { auth_code: "dashboard-auth-code" } });
+      await route.fulfill({
+        json: { auth_code: "dashboard-auth-code" },
+      });
       return;
     }
 
@@ -236,14 +261,22 @@ export async function setupOnboardingMocks(
   return calls;
 }
 
-export async function openOnboarding(page: Page, baseURL: string) {
+export async function openOnboarding(
+  page: Page,
+  baseURL: string,
+  authorizationParams: Record<string, string> = {}
+) {
   const origin = new URL(baseURL).origin;
   const state = btoa(
     JSON.stringify({ hassUrl: origin, clientId: `${origin}/` })
   );
-  await page.goto(
-    `/onboarding.html?client_id=${encodeURIComponent(`${origin}/`)}&redirect_uri=${encodeURIComponent(`${origin}/dashboard.html?auth_callback=1`)}&state=${encodeURIComponent(state)}`
-  );
+  const params = new URLSearchParams({
+    client_id: `${origin}/`,
+    redirect_uri: `${origin}/dashboard.html?auth_callback=1`,
+    state,
+    ...authorizationParams,
+  });
+  await page.goto(`/onboarding.html?${params}`);
   await expect(page.locator("onboarding-welcome")).toBeAttached({
     timeout: SHELL_TIMEOUT,
   });
@@ -251,7 +284,8 @@ export async function openOnboarding(page: Page, baseURL: string) {
 
 export async function createOwner(page: Page) {
   await page
-    .locator("onboarding-welcome ha-button.start")
+    .locator("onboarding-welcome")
+    .getByRole("button", { name: "Create my smart home", exact: true })
     .click({ timeout: SHELL_TIMEOUT });
 
   const inputs = page.locator("onboarding-create-user ha-input >> input");

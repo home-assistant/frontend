@@ -187,7 +187,6 @@ class DialogPersonDetail
             ></ha-input>
 
             <ha-picture-upload
-              .hass=${this.hass}
               .value=${this._picture}
               crop
               select-media
@@ -319,9 +318,12 @@ class DialogPersonDetail
   private _renderUserFields() {
     const user = this._user;
     if (!user) return nothing;
+    const hasHomeAssistantCredential = user.credentials.some(
+      (credential) => credential.type === "homeassistant"
+    );
     return html`
       ${
-        !user.system_generated
+        !user.system_generated && hasHomeAssistantCredential
           ? html`
               <ha-row-item>
                 <span slot="headline"
@@ -350,7 +352,9 @@ class DialogPersonDetail
           : nothing
       }
       ${
-        !user.system_generated && this.hass.user?.is_owner
+        !user.system_generated &&
+        hasHomeAssistantCredential &&
+        this.hass.user?.is_owner
           ? html`
               <ha-row-item>
                 <span slot="headline"
@@ -462,7 +466,9 @@ class DialogPersonDetail
       );
       const eligibleUsers = users.filter(
         (u) =>
-          !currentLinkedUsers.has(u.id) && !u.system_generated && u.username
+          !currentLinkedUsers.has(u.id) &&
+          !u.system_generated &&
+          u.credentials.length > 0
       );
       const addUserDialog = () =>
         showAddUserDialog(this, {
@@ -492,7 +498,9 @@ class DialogPersonDetail
           },
           ...eligibleUsers.map((user) => ({
             iconPath: mdiAccount,
-            label: `${user.name} (${user.username})`,
+            label: user.username
+              ? `${user.name} (${user.username})`
+              : user.name,
             action: () => this._linkUser(user, false),
           })),
         ],

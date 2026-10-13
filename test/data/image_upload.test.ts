@@ -10,6 +10,7 @@ import {
   URL_PREFIX,
   MEDIA_PREFIX,
 } from "../../src/data/image_upload";
+import type { LocalizeFunc } from "../../src/common/translations/localize";
 import type { HomeAssistant } from "../../src/types";
 
 describe("image_upload", () => {
@@ -69,40 +70,37 @@ describe("image_upload", () => {
   describe("createImage", () => {
     it("should create an image", async () => {
       const file = new File([""], "image.png", { type: "image/png" });
-      const hass = {
-        fetchWithAuth: vi.fn().mockResolvedValue({
-          status: 200,
-          json: vi.fn().mockResolvedValue({ id: "12345" }),
-        }),
-      } as unknown as HomeAssistant;
-      const image = await createImage(hass, file);
-      expect(hass.fetchWithAuth).toHaveBeenCalled();
+      const fetchWithAuth = vi.fn().mockResolvedValue({
+        status: 200,
+        json: vi.fn().mockResolvedValue({ id: "12345" }),
+      });
+      const localize = vi.fn() as unknown as LocalizeFunc;
+      const image = await createImage(fetchWithAuth, localize, file);
+      expect(fetchWithAuth).toHaveBeenCalled();
       expect(image).toEqual({ id: "12345" });
     });
 
     it("should throw error if image is too large", async () => {
       const file = new File([""], "image.png", { type: "image/png" });
-      const hass = {
-        fetchWithAuth: vi.fn().mockResolvedValue({ status: 413 }),
-        localize: vi.fn((key: string, values?: Record<string, string>) => {
-          if (key === "ui.common.upload_image_too_large") {
-            return `Uploaded image is too large (${values?.name})`;
-          }
-          return "Unknown error";
-        }),
-      } as unknown as HomeAssistant;
-      await expect(createImage(hass, file)).rejects.toThrow(
+      const fetchWithAuth = vi.fn().mockResolvedValue({ status: 413 });
+      const localize = vi.fn((key: string, values?: Record<string, string>) => {
+        if (key === "ui.common.upload_image_too_large") {
+          return `Uploaded image is too large (${values?.name})`;
+        }
+        return "Unknown error";
+      }) as unknown as LocalizeFunc;
+      await expect(createImage(fetchWithAuth, localize, file)).rejects.toThrow(
         "Uploaded image is too large (image.png)"
       );
     });
 
     it("should throw error if fetch fails", async () => {
       const file = new File([""], "image.png", { type: "image/png" });
-      const hass = {
-        fetchWithAuth: vi.fn().mockResolvedValue({ status: 500 }),
-        localize: vi.fn(() => "Unknown error"),
-      } as unknown as HomeAssistant;
-      await expect(createImage(hass, file)).rejects.toThrow("Unknown error");
+      const fetchWithAuth = vi.fn().mockResolvedValue({ status: 500 });
+      const localize = vi.fn(() => "Unknown error") as unknown as LocalizeFunc;
+      await expect(createImage(fetchWithAuth, localize, file)).rejects.toThrow(
+        "Unknown error"
+      );
     });
   });
 
@@ -115,7 +113,7 @@ describe("image_upload", () => {
       await updateImage(hass, "12345", updates);
       expect(hass.callWS).toHaveBeenCalledWith({
         type: "image/update",
-        media_id: "12345",
+        image_id: "12345",
         ...updates,
       });
     });
@@ -135,15 +133,13 @@ describe("image_upload", () => {
   });
 
   describe("getImageData", () => {
-    const hass = {
-      hassUrl: vi.fn((url) => url),
-    } as unknown as HomeAssistant;
+    const hassUrl = vi.fn((url?: string) => url ?? "");
     it("should fetch image data", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         blob: vi.fn().mockResolvedValue(new Blob()),
       });
-      const data = await getImageData(hass, "http://example.com/image.png");
+      const data = await getImageData(hassUrl, "http://example.com/image.png");
       expect(global.fetch).toHaveBeenCalledWith("http://example.com/image.png");
       expect(data).toBeInstanceOf(Blob);
     });
@@ -153,7 +149,7 @@ describe("image_upload", () => {
         .fn()
         .mockResolvedValue({ ok: false, statusText: "Not Found" });
       await expect(
-        getImageData(hass, "http://example.com/image.png")
+        getImageData(hassUrl, "http://example.com/image.png")
       ).rejects.toThrow("Failed to fetch image: Not Found");
     });
   });

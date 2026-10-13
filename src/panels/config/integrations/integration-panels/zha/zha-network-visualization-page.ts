@@ -6,6 +6,7 @@ import type {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
@@ -66,7 +67,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
             : nothing
         }
         <ha-network-graph
-          .hass=${this.hass}
           .searchFilter=${this._searchFilter}
           .data=${this._networkData}
           .searchableAttributes=${this._getSearchableAttributes}
@@ -130,8 +130,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return attributes;
   };
 
-  private _handleSearchChange(ev: InputEvent): void {
-    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>): void {
+    this._searchFilter = ev.target.value ?? "";
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams) => {

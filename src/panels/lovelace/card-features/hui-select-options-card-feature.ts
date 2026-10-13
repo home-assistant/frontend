@@ -59,6 +59,8 @@ class HuiSelectOptionsCardFeature
 
   protected readonly _allowIconsStyle = false;
 
+  protected readonly _allowButtonsStyle = true;
+
   protected readonly _showDropdownOptionIcons = false;
 
   static getStubConfig(): SelectOptionsCardFeatureConfig {

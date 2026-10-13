@@ -40,9 +40,11 @@ class HaConfigScript extends HassRouterPage {
       },
       edit: {
         tag: "ha-script-editor",
+        itemId: true,
       },
       show: {
         tag: "ha-script-editor",
+        itemId: true,
       },
       trace: {
         tag: "ha-script-trace",

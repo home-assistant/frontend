@@ -1,6 +1,6 @@
-import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { connectionContext } from "../../../data/context";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";

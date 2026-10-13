@@ -40,7 +40,7 @@ class EntityPreviewRow extends LitElement {
       return nothing;
     }
     const stateObj = this.stateObj;
-    return html`<state-badge .stateObj=${stateObj} stateColor></state-badge>
+    return html`<state-badge .stateObj=${stateObj} color="state"></state-badge>
       <div class="name" .title=${computeStateName(stateObj)}>
         ${computeStateName(stateObj)}
       </div>
@@ -182,7 +182,6 @@ class EntityPreviewRow extends LitElement {
             noValue
               ? this.hass.formatEntityState(stateObj)
               : html`<hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   capitalize
                 ></hui-timestamp-display>`
@@ -319,7 +318,6 @@ class EntityPreviewRow extends LitElement {
           showSensor
             ? html`
                 <hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${
                     stateObj.attributes.device_class ===

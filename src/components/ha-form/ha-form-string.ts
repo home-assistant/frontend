@@ -57,6 +57,7 @@ export class HaFormString extends LitElement implements HaFormElement {
         .name=${this.schema.name}
         .autofocus=${!!this.schema.autofocus}
         .autocomplete=${this.schema.autocomplete}
+        .inputId=${this.schema.name}
         .validationMessage=${
           this.schema.required
             ? this.localize?.("ui.common.error_required")

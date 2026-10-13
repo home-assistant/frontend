@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiCalendar } from "@mdi/js";
 import "cally";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
@@ -7,6 +7,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
+import { consume } from "../../common/decorators/consume";
 import { shiftDateRange } from "../../common/datetime/calc_date";
 import type { DateRange } from "../../common/datetime/calc_date_range";
 import { calcDateRange } from "../../common/datetime/calc_date_range";
@@ -188,7 +189,9 @@ export class HaDateRangePicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="container">
-        <div class="date-range-inputs">${this._renderField()}</div>
+        <div class="date-range-inputs" part="range-input">
+          ${this._renderField()}
+        </div>
         ${
           this._pickerWrapperOpen || this._opened
             ? this._openedNarrow

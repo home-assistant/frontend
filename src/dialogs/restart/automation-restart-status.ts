@@ -1,6 +1,7 @@
 import { LitElement, html } from "lit";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { computeDomain } from "../../common/entity/compute_domain";
 import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";

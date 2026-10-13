@@ -5,6 +5,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
+import type { EntityNameType } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import {
   STRINGS_SEPARATOR_DOT,
@@ -56,11 +57,18 @@ export const DEFAULT_STATE_CONTENT_DOMAINS: Record<string, StateContent> = {
   valve: ["state", "current_position"],
 };
 
+const NAME_CONTENT_TYPES = new Map<string, EntityNameType>([
+  ["device_name", "device"],
+  ["parent_device_name", "parent_device"],
+  ["area_name", "area"],
+  ["floor_name", "floor"],
+]);
+
 const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
 
 const TIMESTAMP_CONTENTS = [...TIMESTAMP_STATE_PROPS, "last_triggered"];
 
-const TIMESTAMP_DOMAIN_CONTENTS = {
+const TIMESTAMP_DOMAIN_CONTENTS: Record<string, string[] | undefined> = {
   calendar: ["start_time", "end_time"],
   input_datetime: ["timestamp"],
   sun: [
@@ -98,10 +106,11 @@ export const stateContentHasTimestamp = (
       }
     }
   }
+  const domainContents = TIMESTAMP_DOMAIN_CONTENTS[domain];
   return (
-    TIMESTAMP_DOMAIN_CONTENTS[domain] &&
-    content &&
-    contentArray.some((c) => TIMESTAMP_DOMAIN_CONTENTS[domain].includes(c))
+    !!content &&
+    !!domainContents &&
+    contentArray.some((c) => domainContents.includes(c))
   );
 };
 
@@ -168,7 +177,6 @@ class StateDisplay extends LitElement {
       ) {
         return html`
           <hui-timestamp-display
-            .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
             .format=${
               this.timeFormat ||
@@ -190,13 +198,11 @@ class StateDisplay extends LitElement {
     if (content === "entity-id") {
       return stateObj.entity_id;
     }
-    if (
-      content === "device_name" ||
-      content === "area_name" ||
-      content === "floor_name"
-    ) {
-      const type = content.replace("_name", "") as "device" | "area" | "floor";
-      return this.hass.formatEntityName(stateObj, { type }) || undefined;
+    const nameType = NAME_CONTENT_TYPES.get(content);
+    if (nameType) {
+      return (
+        this.hass.formatEntityName(stateObj, { type: nameType }) || undefined
+      );
     }
 
     let relativeDateTime: string | number | undefined;
@@ -214,7 +220,6 @@ class StateDisplay extends LitElement {
 
     if (relativeDateTime || relativeDateTime === 0) {
       return html`<hui-timestamp-display
-        .hass=${this.hass}
         .ts=${new Date(relativeDateTime)}
         .format=${this.timeFormat}
         capitalize

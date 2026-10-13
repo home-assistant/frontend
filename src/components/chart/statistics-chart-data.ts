@@ -3,7 +3,9 @@ import type {
   LineSeriesOption,
   ZRColor,
 } from "echarts/types/dist/shared";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../common/color/colors";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -15,7 +17,7 @@ import {
   isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantFormatters } from "../../types";
 import { fillDataGapsAndRoundCaps } from "./round-caps";
 import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 
@@ -28,7 +30,9 @@ export interface StatisticsChartLegendItem {
 }
 
 export interface StatisticsChartDataParams {
-  hass: HomeAssistant;
+  states: HassEntities;
+  formatEntityName: HomeAssistantFormatters["formatEntityName"];
+  localize: LocalizeFunc;
   statisticsData: Statistics;
   statisticsMetaData: Record<string, StatisticsMetaData>;
   names?: Record<string, string>;
@@ -53,15 +57,59 @@ export interface StatisticsChartData {
   yAxisFractionDigits: number;
 }
 
+// ECharts stacks a time axis by data index. Merge the sorted point lists so
+// every stacked line has the same x at every index, padding with null.
+function alignStackedLines(datasets: LineSeriesOption[]) {
+  const sources = datasets.map((d) => d.data as [number, number | null][]);
+  const cursors = sources.map(() => 0);
+  const counts = sources.map(() => 0);
+  const aligned = sources.map((): [number, number | null][] => []);
+  while (cursors.some((cursor, i) => cursor < sources[i].length)) {
+    let x = Infinity;
+    for (let i = 0; i < sources.length; i++) {
+      const point = sources[i][cursors[i]];
+      if (point && point[0] < x) x = point[0];
+    }
+    let slots = 1;
+    for (let i = 0; i < sources.length; i++) {
+      let count = 0;
+      while (sources[i][cursors[i] + count]?.[0] === x) count++;
+      counts[i] = count;
+      if (count > slots) slots = count;
+    }
+    for (let i = 0; i < sources.length; i++) {
+      const count = counts[i];
+      for (let slot = 0; slot < slots; slot++) {
+        aligned[i].push(
+          count ? sources[i][cursors[i] + Math.min(slot, count - 1)] : [x, null]
+        );
+      }
+      cursors[i] += count;
+    }
+  }
+  datasets.forEach((d, i) => {
+    d.data = aligned[i];
+  });
+}
+
 /**
  * Transforms raw statistics into ECharts series for `statistics-chart`.
  * Pure data processing: all environment inputs (current time, theme style,
- * hass) are injected so the transform is deterministic and benchmarkable.
+ * entity states, names and localize) are injected so the transform is
+ * deterministic and benchmarkable.
  */
 export function generateStatisticsChartData(
   params: StatisticsChartDataParams
 ): StatisticsChartData | undefined {
-  const { hass, statisticsMetaData, computedStyle, now, hiddenStats } = params;
+  const {
+    states,
+    formatEntityName,
+    localize,
+    statisticsMetaData,
+    computedStyle,
+    now,
+    hiddenStats,
+  } = params;
 
   let colorIndex = 0;
   const chartType = params.chartType.startsWith("line") ? "line" : "bar";
@@ -112,7 +160,7 @@ export function generateStatisticsChartData(
     let inferredUnit: string | undefined | null;
     statisticsData.forEach(([statistic_id, _stats]) => {
       const meta = statisticsMetaData?.[statistic_id];
-      const statisticUnit = getDisplayUnit(hass, statistic_id, meta);
+      const statisticUnit = getDisplayUnit(states, statistic_id, meta);
       if (inferredUnit === undefined) {
         inferredUnit = statisticUnit;
       } else if (inferredUnit !== null && inferredUnit !== statisticUnit) {
@@ -131,7 +179,7 @@ export function generateStatisticsChartData(
     const meta = statisticsMetaData?.[statistic_id];
     let name = names[statistic_id];
     if (name === undefined) {
-      name = getStatisticLabel(hass, statistic_id, meta);
+      name = getStatisticLabel(states, formatEntityName, statistic_id, meta);
     }
 
     // array containing [value1, value2, etc]
@@ -255,16 +303,18 @@ export function generateStatisticsChartData(
           cursor: "default",
           data: [],
           name: name
-            ? `${name} (${hass.localize(
+            ? `${name} (${localize(
                 `ui.components.statistics_charts.statistic_types.${type}`
               )})`
-            : hass.localize(
+            : localize(
                 `ui.components.statistics_charts.statistic_types.${type}`
               ),
           symbol: "none",
           // minmax sampling operates independently per series, breaking stacking alignment
+          // echarts stacks before it samples, so its lttb keeps stacks aligned
           // https://github.com/apache/echarts/issues/11879
-          sampling: band && drawBands ? "lttb" : "minmax",
+          sampling:
+            band || (chartStacked && chartType === "line") ? "lttb" : "minmax",
           animationDurationUpdate: 0,
           lineStyle: {
             width: 1.5,
@@ -395,7 +445,7 @@ export function generateStatisticsChartData(
     }
 
     // Show current state if required, and units match (or are unknown)
-    const statisticUnit = getDisplayUnit(hass, statistic_id, meta);
+    const statisticUnit = getDisplayUnit(states, statistic_id, meta);
     if (
       displayCurrentState &&
       !chartStacked &&
@@ -403,7 +453,7 @@ export function generateStatisticsChartData(
     ) {
       // Skip external statistics
       if (!isExternalStatistic(statistic_id)) {
-        const stateObj = hass.states[statistic_id];
+        const stateObj = states[statistic_id];
         if (stateObj) {
           const currentValue = parseFloat(stateObj.state);
           if (isFinite(currentValue) && !hiddenStats.has(statistic_id)) {
@@ -438,6 +488,15 @@ export function generateStatisticsChartData(
     Array.prototype.push.apply(totalDataSets, statDataSets);
     Array.prototype.push.apply(legendData, statLegendData);
   });
+
+  if (chartType === "line" && chartStacked) {
+    const stacked = (totalDataSets as LineSeriesOption[]).filter(
+      (d) => d.data?.length
+    );
+    if (stacked.length > 1) {
+      alignStackedLines(stacked);
+    }
+  }
 
   if (chartType === "bar") {
     fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[], chartStacked);

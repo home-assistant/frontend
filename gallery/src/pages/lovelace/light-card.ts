@@ -21,7 +21,8 @@ const ENTITIES = [
     state: "on",
     attributes: {
       friendly_name: "Dining Room",
-      supported_features: 1,
+      supported_color_modes: ["brightness"],
+      color_mode: "brightness",
       brightness: 100,
     },
   },
@@ -30,7 +31,7 @@ const ENTITIES = [
     state: "off",
     attributes: {
       friendly_name: "Dining Room",
-      supported_features: 1,
+      supported_color_modes: ["brightness"],
     },
   },
   {
@@ -38,7 +39,7 @@ const ENTITIES = [
     state: "unavailable",
     attributes: {
       friendly_name: "Lost Light",
-      supported_features: 1,
+      supported_color_modes: ["brightness"],
     },
   },
 ];

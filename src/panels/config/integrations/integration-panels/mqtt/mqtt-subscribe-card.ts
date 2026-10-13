@@ -17,7 +17,6 @@ import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 
 import { storage } from "../../../../../common/decorators/storage";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 
 const qosLevel = ["0", "1", "2"];
@@ -78,16 +77,13 @@ class MqttSubscribeCard extends LitElement {
         <div class="card-content">
           <form>
             <p>
-              <ha-formfield
-                label=${this.hass!.localize(
+              <ha-switch
+                @change=${this._handleJSONFormat}
+                .checked=${this._json_format}
+                >${this.hass!.localize(
                   "ui.panel.config.mqtt.json_formatting"
-                )}
+                )}</ha-switch
               >
-                <ha-switch
-                  @change=${this._handleJSONFormat}
-                  .checked=${this._json_format}
-                ></ha-switch>
-              </ha-formfield>
             </p>
             <div class="panel-dev-mqtt-subscribe-fields">
               <ha-input
@@ -256,10 +252,14 @@ class MqttSubscribeCard extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
+      gap: var(--ha-space-2);
+    }
+    ha-button {
+      align-self: flex-start;
+      margin-top: var(--ha-space-3);
     }
     ha-select {
       width: 96px;
-      margin: 0 8px;
     }
     ha-input {
       flex: 1;
@@ -281,10 +281,6 @@ class MqttSubscribeCard extends LitElement {
     @media screen and (max-width: 600px) {
       ha-select {
         display: block;
-        margin-left: 0px;
-        margin-top: 8px;
-        margin-inline-start: 0px;
-        margin-inline-end: initial;
       }
       ha-input {
         flex: auto;

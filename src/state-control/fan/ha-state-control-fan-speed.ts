@@ -1,12 +1,14 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
+import { formatNumber } from "../../common/number/format_number";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
@@ -20,12 +22,11 @@ import { UNAVAILABLE } from "../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
-  computeFanSpeedCount,
   computeFanSpeedIcon,
-  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
-  FAN_SPEEDS,
+  computeFanSpeeds,
   fanPercentageToSpeed,
   fanSpeedToPercentage,
+  isNumberedFanSpeed,
 } from "../../data/fan";
 
 @customElement("ha-state-control-fan-speed")
@@ -91,22 +92,35 @@ export class HaStateControlFanSpeed extends LitElement {
     if (speed === "on" || speed === "off") {
       return this._formatters.formatEntityState(this.stateObj, speed);
     }
+    if (isNumberedFanSpeed(speed)) {
+      return this._i18n.localize("ui.card.fan.speed.numbered", {
+        speed: formatNumber(speed, this._i18n.locale),
+      });
+    }
     return this._i18n.localize(`ui.card.fan.speed.${speed}`) || speed;
   }
 
   protected render() {
     const color = stateColorCss(this.stateObj);
 
-    const speedCount = computeFanSpeedCount(this.stateObj);
+    const speeds = computeFanSpeeds(this.stateObj);
 
-    if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
-      const options = FAN_SPEEDS[speedCount]!.map<ControlSelectOption>(
-        (speed) => ({
-          value: speed,
-          label: this._localizeSpeed(speed),
-          path: computeFanSpeedIcon(this.stateObj, speed),
-        })
-      ).reverse();
+    if (speeds) {
+      const options = speeds
+        .map<ControlSelectOption>((speed) =>
+          isNumberedFanSpeed(speed)
+            ? {
+                value: speed,
+                label: formatNumber(speed, this._i18n.locale),
+                ariaLabel: this._localizeSpeed(speed),
+              }
+            : {
+                value: speed,
+                label: this._localizeSpeed(speed),
+                path: computeFanSpeedIcon(this.stateObj, speed),
+              }
+        )
+        .reverse();
 
       return html`
         <ha-control-select

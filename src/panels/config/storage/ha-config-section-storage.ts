@@ -40,12 +40,13 @@ import {
   SupervisorMountUsage,
   fetchSupervisorMounts,
   reloadSupervisorMount,
+  supervisorMountDescription,
 } from "../../../data/supervisor/mounts";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { panelIsReady } from "../../../layouts/panel-ready";
 import type { HomeAssistant, Route } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
-import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
 import "./storage-breakdown-chart";
@@ -73,11 +74,16 @@ class HaConfigSectionStorage extends LitElement {
   // Guards against a slow response from a previous reload landing in a newer one.
   private _mountUsageGeneration = 0;
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
+  protected async firstUpdated(
+    changedProps: PropertyValues<this>
+  ): Promise<void> {
     super.firstUpdated(changedProps);
     if (isComponentLoaded(this.hass.config, "hassio")) {
-      this._load();
+      await this._load();
+    } else {
+      this._mountsInfo = null;
     }
+    await panelIsReady(this);
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -85,7 +91,11 @@ class HaConfigSectionStorage extends LitElement {
       return nothing;
     }
     const validMounts = this._mountsInfo?.mounts.filter((mount) =>
-      [SupervisorMountType.CIFS, SupervisorMountType.NFS].includes(mount.type)
+      [
+        SupervisorMountType.CIFS,
+        SupervisorMountType.DISK,
+        SupervisorMountType.NFS,
+      ].includes(mount.type)
     );
     const isHAOS = this._hostInfo?.features.includes("haos");
     return html`
@@ -206,13 +216,7 @@ class HaConfigSectionStorage extends LitElement {
                             </span>
                             <span slot="secondary">
                               <span class="mount-address">
-                                ${mount.server}${
-                                  mount.port ? `:${mount.port}` : ""
-                                }${
-                                  mount.type === SupervisorMountType.NFS
-                                    ? mount.path
-                                    : `:${mount.share}`
-                                }
+                                ${supervisorMountDescription(mount)}
                               </span>
                               ${this._renderMountUsage(mount)}
                             </span>
@@ -481,6 +485,7 @@ class HaConfigSectionStorage extends LitElement {
     .mount-state-failed {
       color: var(--error-color);
     }
+    .mount-state-inactive,
     .mount-state-unknown {
       color: var(--warning-color);
     }

@@ -13,6 +13,8 @@ import "./ha-dialog-footer";
 import "./ha-filter-pane-chip";
 import "./ha-icon-button";
 
+const HIGHLIGHT_DURATION = 1500;
+
 /**
  * Filter pane for a filtered page: a column next to the content on wide
  * screens, a bottom sheet on narrow ones. Mirrors the filter pane of
@@ -113,6 +115,15 @@ export class HaFilterPane extends LitElement {
     `;
   }
 
+  public highlight() {
+    const color = getComputedStyle(this).getPropertyValue("--primary-color");
+    this.getAnimations().forEach((animation) => animation.cancel());
+    this.animate([{ outlineColor: color }, { outlineColor: "transparent" }], {
+      duration: HIGHLIGHT_DURATION,
+      easing: "ease-out",
+    });
+  }
+
   private _close() {
     fireEvent(this, "close-filter-pane");
   }
@@ -133,6 +144,8 @@ export class HaFilterPane extends LitElement {
           box-sizing: border-box;
           overflow: hidden;
           border-inline-end: 1px solid var(--divider-color);
+          outline: var(--ha-border-width-md) solid transparent;
+          outline-offset: calc(-1 * var(--ha-border-width-md));
         }
 
         /* The bottom sheet positions itself, so the pane takes no space. */

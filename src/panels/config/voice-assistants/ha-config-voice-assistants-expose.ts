@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiCloseBoxMultiple,
   mdiCloseCircleOutline,
@@ -10,11 +9,11 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { EntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import {
   generateEntityDomainFilter,
@@ -58,7 +57,6 @@ import {
   getAssistantsTableColumn,
 } from "./expose/assistants-table-column";
 import { getAvailableAssistants } from "./expose/available-assistants";
-import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
@@ -248,6 +246,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _filteredEntities = memoize(
     (
       localize: LocalizeFunc,
+      formatEntityName: HomeAssistant["formatEntityName"],
       entities: Record<string, ExtEntityRegistryEntry>,
       exposedEntities: Record<string, ExposeEntitySettings>,
       devices: HomeAssistant["devices"],
@@ -330,7 +329,7 @@ export class VoiceAssistantsExpose extends LitElement {
           entity_id: entityState.entity_id,
           entity: entityState,
           name:
-            computeStateName(entityState) ||
+            formatEntityName(entityState) ||
             this.hass.localize(
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
@@ -377,7 +376,7 @@ export class VoiceAssistantsExpose extends LitElement {
             result[entityId] = {
               entity_id: entityState.entity_id,
               entity: entityState,
-              name: computeStateName(entityState),
+              name: formatEntityName(entityState),
               area: area ? area.name : undefined,
               assistants: [
                 ...(exposedEntities
@@ -395,9 +394,11 @@ export class VoiceAssistantsExpose extends LitElement {
               aliases: entry?.aliases || [],
             };
           }
-          result[entityId].assistants_sortable_key = getAssistantsSortableKey(
-            result[entityId].assistants
-          );
+          if (result[entityId]) {
+            result[entityId].assistants_sortable_key = getAssistantsSortableKey(
+              result[entityId].assistants
+            );
+          }
         });
       }
       return Object.values(result);
@@ -429,9 +430,14 @@ export class VoiceAssistantsExpose extends LitElement {
   };
 
   private async _fetchEntities() {
-    this._extEntities = await getExtendedEntityRegistryEntries(
+    const entries = await getExtendedEntityRegistryEntries(
       this.hass,
       Object.keys(this._entities)
+    );
+    this._extEntities = Object.fromEntries(
+      Object.entries(entries).filter(
+        (entry): entry is [string, ExtEntityRegistryEntry] => entry[1] !== null
+      )
     );
     this._fetchSupportedEntities();
   }
@@ -480,6 +486,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
     const filteredEntities = this._filteredEntities(
       this.hass.localize,
+      this.hass.formatEntityName,
       this._extEntities,
       this.exposedEntities,
       this.hass.devices,
@@ -709,6 +716,9 @@ export class VoiceAssistantsExpose extends LitElement {
       extEntityReg: this._extEntities?.[entityId],
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");
+      },
+      entityEntryUpdated: (entry) => {
+        this._extEntities = { ...this._extEntities, [entityId]: entry };
       },
     });
   }

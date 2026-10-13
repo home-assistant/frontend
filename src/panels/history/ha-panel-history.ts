@@ -20,7 +20,6 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
-import { shallowEqual } from "../../common/util/shallow-equal";
 import {
   createHistoryLogbookUrl,
   decodeHistoryLogbookQueryParams,
@@ -31,7 +30,11 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
+import { shallowEqual } from "../../common/util/shallow-equal";
+import {
+  DEFAULT_CHART_WIDTH,
+  MIN_TIME_BETWEEN_UPDATES,
+} from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/date-picker/ha-date-range-nav";
@@ -40,23 +43,27 @@ import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
-import "../../components/ha-filter-pane-chip";
 import "../../components/ha-filter-pane";
+import type { HaFilterPane } from "../../components/ha-filter-pane";
+import "../../components/ha-filter-pane-chip";
 import "../../components/ha-icon-button";
+import type { SourceFilters } from "../../components/ha-sources-picker";
 import {
   applySourceFilters,
   countSourceFilters,
   countTargets,
 } from "../../components/ha-sources-picker";
-import type { SourceFilters } from "../../components/ha-sources-picker";
 import "../../components/ha-spinner";
 import "../../components/ha-top-app-bar-fixed";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
-import type { HistoryResult } from "../../data/history";
+import { entityTypesNeedStates } from "../../data/entity/entity_type";
+import type { HistoryResult, HistoryStates } from "../../data/history";
 import {
   computeHistory,
+  computeHistoryUpdateDelay,
   convertStatisticsToHistory,
+  countHistoryStates,
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
@@ -65,8 +72,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { csvDownload, csvSafeString } from "../../util/csv";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
-import { csvSafeString, csvDownload } from "../../util/csv";
 
 const EMPTY_STATES: HomeAssistant["states"] = {};
 
@@ -107,6 +114,8 @@ class HaPanelHistory extends LitElement {
 
   @state() private _showSources?: boolean;
 
+  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
+
   @state() private _entitySources?: EntitySources;
 
   @state() private _stateHistory?: HistoryResult;
@@ -128,6 +137,10 @@ class HaPanelHistory extends LitElement {
   private _statsFetchId = 0;
 
   private _interval?: number;
+
+  private _historyUpdateTimer?: number;
+
+  private _historyGeneration = 0;
 
   public constructor() {
     super();
@@ -216,6 +229,7 @@ class HaPanelHistory extends LitElement {
                       .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
+                      .entitySources=${this._entitySources}
                       .disabled=${this._isLoading}
                       .description=${this.hass.localize(
                         "ui.panel.history.no_targets"
@@ -264,8 +278,8 @@ class HaPanelHistory extends LitElement {
                             .startTime=${this._startDate}
                             .endTime=${this._endDate}
                             .narrow=${this.narrow}
-                            inside-labels
                             sync-charts
+                            inside-labels
                           >
                           </state-history-charts>
                         `
@@ -294,11 +308,7 @@ class HaPanelHistory extends LitElement {
         )}
       >
         <ha-button appearance="plain" @click=${this._openSources}>
-          ${this.hass.localize(
-            hasTargets
-              ? "ui.panel.history.change_sources"
-              : "ui.panel.history.add_targets"
-          )}
+          ${this.hass.localize("ui.panel.history.change_sources")}
         </ha-button>
       </ha-empty-state>
     `;
@@ -371,6 +381,11 @@ class HaPanelHistory extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
+    // On narrow screens, the sources sheet covers the results, so only fetch
+    // once it is closed instead of on every source change.
+    if (this.narrow && this._sourcesShown()) {
+      return;
+    }
     if (
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
@@ -390,6 +405,10 @@ class HaPanelHistory extends LitElement {
   }
 
   private _openSources() {
+    if (this._sourcesShown()) {
+      this._filterPane?.highlight();
+      return;
+    }
     this._showSources = true;
   }
 
@@ -430,7 +449,7 @@ class HaPanelHistory extends LitElement {
     let statistics;
     try {
       statistics = await fetchStatistics(
-        this.hass!,
+        this.hass!.callWS,
         statsStartDate,
         this._endDate,
         statisticIds,
@@ -474,17 +493,60 @@ class HaPanelHistory extends LitElement {
 
     const now = new Date();
 
+    // The first message is applied right away, live updates to a large history are coalesced
+    const generation = this._historyGeneration;
+    let lastApplied = 0;
+    let pending: HistoryStates | undefined;
+    const applyHistory = (history: HistoryStates) => {
+      lastApplied = Date.now();
+      this._isLoading = false;
+      this._stateHistory = computeHistory(
+        this.hass,
+        history,
+        entityIds,
+        this.hass.localize,
+        true
+      );
+    };
+
     this._subscribed = subscribeHistory(
       this.hass,
       (history) => {
-        this._isLoading = false;
-        this._stateHistory = computeHistory(
-          this.hass,
-          history,
-          entityIds,
-          this.hass.localize,
-          true
-        );
+        // A replaced subscription can still deliver until its unsubscribe is acknowledged
+        if (generation !== this._historyGeneration) {
+          return;
+        }
+        const delay = lastApplied
+          ? computeHistoryUpdateDelay(
+              countHistoryStates(history),
+              Math.min(this._endDate.getTime(), Date.now()) -
+                this._startDate.getTime(),
+              (this._stateHistoryCharts?.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
+              MIN_TIME_BETWEEN_UPDATES
+            )
+          : 0;
+        const wait = lastApplied + delay - Date.now();
+        if (wait <= 0) {
+          window.clearTimeout(this._historyUpdateTimer);
+          this._historyUpdateTimer = undefined;
+          pending = undefined;
+          applyHistory(history);
+          return;
+        }
+        // Every message carries the complete history, so the latest one wins.
+        pending = history;
+        this._stateHistoryCharts?.requestUpdate();
+        if (this._historyUpdateTimer === undefined) {
+          this._historyUpdateTimer = window.setTimeout(() => {
+            this._historyUpdateTimer = undefined;
+            if (pending) {
+              const latest = pending;
+              pending = undefined;
+              applyHistory(latest);
+            }
+          }, wait);
+        }
       },
       this._startDate,
       this._endDate,
@@ -521,6 +583,9 @@ class HaPanelHistory extends LitElement {
       clearInterval(this._interval);
       this._interval = undefined;
     }
+    window.clearTimeout(this._historyUpdateTimer);
+    this._historyUpdateTimer = undefined;
+    this._historyGeneration++;
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
@@ -536,8 +601,10 @@ class HaPanelHistory extends LitElement {
         this.hass.areas
       ),
       this._filters,
-      // Only the device class filter reads the states.
-      this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      // Only a device class narrows down using the states.
+      entityTypesNeedStates(this._filters.types)
+        ? this.hass.states
+        : EMPTY_STATES,
       this.hass.entities,
       this._entitySources
     );
@@ -732,6 +799,10 @@ class HaPanelHistory extends LitElement {
       haStyle,
       haStyleScrollbar,
       css`
+        :host {
+          /* The target picker chips need more room than a plain filter list. */
+          --ha-filter-pane-width: 340px;
+        }
         ha-top-app-bar-fixed {
           height: 100vh;
           overflow-x: hidden;
@@ -802,12 +873,13 @@ class HaPanelHistory extends LitElement {
           flex: 1;
           min-width: 0;
           overflow: hidden auto;
-          padding: 16px 8px;
+          padding: var(--ha-space-4);
         }
 
-        /* Line the charts up with the toolbar when there are no axis labels. */
+        /* Narrow screens: keep the vertical rhythm but give the charts the
+           horizontal space back. */
         :host([narrow]) .results {
-          padding-inline: 16px;
+          padding-inline: var(--ha-space-2);
         }
 
         .progress-wrapper {

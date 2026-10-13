@@ -1,0 +1,1224 @@
+import { mdiCogOutline, mdiHistory } from "@mdi/js";
+import type {
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+import { formatTime } from "../../../../common/datetime/format_time";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { getEntityLocation } from "../../../../common/entity/get_entity_location";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../../common/map/entity-map-colors";
+import { contrastingZoneContent } from "../../../../common/map/zone-marker";
+import "../../../../components/ha-button";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-relative-time";
+import "../../../../components/ha-snap-bottom-sheet";
+import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
+import "../../../../components/ha-spinner";
+import "../../../../components/ha-state-icon";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
+import type { HaMapEntity } from "../../../../components/map/ha-map";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  formattersContext,
+  fullEntitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { HistoryStates } from "../../../../data/history";
+import { fetchDateWS } from "../../../../data/history";
+import { computeUserInitials } from "../../../../data/user";
+import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
+import type {
+  CurrentUser,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../../types";
+import type { ActivityEntry } from "./map-activity";
+import { personActivity, zoneActivity } from "./map-activity";
+
+export type OverviewTab = "people" | "devices" | "zones";
+
+const ACTIVITY_HOURS = 24;
+const ACTIVITY_INITIAL_ENTRIES = 5;
+
+declare global {
+  interface HASSDomEvents {
+    "map-overview-select": { entityId?: string };
+    "map-overview-tab": { tab: OverviewTab };
+    /**
+     * Rendered size, so the host keeps controls and focused markers clear of
+     * it. The phone sheet also sends the height markers are framed for, the
+     * same at every position so moving the sheet never moves the map.
+     */
+    "map-overview-resize": {
+      width: number;
+      height: number;
+      fitHeight?: number;
+    };
+  }
+}
+
+@customElement("hui-map-overview")
+export class HuiMapOverview extends LitElement {
+  @property({ attribute: false }) public entities: HaMapEntity[] = [];
+
+  @property({ attribute: false }) public selected?: string;
+
+  @property({ attribute: false }) public tab: OverviewTab = "people";
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
+
+  // Registry creation order decides the zone colors
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
+
+  @queryAll(".tablist button")
+  private _tabButtons!: NodeListOf<HTMLButtonElement>;
+
+  // On phones the overview is a bottom sheet; elsewhere a floating panel
+  @state() private _phone = false;
+
+  private _phoneQuery = window.matchMedia("(max-width: 600px)");
+
+  // The sheet never shrinks below the strip that stays useful when collapsed
+  @state() private _sheetMinHeight?: number;
+
+  @query(".panel.sheet") private _sheetPanel?: HTMLElement;
+
+  @query("ha-snap-bottom-sheet") private _sheet?: HaSnapBottomSheet;
+
+  @query(".peek") private _peek?: HTMLElement;
+
+  @query(".detail-name") private _detailName?: HTMLElement;
+
+  @queryAll("ha-list-item-button")
+  private _listItems!: NodeListOf<HTMLElement>;
+
+  private _peekObserver?: ResizeObserver;
+
+  private _observedPeek?: HTMLElement;
+
+  @state() private _activity?: ActivityEntry[];
+
+  @state() private _activityFailed = false;
+
+  @state() private _activityExpanded = false;
+
+  // Counts activity loads so only the newest one may show its result, even
+  // when the same entity is selected again while an older load is pending
+  private _activityRequest = 0;
+
+  private _resizeObserver?: ResizeObserver;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._phone = this._phoneQuery.matches;
+    this._phoneQuery.addEventListener("change", this._handlePhoneChange);
+    this._resizeObserver ??= new ResizeObserver(() => {
+      // The sheet reports its own size
+      if (this._phone) {
+        return;
+      }
+      const { width, height } = this.getBoundingClientRect();
+      fireEvent(this, "map-overview-resize", { width, height });
+    });
+    this._resizeObserver.observe(this);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._phoneQuery.removeEventListener("change", this._handlePhoneChange);
+    this._resizeObserver?.disconnect();
+    this._peekObserver?.disconnect();
+    this._observedPeek = undefined;
+    fireEvent(this, "map-overview-resize", { width: 0, height: 0 });
+  }
+
+  private _handlePhoneChange = () => {
+    this._phone = this._phoneQuery.matches;
+  };
+
+  protected updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    this._watchPeek();
+    // The host filters the map by the tab it set; tell it when that one is gone
+    const tabs = Object.keys(
+      this._itemsPerTab(this._getPeople(), this._getDevices(), this._getZones())
+    ) as OverviewTab[];
+    if (tabs.length && !tabs.includes(this.tab)) {
+      fireEvent(this, "map-overview-tab", { tab: tabs[0] });
+    }
+    this.toggleAttribute("single-tab", tabs.length === 1);
+    if (changedProps.has("selected")) {
+      this._moveFocus(changedProps.get("selected"));
+      if (this.selected) {
+        this._sheet?.snapTo("half");
+      }
+    }
+  }
+
+  // Selecting an item replaces the list with the detail view and going back
+  // replaces it again; move focus with the content so keyboard and screen
+  // reader users keep their place instead of losing it on the removed element.
+  private _moveFocus(previous: string | undefined): void {
+    if (this.selected) {
+      this._detailName?.focus();
+    } else if (previous) {
+      const item = [...this._listItems].find(
+        (listItem) => listItem.dataset.entityId === previous
+      );
+      // The row may be on another tab; fall back to the selected tab button.
+      (
+        item ??
+        [...this._tabButtons].find(
+          (button) => button.getAttribute("aria-selected") === "true"
+        )
+      )?.focus();
+    }
+  }
+
+  // Measures the tabs or the detail header, whichever the sheet shows, plus
+  // the panel's padding around it
+  private _watchPeek(): void {
+    const peek = this._phone ? this._peek : undefined;
+    if (peek === this._observedPeek) {
+      return;
+    }
+    this._peekObserver?.disconnect();
+    this._observedPeek = peek;
+    if (!peek) {
+      this._sheetMinHeight = undefined;
+      // The phone sheet is gone; clear the size so the host drops its inset.
+      fireEvent(this, "map-overview-resize", { width: 0, height: 0 });
+      return;
+    }
+    this._peekObserver = new ResizeObserver(() => {
+      const panel = this._sheetPanel;
+      if (!panel) {
+        return;
+      }
+      const style = getComputedStyle(panel);
+      // The sheet adds the bottom safe area below this strip
+      this._sheetMinHeight =
+        parseFloat(style.paddingTop) +
+        peek.offsetHeight +
+        parseFloat(style.getPropertyValue("--ha-space-3"));
+    });
+    this._peekObserver.observe(peek);
+  }
+
+  private _handleSheetResized(
+    ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]> &
+      HASSDomCurrentTargetEvent<HaSnapBottomSheet>
+  ) {
+    fireEvent(this, "map-overview-resize", {
+      width: window.innerWidth,
+      height: ev.detail.height,
+      fitHeight: ev.currentTarget.halfHeight,
+    });
+  }
+
+  private _getPeople(): HassEntity[] {
+    return this.entities
+      .map((entity) => this._states[entity.entity_id])
+      .filter(
+        (stateObj): stateObj is HassEntity =>
+          !!stateObj && computeStateDomain(stateObj) === "person"
+      )
+      .sort((a, b) => {
+        const aMe = this._isMe(a);
+        if (aMe !== this._isMe(b)) {
+          return aMe ? -1 : 1;
+        }
+        const aLocated = !!getEntityLocation(a, this._states);
+        const bLocated = !!getEntityLocation(b, this._states);
+        if (aLocated !== bLocated) {
+          return aLocated ? -1 : 1;
+        }
+        return this._entityName(a).localeCompare(
+          this._entityName(b),
+          this._i18n.locale.language
+        );
+      });
+  }
+
+  private _isMe(stateObj: HassEntity): boolean {
+    return (
+      !!this._user &&
+      computeStateDomain(stateObj) === "person" &&
+      stateObj.attributes.user_id === this._user.id
+    );
+  }
+
+  private _personName(stateObj: HassEntity): string {
+    return this._isMe(stateObj)
+      ? this._i18n.localize("ui.panel.lovelace.cards.map.overview.me")
+      : this._entityName(stateObj);
+  }
+
+  private _entityName(stateObj: HassEntity): string {
+    return (
+      this._configuredNames(this.entities).get(stateObj.entity_id) ??
+      this._formatters.formatEntityName(stateObj)
+    );
+  }
+
+  private _configuredNames = memoizeOne(
+    (entities: HaMapEntity[]) =>
+      new Map(
+        entities
+          .filter((entity) => entity.name)
+          .map((entity) => [entity.entity_id, entity.name!] as const)
+      )
+  );
+
+  private _getDevices(): HassEntity[] {
+    return this.entities
+      .map((entity) => this._states[entity.entity_id])
+      .filter(
+        (stateObj): stateObj is HassEntity =>
+          !!stateObj &&
+          computeStateDomain(stateObj) === "device_tracker" &&
+          !!getEntityLocation(stateObj, this._states)
+      )
+      .sort((a, b) =>
+        this._entityName(a).localeCompare(
+          this._entityName(b),
+          this._i18n.locale.language
+        )
+      );
+  }
+
+  private _getZones(): HassEntity[] {
+    return this.entities
+      .map((entity) => this._states[entity.entity_id])
+      .filter(
+        (stateObj): stateObj is HassEntity =>
+          !!stateObj &&
+          computeStateDomain(stateObj) === "zone" &&
+          !stateObj.attributes.passive &&
+          stateObj.attributes.latitude !== undefined &&
+          stateObj.attributes.longitude !== undefined
+      )
+      .sort((a, b) => {
+        // Home first
+        if (
+          (a.entity_id === HOME_ZONE_ENTITY_ID) !==
+          (b.entity_id === HOME_ZONE_ENTITY_ID)
+        ) {
+          return a.entity_id === HOME_ZONE_ENTITY_ID ? -1 : 1;
+        }
+        return this._entityName(a).localeCompare(
+          this._entityName(b),
+          this._i18n.locale.language
+        );
+      });
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size > 1 || !changedProps.has("_states")) {
+      return true;
+    }
+    // Only the map's entities matter; ignore other state churn
+    const oldStates = changedProps.get("_states") as HassEntities | undefined;
+    return (
+      !oldStates ||
+      this.entities.some(
+        (entity) =>
+          oldStates[entity.entity_id] !== this._states[entity.entity_id]
+      )
+    );
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("selected")) {
+      this._activity = undefined;
+      this._activityFailed = false;
+      this._activityExpanded = false;
+      const request = ++this._activityRequest;
+      if (this.selected) {
+        this._loadActivity(this.selected, request);
+      }
+    }
+  }
+
+  // The window's start; history before it only seeds the previous state
+  private _activitySince(): number {
+    return Date.now() - ACTIVITY_HOURS * 3600 * 1000;
+  }
+
+  /** Resolves to null when history could not be loaded */
+  private async _fetchHistory(
+    entityIds: string[],
+    since: number
+  ): Promise<HistoryStates | undefined | null> {
+    try {
+      return await fetchDateWS(
+        { states: this._states, callWS: this._api.callWS },
+        new Date(since),
+        new Date(),
+        entityIds
+      );
+    } catch (_err) {
+      return null;
+    }
+  }
+
+  private async _loadActivity(
+    entityId: string,
+    request: number
+  ): Promise<void> {
+    if (computeDomain(entityId) === "zone") {
+      await this._loadZoneActivity(entityId, request);
+    } else {
+      await this._loadPersonActivity(entityId, request);
+    }
+  }
+
+  private async _loadPersonActivity(
+    entityId: string,
+    request: number
+  ): Promise<void> {
+    const since = this._activitySince();
+    const history = await this._fetchHistory([entityId], since);
+    if (request !== this._activityRequest) {
+      // A newer selection took over while loading
+      return;
+    }
+    if (history === null) {
+      this._activityFailed = true;
+      this._activity = [];
+      return;
+    }
+    this._activity = personActivity(history?.[entityId], since);
+  }
+
+  private async _loadZoneActivity(
+    entityId: string,
+    request: number
+  ): Promise<void> {
+    const zone = this._states[entityId];
+    if (!zone) {
+      this._activity = [];
+      return;
+    }
+    const personIds = this._getPeople().map((person) => person.entity_id);
+    const since = this._activitySince();
+    const history = personIds.length
+      ? await this._fetchHistory(personIds, since)
+      : {};
+    if (request !== this._activityRequest) {
+      // A newer selection took over while loading
+      return;
+    }
+    if (history === null) {
+      this._activityFailed = true;
+      this._activity = [];
+      return;
+    }
+    // A person's state is "home" for the home zone, the zone name otherwise
+    const zoneState =
+      entityId === "zone.home" ? "home" : computeStateName(zone);
+    this._activity = zoneActivity(history, personIds, zoneState, since);
+  }
+
+  protected render() {
+    const people = this._getPeople();
+    const devices = this._getDevices();
+    const zones = this._getZones();
+
+    if (!people.length && !devices.length && !zones.length) {
+      return nothing;
+    }
+
+    const selectedStateObj = this.selected
+      ? this._states[this.selected]
+      : undefined;
+    const content = selectedStateObj
+      ? this._renderDetail(selectedStateObj)
+      : this._renderList(people, devices, zones);
+
+    return html`
+      ${
+        this._phone
+          ? html`<ha-snap-bottom-sheet
+              .minHeight=${this._sheetMinHeight}
+              .label=${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.label"
+              )}
+              @bottom-sheet-resized=${this._handleSheetResized}
+            >
+              <div class="panel sheet">${content}</div>
+            </ha-snap-bottom-sheet>`
+          : html`<div class="panel">${content}</div>`
+      }
+    `;
+  }
+
+  private _renderDetail(stateObj: HassEntity) {
+    const isZone = computeStateDomain(stateObj) === "zone";
+    const zoneCount = isZone ? Number(stateObj.state) : undefined;
+
+    return html`
+      <div class="detail-header peek">
+        <ha-icon-button-prev
+          .label=${this._i18n.localize("ui.common.back")}
+          @click=${this._handleBack}
+        ></ha-icon-button-prev>
+        <div class="detail-title">
+          <span class="detail-name" tabindex="-1">
+            ${this._personName(stateObj)}
+          </span>
+          <span class="detail-state">
+            ${
+              isZone
+                ? zoneCount === undefined || Number.isNaN(zoneCount)
+                  ? nothing
+                  : this._i18n.localize(
+                      "ui.panel.lovelace.cards.map.overview.people_in_zone",
+                      { count: zoneCount }
+                    )
+                : html`${this._formatters.formatEntityState(stateObj)} ·
+                    <ha-relative-time
+                      .datetime=${stateObj.last_updated}
+                      format="short"
+                    ></ha-relative-time>`
+            }
+          </span>
+        </div>
+        ${
+          !__DEMO__ && this._user?.is_admin
+            ? html`<ha-icon-button
+                .label=${this._i18n.localize(
+                  "ui.dialogs.more_info_control.settings"
+                )}
+                .path=${mdiCogOutline}
+                @click=${this._handleSettings}
+              ></ha-icon-button>`
+            : nothing
+        }
+      </div>
+      <div class="list">
+        <div class="activity">
+          <div class="activity-header">
+            <span class="activity-icon">
+              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+            </span>
+            <span class="activity-title">
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.activity"
+              )}
+            </span>
+          </div>
+          ${
+            !this._activity
+              ? html`<div class="activity-loading">
+                  <ha-spinner size="small"></ha-spinner>
+                </div>`
+              : !this._activity.length
+                ? html`<span class="activity-empty">
+                    ${this._i18n.localize(
+                      this._activityFailed
+                        ? "ui.panel.lovelace.cards.map.overview.activity_unavailable"
+                        : "ui.panel.lovelace.cards.map.overview.no_activity"
+                    )}
+                  </span>`
+                : this._renderTimeline(stateObj, this._activity)
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  // The zone a person's state names; undefined when away or unknown
+  private _zoneForState(entityState: string): HassEntity | undefined {
+    if (entityState === "not_home" || entityState === "unknown") {
+      return undefined;
+    }
+    return entityState === "home"
+      ? this._states[HOME_ZONE_ENTITY_ID]
+      : Object.values(this._states).find(
+          (candidate) =>
+            computeStateDomain(candidate) === "zone" &&
+            computeStateName(candidate) === entityState
+        );
+  }
+
+  // The same color as the zone's marker on the map
+  private _zoneColor(zone: HassEntity): string {
+    return zoneColor(
+      zone.entity_id,
+      !!zone.attributes.passive,
+      this._entityReg,
+      getComputedStyle(this)
+    );
+  }
+
+  private _renderTimeline(stateObj: HassEntity, activity: ActivityEntry[]) {
+    const shown = this._activityExpanded
+      ? activity
+      : activity.slice(0, ACTIVITY_INITIAL_ENTRIES);
+    return html`
+      <div class="timeline">
+        ${shown.map((entry) => this._renderActivityEntry(stateObj, entry))}
+      </div>
+      ${
+        activity.length > shown.length
+          ? html`<ha-button
+              appearance="plain"
+              size="s"
+              class="show-more"
+              @click=${this._showAllActivity}
+            >
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.map.overview.show_more"
+              )}
+            </ha-button>`
+          : nothing
+      }
+    `;
+  }
+
+  private _renderActivityEntry(stateObj: HassEntity, entry: ActivityEntry) {
+    const person = entry.personId ? this._states[entry.personId] : undefined;
+    const headline = entry.personId
+      ? person
+        ? this._personName(person)
+        : entry.personId
+      : this._formatters.formatEntityState(stateObj, entry.state);
+    const zone = entry.personId ? undefined : this._zoneForState(entry.state);
+    const tile = zone
+      ? this._renderZoneAvatar(zone)
+      : person
+        ? this._renderAvatar(person)
+        : html`<span class="rail" aria-hidden="true"></span>`;
+    return html`
+      <div class="entry">
+        ${tile}
+        <div class="entry-text">
+          <span class="entry-headline">${headline}</span>
+          <span class="entry-when">
+            ${
+              entry.personId
+                ? html`${this._i18n.localize(
+                    entry.arrived
+                      ? "ui.panel.lovelace.cards.map.overview.entered"
+                      : "ui.panel.lovelace.cards.map.overview.left"
+                  )}
+                  · `
+                : nothing
+            }
+            ${formatTime(entry.when, this._i18n.locale, this._config)} ·
+            <ha-relative-time .datetime=${entry.when}></ha-relative-time>
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
+  private _showAllActivity() {
+    this._activityExpanded = true;
+  }
+
+  private _itemsPerTab(
+    people: HassEntity[],
+    devices: HassEntity[],
+    zones: HassEntity[]
+  ): Partial<Record<OverviewTab, HassEntity[]>> {
+    return {
+      ...(people.length ? { people } : {}),
+      ...(devices.length ? { devices } : {}),
+      ...(zones.length ? { zones } : {}),
+    };
+  }
+
+  private _renderList(
+    people: HassEntity[],
+    devices: HassEntity[],
+    zones: HassEntity[]
+  ) {
+    const itemsPerTab = this._itemsPerTab(people, devices, zones);
+    const tabs = Object.keys(itemsPerTab) as OverviewTab[];
+    const tab = tabs.includes(this.tab) ? this.tab : tabs[0];
+    const items = itemsPerTab[tab]!;
+
+    // A lone heading also serves as the phone sheet's peek strip
+    if (tabs.length === 1) {
+      return html`
+        <div class="heading peek" id="tab-${tab}">
+          ${this._i18n.localize(`ui.panel.lovelace.cards.map.overview.${tab}`)}
+        </div>
+        ${this._renderItems(tab, items)}
+      `;
+    }
+
+    return html`
+      <div class="tabs peek">
+        <span
+          class="pill"
+          style=${styleMap({
+            "--tab-count": String(tabs.length),
+            "--tab-index": String(tabs.indexOf(tab)),
+          })}
+          aria-hidden="true"
+        ></span>
+        <div class="tablist" role="tablist" @keydown=${this._handleTabKeydown}>
+          ${tabs.map(
+            (tabId) => html`
+              <button
+                type="button"
+                role="tab"
+                id="tab-${tabId}"
+                aria-controls="tabpanel"
+                aria-selected=${tab === tabId}
+                tabindex=${tab === tabId ? 0 : -1}
+                data-tab=${tabId}
+                @click=${this._handleTabClick}
+              >
+                ${this._i18n.localize(
+                  `ui.panel.lovelace.cards.map.overview.${tabId}`
+                )}
+              </button>
+            `
+          )}
+        </div>
+      </div>
+      ${this._renderItems(tab, items)}
+    `;
+  }
+
+  private _renderItems(tab: OverviewTab, items: HassEntity[]) {
+    return html`
+      <div
+        class="list"
+        id="tabpanel"
+        role="tabpanel"
+        aria-labelledby="tab-${tab}"
+      >
+        <ha-list-base>
+          ${items.map((stateObj) =>
+            tab === "zones"
+              ? this._renderZone(stateObj)
+              : this._renderEntity(stateObj)
+          )}
+        </ha-list-base>
+      </div>
+    `;
+  }
+
+  private _renderEntity(stateObj: HassEntity) {
+    const name = this._personName(stateObj);
+    const location = getEntityLocation(stateObj, this._states);
+
+    return html`
+      <ha-list-item-button
+        data-entity-id=${stateObj.entity_id}
+        class=${classMap({ "no-location": !location })}
+        @click=${this._handleItemClick}
+      >
+        ${this._renderAvatar(stateObj, "start")}
+        <span slot="headline">${name}</span>
+        <span slot="supporting-text">
+          ${this._formatters.formatEntityState(stateObj)} ·
+          <ha-relative-time
+            .datetime=${stateObj.last_updated}
+            format="short"
+          ></ha-relative-time>
+        </span>
+      </ha-list-item-button>
+    `;
+  }
+
+  private _renderZone(stateObj: HassEntity) {
+    const count = Number(stateObj.state);
+
+    return html`
+      <ha-list-item-button
+        data-entity-id=${stateObj.entity_id}
+        @click=${this._handleItemClick}
+      >
+        ${this._renderZoneAvatar(stateObj, "start")}
+        <span slot="headline">${this._entityName(stateObj)}</span>
+        <span slot="supporting-text">
+          ${
+            Number.isNaN(count)
+              ? nothing
+              : this._i18n.localize(
+                  "ui.panel.lovelace.cards.map.overview.people_in_zone",
+                  { count }
+                )
+          }
+        </span>
+      </ha-list-item-button>
+    `;
+  }
+
+  private _renderAvatar(stateObj: HassEntity, slot?: string) {
+    const picture = stateObj.attributes.entity_picture;
+    return html`
+      <div class="avatar" slot=${ifDefined(slot)} aria-hidden="true">
+        ${
+          picture
+            ? html`<img
+                src=${this._connection.hassUrl(picture)}
+                alt=""
+                loading="lazy"
+              />`
+            : computeStateDomain(stateObj) === "person"
+              ? html`<span class="initials"
+                  >${computeUserInitials(this._entityName(stateObj))}</span
+                >`
+              : html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
+        }
+      </div>
+    `;
+  }
+
+  private _renderZoneAvatar(zone: HassEntity, slot?: string) {
+    const color = this._zoneColor(zone);
+    return html`
+      <div
+        class="avatar zone"
+        slot=${ifDefined(slot)}
+        aria-hidden="true"
+        style=${styleMap({
+          background: color,
+          color: contrastingZoneContent(color),
+        })}
+      >
+        <ha-state-icon .stateObj=${zone}></ha-state-icon>
+      </div>
+    `;
+  }
+
+  private _handleTabClick(ev: HASSDomCurrentTargetEvent<HTMLButtonElement>) {
+    fireEvent(this, "map-overview-tab", {
+      tab: ev.currentTarget.dataset.tab as OverviewTab,
+    });
+  }
+
+  private _handleTabKeydown(ev: KeyboardEvent) {
+    const step =
+      ev.key === "ArrowRight" ? 1 : ev.key === "ArrowLeft" ? -1 : undefined;
+    if (step === undefined) {
+      return;
+    }
+    ev.preventDefault();
+    const buttons = [...this._tabButtons].filter((button) => !button.disabled);
+    const current = buttons.indexOf(ev.target as HTMLButtonElement);
+    const rtl = getComputedStyle(this).direction === "rtl";
+    const next =
+      buttons[
+        (current + (rtl ? -step : step) + buttons.length) % buttons.length
+      ];
+    if (next?.dataset.tab) {
+      fireEvent(this, "map-overview-tab", {
+        tab: next.dataset.tab as OverviewTab,
+      });
+      next.focus();
+    }
+  }
+
+  private _handleItemClick(ev: Event) {
+    const entityId = (ev.currentTarget as HTMLElement).dataset.entityId;
+    if (entityId) {
+      fireEvent(this, "map-overview-select", { entityId });
+    }
+  }
+
+  private _handleBack() {
+    fireEvent(this, "map-overview-select", { entityId: undefined });
+  }
+
+  private _handleSettings() {
+    if (this.selected) {
+      showMoreInfoDialog(this, { entityId: this.selected, view: "settings" });
+    }
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      pointer-events: none;
+    }
+
+    .panel {
+      --avatar-size: 48px;
+      pointer-events: auto;
+      box-sizing: border-box;
+      width: 100%;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: var(--ha-space-3);
+      border-radius: var(--ha-border-radius-xl);
+      background: var(--card-background-color);
+      color: var(--primary-text-color);
+      /* Floats over the map, so it keeps its shadow where cards lose theirs */
+      box-shadow: var(--ha-box-shadow-m);
+    }
+
+    ha-snap-bottom-sheet {
+      pointer-events: auto;
+      /* The tabs sit right under the handle */
+      --ha-bottom-sheet-handle-padding: var(--ha-space-2);
+      --ha-bottom-sheet-inset-left: 0px;
+      --ha-bottom-sheet-inset-right: 0px;
+    }
+
+    .panel.sheet {
+      flex: 1;
+      min-height: 0;
+      background: none;
+      box-shadow: none;
+      --sheet-bottom-space: max(
+        var(--ha-space-3),
+        var(--safe-area-inset-bottom)
+      );
+      padding-top: var(--ha-space-7);
+      padding-right: max(var(--ha-space-3), var(--safe-area-inset-right));
+      padding-bottom: var(--sheet-bottom-space);
+      padding-left: max(var(--ha-space-3), var(--safe-area-inset-left));
+    }
+
+    .heading {
+      flex: none;
+      padding: var(--ha-space-2) var(--ha-space-3);
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+
+    .tabs {
+      position: relative;
+      flex: none;
+      padding: var(--ha-space-1);
+      border-radius: var(--ha-border-radius-lg);
+      background: var(--ha-color-fill-neutral-quiet-resting);
+    }
+
+    .tablist {
+      display: flex;
+      gap: var(--ha-space-1);
+    }
+
+    .tabs .pill {
+      --segment-width: calc(
+        (100% - (var(--tab-count) + 1) * var(--ha-space-1)) / var(--tab-count)
+      );
+      position: absolute;
+      inset-block: var(--ha-space-1);
+      inset-inline-start: calc(
+        var(--ha-space-1) + var(--tab-index) *
+          (var(--segment-width) + var(--ha-space-1))
+      );
+      width: var(--segment-width);
+      border-radius: calc(var(--ha-border-radius-lg) - var(--ha-space-1));
+      background: var(--card-background-color);
+      box-shadow: var(--ha-box-shadow-s);
+      transition: inset-inline-start 200ms ease;
+    }
+
+    .tabs button {
+      position: relative;
+      flex: 1;
+      border: none;
+      margin: 0;
+      padding: var(--ha-space-2) var(--ha-space-3);
+      border-radius: calc(var(--ha-border-radius-lg) - var(--ha-space-1));
+      background: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--secondary-text-color);
+      transition: color 180ms ease-in-out;
+    }
+
+    .tabs button[aria-selected="true"] {
+      color: var(--primary-text-color);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tabs .pill {
+        transition: none;
+      }
+    }
+
+    .tabs button:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    .tabs button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: -2px;
+    }
+
+    .list {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ha-list-base {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      margin-top: var(--ha-space-2);
+      margin-bottom: calc(-1 * var(--sheet-bottom-space, 0px));
+      padding-bottom: var(--sheet-bottom-space, 0px);
+    }
+
+    ha-list-item-button {
+      border-radius: var(--ha-border-radius-lg);
+      --ha-list-item-focus-radius: var(--ha-border-radius-lg);
+      --ha-row-item-gap: var(--ha-space-3);
+      --ha-row-item-padding-inline: var(--ha-space-2);
+      /* The ripple's hover layer would sit above the content */
+      --ha-ripple-hover-opacity: 0;
+    }
+
+    ha-list-item-button:hover,
+    ha-list-item-button:focus-within {
+      background: var(--ha-color-fill-neutral-quiet-resting);
+    }
+
+    ha-list-item-button::part(headline) {
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    ha-list-item-button.no-location {
+      color: var(--secondary-text-color);
+    }
+
+    .avatar {
+      position: relative;
+      flex: none;
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      border-radius: var(--ha-border-radius-lg);
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ha-color-fill-neutral-quiet-resting);
+      color: var(--secondary-text-color);
+      font-weight: var(--ha-font-weight-medium);
+      box-sizing: border-box;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .avatar.zone {
+      border: none;
+      background: var(--accent-color);
+      color: #fff;
+    }
+
+    ha-relative-time {
+      display: inline;
+    }
+
+    .detail-header {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-1);
+      padding: var(--ha-space-1) var(--ha-space-3);
+      border-radius: var(--ha-border-radius-lg);
+      background: var(--ha-color-fill-neutral-quiet-resting);
+      color: var(--primary-text-color);
+    }
+
+    .detail-title {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .detail-name {
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    .detail-state {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+
+    .activity {
+      margin-top: var(--ha-space-2);
+      padding: var(--ha-space-3);
+      border-radius: var(--ha-border-radius-lg);
+      background: var(--ha-color-fill-neutral-quiet-resting);
+      /* Scrolls within the drawer's height instead of being clipped by it */
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* The panel shares the avatar's resting fill */
+    .activity .avatar {
+      background: var(--card-background-color);
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
+    }
+
+    .activity-icon {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      border-radius: var(--ha-border-radius-lg);
+      background: var(--card-background-color);
+      color: var(--primary-color);
+    }
+
+    .activity-title {
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    .activity-loading {
+      display: flex;
+      justify-content: center;
+      padding: var(--ha-space-3);
+    }
+
+    .activity-empty {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-4);
+      margin-top: var(--ha-space-3);
+    }
+
+    .entry {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
+    }
+
+    /* Centered under the tiles */
+    .rail {
+      flex: none;
+      align-self: stretch;
+      width: var(--ha-border-width-md);
+      margin-inline: calc((var(--avatar-size) - var(--ha-border-width-md)) / 2);
+      border-radius: var(--ha-border-radius-pill);
+      background: var(--divider-color);
+    }
+
+    .entry-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .entry-headline {
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+    .entry-when {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+    .show-more {
+      display: block;
+      margin-top: var(--ha-space-3);
+      padding-top: var(--ha-space-2);
+      border-top: 1px solid var(--divider-color);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-map-overview": HuiMapOverview;
+  }
+}

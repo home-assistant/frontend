@@ -1,22 +1,23 @@
 import { mdiFolderUpload } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-file-upload";
-import "../../components/ha-alert";
-import "../../components/ha-icon-button-arrow-prev";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../common/navigate";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { removeSearchParam } from "../../common/url/search-params";
+import "../../components/ha-alert";
+import "../../components/ha-file-upload";
+import "../../components/ha-icon-button-arrow-prev";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
   isSupportedBackupFile,
   SUPPORTED_UPLOAD_FORMAT,
 } from "../../data/backup";
-import type { LocalizeFunc } from "../../common/translations/localize";
 import { uploadOnboardingBackup } from "../../data/backup_onboarding";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { onBoardingStyles } from "../styles";
-import { navigate } from "../../common/navigate";
-import { removeSearchParam } from "../../common/url/search-params";
 
 declare global {
   interface HASSDomEvents {
@@ -27,7 +28,9 @@ declare global {
 class OnboardingRestoreBackupUpload extends LitElement {
   @property({ type: Boolean }) public supervisor = false;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _uploading = false;
 
@@ -36,14 +39,14 @@ class OnboardingRestoreBackupUpload extends LitElement {
   render() {
     return html`
       <ha-icon-button-arrow-prev
-        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        .label=${this._localize("ui.panel.page-onboarding.restore.back")}
         @click=${this._back}
       ></ha-icon-button-arrow-prev>
       <h1>
-        ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
+        ${this._localize("ui.panel.page-onboarding.restore.upload_backup")}
       </h1>
       <p>
-        ${this.localize(
+        ${this._localize(
           "ui.panel.page-onboarding.restore.upload_backup_subtitle"
         )}
       </p>
@@ -56,18 +59,17 @@ class OnboardingRestoreBackupUpload extends LitElement {
         .uploading=${this._uploading}
         .icon=${mdiFolderUpload}
         accept=${SUPPORTED_UPLOAD_FORMAT}
-        .localize=${this.localize}
-        .label=${this.localize(
+        .label=${this._localize(
           "ui.panel.page-onboarding.restore.upload_input_label"
         )}
-        .secondary=${this.localize(
+        .secondary=${this._localize(
           "ui.panel.page-onboarding.restore.upload_secondary"
         )}
-        .supports=${this.localize(
+        .supports=${this._localize(
           "ui.panel.page-onboarding.restore.upload_supports_tar"
         )}
-        .deleteLabel=${this.localize("ui.panel.page-onboarding.restore.delete")}
-        .uploadingLabel=${this.localize(
+        .deleteLabel=${this._localize("ui.panel.page-onboarding.restore.delete")}
+        .uploadingLabel=${this._localize(
           "ui.panel.page-onboarding.restore.uploading"
         )}
         @file-picked=${this._filePicked}
@@ -81,13 +83,13 @@ class OnboardingRestoreBackupUpload extends LitElement {
 
     if (!file || !isSupportedBackupFile(file)) {
       showAlertDialog(this, {
-        title: this.localize(
+        title: this._localize(
           "ui.panel.page-onboarding.restore.unsupported.title"
         ),
-        text: this.localize(
+        text: this._localize(
           "ui.panel.page-onboarding.restore.unsupported.text"
         ),
-        confirmText: this.localize("ui.panel.page-onboarding.restore.ok"),
+        confirmText: this._localize("ui.panel.page-onboarding.restore.ok"),
       });
       return;
     }

@@ -130,7 +130,6 @@ export class HaNavigationPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this._loading ? undefined : this.value}
         allow-custom-value
         .placeholder=${this.label}
@@ -182,7 +181,7 @@ export class HaNavigationPicker extends LitElement {
   };
 
   private _rowRenderer = (item: NavigationItem) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${
         item.domain
           ? html`

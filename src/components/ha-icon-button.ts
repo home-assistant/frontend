@@ -12,7 +12,9 @@ export class HaIconButton extends LitElement {
   // SVG icon path (if you need a non SVG icon instead, use the provided slot to pass an <ha-icon> in)
   @property({ type: String }) path?: string;
 
-  // Label that is used for ARIA support and as tooltip
+  // Label that is used for ARIA support and as tooltip. Passed to ha-button as
+  // properties, so only its inner button gets them: as attributes on the
+  // ha-button host, screen readers also announce the host as a named group.
   @property({ type: String }) label?: string;
 
   // These should always be set as properties, not attributes,
@@ -42,8 +44,8 @@ export class HaIconButton extends LitElement {
       <ha-button
         appearance="plain"
         variant="neutral"
-        aria-label=${ifDefined(this.label)}
-        title=${ifDefined(this.hideTitle ? undefined : this.label)}
+        .ariaLabel=${this.label ?? null}
+        .title=${this.hideTitle ? "" : (this.label ?? "")}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}
         .iconTag=${this.path ? "ha-svg-icon" : "span"}

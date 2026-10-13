@@ -80,7 +80,7 @@ const loadCustomIconItems = async (
 };
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item type="button">
+  <ha-combo-box-item>
     <ha-icon .icon=${item.id} slot="start"></ha-icon>
     ${item.id}
   </ha-combo-box-item>

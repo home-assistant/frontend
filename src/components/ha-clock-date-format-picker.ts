@@ -1,9 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
 import { resolveTimeZone } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
@@ -13,7 +14,7 @@ import {
   formatClockCardDate,
 } from "../panels/lovelace/cards/clock/clock-date-format";
 import type { ClockCardDatePart } from "../panels/lovelace/cards/types";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./chips/ha-assist-chip";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
@@ -115,8 +116,6 @@ interface ClockDatePartValueItem {
 
 @customElement("ha-clock-date-format-picker")
 export class HaClockDateFormatPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -152,7 +151,6 @@ export class HaClockDateFormatPicker extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-generic-picker
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
@@ -198,11 +196,7 @@ export class HaClockDateFormatPicker extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`
-          <ha-input-helper-text .disabled=${this.disabled}>
-            ${this.helper}
-          </ha-input-helper-text>
-        `
+      ? html` <ha-input-helper-text> ${this.helper} </ha-input-helper-text> `
       : nothing;
   }
 

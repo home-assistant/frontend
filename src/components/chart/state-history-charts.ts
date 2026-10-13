@@ -79,8 +79,9 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  /** Draw timeline row names above their bar instead of in a label column. */
-  @property({ attribute: "inside-labels", type: Boolean, reflect: true })
+  // Render timeline row names inside the plot (under each bar) instead of in a
+  // left-hand column. Opt-in; used by the history panel and history-graph card.
+  @property({ attribute: "inside-labels", type: Boolean })
   public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
@@ -272,7 +273,12 @@ export class StateHistoryCharts extends LitElement {
       )
     ) {
       // Don't recompute times when we just want to update layout
-      const now = new Date();
+      // A browser clock behind the server's would put the newest states past
+      // the end time, and the charts drop those. Rounded up because Date
+      // truncates their sub-millisecond timestamps.
+      const now = new Date(
+        Math.max(Date.now(), Math.ceil(this._newestStateTime()))
+      );
 
       this._computedEndTime =
         this.upToNow || !this.endTime || this.endTime > now
@@ -283,7 +289,7 @@ export class StateHistoryCharts extends LitElement {
         this._computedStartTime = this.startTime;
       } else if (this.hoursToShow) {
         this._computedStartTime = new Date(
-          new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
+          now.getTime() - 60 * 60 * this.hoursToShow * 1000
         );
       } else {
         let minTimeAll = (this.historyData?.timeline ?? []).reduce(
@@ -374,12 +380,31 @@ export class StateHistoryCharts extends LitElement {
         const chartBase =
           chartComponent.renderRoot?.querySelector("ha-chart-base");
 
-        if (chartBase && chartBase.chart) {
+        if (chartBase) {
           chartBase.zoom(0, 100);
         }
       });
       this._isSyncing = false;
     });
+  }
+
+  private _newestStateTime(): number {
+    let newest = 0;
+    for (const entity of this.historyData?.timeline ?? []) {
+      newest = Math.max(
+        newest,
+        entity.data[entity.data.length - 1]?.last_changed ?? 0
+      );
+    }
+    for (const unit of this.historyData?.line ?? []) {
+      for (const entity of unit.data) {
+        newest = Math.max(
+          newest,
+          entity.states[entity.states.length - 1]?.last_changed ?? 0
+        );
+      }
+    }
+    return newest;
   }
 
   private _isHistoryEmpty(): boolean {
@@ -429,12 +454,6 @@ export class StateHistoryCharts extends LitElement {
       padding-top: 8px;
     }
 
-    /* Names inside the plot sit close to the chart above them, so the groups
-       need more room between them to stay apart. */
-    :host([inside-labels]) .entry-container.timeline:not(:first-child) {
-      margin-top: var(--ha-space-8);
-    }
-
     .entry-container:hover {
       z-index: 1;
     }
@@ -453,6 +472,10 @@ export class StateHistoryCharts extends LitElement {
     .entry-container:not(:first-child) {
       border-top: 2px solid var(--divider-color);
       margin-top: 16px;
+    }
+
+    .entry-container.timeline:not(:first-child) {
+      margin-top: var(--ha-space-8);
     }
 
     .container,

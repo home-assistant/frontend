@@ -12,7 +12,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
@@ -296,7 +295,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
-      toggleAttribute(this, "expanded", this.alwaysExpand);
+      this.toggleAttribute("expanded", this.alwaysExpand);
     }
     if (!changedProps.has("hass")) {
       return;
@@ -665,9 +664,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           flex-direction: column;
           overflow: hidden;
           overscroll-behavior: contain;
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
@@ -897,7 +894,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
 
         .menu ha-icon-button {
-          -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
         }
 

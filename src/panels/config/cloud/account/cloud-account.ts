@@ -21,14 +21,10 @@ import {
   completeCloudOnboarding,
   fetchCloudSubscriptionInfo,
   ONBOARDING_ITEMS,
-  removeCloudData,
 } from "../../../../data/cloud";
 import type { Webhook } from "../../../../data/webhook";
 import { fetchWebhooks } from "../../../../data/webhook";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
@@ -41,6 +37,7 @@ import {
 } from "./cloud-account-status";
 import { showCloudOnboardingDialog } from "./show-dialog-cloud-onboarding";
 import { showSupportPackageDialog } from "./show-dialog-cloud-support-package";
+import { confirmDeleteCloudData } from "../delete-cloud-data";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -297,33 +294,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   }
 
   private async _deleteCloudData() {
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.cloud.account.reset_data_confirm_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.cloud.account.reset_data_confirm_text"
-      ),
-      confirmText: this.hass.localize("ui.panel.config.cloud.account.reset"),
-      destructive: true,
-    });
-    if (!confirm) {
-      return;
-    }
-    try {
-      await cloudLogout(this.hass);
-      await removeCloudData(this.hass);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.cloud.account.reset_data_failed"
-        ),
-        text: err?.message,
-      });
-      return;
-    } finally {
-      fireEvent(this, "ha-refresh-cloud-status");
-    }
+    await confirmDeleteCloudData(this, this.hass, { signOutFirst: true });
   }
 
   private async _downloadSupportPackage() {

@@ -13,7 +13,6 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-target-picker";

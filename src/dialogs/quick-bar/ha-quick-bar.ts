@@ -1,17 +1,20 @@
 import { mdiCommentProcessingOutline, mdiDevices } from "@mdi/js";
-import { consume } from "@lit/context";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import "../../components/entity/state-badge";
 import "../../components/ha-adaptive-dialog";
+import "../../components/ha-app-icon";
 import "../../components/ha-combo-box-item";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon";
@@ -58,7 +61,6 @@ import {
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
-import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "../restart/automation-restart-status";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
@@ -116,6 +118,9 @@ export class QuickBar extends LitElement {
   private _translationsLoaded = false;
 
   private _itemSelected = false;
+
+  // Command that is being run after it was picked, shown with a spinner.
+  @state() private _runningCommandId?: string;
 
   // #region lifecycle
   public async showDialog(params: QuickBarParams) {
@@ -206,6 +211,7 @@ export class QuickBar extends LitElement {
     this._opened = false;
     this._open = false;
     this._itemSelected = false;
+    this._runningCommandId = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
 
@@ -276,7 +282,7 @@ export class QuickBar extends LitElement {
                 )}
                 .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
                 .getItems=${this._getItems}
-                .rowRenderer=${this._renderRow}
+                .rowRenderer=${this._getRowRenderer(this._runningCommandId)}
                 mode="dialog"
                 .sections=${sections}
                 .selectedSection=${this._selectedSection}
@@ -295,7 +301,7 @@ export class QuickBar extends LitElement {
                   >
                     ${this.hass.localize("ui.tips.keyboard_shortcut")}
                   </button>`,
-                  modifier: isMac ? "⌘" : "Ctrl",
+                  modifier: ctrlOrCmdLabel(this.hass.localize),
                 })}</ha-tip
               >`
             : nothing
@@ -304,18 +310,27 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private _renderRow = (item: QuickBarComboBoxItem) => {
+  private _getRowRenderer = memoizeOne(
+    (runningCommandId?: string) => (item: QuickBarComboBoxItem) =>
+      this._renderRow(item, item?.id === runningCommandId)
+  );
+
+  private _renderRow(item: QuickBarComboBoxItem, running: boolean) {
     if (!item) {
       return nothing;
     }
 
     const iconPath = item.icon_path || mdiDevices;
+    const iconColor = "iconColor" in item ? item.iconColor : undefined;
 
     return html`
       <ha-combo-box-item
-        tabindex="-1"
-        type="button"
-        style="--mdc-icon-size: 24px;"
+        style=${styleMap({
+          "--mdc-icon-size": "24px",
+          backgroundColor: running
+            ? "var(--ha-color-fill-primary-normal-resting)"
+            : undefined,
+        })}
       >
         ${
           "stateObj" in item && item.stateObj
@@ -334,44 +349,65 @@ export class QuickBar extends LitElement {
                     brand-fallback
                   ></ha-domain-icon>
                 `
-              : "image" in item && item.image
+              : "app" in item && item.app
                 ? html`
-                    <img
+                    <ha-app-icon
                       slot="start"
-                      alt=${item.primary ?? "Unknown"}
-                      .src=${item.image}
+                      .slug=${item.app.slug}
+                      .hasIcon=${item.app.icon}
+                      .alt=${item.primary ?? "Unknown"}
+                      class=${iconColor ? "colored" : nothing}
                       style=${
-                        "iconColor" in item && item.iconColor
-                          ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
-                          : ""
+                        iconColor
+                          ? `--app-icon-background-color: ${iconColor}`
+                          : nothing
                       }
-                    />
+                    >
+                      ${
+                        item.icon
+                          ? html`<ha-icon .icon=${item.icon}></ha-icon>`
+                          : html`<ha-svg-icon .path=${iconPath}></ha-svg-icon>`
+                      }
+                    </ha-app-icon>
                   `
-                : item.icon
-                  ? html`<ha-icon
-                      style="margin: var(--ha-space-1);"
-                      slot="start"
-                      .icon=${item.icon}
-                    ></ha-icon>`
-                  : "iconColor" in item && item.iconColor
-                    ? html`
-                        <div
-                          slot="start"
-                          style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
-                        >
+                : "image" in item && item.image
+                  ? html`
+                      <img
+                        slot="start"
+                        alt=${item.primary ?? "Unknown"}
+                        .src=${item.image}
+                        style=${
+                          "iconColor" in item && item.iconColor
+                            ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                            : ""
+                        }
+                      />
+                    `
+                  : item.icon
+                    ? html`<ha-icon
+                        style="margin: var(--ha-space-1);"
+                        slot="start"
+                        .icon=${item.icon}
+                      ></ha-icon>`
+                    : "iconColor" in item && item.iconColor
+                      ? html`
+                          <div
+                            slot="start"
+                            style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
+                          >
+                            <ha-svg-icon
+                              style="color: var(--white-color); --mdc-icon-size: 24px;"
+                              .path=${iconPath}
+                            ></ha-svg-icon>
+                          </div>
+                        `
+                      : html`
                           <ha-svg-icon
-                            style="color: var(--white-color); --mdc-icon-size: 24px;"
+                            style="margin: var(--ha-space-1);"
+                            slot="start"
                             .path=${iconPath}
                           ></ha-svg-icon>
-                        </div>
-                      `
-                    : html`
-                        <ha-svg-icon
-                          style="margin: var(--ha-space-1);"
-                          slot="start"
-                          .path=${iconPath}
-                        ></ha-svg-icon>
-                      `
+                        `
         }
         <span slot="headline">${item.primary}</span>
         ${
@@ -398,18 +434,14 @@ export class QuickBar extends LitElement {
               `
             : nothing
         }
+        ${
+          running
+            ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
+            : nothing
+        }
       </ha-combo-box-item>
     `;
-  };
-
-  private _getRowSpinner = memoizeOne(() => {
-    const spinner = document.createElement("ha-spinner");
-    spinner.size = "small";
-    spinner.style.marginRight = "16px";
-    spinner.style.position = "absolute";
-    spinner.style.right = "0";
-    return spinner;
-  });
+  }
 
   private _sectionTitleFunction = ({
     firstIndex,
@@ -744,15 +776,9 @@ export class QuickBar extends LitElement {
   private async _handleItemSelected(
     ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
   ) {
-    if (
-      !this._itemSelected &&
-      this._comboBox &&
-      this._comboBox.virtualizerElement
-    ) {
-      const { index, newTab } = ev.detail;
-      const item = this._comboBox.virtualizerElement.items[
-        index
-      ] as QuickBarComboBoxItem;
+    if (!this._itemSelected) {
+      const { newTab } = ev.detail;
+      const item = ev.detail.item as QuickBarComboBoxItem;
 
       this._itemSelected = true;
 
@@ -817,15 +843,7 @@ export class QuickBar extends LitElement {
           return;
         }
 
-        const element = this._comboBox.virtualizerElement.querySelector(
-          `#list-item-${index}`
-        ) as HTMLDivElement | null;
-
-        if (element) {
-          element.style.backgroundColor =
-            "var(--ha-color-fill-primary-normal-resting)";
-          element.prepend(this._getRowSpinner());
-        }
+        this._runningCommandId = actionItem.id;
 
         await this.hass.callService(actionItem.domain!, actionItem.action);
 

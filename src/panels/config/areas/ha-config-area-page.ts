@@ -1,7 +1,4 @@
-import { startOfYesterday } from "date-fns";
-import { consume } from "@lit/context";
 import {
-  mdiChevronRight,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -14,6 +11,7 @@ import {
   mdiShape,
   mdiTools,
 } from "@mdi/js";
+import { startOfYesterday } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -21,14 +19,15 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
-import { createSearchParam } from "../../../common/url/search-params";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { createSearchParam } from "../../../common/url/search-params";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import { createColumnsController } from "../../../common/util/responsive-columns";
@@ -38,8 +37,10 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
@@ -67,8 +68,8 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { isHelperDomain } from "../helpers/const";
 import "../../logbook/ha-logbook";
+import { isHelperDomain } from "../helpers/const";
 import {
   loadAreaAddToDialog,
   showAreaAddToDialog,
@@ -604,12 +605,11 @@ class HaConfigAreaPage extends LitElement {
                       back: "1",
                     })}"
                   >
-                    <ha-icon-button
-                      .path=${mdiChevronRight}
+                    <ha-icon-button-next
                       .label=${this.hass.localize(
                         "ui.dialogs.more_info_control.show_more"
                       )}
-                    ></ha-icon-button>
+                    ></ha-icon-button-next>
                   </a>
                 </div>
                 <ha-logbook

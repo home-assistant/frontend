@@ -1,312 +1,90 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/buttons/ha-progress-button";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-card";
-import "../../../../components/input/ha-input";
-import type { HaInput } from "../../../../components/input/ha-input";
-import { cloudRegister, cloudResendVerification } from "../../../../data/cloud";
+import { navigate } from "../../../../common/navigate";
+import type { CloudStatus } from "../../../../data/cloud";
+import { cloudStatusAutoLogin } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../ha-config-section";
+import "../cloud-signed-out-menu";
+import { cloudSignedOutStyle } from "../cloud-signed-out-style";
+import { cloudSubpageStyle } from "../account/cloud-subpage-style";
+import "./cloud-register-card";
+
+const BACK_PATH = "/config/cloud/start";
 
 @customElement("cloud-register")
 export class CloudRegister extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property() public email?: string;
 
-  @state() private _requestInProgress = false;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @state() private _password = "";
-
-  @state() private _error?: string;
-
-  @query("#email", true) private _emailField!: HaInput;
-
-  @query("#password", true) private _passwordField!: HaInput;
+  @state() private _confirming = false;
 
   protected render(): TemplateResult {
     return html`
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
-        .header=${this.hass.localize("ui.panel.config.cloud.register.title")}
+        back-path=${BACK_PATH}
+        .backCallback=${this._confirming ? this._handleConfirmBack : undefined}
+        .header=${this.hass.localize("ui.panel.config.cloud.register.headline")}
       >
+        <cloud-signed-out-menu
+          slot="toolbar-icon"
+          .hass=${this.hass}
+        ></cloud-signed-out-menu>
         <div class="content">
-          <ha-config-section .isWide=${this.isWide}>
-            <span slot="header"
-              >${this.hass.localize(
-                "ui.panel.config.cloud.register.headline"
-              )}</span
-            >
-            <div slot="introduction">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.register.information"
-                )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.register.information2"
-                )}
-              </p>
-              <ul>
-                <li>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.register.feature_remote_control"
-                  )}
-                </li>
-                <li>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.register.feature_google_home"
-                  )}
-                </li>
-                <li>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.register.feature_amazon_alexa"
-                  )}
-                </li>
-                <li>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.register.feature_webhook_apps"
-                  )}
-                </li>
-              </ul>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.register.information3"
-                )}
-                <a
-                  href="https://www.nabucasa.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  >Nabu&nbsp;Casa,&nbsp;Inc</a
-                >
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.register.information3a"
-                )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.register.information4"
-                )}
-              </p>
-              <ul>
-                <li>
-                  <a
-                    href="https://www.nabucasa.com/tos/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.register.link_terms_conditions"
-                    )}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.nabucasa.com/privacy_policy/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.register.link_privacy_policy"
-                    )}
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <ha-card
-              outlined
-              .header=${this.hass.localize(
-                "ui.panel.config.cloud.register.create_account"
-              )}
-              ><div class="card-content register-form">
-                ${
-                  this._error
-                    ? html`<ha-alert alert-type="error"
-                        >${this._error}</ha-alert
-                      >`
-                    : ""
-                }
-                <ha-input
-                  autofocus
-                  id="email"
-                  name="email"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.cloud.register.email_address"
-                  )}
-                  type="email"
-                  autocomplete="email"
-                  required
-                  .value=${this.email ?? ""}
-                  @keydown=${this._keyDown}
-                  .validationMessage=${this.hass.localize(
-                    "ui.panel.config.cloud.register.email_error_msg"
-                  )}
-                ></ha-input>
-                <ha-input
-                  id="password"
-                  type="password"
-                  password-toggle
-                  name="password"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.cloud.register.password"
-                  )}
-                  .value=${this._password}
-                  autocomplete="new-password"
-                  minlength="8"
-                  required
-                  @keydown=${this._keyDown}
-                  .validationMessage=${this.hass.localize(
-                    "ui.panel.config.cloud.register.password_error_msg"
-                  )}
-                ></ha-input>
-              </div>
-              <div class="card-actions">
-                <button
-                  class="link"
-                  .disabled=${this._requestInProgress}
-                  @click=${this._handleResendVerifyEmail}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.register.resend_confirm_email"
-                  )}
-                </button>
-                <ha-progress-button
-                  @click=${this._handleRegister}
-                  .progress=${this._requestInProgress}
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.register.start_trial"
-                  )}</ha-progress-button
-                >
-              </div>
-            </ha-card>
-          </ha-config-section>
+          <cloud-register-card
+            .hass=${this.hass}
+            .email=${this.email}
+            .autoLogin=${cloudStatusAutoLogin(this.cloudStatus)}
+            @cloud-register-view-changed=${this._viewChanged}
+            @cloud-sign-in-instead=${this._handleSignInInstead}
+          ></cloud-register-card>
         </div>
       </hass-subpage>
     `;
   }
 
-  private _keyDown(ev: KeyboardEvent) {
-    if (ev.key === "Enter") {
-      this._handleRegister();
-    }
-  }
-
-  private async _handleRegister() {
-    const emailField = this._emailField;
-    const passwordField = this._passwordField;
-
-    if (!emailField.reportValidity()) {
-      passwordField.reportValidity();
-      emailField.focus();
-      return;
-    }
-
-    if (!passwordField.reportValidity()) {
-      passwordField.focus();
-      return;
-    }
-
-    const email = emailField.value?.toLowerCase() || "";
-    const password = passwordField.value || "";
-
-    this._requestInProgress = true;
-
-    try {
-      await cloudRegister(this.hass, email, password);
-      this._verificationEmailSent(email, "account_created");
-    } catch (err: any) {
-      this._password = "";
-      this._requestInProgress = false;
-      this._error =
-        err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
-    }
-  }
-
-  private async _handleResendVerifyEmail() {
-    const emailField = this._emailField;
-
-    if (!emailField.reportValidity()) {
-      emailField.focus();
-      return;
-    }
-
-    const email = emailField.value || "";
-
-    this._requestInProgress = true;
-
-    const doResend = async (username: string) => {
-      try {
-        await cloudResendVerification(this.hass, username);
-        this._verificationEmailSent(username, "verification_email_sent");
-      } catch (err: any) {
-        const errCode = err && err.body && err.body.code;
-        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
-          await doResend(username.toLowerCase());
-        } else {
-          this._requestInProgress = false;
-          this._error =
-            err && err.body && err.body.message
-              ? err.body.message
-              : "Unknown error";
-        }
-      }
-    };
-
-    await doResend(email);
-  }
-
-  private _verificationEmailSent(
-    email: string,
-    messageKey: "account_created" | "verification_email_sent"
+  private _viewChanged(
+    ev: HASSDomEvent<HASSDomEvents["cloud-register-view-changed"]>
   ) {
-    this._requestInProgress = false;
-    this._password = "";
-    fireEvent(this, "cloud-email-changed", { value: email });
-    fireEvent(this, "cloud-done", {
-      flashMessage: this.hass.localize(
-        `ui.panel.config.cloud.register.${messageKey}`
-      ),
-    });
+    this._confirming = ev.detail.confirming;
   }
+
+  private _handleSignInInstead() {
+    // Replaces only from the waiting view, whose registration is being
+    // cancelled: browser-back must not return to it. The form is a page worth
+    // going back to.
+    navigate("/config/cloud/login", { replace: this._confirming });
+  }
+
+  private _handleConfirmBack = () => {
+    fireEvent(this, "cloud-cancel-auto-login");
+    navigate(BACK_PATH, { replace: true });
+  };
 
   static get styles() {
     return [
       haStyle,
+      cloudSubpageStyle,
+      cloudSignedOutStyle,
       css`
-        [slot="introduction"] {
-          margin: -1em 0;
+        .content {
+          gap: var(--ha-space-3);
         }
-        [slot="introduction"] a {
-          color: var(--primary-color);
-        }
-        a {
-          color: var(--primary-color);
-        }
-        h1 {
-          margin: 0;
-        }
-        .register-form {
-          display: flex;
-          flex-direction: column;
-        }
-        .card-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        cloud-register-card {
+          width: 100%;
+          max-width: 600px;
+          margin-inline: auto;
         }
       `,
     ];
@@ -316,9 +94,5 @@ export class CloudRegister extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "cloud-register": CloudRegister;
-  }
-
-  interface HASSDomEvents {
-    "cloud-done": { flashMessage: string };
   }
 }

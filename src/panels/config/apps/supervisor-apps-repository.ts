@@ -116,11 +116,8 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                           ? "not_available"
                           : ""
                     }
-                    .iconImage=${
-                      addon.icon
-                        ? `/api/hassio/addons/${addon.slug}/icon`
-                        : undefined
-                    }
+                    .appSlug=${addon.slug}
+                    .hasAppIcon=${addon.icon}
                     .showTopbar=${addon.installed || !addon.available}
                     .topbarClass=${
                       addon.installed

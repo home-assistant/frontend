@@ -1,8 +1,10 @@
 import {
+  mdiAccessPointNetwork,
   mdiAccount,
   mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiBluetooth,
+  mdiCableData,
   mdiCellphoneCog,
   mdiCog,
   mdiDatabase,
@@ -29,8 +31,10 @@ import {
   mdiShape,
   mdiSofa,
   mdiStarFourPoints,
+  mdiStore,
   mdiTextBoxOutline,
   mdiTools,
+  mdiTransitConnectionVariant,
   mdiUpdate,
   mdiViewDashboard,
   mdiZigbee,
@@ -46,7 +50,9 @@ const getHasDomainCheck = (domain: string) => {
   const checkRegistry = memoizeOne((entries: HomeAssistant["entities"]) =>
     Object.values(entries).some((entry) => entry.entity_id.startsWith(prefix))
   );
-  return (hass: HomeAssistant) => checkRegistry(hass.entities);
+
+  return (hass: Pick<HomeAssistant, "entities">) =>
+    checkRegistry(hass.entities);
 };
 
 export const configSections: Record<string, PageNavigation[]> = {
@@ -84,18 +90,19 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
+      path: "/marketplace",
+      translationKey: "marketplace",
+      iconPath: mdiStore,
+      iconColor: "#7C4DFF",
+      component: "marketplace",
+      adminOnly: true,
+    },
+    {
       path: "/config/lovelace/dashboards",
       translationKey: "dashboards",
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
       component: "lovelace",
-      adminOnly: true,
-    },
-    {
-      path: "/config/voice-assistants",
-      translationKey: "voice_assistants",
-      iconPath: mdiMicrophone,
-      iconColor: "#3263C3",
       adminOnly: true,
     },
   ],
@@ -108,6 +115,23 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
   ],
   dashboard_2: [
+    {
+      path: "/config/connectivity",
+      translationKey: "connectivity",
+      iconPath: mdiAccessPointNetwork,
+      iconColor: "#00838F",
+      core: true,
+      adminOnly: true,
+    },
+    {
+      path: "/config/voice-assistants",
+      translationKey: "voice_assistants",
+      iconPath: mdiMicrophone,
+      iconColor: "#3263C3",
+      adminOnly: true,
+    },
+  ],
+  connectivity: [
     {
       path: "/config/matter",
       iconPath:
@@ -166,6 +190,22 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#0082FC",
       component: "bluetooth",
       translationKey: "bluetooth",
+      adminOnly: true,
+    },
+    {
+      path: "/config/serial",
+      iconPath: mdiCableData,
+      iconColor: "#607D8B",
+      component: "usb",
+      translationKey: "serial",
+      adminOnly: true,
+    },
+    {
+      path: "/config/modbus",
+      iconPath: mdiTransitConnectionVariant,
+      iconColor: "#00897B",
+      component: "modbus",
+      translationKey: "modbus",
       adminOnly: true,
     },
     {
@@ -520,8 +560,8 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
-      path: "/config/ai-tasks",
-      translationKey: "ai_tasks",
+      path: "/config/ai",
+      translationKey: "ai",
       iconPath: mdiStarFourPoints,
       iconColor: "#8B69E3",
       core: true,

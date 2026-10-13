@@ -2,3 +2,5 @@ CLA.md
 CODE_OF_CONDUCT.md
 LICENSE.md
 PULL_REQUEST_TEMPLATE.md
+public/static/map/sprites/*.json
+pnpm-lock.yaml

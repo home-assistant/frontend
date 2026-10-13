@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -7,6 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -64,6 +65,9 @@ export class HaFilterFloorAreas extends LitElement {
   };
 
   @property() public type?: keyof RelatedResult;
+
+  @property({ type: Boolean, attribute: "include-disabled-entities" })
+  public includeDisabledEntities = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -295,7 +299,9 @@ export class HaFilterFloorAreas extends LitElement {
     if (this.value.areas) {
       for (const areaId of this.value.areas) {
         if (this.type) {
-          relatedPromises.push(findRelated(this._api, "area", areaId));
+          relatedPromises.push(
+            findRelated(this._api, "area", areaId, this.includeDisabledEntities)
+          );
         }
       }
     }
@@ -303,7 +309,14 @@ export class HaFilterFloorAreas extends LitElement {
     if (this.value.floors) {
       for (const floorId of this.value.floors) {
         if (this.type) {
-          relatedPromises.push(findRelated(this._api, "floor", floorId));
+          relatedPromises.push(
+            findRelated(
+              this._api,
+              "floor",
+              floorId,
+              this.includeDisabledEntities
+            )
+          );
         }
       }
     }

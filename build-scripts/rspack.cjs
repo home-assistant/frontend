@@ -54,6 +54,10 @@ const CONFIG_FILES = [
   path.join(__dirname, "babel-plugins", "inline-constants-plugin.cjs"),
 ];
 
+// Patches change a package's files but not its version, which is all the
+// node_modules snapshot checks, so their contents go into the version too.
+const PATCHES_DIR = path.join(paths.root_dir, "patches");
+
 // Content hash of the toolchain versions and our own build files, used as the
 // persistent cache `version`. Everything here is path-independent so the cache
 // stays valid when reused on a different machine or checkout path.
@@ -65,6 +69,13 @@ const cacheVersion = () => {
     ...CONFIG_FILES.map(
       (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
     ),
+    ...(existsSync(PATCHES_DIR) ? fs.readdirSync(PATCHES_DIR) : [])
+      .filter((file) => file.endsWith(".patch"))
+      .sort()
+      .map(
+        (file) =>
+          `${file}:${fs.readFileSync(path.join(PATCHES_DIR, file), "utf8")}`
+      ),
   ];
   return require("crypto")
     .createHash("sha256")
@@ -104,7 +115,10 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
-  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  // pnpm links node_modules/lit-html into its store; rspack compares real paths
+  const litHtmlRoot = fs.realpathSync(
+    path.resolve(__dirname, "../node_modules/lit-html")
+  );
   const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
   const litDisableDevModeLoader = path.join(
     __dirname,
@@ -133,11 +147,19 @@ const createRspackConfig = ({
             [
               {
                 loader: "babel-loader",
+                // Options are stored per loader identity, not per call. A
+                // file imported by both the page and a worker gets two
+                // modules but, without distinct idents, one set of options:
+                // whichever layer resolved it first. That handed the worker
+                // the page's transform, polyfills included, and the page the
+                // worker's.
+                ident: `babel-loader-${info.issuerLayer ?? "page"}`,
                 options: {
                   ...bundle.babelOptions({
                     latestBuild,
                     isTestBuild,
                     sw: info.issuerLayer === "sw",
+                    worker: info.issuerLayer === "worker",
                   }),
                   cacheDirectory: !isProdBuild,
                   cacheCompression: false,
@@ -175,6 +197,19 @@ const createRspackConfig = ({
           },
           parser: {
             worker: ["*context.audioWorklet.addModule()", "..."],
+          },
+        },
+        {
+          // MapLibre's worker loads ESM plugins through `import(url)`, and the
+          // page side builds a blob import from `new URL(url, import.meta.url)`
+          // for a cross-origin worker. Neither path is taken here: the RTL
+          // plugin is UMD and the worker is served from the page's origin.
+          // Rspack's stubs for these fully dynamic requests are exactly what
+          // should remain - rejecting, and free of syntax the legacy floor
+          // cannot parse - so the warnings about them are noise.
+          test: /[\\/]maplibre-gl[\\/]dist[\\/]maplibre-gl(?:-worker)?\.mjs$/,
+          parser: {
+            exprContextCritical: false,
           },
         },
         {
@@ -258,7 +293,12 @@ const createRspackConfig = ({
           }
         ),
       new rspack.DefinePlugin(
-        bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
+        bundle.definedVars({
+          isProdBuild,
+          latestBuild,
+          publicPath,
+          defineOverlay,
+        })
       ),
       new rspack.IgnorePlugin({
         checkResource(resource, context) {
@@ -274,12 +314,20 @@ const createRspackConfig = ({
           ) {
             return false;
           }
+          if (!ignorePackages.length) {
+            return false;
+          }
           let fullPath;
           try {
             fullPath = resource.startsWith(".")
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
+            // ESM-only packages have no CommonJS entry to resolve. The ignore
+            // list holds resolved CommonJS paths, so they can never match.
+            if (err.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+              return false;
+            }
             console.error(
               "Error in Home Assistant ignore plugin",
               resource,
@@ -345,10 +393,7 @@ const createRspackConfig = ({
         "lit/directives/join$": "lit/directives/join.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
-        "lit/directives/keyed$": latestBuild
-          ? "lit/directives/keyed.js"
-          : path.resolve(__dirname, "../src/common/lit/keyed-es5.ts"),
-        "lit/polyfill-support$": "lit/polyfill-support.js",
+        "lit/directives/keyed$": "lit/directives/keyed.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
         "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
@@ -396,9 +441,12 @@ const createRspackConfig = ({
     output: {
       module: latestBuild,
       filename: ({ chunk }) =>
-        !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
-          ? "[name].js"
-          : "[name].[contenthash].js",
+        // Versioned instead of hashed; MapLibre gets the URL at build time
+        chunk.name === bundle.mapWorkerName
+          ? bundle.mapWorkerFilename()
+          : !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
+            ? "[name].js"
+            : "[name].[contenthash].js",
       chunkFilename:
         isProdBuild && !isStatsBuild ? "[name].[contenthash].js" : "[name].js",
       assetModuleFilename:
@@ -444,12 +492,13 @@ const createRspackConfig = ({
             // `name` is already unique per variant (frontend-modern/-legacy).
             name,
             // Content-based version (node major + toolchain versions + our own
-            // build files). Everything is path-independent, so the cache stays
-            // valid when reused on another machine/checkout. Runtime deps are
-            // deliberately absent — rspack's node_modules snapshot invalidates
-            // their modules per-package, so a single unrelated bump keeps the
-            // rest warm. buildDependencies is intentionally not used: rspack
-            // compares it by absolute path, which breaks cross-machine reuse.
+            // build files + patches). Everything is path-independent, so
+            // the cache stays valid when reused on another machine/checkout.
+            // Runtime deps are deliberately absent — rspack's node_modules
+            // snapshot invalidates their modules per-package, so a single
+            // unrelated bump keeps the rest warm. buildDependencies is
+            // intentionally not used: rspack compares it by absolute path,
+            // which breaks cross-machine reuse.
             version: `node${process.versions.node.split(".")[0]}-${cacheVersion()}`,
             storage: {
               type: "filesystem",

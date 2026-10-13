@@ -3,7 +3,6 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { refine } from "superstruct";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-assist-pipeline-picker";
 import type {
   HaFormSchema,
   SchemaUnion,
