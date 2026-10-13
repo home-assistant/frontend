@@ -1395,6 +1395,33 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     await vi.advanceTimersByTimeAsync(5000);
   });
 
+  it("consumes initial and reconnect failures and recovers on the next reconnect", async () => {
+    vi.useFakeTimers();
+    const { collection, pending, connection } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    const ready = vi
+      .mocked(connection.addEventListener)
+      .mock.calls.find(([event]) => event === "ready")![1];
+
+    // Leave lifecycle promises unhandled by the test, just as the connection
+    // does. Vitest reports an unhandled rejection if either failure escapes.
+    pending[0].reject(new Error("initial load failed"));
+    await vi.advanceTimersByTimeAsync(0);
+    ready(connection, undefined);
+    pending[1].reject(new Error("reconnect load failed"));
+    await vi.advanceTimersByTimeAsync(0);
+    assert.equal(received.mock.calls.length, 0);
+    assert.isUndefined(collection.state);
+
+    ready(connection, undefined);
+    await complete(pending[2]);
+    assert.equal(received.mock.calls.length, 1);
+    assert.strictEqual(received.mock.calls[0][0], collection.state);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
   it("guards reconnect refreshes and removes their listener on teardown", async () => {
     vi.useFakeTimers();
     const { collection, pending, connection } = createCollection();

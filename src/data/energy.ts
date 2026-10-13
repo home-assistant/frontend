@@ -1180,12 +1180,9 @@ export const getEnergyDataCollection = (
         subscribedStore.setState(store.state, true);
       }
       store = subscribedStore;
-      const refreshOnReady = () =>
-        refresh().catch((err) => {
-          if (connection.connected) {
-            throw err;
-          }
-        });
+      // Lifecycle callers do not await refreshes. Keep errors available to
+      // explicit refresh() callers without creating unhandled rejections here.
+      const refreshOnReady = () => refresh().catch(() => undefined);
       connection.addEventListener("ready", refreshOnReady);
       refreshOnReady();
       return () => {
