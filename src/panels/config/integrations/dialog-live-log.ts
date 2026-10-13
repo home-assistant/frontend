@@ -7,22 +7,15 @@ import type { CSSResultGroup } from "lit";
 import {
   mdiArrowCollapseDown,
   mdiCircle,
-  mdiPause,
-  mdiPlay,
   mdiWrap,
   mdiWrapDisabled,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type {
-  HASSDomCurrentTargetEvent,
-  HASSDomTargetEvent,
-} from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { consume } from "../../../common/decorators/consume";
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/chips/ha-chip-set";
-import "../../../components/chips/ha-filter-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
 import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
@@ -33,8 +26,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
-import "../../../components/input/ha-input";
-import type { HaInput } from "../../../components/input/ha-input";
 import {
   connectionContext,
   internationalizationContext,
@@ -52,20 +43,8 @@ const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g;
 // Stay close to the bottom to keep following new lines
 const SCROLL_FOLLOW_MARGIN = 40;
 
+// Keep only the newest lines so memory stays bounded
 const DEFAULT_LOG_LINE_LIMIT = 5000;
-
-const LOG_LEVELS = ["debug", "info", "warning", "error"] as const;
-
-type LogLevel = (typeof LOG_LEVELS)[number];
-
-const LEVEL_PATTERN =
-  /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)? (DEBUG|INFO|WARNING|ERROR|CRITICAL) /;
-
-interface LogLine {
-  text: string;
-  // Lines before the first record have no level and are always shown
-  level?: LogLevel;
-}
 
 @customElement("dialog-live-log")
 class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
@@ -79,19 +58,13 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
   @state() private _lineCount = 0;
 
-  @state() private _lineLimit = DEFAULT_LOG_LINE_LIMIT;
-
   @state() private _unsupported = false;
 
   @state() private _live = false;
 
   @state() private _newLogsIndicator = false;
 
-  @state() private _levels = new Set<LogLevel>(LOG_LEVELS);
-
   @state() private _search = "";
-
-  @state() private _paused = false;
 
   @state() private _wrapLines = true;
 
@@ -101,12 +74,10 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
   @query("ha-ansi-to-html") private _ansiToHtml?: HaAnsiToHtml;
 
-  private _lines: LogLine[] = [];
+  private _lines: string[] = [];
 
-  // Number of stored lines shown in the view, the rest is buffered while paused
+  // Number of stored lines already rendered in the view
   private _shownCount = 0;
-
-  private _lastLevel?: LogLevel;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -175,7 +146,6 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     this._cancelFollowBottom();
     this._lines = [];
     this._shownCount = 0;
-    this._lastLevel = undefined;
     this._lineCount = 0;
     this._newLogsIndicator = false;
     this._noMatches = false;
@@ -229,41 +199,10 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     }
   }
 
-  private _lineLimitChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
-    const input = ev.currentTarget;
-    const value = input.value?.trim() ?? "";
-    const limit = Number(value);
-    input.invalid =
-      !/^\d+$/.test(value) || !Number.isSafeInteger(limit) || limit < 1;
-    if (input.invalid || limit === this._lineLimit) {
-      return;
-    }
-    const follow = !this._paused && this._isScrolledToBottom();
-    this._lineLimit = limit;
-    this._trimLines();
-    this._lineCount = this._lines.length;
-    if (follow) {
-      this._followBottom();
-    }
-  }
-
-  private _parseLevel(text: string): LogLevel | undefined {
-    const match = LEVEL_PATTERN.exec(text.replace(ANSI_ESCAPE, ""));
-    if (match) {
-      this._lastLevel =
-        match[1] === "CRITICAL"
-          ? "error"
-          : (match[1].toLowerCase() as LogLevel);
-    }
-    // Continuation lines belong to the record before them
-    return this._lastLevel;
-  }
-
   private _addLines(lines: string[]) {
     const newLines = lines
       .flatMap((line) => line.split("\n"))
-      .map((text) => ({ text, level: this._parseLevel(text) }))
-      .slice(-this._lineLimit);
+      .slice(-DEFAULT_LOG_LINE_LIMIT);
     if (!newLines.length) {
       return;
     }
@@ -271,13 +210,11 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     this._lines = this._lines.concat(newLines);
     this._trimLines();
     this._lineCount = this._lines.length;
-    if (!this._paused) {
-      this._showNewLines(follow);
-    }
+    this._showNewLines(follow);
   }
 
   private _trimLines() {
-    const excessLineCount = this._lines.length - this._lineLimit;
+    const excessLineCount = this._lines.length - DEFAULT_LOG_LINE_LIMIT;
     if (excessLineCount <= 0) {
       return;
     }
@@ -287,11 +224,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
     this._lines.splice(0, excessLineCount);
     this._shownCount = Math.max(0, this._shownCount - excessLineCount);
-    const renderedLineCount = this._lines
-      .slice(0, this._shownCount)
-      .filter((line) => !line.level || this._levels.has(line.level)).length;
     if (this._ansiToHtml) {
-      this._ansiToHtml.trimLines(renderedLineCount);
+      this._ansiToHtml.trimLines(this._shownCount);
       const hasMatches = this._ansiToHtml.filterLines(this._search);
       this._noMatches = this._shownCount > 0 && !hasMatches;
     }
@@ -305,7 +239,7 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     }
   }
 
-  private _showNewLines(follow = this._isScrolledToBottom()) {
+  private _showNewLines(follow: boolean) {
     const newLines = this._lines.slice(this._shownCount);
     if (!newLines.length) {
       return;
@@ -319,41 +253,17 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     }
   }
 
-  private _renderLines(lines: LogLine[], reset = false) {
+  private _renderLines(lines: string[]) {
     const ansiToHtml = this._ansiToHtml;
     if (!ansiToHtml) {
       return;
     }
-    if (reset) {
-      ansiToHtml.clear();
-    }
     // ha-ansi-to-html re-filters all lines after every added line while a
     // search is set, so search once after adding them
     ansiToHtml.filterLines("");
-    ansiToHtml.parseLinesToColoredPre(
-      lines
-        .filter((line) => !line.level || this._levels.has(line.level))
-        .map((line) => line.text)
-    );
+    ansiToHtml.parseLinesToColoredPre(lines);
     this._noMatches =
       this._shownCount > 0 && !ansiToHtml.filterLines(this._search);
-  }
-
-  private _rerender() {
-    this._renderLines(this._lines.slice(0, this._shownCount), true);
-    this._scrollToBottom();
-  }
-
-  private _toggleLevel(ev: Event) {
-    const level = (ev.currentTarget as HTMLElement).dataset.level as LogLevel;
-    const levels = new Set(this._levels);
-    if (levels.has(level)) {
-      levels.delete(level);
-    } else {
-      levels.add(level);
-    }
-    this._levels = levels;
-    this._rerender();
   }
 
   private _searchChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
@@ -371,24 +281,12 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     }
   }, 150);
 
-  private _togglePause() {
-    this._paused = !this._paused;
-    if (this._paused) {
-      this._cancelFollowBottom();
-    } else {
-      this._showNewLines();
-    }
-  }
-
   private _toggleLineWrap() {
     this._wrapLines = !this._wrapLines;
   }
 
   private _download() {
-    const text = this._lines
-      .map((line) => line.text)
-      .join("\n")
-      .replace(ANSI_ESCAPE, "");
+    const text = this._lines.join("\n").replace(ANSI_ESCAPE, "");
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
     fileDownload(
@@ -408,7 +306,7 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           "ui.panel.config.integrations.config_entry.live_log.title"
         )}
         header-subtitle=${this.params.name}
-        width="large"
+        width="full"
         flexcontent
       >
         ${
@@ -427,59 +325,13 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                     )}
                     @input=${this._searchChanged}
                   ></ha-input-search>
-                  <ha-input
-                    class="line-limit"
-                    type="number"
-                    appearance="outlined"
-                    .min=${1}
-                    .step=${1}
-                    .value=${String(this._lineLimit)}
-                    .validationMessage=${this._i18n.localize(
-                      "ui.panel.config.integrations.config_entry.live_log.invalid_line_limit"
+                  <ha-icon-button
+                    .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
+                    .label=${this._i18n.localize(
+                      `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
                     )}
-                    @change=${this._lineLimitChanged}
-                  >
-                    <span slot="label" class="line-limit-label">
-                      ${this._i18n.localize(
-                        "ui.panel.config.integrations.config_entry.live_log.lines"
-                      )}
-                    </span>
-                    <span slot="start" aria-hidden="true">
-                      ${this._i18n.localize(
-                        "ui.panel.config.integrations.config_entry.live_log.lines"
-                      )}
-                    </span>
-                  </ha-input>
-                  <ha-chip-set>
-                    ${LOG_LEVELS.map(
-                      (level) => html`
-                        <ha-filter-chip
-                          data-level=${level}
-                          .selected=${this._levels.has(level)}
-                          .label=${this._i18n.localize(
-                            `ui.panel.config.logs.level.${level}`
-                          )}
-                          @click=${this._toggleLevel}
-                        ></ha-filter-chip>
-                      `
-                    )}
-                  </ha-chip-set>
-                  <div class="toolbar-buttons">
-                    <ha-icon-button
-                      .path=${this._paused ? mdiPlay : mdiPause}
-                      .label=${this._i18n.localize(
-                        `ui.panel.config.integrations.config_entry.live_log.${this._paused ? "resume" : "pause"}`
-                      )}
-                      @click=${this._togglePause}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
-                      .label=${this._i18n.localize(
-                        `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
-                      )}
-                      @click=${this._toggleLineWrap}
-                    ></ha-icon-button>
-                  </div>
+                    @click=${this._toggleLineWrap}
+                  ></ha-icon-button>
                 </div>
                 <div class="log-container">
                   <div class="log" @scroll=${this._handleScroll}>
@@ -527,16 +379,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                   ${
                     this._live
                       ? html`<div class="live-indicator">
-                          ${
-                            this._paused
-                              ? this._i18n.localize(
-                                  "ui.panel.config.integrations.config_entry.live_log.paused"
-                                )
-                              : html`<ha-svg-icon
-                                    .path=${mdiCircle}
-                                  ></ha-svg-icon>
-                                  Live`
-                          }
+                          <ha-svg-icon .path=${mdiCircle}></ha-svg-icon>
+                          ${this._i18n.localize("ui.panel.config.logs.live")}
                         </div>`
                       : nothing
                   }
@@ -574,40 +418,21 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
         .toolbar ha-input-search {
           flex: 1 1 200px;
         }
-        .line-limit {
-          flex: 0 0 140px;
-          min-width: 0;
-        }
-        .line-limit::part(wa-base) {
-          height: 40px;
-        }
-        .line-limit [slot="start"] {
-          color: var(--secondary-text-color);
-        }
-        .line-limit-label {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          overflow: hidden;
-          clip-path: inset(50%);
-          white-space: nowrap;
-        }
-        .toolbar-buttons {
-          display: flex;
-          margin-inline-start: auto;
-        }
         .log-container {
           position: relative;
           display: flex;
           flex-direction: column;
           flex: 1;
           min-height: 0;
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-md);
+          overflow: hidden;
         }
         .log {
           /* Fills the dialog when it is full screen on narrow screens */
           flex: 1 1 60vh;
           min-height: 0;
-          padding-bottom: var(--ha-space-8);
+          padding: var(--ha-space-2) var(--ha-space-2) var(--ha-space-8);
           box-sizing: border-box;
           overflow: auto;
           overflow-anchor: none;

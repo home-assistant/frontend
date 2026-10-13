@@ -3,12 +3,9 @@ import { subscribeIntegrationLog } from "../../../../src/data/error_log";
 import "../../../../src/panels/config/integrations/dialog-live-log";
 
 vi.mock("../../../../src/components/ha-alert", () => ({}));
-vi.mock("../../../../src/components/chips/ha-chip-set", () => ({}));
-vi.mock("../../../../src/components/chips/ha-filter-chip", () => ({}));
 vi.mock("../../../../src/components/ha-icon-button", () => ({}));
 vi.mock("../../../../src/components/ha-svg-icon", () => ({}));
 vi.mock("../../../../src/components/input/ha-input-search", () => ({}));
-vi.mock("../../../../src/components/input/ha-input", () => ({}));
 vi.mock("../../../../src/components/ha-button", () => ({}));
 vi.mock("../../../../src/components/ha-dialog", () => ({}));
 vi.mock("../../../../src/components/ha-dialog-footer", () => ({}));
@@ -84,13 +81,6 @@ const openLogDialog = async () => {
   return { receiveLogLines, renderedLog, scrollContainer };
 };
 
-const changeLineLimit = (value: string) => {
-  const input = dialog.shadowRoot!.querySelector("ha-input")!;
-  input.value = value;
-  input.dispatchEvent(new Event("change"));
-  return input;
-};
-
 const getRenderedLines = (renderedLog: HTMLPreElement) =>
   Array.from(renderedLog.querySelectorAll("div"), (row) => row.textContent);
 
@@ -119,7 +109,7 @@ const expectRetainedLines = (
   renderedLog: HTMLPreElement,
   expectedLines: string[]
 ) => {
-  const storedLines = dialog["_lines"].map((line) => line.text);
+  const storedLines = dialog["_lines"];
   const renderedRows = renderedLog.querySelectorAll("div");
   const renderedLines = Array.from(renderedRows, (row) => row.textContent);
 
@@ -227,247 +217,44 @@ describe("dialog-live-log retention", { timeout: 15000 }, () => {
   });
 });
 
-describe("configurable live log retention", () => {
-  it("changes the limit between streaming batches without resubscribing", async () => {
-    const { receiveLogLines, renderedLog } = await openLogDialog();
-    changeLineLimit("10");
-    receiveLogLines(createLogLines(0, 10));
-
-    changeLineLimit("5");
-    expectRetainedLines(renderedLog, createLogLines(5, 5));
-    expect(dialog["_lineCount"]).toBe(5);
-    expect(dialog["_shownCount"]).toBe(5);
-
-    receiveLogLines(createLogLines(10, 2));
-    expectRetainedLines(renderedLog, createLogLines(7, 5));
-
-    changeLineLimit("8");
-    expectRetainedLines(renderedLog, createLogLines(7, 5));
-    receiveLogLines(createLogLines(12, 3));
-    expectRetainedLines(renderedLog, createLogLines(7, 8));
-    expect(dialog["_lineCount"]).toBe(8);
-    expect(dialog["_shownCount"]).toBe(8);
-    expect(subscribeIntegrationLog).toHaveBeenCalledTimes(1);
-  });
-
-  it("keeps paused lines separate from displayed lines when the limit changes", async () => {
-    const { receiveLogLines, renderedLog } = await openLogDialog();
-    changeLineLimit("10");
-    receiveLogLines(createLogLines(0, 6));
-    dialog["_togglePause"]();
-    receiveLogLines(createLogLines(6, 3));
-
-    changeLineLimit("5");
-    expect(dialog["_lines"].map((line) => line.text)).toEqual(
-      createLogLines(4, 5)
-    );
-    expect(getRenderedLines(renderedLog)).toEqual(createLogLines(4, 2));
-    expect(dialog["_lineCount"]).toBe(5);
-    expect(dialog["_shownCount"]).toBe(2);
-
-    changeLineLimit("8");
-    receiveLogLines(createLogLines(9, 3));
-    expect(getRenderedLines(renderedLog)).toEqual(createLogLines(4, 2));
-    expect(dialog["_lineCount"]).toBe(8);
-
-    dialog["_togglePause"]();
-    expectRetainedLines(renderedLog, createLogLines(4, 8));
-    expect(dialog["_shownCount"]).toBe(8);
-    expect(subscribeIntegrationLog).toHaveBeenCalledTimes(1);
-  });
-
-  it("discards both displayed and buffered old lines during a long pause", async () => {
-    const { receiveLogLines, renderedLog } = await openLogDialog();
-    changeLineLimit("5");
-    receiveLogLines(createLogLines(0, 5));
-    dialog["_togglePause"]();
-    receiveLogLines(createLogLines(5, 20));
-
-    expect(renderedLog.childElementCount).toBe(0);
-    expect(dialog["_shownCount"]).toBe(0);
-    expect(dialog["_lineCount"]).toBe(5);
-    changeLineLimit("3");
-
-    dialog["_togglePause"]();
-    expectRetainedLines(renderedLog, createLogLines(22, 3));
-  });
-
+describe("dialog-live-log high volume", { timeout: 15000 }, () => {
   it("bounds high-volume batches without exceeding the function argument limit", async () => {
     const { receiveLogLines, renderedLog } = await openLogDialog();
-    const lineLimit = 50;
     const batchSize = 150000;
-    changeLineLimit(String(lineLimit));
     for (let batchIndex = 0; batchIndex < 2; batchIndex++) {
       receiveLogLines(createLogLines(batchIndex * batchSize, batchSize));
-      const firstRetainedLine = (batchIndex + 1) * batchSize - lineLimit;
+      const firstRetainedLine =
+        (batchIndex + 1) * batchSize - MAX_RETAINED_LINES;
       expectRetainedLines(
         renderedLog,
-        createLogLines(firstRetainedLine, lineLimit)
+        createLogLines(firstRetainedLine, MAX_RETAINED_LINES)
       );
     }
   });
 
-  it("preserves the reading position when decreasing the limit", async () => {
-    const { receiveLogLines, renderedLog, scrollContainer } =
-      await openLogDialog();
-    changeLineLimit("50");
-    receiveLogLines(createLogLines(0, 50));
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-    scrollContainer.scrollTop = 207;
-
-    changeLineLimit("45");
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-    expect(scrollContainer.scrollTop).toBe(207 - 5 * LOG_LINE_HEIGHT);
-    expectRetainedLines(renderedLog, createLogLines(5, 45));
-
-    changeLineLimit("100");
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-    expect(scrollContainer.scrollTop).toBe(207 - 5 * LOG_LINE_HEIGHT);
-  });
-
-  it("keeps following the bottom when decreasing the limit", async () => {
-    const { receiveLogLines, scrollContainer } = await openLogDialog();
-    changeLineLimit("50");
-    receiveLogLines(createLogLines(0, 50));
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-
-    changeLineLimit("30");
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-    expect(scrollContainer.scrollTop).toBe(scrollContainer.scrollHeight);
-  });
-
-  it("cancels pending automatic scrolling when paused or scrolled up", async () => {
-    const { receiveLogLines, scrollContainer } = await openLogDialog();
-    receiveLogLines(createLogLines(0, 50));
-    dialog["_togglePause"]();
-    changeLineLimit("40");
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-    expect(scrollContainer.scrollTop).toBe(0);
-
-    dialog["_togglePause"]();
-    scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    receiveLogLines(["new line"]);
-    scrollContainer.scrollTop = 107;
-    scrollContainer.dispatchEvent(new Event("scroll"));
-    changeLineLimit("60");
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
-    expect(scrollContainer.scrollTop).toBe(107);
-  });
-
   it("keeps following after a scroll event caused by trimming a batch", async () => {
-    const { receiveLogLines, scrollContainer } = await openLogDialog();
-    const lineLimit = 50;
-    changeLineLimit(String(lineLimit));
-    receiveLogLines(createLogLines(0, lineLimit));
-    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+    const { receiveLogLines, scrollContainer } = await openDialogWithFullLog();
     scrollContainer.scrollTop =
       scrollContainer.scrollHeight - LOG_VIEWPORT_HEIGHT;
 
-    receiveLogLines(createLogLines(lineLimit, 10));
+    receiveLogLines(createLogLines(MAX_RETAINED_LINES, 10));
     scrollContainer.dispatchEvent(new Event("scroll"));
     await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
     expect(scrollContainer.scrollTop).toBe(scrollContainer.scrollHeight);
   });
 
-  it("preserves filtered reading positions and never restores discarded lines", async () => {
-    const { receiveLogLines, renderedLog, scrollContainer } =
-      await openLogDialog();
-    const lines = Array.from({ length: 80 }, (_, index) => {
-      const level = index % 2 === 0 ? "DEBUG" : "ERROR";
-      const message = index % 4 === 1 ? "keep" : "hide";
-      return `2026-10-10 12:00:00 ${level} ${message} ${index}`;
-    });
-    changeLineLimit("80");
-    receiveLogLines(lines);
-    dialog["_levels"] = new Set(["error"]);
-    dialog["_search"] = "keep";
-    dialog["_rerender"]();
+  it("shows the new logs indicator when scrolled up", async () => {
+    const { receiveLogLines, scrollContainer } = await openLogDialog();
+    receiveLogLines(createLogLines(0, 50));
     await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
     scrollContainer.scrollTop = 107;
     scrollContainer.dispatchEvent(new Event("scroll"));
 
-    changeLineLimit("76");
-    expect(scrollContainer.scrollTop).toBe(107 - LOG_LINE_HEIGHT);
-    expect(getRenderedLines(renderedLog)).toEqual(
-      lines.slice(4).filter((line) => line.includes("ERROR"))
-    );
-    const visibleRows = Array.from(renderedLog.querySelectorAll("div")).filter(
-      (row) => row.style.display !== "none"
-    );
-    expect(visibleRows.map((row) => row.textContent)).toEqual(
-      lines.slice(4).filter((line) => line.includes("ERROR keep"))
-    );
-
-    dialog["_levels"] = new Set(["debug", "info", "warning", "error"]);
-    dialog["_search"] = "";
-    dialog["_rerender"]();
-    expectRetainedLines(renderedLog, lines.slice(4));
+    receiveLogLines(["new line"]);
+    await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
+    expect(scrollContainer.scrollTop).toBe(107);
+    expect(dialog["_newLogsIndicator"]).toBe(true);
   });
-
-  it("retains the level of continuation lines when their record header is discarded", async () => {
-    const { receiveLogLines, renderedLog } = await openLogDialog();
-    changeLineLimit("2");
-    receiveLogLines(["2026-10-10 12:00:00 ERROR failure\ntrace 1\ntrace 2"]);
-    expect(dialog["_lines"].map((line) => line.level)).toEqual([
-      "error",
-      "error",
-    ]);
-    dialog["_levels"] = new Set(["debug"]);
-    dialog["_rerender"]();
-    expect(renderedLog.childElementCount).toBe(0);
-    expect(dialog["_noMatches"]).toBe(true);
-    dialog["_levels"] = new Set(["error"]);
-    dialog["_rerender"]();
-    expectRetainedLines(renderedLog, ["trace 1", "trace 2"]);
-    expect(dialog["_noMatches"]).toBe(false);
-  });
-
-  it("does not trim while the user is still typing a limit", async () => {
-    const { receiveLogLines, renderedLog } = await openLogDialog();
-    receiveLogLines(createLogLines(0, 20));
-    const input = dialog.shadowRoot!.querySelector("ha-input")!;
-    input.value = "5";
-    input.dispatchEvent(new Event("input"));
-    receiveLogLines(["line 20"]);
-    expectRetainedLines(renderedLog, createLogLines(0, 21));
-    input.value = "500";
-    input.dispatchEvent(new Event("change"));
-    expect(dialog["_lineLimit"]).toBe(500);
-    expectRetainedLines(renderedLog, createLogLines(0, 21));
-  });
-
-  it.each([
-    "",
-    "0",
-    "-1",
-    "1.5",
-    "NaN",
-    "Infinity",
-    "abc",
-    "1e3",
-    "9007199254740992",
-  ])("rejects invalid limit %j without discarding lines", async (value) => {
-    const { receiveLogLines, renderedLog } = await openLogDialog();
-    receiveLogLines(createLogLines(0, 10));
-    const input = changeLineLimit(value);
-    expect(input.invalid).toBe(true);
-    expect(dialog["_lineLimit"]).toBe(MAX_RETAINED_LINES);
-    expectRetainedLines(renderedLog, createLogLines(0, 10));
-    changeLineLimit("20");
-    expect(input.invalid).toBe(false);
-    expect(dialog["_lineLimit"]).toBe(20);
-  });
-
-  it.each([1, 500, 3000, 10000, 50000])(
-    "accepts a custom limit of %i",
-    async (limit) => {
-      await openLogDialog();
-      const input = changeLineLimit(String(limit));
-      expect(input.invalid).toBe(false);
-      expect(dialog["_lineLimit"]).toBe(limit);
-      expect(subscribeIntegrationLog).toHaveBeenCalledTimes(1);
-    }
-  );
 });
 
 describe("dialog-live-log connection", () => {
@@ -545,6 +332,24 @@ describe("dialog-live-log search", () => {
     input.dispatchEvent(new Event("input"));
     await vi.advanceTimersByTimeAsync(150);
   };
+
+  it("hides lines that don't match and reports when nothing matches", async () => {
+    const { receiveLogLines, renderedLog } = await openLogDialog();
+    receiveLogLines(["first match", "other", "second match"]);
+
+    await search("match");
+    const visibleRows = Array.from(renderedLog.querySelectorAll("div")).filter(
+      (row) => row.style.display !== "none"
+    );
+    expect(visibleRows.map((row) => row.textContent)).toEqual([
+      "first match",
+      "second match",
+    ]);
+    expect(dialog["_noMatches"]).toBe(false);
+
+    await search("missing");
+    expect(dialog["_noMatches"]).toBe(true);
+  });
 
   it("keeps the reading position while searching and scrolls down when cleared", async () => {
     const { scrollContainer } = await openDialogWithFullLog();

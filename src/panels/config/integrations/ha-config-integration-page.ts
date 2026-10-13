@@ -729,7 +729,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           ${
             this._logInfo?.level === LogSeverity.DEBUG
               ? html`<div class="section">
-                  <ha-alert alert-type="warning">
+                  <ha-alert alert-type="warning" .narrow=${this.narrow}>
                     <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.debug_logging_enabled"
@@ -738,10 +738,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       <ha-button
                         size="s"
                         variant="warning"
+                        appearance="filled"
                         @click=${this._showLiveLog}
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.show_live_log"
+                          "ui.panel.config.integrations.config_entry.show_logs"
                         )}
                       </ha-button>
                       <ha-button
