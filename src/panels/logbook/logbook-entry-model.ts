@@ -143,7 +143,11 @@ export const computeRunTraceLink = (
     return undefined;
   }
   return row.domain && row.item_id && row.run_id
-    ? `/config/${row.domain}/trace/${encodeURIComponent(row.item_id)}?run_id=${row.run_id}`
+    ? getTraceUrl({
+        domain: row.domain,
+        item_id: row.item_id,
+        run_id: row.run_id,
+      })
     : computeTraceLink(traceContexts, row.context_id);
 };
 
