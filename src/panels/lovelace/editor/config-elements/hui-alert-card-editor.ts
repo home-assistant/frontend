@@ -1,4 +1,3 @@
-import { mdiTextShort } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -14,6 +13,7 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -28,6 +28,11 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import { alertSchema } from "./alert-schema";
+import {
+  tileContentConfigFromForm,
+  tileContentFormData,
+  tileContentSchema,
+} from "./content-schema";
 import { tileInteractionsSchema } from "./interactions-schema";
 
 const cardConfigStruct = assign(
@@ -40,8 +45,10 @@ const cardConfigStruct = assign(
     clear_color: optional(string()),
     pulse: optional(boolean()),
     show_entity_picture: optional(boolean()),
+    hide_state: optional(boolean()),
     state_content: optional(union([string(), array(string())])),
     time_format: optional(timeFormatConfigStruct),
+    vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -66,7 +73,11 @@ export class HuiAlertCardEditor
   }
 
   private _schema = memoizeOne(
-    (entityId: string | undefined, showTimeFormat: boolean) =>
+    (
+      localize: LocalizeFunc,
+      entityId: string | undefined,
+      showTimeFormat: boolean
+    ) =>
       [
         {
           name: "entity",
@@ -74,44 +85,7 @@ export class HuiAlertCardEditor
           selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
         },
         alertSchema(),
-        {
-          name: "content",
-          flatten: true,
-          type: "expandable",
-          iconPath: mdiTextShort,
-          schema: [
-            {
-              name: "name",
-              selector: { entity_name: {} },
-              context: { entity: "entity" },
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "icon",
-                  selector: { icon: {} },
-                  context: { icon_entity: "entity" },
-                },
-                {
-                  name: "show_entity_picture",
-                  selector: { boolean: {} },
-                },
-              ],
-            },
-            {
-              name: "state_content",
-              selector: { ui_state_content: { allow_context: true } },
-              context: { filter_entity: "entity" },
-            },
-            {
-              name: "time_format",
-              visible: showTimeFormat,
-              selector: { ui_time_format: {} },
-            },
-          ],
-        },
+        tileContentSchema(localize, showTimeFormat, false),
         tileInteractionsSchema(entityId),
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -124,8 +98,10 @@ export class HuiAlertCardEditor
     const entityId = this._config.entity;
 
     const schema = this._schema(
+      this.hass.localize,
       entityId,
-      Boolean(this._config.state_content) &&
+      !this._config.hide_state &&
+        Boolean(this._config.state_content) &&
         stateContentHasTimestamp(
           entityId,
           this.hass.states[entityId],
@@ -136,7 +112,7 @@ export class HuiAlertCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${tileContentFormData(this._config)}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -148,11 +124,7 @@ export class HuiAlertCardEditor
   private _valueChanged(ev: ValueChangedEvent<AlertCardConfig>): void {
     ev.stopPropagation();
 
-    const config = { ...ev.detail.value };
-
-    if (!config.state_content) {
-      delete config.state_content;
-    }
+    const config = tileContentConfigFromForm(ev.detail.value);
 
     fireEvent(this, "config-changed", { config });
   }
@@ -175,7 +147,9 @@ export class HuiAlertCardEditor
       case "icon_hold_action":
       case "icon_double_tap_action":
       case "show_entity_picture":
+      case "hide_state":
       case "state_content":
+      case "content_layout":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
