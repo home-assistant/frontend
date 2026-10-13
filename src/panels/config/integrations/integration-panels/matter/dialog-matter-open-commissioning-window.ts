@@ -29,7 +29,7 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 
 // Treat the code as expired this early: no countdown is shown, and pairing has to start in time.
-const SHARE_MARGIN_SECONDS = 30;
+const EXPIRY_MARGIN_SECONDS = 30;
 
 @customElement("dialog-matter-open-commissioning-window")
 class DialogMatterOpenCommissioningWindow extends LitElement {
@@ -82,6 +82,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     );
     // Apple Home only helps Apple Home users, so there the code, which works with any app, stays primary.
     const copyIsPrimary = shareTarget === "apple_home";
+    // While the app pairs, its window is still live, and a new code would revoke it.
+    const expired = this._shareExpired && !this._sharing;
 
     return html`
       <ha-dialog
@@ -92,7 +94,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         @closed=${this._dialogClosed}
       >
         ${
-          this._commissionParams && this._shareExpired
+          this._commissionParams && expired
             ? html`<ha-alert class="share-alert" alert-type="error">
                 ${this.hass.localize(
                   "ui.panel.config.matter.open_commissioning_window.share_expired"
@@ -212,7 +214,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         <ha-dialog-footer slot="footer">
           ${
             // An expired code leaves `_status` at "started", so it falls through to Close.
-            this._commissionParams && !this._shareExpired
+            this._commissionParams && !expired
               ? shareTarget
                 ? html`
                     <ha-button
@@ -278,8 +280,6 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     this._status = "started";
     this._commissionParams = undefined;
     clearTimeout(this._expiryTimer);
-    // The old share's result is ignored, so it must not keep Share spinning.
-    this._sharing = false;
     this._shareFailed = false;
     this._shareExpired = false;
     const deviceId = this.device_id!;
@@ -296,15 +296,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       this._commissionParams = params;
       this._windowOpenedAt = requestedAt;
       if (params.commissioning_timeout != null) {
-        // Show the expired state without waiting for a Share tap.
-        this._expiryTimer = window.setTimeout(
-          () => {
-            this._shareExpired = true;
-          },
+        const delay =
           requestedAt +
-            (params.commissioning_timeout - SHARE_MARGIN_SECONDS) * 1000 -
-            Date.now()
-        );
+          (params.commissioning_timeout - EXPIRY_MARGIN_SECONDS) * 1000 -
+          Date.now();
+        // Show the expired state without waiting for a Share tap.
+        this._expiryTimer = window.setTimeout(() => {
+          this._shareExpired = true;
+        }, delay);
       }
     } catch (_e) {
       if (this.device_id === deviceId) {
@@ -337,8 +336,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       this._windowOpenedAt,
       Date.now()
     );
-    // `<=`: the floored seconds still read the margin when the timer fires.
-    if (remaining !== undefined && remaining <= SHARE_MARGIN_SECONDS) {
+    // `<=`: the timer fires with exactly the margin left.
+    if (remaining !== undefined && remaining <= EXPIRY_MARGIN_SECONDS) {
       this._shareExpired = true;
       return;
     }

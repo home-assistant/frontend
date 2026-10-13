@@ -269,6 +269,26 @@ describe("dialog-matter-open-commissioning-window", () => {
     });
 
     describe("expiry", () => {
+      /** Draws the template directly: the dialog is never connected. */
+      const renderer = () => {
+        dialog.hass = {
+          ...dialog.hass,
+          auth: {
+            data: { hassUrl: "http://ha.local" },
+            external: { config: { canShareMatterDeviceToAppleHome: true } },
+          },
+        } as unknown as HomeAssistant;
+        const container = document.createElement("div");
+        return () => {
+          render(
+            (internals()["render"] as () => unknown).call(dialog),
+            container,
+            { host: dialog }
+          );
+          return container;
+        };
+      };
+
       it("marks the code expired when the window runs out, without a tap", async () => {
         await openedWindow();
 
@@ -303,55 +323,42 @@ describe("dialog-matter-open-commissioning-window", () => {
         expect(vi.getTimerCount()).toBe(0);
       });
 
-      it("frees Share when a new code is fetched during a share", async () => {
-        let settle!: (value: unknown) => void;
+      it("keeps the code while the app is still pairing on it", async () => {
         shareMatterDeviceExternal.mockReturnValue(
-          new Promise((resolve) => {
-            settle = resolve;
+          new Promise((_resolve, reject) => {
+            setTimeout(() => reject({ code: "canceled" }), 20_000);
           })
         );
         await openedWindow();
+        const draw = renderer();
+        vi.advanceTimersByTime(260_000);
         const pending = share();
-        vi.advanceTimersByTime(270_000);
-        openMatterCommissioningWindow.mockResolvedValue({ ...window_ });
 
-        await start();
-        settle({});
+        vi.advanceTimersByTime(10_000);
+        expect(draw().querySelector("ha-qr-code")).not.toBeNull();
+        await vi.advanceTimersByTimeAsync(10_000);
         await pending;
 
-        expect(internals()["_sharing"]).toBe(false);
-        expect(internals()["_open"]).toBe(true);
+        expect(draw().querySelector("ha-qr-code")).toBeNull();
       });
 
       it("swaps the dead code for a new-code button once it has expired", async () => {
         await openedWindow();
-        dialog.hass = {
-          ...dialog.hass,
-          auth: { data: { hassUrl: "http://ha.local" } },
-        } as unknown as HomeAssistant;
-        const container = document.createElement("div");
-        const draw = () =>
-          render(
-            (internals()["render"] as () => unknown).call(dialog),
-            container,
-            {
-              host: dialog,
-            }
-          );
+        const draw = renderer();
 
-        draw();
-        expect(container.querySelector("ha-qr-code")).not.toBeNull();
+        expect(draw().textContent).toContain("add_to_apple_home");
         vi.advanceTimersByTime(270_000);
-        draw();
+        const container = draw();
 
         expect(container.querySelector("ha-qr-code")).toBeNull();
         expect(container.textContent).not.toContain("copy_code");
+        expect(container.textContent).not.toContain("add_to_apple_home");
         expect(container.textContent).toContain("ui.common.close");
         const button =
           container.querySelector<HTMLElement>("ha-alert ha-button")!;
         expect(button.textContent).toContain("new_code");
 
-        // `ha-button` forwards `click()` to its inner button, which jsdom does not render.
+        // `ha-button` forwards `click()` to its inner button, which a detached one never renders.
         button.dispatchEvent(new MouseEvent("click"));
         await vi.runOnlyPendingTimersAsync();
 
