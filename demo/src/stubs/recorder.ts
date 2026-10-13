@@ -1,8 +1,10 @@
+import { TZDate } from "@date-fns/tz";
 import {
   addDays,
   addHours,
   addMinutes,
   addMonths,
+  constructFrom,
   differenceInHours,
   endOfDay,
 } from "date-fns";
@@ -33,7 +35,7 @@ const generateMeanStatistics = (
   maxDiff: number
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
+  let currentDate = constructFrom(start, start);
   currentDate.setMinutes(0, 0, 0);
   const now = new Date();
   while (end > currentDate && currentDate < now) {
@@ -63,7 +65,7 @@ const generateSumStatistics = (
   maxDiff: number | ((start: Date, end: Date) => number)
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
+  let currentDate = constructFrom(start, start);
   currentDate.setMinutes(0, 0, 0);
   let sum = initValue;
   const now = new Date();
@@ -98,7 +100,7 @@ const generateCurvedStatistics = (
   metered: boolean
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
+  let currentDate = constructFrom(start, start);
   currentDate.setMinutes(0, 0, 0);
   let sum = initValue;
   const hours = differenceInHours(end, start) - 1;
@@ -329,8 +331,9 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
   mockHass.mockWS(
     "recorder/statistics_during_period",
     ({ statistic_ids, start_time, end_time, period }, hass): Statistics => {
-      const start = new Date(start_time);
-      const end = end_time ? new Date(end_time) : new Date();
+      // Calendar buckets follow the server timezone, independent of the browser.
+      const start = new TZDate(start_time, hass.config.time_zone);
+      const end = new TZDate(end_time ?? Date.now(), hass.config.time_zone);
 
       const statistics: Record<string, StatisticValue[]> = {};
       const cache: Record<string, StatisticValue[]> = {};
