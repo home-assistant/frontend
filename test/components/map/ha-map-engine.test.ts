@@ -394,6 +394,7 @@ describe("ha-map engine selection", () => {
         };
         const el = await createMap(states, [...visibleZones, entityId]);
         el.renderPassive = true;
+        el.entities = [...el.entities];
         await el.updateComplete;
 
         expect(entityHandles(el)).toMatchObject([
