@@ -2,7 +2,7 @@ import type { ContextType } from "@lit/context";
 import { mdiAlertCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -72,8 +72,6 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     return ALERT_BADGE_DEFAULT_CONFIG;
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: AlertBadgeConfig;
 
   @state()
@@ -116,7 +114,6 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this._connection ||
       !this._formatters ||
       !this._localize
@@ -155,7 +152,6 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     const content = showState
       ? html`<state-display
           .stateObj=${stateObj}
-          .hass=${this.hass}
           .content=${this._config.state_content}
           .timeFormat=${this._config.time_format}
           .name=${name}

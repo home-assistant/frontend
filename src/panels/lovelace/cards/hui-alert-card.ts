@@ -1,7 +1,7 @@
 import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
@@ -66,8 +66,6 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     return { type: "alert", entity: entity || "" };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: AlertCardConfig;
 
   @state()
@@ -122,7 +120,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this._formatters || !this._connection || !this.hass) {
+    if (!this._config || !this._formatters || !this._connection) {
       return nothing;
     }
 
@@ -199,7 +197,6 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
                       this._config.state_content
                         ? html`<state-display
                             .stateObj=${stateObj}
-                            .hass=${this.hass}
                             .content=${this._config.state_content}
                             .timeFormat=${this._config.time_format}
                           ></state-display>`
