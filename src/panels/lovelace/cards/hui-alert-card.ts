@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
   DEFAULT_ALERT_COLOR,
@@ -20,12 +21,11 @@ import "../../../components/ha-state-icon";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import { formattersContext } from "../../../data/context";
+import { connectionContext, formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantConnection } from "../../../types";
 import { findEntities } from "../common/find-entities";
-import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type {
   LovelaceCard,
@@ -75,6 +75,10 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   private _stateObj?: HassEntity;
 
   @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
+
+  @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: ContextType<typeof formattersContext>;
 
@@ -116,7 +120,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this._formatters || !this.hass) {
+    if (!this._config || !this._formatters || !this._connection || !this.hass) {
       return nothing;
     }
 
@@ -135,7 +139,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     const hasColor = color !== undefined && color !== "none";
 
     const imageUrl = this._config.show_entity_picture
-      ? getTileImageUrl(this.hass, stateObj)
+      ? getTileImageUrl(this._connection, stateObj)
       : undefined;
 
     return html`
@@ -218,17 +222,18 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action!,
+    });
   }
 
   private _handleIconAction(ev: ActionHandlerEvent): void {
     ev.stopPropagation();
-    handleAction(
-      this,
-      this.hass!,
-      getTileIconActionConfig(this._config!.entity, this._config!),
-      ev.detail.action!
-    );
+    fireEvent(this, "hass-action", {
+      config: getTileIconActionConfig(this._config!.entity, this._config!),
+      action: ev.detail.action!,
+    });
   }
 
   static styles = [

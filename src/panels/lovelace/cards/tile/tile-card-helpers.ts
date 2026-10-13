@@ -2,7 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { DOMAINS_TOGGLE } from "../../../../common/const";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { cameraUrlWithWidthHeight } from "../../../../data/camera";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistantConnection } from "../../../../types";
 import type { ActionConfigParams } from "../../common/handle-action";
 import { hasAction } from "../../common/has-action";
 import type { TileActionsConfig } from "../types";
@@ -47,7 +47,7 @@ export const getTileIconActionConfig = (
 });
 
 export const getTileImageUrl = (
-  hass: HomeAssistant,
+  connection: Pick<HomeAssistantConnection, "hassUrl">,
   stateObj: HassEntity,
   size = 80
 ): string | undefined => {
@@ -59,7 +59,7 @@ export const getTileImageUrl = (
     return undefined;
   }
 
-  const imageUrl = hass.hassUrl(entityPicture);
+  const imageUrl = connection.hassUrl(entityPicture);
 
   return computeDomain(stateObj.entity_id) === "camera"
     ? cameraUrlWithWidthHeight(imageUrl, size, size)

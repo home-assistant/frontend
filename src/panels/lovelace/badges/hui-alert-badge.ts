@@ -11,6 +11,7 @@ import {
   consumeEntityState,
   consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
   DEFAULT_ALERT_COLOR,
@@ -22,17 +23,16 @@ import "../../../components/ha-badge";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { formattersContext } from "../../../data/context";
+import { connectionContext, formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantConnection } from "../../../types";
 import {
   getTileImageUrl,
   hasTileCardAction,
 } from "../cards/tile/tile-card-helpers";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
-import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import type { AlertBadgeConfig } from "./types";
@@ -70,6 +70,10 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   private _stateObj?: HassEntity;
 
   @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
+
+  @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: ContextType<typeof formattersContext>;
 
@@ -99,7 +103,13 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   }
 
   protected render() {
-    if (!this._config || !this.hass || !this._formatters || !this._localize) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this._connection ||
+      !this._formatters ||
+      !this._localize
+    ) {
       return nothing;
     }
 
@@ -126,7 +136,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     const name = this._formatters.formatEntityName(stateObj, this._config.name);
 
     const imageUrl = this._config.show_entity_picture
-      ? getTileImageUrl(this.hass, stateObj, 32)
+      ? getTileImageUrl(this._connection, stateObj, 32)
       : undefined;
 
     return html`
@@ -165,7 +175,10 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action!,
+    });
   }
 
   static styles = css`
