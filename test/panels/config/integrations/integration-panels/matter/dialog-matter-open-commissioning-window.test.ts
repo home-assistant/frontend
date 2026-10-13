@@ -220,6 +220,28 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(internals()["_shareExpired"]).toBe(true);
     });
 
+    it("refuses a window with less than 30 seconds left", async () => {
+      await openedWindow();
+      internals()["_windowOpenedAt"] = Date.now() - 271_000;
+
+      await share();
+
+      expect(shareMatterDeviceExternal).not.toHaveBeenCalled();
+      expect(internals()["_shareExpired"]).toBe(true);
+    });
+
+    it("still shares a window with 30 seconds left", async () => {
+      shareMatterDeviceExternal.mockResolvedValue({});
+      await openedWindow();
+      internals()["_windowOpenedAt"] = Date.now() - 270_000;
+
+      await share();
+
+      expect(shareMatterDeviceExternal.mock.calls[0][1].remaining_seconds).toBe(
+        30
+      );
+    });
+
     it("opens a new window in place once the old one has run out", async () => {
       await openedWindow();
       internals()["_windowOpenedAt"] = Date.now() - 300_000;
@@ -246,7 +268,7 @@ describe("dialog-matter-open-commissioning-window", () => {
       it("marks the code expired when the window runs out, without a tap", async () => {
         await openedWindow();
 
-        vi.advanceTimersByTime(299_000);
+        vi.advanceTimersByTime(269_000);
         expect(internals()["_shareExpired"]).toBe(false);
         vi.advanceTimersByTime(1_000);
 
@@ -259,9 +281,9 @@ describe("dialog-matter-open-commissioning-window", () => {
         vi.advanceTimersByTime(200_000);
         await start();
 
-        vi.advanceTimersByTime(200_000);
+        vi.advanceTimersByTime(269_000);
         expect(internals()["_shareExpired"]).toBe(false);
-        vi.advanceTimersByTime(100_000);
+        vi.advanceTimersByTime(1_000);
 
         expect(internals()["_shareExpired"]).toBe(true);
       });

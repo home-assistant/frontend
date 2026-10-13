@@ -28,6 +28,9 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 
+// No countdown is shown, and a code with seconds left cannot be scanned or typed in time.
+const SHARE_MARGIN_SECONDS = 30;
+
 @customElement("dialog-matter-open-commissioning-window")
 class DialogMatterOpenCommissioningWindow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -299,7 +302,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           () => {
             this._shareExpired = true;
           },
-          requestedAt + params.commissioning_timeout * 1000 - Date.now()
+          requestedAt +
+            (params.commissioning_timeout - SHARE_MARGIN_SECONDS) * 1000 -
+            Date.now()
         );
       }
     } catch (_e) {
@@ -333,7 +338,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       this._windowOpenedAt,
       Date.now()
     );
-    if (remaining !== undefined && remaining < 1) {
+    if (remaining !== undefined && remaining < SHARE_MARGIN_SECONDS) {
       this._shareExpired = true;
       return;
     }
