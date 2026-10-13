@@ -59,6 +59,10 @@ export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
 
 // All collection keys created this session
 const energyCollectionKeys = new Set<string | undefined>();
+const energyCollections = new WeakMap<
+  Connection,
+  Map<string, EnergyCollection>
+>();
 
 // Validate that a string is a valid energy collection key.
 export function validateEnergyCollectionKey(key: string | undefined) {
@@ -903,7 +907,11 @@ const getEnergyData = async (
   return data;
 };
 
-export interface EnergyCollection extends Collection<EnergyData> {
+export interface EnergyCollection extends Omit<
+  Collection<EnergyData>,
+  "state"
+> {
+  readonly state: EnergyData | undefined;
   start: Date;
   end?: Date;
   compare?: CompareMode;
@@ -984,7 +992,7 @@ const findEnergyDataCollection = (
     panelUrl,
     collectionKey
   );
-  return (connection as any)[key];
+  return energyCollections.get(connection)?.get(key);
 };
 
 // The last-picked preset is remembered per energy collection, so each dashboard
@@ -1111,13 +1119,37 @@ export const getEnergyDataCollection = (
     panelUrl,
     options.key
   );
-  if ((connection as any)[key]) {
-    return (connection as any)[key];
+  const existingCollection = energyCollections.get(connection)?.get(key);
+  if (existingCollection) {
+    return existingCollection;
   }
 
   const midnightRollover = options.midnightRollover ?? false;
 
   energyCollectionKeys.add(collectionKey);
+
+  // Set start to start of today if we have data for today, otherwise yesterday.
+  // The real-time "Now" view always tracks today; it shows live data even
+  // before today's first statistic exists, so it never falls back to yesterday.
+  const initialNow = new Date();
+  const preferredPeriod =
+    (localStorage.getItem(
+      getEnergyDefaultPeriodStorageKey(panelUrl, options.key)
+    ) as DateRange) || "today";
+  const period =
+    preferredPeriod === "today" &&
+    shouldFallbackEnergyPeriodToYesterday(
+      midnightRollover,
+      initialNow,
+      locale,
+      config
+    )
+      ? "yesterday"
+      : preferredPeriod;
+
+  const [initialStart, initialEnd] = calcDateRange(locale, config, period);
+  // True while tracking today (or hour-0 yesterday), rather than a custom range.
+  let followLiveDay = preferredPeriod === "today";
 
   let revision = 0;
   let pendingRevision: number | undefined;
@@ -1199,22 +1231,6 @@ export const getEnergyDataCollection = (
       };
     }
   );
-  const collection = {
-    ...baseCollection,
-    get state() {
-      return store.state!;
-    },
-    refresh,
-  } as EnergyCollection;
-  (connection as any)[key] = collection;
-
-  collection._active = 0;
-  collection.prefs = options.prefs;
-
-  // True while the collection is tracking the rolling "today" (or hour-0
-  // yesterday) day. Cleared when the user picks a custom range.
-  let followLiveDay = false;
-
   const applyLiveDayPeriod = (now: Date): boolean => {
     const live = getEnergyLiveDayPeriod(
       midnightRollover,
@@ -1265,16 +1281,14 @@ export const getEnergyDataCollection = (
     );
   };
 
-  const origSubscribe = collection.subscribe;
-
-  collection.subscribe = (subscriber: (data: EnergyData) => void) => {
-    // Catch up before origSubscribe so the first fetch uses the live day.
+  const subscribe = (subscriber: (data: EnergyData) => void) => {
+    // Catch up before subscribing so the first fetch uses the live day.
     if (followLiveDay) {
       applyLiveDayPeriod(new Date());
       scheduleUpdatePeriod();
     }
 
-    const unsub = origSubscribe((data) => {
+    const unsub = baseCollection.subscribe((data) => {
       // A newly attached card can receive cached state while a new period loads.
       if (publishedSelectionRevision === selectionRevision) {
         subscriber(data);
@@ -1309,59 +1323,57 @@ export const getEnergyDataCollection = (
     };
   };
 
-  // Set start to start of today if we have data for today, otherwise yesterday.
-  // The real-time "Now" view always tracks today; it shows live data even
-  // before today's first statistic exists, so it never falls back to yesterday.
-  const now = new Date();
-  const preferredPeriod =
-    (localStorage.getItem(
-      getEnergyDefaultPeriodStorageKey(panelUrl, options.key)
-    ) as DateRange) || "today";
-  const period =
-    preferredPeriod === "today" &&
-    shouldFallbackEnergyPeriodToYesterday(midnightRollover, now, locale, config)
-      ? "yesterday"
-      : preferredPeriod;
-
-  const [start, end] = calcDateRange(locale, config, period);
-  collection.start = calcDate(start, startOfDay, locale, config);
-  collection.end = calcDate(end, endOfDay, locale, config);
-  followLiveDay = preferredPeriod === "today";
-
-  collection.isActive = () => !!collection._active;
-  collection.clearPrefs = () => {
-    revision++;
-    selectionRevision++;
-    collection.prefs = undefined;
-  };
-  collection.setPeriod = (newStart: Date, newEnd?: Date) => {
-    if (
-      collection.start.getTime() !== newStart.getTime() ||
-      collection.end?.getTime() !== newEnd?.getTime()
-    ) {
+  const collection: EnergyCollection = {
+    get state() {
+      return store.state;
+    },
+    refresh,
+    subscribe,
+    start: calcDate(initialStart, startOfDay, locale, config),
+    end: calcDate(initialEnd, endOfDay, locale, config),
+    prefs: options.prefs,
+    _active: 0,
+    isActive: () => !!collection._active,
+    clearPrefs() {
       revision++;
       selectionRevision++;
-    }
-    clearUpdatePeriodTimeout();
-    collection.start = newStart;
-    collection.end = newEnd;
-    const periodNow = new Date();
-    followLiveDay =
-      collection.start.getTime() ===
-        calcDate(periodNow, startOfDay, locale, config).getTime() &&
-      collection.end?.getTime() ===
-        calcDate(periodNow, endOfDay, locale, config).getTime();
-    if (followLiveDay) {
-      scheduleUpdatePeriod();
-    }
+      collection.prefs = undefined;
+    },
+    setPeriod(newStart: Date, newEnd?: Date) {
+      if (
+        collection.start.getTime() !== newStart.getTime() ||
+        collection.end?.getTime() !== newEnd?.getTime()
+      ) {
+        revision++;
+        selectionRevision++;
+      }
+      clearUpdatePeriodTimeout();
+      collection.start = newStart;
+      collection.end = newEnd;
+      const periodNow = new Date();
+      followLiveDay =
+        collection.start.getTime() ===
+          calcDate(periodNow, startOfDay, locale, config).getTime() &&
+        collection.end?.getTime() ===
+          calcDate(periodNow, endOfDay, locale, config).getTime();
+      if (followLiveDay) {
+        scheduleUpdatePeriod();
+      }
+    },
+    setCompare(compare: CompareMode) {
+      if (collection.compare !== compare) {
+        revision++;
+        selectionRevision++;
+        collection.compare = compare;
+      }
+    },
   };
-  collection.setCompare = (compare: CompareMode) => {
-    if (collection.compare !== compare) {
-      revision++;
-      selectionRevision++;
-      collection.compare = compare;
-    }
-  };
+  let connectionCollections = energyCollections.get(connection);
+  if (!connectionCollections) {
+    connectionCollections = new Map<string, EnergyCollection>();
+    energyCollections.set(connection, connectionCollections);
+  }
+  connectionCollections.set(key, collection);
   return collection;
 };
 
@@ -2155,17 +2167,18 @@ export const downloadEnergyData = (
   energyData: EnergyCollection,
   currency: string
 ) => {
-  if (!energyData.prefs || !energyData.state.stats) {
+  const { state } = energyData;
+  if (!energyData.prefs || !state?.stats) {
     return;
   }
 
-  const gasUnit = energyData.state.gasUnit;
+  const gasUnit = state.gasUnit;
   const electricUnit = "kWh";
 
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
-  const stats = energyData.state.stats;
+  const stats = state.stats;
 
   interface CsvRow {
     id: string;
@@ -2219,7 +2232,7 @@ export const downloadEnergyData = (
         grid_consumptions.push(gridSource.stat_energy_from);
         const importCostId =
           gridSource.stat_cost ||
-          energyData.state.info.cost_sensors[gridSource.stat_energy_from];
+          state.info.cost_sensors[gridSource.stat_energy_from];
         if (importCostId) {
           grid_consumptions_cost.push(importCostId);
         }
@@ -2228,7 +2241,7 @@ export const downloadEnergyData = (
         grid_productions.push(gridSource.stat_energy_to);
         const exportCostId =
           gridSource.stat_compensation ||
-          energyData.state.info.cost_sensors[gridSource.stat_energy_to];
+          state.info.cost_sensors[gridSource.stat_energy_to];
         if (exportCostId) {
           grid_productions_cost.push(exportCostId);
         }
@@ -2281,8 +2294,7 @@ export const downloadEnergyData = (
       source = source as GasSourceTypeEnergyPreference;
       const statId = source.stat_energy_from;
       gas_consumptions.push(statId);
-      const costId =
-        source.stat_cost || energyData.state.info.cost_sensors[statId];
+      const costId = source.stat_cost || state.info.cost_sensors[statId];
       if (costId) {
         gas_consumptions_cost.push(costId);
       }
@@ -2304,8 +2316,7 @@ export const downloadEnergyData = (
       source = source as WaterSourceTypeEnergyPreference;
       const statId = source.stat_energy_from;
       water_consumptions.push(statId);
-      const costId =
-        source.stat_cost || energyData.state.info.cost_sensors[statId];
+      const costId = source.stat_cost || state.info.cost_sensors[statId];
       if (costId) {
         water_consumptions_cost.push(costId);
       }
@@ -2314,7 +2325,7 @@ export const downloadEnergyData = (
   printCategory(
     "water_consumption",
     water_consumptions,
-    energyData.state.waterUnit,
+    state.waterUnit,
     "water_consumption_cost",
     water_consumptions_cost
   );
@@ -2334,14 +2345,10 @@ export const downloadEnergyData = (
       waterDevices.push(source.stat_consumption);
     });
 
-    printCategory(
-      "device_consumption_water",
-      waterDevices,
-      energyData.state.waterUnit
-    );
+    printCategory("device_consumption_water", waterDevices, state.waterUnit);
   }
 
-  const { summedData } = getSummedData(energyData.state);
+  const { summedData } = getSummedData(state);
   const { consumption } = computeConsumptionData(summedData, undefined);
 
   const processConsumptionData = function (

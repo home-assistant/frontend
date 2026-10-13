@@ -24,6 +24,7 @@ import {
   getEnergyLiveDayPeriod,
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
+  saveEnergyPreferences,
   EMPTY_PREFERENCES,
   CompareMode,
 } from "../../src/data/energy";
@@ -1130,6 +1131,57 @@ describe("getEnergyLiveDayPeriod", () => {
   });
 });
 
+describe("getEnergyDataCollection cache", () => {
+  it("reuses collections per connection and key and clears their preferences", async () => {
+    const hass = createMockHass();
+    const otherHass = createMockHass();
+    for (const mockHass of [hass, otherHass]) {
+      Object.assign(mockHass, {
+        connection: {
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          connected: true,
+        },
+      });
+    }
+    const options = {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      prefs: EMPTY_PREFERENCES,
+      key: "energy_cache",
+    };
+    const collection = getEnergyDataCollection(hass.connection, options);
+    const otherKey = getEnergyDataCollection(hass.connection, {
+      ...options,
+      key: "energy_cache_other",
+    });
+    const otherConnection = getEnergyDataCollection(
+      otherHass.connection,
+      options
+    );
+    assert.strictEqual(
+      getEnergyDataCollection(hass.connection, options),
+      collection
+    );
+    assert.notStrictEqual(otherKey, collection);
+    assert.notStrictEqual(otherConnection, collection);
+
+    hass.callWS = vi.fn().mockResolvedValue(EMPTY_PREFERENCES);
+    await saveEnergyPreferences(hass, EMPTY_PREFERENCES);
+    assert.isUndefined(collection.prefs);
+    assert.isUndefined(otherKey.prefs);
+    assert.strictEqual(otherConnection.prefs, EMPTY_PREFERENCES);
+    assert.strictEqual(
+      getEnergyDataCollection(hass.connection, options),
+      collection
+    );
+  });
+});
+
 describe("getEnergyDataCollection overlapping refreshes", () => {
   afterEach(() => {
     localStorage.clear();
@@ -1243,7 +1295,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
       await complete(pending[1]);
       assert.equal(received.mock.calls.length, 1);
       assert.equal(
-        collection.state.start.getTime(),
+        collection.state?.start.getTime(),
         startOfDay(new Date()).getTime()
       );
       unsubSecond();
@@ -1261,7 +1313,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     collection.setCompare(CompareMode.PREVIOUS);
     await complete(pending[0]);
     assert.equal(received.mock.calls.length, 1);
-    assert.equal(collection.state.compareMode, CompareMode.PREVIOUS);
+    assert.equal(collection.state?.compareMode, CompareMode.PREVIOUS);
     unsub();
     await vi.advanceTimersByTimeAsync(5000);
   });
@@ -1288,7 +1340,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
       await refresh;
       assert.equal(received.length, 1);
       assert.equal(
-        collection.state.start.getTime(),
+        collection.state?.start.getTime(),
         collection.start.getTime()
       );
       assert.strictEqual(received[0], collection.state);
@@ -1309,7 +1361,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     const refresh = collection.refresh();
     await complete(pending[1]);
     await refresh;
-    assert.equal(collection.state.compareMode, CompareMode.PREVIOUS);
+    assert.equal(collection.state?.compareMode, CompareMode.PREVIOUS);
     assert.equal(received.mock.calls.length, 1);
     unsub();
     await vi.advanceTimersByTimeAsync(5000);
@@ -1389,7 +1441,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     assert.equal(collection.state, undefined);
     await complete(pending[0]);
     await latestRefresh;
-    assert.strictEqual(collection.state.prefs, latestPrefs);
+    assert.strictEqual(collection.state?.prefs, latestPrefs);
   });
 
   it("replays relevant cached data while refreshing the same selection", async () => {
