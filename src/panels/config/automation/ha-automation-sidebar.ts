@@ -13,6 +13,7 @@ import {
   isTrigger,
   type ActionSidebarConfig,
   type ConditionSidebarConfig,
+  type OptionSidebarConfig,
   type ScriptFieldSidebarConfig,
   type SidebarConfig,
   type TriggerSidebarConfig,
@@ -229,11 +230,8 @@ export default class HaAutomationSidebar extends LitElement {
     }
 
     // option is a building block; its config only carries the option itself
-    if (
-      this.config &&
-      (!(this.config as any)?.config ||
-        "option" in ((this.config as any).config ?? {}))
-    ) {
+    const optionConfig = (this.config as OptionSidebarConfig)?.config;
+    if (this.config && (!optionConfig || "option" in optionConfig)) {
       return "option";
     }
 

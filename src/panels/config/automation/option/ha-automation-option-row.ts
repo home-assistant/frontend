@@ -9,10 +9,11 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { assert } from "superstruct";
 import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -20,6 +21,7 @@ import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_de
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
@@ -30,6 +32,7 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type {
   Condition,
   OptionSidebarConfig,
@@ -39,6 +42,7 @@ import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { Action, Option } from "../../../../data/script";
+import { migrateAutomationAction } from "../../../../data/script";
 import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -47,6 +51,8 @@ import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
 import type HaAutomationCondition from "../condition/ha-automation-condition";
 import { showEditorToast } from "../editor-toast";
+import "../ha-automation-editor-warning";
+import { optionStruct } from "../structs";
 import "../trigger/ha-automation-trigger-references";
 import {
   editorStyles,
@@ -55,6 +61,7 @@ import {
   rowStyles,
 } from "../styles";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -88,6 +95,10 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @state() private _yamlMode = false;
 
+  @state() private _warnings?: string[];
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
@@ -103,6 +114,31 @@ export default class HaAutomationOptionRow extends LitElement {
 
   get selected() {
     return this._selected;
+  }
+
+  public static checkUiSupport(
+    _localize: LocalizeFunc,
+    option: Option
+  ): Error | undefined {
+    try {
+      assert(option, optionStruct);
+    } catch (err: any) {
+      return err;
+    }
+    return undefined;
+  }
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("option") || changedProperties.has("_yamlMode")) {
+      this._warnings =
+        this._yamlMode && isConfigObject(this.option)
+          ? getUiSupportWarnings(
+              this.hass.localize,
+              "ha-automation-option-row",
+              this.option
+            )
+          : undefined;
+    }
   }
 
   private _expandedChanged(ev) {
@@ -266,7 +302,10 @@ export default class HaAutomationOptionRow extends LitElement {
                   )}
                 </ha-dropdown-item>
 
-                <ha-dropdown-item value="toggle_yaml_mode">
+                <ha-dropdown-item
+                  value="toggle_yaml_mode"
+                  .disabled=${!!this._warnings}
+                >
                   <ha-svg-icon
                     slot="icon"
                     .path=${mdiPlaylistEdit}
@@ -343,22 +382,18 @@ export default class HaAutomationOptionRow extends LitElement {
   }
 
   private _renderContent() {
-    if (this.optionsInSidebar && this._yamlMode) {
-      // YAML is edited in the sidebar
-      return nothing;
-    }
-    if (this._yamlMode && this.option) {
-      return html`<div
-        class=${classMap({
-          "card-content": true,
-          card: !this.optionsInSidebar,
-          indent: this.optionsInSidebar,
-          selected: this._selected,
-          hidden: this.optionsInSidebar && this._collapsed,
-        })}
-      >
+    // In sidebar layout, YAML is edited in the sidebar
+    if (this._yamlMode && this.option && !this.optionsInSidebar) {
+      return html`<div class="card-content card">
+        ${
+          this._warnings
+            ? html`<ha-automation-editor-warning
+                .localize=${this.hass.localize}
+                .warnings=${this._warnings}
+              ></ha-automation-editor-warning>`
+            : nothing
+        }
         <ha-yaml-editor
-          .hass=${this.hass}
           .defaultValue=${this.option}
           .readOnly=${this.disabled}
           @value-changed=${this._onYamlChange}
@@ -457,9 +492,11 @@ export default class HaAutomationOptionRow extends LitElement {
 
   private _toggleYamlMode = () => {
     this._yamlMode = !this._yamlMode;
-    this.expand();
-    if (this.optionsInSidebar && this._selected) {
-      this.openSidebar(); // refresh sidebar
+    if (this.optionsInSidebar) {
+      // YAML is edited in the sidebar, so open (or refresh) it
+      this.openSidebar();
+    } else {
+      this.expand();
     }
   };
 
@@ -468,8 +505,18 @@ export default class HaAutomationOptionRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
+    this._saveYamlOption(ev.detail.value);
+  }
+
+  private _saveYamlOption(value: unknown) {
+    // YAML can parse to scalars or lists, which are never valid options
+    if (!isConfigObject(value)) {
+      return;
+    }
     fireEvent(this, "value-changed", {
-      value: ev.detail.value,
+      value: value.sequence
+        ? { ...value, sequence: migrateAutomationAction(value.sequence) }
+        : value,
     });
   }
 
@@ -550,7 +597,7 @@ export default class HaAutomationOptionRow extends LitElement {
       confirmText: this.hass.localize("ui.common.submit"),
     });
     if (alias !== null) {
-      const value = { ...this.option };
+      const value: Option = { ...this.option! };
       if (alias === "") {
         delete value.alias;
       } else {
@@ -559,6 +606,12 @@ export default class HaAutomationOptionRow extends LitElement {
       fireEvent(this, "value-changed", {
         value,
       });
+
+      if (this._selected) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this._yamlEditor?.setValue(value);
+      }
     }
   };
 
@@ -591,6 +644,8 @@ export default class HaAutomationOptionRow extends LitElement {
 
       if (this._selected) {
         this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this._yamlEditor?.setValue(value);
       }
     }
   };
@@ -630,7 +685,7 @@ export default class HaAutomationOptionRow extends LitElement {
     const sidebarOption = option ?? this.option;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
-        fireEvent(this, "value-changed", { value });
+        this._saveYamlOption(value);
       },
       close: (focus?: boolean) => {
         this._selected = false;
