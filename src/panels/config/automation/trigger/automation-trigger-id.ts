@@ -300,6 +300,10 @@ class AutomationTriggerConditionMapper {
 
   /** Map condition actions and nested blocks; return other action types unchanged. */
   private _mapAction = (action: Action): Action => {
+    // Invalid YAML can contain scalars, which getActionType can't handle
+    if (typeof action !== "object" || action === null) {
+      return action;
+    }
     switch (getActionType(action)) {
       case "check_condition":
         return this._mapCondition(action as Condition) as Action;

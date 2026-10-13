@@ -44,6 +44,21 @@ describe("automation trigger IDs", () => {
     expect(stripGeneratedTriggerIds(null as unknown as Trigger)).toBeNull();
   });
 
+  it("ignores scalar action entries from invalid YAML", () => {
+    const actions = [
+      1,
+      { choose: [{ conditions: [], sequence: [1, null] }] },
+    ] as unknown as Action[];
+
+    expect(
+      cleanupUnusedGeneratedTriggerIds({
+        triggers: [],
+        conditions: [],
+        actions,
+      } as AutomationConfig).actions
+    ).toEqual(actions);
+  });
+
   it("creates generated trigger ID options that do not collide with existing IDs", () => {
     const triggers: Trigger[] = [
       { trigger: "state", entity_id: "light.kitchen" },

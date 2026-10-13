@@ -1,5 +1,4 @@
 import {
-  any,
   array,
   boolean,
   number,
@@ -19,8 +18,8 @@ export const baseTriggerStruct = object({
 export const optionStruct = object({
   alias: optional(string()),
   note: optional(string()),
-  conditions: union([string(), object(), array(any())]),
-  sequence: union([object(), array(any())]),
+  conditions: union([string(), object(), array(union([string(), object()]))]),
+  sequence: union([object(), array(object())]),
 });
 
 export const forDictStruct = object({
