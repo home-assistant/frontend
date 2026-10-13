@@ -8904,7 +8904,7 @@
             "share_with_app": "Share with app",
             "share_failed": "Couldn't share the device. Try again, or close this dialog to get a new code.",
             "share_expired": "This code has expired.",
-            "new_code": "New code"
+            "new_code": "Get new code"
           },
           "lock": {
             "manage": "Manage access",

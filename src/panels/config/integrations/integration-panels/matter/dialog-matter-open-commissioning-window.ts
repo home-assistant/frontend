@@ -51,6 +51,8 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   private _windowOpenedAt?: number;
 
+  private _expiryTimer?: number;
+
   // Not reset on close: the request outlives it.
   private _opening = new Set<string>();
 
@@ -110,7 +112,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                           this._shareExpired
                             ? html`<ha-button
                                 slot="action"
-                                appearance="plain"
+                                size="s"
                                 @click=${this._start}
                               >
                                 ${this.hass.localize(
@@ -275,6 +277,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     }
     this._status = "started";
     this._commissionParams = undefined;
+    clearTimeout(this._expiryTimer);
     this._shareFailed = false;
     this._shareExpired = false;
     const deviceId = this.device_id!;
@@ -290,6 +293,15 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       }
       this._commissionParams = params;
       this._windowOpenedAt = requestedAt;
+      if (params.commissioning_timeout != null) {
+        // Otherwise the dead code only shows as dead once Share is tapped.
+        this._expiryTimer = window.setTimeout(
+          () => {
+            this._shareExpired = true;
+          },
+          requestedAt + params.commissioning_timeout * 1000 - Date.now()
+        );
+      }
     } catch (_e) {
       if (this.device_id === deviceId) {
         this._status = "failed";
@@ -383,6 +395,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     this._shareFailed = false;
     this._shareExpired = false;
     this._windowOpenedAt = undefined;
+    clearTimeout(this._expiryTimer);
   }
 
   static get styles(): CSSResultGroup {

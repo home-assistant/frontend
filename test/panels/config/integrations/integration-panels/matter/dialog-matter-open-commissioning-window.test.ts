@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as MatterData from "../../../../../../src/data/matter";
 import type { MatterCommissioningParameters } from "../../../../../../src/data/matter";
 import type { MatterOpenCommissioningWindowDialogParams } from "../../../../../../src/panels/config/integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
@@ -232,6 +232,60 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(openMatterCommissioningWindow).toHaveBeenCalledTimes(2);
       expect(internals()["_shareExpired"]).toBe(false);
       expect(commissionParams()).toBe(fresh);
+    });
+
+    describe("expiry", () => {
+      beforeEach(() => {
+        vi.useFakeTimers();
+      });
+
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it("marks the code expired when the window runs out, without a tap", async () => {
+        await openedWindow();
+
+        vi.advanceTimersByTime(299_000);
+        expect(internals()["_shareExpired"]).toBe(false);
+        vi.advanceTimersByTime(1_000);
+
+        expect(internals()["_shareExpired"]).toBe(true);
+        expect(shareMatterDeviceExternal).not.toHaveBeenCalled();
+      });
+
+      it("times a new window from its own start", async () => {
+        await openedWindow();
+        vi.advanceTimersByTime(200_000);
+        await start();
+
+        vi.advanceTimersByTime(200_000);
+        expect(internals()["_shareExpired"]).toBe(false);
+        vi.advanceTimersByTime(100_000);
+
+        expect(internals()["_shareExpired"]).toBe(true);
+      });
+
+      it("drops an earlier failure along with the expiry on a new code", async () => {
+        shareMatterDeviceExternal.mockRejectedValue({ code: "failed" });
+        await openedWindow();
+        await share();
+        vi.advanceTimersByTime(300_000);
+
+        await start();
+
+        expect(internals()["_shareFailed"]).toBe(false);
+        expect(internals()["_shareExpired"]).toBe(false);
+      });
+
+      it("stops the clock when the dialog closes", async () => {
+        await openedWindow();
+
+        close();
+        vi.advanceTimersByTime(300_000);
+
+        expect(internals()["_shareExpired"]).toBe(false);
+      });
     });
 
     it("keeps the dialog open when the code is copied during a share", async () => {
