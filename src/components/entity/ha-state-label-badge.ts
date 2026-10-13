@@ -13,7 +13,6 @@ import {
   consumeLocalize,
 } from "../../common/decorators/consume-context-entry";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { unitFromParts, valueFromParts } from "../../common/entity/value_parts";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -138,7 +137,7 @@ export class HaStateLabelBadge extends LitElement {
         )}
         .description=${
           this.showName
-            ? (this.name ?? computeStateName(entityState))
+            ? (this.name ?? this._formatters?.formatEntityName(entityState))
             : undefined
         }
       >

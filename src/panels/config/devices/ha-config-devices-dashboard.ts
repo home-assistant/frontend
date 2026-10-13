@@ -746,7 +746,6 @@ export class HaConfigDeviceDashboard extends LitElement {
                     : nothing
                 }
                 <ha-battery-icon
-                  .hass=${this.hass}
                   .batteryStateObj=${battery}
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>
@@ -1405,7 +1404,7 @@ ${rejected
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
       haStyle,

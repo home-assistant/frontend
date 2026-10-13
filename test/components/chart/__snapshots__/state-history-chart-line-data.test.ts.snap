@@ -1321,3 +1321,71 @@ exports[`generateStateHistoryChartLineData > matches snapshot for numeric sensor
   "yAxisFractionDigits": 0,
 }
 `;
+
+exports[`generateStateHistoryChartLineData > matches snapshot when states continue past endTime 1`] = `
+{
+  "datasetToDataIndex": [
+    0,
+  ],
+  "datasets": [
+    {
+      "animationDurationUpdate": 0,
+      "areaStyle": undefined,
+      "color": "#4269d0",
+      "cursor": "default",
+      "data": [
+        [
+          1704153300000,
+          10,
+        ],
+        [
+          1704153360000,
+          12,
+        ],
+        [
+          1704153420000,
+          11.5,
+        ],
+        [
+          1704153420001,
+          11.5,
+        ],
+        [
+          1704153420001,
+          null,
+        ],
+        [
+          1704153480000,
+          11,
+        ],
+        [
+          1704153540000,
+          13,
+        ],
+        [
+          1704153600000,
+          13,
+        ],
+      ],
+      "id": "sensor.power_meter",
+      "lineStyle": {
+        "width": 1.5,
+      },
+      "name": "power meter",
+      "sampling": "minmax",
+      "step": "end",
+      "symbol": "circle",
+      "symbolSize": 1,
+      "tooltip": {
+        "show": true,
+      },
+      "type": "line",
+    },
+  ],
+  "entityIds": [
+    "sensor.power_meter",
+  ],
+  "visualMap": undefined,
+  "yAxisFractionDigits": 1,
+}
+`;

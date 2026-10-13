@@ -107,10 +107,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
 
     if (!this._co2State) {
       return html`<hui-warning>
-        ${createEntityNotFoundWarning(
-          { config: this._hassConfig, localize: this._i18n.localize },
-          this._data.co2SignalEntity
-        )}
+        ${createEntityNotFoundWarning(this._i18n.localize, this._hassConfig)}
       </hui-warning>`;
     }
 

@@ -154,7 +154,7 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   private _handleButton(ev) {
-    const target = ev.currentTarget.target as Target;
+    const target = ev.currentTarget.dataset.target as Target;
     const step = ev.currentTarget.step as number;
 
     const defaultValue = target === "high" ? this._max : this._min;
@@ -230,9 +230,9 @@ export class HaStateControlClimateTemperature extends LitElement {
       <div class="buttons">
         <ha-outlined-icon-button
           style=${styleMap({
-            "--md-sys-color-outline": color,
+            "--ha-outlined-icon-button-outline-color": color,
           })}
-          .target=${target}
+          data-target=${target}
           .step=${-this._step}
           @click=${this._handleButton}
         >
@@ -240,9 +240,9 @@ export class HaStateControlClimateTemperature extends LitElement {
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           style=${styleMap({
-            "--md-sys-color-outline": color,
+            "--ha-outlined-icon-button-outline-color": color,
           })}
-          .target=${target}
+          data-target=${target}
           .step=${this._step}
           @click=${this._handleButton}
         >

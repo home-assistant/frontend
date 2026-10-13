@@ -40,11 +40,8 @@ export interface CallServiceActionTraceStep extends BaseTraceStep {
     running_script: boolean;
     params: Record<string, unknown>;
   };
-  child_id?: {
-    domain: string;
-    item_id: string;
-    run_id: string;
-  };
+  // The script or automation run this step started.
+  child_id?: TraceId;
 }
 
 export interface ChooseActionTraceStep extends BaseTraceStep {
@@ -195,10 +192,19 @@ export const loadTraces = <T extends keyof TraceTypes>(
     item_id,
   });
 
-export type TraceContexts = Record<
-  string,
-  { run_id: string; domain: string; item_id: string }
->;
+export interface TraceId {
+  domain: string;
+  item_id: string;
+  run_id: string;
+}
+
+export const getTracePath = (domain: string, itemId: string): string =>
+  `/config/${domain}/trace/${encodeURIComponent(itemId)}`;
+
+export const getTraceUrl = ({ domain, item_id, run_id }: TraceId): string =>
+  `${getTracePath(domain, item_id)}?run_id=${run_id}`;
+
+export type TraceContexts = Record<string, TraceId>;
 
 export const loadTraceContexts = (
   hass: HomeAssistant,

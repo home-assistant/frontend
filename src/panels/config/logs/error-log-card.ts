@@ -339,7 +339,7 @@ class ErrorLogCard extends LitElement {
             streaming && this._boot === 0 && !this._error
               ? html`<div class="live-indicator">
                   <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
-                  Live
+                  ${localize("ui.panel.config.logs.live")}
                 </div>`
               : nothing
           }
@@ -876,7 +876,7 @@ class ErrorLogCard extends LitElement {
 
     ha-assist-chip {
       --ha-assist-chip-container-shape: 10px;
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     @keyframes breathe {

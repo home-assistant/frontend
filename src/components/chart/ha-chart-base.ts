@@ -531,6 +531,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
+      this._disposeSonification();
       if (this._compareCustomLegendOptions(previousOptions, this.options)) {
         // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
@@ -1038,6 +1039,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       LegendComponentOption | undefined;
+    const hiddenCount = this._hiddenDatasets.size;
     Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
       if (selected === false) {
         this._getAllIdsFromLegend(options, stat).forEach((id) =>
@@ -1045,7 +1047,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         );
       }
     });
-    this.requestUpdate("_hiddenDatasets");
+    // Flagging this rebuilds and downsamples every series, so only when needed
+    if (this._hiddenDatasets.size !== hiddenCount) {
+      this.requestUpdate("_hiddenDatasets");
+    }
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
@@ -2089,9 +2094,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       height: 100%;
       --ha-button-height: 24px;
       --ha-chip-label-weight: 500;
-      --md-assist-chip-leading-space: var(--ha-space-2);
-      --md-assist-chip-trailing-space: var(--ha-space-2);
-      --md-assist-chip-icon-label-space: var(--ha-space-1);
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }

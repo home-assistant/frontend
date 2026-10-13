@@ -308,4 +308,66 @@ describe("generateEnergyDevicesDetailGraphData", () => {
       assert.deepEqual(legend!.secondaryIds, [`compare-${negative!.id}`]);
     });
   });
+
+  it("clamps a parent's untracked part when it was added mid-bucket", () => {
+    // The parent started reporting partway through the second day, so its
+    // change for that day is smaller than its child's full-day change.
+    const dayMs = 24 * 60 * 60 * 1000;
+    const start = new Date("2025-09-01T00:00:00Z");
+    const day1 = start.getTime() + 27 * dayMs;
+    const day2 = day1 + dayMs;
+    const bucket = (ts: number, change: number) => ({
+      start: ts,
+      end: ts + dayMs,
+      change,
+    });
+    const gridPrefs = generateEnergyPreferences({ grid: true });
+    const energyData = {
+      ...generateEnergyData(1, { days: 1, prefs: gridPrefs }),
+      start,
+      end: new Date(start.getTime() + 30 * dayMs),
+      prefs: {
+        ...gridPrefs,
+        energy_sources: gridPrefs.energy_sources.map((s) =>
+          s.type === "grid" ? { ...s, stat_energy_to: null } : s
+        ),
+        device_consumption: [
+          { stat_consumption: "sensor.server_rack" },
+          {
+            stat_consumption: "sensor.server",
+            included_in_stat: "sensor.server_rack",
+          },
+        ],
+      },
+      stats: {
+        "sensor.grid_consumption": [bucket(day1, 30), bucket(day2, 30.62)],
+        "sensor.server": [bucket(day1, 4), bucket(day2, 4.01)],
+        "sensor.server_rack": [bucket(day2, 1.64)],
+      },
+    };
+    const result = generateEnergyDevicesDetailGraphData({
+      ...baseParams,
+      energyData,
+    });
+
+    const points = (d: (typeof result.chartData)[number]) =>
+      (d.data as any[]).map((p) => p.value ?? p);
+    const parent = result.chartData.find(
+      (d) => typeof d.id === "string" && d.id.startsWith("sensor.server_rack")
+    );
+    assert.exists(parent);
+    assert.isTrue(points(parent!).every(([, y]) => y >= 0));
+
+    // The stack still adds up to the grid usage for that day.
+    const day2Total = result.chartData
+      .flatMap(points)
+      .filter(([, , ts]) => ts === day2)
+      .reduce((acc, [, y]) => acc + y, 0);
+    assert.closeTo(day2Total, 30.62, 1e-9);
+    assert.isFalse(
+      result.chartData.some(
+        (d) => typeof d.id === "string" && d.id.includes("untracked-negative")
+      )
+    );
+  });
 });

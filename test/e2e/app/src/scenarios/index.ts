@@ -372,6 +372,20 @@ const delayedMediaBrowseErrorScenario: Scenario = (hass) => {
   hass.mockWS("media_source/browse_media", () => browsePromise);
 };
 
+const automationEditorScenario: Scenario = async (hass) => {
+  // A direct load of an automation route otherwise races the config panel
+  // translations that the editor's buttons and dialogs are named by.
+  await hass.loadFragmentTranslation("config");
+  // Like a default install, so creating an automation starts in the dialog
+  // that also offers blueprints.
+  hass.updateHass({
+    config: {
+      ...hass.config,
+      components: [...hass.config.components, "blueprint"],
+    },
+  });
+};
+
 const systemLogReportingScenario: Scenario = async (hass) => {
   await hass.loadFragmentTranslation("config");
   hass.updateHass({
@@ -497,6 +511,7 @@ const systemLogReportingScenario: Scenario = async (hass) => {
 
 export const scenarios: Record<string, Scenario> = {
   default: defaultScenario,
+  "automation-editor": automationEditorScenario,
   "non-admin": nonAdminScenario,
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,

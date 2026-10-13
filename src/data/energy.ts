@@ -26,10 +26,12 @@ import {
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
+import { computeAreaName } from "../common/entity/compute_area_name";
+import { getEntityAreaId } from "../common/entity/context/get_entity_context";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
   StatisticPeriod,
@@ -43,6 +45,7 @@ import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
+  ENERGY_UNITS,
   VOLUME_UNITS,
 } from "./recorder";
 
@@ -342,6 +345,19 @@ export const computeEnergyLabel = (
   );
 };
 
+export const computeEnergyStatisticArea = (
+  registries: HomeAssistantRegistries,
+  statisticId: string
+): string | undefined => {
+  const areaId = getEntityAreaId(
+    statisticId,
+    registries.entities,
+    registries.devices
+  );
+  const area = areaId ? registries.areas[areaId] : undefined;
+  return area ? computeAreaName(area) : undefined;
+};
+
 /**
  * Device labels keyed by statistic id. Cards that show live power or flow
  * key their nodes by `stat_rate` instead of `stat_consumption`; devices
@@ -595,6 +611,20 @@ const getEnergyData = async (
 
   const gasUnit = getEnergyGasUnit(states, config, prefs, statsMetadata);
   const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
+  // Everything else on the dashboard is kWh, so gas in another energy unit is
+  // fetched separately.
+  const gasIsOtherEnergy =
+    ENERGY_UNITS.includes(gasUnit as any) && gasUnit !== "kWh";
+  const gasEnergyStatIds = gasIsOtherEnergy
+    ? (energySourcesByType(prefs).gas ?? []).map(
+        (source) => source.stat_energy_from
+      )
+    : [];
+  const gasEnergyUnits: StatisticsUnitConfiguration = {
+    energy: gasIsOtherEnergy
+      ? (gasUnit as (typeof ENERGY_UNITS)[number])
+      : undefined,
+  };
 
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
@@ -621,6 +651,18 @@ const getEnergyData = async (
         ["change"]
       )
     : {};
+  const _gasEnergyStats: Statistics | Promise<Statistics> =
+    gasEnergyStatIds.length
+      ? fetchStatistics(
+          callWS,
+          periodStart,
+          periodEnd,
+          gasEnergyStatIds,
+          period,
+          gasEnergyUnits,
+          ["change"]
+        )
+      : {};
   const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
     ? fetchStatistics(
         callWS,
@@ -661,6 +703,7 @@ const getEnergyData = async (
   let periodEndCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
+  let _gasEnergyStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
     if (compare === CompareMode.PREVIOUS) {
       if (
@@ -723,6 +766,17 @@ const getEnergyData = async (
         ["change"]
       );
     }
+    if (gasEnergyStatIds.length) {
+      _gasEnergyStatsCompare = fetchStatistics(
+        callWS,
+        periodStartCompare,
+        periodEndCompare,
+        gasEnergyStatIds,
+        period,
+        gasEnergyUnits,
+        ["change"]
+      );
+    }
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         callWS,
@@ -762,19 +816,23 @@ const getEnergyData = async (
 
   const [
     energyStats,
+    gasEnergyStats,
     powerStats,
     powerStatsHour,
     waterStats,
     energyStatsCompare,
+    gasEnergyStatsCompare,
     waterStatsCompare,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
+    _gasEnergyStats,
     _powerStats,
     _powerStatsHour,
     _waterStats,
     _energyStatsCompare,
+    _gasEnergyStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
@@ -810,9 +868,18 @@ const getEnergyData = async (
     });
   }
 
-  const stats = { ...energyStats, ...waterStats, ...powerStats };
+  const stats = {
+    ...energyStats,
+    ...gasEnergyStats,
+    ...waterStats,
+    ...powerStats,
+  };
   if (compare) {
-    statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+    statsCompare = {
+      ...energyStatsCompare,
+      ...gasEnergyStatsCompare,
+      ...waterStatsCompare,
+    };
   }
 
   const data: EnergyData = {
@@ -1253,11 +1320,6 @@ const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
-  const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
-  if (unitClass === "energy") {
-    return "kWh";
-  }
-
   const units = prefs.energy_sources
     .filter((s) => s.type === "gas")
     .map((s) =>
@@ -1267,6 +1329,43 @@ const getEnergyGasUnit = (
         statisticsMetaData[s.stat_energy_from]
       )
     );
+
+  const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
+  if (unitClass === "energy") {
+    // A gas statistic that is also a grid, solar, battery or device statistic
+    // is read by those charts in kWh, so keep kWh to not mislabel the values.
+    const kWhStatIds = new Set([
+      ...prefs.device_consumption.map((device) => device.stat_consumption),
+      ...prefs.energy_sources.flatMap((source) => {
+        if (source.type === "solar") {
+          return [source.stat_energy_from];
+        }
+        if (source.type === "battery") {
+          return [source.stat_energy_from, source.stat_energy_to];
+        }
+        if (source.type === "grid") {
+          return [source.stat_energy_from, source.stat_energy_to].filter(
+            (id): id is string => id !== null
+          );
+        }
+        return [];
+      }),
+    ]);
+    const isSharedWithKWh = prefs.energy_sources.some(
+      (source) =>
+        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
+    );
+    const first = units[0];
+    if (
+      !isSharedWithKWh &&
+      ENERGY_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof ENERGY_UNITS)[number];
+    }
+    return "kWh";
+  }
+
   if (units.length) {
     const first = units[0];
     if (

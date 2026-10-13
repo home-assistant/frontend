@@ -202,13 +202,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
         }
 
         const { friendlyName, deviceName, parentDeviceName, areaName } =
-          computeEntitySearchLabels(
-            entity,
-            registries.entities,
-            registries.devices,
-            registries.areas,
-            registries.floors
-          );
+          computeEntitySearchLabels(entity, registries);
 
         if (
           [friendlyName, deviceName, parentDeviceName, areaName].some((name) =>
