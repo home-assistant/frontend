@@ -200,9 +200,21 @@ describe("checkConditionsMet", () => {
             state,
             attributes: { user_id: "user1", in_zones: inZones },
           },
-          "zone.store_1": { entity_id: "zone.store_1", state: "1" },
-          "zone.store_2": { entity_id: "zone.store_2", state: "0" },
-          "zone.work": { entity_id: "zone.work", state: "0" },
+          "zone.store_1": {
+            entity_id: "zone.store_1",
+            state: "1",
+            attributes: {},
+          },
+          "zone.store_2": {
+            entity_id: "zone.store_2",
+            state: "0",
+            attributes: {},
+          },
+          "zone.work": {
+            entity_id: "zone.work",
+            state: "0",
+            attributes: {},
+          },
         },
         entities: {
           "zone.store_1": { entity_id: "zone.store_1", labels: ["store"] },
@@ -274,8 +286,8 @@ describe("checkConditionsMet", () => {
       ).toBe(true);
     });
 
-    it("does not match when the person has no in_zones", () => {
-      const hass = createLocationHass("Store", []);
+    it("does not match when the person is in no zone", () => {
+      const hass = createLocationHass("not_home", []);
       expect(
         checkConditionsMet(
           [{ condition: "location", target: { entity_id: "zone.store_1" } }],
@@ -484,6 +496,28 @@ describe("checkConditionsMet", () => {
         expect(check(hass, { entity_id: "zone.store_1" })).toBe(false);
         expect(check(hass, { entity_id: "zone.store_2" })).toBe(true);
       });
+
+      it.each([["active_zone"], ["any_zone"]])(
+        "matches the state with %s when in_zones is empty",
+        (matchMode) => {
+          // Legacy device trackers don't report in_zones.
+          const hass = createActiveZoneHass("Work", []);
+          const conditions = (entityId: string) =>
+            [
+              {
+                condition: "location",
+                target: { entity_id: entityId },
+                match_mode: matchMode,
+              },
+            ] as any;
+          expect(checkConditionsMet(conditions("zone.work"), hass, {})).toBe(
+            true
+          );
+          expect(checkConditionsMet(conditions("zone.store_1"), hass, {})).toBe(
+            false
+          );
+        }
+      );
 
       it("never matches a passive zone", () => {
         const hass = createActiveZoneHass("Work", [

@@ -71,7 +71,8 @@ export interface LocationCondition extends BaseCondition {
   /**
    * `any_zone` (default) matches the zones in the person `in_zones`.
    * `active_zone` matches only the zone shown as the person state, like
-   * `locations`, so passive zones never match.
+   * `locations`, so passive zones never match. Both match the state when
+   * `in_zones` is empty, as it is for legacy device trackers.
    */
   match_mode?: LocationMatchMode;
   /** Matches the person state `not_home`, which passive zones don't change. */
@@ -313,11 +314,16 @@ function checkLocationCondition(
   if (!isValidTarget(condition.target)) {
     return false;
   }
-  const inZones = stateObj.attributes.in_zones;
-  if (!Array.isArray(inZones) || inZones.length === 0) {
-    return false;
-  }
   const zones = resolveLocationZones(hass, condition.target);
+  const inZones = stateObj.attributes.in_zones;
+  // Legacy device trackers don't report `in_zones` (person only adds
+  // zone.home for them), so their state, the active zone name, is all there
+  // is. Trackers that do report it have an empty list only when `not_home`.
+  if (!Array.isArray(inZones) || inZones.length === 0) {
+    return zones.some(
+      (zoneId) => activeZoneState(hass, zoneId) === stateObj.state
+    );
+  }
   if (condition.match_mode === "active_zone") {
     // Zone names aren't unique, so find the zone the person is in that set
     // their state, rather than comparing the selected zones' names.
