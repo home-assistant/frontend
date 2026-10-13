@@ -104,6 +104,11 @@ export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
  */
 export const narrowViewportContext = createContext<boolean>("narrowViewport");
 
+/**
+ * Whether the user prefers reduced motion.
+ */
+export const reducedMotionContext = createContext<boolean>("reducedMotion");
+
 // #region lazy-contexts
 
 /**
@@ -207,7 +212,7 @@ declare global {
     "hass-related-context": RelatedContextItem | undefined;
   }
   interface HTMLElementEventMap {
-    "hass-related-context": HASSDomEvent<RelatedContextItem | undefined>;
+    "hass-related-context": HASSDomEvent<HASSDomEvents["hass-related-context"]>;
   }
 }
 

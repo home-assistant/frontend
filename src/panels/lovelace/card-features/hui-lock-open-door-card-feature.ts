@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import { mdiCheck } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,

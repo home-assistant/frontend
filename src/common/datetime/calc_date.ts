@@ -15,6 +15,7 @@ import { TZDate } from "@date-fns/tz";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
+import { LOCAL_TIME_ZONE } from "./resolve-time-zone";
 
 const calcZonedDate = (
   date: Date,
@@ -41,6 +42,35 @@ export const calcDate = (
   locale.time_zone === TimeZone.server
     ? (calcZonedDate(date, config.time_zone, fn, options) as Date)
     : fn(date, options);
+
+/**
+ * Moves a date calculated in the browser time zone to the same date and time
+ * in the server time zone.
+ */
+export const shiftToServerTimeZone = (
+  date: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+): Date => {
+  if (
+    locale.time_zone === TimeZone.server ||
+    LOCAL_TIME_ZONE === config.time_zone
+  ) {
+    return date;
+  }
+  const shifted = new TZDate(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    config.time_zone
+  ).getTime();
+  // TZDate is invalid where Intl lacks "longOffset" (Chrome < 95, Safari < 15.4)
+  return Number.isNaN(shifted) ? date : new Date(shifted);
+};
 
 export const calcDateProperty = (
   date: Date,

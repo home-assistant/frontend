@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
@@ -74,8 +75,8 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
     this._aliases = this._params.entry?.aliases || [];
     this._icon = this._params.entry?.icon || null;
     this._level = this._params.entry?.level ?? null;
-    this._addedAreas.clear();
-    this._removedAreas.clear();
+    this._addedAreas = new Set();
+    this._removedAreas = new Set();
     this._open = true;
     this._initDirtyTracking({ type: "deep" }, this._currentState());
   }
@@ -98,8 +99,6 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
   private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
-    this._addedAreas.clear();
-    this._removedAreas.clear();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -188,7 +187,6 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
             ></ha-input>
 
             <ha-icon-picker
-              .hass=${this.hass}
               .value=${this._icon}
               @value-changed=${this._iconChanged}
               .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
@@ -336,13 +334,13 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
-  private _nameChanged(ev: InputEvent) {
+  private _nameChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
     this._updateDirtyState(this._currentState());
   }
 
-  private _levelChanged(ev: InputEvent) {
+  private _levelChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._level =
       (ev.target as HaInput).value === ""

@@ -19,7 +19,6 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
 import "../../ha-adaptive-dialog";
-import "../../ha-dialog-header";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
 import "../../ha-svg-icon";
@@ -39,7 +38,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   @state() private _entitySourcesLoaded = false;
 
-  private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
+  private _deviceIntegrationLookup = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceIntegrationLookup(Object.values(entities))
+  );
 
   public showDialog(params: TargetDetailsDialogParams): void {
     this._params = params;
@@ -107,16 +109,23 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     if (!target?.device) {
       return true;
     }
-    const deviceIntegrations = this._entitySources
-      ? this._deviceIntegrationLookup(
-          this._entitySources,
-          Object.values(this.hass.entities)
-        )
+    const deviceIntegrations = this._hasIntegration({ target })
+      ? this._deviceIntegrationLookup(this.hass.entities)
       : undefined;
     return ensureArray(target.device).some((d) =>
       filterSelectorDevices(d, device, deviceIntegrations)
     );
   };
+
+  private _combinedFilter = memoizeOne(
+    (
+      entityFilter: HaEntityPickerEntityFilterFunc | undefined,
+      activeFilter: (entityId: string) => boolean
+    ): HaEntityPickerEntityFilterFunc =>
+      (stateObj) =>
+        (!entityFilter || entityFilter(stateObj)) &&
+        activeFilter(stateObj.entity_id)
+  );
 
   private _selectorTarget() {
     return this._params?.selector?.target || null;
@@ -126,6 +135,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     if (!this._params) {
       return nothing;
     }
+
+    const { activeFilter } = this._params;
 
     let deviceFilter: HaDevicePickerDeviceFilterFunc | undefined;
     let entityFilter: HaEntityPickerEntityFilterFunc | undefined;
@@ -143,6 +154,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       includeDomains = this._params.includeDomains;
       includeDeviceClasses = this._params.includeDeviceClasses;
       primaryEntitiesOnly = this._params.primaryEntitiesOnly;
+    }
+
+    if (activeFilter) {
+      entityFilter = this._combinedFilter(entityFilter, activeFilter);
     }
 
     const waitingForSources =

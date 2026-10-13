@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -195,7 +196,6 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         .preventScrimClose=${this.isDirtyState}
@@ -478,7 +478,9 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
     }
   }
 
-  private _handleCredentialTypeChanged(ev: Event): void {
+  private _handleCredentialTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ): void {
     this._credentialType = (ev.currentTarget as HaRadioGroup)
       .value as ZwaveCredentialType;
     // Switching types invalidates any data tied to the previous type's

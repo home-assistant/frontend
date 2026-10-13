@@ -5,6 +5,7 @@ export interface Webhook {
   domain: string;
   name: string;
   local_only: boolean;
+  allowed_methods: string[];
 }
 export interface WebhookError {
   code: number;

@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   update_release_draft:
+    if: github.repository == 'home-assistant/frontend'
     permissions:
       # write permission for contents is required to create a github release
       contents: write
@@ -18,6 +19,6 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@eada3c96a64734dd381cfbda23511034e328ddb0 # v7.6.0
+      - uses: release-drafter/release-drafter@72967cdc98ddd3160f1fc3dff619de365e137dd0 # v7.9.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

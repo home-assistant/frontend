@@ -66,9 +66,11 @@ const renderProgress = (
   stage: PipelineRun["stage"],
   start_suffix = "-start"
 ) => {
-  const startEvent = pipelineRun.events.find(
-    (ev) => ev.type === `${stage}` + start_suffix
-  );
+  // Speech-to-text times from the end of voice activity, but core only sends
+  // stt-vad-end when it runs VAD itself. Fall back to the stage start then.
+  const startEvent =
+    pipelineRun.events.find((ev) => ev.type === `${stage}${start_suffix}`) ??
+    pipelineRun.events.find((ev) => ev.type === `${stage}-start`);
   const finishEvent = pipelineRun.events.find(
     (ev) => ev.type === `${stage}-end`
   );
@@ -193,7 +195,7 @@ export class AssistPipelineDebug extends LitElement {
         messages.push({
           role: "assistant",
           content:
-            this.pipelineRun.intent.intent_output.response.speech.plain.speech,
+            this.pipelineRun.intent.intent_output.response.speech.plain?.speech,
         } as ChatLogAssistantContent);
       }
     }
@@ -321,7 +323,7 @@ export class AssistPipelineDebug extends LitElement {
                                       <div>
                                         ${
                                           this.pipelineRun.wake_word
-                                            .wake_word_output.ww_id
+                                            .wake_word_output.wake_word_id
                                         }
                                       </div>
                                     </div>

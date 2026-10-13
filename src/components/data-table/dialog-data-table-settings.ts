@@ -66,15 +66,15 @@ export class DialogDataTableSettings extends LitElement {
   }
 
   private _preserveLastFixed(columnOrder) {
-    let strippedColumnOrder;
     const lastFixedCount = this._lastFixedCount();
-    if (lastFixedCount && columnOrder) {
-      strippedColumnOrder = [...columnOrder];
-      strippedColumnOrder.splice(
-        columnOrder.length - lastFixedCount,
-        lastFixedCount
-      );
+    if (!lastFixedCount || !columnOrder) {
+      return columnOrder;
     }
+    const strippedColumnOrder = [...columnOrder];
+    strippedColumnOrder.splice(
+      columnOrder.length - lastFixedCount,
+      lastFixedCount
+    );
     return strippedColumnOrder;
   }
 

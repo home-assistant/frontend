@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home Assistant onboarding</title>
+    <style>
+      html,
+      body {
+        font-family: Roboto, Noto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-weight: 400;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      .content {
+        box-sizing: border-box;
+        margin: 0 auto;
+        max-width: 500px;
+        padding: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="content">
+      <ha-onboarding></ha-onboarding>
+    </main>
+    <%= renderTemplate("../../../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../../../src/html/_preload_roboto.html.template") %>
+    <%= renderTemplate("../../../../../src/html/_script_loader.html.template") %>
+  </body>
+</html>

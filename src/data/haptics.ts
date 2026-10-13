@@ -24,7 +24,7 @@ declare global {
   }
 
   interface GlobalEventHandlersEventMap {
-    haptic: HASSDomEvent<HapticType>;
+    haptic: HASSDomEvent<HASSDomEvents["haptic"]>;
   }
 }
 

@@ -168,7 +168,6 @@ class HaInputNumberForm extends LitElement {
         ></ha-input>
 
         <ha-selector-select
-          .hass=${this.hass}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.input_number.unit_of_measurement"
           )}

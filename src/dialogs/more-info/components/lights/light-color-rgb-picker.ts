@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiEyedropper } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import {
   hex2rgb,
   hs2rgb,
@@ -17,7 +18,6 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
 import { apiContext } from "../../../../data/context";
 import type { LightColor, LightEntity } from "../../../../data/light";
@@ -483,8 +483,6 @@ class LightRgbColorPicker extends LitElement {
 
         input[type="color"] {
           appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
           border: none;
           outline: none;
           display: block;

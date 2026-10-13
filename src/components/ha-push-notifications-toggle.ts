@@ -5,7 +5,7 @@ import { getAppKey } from "../data/notify_html5";
 import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 import type { HaSwitch } from "./ha-switch";
 import type { HomeAssistant } from "../types";
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import "./ha-switch";
 
 export const pushSupported =
@@ -55,7 +55,7 @@ class HaPushNotificationsToggle extends LitElement {
     }
   }
 
-  private _handlePushChange(ev: Event) {
+  private _handlePushChange(ev: HASSDomTargetEvent<HaSwitch>) {
     // Somehow this is triggered on Safari on page load causing
     // it to get into a loop and crash the page.
     if (!pushSupported) return;

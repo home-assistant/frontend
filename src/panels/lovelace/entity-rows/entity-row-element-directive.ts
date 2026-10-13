@@ -12,7 +12,10 @@ class EntityRowDirective extends Directive {
 
   private _name?: string;
 
+  private _lastHass?: HomeAssistant;
+
   render(entityId: string, name: string, hass: HomeAssistant) {
+    this._lastHass = hass;
     if (
       !this._element ||
       (this._entityId !== entityId &&
@@ -22,6 +25,15 @@ class EntityRowDirective extends Directive {
         entity: entityId,
         name,
       } as LovelaceRowConfig);
+      this._element.addEventListener(
+        "ll-upgrade",
+        () => {
+          if ("hass" in this._element!) {
+            this._element!.hass = this._lastHass;
+          }
+        },
+        { once: true }
+      );
     } else if (this._entityId !== entityId || this._name !== name) {
       (this._element as LovelaceRow).setConfig?.({
         entity: entityId,

@@ -6,7 +6,8 @@ import { classMap } from "lit/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
-  @property({ attribute: false }) public payload!: Record<string, unknown>;
+  @property({ attribute: false }) public payload!:
+    Record<string, unknown> | string;
 
   @property({ attribute: "show-as-yaml", type: Boolean })
   public showAsYaml = false;

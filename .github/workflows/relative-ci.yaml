@@ -14,11 +14,11 @@ permissions:
 jobs:
   upload-frontend-modern:
     name: Upload stats (frontend/modern)
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.repository == 'home-assistant/frontend' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
-        uses: relative-ci/agent-action@fcf45416581928e8dd62eded78ce98c78e5149f8 # v3.2.3
+        uses: relative-ci/agent-action@711f3a8fa1b928e6afde280011110c9b0a224a60 # v3.2.4
         with:
           key: ${{ secrets.RELATIVE_CI_KEY_frontend_modern }}
           token: ${{ github.token }}
@@ -27,11 +27,11 @@ jobs:
 
   upload-frontend-legacy:
     name: Upload stats (frontend/legacy)
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.repository == 'home-assistant/frontend' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
-        uses: relative-ci/agent-action@fcf45416581928e8dd62eded78ce98c78e5149f8 # v3.2.3
+        uses: relative-ci/agent-action@711f3a8fa1b928e6afde280011110c9b0a224a60 # v3.2.4
         with:
           key: ${{ secrets.RELATIVE_CI_KEY_frontend_legacy }}
           token: ${{ github.token }}

@@ -3,6 +3,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-alert";
@@ -11,9 +12,11 @@ import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-svg-icon";
 import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
+import { getWsErrorMessage } from "../../util/ws-error";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
@@ -190,8 +193,10 @@ export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string
     `;
   }
 
-  private _nameChanged(ev: Event) {
-    this._name = (ev.currentTarget as HTMLInputElement).value;
+  private _nameChanged(
+    ev: HASSDomCurrentTargetEvent<Omit<HaInput, "value"> & { value: string }>
+  ) {
+    this._name = ev.currentTarget.value;
     this._errorMessage = undefined;
     this._updateDirtyState(this._name);
   }
@@ -225,7 +230,8 @@ export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string
       this._markDirtyStateClean();
       this._createdCallback();
     } catch (err: unknown) {
-      this._errorMessage = err instanceof Error ? err.message : String(err);
+      this._errorMessage =
+        getWsErrorMessage(err) ?? this.hass.localize("ui.common.unknown_error");
     } finally {
       this._loading = false;
     }

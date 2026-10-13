@@ -8,6 +8,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
@@ -17,6 +18,12 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
@@ -24,6 +31,7 @@ import {
   OTBRCreateNetwork,
   OTBRSetChannel,
   OTBRSetNetwork,
+  findOTBRInfoForDataset,
   getOTBRInfo,
 } from "../../../../../data/otbr";
 import type { ThreadDataSet, ThreadRouter } from "../../../../../data/thread";
@@ -49,7 +57,6 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
-import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
 
 export interface ThreadNetwork {
   name: string;
@@ -79,7 +86,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .hass=${this.hass}
         header="Thread"
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
@@ -181,43 +188,25 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   private _renderNetwork(network: ThreadNetwork) {
     const otbrForNetwork =
-      this._otbrInfo &&
       network.dataset &&
-      ((network.dataset.preferred_extended_address &&
-        this._otbrInfo[network.dataset.preferred_extended_address]) ||
-        Object.values(this._otbrInfo).find(
-          (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
-        ));
+      findOTBRInfoForDataset(this._otbrInfo, network.dataset);
     const canImportKeychain =
       this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
     return html`<ha-card>
       <div class="card-header">
         ${network.name}${
-          network.dataset
-            ? html`<div>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.thread.thread_network_info"
-                  )}
-                  .otbr=${otbrForNetwork}
-                  .network=${network}
-                  .path=${mdiInformationOutline}
-                  @click=${this._showDatasetInfo}
-                ></ha-icon-button
-                >${
-                  !network.dataset.preferred && !network.routers?.length
-                    ? html`<ha-icon-button
-                        .label=${this.hass.localize(
-                          "ui.panel.config.thread.thread_network_delete_credentials"
-                        )}
-                        .networkDataset=${network.dataset}
-                        .path=${mdiDeleteOutline}
-                        @click=${this._removeDataset}
-                      ></ha-icon-button>`
-                    : ""
-                }
-              </div>`
+          network.dataset &&
+          !network.dataset.preferred &&
+          !network.routers?.length
+            ? html`<ha-icon-button
+                .label=${this.hass.localize(
+                  "ui.panel.config.thread.thread_network_delete_credentials"
+                )}
+                .networkDataset=${network.dataset}
+                .path=${mdiDeleteOutline}
+                @click=${this._removeDataset}
+              ></ha-icon-button>`
             : ""
         }
       </div>
@@ -245,25 +234,29 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 return html`<ha-list-item
                   class="router"
                   twoline
-                  graphic="avatar"
+                  graphic=${ifDefined(router.brand ? "avatar" : undefined)}
                   .hasMeta=${showOverflow}
                 >
-                  <img
-                    slot="graphic"
-                    .src=${brandsUrl(
-                      {
-                        domain: router.brand,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
-                    alt=${router.brand}
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    @error=${this._onImageError}
-                    @load=${this._onImageLoad}
-                  />
+                  ${
+                    router.brand
+                      ? html`<img
+                          slot="graphic"
+                          .src=${brandsUrl(
+                            {
+                              domain: router.brand,
+                              type: "icon",
+                              darkOptimized: this.hass.themes?.darkMode,
+                            },
+                            this.hass.auth.data.hassUrl
+                          )}
+                          alt=${router.brand}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          @error=${this._onImageError}
+                          @load=${this._onImageLoad}
+                        />`
+                      : nothing
+                  }
                   ${
                     router.instance_name ||
                     router.model_name ||
@@ -368,6 +361,38 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             </div> `
       }
       ${
+        network.dataset
+          ? html`<ha-list-nav
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.config.thread.network_info.nav_label",
+                {
+                  name: network.name || network.dataset.extended_pan_id,
+                }
+              )}
+            >
+              <ha-list-item-button
+                href=${`/config/thread/network-info/${network.dataset.dataset_id}${window.location.search}`}
+              >
+                <ha-svg-icon
+                  slot="start"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <div slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.thread.network_info.title"
+                  )}
+                </div>
+                <div slot="supporting-text">
+                  ${this.hass.localize(
+                    "ui.panel.config.thread.network_info.description"
+                  )}
+                </div>
+                <ha-icon-next slot="end"></ha-icon-next>
+              </ha-list-item-button>
+            </ha-list-nav>`
+          : nothing
+      }
+      ${
         network.dataset && !network.dataset.preferred
           ? html`<div class="card-actions">
               <ha-button
@@ -433,12 +458,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
   }
 
-  private async _showDatasetInfo(ev: Event) {
-    const network = (ev.currentTarget as any).network as ThreadNetwork;
-    const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    showThreadDatasetDialog(this, { network, otbrInfo: otbr });
-  }
-
   private _importExternalThreadCredentials() {
     this.hass.auth.external!.fireMessage({
       type: "thread/import_credentials",
@@ -494,7 +513,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         }
         if (dataset.preferred) {
           preferred = {
-            name: dataset.network_name,
+            name: dataset.network_name || "",
             dataset: dataset,
             routers: networks[network]?.routers,
           };
@@ -504,7 +523,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (network in networks) {
           networks[network].dataset = dataset;
         } else {
-          networks[network] = { name: dataset.network_name, dataset: dataset };
+          networks[network] = {
+            name: dataset.network_name || "",
+            dataset: dataset,
+          };
         }
       }
       return {
@@ -674,7 +696,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.thread.confirm_delete_dataset",
-        { name: dataset.network_name }
+        { name: dataset.network_name || dataset.extended_pan_id }
       ),
       text: this.hass.localize(
         "ui.panel.config.thread.confirm_delete_dataset_text"
@@ -801,6 +823,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       }
       ha-card {
         margin-bottom: 16px;
+        overflow: hidden;
+      }
+      ha-list-nav {
+        border-top: 1px solid var(--divider-color);
       }
       h3 {
         margin-top: var(--ha-space-8);
@@ -811,6 +837,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       .card-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+      }
+      .card-header ha-icon-button {
+        margin-block: calc(var(--ha-space-3) * -1);
       }
 
       .send-to-phone-description {

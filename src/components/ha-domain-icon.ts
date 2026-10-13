@@ -1,7 +1,8 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { initialState } from "@lit/task";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { configContext, connectionContext, uiContext } from "../data/context";
 import {

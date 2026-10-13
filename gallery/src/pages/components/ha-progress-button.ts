@@ -23,7 +23,7 @@ export class DemoHaProgressButton extends LitElement {
                 <ha-progress-button @click=${this._clickedFail}>
                   Fail
                 </ha-progress-button>
-                <ha-progress-button size="small" @click=${this._clickedSuccess}>
+                <ha-progress-button size="s" @click=${this._clickedSuccess}>
                   small
                 </ha-progress-button>
                 <ha-progress-button

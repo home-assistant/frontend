@@ -114,7 +114,9 @@ export interface StateTrigger extends BaseTrigger {
   entity_id: string | string[];
   attribute?: string;
   from?: string | string[];
+  not_from?: string | string[];
   to?: string | string[];
+  not_to?: string | string[];
   for?: string | number | ForDict;
 }
 
@@ -153,7 +155,7 @@ export interface ConversationTrigger extends BaseTrigger {
 
 export interface SunTrigger extends BaseTrigger {
   trigger: "sun";
-  offset: number;
+  offset?: string | number | ForDict;
   event: "sunrise" | "sunset";
 }
 
@@ -190,9 +192,11 @@ export interface TagTrigger extends BaseTrigger {
   device_id?: string;
 }
 
+export type TimeTriggerAt = string | { entity_id: string; offset?: string };
+
 export interface TimeTrigger extends BaseTrigger {
   trigger: "time";
-  at: string | { entity_id: string; offset?: string };
+  at: TimeTriggerAt | TimeTriggerAt[];
   weekday?: string | string[];
 }
 
@@ -211,9 +215,9 @@ export interface EventTrigger extends BaseTrigger {
 
 export interface CalendarTrigger extends BaseTrigger {
   trigger: "calendar";
-  event: "start" | "end";
+  event?: "start" | "end";
   entity_id: string;
-  offset: string;
+  offset?: string | number | ForDict;
 }
 
 export type LegacyTrigger =
@@ -301,7 +305,7 @@ export interface TemplateCondition extends BaseCondition {
 
 export interface TriggerCondition extends BaseCondition {
   condition: "trigger";
-  id: string;
+  id: string | string[];
 }
 
 type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
@@ -358,11 +362,17 @@ export type ConditionWithShorthand =
   | ShorthandAndConditionList
   | ShorthandAndCondition
   | ShorthandOrCondition
-  | ShorthandNotCondition;
+  | ShorthandNotCondition
+  | string;
 
 export const expandConditionWithShorthand = (
   cond: ConditionWithShorthand
 ): Condition => {
+  // A bare template string is shorthand for a template condition
+  if (typeof cond === "string") {
+    return { condition: "template", value_template: cond };
+  }
+
   if ("condition" in cond && Array.isArray(cond.condition)) {
     return {
       condition: "and",
@@ -480,6 +490,40 @@ export const migrateAutomationConfig = <
   return config;
 };
 
+// The fields of the row holding a trigger, condition or action, as opposed to
+// the configuration of its type. The UI editors of some types build their value
+// from scratch, so these have to be carried over explicitly.
+export const TRIGGER_ROW_CONFIG_KEYS = [
+  "alias",
+  "note",
+  "id",
+  "enabled",
+  "variables",
+] as const;
+
+export const CONDITION_ROW_CONFIG_KEYS = ["alias", "note", "enabled"] as const;
+
+export const ACTION_ROW_CONFIG_KEYS = [
+  "alias",
+  "note",
+  "enabled",
+  "continue_on_error",
+] as const;
+
+export const pickRowConfig = <T extends object>(
+  row: T,
+  keys: readonly string[]
+): Partial<T> => {
+  const source = row as Record<string, unknown>;
+  const config: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (key in source) {
+      config[key] = source[key];
+    }
+  }
+  return config as Partial<T>;
+};
+
 export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[],
   report?: AutomationMigrationReport
@@ -535,6 +579,10 @@ export const flattenTriggers = (
   const flatTriggers: Trigger[] = [];
 
   ensureArray(triggers).forEach((t) => {
+    // Incomplete YAML can leave null entries in the trigger list
+    if (!t || typeof t !== "object") {
+      return;
+    }
     if ("triggers" in t) {
       if (t.triggers) {
         flatTriggers.push(...flattenTriggers(t.triggers));
@@ -618,7 +666,7 @@ export const testCondition = (
   condition: Condition | Condition[],
   variables?: Record<string, unknown>
 ) =>
-  hass.callWS<{ result: boolean }>({
+  hass.callWS<{ result: boolean; template_errors?: string[] }>({
     type: "test_condition",
     condition,
     variables,
@@ -629,6 +677,8 @@ export const subscribeCondition = (
   onChange: (result: {
     result?: boolean;
     error?: string | { code: string; message: string };
+    /** Template errors while still producing a result. */
+    template_errors?: string[];
   }) => void,
   condition: Condition
 ) =>
@@ -657,7 +707,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Trigger | Trigger[]) => boolean;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   config: Trigger;
   description?: TriggerDescription;
   yamlMode: boolean;
@@ -675,7 +725,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Condition | Condition[]) => boolean;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   config: Condition;
   description?: ConditionDescription;
   yamlMode: boolean;
@@ -694,7 +744,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   copy: () => void;
   insertAfter: (value: Action | Action[]) => boolean;
   run: () => void;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   config: {
     action: Action;
   };

@@ -15,13 +15,22 @@ const _loadLovelaceResource = (
     hass.auth.data.hassUrl
   ).toString();
 
+  const logLoadError = (err: unknown) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Failed to load Lovelace resource ${normalizedUrl} (type: ${resource.type}). Check that the URL is correct and the file exists.`,
+      err
+    );
+  };
+
   switch (resource.type) {
     case "css": {
       if (normalizedUrl in CSS_CACHE) {
         return CSS_CACHE[normalizedUrl];
       }
 
-      const loadTask = loadCSS(normalizedUrl);
+      // Catch before caching, so a cache hit cannot log the failure again
+      const loadTask = loadCSS(normalizedUrl).catch(logLoadError);
       CSS_CACHE[normalizedUrl] = loadTask;
       return loadTask;
     }
@@ -31,13 +40,13 @@ const _loadLovelaceResource = (
         return JS_CACHE[normalizedUrl];
       }
 
-      const loadTask = loadJS(normalizedUrl);
+      const loadTask = loadJS(normalizedUrl).catch(logLoadError);
       JS_CACHE[normalizedUrl] = loadTask;
       return loadTask;
     }
 
     case "module":
-      return loadModule(normalizedUrl);
+      return loadModule(normalizedUrl).catch(logLoadError);
 
     default:
       // eslint-disable-next-line

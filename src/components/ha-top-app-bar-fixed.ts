@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { goBack } from "../common/navigate";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-icon-button-arrow-prev";
@@ -32,16 +33,11 @@ export const haTopAppBarFixedStyles = css`
     width: 100%;
     z-index: 4;
     padding-top: var(--safe-area-inset-top);
-    padding-right: var(--safe-area-inset-right);
     transition:
       box-shadow var(--ha-animation-duration-normal) ease,
       width var(--ha-animation-duration-normal) ease,
       padding-left var(--ha-animation-duration-normal) ease,
       padding-right var(--ha-animation-duration-normal) ease;
-  }
-
-  :host([narrow]) .top-app-bar {
-    padding-left: var(--safe-area-inset-left);
   }
 
   .top-app-bar.scrolled:not(.pane-header) {
@@ -52,9 +48,15 @@ export const haTopAppBarFixedStyles = css`
     box-sizing: border-box;
     display: flex;
     width: 100%;
+    padding-right: var(--safe-area-inset-right, 0px);
     align-items: center;
     height: var(--header-height);
     border-bottom: var(--app-header-border-bottom);
+  }
+
+  :host([narrow]) .row,
+  :host([narrow]) .sub-row {
+    padding-left: var(--safe-area-inset-left, 0px);
   }
 
   .top-app-bar.has-sub-row .row {
@@ -65,6 +67,7 @@ export const haTopAppBarFixedStyles = css`
     box-sizing: border-box;
     display: block;
     width: 100%;
+    padding-right: var(--safe-area-inset-right, 0px);
     overflow: hidden;
     border-bottom: var(--app-header-border-bottom);
   }
@@ -324,7 +327,9 @@ export class HaTopAppBarFixed extends LitElement {
     this._subRowResizeObserver = undefined;
   }
 
-  private _subRowSlotChanged = (ev: Event) => {
+  private _subRowSlotChanged = (
+    ev: HASSDomCurrentTargetEvent<HTMLSlotElement>
+  ) => {
     const slot = ev.currentTarget as HTMLSlotElement;
     this._hasSubRow = slot
       .assignedNodes({ flatten: true })

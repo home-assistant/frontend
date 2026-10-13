@@ -106,7 +106,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _hiddenStats = new Set<string>();
 
-  @state() private _yWidth = MIN_Y_AXIS_WIDTH;
+  @state() private _yWidth = 0;
 
   @state() private _visualMap?: VisualMapComponentOption[];
 
@@ -117,7 +117,6 @@ export class StateHistoryChartLine extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}
@@ -216,11 +215,13 @@ export class StateHistoryChartLine extends LitElement {
     })}`;
   };
 
-  private _datasetHidden(ev: CustomEvent) {
+  private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
   }
 
-  private _datasetUnhidden(ev: CustomEvent) {
+  private _datasetUnhidden(
+    ev: HASSDomEvent<HASSDomEvents["dataset-unhidden"]>
+  ) {
     this._hiddenStats.delete(ev.detail.id);
   }
 
@@ -229,7 +230,7 @@ export class StateHistoryChartLine extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  private _handleDataZoom(ev: CustomEvent) {
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
@@ -326,6 +327,7 @@ export class StateHistoryChartLine extends LitElement {
           ...createYAxisPrecisionBounds({
             min: this._clampYAxis(minYAxis),
             max: this._clampYAxis(maxYAxis),
+            unit: this.unit,
             onFractionDigits: (digits) => {
               if (digits !== this._yAxisFractionDigits) {
                 this._yAxisFractionDigits = digits;

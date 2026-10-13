@@ -22,17 +22,24 @@ The harness has three parts:
 ## Running
 
 ```bash
-yarn test:bench                          # run all benchmarks
-yarn test:bench down-sample              # run one suite
+pnpm test:bench                          # run all benchmarks
+pnpm test:bench down-sample              # run one suite
 
 # Record a baseline, then compare after a change:
-yarn test:bench --outputJson test/benchmarks/results/baseline.json
-yarn test:bench --compare test/benchmarks/results/baseline.json --outputJson test/benchmarks/results/after.json
+pnpm test:bench --reporter=default --reporter=json --outputFile=test/benchmarks/results/baseline.json
+pnpm test:bench --reporter=default --reporter=json --outputFile=test/benchmarks/results/after.json
 ```
 
-`test/benchmarks/results/` is gitignored. The JSON reports include `hz`,
-`mean`, `rme` (relative margin of error), and percentiles per benchmark;
-compare mode also prints the delta next to each result.
+`test/benchmarks/results/` is gitignored. Vitest 5 stores benchmark results
+under `testResults[].assertionResults[].benchmarks[].tasks[]`. Each task has
+`throughput.mean` (ops/sec), `latency.mean` (ms), `latency.rme` (relative
+margin of error), and latency percentiles.
+
+Vitest 5 removed `--outputJson` and `--compare`. Compare matching test and
+task names in the two JSON reports, or use
+[`writeResult` and `bench.from()`](https://vitest.dev/guide/benchmarking#storing-and-replaying-results)
+for an in-test comparison. Record fresh baselines after migrating from
+Vitest 4; its reports use a different format and benchmark engine version.
 
 Benchmarks run in a plain node environment (`test/vitest.bench.config.ts`)
 with sequential files for stable timings. Expect run-to-run noise of a few
@@ -99,21 +106,21 @@ To optimize one of these, first repeat the extraction pattern used for
 
 Work on **one target at a time**:
 
-1. **Preflight** — `yarn test` must be green before you start.
+1. **Preflight** — `pnpm test` must be green before you start.
 2. **Coverage check** — confirm the target has characterization coverage for
    the code paths you will touch; add missing cases in a separate commit
    _before_ changing the implementation.
-3. **Baseline** — run `yarn test:bench --outputJson .../baseline.json`
+3. **Baseline**: run `pnpm test:bench --reporter=json --outputFile=.../baseline.json`
    **twice**; note the `rme` and the spread between runs. That spread is your
    noise floor.
 4. **Optimize** — change the implementation. Stay within the guardrails
    below.
-5. **Verify correctness** — `yarn test` and `yarn lint` must pass. Never run
-   `yarn lint:types` with file arguments.
-6. **Measure** — `yarn test:bench --compare .../baseline.json --outputJson
-.../after.json`.
-7. **Report** — include a before/after table (`mean`, `hz`, `rme`) for every
-   affected benchmark, generated from the two JSON files.
+5. **Verify correctness** — `pnpm test` and `pnpm lint` must pass. Never run
+   `pnpm lint:types` with file arguments.
+6. **Measure**: run `pnpm test:bench --reporter=json --outputFile=.../after.json`
+   and compare matching test and benchmark task names against the baseline report.
+7. **Report** — include a before/after table (`latency.mean`, `throughput.mean`,
+   `latency.rme`) for every affected benchmark, generated from the two JSON files.
 
 ### Guardrails
 
@@ -142,7 +149,7 @@ Work on **one target at a time**:
 
 An optimization is accepted only if **all** of the following hold:
 
-- `yarn test` fully green and `yarn lint` clean.
+- `pnpm test` fully green and `pnpm lint` clean.
 - `git diff` contains no changes under `test/fixtures/`, `__snapshots__/`,
   or existing characterization tests.
 - The declared target improves by **≥ 10% mean time**, and the improvement is

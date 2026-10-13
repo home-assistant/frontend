@@ -2,9 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
@@ -198,21 +196,6 @@ export class HaNumericStateTrigger extends LitElement {
     };
   }
 
-  private _wrapForValue(
-    forValue: NumericStateTrigger["for"]
-  ): Record<string, unknown> | undefined {
-    if (forValue === undefined) {
-      return undefined;
-    }
-    if (typeof forValue === "string" && hasTemplate(forValue)) {
-      return { active_choice: "template", template: forValue };
-    }
-    return {
-      active_choice: "duration",
-      duration: createDurationData(forValue),
-    };
-  }
-
   private _unwrapForValue(
     forValue: Record<string, unknown> | undefined
   ): NumericStateTrigger["for"] {
@@ -240,7 +223,6 @@ export class HaNumericStateTrigger extends LitElement {
   private _data = memoizeOne((trigger: NumericStateTrigger) => ({
     ...trigger,
     entity_id: ensureArray(trigger.entity_id),
-    for: this._wrapForValue(trigger.for),
   }));
 
   public render() {

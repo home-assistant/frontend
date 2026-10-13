@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
@@ -184,7 +185,6 @@ class DialogAreaDetail
       ></ha-input>
 
       <ha-icon-picker
-        .hass=${this.hass}
         .value=${this._icon}
         @value-changed=${this._iconChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
@@ -208,7 +208,6 @@ class DialogAreaDetail
       ></ha-labels-picker>
 
       <ha-picture-upload
-        .hass=${this.hass}
         .value=${this._picture}
         crop
         select-media
@@ -366,7 +365,6 @@ class DialogAreaDetail
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${
           entry
@@ -455,7 +453,7 @@ class DialogAreaDetail
     return deviceReg && deviceReg.area_id === areaId;
   };
 
-  private _nameChanged(ev: InputEvent) {
+  private _nameChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
     this._updateDirtyState(this._currentState());
@@ -479,7 +477,9 @@ class DialogAreaDetail
     this._updateDirtyState(this._currentState());
   }
 
-  private _pictureChanged(ev: ValueChangedEvent<string | null>) {
+  private _pictureChanged(
+    ev: ValueChangedEvent<string | null> & HASSDomTargetEvent<HaPictureUpload>
+  ) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
     this._updateDirtyState(this._currentState());
@@ -490,7 +490,9 @@ class DialogAreaDetail
     this._updateDirtyState(this._currentState());
   }
 
-  private _sensorChanged(ev: CustomEvent): void {
+  private _sensorChanged(
+    ev: ValueChangedEvent<string> & HASSDomTargetEvent<HaEntityPicker>
+  ): void {
     const deviceClass = (ev.target as HaEntityPicker).includeDeviceClasses![0];
     const key = `_${deviceClass}Entity`;
     this[key] = ev.detail.value || null;

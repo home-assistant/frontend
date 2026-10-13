@@ -1,22 +1,36 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import {
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  getEnergyDataCollection,
+  computeEnergyDeviceLabels,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { WaterSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
@@ -26,6 +40,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "../energy/common/sankey";
@@ -37,15 +52,13 @@ const DEFAULT_CONFIG: Partial<WaterSankeyCardConfig> = {
 
 @customElement("hui-water-sankey-card")
 class HuiWaterSankeyCard
-  extends SubscribeMixin(MobileAwareMixin(LitElement))
+  extends MobileAwareMixin(LitElement)
   implements LovelaceCard
 {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-sankey-card-editor");
     return document.createElement("hui-energy-sankey-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
@@ -65,23 +78,50 @@ class HuiWaterSankeyCard
 
   @state() private _data?: EnergyData;
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: HomeAssistantRegistries;
+
+  // Not @state: labels and area grouping refresh with _data, not per state.
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
+        this._data = data;
+      },
+    });
+  }
 
   public setConfig(config: WaterSankeyCardConfig): void {
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = { ...DEFAULT_CONFIG, ...config };
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._data = data;
-      }),
-    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -97,23 +137,13 @@ class HuiWaterSankeyCard
     };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return (
-      changedProps.has("_config") ||
-      changedProps.has("_data") ||
-      changedProps.has("_isMobileSize")
-    );
-  }
-
   protected render() {
     if (!this._config) {
       return nothing;
     }
 
     if (!this._data) {
-      return html`${this.hass.localize(
-        "ui.panel.lovelace.cards.energy.loading"
-      )}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -161,7 +191,7 @@ class HuiWaterSankeyCard
     // Create home/consumption node
     const homeNode: Node = {
       id: "home",
-      label: this.hass.config.location_name,
+      label: this._hassConfig.location_name,
       value: Math.max(0, totalWaterConsumption),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -194,7 +224,8 @@ class HuiWaterSankeyCard
         label:
           source.name ||
           getStatisticLabel(
-            this.hass,
+            this._states,
+            this._formatEntityName,
             source.stat_energy_from,
             this._data!.statsMetadata[source.stat_energy_from]
           ),
@@ -215,39 +246,18 @@ class HuiWaterSankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    // Set of device stats that will be rendered as their own node
-    const renderedStats = new Set<string>();
-    prefs.device_consumption_water.forEach((device) => {
-      if (deviceValue(device.stat_consumption) >= minWaterThreshold) {
-        renderedStats.add(device.stat_consumption);
-      }
-    });
+    const deviceLabels = computeEnergyDeviceLabels(
+      this._states,
+      this._formatEntityName,
+      prefs.device_consumption_water,
+      this._data!.statsMetadata
+    );
 
-    // Walk up the included_in_stat chain to the first ancestor that is rendered
-    const deviceMap = new Map<string, string | undefined>();
-    prefs.device_consumption_water.forEach((device) => {
-      deviceMap.set(device.stat_consumption, device.included_in_stat);
-    });
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        if (renderedStats.has(currentParent)) {
-          return currentParent;
-        }
-        if (!deviceMap.has(currentParent)) {
-          return undefined;
-        }
-        currentParent = deviceMap.get(currentParent);
-      }
-      return undefined;
-    };
-
-    const deviceLabel = (statConsumption: string, name?: string) =>
-      name ||
+    const deviceLabel = (statConsumption: string) =>
+      deviceLabels[statConsumption] ||
       getStatisticLabel(
-        this.hass,
+        this._states,
+        this._formatEntityName,
         statConsumption,
         this._data!.statsMetadata[statConsumption]
       );
@@ -260,9 +270,10 @@ class HuiWaterSankeyCard
     } = buildSankeyDeviceNodes({
       devices: prefs.device_consumption_water,
       computedStyle,
-      localize: this.hass.localize,
+      localize: this._i18n.localize,
       rootNodeId: "home",
       minThreshold: minWaterThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 0,
       ceilOtherValue: false,
       initialUntracked: homeNode.value,
@@ -270,15 +281,15 @@ class HuiWaterSankeyCard
       getValue: deviceValue,
       getLabel: deviceLabel,
       getEntityId: (id) => (isExternalStatistic(id) ? undefined : id),
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 
     const { group_by_area, group_by_floor } = this._config;
     const layout = buildSankeyLayout({
-      hass: this.hass,
+      states: this._states,
+      registries: this._registries,
       computedStyle,
-      localize: this.hass.localize,
+      localize: this._i18n.localize,
       deviceNodes,
       parentLinks,
       rootNodeId: "home",
@@ -309,13 +320,13 @@ class HuiWaterSankeyCard
           ${
             hasData
               ? html`<ha-sankey-chart
-                  .hass=${this.hass}
                   .data=${{ nodes, links }}
                   .vertical=${vertical}
+                  .showValues=${this._config.show_values === true}
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`
-              : html`${this.hass.localize(
+              : html`${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.no_data_period"
                 )}`
           }
@@ -325,7 +336,7 @@ class HuiWaterSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} ${this._data!.waterUnit}`;
+    `${formatNumber(value, this._i18n.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} ${this._data!.waterUnit}`;
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

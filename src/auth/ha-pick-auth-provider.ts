@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-next";
@@ -20,13 +21,15 @@ declare global {
 export class HaPickAuthProvider extends LitElement {
   @property({ attribute: false }) public authProviders: AuthProvider[] = [];
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected render() {
     return html`
       <h3>
         <span
-          >${this.localize("ui.panel.page-authorize.pick_auth_provider")}</span
+          >${this._localize("ui.panel.page-authorize.pick_auth_provider")}</span
         >
       </h3>
       <ha-list>

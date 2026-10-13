@@ -9,9 +9,12 @@ import type { BootstrapIntegrationsTimings } from "../data/bootstrap_integration
 import { subscribeBootstrapIntegrations } from "../data/bootstrap_integrations";
 import { domainToName } from "../data/integration";
 import type { Constructor } from "../types";
-import { showToast } from "../util/toast";
+import { HOST_ACTION_TOAST_ID, showToast } from "../util/toast";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { navigate } from "../common/navigate";
+
+const CONNECTION_LOST_TOAST_ID = "connection-lost";
+const SERVER_STARTUP_TOAST_ID = "server-startup";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -34,6 +37,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (oldHass?.config?.state !== this.hass!.config.state) {
         if (this.hass!.config.state === STATE_NOT_RUNNING) {
           showToast(this, {
+            id: SERVER_STARTUP_TOAST_ID,
             message:
               this.hass!.localize("ui.notification_toast.starting") ||
               "Home Assistant is starting. Not everything will be available until it is finished.",
@@ -57,6 +61,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           this._unsubscribeBootstrapIntegrations();
           showToast(this, {
+            id: SERVER_STARTUP_TOAST_ID,
             message: this.hass!.localize("ui.notification_toast.started"),
             duration: 5000,
           });
@@ -89,12 +94,19 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassReconnected() {
       super.hassReconnected();
+      // A reboot toast is obsolete once we are connected again
+      showToast(this, {
+        id: HOST_ACTION_TOAST_ID,
+        message: "",
+        duration: 0,
+      });
       if (this._disconnectedTimeout) {
         clearTimeout(this._disconnectedTimeout);
         this._disconnectedTimeout = undefined;
         return;
       }
       showToast(this, {
+        id: CONNECTION_LOST_TOAST_ID,
         message: "",
         duration: 0,
       });
@@ -106,6 +118,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._disconnectedTimeout = window.setTimeout(() => {
         this._disconnectedTimeout = undefined;
         showToast(this, {
+          id: CONNECTION_LOST_TOAST_ID,
           message: this.hass!.localize("ui.notification_toast.connection_lost"),
           duration: -1,
           dismissable: false,
@@ -120,6 +133,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       if (Object.keys(message).length === 0) {
         showToast(this, {
+          id: SERVER_STARTUP_TOAST_ID,
           message:
             this.hass!.localize("ui.notification_toast.wrapping_up_startup") ||
             `Wrapping up startup. Not everything will be available until it is finished.`,
@@ -142,7 +156,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       )[0][0];
 
       showToast(this, {
-        id: "integration_starting",
+        id: SERVER_STARTUP_TOAST_ID,
         message:
           this.hass!.localize("ui.notification_toast.integration_starting", {
             integration: domainToName(this.hass!.localize, integration),

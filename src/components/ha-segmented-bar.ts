@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import "./ha-tooltip";
 
 export interface Segment {
@@ -120,7 +121,9 @@ class HaSegmentedBar extends LitElement {
     `;
   }
 
-  private _handleSegmentClick(ev: Event): void {
+  private _handleSegmentClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement>
+  ): void {
     const target = ev.currentTarget as HTMLElement;
     const index = Number(target.dataset.index);
     const segment = this.segments[index];
@@ -129,7 +132,7 @@ class HaSegmentedBar extends LitElement {
     }
   }
 
-  private _handleLegendClick(ev: Event): void {
+  private _handleLegendClick(ev: HASSDomCurrentTargetEvent<HTMLElement>): void {
     const target = ev.currentTarget as HTMLElement;
     const index = Number(target.dataset.index);
     const segment = this.segments[index];

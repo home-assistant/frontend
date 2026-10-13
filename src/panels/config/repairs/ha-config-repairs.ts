@@ -20,7 +20,7 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fixStatisticsIssue } from "../tools/statistics/fix-statistics";
 import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
-import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
+import { showRepairsFlowDialog } from "../../../dialogs/repairs-flow/show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 
 @customElement("ha-config-repairs")
@@ -144,7 +144,7 @@ class HaConfigRepairs extends LitElement {
         issue.domain,
         issue.issue_id
       );
-      if ("flow_id" in data.issue_data) {
+      if (data.issue_data && "flow_id" in data.issue_data) {
         showConfigFlowDialog(this, {
           continueFlowId: data.issue_data.flow_id as string,
         });
@@ -159,6 +159,7 @@ class HaConfigRepairs extends LitElement {
         issue.issue_id
       );
       if (
+        data.issue_data &&
         "entity_id" in data.issue_data &&
         typeof data.issue_data.entity_id === "string"
       ) {
@@ -177,7 +178,7 @@ class HaConfigRepairs extends LitElement {
         issue.domain,
         issue.issue_id
       );
-      if ("issue_type" in data.issue_data) {
+      if (data.issue_data && "issue_type" in data.issue_data) {
         await fixStatisticsIssue(this, {
           type: data.issue_data
             .issue_type as StatisticsValidationResult["type"],

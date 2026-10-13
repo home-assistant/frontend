@@ -77,6 +77,7 @@ export const mockDevice = (
   disabled_by: null,
   configuration_url: null,
   primary_config_entry: null,
+  parent_device_id: null,
   created_at: 0,
   modified_at: 0,
   ...partial,

@@ -2,6 +2,10 @@ import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
@@ -9,6 +13,7 @@ import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import "../../components/item/ha-row-item";
 import {
   getPreferredAgentForDownload,
@@ -19,11 +24,11 @@ import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import "../../panels/config/backup/components/ha-backup-data-picker";
 import "../../panels/config/backup/components/ha-backup-formfield-label";
 import { onBoardingStyles } from "../styles";
+import type { ValueChangedEvent } from "../../types";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ attribute: false }) public backup!: BackupContentExtended;
 
   @property({ type: Boolean }) public supervisor = false;
@@ -31,6 +36,10 @@ class OnboardingRestoreBackupRestore extends LitElement {
   @property() public error?: string;
 
   @property() public mode!: "upload" | "cloud";
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _encryptionKey = "";
 
@@ -60,11 +69,11 @@ class OnboardingRestoreBackupRestore extends LitElement {
 
     return html`
       <ha-icon-button-arrow-prev
-        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        .label=${this._localize("ui.panel.page-onboarding.restore.back")}
         @click=${this._back}
       ></ha-icon-button-arrow-prev>
       <h1>
-        ${this.localize(
+        ${this._localize(
           "ui.panel.page-onboarding.restore.details.restore.title"
         )}
       </h1>
@@ -72,13 +81,13 @@ class OnboardingRestoreBackupRestore extends LitElement {
       ${
         this.backup.homeassistant_included
           ? html`<div class="description">
-              ${this.localize(
+              ${this._localize(
                 "ui.panel.page-onboarding.restore.confirm_restore_full_backup_text"
               )}
             </div>`
           : html`
               <ha-alert alert-type="error">
-                ${this.localize(
+                ${this._localize(
                   "ui.panel.page-onboarding.restore.details.home_assistant_missing"
                 )}
               </ha-alert>
@@ -88,7 +97,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         this.error
           ? html`<ha-alert
               alert-type="error"
-              .title=${this.localize("ui.panel.page-onboarding.restore.failed")}
+              .title=${this._localize("ui.panel.page-onboarding.restore.failed")}
             >
               ${this.error}
             </ha-alert>`
@@ -97,7 +106,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
 
       <ha-row-item>
         <span slot="headline">
-          ${this.localize(
+          ${this._localize(
             "ui.panel.page-onboarding.restore.details.summary.created"
           )}
         </span>
@@ -107,14 +116,14 @@ class OnboardingRestoreBackupRestore extends LitElement {
         onlyHomeAssistantBackup
           ? html`<ha-row-item>
               <span slot="headline">
-                ${this.localize(
+                ${this._localize(
                   "ui.panel.page-onboarding.restore.details.summary.content"
                 )}
               </span>
               <ha-backup-formfield-label
                 slot="supporting-text"
                 .version=${this.backup.homeassistant_version}
-                .label=${this.localize(
+                .label=${this._localize(
                   `ui.panel.page-onboarding.restore.data_picker.${this.backup.database_included ? "settings_and_history" : "settings"}`
                 )}
               ></ha-backup-formfield-label>
@@ -124,7 +133,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
       ${
         !onlyHomeAssistantBackup
           ? html`<h2>
-              ${this.localize("ui.panel.page-onboarding.restore.select_type")}
+              ${this._localize("ui.panel.page-onboarding.restore.select_type")}
             </h2>`
           : nothing
       }
@@ -133,7 +142,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         !this.supervisor &&
         this.backup.addons.length > 0
           ? html`<ha-alert class="supervisor-warning">
-              ${this.localize(
+              ${this._localize(
                 "ui.panel.page-onboarding.restore.details.apps_unsupported"
               )}
               <ha-button
@@ -143,7 +152,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
                 rel="noreferrer noopener"
                 size="s"
               >
-                ${this.localize(
+                ${this._localize(
                   "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
                 )}</ha-button
               >
@@ -154,7 +163,6 @@ class OnboardingRestoreBackupRestore extends LitElement {
         !onlyHomeAssistantBackup
           ? html`<ha-backup-data-picker
               translation-key-panel="page-onboarding.restore"
-              .localize=${this.localize}
               .data=${this.backup}
               .value=${this._selectedData}
               @value-changed=${this._selectedBackupChanged}
@@ -172,24 +180,24 @@ class OnboardingRestoreBackupRestore extends LitElement {
         backupProtected
           ? html`<div class="encryption">
               <h2>
-                ${this.localize(
+                ${this._localize(
                   "ui.panel.page-onboarding.restore.details.restore.encryption.label"
                 )}
               </h2>
               <span>
-                ${this.localize(
+                ${this._localize(
                   `ui.panel.page-onboarding.restore.details.restore.encryption.description${this.mode === "cloud" ? "_cloud" : ""}`
                 )}
               </span>
               <ha-input
                 .disabled=${this._loading}
                 @input=${this._encryptionKeyChanged}
-                .label=${this.localize(
+                .label=${this._localize(
                   "ui.panel.page-onboarding.restore.details.restore.encryption.input_label"
                 )}
                 .value=${this._encryptionKey}
                 @keydown=${this._keyDown}
-                .validationMessage=${this.localize(
+                .validationMessage=${this._localize(
                   "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
                 )}
                 .invalid=${this._encryptionKeyWrong}
@@ -202,7 +210,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         ${
           this.mode === "cloud"
             ? html`<ha-button appearance="plain" @click=${this._signOut}>
-                ${this.localize(
+                ${this._localize(
                   "ui.panel.page-onboarding.restore.ha-cloud.sign_out"
                 )}
               </ha-button>`
@@ -217,7 +225,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
           }
           @click=${this._startRestore}
         >
-          ${this.localize(
+          ${this._localize(
             "ui.panel.page-onboarding.restore.details.restore.action"
           )}
         </ha-progress-button>
@@ -247,16 +255,20 @@ class OnboardingRestoreBackupRestore extends LitElement {
     fireEvent(this, "sign-out");
   }
 
-  private _selectedBackupChanged(ev: CustomEvent) {
+  private _selectedBackupChanged(ev: ValueChangedEvent<BackupData>) {
     ev.stopPropagation();
     this._selectedData = ev.detail.value;
   }
 
-  private _encryptionKeyChanged(ev): void {
+  private _encryptionKeyChanged(
+    ev: HASSDomTargetEvent<Omit<HaInput, "value"> & { value: string }>
+  ): void {
     this._encryptionKey = ev.target.value;
   }
 
-  private async _startRestore(ev: CustomEvent): Promise<void> {
+  private async _startRestore(
+    ev: HASSDomCurrentTargetEvent<HaProgressButton>
+  ): Promise<void> {
     const agentId = Object.keys(this.backup.agents)[0];
     const backupProtected = this.backup.agents[agentId].protected;
 
@@ -270,7 +282,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
     }
 
     this._loading = true;
-    const button = ev.currentTarget as HaProgressButton;
+    const button = ev.currentTarget;
     this._error = undefined;
     this._encryptionKeyWrong = false;
 

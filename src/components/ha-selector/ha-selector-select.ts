@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { consume } from "@lit/context";
+import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -11,15 +11,11 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { internationalizationContext } from "../../data/context";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { FrontendLocaleData } from "../../data/translation";
-import type {
-  HomeAssistant,
-  HomeAssistantInternationalization,
-} from "../../types";
+import type { HomeAssistantInternationalization } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
 import "../ha-dropdown-item";
-import "../ha-formfield";
 import "../ha-generic-picker";
 import "../ha-input-helper-text";
 import "../ha-select";
@@ -30,8 +26,6 @@ import "../radio/ha-radio-option";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   @transform<HomeAssistantInternationalization, FrontendLocaleData>({
@@ -104,6 +98,7 @@ export class HaSelectSelector extends LitElement {
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
+          .disabled=${this.disabled}
           @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
         ></ha-select-box>
@@ -187,6 +182,7 @@ export class HaSelectSelector extends LitElement {
                             .idx=${idx}
                             @remove=${this._removeItem}
                             .label=${label}
+                            .title=${label}
                             selected
                           >
                             ${
@@ -215,7 +211,6 @@ export class HaSelectSelector extends LitElement {
 
         <ha-generic-picker
           no-sort
-          .hass=${this.hass}
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
@@ -232,7 +227,6 @@ export class HaSelectSelector extends LitElement {
       return html`
         <ha-generic-picker
           no-sort
-          .hass=${this.hass}
           .label=${this.label}
           .helper=${this.helper}
           .disabled=${this.disabled}
@@ -266,9 +260,7 @@ export class HaSelectSelector extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`<ha-input-helper-text .disabled=${this.disabled}
-          >${this.helper}</ha-input-helper-text
-        >`
+      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
       : "";
   }
 
@@ -400,8 +392,7 @@ export class HaSelectSelector extends LitElement {
     :host {
       position: relative;
     }
-    ha-select,
-    ha-formfield {
+    ha-select {
       display: block;
     }
 

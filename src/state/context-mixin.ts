@@ -1,4 +1,6 @@
 import { ContextProvider } from "@lit/context";
+import type { ConditionDescriptions } from "../data/condition";
+import { subscribeConditions } from "../data/condition";
 import {
   ConfigEntryStream,
   type ConfigEntryUpdate,
@@ -24,6 +26,7 @@ import {
   localizeContext,
   manifestsContext,
   panelsContext,
+  reducedMotionContext,
   registriesContext,
   selectedThemeContext,
   servicesContext,
@@ -34,15 +37,18 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
-import type { ConditionDescriptions } from "../data/condition";
-import { subscribeConditions } from "../data/condition";
+import { listenMediaQuery } from "../common/dom/media_query";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
 import { fetchIntegrationManifestsCollection } from "../data/integration";
 import { subscribeLabelRegistry } from "../data/label/label_registry";
 import type { TriggerDescriptions } from "../data/trigger";
 import { subscribeTriggers } from "../data/trigger";
-import type { Constructor, HomeAssistant } from "../types";
+import type {
+  Constructor,
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { LazyContextProvider } from "./lazy-context-provider";
 import { RelatedContextProvider } from "./related-context-provider";
@@ -234,6 +240,21 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     private __relatedContextProvider = new RelatedContextProvider(this);
 
+    private __reducedMotionProvider = new ContextProvider(this, {
+      context: reducedMotionContext,
+      initialValue: false,
+    });
+
+    private __unsubReducedMotion?: () => void;
+
+    public connectedCallback() {
+      super.connectedCallback();
+      this.__unsubReducedMotion = listenMediaQuery(
+        "(prefers-reduced-motion: reduce)",
+        (matches) => this.__reducedMotionProvider.setValue(matches)
+      );
+    }
+
     protected hassConnected() {
       super.hassConnected();
       for (const [key, value] of Object.entries(this.hass!)) {
@@ -274,8 +295,20 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       }
     }
 
+    // Publishes i18n contexts from a "lite" localize source before a full `hass` exists
+    // Once `hass` connects it overwrites these values.
+    protected _provideLiteInternationalization(
+      value: HomeAssistantInternationalization
+    ) {
+      this.__hassContextProviderGroups.internationalization!.setValue(value);
+      this.__contextProviders.localize?.setValue(value.localize);
+      this.__contextProviders.locale?.setValue(value.locale);
+    }
+
     public disconnectedCallback() {
       super.disconnectedCallback();
+      this.__unsubReducedMotion?.();
+      this.__unsubReducedMotion = undefined;
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.unsubscribe();
       }

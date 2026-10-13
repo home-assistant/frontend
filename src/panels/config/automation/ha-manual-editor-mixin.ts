@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
@@ -9,8 +8,10 @@ import {
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { replaceCurrentUrl } from "../../../common/navigate";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import {
   extractSearchParam,
@@ -34,6 +35,8 @@ import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
 
 export const SIDEBAR_DEFAULT_WIDTH = 500;
+
+export const PASTED_CONFIG_TOAST_ID = "pasted-config";
 
 export const ManualEditorMixin = <TConfig>(
   superClass: Constructor<LitElement>
@@ -171,17 +174,20 @@ export const ManualEditorMixin = <TConfig>(
     }
 
     protected clearParam(param: string) {
-      window.history.replaceState(
-        null,
-        "",
-        constructUrlCurrentPath(removeSearchParam(param))
-      );
+      replaceCurrentUrl(constructUrlCurrentPath(removeSearchParam(param)));
     }
 
     protected async openSidebar(ev: CustomEvent<SidebarConfig>) {
       // deselect previous selected row
       this.sidebarConfig?.close?.();
       this.sidebarConfig = ev.detail;
+      this.dispatchEvent(
+        new CustomEvent("sidebar-config-changed", {
+          detail: { value: this.sidebarConfig },
+          bubbles: true,
+          composed: true,
+        })
+      );
 
       // be sure the sidebar editor is recreated
       this.sidebarKey++;
@@ -200,6 +206,13 @@ export const ManualEditorMixin = <TConfig>(
         ...this.sidebarConfig,
         ...ev.detail.value,
       };
+      this.dispatchEvent(
+        new CustomEvent("sidebar-config-changed", {
+          detail: { value: this.sidebarConfig },
+          bubbles: true,
+          composed: true,
+        })
+      );
     }
 
     public triggerCloseSidebar() {
@@ -215,6 +228,13 @@ export const ManualEditorMixin = <TConfig>(
 
     protected handleCloseSidebar() {
       this.sidebarConfig = undefined;
+      this.dispatchEvent(
+        new CustomEvent("sidebar-config-changed", {
+          detail: { value: undefined },
+          bubbles: true,
+          composed: true,
+        })
+      );
     }
 
     protected replaceExistingConfig(config: TConfig) {
@@ -237,6 +257,7 @@ export const ManualEditorMixin = <TConfig>(
       this.pastedConfig = undefined;
 
       showToast(this, {
+        id: PASTED_CONFIG_TOAST_ID,
         message: "",
         duration: 0,
       });

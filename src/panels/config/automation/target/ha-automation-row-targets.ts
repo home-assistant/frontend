@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiAlert,
   mdiAlertOctagon,
@@ -7,6 +7,7 @@ import {
   mdiFormatListBulleted,
   mdiMenuDown,
   mdiShape,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import {
@@ -20,6 +21,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
+import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -33,11 +35,16 @@ import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   apiContext,
   configEntriesContext,
+  connectionContext,
   internationalizationContext,
   labelsContext,
   registriesContext,
   statesContext,
 } from "../../../../data/context";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   deviceMeetsTargetSelector,
@@ -46,6 +53,7 @@ import {
 } from "../../../../data/selector";
 import { extractFromTarget, type TargetType } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
+import { isConfigObject } from "../ui-support";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
@@ -62,6 +70,9 @@ export class HaAutomationRowTargets extends LitElement {
 
   @property({ type: Boolean })
   public interactive = false;
+
+  @property({ reflect: true })
+  public size: "s" | "m" = "m";
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -89,8 +100,16 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
+
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
 
   private _countCache = new Map<
     string,
@@ -107,6 +126,43 @@ export class HaAutomationRowTargets extends LitElement {
       changedProps.has("_registries")
     ) {
       this._rerenderCount = true;
+    }
+
+    if (
+      (changedProps.has("target") || changedProps.has("_registries")) &&
+      this._compositeSplits === undefined &&
+      !this._loadingCompositeSplits &&
+      this._hasMissingDevice()
+    ) {
+      // A referenced device is missing from the registry; it might be a legacy
+      // composite device that was split. Fetch the split map so we can flag it.
+      this._loadCompositeSplits();
+    }
+  }
+
+  private _hasMissingDevice(): boolean {
+    const deviceIds = this.target?.device_id
+      ? ensureArray(this.target.device_id)
+      : [];
+    return deviceIds.some(
+      (id) => !isTemplate(id) && !this._registries?.devices?.[id]
+    );
+  }
+
+  private async _loadCompositeSplits() {
+    if (!this._api || !this._connection) {
+      return;
+    }
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits({
+        connection: this._connection.connection,
+        callWS: this._api.callWS,
+      });
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
     }
   }
 
@@ -206,7 +262,17 @@ export class HaAutomationRowTargets extends LitElement {
   }
 
   protected render() {
-    const length = Object.keys(this.target || {}).length;
+    // In actions, the whole target can be a template
+    if (typeof this.target === "string" && isTemplate(this.target)) {
+      return html`<span class="target-wrapper">
+        ${this._renderTarget("entity", this.target)}
+      </span>`;
+    }
+
+    // Any other value that isn't a mapping is invalid. Without this, the
+    // characters of a string or the items of a list would count as targets.
+    const target = isConfigObject(this.target) ? this.target : undefined;
+    const length = Object.keys(target || {}).length;
     if (!length) {
       return this._renderTargetBadge(
         this.targetRequired
@@ -219,13 +285,13 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
       );
     }
-    const totalLength = Object.values(this.target || {}).reduce(
+    const totalLength = Object.values(target || {}).reduce(
       (acc, val) => acc + ensureArray(val).length,
       0
     );
 
     if (totalLength <= 5) {
-      const targets = Object.entries(this.target!).reduce<
+      const targets = Object.entries(target!).reduce<
         ["floor" | "area" | "device" | "entity" | "label", string][]
       >((acc, [targetType, targetId]) => {
         const type = targetType.replace("_id", "") as
@@ -247,7 +313,7 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    const rows = Object.entries(this.target!)
+    const rows = Object.entries(target!)
       .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
         (acc, [targetType, targetId]) => {
           const type = targetType.replace("_id", "") as
@@ -269,14 +335,25 @@ export class HaAutomationRowTargets extends LitElement {
 
     let lastTargetType: string | null = null;
 
+    // The collapsed summary hides the individual targets, so carry over the
+    // warning when any of them no longer exists.
+    const hasMissingTarget = rows.some(
+      ([targetType, targetId]) => !this._checkTargetExists(targetType, targetId)
+    );
+
     return html`
       <ha-dropdown
         @wa-select=${this._handleTargetSelect}
         @click=${stopPropagation}
         @keydown=${stopPropagation}
       >
-        <button slot="trigger" class="target">
-          <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
+        <button
+          slot="trigger"
+          class=${classMap({ target: true, warning: hasMissingTarget })}
+        >
+          <ha-svg-icon
+            .path=${hasMissingTarget ? mdiAlert : mdiFormatListBulleted}
+          ></ha-svg-icon>
           <div class="label">
             ${this._i18n.localize(
               "ui.panel.config.automation.editor.target_summary.targets",
@@ -342,7 +419,8 @@ export class HaAutomationRowTargets extends LitElement {
     error = false,
     targetId?: string,
     targetType?: string,
-    countTemplate: unknown = nothing
+    countTemplate: unknown = nothing,
+    title?: string
   ) {
     if (!this.interactive || !targetId || !targetType) {
       return html`<div
@@ -351,6 +429,7 @@ export class HaAutomationRowTargets extends LitElement {
           warning,
           error,
         })}
+        title=${title ?? nothing}
         .targetId=${targetId}
         .targetType=${targetType}
         .label=${label}
@@ -366,6 +445,7 @@ export class HaAutomationRowTargets extends LitElement {
         warning,
         error,
       })}
+      title=${title ?? nothing}
       .targetId=${targetId}
       .targetType=${targetType}
       .label=${label}
@@ -385,6 +465,7 @@ export class HaAutomationRowTargets extends LitElement {
     let icon: string | undefined;
     let label: string;
     let warning = false;
+    let title: string | undefined;
     let badgeTargetId: string | undefined = targetId;
     let badgeTargetType: string | undefined = targetType;
     let countTemplate: unknown = nothing;
@@ -408,17 +489,34 @@ export class HaAutomationRowTargets extends LitElement {
       const exists = this._checkTargetExists(targetType, targetId);
       if (!exists) {
         icon = mdiAlert;
-        label = getTargetText(
-          this._registries,
-          this._states,
-          this._i18n.localize,
-          targetType,
-          targetId,
-          this._getLabel
-        );
         warning = true;
         badgeTargetId = undefined;
         badgeTargetType = undefined;
+        if (
+          targetType === "device" &&
+          this._compositeSplits?.[targetId]?.split_ids.some(
+            (id) => id in this._registries.devices
+          )
+        ) {
+          // The device was replaced by one or more split devices; make clear
+          // this reference needs to be updated, distinct from "unknown device".
+          icon = mdiSwapHorizontal;
+          label = this._i18n.localize(
+            "ui.panel.config.automation.editor.target_summary.device_replaced"
+          );
+          title = this._i18n.localize(
+            "ui.panel.config.automation.editor.target_summary.device_replaced_description"
+          );
+        } else {
+          label = getTargetText(
+            this._registries,
+            this._states,
+            this._i18n.localize,
+            targetType,
+            targetId,
+            this._getLabel
+          );
+        }
       } else {
         label = getTargetText(
           this._registries,
@@ -456,6 +554,7 @@ export class HaAutomationRowTargets extends LitElement {
           targetType: badgeTargetType,
           label,
         }}
+        title=${title ?? nothing}
         class=${classMap({
           warning,
         })}
@@ -470,7 +569,8 @@ export class HaAutomationRowTargets extends LitElement {
       false,
       badgeTargetId,
       badgeTargetType,
-      countTemplate
+      countTemplate,
+      title
     );
   }
 
@@ -556,6 +656,8 @@ export class HaAutomationRowTargets extends LitElement {
         var(--ha-color-border-neutral-quiet);
       overflow: hidden;
       height: 32px;
+      box-sizing: border-box;
+      font: inherit;
     }
     .target.warning {
       background: var(--ha-color-fill-warning-normal-resting);
@@ -584,6 +686,23 @@ export class HaAutomationRowTargets extends LitElement {
       align-items: center;
     }
 
+    :host([size="s"]) {
+      min-height: 24px;
+    }
+    :host([size="s"]) .target {
+      height: 24px;
+    }
+    /* A default 24px icon would fill the whole small chip. */
+    :host([size="s"]) .target ha-icon,
+    :host([size="s"]) .target ha-svg-icon,
+    :host([size="s"]) .target ha-domain-icon,
+    :host([size="s"]) .target ha-floor-icon {
+      --mdc-icon-size: 16px;
+    }
+    :host([size="s"]) .target ha-floor-icon {
+      height: 24px;
+    }
+
     button.target {
       cursor: pointer;
     }
@@ -596,6 +715,9 @@ export class HaAutomationRowTargets extends LitElement {
     }
     ha-dropdown-item.warning {
       background-color: var(--ha-color-fill-warning-quiet-resting);
+      color: var(--ha-color-on-warning-normal);
+    }
+    ha-dropdown-item.warning ha-svg-icon {
       color: var(--ha-color-on-warning-normal);
     }
     ha-dropdown-item.warning:hover {

@@ -24,6 +24,11 @@ export class MockLawnMowerEntity extends MockBaseEntity {
       return;
     }
 
+    if (service === "stop") {
+      this.update({ state: "idle" });
+      return;
+    }
+
     if (service === "dock") {
       this._transition("returning", "docked", TRANSITION_MS);
       return;

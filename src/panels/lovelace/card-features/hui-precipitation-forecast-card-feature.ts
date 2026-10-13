@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type {
   Connection,
@@ -10,6 +9,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { UNIT_IN } from "../../../common/const";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";

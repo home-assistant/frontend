@@ -1,5 +1,4 @@
 import {
-  mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
   mdiCommentTextOutline,
   mdiDelete,
@@ -31,6 +30,7 @@ import { showEditorToast } from "../automation/editor-toast";
 import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
+import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -132,17 +132,7 @@ export default class HaScriptFieldRow extends LitElement {
                 ${
                   !this.narrow
                     ? html`<span class="shortcut">
-                        <span
-                          >${
-                            isMac
-                              ? html`<ha-svg-icon
-                                  .path=${mdiAppleKeyboardCommand}
-                                ></ha-svg-icon>`
-                              : this.hass.localize(
-                                  "ui.panel.config.automation.editor.ctrl"
-                                )
-                          }</span
-                        >
+                        <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                         <span>+</span>
                         <span
                           >${this.hass.localize(
@@ -253,15 +243,9 @@ export default class HaScriptFieldRow extends LitElement {
                             !this.narrow
                               ? html`<span class="shortcut">
                                   <span
-                                    >${
-                                      isMac
-                                        ? html`<ha-svg-icon
-                                            .path=${mdiAppleKeyboardCommand}
-                                          ></ha-svg-icon>`
-                                        : this.hass.localize(
-                                            "ui.panel.config.automation.editor.ctrl"
-                                          )
-                                    }</span
+                                    >${renderCtrlOrCmd(
+                                      this.hass.localize
+                                    )}</span
                                   >
                                   <span>+</span>
                                   <span

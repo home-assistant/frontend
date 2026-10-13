@@ -1,4 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { deepEqual } from "../util/deep-equal";
 import {
   createQueryString,
   decodeQueryParams,
@@ -34,6 +35,15 @@ export const historyLogbookTargetFromQueryParams = (
   params: HistoryLogbookQueryParams
 ): HassServiceTarget | undefined =>
   serviceTargetFromQueryParams(params, historyLogbookTargetParamKeys);
+
+export const historyLogbookTargetsEqual = (
+  a: HassServiceTarget,
+  b: HassServiceTarget
+): boolean =>
+  deepEqual(
+    queryParamsFromServiceTarget(a, historyLogbookTargetParamKeys),
+    queryParamsFromServiceTarget(b, historyLogbookTargetParamKeys)
+  );
 
 export const createHistoryLogbookUrl = (
   path: string,

@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { transform } from "../../common/decorators/transform";
 import { stateColorCss } from "../../common/entity/state_color";

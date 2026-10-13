@@ -318,7 +318,7 @@ export class HaFloorPicker extends LitElement {
   );
 
   private _rowRenderer: RenderItemFunction<FloorComboBoxItem> = (item) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${
         item.icon_path
           ? html`
@@ -403,7 +403,6 @@ export class HaFloorPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
         .label=${this.label}

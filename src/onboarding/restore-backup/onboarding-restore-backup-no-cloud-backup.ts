@@ -1,36 +1,39 @@
-import { LitElement, html, css, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
-import type { LocalizeFunc } from "../../common/translations/localize";
-import "../../components/ha-button";
-import "../../components/ha-icon-button-arrow-prev";
+import { LitElement, css, html, type CSSResultGroup } from "lit";
+import { customElement, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { removeSearchParam } from "../../common/url/search-params";
+import "../../components/ha-button";
+import "../../components/ha-icon-button-arrow-prev";
 import { onBoardingStyles } from "../styles";
 
 @customElement("onboarding-restore-backup-no-cloud-backup")
 class OnboardingRestoreBackupNoCloudBackup extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   render() {
     return html`
       <ha-icon-button-arrow-prev
-        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        .label=${this._localize("ui.panel.page-onboarding.restore.back")}
         @click=${this._back}
       ></ha-icon-button-arrow-prev>
       <h1>
-        ${this.localize(
+        ${this._localize(
           "ui.panel.page-onboarding.restore.ha-cloud.no_cloud_backup"
         )}
       </h1>
       <div class="description">
-        ${this.localize(
+        ${this._localize(
           "ui.panel.page-onboarding.restore.ha-cloud.no_cloud_backup_description"
         )}
       </div>
       <div class="actions">
         <ha-button @click=${this._signOut}>
-          ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
+          ${this._localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
         </ha-button>
         <ha-button
           href="https://www.nabucasa.com/config/backups/"
@@ -38,7 +41,7 @@ class OnboardingRestoreBackupNoCloudBackup extends LitElement {
           rel="noreferrer noopener"
           appearance="plain"
         >
-          ${this.localize(
+          ${this._localize(
             "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
           )}
         </ha-button>

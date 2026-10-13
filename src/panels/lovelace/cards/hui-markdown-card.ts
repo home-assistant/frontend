@@ -310,6 +310,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
     .text-only {
       background: none;
+      backdrop-filter: none;
       box-shadow: none;
       border: none;
     }

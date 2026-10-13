@@ -1,9 +1,14 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
@@ -16,6 +21,7 @@ import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import {
   isMediaSourceContentId,
+  isStreamingMedia,
   resolveMediaSource,
 } from "../../../data/media_source";
 import type { HomeAssistant } from "../../../types";
@@ -65,6 +71,10 @@ export class HuiImage extends LitElement {
 
   @state() private _loadState?: LoadState;
 
+  @query("#image") private _img?: HTMLImageElement;
+
+  private _reconnectImg = false;
+
   @state() private _cameraImageSrc?: string;
 
   @state() private _loadedImageSrc?: string;
@@ -88,6 +98,9 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    if (this._reconnectImg) {
+      this.requestUpdate();
+    }
     if (this._loadState === undefined) {
       this._loadState = LoadState.Loading;
     }
@@ -101,6 +114,12 @@ export class HuiImage extends LitElement {
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
     this._imageVisible = undefined;
+    // A detached <img> keeps an MJPEG stream open, which can tie up the
+    // connection. Drop the source and set it again when reconnected.
+    if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
+      this._reconnectImg = true;
+      this._img?.removeAttribute("src");
+    }
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
@@ -108,6 +127,9 @@ export class HuiImage extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
+    if (this.isConnected) {
+      this._reconnectImg = false;
+    }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
@@ -280,7 +302,7 @@ export class HuiImage extends LitElement {
               : html`
                   <img
                     id="image"
-                    src=${imageSrc}
+                    src=${this._reconnectImg ? nothing : live(imageSrc)}
                     alt=${this.entity || ""}
                     @error=${this._onImageError}
                     @load=${this._onImageLoad}
@@ -378,9 +400,11 @@ export class HuiImage extends LitElement {
     this._loadState = LoadState.Error;
   }
 
-  private async _onImageLoad(ev: Event): Promise<void> {
+  private async _onImageLoad(
+    ev: HASSDomTargetEvent<HTMLImageElement>
+  ): Promise<void> {
     this._loadState = LoadState.Loaded;
-    const imgEl = ev.target as HTMLImageElement;
+    const imgEl = ev.target;
     if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
       this._loadedImageSrc = imgEl.src;
     }
@@ -388,9 +412,11 @@ export class HuiImage extends LitElement {
     this._lastImageHeight = imgEl.offsetHeight;
   }
 
-  private async _onVideoLoad(ev: Event): Promise<void> {
+  private async _onVideoLoad(
+    ev: HASSDomCurrentTargetEvent<HaCameraStream>
+  ): Promise<void> {
     this._loadState = LoadState.Loaded;
-    const videoEl = ev.currentTarget as HaCameraStream;
+    const videoEl = ev.currentTarget;
     await this.updateComplete;
     this._lastImageHeight = videoEl.offsetHeight;
   }

@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import "../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../data/context";
 import type { AddonState } from "../../../../data/hassio/addon";

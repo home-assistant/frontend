@@ -1,7 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { setTimeValue } from "../../../data/time";
@@ -37,8 +36,8 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }

@@ -3,8 +3,11 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
+import type { HaSlider } from "../components/ha-slider";
 import "../components/ha-slider";
+import type { HaInput } from "../components/input/ha-input";
 import "../components/input/ha-input";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { setValue } from "../data/input_text";
@@ -152,13 +155,12 @@ class StateCardInputNumber extends LitElement {
     }
   }
 
-  private _selectedValueChanged(ev: Event): void {
-    if ((ev.target as HTMLInputElement).value !== this.stateObj.state) {
-      setValue(
-        this.hass!,
-        this.stateObj.entity_id,
-        (ev.target as HTMLInputElement).value
-      );
+  private _selectedValueChanged(
+    ev: HASSDomTargetEvent<HaSlider | HaInput>
+  ): void {
+    const value = String(ev.target.value);
+    if (value !== this.stateObj.state) {
+      setValue(this.hass!, this.stateObj.entity_id, value);
     }
   }
 }

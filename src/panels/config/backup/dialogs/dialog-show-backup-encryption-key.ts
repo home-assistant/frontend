@@ -8,7 +8,6 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-icon-button-prev";
 import "../../../../components/item/ha-row-item";
 import { downloadEmergencyKit } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";

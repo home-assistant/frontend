@@ -107,6 +107,9 @@ export class DialogAddApplicationCredential extends DirtyStateProviderMixin<Cred
     const selectedDomainName = this._params.selectedDomain
       ? domainToName(this.hass.localize, this._domain!)
       : "";
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/integrations/${this._domain}`)
+      : this._manifest?.documentation;
     return html`
       <ha-dialog
         .open=${this._open}
@@ -139,17 +142,9 @@ export class DialogAddApplicationCredential extends DirtyStateProviderMixin<Cred
                             }
                           )}
                           ${
-                            this._manifest?.is_built_in ||
-                            this._manifest?.documentation
+                            documentationLink
                               ? html`<a
-                                  href=${
-                                    this._manifest.is_built_in
-                                      ? documentationUrl(
-                                          this.hass,
-                                          `/integrations/${this._domain}`
-                                        )
-                                      : this._manifest.documentation
-                                  }
+                                  href=${documentationLink}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
@@ -195,7 +190,6 @@ export class DialogAddApplicationCredential extends DirtyStateProviderMixin<Cred
                       ? nothing
                       : html`<ha-generic-picker
                           name="domain"
-                          .hass=${this.hass}
                           .label=${this.hass.localize(
                             "ui.panel.config.application_credentials.editor.domain"
                           )}

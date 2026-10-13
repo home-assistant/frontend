@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus, mdiThermometer, mdiThermostat } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,6 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { UNIT_F } from "../../common/const";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
@@ -154,7 +154,7 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   private _handleButton(ev) {
-    const target = ev.currentTarget.target as Target;
+    const target = ev.currentTarget.dataset.target as Target;
     const step = ev.currentTarget.step as number;
 
     const defaultValue = target === "high" ? this._max : this._min;
@@ -230,9 +230,9 @@ export class HaStateControlClimateTemperature extends LitElement {
       <div class="buttons">
         <ha-outlined-icon-button
           style=${styleMap({
-            "--md-sys-color-outline": color,
+            "--ha-outlined-icon-button-outline-color": color,
           })}
-          .target=${target}
+          data-target=${target}
           .step=${-this._step}
           @click=${this._handleButton}
         >
@@ -240,9 +240,9 @@ export class HaStateControlClimateTemperature extends LitElement {
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           style=${styleMap({
-            "--md-sys-color-outline": color,
+            "--ha-outlined-icon-button-outline-color": color,
           })}
-          .target=${target}
+          data-target=${target}
           .step=${this._step}
           @click=${this._handleButton}
         >

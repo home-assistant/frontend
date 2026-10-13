@@ -28,24 +28,24 @@ export interface HardwareInfo {
 export interface HardwareInfoEntry {
   board: HardwareInfoBoardInfo | null;
   dongle: HardwareInfoDongleInfo | null;
-  config_entries: string[];
-  name: string;
-  url?: string;
+  config_entries: string[] | null;
+  name: string | null;
+  url: string | null;
 }
 
 export interface HardwareInfoBoardInfo {
   manufacturer: string;
-  model?: string;
-  revision?: string;
-  hassio_board_id?: string;
+  model: string | null;
+  revision: string | null;
+  hassio_board_id: string | null;
 }
 
 export interface HardwareInfoDongleInfo {
-  manufacturer: string;
-  description: string;
-  pid?: string;
-  vid?: string;
-  serial_number?: string;
+  manufacturer: string | null;
+  description: string | null;
+  pid: string;
+  vid: string;
+  serial_number: string | null;
 }
 
 export interface SystemStatusStreamMessage {

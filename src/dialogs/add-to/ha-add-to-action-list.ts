@@ -15,7 +15,7 @@ import "../../components/ha-icon";
 import "../../components/ha-svg-icon";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-button";
-import "../../components/list/ha-list-base";
+import "../../components/list/ha-grouped-list";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 
 export interface AddToActionListItem {
@@ -76,20 +76,19 @@ class HaAddToActionList extends LitElement {
     }
 
     return html`
-      <h3 class="section-header">
-        ${this._localizeValue(section.title, section.titleKey)}
-      </h3>
-      ${
-        section.actions.length
-          ? html`<ha-list-base>
-              ${section.actions.map((action, actionIndex) =>
+      <ha-grouped-list
+        .header=${this._localizeValue(section.title, section.titleKey)}
+      >
+        ${
+          section.actions.length
+            ? section.actions.map((action, actionIndex) =>
                 this._renderActionItem(action, sectionIndex, actionIndex)
-              )}
-            </ha-list-base>`
-          : html`<h4 class="empty">
-              ${this._localizeValue(section.empty, section.emptyKey)}
-            </h4>`
-      }
+              )
+            : html`<div class="empty">
+                ${this._localizeValue(section.empty, section.emptyKey)}
+              </div>`
+        }
+      </ha-grouped-list>
     `;
   }
 
@@ -161,26 +160,17 @@ class HaAddToActionList extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
+      padding: 0 var(--ha-space-6);
     }
 
-    .section-header {
-      padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-1);
-      margin: 0;
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--secondary-text-color);
+    ha-grouped-list + ha-grouped-list {
+      margin-top: var(--ha-space-6);
     }
 
     .empty {
-      padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-1);
-      margin: 0;
+      padding: var(--ha-space-2) var(--ha-space-3);
       font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-normal);
       color: var(--secondary-text-color);
-    }
-
-    ha-list-item-button {
-      --ha-row-item-padding-inline: var(--ha-space-5);
     }
 
     ha-icon,
@@ -194,7 +184,7 @@ class HaAddToActionList extends LitElement {
     }
 
     .plus {
-      color: var(--primary-color);
+      color: var(--secondary-text-color);
     }
 
     ha-list-item-button[disabled] .start-icon,

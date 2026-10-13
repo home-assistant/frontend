@@ -18,9 +18,14 @@ vi.mock("../../../src/components/ha-dialog", () => {
   return {};
 });
 
-vi.mock("../../../src/components/ha-button", () => {
-  customElements.define("ha-button", class extends HTMLElement {});
-  return {};
+vi.mock("../../../src/components/ha-button", async () => {
+  const lit = await import("lit");
+
+  class HaButton extends lit.LitElement {}
+
+  customElements.define("ha-button", HaButton);
+
+  return { HaButton };
 });
 
 vi.mock("../../../src/components/ha-dialog-footer", () => {

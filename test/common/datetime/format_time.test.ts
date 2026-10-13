@@ -3,6 +3,7 @@ import { expect, describe, it } from "vitest";
 import {
   formatTime,
   formatTimeWithSeconds,
+  formatTimeWithMilliseconds,
   formatTimeWeekday,
   formatTime24h,
 } from "../../../src/common/datetime/format_time";
@@ -82,6 +83,58 @@ describe("formatTimeWithSeconds", () => {
         demoConfig
       )
     ).toBe("23:12:13");
+  });
+});
+
+describe("formatTimeWithMilliseconds", () => {
+  const dateObj = new Date(2017, 10, 18, 23, 12, 13, 400);
+
+  it("Formats English times with milliseconds", () => {
+    expect(
+      formatTimeWithMilliseconds(
+        dateObj,
+        {
+          language: "en",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.am_pm,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      )
+    ).toBe("11:12:13.400 PM");
+    expect(
+      formatTimeWithMilliseconds(
+        dateObj,
+        {
+          language: "en",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.twenty_four,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      )
+    ).toBe("23:12:13.400");
+  });
+
+  it("Uses the locale decimal separator", () => {
+    expect(
+      formatTimeWithMilliseconds(
+        dateObj,
+        {
+          language: "fr",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.twenty_four,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      )
+    ).toBe("23:12:13,400");
   });
 });
 

@@ -124,17 +124,15 @@ export class HaTemplateSelector extends LitElement {
           : this._test && this._templateResult
             ? html`<pre class="rendered">
 ${
-  typeof this._templateResult.result === "object"
-    ? JSON.stringify(this._templateResult.result, null, 2)
-    : this._templateResult.result
-}</pre>`
+                  typeof this._templateResult.result === "object"
+                    ? JSON.stringify(this._templateResult.result, null, 2)
+                    : this._templateResult.result
+                }</pre>`
             : nothing
       }
       ${
         this.helper
-          ? html`<ha-input-helper-text .disabled=${this.disabled}
-              >${this.helper}</ha-input-helper-text
-            >`
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : nothing
       }
     `;

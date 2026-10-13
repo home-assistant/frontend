@@ -8,8 +8,11 @@
 //   await postReportComment({ github, context, core });
 
 import { readFileSync } from "fs";
+import { withRetry } from "../../.github/scripts/github-retry.mts";
 
 const REPORT_PATH = "test/e2e/reports/combined/results.json";
+const COMMENT_MARKER = "<!-- playwright-e2e-report -->";
+const COMMENT_HEADING = "## Playwright E2E tests failed";
 
 // GitHub comment bodies cap at 65536 chars; leave headroom.
 const MAX_BODY = 60000;
@@ -76,6 +79,21 @@ export default async function postReportComment({ github, context, core }) {
   const { owner, repo } = context.repo;
   const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
 
+  const comments = await withRetry("comment list", () =>
+    github.paginate(github.rest.issues.listComments, {
+      owner,
+      repo,
+      issue_number: context.issue.number,
+      per_page: 100,
+    })
+  );
+  const previousComments = comments.filter(
+    (comment) =>
+      comment.user?.login === "github-actions[bot]" &&
+      (comment.body?.includes(COMMENT_MARKER) ||
+        comment.body?.startsWith(COMMENT_HEADING))
+  );
+
   let stats = { expected: 0, unexpected: 0, flaky: 0, skipped: 0 };
   let failures = [];
 
@@ -97,7 +115,8 @@ export default async function postReportComment({ github, context, core }) {
     : "_No failing tests were captured in the report._";
 
   let body = [
-    "## Playwright E2E tests failed",
+    COMMENT_MARKER,
+    COMMENT_HEADING,
     "",
     summaryLine,
     "",
@@ -112,10 +131,51 @@ export default async function postReportComment({ github, context, core }) {
     body = `${body.slice(0, MAX_BODY)}\n\n_…report truncated, see the full HTML report artifact._`;
   }
 
+  // Not retried, as a retry after GitHub created the comment would post it twice
   await github.rest.issues.createComment({
     owner,
     repo,
     issue_number: context.issue.number,
     body,
   });
+
+  const batches = Array.from(
+    { length: Math.ceil(previousComments.length / 100) },
+    (_, index) => previousComments.slice(index * 100, (index + 1) * 100)
+  );
+  const commentsToMinimize = (
+    await Promise.all(
+      batches.map(async (batch) => {
+        const { nodes } = await withRetry("comment state lookup", () =>
+          github.graphql(
+            `query($ids: [ID!]!) {
+              nodes(ids: $ids) {
+                ... on IssueComment {
+                  id
+                  isMinimized
+                }
+              }
+            }`,
+            { ids: batch.map((comment) => comment.node_id) }
+          )
+        );
+        return nodes.filter((node) => !node.isMinimized);
+      })
+    )
+  ).flat();
+
+  await Promise.all(
+    commentsToMinimize.map((comment) =>
+      withRetry("comment minimize", () =>
+        github.graphql(
+          `mutation($id: ID!) {
+            minimizeComment(input: { subjectId: $id, classifier: OUTDATED }) {
+              clientMutationId
+            }
+          }`,
+          { id: comment.id }
+        )
+      )
+    )
+  );
 }

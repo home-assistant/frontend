@@ -93,17 +93,18 @@ export const getZwaveDeviceActions = async (
     return [];
   }
 
-  const actions: DeviceAction[] = [];
+  const actions: DeviceAction[] = [
+    {
+      label: hass.localize(
+        "ui.panel.config.zwave_js.device_info.device_config"
+      ),
+      icon: mdiCog,
+      href: `/config/zwave_js/node_config/${device.id}?config_entry=${entryId}`,
+    },
+  ];
 
   if (!nodeStatus.is_controller_node) {
     actions.push(
-      {
-        label: hass.localize(
-          "ui.panel.config.zwave_js.device_info.device_config"
-        ),
-        icon: mdiCog,
-        href: `/config/zwave_js/node_config/${device.id}?config_entry=${entryId}`,
-      },
       {
         label: hass.localize(
           "ui.panel.config.zwave_js.device_info.reinterview_device"
@@ -217,7 +218,8 @@ export const getZwaveDeviceActions = async (
       action: async () => {
         showZWaveJSAddNodeDialog(el, {
           entry_id: entryId,
-          longRangeSupported: networkStatus.controller?.supports_long_range,
+          longRangeSupported:
+            networkStatus.controller?.supports_long_range ?? undefined,
         });
       },
     });

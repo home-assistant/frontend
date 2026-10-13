@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/item/ha-list-item-button";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
@@ -50,14 +51,14 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
       </ha-list-base>`;
   }
 
-  private async _wakeWordPicked(ev: Event) {
+  private async _wakeWordPicked(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { value: string }>
+  ) {
     if (!this.assistEntityId) {
       return;
     }
 
-    const wakeWordId = (
-      ev.currentTarget as HaListItemButton & { value: string }
-    ).value;
+    const wakeWordId = ev.currentTarget.value;
 
     await setWakeWords(this.hass, this.assistEntityId, [wakeWordId]);
     this._nextStep();

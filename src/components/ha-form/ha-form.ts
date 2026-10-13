@@ -3,15 +3,51 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import { resolveSelectorContext } from "../../data/selector";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
 import { getHiddenFields } from "./conditions";
-import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+import type {
+  HaFormData,
+  HaFormDataContainer,
+  HaFormElement,
+  HaFormSchema,
+} from "./types";
+
+type HaFormDataChangedEvent = ValueChangedEvent<HaFormData>;
+type HaFormDataContainerChangedEvent = ValueChangedEvent<HaFormDataContainer>;
+
+/**
+ * Merge the form context with the selector config context and the
+ * field-level schema context, where the latter wins.
+ */
+export const generateFormContext = (
+  schema: HaFormSchema,
+  data: HaFormDataContainer | undefined,
+  formContext: Record<string, any> | undefined
+): Record<string, any> | undefined => {
+  const selectorContext =
+    "selector" in schema && schema.selector
+      ? resolveSelectorContext(schema.selector, data)
+      : undefined;
+  if (!schema.context && !selectorContext && !formContext) {
+    return undefined;
+  }
+
+  const context = { ...formContext, ...selectorContext };
+  if (schema.context) {
+    for (const [context_key, data_key] of Object.entries(schema.context)) {
+      context[context_key] = data?.[data_key];
+    }
+  }
+  return context;
+};
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
   constant: () => import("./ha-form-constant"),
+  divider: () => import("./ha-form-divider"),
   float: () => import("./ha-form-float"),
   grid: () => import("./ha-form-grid"),
   expandable: () => import("./ha-form-expandable"),
@@ -240,17 +276,7 @@ export class HaForm extends LitElement implements HaFormElement {
   private _generateContext(
     schema: HaFormSchema
   ): Record<string, any> | undefined {
-    if (!schema.context && !this.context) {
-      return undefined;
-    }
-
-    const context = { ...this.context };
-    if (schema.context) {
-      for (const [context_key, data_key] of Object.entries(schema.context)) {
-        context[context_key] = this.data[data_key];
-      }
-    }
-    return context;
+    return generateFormContext(schema, this.data, this.context);
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
@@ -261,16 +287,18 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected addValueChangedListener(element: Element | ShadowRoot) {
-    element.addEventListener("value-changed", (ev) => {
+    element.addEventListener("value-changed", (ev: Event) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
       if (ev.target === this) return;
 
+      const changeEv = ev as
+        HaFormDataChangedEvent | HaFormDataContainerChangedEvent;
       const newValue =
         !schema.name || ("flatten" in schema && schema.flatten)
-          ? ev.detail.value
-          : { [schema.name]: ev.detail.value };
+          ? (changeEv.detail.value as HaFormDataContainer)
+          : { [schema.name]: changeEv.detail.value as HaFormData };
 
       this.data = {
         ...this.data,

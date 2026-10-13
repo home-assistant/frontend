@@ -1,14 +1,15 @@
 import type {
   HassConfig,
-  HassEntities,
   HassEntity,
   HassEntityAttributeBase,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { computeRTL } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
@@ -79,7 +80,7 @@ export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
-  a: Record<string, any>;
+  a?: Record<string, any>;
   /** last_changed; if set, also applies to lu */
   lc?: number;
   /** last_updated */
@@ -93,14 +94,14 @@ export interface HistoryStreamMessage {
 }
 
 export const entityIdHistoryNeedsAttributes = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states">,
   entityId: string
 ) =>
   !hass.states[entityId] ||
   NEED_ATTRIBUTE_DOMAINS.includes(computeDomain(entityId));
 
 export const fetchDateWS = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
   entityIds: string[]
@@ -119,6 +120,32 @@ export const fetchDateWS = (
   }
   return hass.callWS<HistoryStates>(params);
 };
+
+// Rebuilding the charts for this many states takes tens of milliseconds
+const LARGE_HISTORY_STATES = 100_000;
+const MIN_LARGE_HISTORY_UPDATE_DELAY = 1000;
+
+export const countHistoryStates = (history: HistoryStates): number => {
+  let count = 0;
+  for (const states of Object.values(history)) {
+    count += states.length;
+  }
+  return count;
+};
+
+/** How long a live update may wait: none for a small history, else the time one chart pixel covers (1 s to `maxDelay`) */
+export const computeHistoryUpdateDelay = (
+  stateCount: number,
+  timespanMs: number,
+  chartPixels: number,
+  maxDelay: number
+): number =>
+  stateCount < LARGE_HISTORY_STATES
+    ? 0
+    : Math.min(
+        Math.max(timespanMs / chartPixels, MIN_LARGE_HISTORY_UPDATE_DELAY),
+        maxDelay
+      );
 
 export const subscribeHistory = (
   hass: HomeAssistant,
@@ -336,7 +363,7 @@ const processTimelineEntity = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig,
-  entities: HomeAssistant["entities"],
+  hass: HomeAssistant,
   entityId: string,
   states: EntityHistoryState[],
   current_state: HassEntity | undefined
@@ -358,7 +385,7 @@ const processTimelineEntity = (
         localize,
         locale,
         config,
-        entities[entityId],
+        hass.entities[entityId],
         entityId,
         {
           ...(state.a || first.a),
@@ -374,10 +401,16 @@ const processTimelineEntity = (
   }
 
   return {
-    name: computeStateNameFromEntityAttributes(
-      entityId,
-      current_state?.attributes || first.a
-    ),
+    name: current_state
+      ? hass.formatEntityName(current_state, DEFAULT_ENTITY_NAME, {
+          separator: computeRTL(
+            hass.language,
+            hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ ",
+        }) || current_state.entity_id
+      : computeStateNameFromEntityAttributes(entityId, first.a ?? {}),
     entity_id: entityId,
     data,
   };
@@ -387,9 +420,15 @@ const processLineChartEntities = (
   unit: string,
   device_class: string | undefined,
   entities: HistoryStates,
-  hassEntities: HassEntities
+  hass: HomeAssistant
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
+  const nameSeparator = computeRTL(
+    hass.language,
+    hass.translationMetadata.translations
+  )
+    ? " ◂ "
+    : " ▸ ";
 
   const entityIds = Object.keys(entities);
   entityIds.forEach((entityId) => {
@@ -410,7 +449,7 @@ const processLineChartEntities = (
         };
 
         for (const attr of LINE_ATTRIBUTES_TO_KEEP) {
-          if (attr in state.a) {
+          if (state.a && attr in state.a) {
             processedState.attributes![attr] = state.a[attr];
           }
         }
@@ -436,16 +475,19 @@ const processLineChartEntities = (
       processedStates.push(processedState);
     }
 
-    const attributes =
-      entityId in hassEntities
-        ? hassEntities[entityId].attributes
-        : "friendly_name" in first.a
-          ? first.a
-          : undefined;
+    const name =
+      entityId in hass.states
+        ? hass.formatEntityName(hass.states[entityId], DEFAULT_ENTITY_NAME, {
+            separator: nameSeparator,
+          }) || entityId
+        : computeStateNameFromEntityAttributes(
+            entityId,
+            first.a && "friendly_name" in first.a ? first.a : {}
+          );
 
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, attributes || {}),
+      name,
       entity_id: entityId,
       states: processedStates,
     });
@@ -587,7 +629,7 @@ export const computeHistory = (
     if (isNumeric) {
       unit =
         currentState?.attributes.unit_of_measurement ||
-        numericStateFromHistory?.a.unit_of_measurement ||
+        numericStateFromHistory?.a?.unit_of_measurement ||
         BLANK_UNIT;
     } else {
       unit = {
@@ -610,7 +652,7 @@ export const computeHistory = (
           localize,
           hass.locale,
           hass.config,
-          hass.entities,
+          hass,
           entityId,
           stateInfo,
           currentState
@@ -638,7 +680,7 @@ export const computeHistory = (
       unit,
       deviceClass,
       lineChartDevices[key],
-      hass.states
+      hass
     );
   });
 

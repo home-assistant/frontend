@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCircle,
@@ -12,10 +11,10 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { fullEntitiesContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../data/logbook";
@@ -33,14 +32,17 @@ import { describeAction } from "../../data/script_i18n";
 import type {
   ActionTraceStep,
   AutomationTraceExtended,
+  CallServiceActionTraceStep,
   ChooseActionTraceStep,
   IfActionTraceStep,
+  TraceId,
   TriggerTraceStep,
 } from "../../data/trace";
 import { getDataFromPath, isTriggerPath } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
+import { childTraceLinkStyles, renderChildTraceLink } from "./trace-child-link";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -309,7 +311,8 @@ class ActionRenderer {
       path,
       describeAction(this.hass, this.entityReg, data, actionType),
       undefined,
-      data.enabled === false
+      data.enabled === false,
+      (value as CallServiceActionTraceStep).child_id
     );
 
     let i = index + 1;
@@ -640,7 +643,8 @@ class ActionRenderer {
     path: string,
     description: string,
     icon = mdiRecordCircleOutline,
-    disabled = false
+    disabled = false,
+    childId?: TraceId
   ) {
     this.entries.push(html`
       <ha-timeline .icon=${icon} data-path=${path} .notEnabled=${disabled}>
@@ -651,6 +655,14 @@ class ActionRenderer {
                   "ui.panel.config.automation.trace.messages.disabled"
                 )}</span
               >`
+            : ""
+        }${
+          childId
+            ? html`<br />${renderChildTraceLink(
+                  this.hass,
+                  this.entityReg,
+                  childId
+                )}`
             : ""
         }
       </ha-timeline>
@@ -870,7 +882,7 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        toggleAttribute(el, "selected", this.selectedPath === el.dataset.path);
+        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
         if (!this.allowPick || el.tabIndex === 0) {
           return;
         }
@@ -897,6 +909,7 @@ export class HaAutomationTracer extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      childTraceLinkStyles,
       css`
         ha-timeline[lastItem].condition {
           --timeline-ball-color: var(--error-color);

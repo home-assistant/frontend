@@ -90,6 +90,27 @@ describe("generateStateHistoryChartLineData", () => {
     ).toMatchSnapshot();
   });
 
+  it("appends current state at endTime when it is ahead of now", () => {
+    const data = toLineChartEntities({
+      "sensor.power_meter": generateNumericSensorStates(4, { count: 20 }),
+    });
+    const endTime = new Date(FIXED_EPOCH_MS + dayMs);
+    const points = generateStateHistoryChartLineData({
+      ...baseParams,
+      hass: createMockHass({
+        "sensor.power_meter": createMockEntityState(
+          "sensor.power_meter",
+          "123.4",
+          { unit_of_measurement: "W" }
+        ),
+      }),
+      data,
+      endTime,
+      now: new Date(endTime.getTime() - 1500),
+    })!.datasets[0].data!;
+    expect(points[points.length - 1]).toEqual([endTime.getTime(), 123.4]);
+  });
+
   it("builds a visual map for entities backed by statistics", () => {
     const statsHistory = convertStatisticsToHistory(
       hass,
@@ -115,6 +136,26 @@ describe("generateStateHistoryChartLineData", () => {
     const result = generateStateHistoryChartLineData({ ...baseParams, data });
     expect(result?.visualMap).toBeDefined();
     expect(result).toMatchSnapshot();
+  });
+
+  it("matches snapshot when states continue past endTime", () => {
+    // A value and a gap that only closes after endTime are both dropped
+    const endSec = baseParams.endTime.getTime() / 1000;
+    const data = toLineChartEntities({
+      "sensor.power_meter": [
+        { s: "10", a: { unit_of_measurement: "W" }, lu: endSec - 300 },
+        { s: "12", a: {}, lu: endSec - 240 },
+        { s: "unavailable", a: {}, lu: endSec - 180 },
+        { s: "11", a: {}, lu: endSec - 120 },
+        { s: "13", a: {}, lu: endSec - 60 },
+        { s: "14", a: {}, lu: endSec + 60 },
+        { s: "unknown", a: {}, lu: endSec + 120 },
+        { s: "15", a: {}, lu: endSec + 180 },
+      ],
+    });
+    expect(
+      generateStateHistoryChartLineData({ ...baseParams, data })
+    ).toMatchSnapshot();
   });
 
   it("large mixed payload digest is stable", () => {

@@ -36,6 +36,11 @@ type SliderMode = "start" | "end" | "cursor";
 
 @customElement("ha-control-slider")
 export class HaControlSlider extends LitElement {
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   @property({ attribute: false }) public locale?: FrontendLocaleData;
 
   @property({ type: Boolean, reflect: true })
@@ -115,7 +120,9 @@ export class HaControlSlider extends LitElement {
   }
 
   steppedValue(value: number) {
-    return Math.round(value / this.step) * this.step;
+    // Clamp after snapping: when the step does not divide the range evenly,
+    // snapping alone rounds past the bounds (min 1, max 99, step 10 → 0 / 100).
+    return this.boundedValue(Math.round(value / this.step) * this.step);
   }
 
   private _displayedValue(value: number) {
@@ -254,13 +261,9 @@ export class HaControlSlider extends LitElement {
     } else if (e.code === "End") {
       this.value = this.max;
     } else if (e.code === "PageUp") {
-      this.value = this.steppedValue(
-        this.boundedValue((this.value ?? 0) + this._tenPercentStep)
-      );
+      this.value = this.steppedValue((this.value ?? 0) + this._tenPercentStep);
     } else if (e.code === "PageDown") {
-      this.value = this.steppedValue(
-        this.boundedValue((this.value ?? 0) - this._tenPercentStep)
-      );
+      this.value = this.steppedValue((this.value ?? 0) - this._tenPercentStep);
     } else {
       const isRtl = mainWindow.document.dir === "rtl";
       let multiplier = 1;
@@ -424,6 +427,7 @@ export class HaControlSlider extends LitElement {
       --control-slider-background-opacity: 0.2;
       --control-slider-thickness: 40px;
       --control-slider-border-radius: var(--ha-border-radius-md);
+      --control-slider-inset-shadow: none;
       --control-slider-tooltip-font-size: var(--ha-font-size-m);
       height: var(--control-slider-thickness);
       width: 100%;
@@ -534,6 +538,14 @@ export class HaControlSlider extends LitElement {
     .slider * {
       pointer-events: none;
     }
+    .slider::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: var(--control-slider-inset-shadow);
+      pointer-events: none;
+    }
     .slider .slider-track-background {
       position: absolute;
       top: 0;
@@ -560,6 +572,7 @@ export class HaControlSlider extends LitElement {
       transition:
         transform 180ms ease-in-out,
         background-color 180ms ease-in-out;
+      will-change: transform;
     }
     .slider .slider-track-bar.show-handle {
       --slider-size: calc(100% - 2 * var(--handle-margin) - var(--handle-size));

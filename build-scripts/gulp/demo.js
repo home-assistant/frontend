@@ -1,4 +1,5 @@
 import gulp from "gulp";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -13,6 +14,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    createWorkflowLockTask("develop-demo"),
     "clean-demo",
     "translations-enable-merge-backend",
     gulp.parallel(
@@ -32,6 +34,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-demo"),
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",

@@ -1,16 +1,14 @@
-import { mdiArrowRight } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import { formatNumericDuration } from "../../common/datetime/format_duration";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
+import "../../components/ha-icon-arrow-next";
 import type { HttpConfig } from "../../data/http";
 import {
   HTTP_CONFIG_FIELDS,
@@ -43,12 +41,19 @@ export class DialogHttpPendingConfig
 
   private _interval?: number;
 
+  // This dialog must only be dismissed through its own footer buttons
+  // (confirm / revert / close). This flag is flipped right before such a
+  // button closes the dialog, so `closeDialog()` can refuse every other
+  // close request (navigation, back button, `closeAllDialogs`, …).
+  private _resolved = false;
+
   public showDialog(params: HttpPendingConfigDialogParams): void {
     this._params = params;
     this._open = true;
     this._busy = undefined;
     this._error = undefined;
     this._reverted = false;
+    this._resolved = false;
     this._startCountdown();
     // The field labels live in the config panel fragment, which is not loaded
     // yet when this dialog pops up on startup. Load it so the changed-field
@@ -57,6 +62,12 @@ export class DialogHttpPendingConfig
   }
 
   public closeDialog(): boolean {
+    // Refuse programmatic close requests (navigation, back button,
+    // `closeAllDialogs`) so a pending HTTP config is never left silently
+    // unresolved. The dialog only closes once the user picks a footer action.
+    if (!this._resolved) {
+      return false;
+    }
     this._open = false;
     this._stopCountdown();
     return true;
@@ -145,10 +156,6 @@ export class DialogHttpPendingConfig
 
     const changes = this._changedFields;
     const { stable, pending } = this._params.state;
-    const rtl = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    );
 
     return html`
       <ha-dialog
@@ -220,12 +227,7 @@ export class DialogHttpPendingConfig
                             <span class="old"
                               >${this._formatValue(key, stable[key])}</span
                             >
-                            <ha-svg-icon
-                              .path=${mdiArrowRight}
-                              style=${styleMap({
-                                transform: rtl ? "scaleX(-1)" : "",
-                              })}
-                            ></ha-svg-icon>
+                            <ha-icon-arrow-next></ha-icon-arrow-next>
                             <span class="new"
                               >${this._formatValue(key, pending![key])}</span
                             >
@@ -337,6 +339,9 @@ export class DialogHttpPendingConfig
   }
 
   private _notifyResolved(): void {
+    // Mark the dialog as user-resolved so `closeDialog()` is allowed to close
+    // it; every footer action calls this before setting `_open = false`.
+    this._resolved = true;
     this._params?.onResolved?.();
     // The form on Settings > System > Network may be mounted and showing
     // stale state; let it know to refetch.
@@ -387,7 +392,7 @@ export class DialogHttpPendingConfig
       .values .new {
         color: var(--primary-text-color);
       }
-      .values ha-svg-icon {
+      .values ha-icon-arrow-next {
         --mdc-icon-size: 18px;
         flex-shrink: 0;
       }

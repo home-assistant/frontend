@@ -27,6 +27,10 @@ class MatterConfigRouter extends HassRouterPage {
         tag: "matter-options-page",
         load: () => import("./matter-options-page"),
       },
+      visualization: {
+        tag: "matter-network-visualization",
+        load: () => import("./matter-network-visualization"),
+      },
     },
   };
 

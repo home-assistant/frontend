@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import { computeEntityNameParts } from "../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../common/entity/state_color";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -12,13 +12,23 @@ import {
   localizeStateMessage,
   parseTriggerSource,
 } from "../../data/logbook";
+import type { TraceContexts } from "../../data/trace";
+import { getTraceUrl } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 
 export type LogbookEntryCategory = "entity" | "automation" | "integration";
 
-export const TRIGGER_DOMAINS = ["automation", "script"];
+const TRIGGER_DOMAINS = ["automation", "script"];
 
-export const stripEntityId = (message: string, entityId?: string) =>
+// The fixed messages core uses to describe a run: "triggered" (optionally
+// "by" a source) for automations, "started" for scripts.
+const isRunMessage = (domain: string, message: string | undefined) =>
+  message === undefined ||
+  (domain === "script"
+    ? message === "started"
+    : message === "triggered" || message.startsWith("triggered by "));
+
+const stripEntityId = (message: string, entityId?: string) =>
   entityId ? message.replace(entityId, " ") : message;
 
 export const classifyLogbookEntry = (
@@ -35,9 +45,13 @@ export const classifyLogbookEntry = (
   return "integration";
 };
 
+// A run row is the acting automation or script; every other row is an effect.
+export const isRunRow = (item: LogbookEntry): boolean =>
+  classifyLogbookEntry(item) === "automation";
+
 // How much naming detail an entity row shows, from least to most. The value is
-// the broadest part shown: `none` (name hidden), `entity`, `device` (device ▸
-// entity), `area` (area ▸ device ▸ entity).
+// the broadest part shown: `none` (name hidden), `entity`, `device` (parent
+// device ▸ device ▸ entity), `area` (area ▸ parent device ▸ device ▸ entity).
 export type LogbookNameDetail = "none" | "entity" | "device" | "area";
 
 export interface EntityDisplay {
@@ -55,14 +69,12 @@ export const entityDisplay = (
     return {};
   }
 
-  const [entityName, deviceName, areaName] = computeEntityNameList(
-    stateObj,
-    [{ type: "entity" }, { type: "device" }, { type: "area" }],
-    hass.entities,
-    hass.devices,
-    hass.areas,
-    hass.floors
-  );
+  const {
+    entity: entityName,
+    device: deviceName,
+    parent_device: parentDeviceName,
+    area: areaName,
+  } = computeEntityNameParts(stateObj, hass);
 
   const primary = entityName || deviceName || entityId;
 
@@ -77,11 +89,11 @@ export const entityDisplay = (
       parts = [];
       break;
     case "device":
-      parts = [deviceQualifier];
+      parts = [parentDeviceName, deviceQualifier];
       break;
     case "area":
     default:
-      parts = [areaName, deviceQualifier];
+      parts = [areaName, parentDeviceName, deviceQualifier];
   }
 
   const filtered = parts.filter(Boolean) as string[];
@@ -96,11 +108,28 @@ export const entityDisplay = (
   return { primary, secondary };
 };
 
-export const hasContext = (item: LogbookEntry) =>
+const hasContext = (item: LogbookEntry) =>
   item.context_event_type || item.context_state || item.context_message;
 
 export const sameDay = (a?: LogbookEntry, b?: LogbookEntry) =>
   !!a?.when && !!b?.when && isSameDay(a.when * 1000, b.when * 1000);
+
+export const isSameLogbookEntry = (a: LogbookEntry, b: LogbookEntry) =>
+  a.when === b.when &&
+  a.entity_id === b.entity_id &&
+  a.state === b.state &&
+  a.message === b.message &&
+  a.name === b.name;
+
+// Every entry of a run shares the run's context id, so effect rows resolve
+// to their cause's trace too.
+export const computeTraceLink = (
+  traceContexts: TraceContexts,
+  contextId?: string
+): string | undefined => {
+  const traceContext = contextId ? traceContexts[contextId] : undefined;
+  return traceContext ? getTraceUrl(traceContext) : undefined;
+};
 
 // Unavailable is flagged with an orange badge by the row, not a color change.
 export const nodeColor = (
@@ -131,8 +160,7 @@ export interface LogbookCause {
   brandDomain?: string;
 }
 
-export const computeLogbookCause = (
-  hass: HomeAssistant,
+export const computeUserCause = (
   item: LogbookEntry,
   userIdToName: Record<string, string>,
   systemUserIds?: Set<string>
@@ -140,15 +168,21 @@ export const computeLogbookCause = (
   const userName = item.context_user_id
     ? userIdToName[item.context_user_id]
     : undefined;
-  if (userName) {
-    return {
-      type: "user",
-      name: userName,
-      userId: item.context_user_id,
-      systemUser: systemUserIds?.has(item.context_user_id!),
-    };
+  if (!userName) {
+    return undefined;
   }
+  return {
+    type: "user",
+    name: userName,
+    userId: item.context_user_id,
+    systemUser: systemUserIds?.has(item.context_user_id!),
+  };
+};
 
+export const computeContextCause = (
+  hass: HomeAssistant,
+  item: LogbookEntry
+): LogbookCause | undefined => {
   if (
     item.context_event_type === "automation_triggered" ||
     item.context_event_type === "script_started"
@@ -239,6 +273,18 @@ export const computeLogbookCause = (
   return undefined;
 };
 
+export const computeLogbookCause = (
+  hass: HomeAssistant,
+  item: LogbookEntry,
+  userIdToName: Record<string, string>,
+  systemUserIds?: Set<string>
+): LogbookCause | undefined =>
+  computeUserCause(item, userIdToName, systemUserIds) ??
+  computeContextCause(hass, item);
+
+export const isRunCause = (cause?: LogbookCause): boolean =>
+  cause?.type === "automation" || cause?.type === "script";
+
 export type LogbookGlyph =
   | { type: "state"; stateObj: HassEntity; icon?: string }
   | { type: "automation"; script: boolean }
@@ -273,21 +319,19 @@ const computeLogbookValue = (
   if (item.entity_id && item.state) {
     return {
       text: stateObj
-        ? localizeStateMessage(
-            hass,
-            item.state,
-            stateObj,
-            domain!,
-            item.attributes
-          )
+        ? localizeStateMessage(hass, item.state, stateObj, domain!, item)
         : item.state,
       type: "state",
     };
   }
+  // Core sends run rows (carrying the automation/script entity) with a raw
+  // English message; use our own label. Other messages, like logbook.log on an
+  // automation or script, keep their custom text.
   const isAutomationRun =
+    item.entity_id &&
     domain &&
     TRIGGER_DOMAINS.includes(domain) &&
-    (item.source || hasContext(item) || !!item.context_user_id);
+    isRunMessage(domain, item.message);
   if (isAutomationRun) {
     return {
       text: hass.localize(
@@ -348,6 +392,13 @@ export const computeLogbookItem = (
     ? entityDisplay(hass, entry.entity_id, opts.nameDetail)
     : undefined;
 
+  const userCause = computeUserCause(
+    entry,
+    opts.userIdToName ?? {},
+    opts.systemUserIds
+  );
+  const contextCause = computeContextCause(hass, entry);
+
   return {
     category,
     glyph: computeLogbookGlyph(entry, category, historicStateObj, domain),
@@ -355,12 +406,10 @@ export const computeLogbookItem = (
     name: display?.primary ?? entry.name,
     context: display?.secondary,
     value: computeLogbookValue(hass, entry, domain, historicStateObj),
-    cause: computeLogbookCause(
-      hass,
-      entry,
-      opts.userIdToName ?? {},
-      opts.systemUserIds
-    ),
+    // A row shows the run over the user who started it; the dialog shows both.
+    cause: isRunCause(contextCause)
+      ? contextCause
+      : (userCause ?? contextCause),
     when: entry.when * 1000,
   };
 };

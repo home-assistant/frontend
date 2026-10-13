@@ -1,17 +1,18 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { mockTemplate } from "../../../../demo/src/stubs/template";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { MarkdownCardConfig } from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 
 const CONFIGS = [
   {
     heading: "markdown-it demo",
-    config: `
-- type: markdown
-  content: |
-    # h1 Heading 8-)
+    config: {
+      type: "markdown",
+      content: `# h1 Heading 8-)
 
     ## h2 Heading
 
@@ -278,9 +279,12 @@ const CONFIGS = [
     <ha-alert alert-type="success">This is a success alert — check it out!</ha-alert>
     <ha-alert title="Test alert">This is an alert with a title</ha-alert>
 
-    `,
+    `
+        .replace(/^ {4}/gm, "")
+        .replace(/\n+$/, "\n"),
+    },
   },
-];
+] satisfies DemoCardConfig<MarkdownCardConfig>[];
 
 @customElement("demo-lovelace-markdown-card")
 class DemoMarkdown extends LitElement {

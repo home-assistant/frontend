@@ -35,6 +35,7 @@ import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
+import { panelIsReady } from "../../layouts/panel-ready";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
@@ -77,6 +78,8 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   private _mql?: MediaQueryList;
 
+  private _initialReady = false;
+
   public connectedCallback() {
     super.connectedCallback();
     this._mql = window.matchMedia(
@@ -103,6 +106,10 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         this._entityRegistry = entities;
         // Refresh calendars when entity registry updates (includes color changes)
         this._calendars = getCalendars(this.hass, this, this._entityRegistry);
+        if (!this._initialReady) {
+          this._initialReady = true;
+          panelIsReady(this);
+        }
         // Resubscribe events if view dates are available (handles both initial load and color updates)
         if (this._start && this._end) {
           this._unsubscribeAll().then(() => {

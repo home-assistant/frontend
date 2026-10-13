@@ -40,6 +40,7 @@ class HaConfigScene extends HassRouterPage {
       },
       edit: {
         tag: "ha-scene-editor",
+        itemId: true,
       },
     },
   };

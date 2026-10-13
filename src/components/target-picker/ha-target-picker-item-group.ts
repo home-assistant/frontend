@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { DeviceCompositeSplits } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { TargetType, TargetTypeFloorless } from "../../data/target";
 import type { HomeAssistant } from "../../types";
@@ -7,6 +8,13 @@ import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker"
 import "../ha-expansion-panel";
 import "../list/ha-list-base";
 import "./ha-target-picker-item-row";
+
+const TYPE_PLURAL = {
+  entity: "entities",
+  device: "devices",
+  area: "areas",
+  label: "labels",
+} as const satisfies Record<TargetTypeFloorless, string>;
 
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
@@ -25,6 +33,9 @@ export class HaTargetPickerItemGroup extends LitElement {
 
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
 
   /**
    * Show only targets with entities from specific domains.
@@ -45,6 +56,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ type: Boolean, attribute: "primary-entities-only" })
   public primaryEntitiesOnly?: boolean;
 
+  @property({ attribute: false })
+  public compositeSplits?: DeviceCompositeSplits;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -60,11 +74,11 @@ export class HaTargetPickerItemGroup extends LitElement {
     >
       <div slot="header" class="heading">
         ${this.hass.localize(
-          `ui.components.target-picker.selected.${this.type}`,
-          {
-            count,
-          }
+          `ui.components.target-picker.type.${TYPE_PLURAL[this.type]}`
         )}
+        ${
+          this.collapsed ? html`<span class="count">(${count})</span>` : nothing
+        }
       </div>
       <ha-list-base>
         ${Object.entries(this.items).map(([type, items]) =>
@@ -77,9 +91,11 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .itemId=${item}
                     .deviceFilter=${this.deviceFilter}
                     .entityFilter=${this.entityFilter}
+                    .activeFilter=${this.activeFilter}
                     .includeDomains=${this.includeDomains}
                     .includeDeviceClasses=${this.includeDeviceClasses}
                     .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                    .compositeSplits=${this.compositeSplits}
                   ></ha-target-picker-item-row>`
               )
             : nothing
@@ -105,6 +121,10 @@ export class HaTargetPickerItemGroup extends LitElement {
       display: flex;
       justify-content: space-between;
       min-height: unset;
+    }
+    .count {
+      color: var(--secondary-text-color);
+      font-weight: var(--ha-font-weight-normal);
     }
   `;
 }

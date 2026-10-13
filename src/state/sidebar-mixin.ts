@@ -16,7 +16,9 @@ declare global {
   }
   // for add event listener
   interface HTMLElementEventMap {
-    "hass-dock-sidebar": HASSDomEvent<DockSidebarParams>;
+    "hass-dock-sidebar": HASSDomEvent<HASSDomEvents["hass-dock-sidebar"]>;
+  }
+  interface GlobalEventHandlersEventMap {
     "hass-kiosk-mode": HASSDomEvent<HASSDomEvents["hass-kiosk-mode"]>;
   }
 }
