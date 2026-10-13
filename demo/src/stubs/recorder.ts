@@ -164,9 +164,15 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = new Date(start.getTime() + 10 * 60 * 60 * 1000);
+    const morningEnd = constructFrom(
+      start,
+      start.getTime() + 10 * 60 * 60 * 1000
+    );
     const morningLow = generateSumStatistics(start, morningEnd, period, 0, 0.7);
-    const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const eveningStart = constructFrom(
+      start,
+      start.getTime() + 20 * 60 * 60 * 1000
+    );
     const morningFinalVal = morningLow.length
       ? morningLow[morningLow.length - 1].sum!
       : 0;
@@ -201,8 +207,14 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = new Date(start.getTime() + 9 * 60 * 60 * 1000);
-    const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const morningEnd = constructFrom(
+      start,
+      start.getTime() + 9 * 60 * 60 * 1000
+    );
+    const eveningStart = constructFrom(
+      start,
+      start.getTime() + 20 * 60 * 60 * 1000
+    );
     const highTarif = generateSumStatistics(
       morningEnd,
       eveningStart,
@@ -241,9 +253,15 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = new Date(start.getTime() + 9 * 60 * 60 * 1000);
-    const productionEnd = new Date(start.getTime() + 21 * 60 * 60 * 1000);
-    const dayEnd = new Date(endOfDay(productionEnd));
+    const productionStart = constructFrom(
+      start,
+      start.getTime() + 9 * 60 * 60 * 1000
+    );
+    const productionEnd = constructFrom(
+      start,
+      start.getTime() + 21 * 60 * 60 * 1000
+    );
+    const dayEnd = endOfDay(productionEnd);
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
@@ -282,9 +300,15 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const productionEnd = new Date(start.getTime() + 23 * 60 * 60 * 1000);
-    const dayEnd = new Date(endOfDay(productionEnd));
+    const productionStart = constructFrom(
+      start,
+      start.getTime() + 7 * 60 * 60 * 1000
+    );
+    const productionEnd = constructFrom(
+      start,
+      start.getTime() + 23 * 60 * 60 * 1000
+    );
+    const dayEnd = endOfDay(productionEnd);
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,

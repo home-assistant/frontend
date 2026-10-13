@@ -135,6 +135,25 @@ describe("demo water statistics", () => {
     });
   });
 
+  it.each([
+    "sensor.energy_consumption_tarif_1",
+    "sensor.energy_consumption_tarif_2",
+    "sensor.energy_production_tarif_2",
+    "sensor.solar_production",
+  ])("preserves the server zone in derived hourly boundaries for %s", (id) => {
+    vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
+    const start = "2026-03-01T18:30:00Z";
+    const end = "2026-03-02T18:30:00Z";
+    const buckets = fetchWater("hour", [id], start, end, "Asia/Kolkata")[id];
+    expect(buckets.length).toBeGreaterThan(0);
+    for (const bucket of buckets) {
+      expect((bucket.start - Date.parse(start)) % 3600000).toBe(0);
+      expect(bucket.end - bucket.start).toBe(3600000);
+      expect(bucket.start).toBeGreaterThanOrEqual(Date.parse(start));
+      expect(bucket.end).toBeLessThanOrEqual(Date.parse(end));
+    }
+  });
+
   it("keeps consecutive daily buckets aligned across the spring DST change", () => {
     vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
     const stats = fetchWater(
