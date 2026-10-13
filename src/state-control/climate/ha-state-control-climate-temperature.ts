@@ -89,13 +89,16 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
-    // Always sync when switching entities, so a pending value is not shown
-    // for (or sent to) a different entity.
-    if (
-      changedProp.has("stateObj") &&
-      (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id ||
-        this._pendingSync.shouldSync())
-    ) {
+    if (!changedProp.has("stateObj")) {
+      return;
+    }
+    // Drop a pending change when switching entities, so it is not shown for
+    // (or sent to) a different entity.
+    if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.cancel();
+      this._syncTargetTemperature();
+    } else if (this._pendingSync.shouldSync()) {
       this._syncTargetTemperature();
     }
   }

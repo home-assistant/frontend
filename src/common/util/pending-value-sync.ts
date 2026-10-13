@@ -25,6 +25,15 @@ export class PendingValueSync {
   }
 
   /**
+   * Drop the scheduled change and any skipped state update, e.g. when
+   * switching entities. Calls already in flight are still tracked.
+   */
+  public cancel(): void {
+    this._scheduled = false;
+    this._needsResync = false;
+  }
+
+  /**
    * Whether an entity state update may be copied into the local value.
    * A skipped update is remembered so it can be applied later.
    */

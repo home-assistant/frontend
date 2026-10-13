@@ -83,6 +83,31 @@ describe("PendingValueSync", () => {
     expect(resync).toHaveBeenCalledTimes(1);
   });
 
+  it("drops the scheduled change on cancel but keeps tracking calls in flight", async () => {
+    const sync = new PendingValueSync();
+    const call = deferred();
+    const resync = vi.fn();
+
+    sync.schedule();
+    sync.cancel();
+
+    expect(sync.pending).toBe(false);
+    expect(sync.shouldSync()).toBe(true);
+
+    sync.schedule();
+    const run = sync.run(() => call.promise, resync);
+    sync.cancel();
+
+    expect(sync.pending).toBe(true);
+    expect(sync.shouldSync()).toBe(false);
+
+    call.resolve();
+    await run;
+
+    expect(resync).toHaveBeenCalledTimes(1);
+    expect(sync.pending).toBe(false);
+  });
+
   it("resyncs when the service call fails", async () => {
     const sync = new PendingValueSync();
     const call = deferred();

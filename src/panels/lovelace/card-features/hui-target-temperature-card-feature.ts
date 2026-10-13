@@ -125,15 +125,17 @@ class HuiTargetTemperatureCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
+    if (!changedProp.has("_stateObj")) {
+      return;
+    }
     const oldStateObj = changedProp.get("_stateObj") as HassEntity | undefined;
-    // Always sync when switching entities, so a pending value is not shown
-    // for (or sent to) a different entity.
-    if (
-      changedProp.has("_stateObj") &&
-      this._stateObj &&
-      (oldStateObj?.entity_id !== this._stateObj.entity_id ||
-        this._pendingSync.shouldSync())
-    ) {
+    // Drop a pending change when switching entities (or losing the entity),
+    // so it is not shown for (or sent to) a different entity.
+    if (oldStateObj?.entity_id !== this._stateObj?.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.cancel();
+      this._syncTargetTemperature();
+    } else if (this._pendingSync.shouldSync()) {
       this._syncTargetTemperature();
     }
   }
