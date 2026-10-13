@@ -85,7 +85,7 @@
     "@swc/helpers": "0.5.23",
     "@tsparticles/engine": "4.4.0",
     "@tsparticles/preset-links": "4.4.0",
-    "@versatiles/style": "6.3.1",
+    "@versatiles/style": "6.4.0",
     "@vibrant/color": "4.0.4",
     "@vvo/tzdb": "6.198.0",
     "@webcomponents/scoped-custom-element-registry": "0.0.10",
@@ -168,7 +168,7 @@
     "@types/leaflet.markercluster": "1.5.6",
     "@types/lodash.merge": "4.6.9",
     "@types/luxon": "3.7.6",
-    "@types/node": "24.19.1",
+    "@types/node": "24.19.2",
     "@types/qrcode": "1.5.6",
     "@types/sortablejs": "1.15.9",
     "@types/tar": "7.0.87",
@@ -209,7 +209,7 @@
     "map-stream": "0.0.7",
     "minify-literals": "2.2.0",
     "pinst": "3.0.0",
-    "prettier": "3.9.9",
+    "prettier": "3.9.10",
     "rspack-manifest-plugin": "5.2.2",
     "serve": "14.2.6",
     "sinon": "22.1.0",
@@ -225,7 +225,7 @@
     "webpackbar": "7.0.0",
     "workbox-build": "7.4.1"
   },
-  "packageManager": "pnpm@12.11.0",
+  "packageManager": "pnpm@12.11.2",
   "volta": {
     "node": "24.21.0"
   }

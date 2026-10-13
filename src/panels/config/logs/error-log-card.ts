@@ -367,7 +367,7 @@ class ErrorLogCard extends LitElement {
             streaming && this._boot === 0 && !this._error
               ? html`<div class="live-indicator">
                   <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
-                  Live
+                  ${localize("ui.panel.config.logs.live")}
                 </div>`
               : nothing
           }

@@ -40,7 +40,6 @@ class HuiTimerEntityRow extends LitElement {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div class="text-content">
           <ha-timer-remaining-time
-            .hass=${this.hass}
             .stateObj=${stateObj}
           ></ha-timer-remaining-time>
         </div>

@@ -166,7 +166,6 @@ export class CloudTTSPref extends LitElement {
                   </span>
                   <ha-language-picker
                     slot="end"
-                    .hass=${this.hass}
                     .label=${""}
                     .disabled=${this.savingPreferences}
                     .value=${defaultVoice[0]}
