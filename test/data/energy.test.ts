@@ -1,6 +1,6 @@
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
-import { afterEach, assert, describe, it, vi } from "vitest";
+import { afterEach, assert, describe, it, vi, expect } from "vitest";
 
 import { calcDate } from "../../src/common/datetime/calc_date";
 import {
@@ -26,8 +26,7 @@ import {
   getEnergyDataCollection,
   EMPTY_PREFERENCES,
   CompareMode,
-  getSummedData,
-  computeConsumptionData,
+  reconcileUsageWithHome,
 } from "../../src/data/energy";
 import type { EnergySource } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
@@ -35,8 +34,6 @@ import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_re
 import { StatisticMeanType } from "../../src/data/recorder";
 import type { StatisticsMetaData } from "../../src/data/recorder";
 import { createMockEntityState, createMockHass } from "../fixtures/hass";
-import { generateEnergyData } from "../fixtures/energy";
-import { generateStatistics } from "../fixtures/statistics";
 
 const checkConsumptionResult = (
   input: {
@@ -1851,56 +1848,25 @@ describe("computeEnergyDeviceLabels", () => {
   });
 });
 
-describe("Home total device", () => {
-  const build = (flag: boolean) => {
-    const base = generateEnergyData(8, { days: 1, gapChance: 0 });
-    const totalStats = generateStatistics(9, {
-      ids: ["sensor.home_total"],
-      period: "hour",
-      days: 1,
-      gapChance: 0,
-      sumStatistics: true,
+describe("reconcileUsageWithHome", () => {
+  it("scales source usage to match the home meter", () => {
+    const r = reconcileUsageWithHome(20, {
+      used_grid: 6,
+      used_solar: 3,
+      used_battery: 1,
     });
-    return {
-      ...base,
-      prefs: {
-        ...base.prefs,
-        device_consumption: [
-          {
-            stat_consumption: "sensor.home_total",
-            ...(flag ? { is_home_total: true } : {}),
-          },
-        ],
-      },
-      stats: { ...base.stats, ...totalStats },
-    };
-  };
-
-  it("uses the declared sensor as used_total", () => {
-    const { summedData } = getSummedData(build(true));
-    const { consumption } = computeConsumptionData(summedData, undefined);
-    const homeTotal = summedData.home_total!;
-
-    Object.entries(homeTotal).forEach(([t, value]) => {
-      assert.equal(consumption.used_total[Number(t)], value);
-    });
-    assert.closeTo(
-      consumption.total.used_total,
-      Object.values(homeTotal).reduce((a, b) => a + b, 0),
-      1e-9
-    );
+    expect(r.used_total).toBe(20);
+    expect(r.used_grid + r.used_solar + r.used_battery).toBeCloseTo(20);
+    expect(r.used_grid / r.used_solar).toBeCloseTo(2);
   });
 
-  it("keeps the computed used_total without the flag", () => {
-    const baseline = computeConsumptionData(
-      getSummedData(generateEnergyData(8, { days: 1, gapChance: 0 }))
-        .summedData,
-      undefined
-    );
-    const { summedData } = getSummedData(build(false));
-    const { consumption } = computeConsumptionData(summedData, undefined);
-
-    assert.isUndefined(summedData.home_total);
-    assert.deepEqual(consumption.used_total, baseline.consumption.used_total);
+  it("falls back to grid when no source usage is computed", () => {
+    expect(
+      reconcileUsageWithHome(5, {
+        used_grid: 0,
+        used_solar: 0,
+        used_battery: 0,
+      })
+    ).toEqual({ used_total: 5, used_grid: 5, used_solar: 0, used_battery: 0 });
   });
 });

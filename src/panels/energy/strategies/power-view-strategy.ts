@@ -14,7 +14,6 @@ import {
   hasPowerSources,
   hasWaterRateSource,
   isEnergyCardVisible,
-  trackedDevices,
 } from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -118,7 +117,7 @@ export class PowerViewStrategy extends ReactiveElement {
 
     if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
-        trackedDevices(prefs),
+        prefs.device_consumption,
         hass,
         (d) => d.stat_rate
       );

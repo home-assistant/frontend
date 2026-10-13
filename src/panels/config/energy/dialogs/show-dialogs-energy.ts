@@ -8,6 +8,7 @@ import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
+  HomeSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 
@@ -24,6 +25,14 @@ export interface EnergySettingsSolarDialogParams {
   solar_sources: SolarSourceTypeEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsHomeDialogParams {
+  info: EnergyInfo;
+  source?: HomeSourceTypeEnergyPreference;
+  energy_sources: HomeSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
+  saveCallback: (source: HomeSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsBatteryDialogParams {
@@ -91,6 +100,17 @@ export const showEnergySettingsSolarDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-solar-settings",
     dialogImport: () => import("./dialog-energy-solar-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsHomeDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsHomeDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-home-settings",
+    dialogImport: () => import("./dialog-energy-home-settings"),
     dialogParams: dialogParams,
   });
 };
