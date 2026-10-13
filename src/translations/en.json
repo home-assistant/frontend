@@ -4826,6 +4826,7 @@
             "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
           },
           "scroll_down_button": "New logs - Click to scroll",
+          "live": "Live",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
           "haos_boots_title": "Logs of HAOS startup",
