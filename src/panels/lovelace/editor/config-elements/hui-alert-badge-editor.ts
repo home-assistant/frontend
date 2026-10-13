@@ -2,6 +2,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
@@ -14,14 +15,23 @@ const badgeConfigStruct = assign(
   object({
     entity: optional(string()),
     color: optional(string()),
+    inactive_color: optional(string()),
     pulse: optional(boolean()),
   })
 );
 
 const SCHEMA = [
-  { name: "entity", required: true, selector: { entity: {} } },
+  {
+    name: "entity",
+    required: true,
+    selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
+  },
   {
     name: "color",
+    selector: { ui_color: { include_none: true, default_color: "none" } },
+  },
+  {
+    name: "inactive_color",
     selector: { ui_color: { include_none: true, default_color: "none" } },
   },
   { name: "pulse", selector: { boolean: {} } },
@@ -64,8 +74,10 @@ export class HuiAlertBadgeEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "pulse") {
-      return this.hass!.localize("ui.panel.lovelace.editor.card.alert.pulse");
+    if (schema.name === "pulse" || schema.name === "inactive_color") {
+      return this.hass!.localize(
+        `ui.panel.lovelace.editor.card.alert.${schema.name}`
+      );
     }
 
     return this.hass!.localize(
@@ -74,9 +86,13 @@ export class HuiAlertBadgeEditor
   };
 
   private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "pulse") {
+    if (
+      schema.name === "pulse" ||
+      schema.name === "color" ||
+      schema.name === "inactive_color"
+    ) {
       return this.hass?.localize(
-        "ui.panel.lovelace.editor.card.alert.pulse_helper"
+        `ui.panel.lovelace.editor.card.alert.${schema.name}_helper`
       );
     }
 

@@ -9,6 +9,11 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { consume } from "../../../common/decorators/consume";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  ALERT_DOMAINS,
+  isAlertActive,
+} from "../../../common/entity/alert_active";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-badge";
 import "../../../components/ha-state-icon";
@@ -19,7 +24,6 @@ import {
 } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
-import { ALERT_DOMAINS } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
@@ -67,9 +71,17 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     if (
       !isValidEntityId(config.entity) ||
       (config.color !== undefined && typeof config.color !== "string") ||
+      (config.inactive_color !== undefined &&
+        typeof config.inactive_color !== "string") ||
       (config.pulse !== undefined && typeof config.pulse !== "boolean")
     ) {
       throw new Error("Invalid configuration");
+    }
+
+    if (!ALERT_DOMAINS.includes(computeDomain(config.entity))) {
+      throw new Error(
+        `Specify an entity from within the ${ALERT_DOMAINS.join(", ")} domains`
+      );
     }
 
     this._config = config;
@@ -91,10 +103,10 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       `;
     }
 
-    const pulse = this._config.pulse === true;
-
-    const hasColor =
-      this._config.color !== undefined && this._config.color !== "none";
+    const active = isAlertActive(stateObj);
+    const color = active ? this._config.color : this._config.inactive_color;
+    const pulse = active && this._config.pulse === true;
+    const hasColor = color !== undefined && color !== "none";
 
     return html`
       <ha-badge
@@ -103,9 +115,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
         class=${classMap({ alert: true, pulse, "no-color": !hasColor })}
         style=${styleMap({
           "--ha-alert-color":
-            this._config.color && hasColor
-              ? computeCssColor(this._config.color)
-              : undefined,
+            color && hasColor ? computeCssColor(color) : undefined,
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

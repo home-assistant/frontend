@@ -35,6 +35,7 @@ export interface AlertBadgeConfig extends LovelaceBadgeConfig {
   type: "alert";
   entity: string;
   color?: string;
+  inactive_color?: string;
   pulse?: boolean;
 }
 
