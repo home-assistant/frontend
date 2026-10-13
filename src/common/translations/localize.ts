@@ -25,6 +25,7 @@ export type LocalizeKeys =
   | `ui.dialogs.unsupported.reasons.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
   | `ui.panel.config.dashboard.${string}`
+  | `ui.panel.config.mqtt.${string}`
   | `ui.panel.config.storage.segments.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`

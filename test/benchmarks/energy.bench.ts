@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import type { LineSeriesOption } from "echarts/charts";
 import {
   computeConsumptionData,
@@ -39,35 +39,45 @@ const buildLineDatasets = (seed: number): LineSeriesOption[] => {
 };
 
 describe("getSummedData", () => {
-  bench("month of hourly data, full source setup", () => {
-    getSummedData({ ...monthHourly });
+  test("month of hourly data, full source setup", async ({ bench }) => {
+    await bench("month of hourly data, full source setup", () => {
+      getSummedData({ ...monthHourly });
+    }).run();
   });
 
-  bench("month of hourly data with compare", () => {
-    getSummedData({ ...monthHourlyCompare });
+  test("month of hourly data with compare", async ({ bench }) => {
+    await bench("month of hourly data with compare", () => {
+      getSummedData({ ...monthHourlyCompare });
+    }).run();
   });
 });
 
 describe("computeConsumptionData", () => {
-  bench("month of hourly summed data", () => {
-    computeConsumptionData({ ...summedMonth }, undefined);
+  test("month of hourly summed data", async ({ bench }) => {
+    await bench("month of hourly summed data", () => {
+      computeConsumptionData({ ...summedMonth }, undefined);
+    }).run();
   });
 });
 
 describe("computeConsumptionSingle", () => {
-  bench("full battery + solar flow", () => {
-    computeConsumptionSingle({
-      from_grid: 2,
-      to_grid: 1,
-      solar: 6,
-      to_battery: 3,
-      from_battery: 2,
-    });
+  test("full battery + solar flow", async ({ bench }) => {
+    await bench("full battery + solar flow", () => {
+      computeConsumptionSingle({
+        from_grid: 2,
+        to_grid: 1,
+        solar: 6,
+        to_battery: 3,
+        from_battery: 2,
+      });
+    }).run();
   });
 });
 
 describe("fillLineGaps", () => {
-  bench("10 series, month of hourly buckets, 30% gaps", () => {
-    fillLineGaps(buildLineDatasets(4).map((d) => ({ ...d })));
+  test("10 series, month of hourly buckets, 30% gaps", async ({ bench }) => {
+    await bench("10 series, month of hourly buckets, 30% gaps", () => {
+      fillLineGaps(buildLineDatasets(4).map((d) => ({ ...d })));
+    }).run();
   });
 });

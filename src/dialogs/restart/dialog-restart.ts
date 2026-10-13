@@ -35,12 +35,13 @@ import {
 } from "../../data/hassio/host";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant, ServiceCallRequest } from "../../types";
-import { showToast } from "../../util/toast";
+import { HOST_ACTION_TOAST_ID, showToast } from "../../util/toast";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
 import { showRestartWaitDialog } from "./show-dialog-restart";
+import "./automation-restart-status";
 
 @customElement("dialog-restart")
 class DialogRestart extends LitElement {
@@ -314,6 +315,7 @@ class DialogRestart extends LitElement {
   private _hostAction =
     (toastMessage: string, action: "reboot" | "shutdown") => async () => {
       showToast(this, {
+        id: HOST_ACTION_TOAST_ID,
         message: toastMessage,
         duration: -1,
       });
@@ -327,6 +329,11 @@ class DialogRestart extends LitElement {
       } catch (err: any) {
         // Ignore connection errors, these are all expected
         if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
+          showToast(this, {
+            id: HOST_ACTION_TOAST_ID,
+            message: "",
+            duration: 0,
+          });
           showAlertDialog(this, {
             title: this.hass.localize(`ui.dialogs.restart.${action}.failed`),
             text: extractApiErrorMessage(err),
@@ -357,12 +364,12 @@ class DialogRestart extends LitElement {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(`ui.dialogs.restart.${action}.confirm_title`),
       text: html`${this.hass.localize(
-        `ui.dialogs.restart.${action}.confirm_description`
-      )}${
-        backupProgressMessage
-          ? html`<br /><br /><ha-alert>${backupProgressMessage}</ha-alert>`
-          : nothing
-      }`,
+          `ui.dialogs.restart.${action}.confirm_description`
+        )}${
+          backupProgressMessage
+            ? html`<br /><br /><ha-alert>${backupProgressMessage}</ha-alert>`
+            : nothing
+        } <br /><br /><automation-restart-status></automation-restart-status>`,
       confirmText: this.hass.localize(
         `ui.dialogs.restart.${action}.confirm_action${backupState === "idle" ? "" : "_backup"}`
       ),

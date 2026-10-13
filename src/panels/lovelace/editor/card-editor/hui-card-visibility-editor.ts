@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
+import type { VisibilityCondition } from "../../common/validate-condition";
 import { conditionsEntityContext } from "../conditions/context";
 import "../conditions/ha-card-conditions-editor";
 import "../conditions/ha-visibility-status";
@@ -49,7 +49,7 @@ export class HuiCardVisibilityEditor extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const conditions = ev.detail.value as Condition[];
+    const conditions = ev.detail.value as VisibilityCondition[];
     const newConfig: LovelaceCardConfig = {
       ...this.config,
       visibility: conditions,

@@ -4,12 +4,11 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
-import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
 import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
@@ -158,25 +157,23 @@ export class DialogLabsPreviewFeatureEnable
         ${
           createBackupTexts
             ? html`
-                <ha-md-list>
-                  <ha-md-list-item>
-                    <span slot="headline">${createBackupTexts.title}</span>
-                    ${
-                      createBackupTexts.description
-                        ? html`
-                            <span slot="supporting-text">
-                              ${createBackupTexts.description}
-                            </span>
-                          `
-                        : nothing
-                    }
-                    <ha-switch
-                      slot="end"
-                      .checked=${this._createBackup}
-                      @change=${this._createBackupChanged}
-                    ></ha-switch>
-                  </ha-md-list-item>
-                </ha-md-list>
+                <ha-row-item>
+                  <span slot="headline">${createBackupTexts.title}</span>
+                  ${
+                    createBackupTexts.description
+                      ? html`
+                          <span slot="supporting-text">
+                            ${createBackupTexts.description}
+                          </span>
+                        `
+                      : nothing
+                  }
+                  <ha-switch
+                    slot="end"
+                    .checked=${this._createBackup}
+                    @change=${this._createBackupChanged}
+                  ></ha-switch>
+                </ha-row-item>
               `
             : nothing
         }
@@ -211,10 +208,8 @@ export class DialogLabsPreviewFeatureEnable
       color: var(--secondary-text-color);
     }
 
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: var(--ha-space-6);
-      --md-list-item-trailing-space: var(--ha-space-6);
+    ha-row-item {
+      --ha-row-item-padding-inline: var(--ha-space-6);
       margin: 0;
       padding: 0;
       border-top: var(--ha-border-width-sm) solid var(--divider-color);

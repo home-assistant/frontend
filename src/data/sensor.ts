@@ -1,4 +1,4 @@
-import { SENSOR_NUMERIC_DEVICE_CLASSES } from "./sensor_numeric_device_classes";
+import { SENSOR_NUMERIC_DEVICE_CLASSES } from "./sensor_entity_constants";
 import type { HomeAssistant } from "../types";
 
 export const SENSOR_DEVICE_CLASS_BATTERY = "battery";

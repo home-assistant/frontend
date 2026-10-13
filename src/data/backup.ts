@@ -47,7 +47,7 @@ export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
   next_automatic_backup: string | null;
-  next_automatic_backup_additional?: boolean;
+  next_automatic_backup_additional: boolean;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -60,7 +60,7 @@ export interface BackupConfig {
   retention: Retention;
   schedule: {
     recurrence: BackupScheduleRecurrence;
-    time?: string | null;
+    time: string | null;
     days: BackupDay[];
   };
   agents: BackupAgentsConfig;
@@ -79,9 +79,9 @@ export interface BackupMutableConfig {
   };
   retention?: Retention;
   schedule?: {
-    recurrence: BackupScheduleRecurrence;
+    recurrence?: BackupScheduleRecurrence;
     time?: string | null;
-    days?: BackupDay[] | null;
+    days?: BackupDay[];
   };
   agents?: BackupAgentsConfig;
 }
@@ -114,21 +114,22 @@ export interface BackupContent {
   date: string;
   name: string;
   agents: Record<string, BackupContentAgent>;
-  failed_agent_ids?: string[];
-  failed_addons?: AddonInfo[];
-  failed_folders?: string[];
-  extra_metadata?: {
+  failed_agent_ids: string[];
+  failed_addons: AddonInfo[];
+  failed_folders: string[];
+  extra_metadata: {
     "supervisor.addon_update"?: string;
     "supervisor.app_update"?: string;
+    [key: string]: string | boolean | undefined;
   };
-  with_automatic_settings: boolean;
+  with_automatic_settings: boolean | null;
 }
 
 export interface BackupData {
   addons: BackupAddon[];
   database_included: boolean;
   folders: string[];
-  homeassistant_version: string;
+  homeassistant_version: string | null;
   homeassistant_included: boolean;
 }
 
@@ -140,9 +141,20 @@ export interface BackupAddon {
 
 export interface BackupContentExtended extends BackupContent, BackupData {}
 
-export interface BackupInfo {
-  backups: BackupContent[];
+export interface BackupAgentErrorTranslation {
+  translation_domain: string;
+  translation_key: string;
+  translation_placeholders: Record<string, string> | null;
+}
+
+export interface BackupAgentErrors {
   agent_errors: Record<string, string>;
+  // Only contains the agents whose error has a translation
+  agent_error_translations: Record<string, BackupAgentErrorTranslation>;
+}
+
+export interface BackupInfo extends BackupAgentErrors {
+  backups: BackupContentExtended[];
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
   last_action_event: ManagerStateEvent | null;
@@ -151,7 +163,7 @@ export interface BackupInfo {
   state: BackupManagerState;
 }
 
-export interface BackupDetails {
+export interface BackupDetails extends BackupAgentErrors {
   backup: BackupContentExtended;
 }
 
@@ -179,6 +191,22 @@ export interface RestoreBackupParams {
   restore_folders?: string[];
   restore_homeassistant?: boolean;
 }
+
+export const localizeBackupAgentError = (
+  localize: LocalizeFunc,
+  errors: BackupAgentErrors,
+  agentId: string
+): string => {
+  const translation = errors.agent_error_translations[agentId];
+  return (
+    (translation &&
+      localize(
+        `component.${translation.translation_domain}.exceptions.${translation.translation_key}.message`,
+        translation.translation_placeholders ?? undefined
+      )) ||
+    errors.agent_errors[agentId]
+  );
+};
 
 export type CloudBackupHealth = "success" | "failed" | "old" | "none";
 
@@ -232,7 +260,10 @@ export const fetchBackupAgentsInfo = (
     type: "backup/agents/info",
   });
 
-export const deleteBackup = (hass: HomeAssistant, id: string): Promise<void> =>
+export const deleteBackup = (
+  hass: HomeAssistant,
+  id: string
+): Promise<BackupAgentErrors> =>
   hass.callWS({
     type: "backup/delete",
     backup_id: id,
@@ -241,7 +272,7 @@ export const deleteBackup = (hass: HomeAssistant, id: string): Promise<void> =>
 export const generateBackup = (
   hass: HomeAssistant,
   params: GenerateBackupParams
-): Promise<{ backup_id: string }> =>
+): Promise<{ backup_job_id: string }> =>
   hass.callWS({
     type: "backup/generate",
     ...params,
@@ -249,7 +280,7 @@ export const generateBackup = (
 
 export const generateBackupWithAutomaticSettings = (
   hass: HomeAssistant
-): Promise<void> =>
+): Promise<{ backup_job_id: string }> =>
   hass.callWS({
     type: "backup/generate_with_automatic_settings",
   });
@@ -257,7 +288,7 @@ export const generateBackupWithAutomaticSettings = (
 export const restoreBackup = (
   hass: HomeAssistant,
   params: RestoreBackupParams
-): Promise<{ backup_id: string }> =>
+): Promise<void> =>
   hass.callWS({
     type: "backup/restore",
     ...params,

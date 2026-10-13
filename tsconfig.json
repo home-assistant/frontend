@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
+    // Lets build scripts import the shared .mts workflow helpers
+    "allowImportingTsExtensions": true,
     // Caching
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/typescript/.tsbuildinfo",

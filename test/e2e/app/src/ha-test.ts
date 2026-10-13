@@ -18,7 +18,10 @@ import {
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEnergy } from "../../../../demo/src/stubs/energy";
 import { energyEntities } from "../../../../demo/src/stubs/entities";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import {
+  mockEntityRegistry,
+  mockEntityRegistryDisplay,
+} from "../../../../demo/src/stubs/entity_registry";
 import { mockEvents } from "../../../../demo/src/stubs/events";
 import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockFrontend } from "../../../../demo/src/stubs/frontend";
@@ -94,9 +97,14 @@ declare global {
     __mockHass: MockHomeAssistant;
     rejectMediaBrowse?: () => void;
     resolveCalendarRegistry?: () => void;
+    resolveConnectivityConfigEntries?: () => void;
+    resolveConfigEntries?: () => void;
+    resolveConfigEntriesInProgress?: () => void;
     resolveGeneratedDashboard?: () => void;
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;
+    resolveSerialPorts?: () => void;
+    resolveStorageHostInfo?: () => void;
   }
 }
 
@@ -163,6 +171,7 @@ export class HaTest extends HomeAssistantAppEl {
     mockDeviceRegistry(hass);
     mockFloorRegistry(hass);
     mockLabelRegistry(hass);
+    mockEntityRegistryDisplay(hass);
     mockEntityRegistry(hass, []);
     mockConfigEntries(hass);
     mockIcons(hass);
@@ -178,13 +187,13 @@ export class HaTest extends HomeAssistantAppEl {
       const protocolEntries = demoConfigEntries
         .map(({ entry }) => entry)
         .concat(
-          [
-            { entry_id: "mock-bluetooth", domain: "bluetooth" },
-            { entry_id: "mock-lovelace", domain: "lovelace" },
-          ].map((entry) => ({
+          // Bluetooth entries come from the connectivity fixtures in
+          // demoConfigEntries.
+          [{ entry_id: "mock-lovelace", domain: "lovelace" }].map((entry) => ({
             disabled_by: null,
             domain: entry.domain,
             entry_id: entry.entry_id,
+            error_reason_translation_domain: null,
             error_reason_translation_key: null,
             error_reason_translation_placeholders: null,
             num_subentries: 0,
@@ -245,16 +254,12 @@ export class HaTest extends HomeAssistantAppEl {
     window.__mockHass = hass;
 
     // SPA navigation
-    document.body.addEventListener(
-      "click",
-      (e) => {
-        const href = isNavigationClick(e);
-        if (!href) return;
-        e.preventDefault();
+    window.addEventListener("click", (e) => {
+      const href = isNavigationClick(e);
+      if (href) {
         navigate(href);
-      },
-      { capture: true }
-    );
+      }
+    });
 
     this.hassConnected();
   }

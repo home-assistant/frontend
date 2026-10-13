@@ -34,6 +34,8 @@ export const showSubConfigFlowDialog = (
         hass.loadBackendTranslation("selector", configEntry.domain),
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", configEntry.domain),
+        // Shared abort reasons live in the homeassistant integration
+        hass.loadBackendTranslation("config", "homeassistant"),
       ]);
       return step;
     },
@@ -46,20 +48,28 @@ export const showSubConfigFlowDialog = (
         configEntry.domain
       );
       await hass.loadBackendTranslation("selector", configEntry.domain);
+      await hass.loadBackendTranslation("config", "homeassistant");
       return step;
     },
     handleFlowStep: handleSubConfigFlowStep,
     deleteFlow: deleteSubConfigFlow,
 
     renderAbortDescription(hass, step) {
-      const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.abort.${step.reason}`,
-        step.description_placeholders
-      );
+      // A translation domain means the reason is shared by several integrations
+      // and is defined once under `config`, not per subentry type
+      const description = step.translation_domain
+        ? hass.localize(
+            `component.${step.translation_domain}.config.abort.${step.reason}`,
+            step.description_placeholders
+          )
+        : hass.localize(
+            `component.${configEntry.domain}.config_subentries.${flowType}.abort.${step.reason}`,
+            step.description_placeholders
+          );
 
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : step.reason;
     },
@@ -80,7 +90,7 @@ export const showSubConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : "";
     },
@@ -178,7 +188,7 @@ export const showSubConfigFlowDialog = (
           description
             ? html`
                 <ha-markdown
-                  allowsvg
+                  allow-svg
                   breaks
                   .content=${description}
                 ></ha-markdown>
@@ -201,7 +211,7 @@ export const showSubConfigFlowDialog = (
           description
             ? html`
                 <ha-markdown
-                  allowsvg
+                  allow-svg
                   breaks
                   .content=${description}
                 ></ha-markdown>
@@ -226,7 +236,7 @@ export const showSubConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : "";
     },
@@ -247,7 +257,7 @@ export const showSubConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : "";
     },

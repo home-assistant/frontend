@@ -2,7 +2,7 @@ import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import {
   css,
@@ -15,6 +15,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../common/decorators/consume";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { internationalizationContext } from "../../data/context";
 import "../ha-icon-button";
@@ -77,6 +78,7 @@ export type InputType =
  * @attr {boolean} invalid - Marks the input as invalid.
  * @attr {boolean} inset-label - Uses an inset label style where the label stays inside the input.
  * @attr {string} validation-message - Custom validation message shown when the input is invalid.
+ * @attr {string} input-id - Sets the native input's `id` (and associated label `for`) on the inner `wa-input`.
  */
 @customElement("ha-input")
 export class HaInput extends WaInputMixin(LitElement) {
@@ -124,6 +126,10 @@ export class HaInput extends WaInputMixin(LitElement) {
   @property({ type: Boolean, attribute: "inset-label" })
   public insetLabel = false;
 
+  /** Sets the native input id (and label `for`) on the inner `wa-input`. */
+  @property({ attribute: "input-id" })
+  public inputId?: string;
+
   @query("wa-input")
   private _input?: WaInput;
 
@@ -160,6 +166,43 @@ export class HaInput extends WaInputMixin(LitElement) {
     this._input?.stepDown();
   }
 
+  /**
+   * Copies a native input value that was written without `input`/`change` events
+   * (password-manager autofill) into the component so labels and form data update.
+   */
+  public syncFromNativeInput(): boolean {
+    const native = this._getNativeInput();
+    if (!native) {
+      return false;
+    }
+
+    // Compare against wa-input, not our own value: a value set right before
+    // (like clearing the field and focusing it again) only reaches the native
+    // input on the next render, and must not be overwritten by the old text.
+    const nativeValue = native.value;
+    const currentValue = this._input ? this._input.value : this.value;
+    if ((currentValue ?? "") === nativeValue) {
+      return false;
+    }
+
+    if (this._input) {
+      this._input.value = nativeValue;
+    }
+    this._handleInput();
+    this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    return true;
+  }
+
+  public override reportValidity(): boolean {
+    this.syncFromNativeInput();
+    return super.reportValidity();
+  }
+
+  public override connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("focusin", this._syncFromNativeInput);
+  }
+
   protected override async firstUpdated(
     changedProperties: PropertyValues<this>
   ): Promise<void> {
@@ -173,8 +216,25 @@ export class HaInput extends WaInputMixin(LitElement) {
     }
   }
 
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    this._syncAriaInvalid();
+  }
+
+  // wa-input never sets aria-invalid on its native input. Without it, WebKit
+  // falls back to the native validity, so screen readers announce an empty
+  // required field as invalid before anything was typed.
+  private async _syncAriaInvalid(): Promise<void> {
+    await this._input?.updateComplete;
+    this._getNativeInput()?.setAttribute(
+      "aria-invalid",
+      this.invalid || this._invalid ? "true" : "false"
+    );
+  }
+
   public override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.removeEventListener("focusin", this._syncFromNativeInput);
     this._startSlotResizeObserver?.disconnect();
   }
 
@@ -215,6 +275,7 @@ export class HaInput extends WaInputMixin(LitElement) {
         .inputmode=${this.inputmode || undefined}
         .name=${this.name}
         .disabled=${this.disabled}
+        .inputId=${this.inputId || "input"}
         class=${classMap({
           input: true,
           invalid: this.invalid || this._invalid,
@@ -346,6 +407,14 @@ export class HaInput extends WaInputMixin(LitElement) {
     this.passwordVisible = !this.passwordVisible;
   }
 
+  private _getNativeInput(): HTMLInputElement | undefined {
+    return this._input?.input ?? undefined;
+  }
+
+  private _syncFromNativeInput = (): void => {
+    this.syncFromNativeInput();
+  };
+
   static styles = [
     waInputStyles,
     css`
@@ -374,7 +443,8 @@ export class HaInput extends WaInputMixin(LitElement) {
 
       wa-input.label-raised::part(label),
       :host(:focus-within) wa-input::part(label),
-      :host([type="date"]) wa-input::part(label) {
+      :host([type="date"]) wa-input::part(label),
+      :host([type="color"]) wa-input::part(label) {
         padding-top: var(--ha-space-3);
         font-size: var(--ha-font-size-xs);
       }

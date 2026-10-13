@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { mainWindow } from "../../../common/dom/get_main_window";
+import { HOSTNAME_PATTERN } from "../../../common/string/is_hostname";
 import {
   IP_ADDRESS_OR_NETWORK_PATTERN,
   IP_ADDRESS_PATTERN,
@@ -19,6 +20,7 @@ import {
   fetchHttpConfig,
   HTTP_CONFIG_FIELDS,
   saveHttpConfig,
+  SSL_PROFILES,
 } from "../../../data/http";
 import type {
   ActiveConfigType,
@@ -32,13 +34,26 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
+// Core uses -1 as the login attempts threshold to mean "never ban". The form
+// exposes that as a separate toggle instead of asking users to type -1.
+const UNLIMITED_LOGIN_ATTEMPTS = -1;
+
 const SCHEMA = memoizeOne(
-  (localize: LocalizeFunc) =>
+  (localize: LocalizeFunc, unlimitedLoginAttempts: boolean) =>
     [
       {
         name: "server_port",
         required: true,
-        selector: { number: { min: 1, max: 65535, mode: "box" } },
+        selector: {
+          number: {
+            min: 1,
+            max: 65535,
+            mode: "box",
+            validation_message: localize(
+              "ui.panel.config.network.http.invalid_port"
+            ),
+          },
+        },
       },
       {
         name: "ssl",
@@ -62,20 +77,17 @@ const SCHEMA = memoizeOne(
             name: "ssl_profile",
             selector: {
               select: {
-                options: [
-                  {
-                    value: "modern",
-                    label: localize(
-                      "ui.panel.config.network.http.ssl_profile_modern"
-                    ),
-                  },
-                  {
-                    value: "intermediate",
-                    label: localize(
-                      "ui.panel.config.network.http.ssl_profile_intermediate"
-                    ),
-                  },
-                ],
+                mode: "box",
+                box_max_columns: 1,
+                options: SSL_PROFILES.map((profile) => ({
+                  value: profile,
+                  label: localize(
+                    `ui.panel.config.network.http.ssl_profile_${profile}`
+                  ),
+                  description: localize(
+                    `ui.panel.config.network.http.ssl_profile_${profile}_description`
+                  ),
+                })),
               },
             },
           },
@@ -116,10 +128,27 @@ const SCHEMA = memoizeOne(
             selector: { boolean: {} },
           },
           {
-            name: "login_attempts_threshold",
-            required: true,
-            selector: { number: { min: -1, max: 1000, mode: "box" } },
+            name: "login_attempts_unlimited",
+            selector: { boolean: {} },
           },
+          ...(unlimitedLoginAttempts
+            ? []
+            : ([
+                {
+                  name: "login_attempts_threshold",
+                  required: true,
+                  selector: {
+                    number: {
+                      min: 1,
+                      max: 1000,
+                      mode: "box",
+                      validation_message: localize(
+                        "ui.panel.config.network.http.invalid_login_attempts_threshold"
+                      ),
+                    },
+                  },
+                },
+              ] as const)),
         ],
       },
       {
@@ -133,7 +162,7 @@ const SCHEMA = memoizeOne(
             selector: {
               text: {
                 multiple: true,
-                pattern: IP_ADDRESS_PATTERN,
+                pattern: `${IP_ADDRESS_PATTERN}|${HOSTNAME_PATTERN}`,
                 validation_message: localize(
                   "ui.panel.config.network.http.invalid_host"
                 ),
@@ -178,6 +207,9 @@ class HaConfigHttpForm extends LitElement {
   // A pending config that was reverted/failed and kept only for display.
   @state() private _revertedPending?: HttpConfigWithMeta;
 
+  // Last explicit threshold, restored when the unlimited toggle is turned off.
+  private _lastLoginAttemptsThreshold?: number;
+
   @query("ha-form") private _form?: HaForm;
 
   @query("ha-alert") private _firstAlert?: HTMLElement;
@@ -204,7 +236,11 @@ class HaConfigHttpForm extends LitElement {
       return nothing;
     }
 
-    const schema = SCHEMA(this.hass.localize);
+    const formData = this._config ? this._formData(this._config) : undefined;
+    const schema = SCHEMA(
+      this.hass.localize,
+      !!formData?.login_attempts_unlimited
+    );
 
     const portChanged =
       !!this._stable && this._config?.server_port !== this._stable.server_port;
@@ -221,11 +257,14 @@ class HaConfigHttpForm extends LitElement {
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
           ${
-            this._activeConfigType === "default"
+            this._activeConfigType === "default" ||
+            this._activeConfigType === "default_legacy_port"
               ? html`
                   <ha-alert alert-type="warning">
                     ${this.hass.localize(
-                      "ui.panel.config.network.http.running_default"
+                      this._activeConfigType === "default_legacy_port"
+                        ? "ui.panel.config.network.http.running_default_legacy_port"
+                        : "ui.panel.config.network.http.running_default"
                     )}
                   </ha-alert>
                 `
@@ -242,7 +281,12 @@ class HaConfigHttpForm extends LitElement {
                           )
                         : this.hass.localize(
                             "ui.panel.config.network.http.reverted_failed",
-                            { error: this._revertedPending.error ?? "" }
+                            {
+                              error:
+                                this._revertedPending.error_message ??
+                                this._revertedPending.error ??
+                                "",
+                            }
                           )
                     }
                     <ha-button slot="action" @click=${this._reviewReverted}>
@@ -293,11 +337,11 @@ class HaConfigHttpForm extends LitElement {
               : nothing
           }
           ${
-            this._config
+            formData
               ? html`
                   <ha-form
                     .hass=${this.hass}
-                    .data=${this._config}
+                    .data=${formData}
                     .schema=${schema}
                     .error=${this._fieldErrors}
                     .disabled=${this._saving}
@@ -349,6 +393,18 @@ class HaConfigHttpForm extends LitElement {
     }
   }
 
+  private _formData = memoizeOne((config: HttpConfig) => {
+    const unlimited =
+      config.login_attempts_threshold === UNLIMITED_LOGIN_ATTEMPTS;
+    return {
+      ...config,
+      login_attempts_unlimited: unlimited,
+      login_attempts_threshold: unlimited
+        ? undefined
+        : config.login_attempts_threshold,
+    };
+  });
+
   private _reviewReverted(): void {
     if (!this._revertedPending) {
       return;
@@ -390,7 +446,21 @@ class HaConfigHttpForm extends LitElement {
   };
 
   private _valueChanged(ev: CustomEvent): void {
-    this._config = ev.detail.value;
+    const { login_attempts_unlimited: unlimited, ...value } = ev.detail
+      .value as ReturnType<HaConfigHttpForm["_formData"]>;
+    const config: HttpConfig = value;
+    const previous = this._config?.login_attempts_threshold;
+    if (unlimited) {
+      if (previous !== undefined && previous !== UNLIMITED_LOGIN_ATTEMPTS) {
+        this._lastLoginAttemptsThreshold = previous;
+      }
+      config.login_attempts_threshold = UNLIMITED_LOGIN_ATTEMPTS;
+    } else if (previous === UNLIMITED_LOGIN_ATTEMPTS) {
+      // Toggled off: restore the last number, or leave it empty so the
+      // required field asks the user for one.
+      config.login_attempts_threshold = this._lastLoginAttemptsThreshold;
+    }
+    this._config = config;
     this._error = undefined;
     this._fieldErrors = {};
     this._showNoChanges = false;
@@ -443,7 +513,7 @@ class HaConfigHttpForm extends LitElement {
             "ui.panel.config.network.http.restart_address.text"
           )}
         </p>
-        <a href=${url} rel="noreferrer noopener">${url}</a>
+        <a href=${url} target="_blank" rel="noreferrer noopener">${url}</a>
         <p class="dialog-note">
           ${this.hass.localize(
             "ui.panel.config.network.http.restart_address.note"

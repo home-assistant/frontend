@@ -252,6 +252,7 @@ gulp.task("rspack-prod-gallery", () =>
     createGalleryConfig({
       isProdBuild: true,
       latestBuild: true,
+      isTestBuild: env.isTestBuild(),
     })
   )
 );

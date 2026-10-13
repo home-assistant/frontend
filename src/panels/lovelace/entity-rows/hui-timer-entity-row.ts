@@ -30,8 +30,8 @@ class HuiTimerEntityRow extends LitElement {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -40,7 +40,6 @@ class HuiTimerEntityRow extends LitElement {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div class="text-content">
           <ha-timer-remaining-time
-            .hass=${this.hass}
             .stateObj=${stateObj}
           ></ha-timer-remaining-time>
         </div>

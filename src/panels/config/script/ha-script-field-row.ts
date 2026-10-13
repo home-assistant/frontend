@@ -1,5 +1,4 @@
 import {
-  mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
   mdiCommentTextOutline,
   mdiDelete,
@@ -28,9 +27,11 @@ import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "../automation/editor-toast";
+import { scrollRowIntoView } from "../automation/scroll-row-into-view";
 import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
+import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -132,17 +133,7 @@ export default class HaScriptFieldRow extends LitElement {
                 ${
                   !this.narrow
                     ? html`<span class="shortcut">
-                        <span
-                          >${
-                            isMac
-                              ? html`<ha-svg-icon
-                                  .path=${mdiAppleKeyboardCommand}
-                                ></ha-svg-icon>`
-                              : this.hass.localize(
-                                  "ui.panel.config.automation.editor.ctrl"
-                                )
-                          }</span
-                        >
+                        <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                         <span>+</span>
                         <span
                           >${this.hass.localize(
@@ -253,15 +244,9 @@ export default class HaScriptFieldRow extends LitElement {
                             !this.narrow
                               ? html`<span class="shortcut">
                                   <span
-                                    >${
-                                      isMac
-                                        ? html`<ha-svg-icon
-                                            .path=${mdiAppleKeyboardCommand}
-                                          ></ha-svg-icon>`
-                                        : this.hass.localize(
-                                            "ui.panel.config.automation.editor.ctrl"
-                                          )
-                                    }</span
+                                    >${renderCtrlOrCmd(
+                                      this.hass.localize
+                                    )}</span
                                   >
                                   <span>+</span>
                                   <span
@@ -454,10 +439,7 @@ export default class HaScriptFieldRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }

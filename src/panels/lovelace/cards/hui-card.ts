@@ -9,7 +9,6 @@ import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-m
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { getConfigEntityId } from "../common/get-config-entity-id";
-import { checkConditionsMet } from "../common/validate-condition";
 import { tryCreateCardElement } from "../create-element/create-card-element";
 import { createErrorCardElement } from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
@@ -262,14 +261,7 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this.config?.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
     this._setElementVisibility(visible);
   }
 

@@ -7,7 +7,9 @@ import { createDurationData } from "../../../../../common/datetime/create_durati
 import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import { afterNextRender } from "../../../../../common/util/render-status";
 import "../../../../../components/ha-checkbox";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
@@ -162,7 +164,8 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (oldValue?.target !== this.condition?.target) {
-      this._updateResolvedTargetEntityCount(this.condition?.target);
+      this._updateTargetEntityCount();
+      this._setDefaultBehavior();
     }
   }
 
@@ -429,20 +432,8 @@ export class HaPlatformCondition extends LitElement {
         Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
@@ -487,41 +478,51 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
-  private _updateResolvedTargetEntityCount(
-    target: PlatformCondition["target"]
-  ) {
+  private _updateTargetEntityCount() {
+    const target = this.condition?.target;
     this._resolvedTargetEntityCount = getTargetEntityCount(target);
+  }
 
-    const behaviorFieldEntry = Object.entries(
-      this.description?.fields ?? {}
-    ).find(
-      ([, field]) => field.selector && "automation_behavior" in field.selector
-    );
-
-    if (!behaviorFieldEntry) {
-      return;
-    }
-
-    const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
-
-    if (
-      target &&
-      this._resolvedTargetEntityCount > 1 &&
-      this.condition.options?.[behaviorFieldName] === undefined
-    ) {
-      const behaviorDefault = behaviorField.default;
-      if (behaviorDefault !== undefined) {
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.condition,
-            options: {
-              ...this.condition.options,
-              [behaviorFieldName]: behaviorDefault,
-            },
-          },
-        });
+  private _setDefaultBehavior() {
+    // set default behavior after next render to prevent race conditions with the initial render
+    afterNextRender(() => {
+      if (!this.isConnected) {
+        return;
       }
-    }
+
+      const behaviorFieldEntry = Object.entries(
+        this.description?.fields ?? {}
+      ).find(
+        ([, field]) => field.selector && "automation_behavior" in field.selector
+      );
+
+      if (
+        !behaviorFieldEntry ||
+        this._resolvedTargetEntityCount === undefined
+      ) {
+        return;
+      }
+
+      const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+      if (
+        this.condition?.target &&
+        this._resolvedTargetEntityCount > 1 &&
+        this.condition.options?.[behaviorFieldName] === undefined
+      ) {
+        const behaviorDefault = behaviorField.default;
+        if (behaviorDefault !== undefined) {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this.condition,
+              options: {
+                ...this.condition.options,
+                [behaviorFieldName]: behaviorDefault,
+              },
+            },
+          });
+        }
+      }
+    });
   }
 
   // Shows a small info icon beside the `for` duration field's label, with a

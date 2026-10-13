@@ -35,11 +35,6 @@ export const typographyStyles = css`
 
     --ha-font-smoothing: antialiased;
     --ha-moz-osx-font-smoothing: grayscale;
-
-    /* Add font to lists since default does not handle non-latin characters */
-    --md-list-item-label-text-font: var(--ha-font-family-body);
-    --md-list-item-supporting-text-font: var(--ha-font-family-body);
-    --md-list-item-trailing-supporting-text-font: var(--ha-font-family-body);
   }
 `;
 

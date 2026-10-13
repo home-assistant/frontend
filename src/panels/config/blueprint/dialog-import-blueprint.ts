@@ -2,6 +2,7 @@ import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { withViewTransition } from "../../../common/util/view-transition";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -279,7 +280,7 @@ class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState
     });
   }
 
-  private _inputChanged(ev: Event) {
+  private _inputChanged(ev: HASSDomTargetEvent<HaInput>) {
     this._updateDirtyState({
       value: (ev.target as HaInput).value ?? "",
       hasResult: !!this._result,

@@ -13,6 +13,12 @@ export type EntityInput = Pick<
 > & {
   /** Area the entity is assigned to in the mocked entity registry */
   area_id?: string;
+  /** Device the entity belongs to in the mocked entity registry */
+  device_id?: string;
+  /** Integration that provides the entity, defaults to "demo" */
+  platform?: string;
+  /** When the state last changed, a random recent time by default */
+  last_changed?: string;
 };
 
 /**

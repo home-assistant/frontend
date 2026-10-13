@@ -13,6 +13,7 @@ import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
   VIRTUAL_ACTIONS,
+  getAutomationActionType,
 } from "../../../../data/action";
 import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
@@ -25,7 +26,7 @@ import {
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
-import { getAutomationActionType } from "./ha-automation-action-row";
+import "./ha-automation-action-row";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends AutomationSortableListMixin<Action>(
@@ -188,12 +189,6 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
           (!ACTION_BUILDING_BLOCKS.includes(type) || mode === "moved")
         ) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         }
 
         if (mode === "new") {

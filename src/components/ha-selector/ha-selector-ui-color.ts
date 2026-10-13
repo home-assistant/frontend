@@ -3,12 +3,9 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { UiColorSelector } from "../../data/selector";
 import "../ha-color-picker";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_color")
 export class HaSelectorUiColor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: UiColorSelector;
 
   @property() public value?: string;
@@ -23,7 +20,6 @@ export class HaSelectorUiColor extends LitElement {
     return html`
       <ha-color-picker
         .label=${this.label}
-        .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
         .disabled=${this.disabled}

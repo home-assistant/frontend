@@ -2,19 +2,19 @@ import type { HomeAssistant } from "../../types";
 
 export interface HassioHostInfo {
   agent_version: string;
-  chassis: string;
-  cpe: string;
-  deployment: string;
+  chassis: string | null;
+  cpe: string | null;
+  deployment: string | null;
   disk_life_time: number | null;
   disk_free: number;
   disk_total: number;
   disk_used: number;
   features: string[];
-  hostname: string;
-  kernel: string;
-  operating_system: string;
-  boot_timestamp: number;
-  startup_time: number;
+  hostname: string | null;
+  kernel: string | null;
+  operating_system: string | null;
+  boot_timestamp: number | null;
+  startup_time: number | null;
 }
 
 export interface HassioHassOSInfo {
@@ -23,7 +23,8 @@ export interface HassioHassOSInfo {
   update_available: boolean;
   version_latest: string | null;
   version: string | null;
-  data_disk: string;
+  version_pending: string | null;
+  data_disk: string | null;
 }
 
 export interface Datadisk {
@@ -39,6 +40,29 @@ export interface Datadisk {
 export interface DatadiskList {
   devices: string[];
   disks: Datadisk[];
+}
+
+export interface HostDiskPartition {
+  device: string;
+  uuid: string;
+  label: string;
+  filesystem: string;
+  size: number;
+  read_only: boolean;
+  mountable: boolean;
+}
+
+// Without a UDisks2 drive, name and id are dev_path and the drive fields are
+// empty or false.
+export interface HostDisk extends Datadisk {
+  connection_bus: string;
+  removable: boolean;
+  ejectable: boolean;
+  partitions: HostDiskPartition[];
+}
+
+export interface HostDisks {
+  disks: HostDisk[];
 }
 
 export interface HostDisksUsage {
@@ -126,11 +150,29 @@ export const listDatadisks = async (
     timeout: null,
   });
 
-export const fetchHostDisksUsage = async (hass: HomeAssistant) =>
+// Empty list without UDisks2.
+export const fetchHostDisks = async (
+  callWS: HomeAssistant["callWS"]
+): Promise<HostDisks> =>
+  callWS<HostDisks>({
+    type: "supervisor/api",
+    endpoint: "/host/disks",
+    method: "get",
+    timeout: null,
+  });
+
+// `disk` is "default" for the data disk, or a mount name. Omitting maxDepth
+// leaves the depth to the Supervisor, which defaults per target — walking a
+// mount costs a round trip per directory, so mounts want no depth at all.
+export const fetchHostDisksUsage = async (
+  hass: HomeAssistant,
+  disk = "default",
+  maxDepth?: number
+) =>
   hass.callWS<HostDisksUsage>({
     type: "supervisor/api",
-    endpoint: "/host/disks/default/usage",
+    endpoint: `/host/disks/${disk}/usage`,
     method: "get",
     timeout: 3600, // seconds. This can take a while
-    params: { max_depth: 3 },
+    ...(maxDepth === undefined ? {} : { params: { max_depth: maxDepth } }),
   });

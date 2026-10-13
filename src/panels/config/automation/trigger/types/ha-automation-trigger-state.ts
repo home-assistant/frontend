@@ -15,7 +15,6 @@ import {
   union,
 } from "superstruct";
 import { ensureArray } from "../../../../../common/array/ensure-array";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -53,6 +52,34 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   public static get defaultConfig(): StateTrigger {
     return { trigger: "state", entity_id: [] };
+  }
+
+  public static checkUiSupport(
+    localize: LocalizeFunc,
+    trigger: StateTrigger
+  ): Error | undefined {
+    // Check for templates in trigger. If found, revert to YAML mode.
+    // Exclude "for" since the UI now supports templates there via choose.
+    const { for: forValue, ...triggerWithoutFor } = trigger;
+    if (hasTemplate(triggerWithoutFor)) {
+      return Error(localize("ui.errors.config.no_template_editor_support"));
+    }
+    try {
+      // The editor drops `milliseconds: 0` before rendering, so accept it here.
+      if (
+        forValue &&
+        typeof forValue === "object" &&
+        forValue.milliseconds === 0
+      ) {
+        const { milliseconds: _milliseconds, ...forWithoutMs } = forValue;
+        assert({ ...trigger, for: forWithoutMs }, stateTriggerStruct);
+      } else {
+        assert(trigger, stateTriggerStruct);
+      }
+    } catch (err: any) {
+      return err;
+    }
+    return undefined;
   }
 
   private _schema = memoizeOne(
@@ -200,39 +227,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     ) {
       delete this.trigger.for.milliseconds;
     }
-    // Check for templates in trigger. If found, revert to YAML mode.
-    // Exclude "for" since the UI now supports templates there via choose.
-    const { for: _for, ...triggerWithoutFor } = this.trigger;
-    if (triggerWithoutFor && hasTemplate(triggerWithoutFor)) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
-      );
-      return false;
-    }
-    try {
-      assert(this.trigger, stateTriggerStruct);
-    } catch (e: any) {
-      fireEvent(this, "ui-mode-not-available", e);
+    const err = HaStateTrigger.checkUiSupport(this.hass.localize, this.trigger);
+    if (err) {
+      fireEvent(this, "ui-mode-not-available", err);
       return false;
     }
     return true;
-  }
-
-  private _wrapForValue(
-    forValue: StateTrigger["for"]
-  ): Record<string, unknown> | undefined {
-    if (forValue === undefined) {
-      return undefined;
-    }
-    if (typeof forValue === "string" && hasTemplate(forValue)) {
-      return { active_choice: "template", template: forValue };
-    }
-    return {
-      active_choice: "duration",
-      duration: createDurationData(forValue),
-    };
   }
 
   private _unwrapForValue(
@@ -251,7 +251,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const data = {
       ...this.trigger,
       entity_id: ensureArray(this.trigger.entity_id),
-      for: this._wrapForValue(this.trigger.for),
     };
 
     data.to = this._normalizeStates(this.trigger.to, data.attribute);

@@ -67,7 +67,7 @@ class HaRefreshTokens extends LitElement {
     if (token.client_id === androidClientId) {
       return this.hass.localize("ui.panel.profile.refresh_tokens.android_app");
     }
-    return token.client_name || token.client_id;
+    return token.client_name || token.client_id || "";
   };
 
   protected render(): TemplateResult {
@@ -209,7 +209,6 @@ class HaRefreshTokens extends LitElement {
           <ha-button
             variant="danger"
             appearance="filled"
-            size="s"
             @click=${this._deleteAllTokens}
           >
             ${this.hass.localize(
@@ -341,6 +340,9 @@ class HaRefreshTokens extends LitElement {
         ha-list-item-base {
           --ha-row-item-padding-inline: 0;
         }
+        [slot="supporting-text"] {
+          white-space: normal;
+        }
         ha-icon-button {
           color: var(--primary-text-color);
         }
@@ -351,6 +353,10 @@ class HaRefreshTokens extends LitElement {
           background-color: var(--success-color);
           border-radius: var(--ha-border-radius-circle);
           margin-right: 6px;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

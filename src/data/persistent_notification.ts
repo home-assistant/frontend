@@ -15,8 +15,7 @@ export interface PersistentNotification {
   created_at: string;
   message: string;
   notification_id: string;
-  title: string;
-  status: "read" | "unread";
+  title: string | null;
 }
 
 export type PersistentNotifications = Record<string, PersistentNotification>;

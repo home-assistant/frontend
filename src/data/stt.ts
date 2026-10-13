@@ -12,9 +12,8 @@ export interface SpeechMetadata {
 
 export interface STTEngine {
   engine_id: string;
-  supported_languages?: string[];
+  supported_languages: string[];
   name?: string;
-  deprecated: boolean;
 }
 
 export const listSTTEngines = (

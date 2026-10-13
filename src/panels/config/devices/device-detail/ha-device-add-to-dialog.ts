@@ -1,6 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import type { CSSResultGroup } from "lit";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
 import {
   mdiPalette,
@@ -9,6 +9,7 @@ import {
   mdiRobotOutline,
   mdiScriptTextOutline,
 } from "@mdi/js";
+import { consume } from "../../../../common/decorators/consume";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-adaptive-dialog";
@@ -222,7 +223,7 @@ export class DialogDeviceAddTo extends LitElement {
       haStyleDialog,
       css`
         ha-adaptive-dialog {
-          --dialog-content-padding: 0;
+          --dialog-content-padding: 0 0 var(--ha-space-6);
         }
       `,
     ];

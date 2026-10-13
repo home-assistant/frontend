@@ -5,7 +5,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
-import { checkConditionsMet } from "../common/validate-condition";
 import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
 import type { LovelaceHeadingBadge } from "../types";
 import type { LovelaceHeadingBadgeConfig } from "./types";
@@ -160,14 +159,7 @@ export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBad
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this.config?.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
     this._setElementVisibility(visible);
   }
 

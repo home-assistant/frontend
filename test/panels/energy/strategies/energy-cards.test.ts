@@ -9,6 +9,7 @@ import {
   energyCardKey,
   hasEnergySource,
   hasGasRateSource,
+  hasNowViewContent,
   hasWaterRateSource,
   isEnergyCardHidden,
   isEnergyCardVisible,
@@ -165,6 +166,55 @@ describe("source predicates", () => {
     expect(hasGasRateSource(makePrefs({ energy_sources: [GAS_RATE] }))).toBe(
       true
     );
+  });
+
+  it("hasNowViewContent is true for any live power or flow-rate content", () => {
+    expect(hasNowViewContent(makePrefs({ energy_sources: [WATER] }))).toBe(
+      false
+    );
+    expect(hasNowViewContent(makePrefs({ energy_sources: [WATER_RATE] }))).toBe(
+      true
+    );
+    expect(hasNowViewContent(makePrefs({ energy_sources: [GAS_RATE] }))).toBe(
+      true
+    );
+    expect(
+      hasNowViewContent(
+        makePrefs({
+          device_consumption_water: [
+            {
+              stat_consumption: "sensor.water_device",
+              stat_rate: "sensor.water_device_rate",
+            },
+          ],
+        })
+      )
+    ).toBe(true);
+    expect(
+      hasNowViewContent(
+        makePrefs({
+          device_consumption: [
+            {
+              stat_consumption: "sensor.device",
+              stat_rate: "sensor.device_rate",
+            },
+          ],
+        })
+      )
+    ).toBe(true);
+    expect(
+      hasNowViewContent(
+        makePrefs({
+          energy_sources: [
+            source({
+              type: "solar",
+              stat_energy_from: "sensor.solar",
+              stat_rate: "sensor.solar_power",
+            }),
+          ],
+        })
+      )
+    ).toBe(true);
   });
 });
 

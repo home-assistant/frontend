@@ -9,8 +9,6 @@ import {
 import type { ResolvedMediaSource } from "../../data/media_source";
 import type { HomeAssistant } from "../../types";
 
-export const ERR_UNSUPPORTED_MEDIA = "Unsupported Media";
-
 export class BrowserMediaPlayer {
   private player: HTMLAudioElement;
 
@@ -24,12 +22,10 @@ export class BrowserMediaPlayer {
     public item: MediaPlayerItem,
     public resolved: ResolvedMediaSource,
     volume: number,
-    private onChange: () => void
+    private onChange: () => void,
+    private onError: () => void
   ) {
     const player = new Audio(this.resolved.url);
-    if (player.canPlayType(resolved.mime_type) === "") {
-      throw new Error(ERR_UNSUPPORTED_MEDIA);
-    }
     player.autoplay = true;
     player.volume = volume;
     player.addEventListener("play", this._handleChange);
@@ -40,12 +36,20 @@ export class BrowserMediaPlayer {
     player.addEventListener("pause", this._handleChange);
     player.addEventListener("ended", this._handleChange);
     player.addEventListener("canplaythrough", this._handleChange);
+    player.addEventListener("seeked", this._handleChange);
+    player.addEventListener("error", this._handleError);
     this.player = player;
   }
 
   private _handleChange = () => {
     if (!this._removed) {
       this.onChange();
+    }
+  };
+
+  private _handleError = () => {
+    if (!this._removed) {
+      this.onError();
     }
   };
 
@@ -61,6 +65,10 @@ export class BrowserMediaPlayer {
   public setVolume(volume: number) {
     this.player.volume = volume;
     this.onChange();
+  }
+
+  public seek(position: number) {
+    this.player.currentTime = position;
   }
 
   public remove() {
@@ -100,7 +108,10 @@ export class BrowserMediaPlayer {
         // eslint-disable-next-line no-bitwise
         MediaPlayerEntityFeature.PLAY |
         MediaPlayerEntityFeature.PAUSE |
-        MediaPlayerEntityFeature.VOLUME_SET,
+        MediaPlayerEntityFeature.VOLUME_SET |
+        (Number.isFinite(this.player.duration)
+          ? MediaPlayerEntityFeature.SEEK
+          : 0),
     };
 
     if (this.player.duration) {

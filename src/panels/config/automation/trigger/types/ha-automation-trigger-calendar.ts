@@ -8,6 +8,7 @@ import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
@@ -82,13 +83,21 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
     const schema = this._schema(this.hass.localize);
     // Convert from string representation to ha form duration representation
     const trigger_offset = this.trigger.offset;
-    const duration: HaDurationData = createDurationData(trigger_offset)!;
+    // Copy, `createDurationData` returns the input object as-is for dict values.
+    const duration: HaDurationData = { ...createDurationData(trigger_offset)! };
     let offset_type = "after";
-    if (
-      (typeof trigger_offset === "object" && duration!.hours! < 0) ||
-      (typeof trigger_offset === "string" && trigger_offset.startsWith("-"))
-    ) {
-      duration.hours = Math.abs(duration.hours!);
+    if (durationDataToSeconds(duration) < 0) {
+      // A negative offset negates the whole period, and the sign is shown by
+      // the separate before/after select instead.
+      if (duration.days) {
+        duration.days = Math.abs(duration.days);
+      }
+      duration.hours = Math.abs(duration.hours ?? 0);
+      duration.minutes = Math.abs(duration.minutes ?? 0);
+      duration.seconds = Math.abs(duration.seconds ?? 0);
+      if (duration.milliseconds) {
+        duration.milliseconds = Math.abs(duration.milliseconds);
+      }
       offset_type = "before";
     }
     const data = {
@@ -113,11 +122,12 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
     // Convert back to duration string representation
     const duration = ev.detail.value.offset;
     const offsetType = ev.detail.value.offset_type === "before" ? "-" : "";
+    const h = (duration.days ?? 0) * 24 + (duration.hours ?? 0);
+    const m = duration.minutes ?? 0;
+    const s = (duration.seconds ?? 0) + (duration.milliseconds ?? 0) / 1000;
     const newTrigger = {
       ...ev.detail.value,
-      offset: `${offsetType}${duration.hours ?? 0}:${duration.minutes ?? 0}:${
-        duration.seconds ?? 0
-      }`,
+      offset: `${offsetType}${h}:${m}:${s}`,
     };
     delete newTrigger.offset_type;
     fireEvent(this, "value-changed", { value: newTrigger });

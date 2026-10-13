@@ -27,7 +27,6 @@ import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import type { InputSelectEntity } from "../../data/input_select";
 import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";
-import "../../panels/lovelace/entity-rows/hui-select-entity-row";
 import type { HomeAssistant } from "../../types";
 import { getTranslation } from "../../util/common-translation";
 import { AssistantSetupStyles } from "./styles";
@@ -57,7 +56,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       this._setTtsSettings();
       return;
     }
-    if (changedProperties.has("hass") && this.assistConfiguration) {
+    if (
+      changedProperties.has("hass") &&
+      this.assistConfiguration?.pipeline_entity_id
+    ) {
       const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
       if (oldHass) {
         const oldState =
@@ -72,7 +74,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   }
 
   protected override render() {
-    const pipelineEntity = this.assistConfiguration
+    const pipelineEntity = this.assistConfiguration?.pipeline_entity_id
       ? (this.hass.states[
           this.assistConfiguration.pipeline_entity_id
         ] as InputSelectEntity)
@@ -255,7 +257,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private _pipelinePicked(ev: HaSelectSelectEvent) {
     const stateObj = this.hass!.states[
-      this.assistConfiguration!.pipeline_entity_id
+      this.assistConfiguration!.pipeline_entity_id!
     ] as InputSelectEntity;
     const option = ev.detail.value;
     if (

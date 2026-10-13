@@ -12,6 +12,7 @@ import "../components/ha-svg-icon";
 import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
 import { fetchAuthProviders } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import { provideLiteI18nMixin } from "../mixins/provide-lite-i18n-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
 
@@ -23,12 +24,20 @@ const appNames = {
 };
 
 @customElement("ha-authorize")
-export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
+export class HaAuthorize extends provideLiteI18nMixin(
+  litLocalizeLiteMixin(LitElement)
+) {
   @property({ attribute: false }) public clientId?: string;
 
   @property({ attribute: false }) public redirectUri?: string;
 
   @property({ attribute: false }) public oauth2State?: string;
+
+  @property({ attribute: false }) public codeChallenge?: string;
+
+  @property({ attribute: false }) public codeChallengeMethod?: string;
+
+  @property({ attribute: false }) public responseType?: string;
 
   @property({ attribute: false }) public translationFragment = "page-authorize";
 
@@ -51,9 +60,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     if (query.redirect_uri) {
       this.redirectUri = query.redirect_uri;
     }
-    if (query.state) {
-      this.oauth2State = query.state;
-    }
+    this.oauth2State = query.state;
+    this.codeChallenge = query.code_challenge;
+    this.codeChallengeMethod = query.code_challenge_method;
+    this.responseType = query.response_type;
   }
 
   protected render() {
@@ -182,15 +192,16 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                   .clientId=${this.clientId}
                   .redirectUri=${this.redirectUri}
                   .oauth2State=${this.oauth2State}
+                  .codeChallenge=${this.codeChallenge}
+                  .codeChallengeMethod=${this.codeChallengeMethod}
+                  .responseType=${this.responseType}
                   .authProvider=${this._authProvider}
-                  .localize=${this.localize}
                   .initStoreToken=${this._preselectStoreToken}
                 ></ha-auth-flow>
                 ${
                   inactiveProviders!.length > 0
                     ? html`
                         <ha-pick-auth-provider
-                          .localize=${this.localize}
                           .clientId=${this.clientId}
                           .authProviders=${inactiveProviders!}
                           @pick-auth-provider=${this._handleAuthProviderPick}

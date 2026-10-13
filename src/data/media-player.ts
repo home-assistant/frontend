@@ -48,10 +48,14 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_id?: string;
   media_content_type?: string;
   media_artist?: string;
+  media_album_name?: string;
+  media_album_artist?: string;
+  media_track?: number;
   media_playlist?: string;
   media_series_title?: string;
   media_season?: any;
   media_episode?: any;
+  app_id?: string;
   app_name?: string;
   media_position_updated_at?: string | number | Date;
   media_duration?: number;

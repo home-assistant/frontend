@@ -362,7 +362,6 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
       border: 1px solid var(--divider-color);
       cursor: pointer;
       user-select: none;
-      -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
       overflow: hidden;
       min-height: 80px;

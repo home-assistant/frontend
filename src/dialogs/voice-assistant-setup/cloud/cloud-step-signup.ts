@@ -1,16 +1,17 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, css, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-svg-icon";
-import "../../../components/input/ha-input";
-import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/ha-spinner";
+import type { CloudAutoLogin, CloudStatus } from "../../../data/cloud";
 import {
-  cloudLogin,
-  cloudRegister,
-  cloudResendVerification,
+  cancelCloudAutoLogin,
+  cloudStatusAutoLogin,
+  fetchCloudStatus,
+  subscribeCloudEvents,
 } from "../../../data/cloud";
+import "../../../panels/config/cloud/register/cloud-register-card";
 import type { HomeAssistant } from "../../../types";
 import { AssistantSetupStyles } from "../styles";
 
@@ -18,203 +19,127 @@ import { AssistantSetupStyles } from "../styles";
 export class CloudStepSignup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _requestInProgress = false;
+  @state() private _autoLogin: CloudAutoLogin | null = null;
 
-  @state() private _email?: string;
+  @state() private _loading = true;
 
-  @state() private _password?: string;
+  private _email?: string;
 
-  @state() private _error?: string;
+  private _unsubCloudEvents?: Promise<UnsubscribeFunc>;
 
-  @state() private _state?: "VERIFY";
+  private _statusRead: Promise<void> = Promise.resolve();
 
-  @query("#email", true) private _emailField!: HaInput;
+  private _wasLoggedIn?: boolean;
 
-  @query("#password", true) private _passwordField!: HaInput;
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._watchCloudStatus();
+    this._loadInitialStatus();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubCloudEvents?.then((unsub) => unsub()).catch(() => undefined);
+    this._unsubCloudEvents = undefined;
+  }
 
   render() {
     return html`<div class="content">
-        <img
-          src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
-          alt="Nabu Casa logo"
-        />
-        <h1>
-          ${this.hass.localize("ui.panel.config.cloud.register.create_account")}
-        </h1>
-        ${
-          this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""
-        }
-        ${
-          this._state === "VERIFY"
-            ? html`<p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.register.confirm_email",
-                  { email: this._email }
-                )}
-              </p>`
-            : html`<ha-input
-                  autofocus
-                  id="email"
-                  name="email"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.cloud.register.email_address"
-                  )}
-                  .disabled=${this._requestInProgress}
-                  type="email"
-                  autocomplete="email"
-                  required
-                  @keydown=${this._keyDown}
-                  .validationMessage=${this.hass.localize(
-                    "ui.panel.config.cloud.register.email_error_msg"
-                  )}
-                ></ha-input>
-                <ha-input
-                  id="password"
-                  type="password"
-                  password-toggle
-                  name="password"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.cloud.register.password"
-                  )}
-                  .disabled=${this._requestInProgress}
-                  autocomplete="new-password"
-                  minlength="8"
-                  required
-                  @keydown=${this._keyDown}
-                  .validationMessage=${this.hass.localize(
-                    "ui.panel.config.cloud.register.password_error_msg"
-                  )}
-                ></ha-input>`
-        }
-      </div>
-      <div class="footer side-by-side">
-        ${
-          this._state === "VERIFY"
-            ? html`<ha-button
-                  @click=${this._handleResendVerifyEmail}
-                  .disabled=${this._requestInProgress}
-                  appearance="plain"
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.register.resend_confirm_email"
-                  )}</ha-button
-                ><ha-button
-                  @click=${this._login}
-                  .disabled=${this._requestInProgress}
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.register.clicked_confirm"
-                  )}</ha-button
-                >`
-            : html`<ha-button
-                  @click=${this._signIn}
-                  .disabled=${this._requestInProgress}
-                  appearance="plain"
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.login.sign_in"
-                  )}</ha-button
-                >
-                <ha-button
-                  @click=${this._handleRegister}
-                  .disabled=${this._requestInProgress}
-                  >${this.hass.localize("ui.common.next")}</ha-button
-                >`
-        }
-      </div>`;
+      <img
+        src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
+        alt="Nabu Casa logo"
+      />
+      ${
+        this._loading
+          ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
+          : html`<cloud-register-card
+              card-less
+              .hass=${this.hass}
+              .autoLogin=${this._autoLogin}
+              @cloud-email-changed=${this._emailChanged}
+              @cloud-sign-in-instead=${this._signIn}
+              @cloud-cancel-auto-login=${this._cancelAutoLogin}
+              @ha-refresh-cloud-status=${this._refreshCloudStatus}
+            ></cloud-register-card>`
+      }
+    </div>`;
+  }
+
+  // The cloud panel is fed status by ha-panel-config; this dialog is mounted at
+  // the root, outside it, so the step does the watching. Every cloud event means
+  // one thing here — the state moved, read it back — because cloud/status holds
+  // everything the events carry.
+  private _watchCloudStatus() {
+    if (this._unsubCloudEvents) {
+      return;
+    }
+
+    const subscription = subscribeCloudEvents(this.hass, () => {
+      this._refreshCloudStatus();
+    });
+    this._unsubCloudEvents = subscription;
+
+    subscription.catch(() => {
+      if (this._unsubCloudEvents === subscription) {
+        this._unsubCloudEvents = undefined;
+      }
+    });
+  }
+
+  private async _loadInitialStatus() {
+    await this._refreshCloudStatus();
+    this._loading = false;
+  }
+
+  private _refreshCloudStatus = (): Promise<void> => {
+    this._statusRead = this._statusRead
+      .then(() => this._readCloudStatus())
+      .catch(() => undefined);
+    return this._statusRead;
+  };
+
+  private async _readCloudStatus(): Promise<void> {
+    let status: CloudStatus;
+    try {
+      status = await fetchCloudStatus(this.hass);
+    } catch (_err) {
+      // Nothing to reconcile against. The registration form is the right place
+      // to be, and the next event tries again.
+      return;
+    }
+
+    // Lit keeps updating an element that was connected once.
+    if (!this.isConnected) {
+      return;
+    }
+
+    const wasLoggedIn = this._wasLoggedIn;
+    this._wasLoggedIn = status.logged_in;
+    this._autoLogin = cloudStatusAutoLogin(status);
+
+    if (status.logged_in && wasLoggedIn === false) {
+      fireEvent(this, "cloud-step", { step: "DONE" });
+    }
+  }
+
+  private _emailChanged(
+    ev: HASSDomEvent<HASSDomEvents["cloud-email-changed"]>
+  ) {
+    this._email = ev.detail.value;
   }
 
   private _signIn() {
-    fireEvent(this, "cloud-step", { step: "SIGNIN" });
+    fireEvent(this, "cloud-step", { step: "SIGNIN", email: this._email });
   }
 
-  private _keyDown(ev: KeyboardEvent) {
-    if (ev.key === "Enter") {
-      this._handleRegister();
-    }
-  }
-
-  private async _handleRegister() {
-    const emailField = this._emailField;
-    const passwordField = this._passwordField;
-
-    let invalid = false;
-
-    if (!emailField.reportValidity()) {
-      invalid = true;
-      emailField.focus();
-    }
-
-    if (!passwordField.reportValidity()) {
-      if (!invalid) {
-        passwordField.focus();
-      }
-      invalid = true;
-    }
-
-    if (invalid) {
-      return;
-    }
-
-    const email = emailField.value!.toLowerCase();
-    const password = passwordField.value!;
-
-    this._requestInProgress = true;
-
+  private async _cancelAutoLogin() {
     try {
-      await cloudRegister(this.hass, email, password);
-      this._email = email;
-      this._password = password;
-      this._verificationEmailSent();
-    } catch (err: any) {
-      this._password = "";
-      this._error =
-        err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
+      await cancelCloudAutoLogin(this.hass);
+    } catch (_err) {
+      // Fire and forget: the card has already returned to the form, and the
+      // read below reconciles a registration the backend refused to drop.
     } finally {
-      this._requestInProgress = false;
-    }
-  }
-
-  private async _handleResendVerifyEmail() {
-    if (!this._email) {
-      return;
-    }
-    try {
-      await cloudResendVerification(this.hass, this._email);
-      this._verificationEmailSent();
-    } catch (err: any) {
-      this._error =
-        err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
-    }
-  }
-
-  private _verificationEmailSent() {
-    this._state = "VERIFY";
-
-    setTimeout(() => this._login(), 5000);
-  }
-
-  private async _login() {
-    if (!this._email || !this._password) {
-      return;
-    }
-
-    try {
-      await cloudLogin({
-        hass: this.hass,
-        email: this._email,
-        password: this._password,
-      });
-      fireEvent(this, "cloud-step", { step: "DONE" });
-    } catch (e: any) {
-      if (e?.body?.code === "usernotconfirmed") {
-        this._verificationEmailSent();
-      } else {
-        this._error = "Something went wrong. Please try again.";
-      }
+      this._refreshCloudStatus();
     }
   }
 
@@ -223,6 +148,14 @@ export class CloudStepSignup extends LitElement {
     css`
       .content {
         width: 100%;
+      }
+      .loading {
+        display: flex;
+        justify-content: center;
+        padding: var(--ha-space-8) 0;
+      }
+      cloud-register-card {
+        text-align: start;
       }
     `,
   ];

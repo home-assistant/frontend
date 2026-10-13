@@ -1,38 +1,34 @@
 import { customElement, property } from "lit/decorators";
 
-import { mdiAccount, mdiLock } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 
-export const profileSections: PageNavigation[] = [
-  {
-    path: "/profile/general",
-    translationKey: "ui.panel.profile.tabs.general",
-    iconPath: mdiAccount,
-  },
-  {
-    path: "/profile/security",
-    translationKey: "ui.panel.profile.tabs.security",
-    iconPath: mdiLock,
-  },
-];
-
 @customElement("ha-panel-profile")
-class HaPanelProfile extends SubscribeMixin(HassRouterPage) {
+class HaPanelProfile extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "general",
+    defaultPage: "dashboard",
     routes: {
-      general: {
-        tag: "ha-profile-section-general",
-        load: () => import("./ha-profile-section-general"),
+      dashboard: {
+        tag: "ha-profile-dashboard",
+        load: () => import("./ha-profile-dashboard"),
+      },
+      preferences: {
+        tag: "ha-profile-section-preferences",
+        load: () => import("./ha-profile-section-preferences"),
+      },
+      localization: {
+        tag: "ha-profile-section-localization",
+        load: () => import("./ha-profile-section-localization"),
+      },
+      browser: {
+        tag: "ha-profile-section-browser",
+        load: () => import("./ha-profile-section-browser"),
       },
       security: {
         tag: "ha-profile-section-security",

@@ -26,15 +26,14 @@ export class HaSelectorEntityName extends SubscribeMixin(LitElement) {
   };
 
   protected render() {
-    const value = this.value ?? this.selector.entity_name?.default_name;
-
     return html`
       <ha-entity-name-picker
         .hass=${this.hass}
         .entityId=${
           this.selector.entity_name?.entity_id || this.context?.entity
         }
-        .value=${value}
+        .value=${this.value}
+        .defaultValue=${this.selector.entity_name?.default_name}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}

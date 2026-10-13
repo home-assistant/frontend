@@ -1,15 +1,23 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { goBack } from "../common/navigate";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { getHistoryState, goBack } from "../common/navigate";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-top-app-bar-fixed";
 import type { HomeAssistant } from "../types";
+import { reloadForUpdate } from "../util/recover-stale-build";
 import "../components/ha-alert";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Fallback for the custom panel iframe, which has no context provider
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state()
+  @consumeLocalize()
+  private _localize?: LocalizeFunc;
 
   @property({ type: Boolean }) public toolbar = true;
 
@@ -19,6 +27,9 @@ class HassErrorScreen extends LitElement {
 
   @property() public error?: string;
 
+  @property({ type: Boolean, attribute: "show-reload" }) public showReload =
+    false;
+
   protected render(): TemplateResult {
     if (!this.toolbar) {
       return this._renderContent();
@@ -27,7 +38,7 @@ class HassErrorScreen extends LitElement {
     return html`
       <ha-top-app-bar-fixed
         .narrow=${this.narrow}
-        .backButton=${!(this.rootnav || history.state?.root)}
+        .backButton=${!(this.rootnav || getHistoryState()?.root)}
       >
         ${this._renderContent()}
       </ha-top-app-bar-fixed>
@@ -35,12 +46,27 @@ class HassErrorScreen extends LitElement {
   }
 
   private _renderContent(): TemplateResult {
+    // Inline as this._localize once the custom panel iframe provides contexts
+    const localize = this._localize ?? this.hass?.localize;
     return html`
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
+          ${
+            this.showReload
+              ? html`
+                  <ha-button
+                    appearance="filled"
+                    size="s"
+                    @click=${this._handleReload}
+                  >
+                    ${localize?.("ui.common.refresh")}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button appearance="plain" size="s" @click=${this._handleBack}>
-            ${this.hass?.localize("ui.common.back")}
+            ${localize?.("ui.common.back")}
           </ha-button>
         </slot>
       </div>
@@ -49,6 +75,12 @@ class HassErrorScreen extends LitElement {
 
   private _handleBack(): void {
     goBack();
+  }
+
+  private _handleReload(): void {
+    // Dirty-aware: reloads when clean, or defers with a toast when an editor
+    // has unsaved changes.
+    reloadForUpdate();
   }
 
   static get styles(): CSSResultGroup {

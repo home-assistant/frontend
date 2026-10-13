@@ -160,16 +160,30 @@ const mockHass: HomeAssistant = {
 describe("generateEntityFilter", () => {
   describe("domain filtering", () => {
     it("should filter entities by single domain", () => {
-      const filter = generateEntityFilter(mockHass, { domain: "light" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { domain: "light" }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(false);
     });
 
     it("should filter entities by multiple domains", () => {
-      const filter = generateEntityFilter(mockHass, {
-        domain: ["light", "switch"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          domain: ["light", "switch"],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(true);
@@ -179,10 +193,24 @@ describe("generateEntityFilter", () => {
     });
 
     it("should handle domain as string vs array", () => {
-      const singleFilter = generateEntityFilter(mockHass, { domain: "sensor" });
-      const arrayFilter = generateEntityFilter(mockHass, {
-        domain: ["sensor"],
-      });
+      const singleFilter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { domain: "sensor" }
+      );
+      const arrayFilter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          domain: ["sensor"],
+        }
+      );
 
       expect(singleFilter("sensor.temperature")).toBe(true);
       expect(arrayFilter("sensor.temperature")).toBe(true);
@@ -193,18 +221,32 @@ describe("generateEntityFilter", () => {
 
   describe("device class filtering", () => {
     it("should filter entities by single device class", () => {
-      const filter = generateEntityFilter(mockHass, {
-        device_class: "temperature",
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          device_class: "temperature",
+        }
+      );
 
       expect(filter("sensor.temperature")).toBe(true);
       expect(filter("sensor.humidity")).toBe(false);
     });
 
     it("should filter entities by multiple device classes", () => {
-      const filter = generateEntityFilter(mockHass, {
-        device_class: ["temperature", "humidity"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          device_class: ["temperature", "humidity"],
+        }
+      );
 
       expect(filter("sensor.temperature")).toBe(true);
       expect(filter("sensor.humidity")).toBe(true);
@@ -212,7 +254,14 @@ describe("generateEntityFilter", () => {
     });
 
     it("should handle entities without device class", () => {
-      const filter = generateEntityFilter(mockHass, { device_class: "test" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { device_class: "test" }
+      );
 
       expect(filter("climate.thermostat")).toBe(false);
       expect(filter("media_player.tv")).toBe(false);
@@ -221,7 +270,14 @@ describe("generateEntityFilter", () => {
 
   describe("area filtering", () => {
     it("should filter entities by single area", () => {
-      const filter = generateEntityFilter(mockHass, { area: "living_room" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { area: "living_room" }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("sensor.temperature")).toBe(true);
@@ -229,9 +285,16 @@ describe("generateEntityFilter", () => {
     });
 
     it("should filter entities by multiple areas", () => {
-      const filter = generateEntityFilter(mockHass, {
-        area: ["living_room", "kitchen"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          area: ["living_room", "kitchen"],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(true);
@@ -243,7 +306,14 @@ describe("generateEntityFilter", () => {
     // NOTE: The current implementation has a bug where it checks `if (!floors)` instead of `if (!floors.has(floor.floor_id))`
     // So floor filtering will never actually filter by floor - it only checks if the entity has a floor at all
     it("should filter entities by floor (tests current buggy behavior)", () => {
-      const filter = generateEntityFilter(mockHass, { floor: "main_floor" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { floor: "main_floor" }
+      );
 
       // Due to bug, all entities with floors pass (not just main_floor)
       expect(filter("light.living_room")).toBe(true); // has floor
@@ -257,9 +327,16 @@ describe("generateEntityFilter", () => {
     });
 
     it("should handle multiple floors (tests current buggy behavior)", () => {
-      const filter = generateEntityFilter(mockHass, {
-        floor: ["main_floor", "upper_floor"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          floor: ["main_floor", "upper_floor"],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("light.bedroom")).toBe(true);
@@ -272,16 +349,30 @@ describe("generateEntityFilter", () => {
 
   describe("device filtering", () => {
     it("should filter entities by single device", () => {
-      const filter = generateEntityFilter(mockHass, { device: "device1" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { device: "device1" }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(false);
     });
 
     it("should filter entities by multiple devices", () => {
-      const filter = generateEntityFilter(mockHass, {
-        device: ["device1", "device2"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          device: ["device1", "device2"],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(true);
@@ -291,30 +382,58 @@ describe("generateEntityFilter", () => {
 
   describe("entity category filtering", () => {
     it("should filter entities by entity category", () => {
-      const filter = generateEntityFilter(mockHass, {
-        entity_category: "diagnostic",
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          entity_category: "diagnostic",
+        }
+      );
 
       expect(filter("sensor.humidity")).toBe(true);
       expect(filter("sensor.temperature")).toBe(false);
     });
 
     it("should filter entities with no entity category", () => {
-      const filter = generateEntityFilter(mockHass, {
-        entity_category: "none",
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          entity_category: "none",
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("sensor.humidity")).toBe(false);
     });
 
     it("should treat entities without a registry entry as having no category", () => {
-      const noneFilter = generateEntityFilter(mockHass, {
-        entity_category: "none",
-      });
-      const diagnosticFilter = generateEntityFilter(mockHass, {
-        entity_category: "diagnostic",
-      });
+      const noneFilter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          entity_category: "none",
+        }
+      );
+      const diagnosticFilter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          entity_category: "diagnostic",
+        }
+      );
 
       expect(noneFilter("binary_sensor.unregistered_battery")).toBe(true);
       expect(diagnosticFilter("binary_sensor.unregistered_battery")).toBe(
@@ -325,16 +444,30 @@ describe("generateEntityFilter", () => {
 
   describe("label filtering", () => {
     it("should filter entities by single label", () => {
-      const filter = generateEntityFilter(mockHass, { label: "climate" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { label: "climate" }
+      );
 
       expect(filter("sensor.humidity")).toBe(true);
       expect(filter("sensor.temperature")).toBe(false);
     });
 
     it("should filter entities by multiple labels", () => {
-      const filter = generateEntityFilter(mockHass, {
-        label: ["climate", "monitoring"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          label: ["climate", "monitoring"],
+        }
+      );
 
       expect(filter("sensor.humidity")).toBe(true);
       expect(filter("light.living_room")).toBe(false);
@@ -343,10 +476,17 @@ describe("generateEntityFilter", () => {
 
   describe("combined filtering", () => {
     it("should combine multiple filter criteria with AND logic", () => {
-      const filter = generateEntityFilter(mockHass, {
-        domain: "light",
-        area: "living_room",
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          domain: "light",
+          area: "living_room",
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("light.bedroom")).toBe(false);
@@ -354,11 +494,18 @@ describe("generateEntityFilter", () => {
     });
 
     it("should handle complex combinations", () => {
-      const filter = generateEntityFilter(mockHass, {
-        domain: ["sensor", "light"],
-        area: "living_room",
-        device_class: ["temperature", "light"],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          domain: ["sensor", "light"],
+          area: "living_room",
+          device_class: ["temperature", "light"],
+        }
+      );
 
       expect(filter("sensor.temperature")).toBe(true);
       expect(filter("light.living_room")).toBe(true);
@@ -369,7 +516,14 @@ describe("generateEntityFilter", () => {
 
   describe("empty filter criteria", () => {
     it("should handle empty filter criteria", () => {
-      const filter = generateEntityFilter(mockHass, {});
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {}
+      );
 
       // Empty filter should pass all entities that exist in hass.states
       expect(filter("light.living_room")).toBe(true);
@@ -378,7 +532,14 @@ describe("generateEntityFilter", () => {
     });
 
     it("should handle empty domain array", () => {
-      const filter = generateEntityFilter(mockHass, { domain: [] });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { domain: [] }
+      );
 
       // Empty domain array means no entities should pass domain filter
       expect(filter("light.living_room")).toBe(false);
@@ -388,20 +549,41 @@ describe("generateEntityFilter", () => {
 
   describe("edge cases", () => {
     it("should handle non-existent entities", () => {
-      const filter = generateEntityFilter(mockHass, { domain: "light" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { domain: "light" }
+      );
 
       expect(filter("light.nonexistent")).toBe(false);
       expect(filter("invalid_entity_id")).toBe(false);
     });
 
     it("should handle entities without device or area assignments", () => {
-      const filter = generateEntityFilter(mockHass, { area: "living_room" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { area: "living_room" }
+      );
 
       expect(filter("light.no_area")).toBe(false);
     });
 
     it("should handle entities with device but no area", () => {
-      const filter = generateEntityFilter(mockHass, { area: "living_room" });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { area: "living_room" }
+      );
 
       // light.no_area has device10 which has no area_id
       expect(filter("light.no_area")).toBe(false);
@@ -410,16 +592,30 @@ describe("generateEntityFilter", () => {
 
   describe("null filtering", () => {
     it("should filter entities with no area when null is used", () => {
-      const filter = generateEntityFilter(mockHass, { area: null });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { area: null }
+      );
 
       expect(filter("light.no_area")).toBe(true);
       expect(filter("light.living_room")).toBe(false);
     });
 
     it("should filter entities with specific area OR no area when null is in array", () => {
-      const filter = generateEntityFilter(mockHass, {
-        area: ["living_room", null],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          area: ["living_room", null],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("sensor.temperature")).toBe(true);
@@ -428,16 +624,30 @@ describe("generateEntityFilter", () => {
     });
 
     it("should filter entities with no floor when null is used", () => {
-      const filter = generateEntityFilter(mockHass, { floor: null });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { floor: null }
+      );
 
       expect(filter("light.no_area")).toBe(true);
       expect(filter("light.living_room")).toBe(false);
     });
 
     it("should filter entities with specific floor OR no floor", () => {
-      const filter = generateEntityFilter(mockHass, {
-        floor: ["main_floor", null],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          floor: ["main_floor", null],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(true);
@@ -446,26 +656,47 @@ describe("generateEntityFilter", () => {
     });
 
     it("should filter entities with no device when null is used", () => {
-      const filter = generateEntityFilter(mockHass, { device: null });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        { device: null }
+      );
 
       expect(filter("light.living_room")).toBe(false);
       expect(filter("light.no_area")).toBe(false);
     });
 
     it("should filter entities with specific device OR no device", () => {
-      const filter = generateEntityFilter(mockHass, {
-        device: ["device1", null],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          device: ["device1", null],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("switch.kitchen")).toBe(false);
     });
 
     it("should combine null filtering with other criteria", () => {
-      const filter = generateEntityFilter(mockHass, {
-        domain: "light",
-        area: ["living_room", null],
-      });
+      const filter = generateEntityFilter(
+        mockHass.states,
+        mockHass.entities,
+        mockHass.devices,
+        mockHass.areas,
+        mockHass.floors,
+        {
+          domain: "light",
+          area: ["living_room", null],
+        }
+      );
 
       expect(filter("light.living_room")).toBe(true);
       expect(filter("light.no_area")).toBe(true);

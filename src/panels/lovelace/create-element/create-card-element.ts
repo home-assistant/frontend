@@ -80,6 +80,7 @@ const LAZY_LOAD_TYPES = {
   shortcut: () => import("../cards/hui-shortcut-card"),
   "discovered-devices": () => import("../cards/hui-discovered-devices-card"),
   repairs: () => import("../cards/hui-repairs-card"),
+  alert: () => import("../cards/hui-alert-card"),
   updates: () => import("../cards/hui-updates-card"),
   gauge: () => import("../cards/hui-gauge-card"),
   "history-graph": () => import("../cards/hui-history-graph-card"),

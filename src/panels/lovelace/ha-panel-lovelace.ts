@@ -4,7 +4,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../common/navigate";
+import { navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -48,6 +48,8 @@ import { fetchDashboards } from "../../data/lovelace/dashboard";
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
+
+const EXTERNALLY_UPDATED_TOAST_ID = "lovelace-externally-updated";
 
 let editorLoaded = false;
 let resourcesLoaded = false;
@@ -265,6 +267,7 @@ export class LovelacePanel extends LitElement {
       return;
     }
     showToast(this, {
+      id: EXTERNALLY_UPDATED_TOAST_ID,
       message: this.hass!.localize(
         "ui.panel.lovelace.externally_updated_toast.message"
       ),
@@ -509,9 +512,7 @@ export class LovelacePanel extends LitElement {
     };
 
     if ("editMode" in props) {
-      window.history.replaceState(
-        null,
-        "",
+      replaceCurrentUrl(
         constructUrlCurrentPath(
           props.editMode
             ? addSearchParam({ edit: "1" })

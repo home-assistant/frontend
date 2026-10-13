@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
@@ -6,6 +5,9 @@ import {
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { mainWindow } from "../common/dom/get_main_window";
+import { navigate } from "../common/navigate";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { promiseTimeout } from "../common/util/promise-timeout";
@@ -44,6 +46,9 @@ const COMPONENTS = {
   map: { load: () => import("../panels/map/ha-panel-map") },
   my: { load: () => import("../panels/my/ha-panel-my") },
   profile: { load: () => import("../panels/profile/ha-panel-profile") },
+  marketplace: {
+    load: () => import("../panels/marketplace/ha-panel-marketplace"),
+  },
   todo: { load: () => import("../panels/todo/ha-panel-todo") },
   "media-browser": {
     load: () => import("../panels/media-browser/ha-panel-media-browser"),
@@ -172,8 +177,22 @@ class PartialPanelResolver extends HassRouterPage {
       routes[panel.url_path] = data;
     });
 
+    // The Marketplace replaced HACS, links in dashboards still point at /hacs.
+    // No route alias for it: the router resolves those before beforeRender.
+    const replacesHacs = Boolean(routes.marketplace && !routes.hacs);
+
     return {
       beforeRender: (page) => {
+        // Rendered right away, and moved to where the Marketplace loads its
+        // translations for. The rest of the path and the query go along.
+        if (page === "hacs" && replacesHacs) {
+          const { pathname, search, hash } = mainWindow.location;
+          navigate(
+            `${pathname.replace(/^\/hacs/, "/marketplace")}${search}${hash}`,
+            { replace: true }
+          );
+          return undefined;
+        }
         if (!page || !routes[page]) {
           return getDefaultPanel(this.hass).url_path;
         }
@@ -257,6 +276,13 @@ class PartialPanelResolver extends HassRouterPage {
       )
     ) {
       await this.rebuild();
+      // hass.panels can change again while rebuild() is in flight (e.g.
+      // multiple integrations/resources updating panels around startup), so
+      // the panel we were about to show may no longer exist. willUpdate will
+      // re-run _updateRoutes for the newer panels, so just bail out here.
+      if (!this.hass.panels[this._currentPage]) {
+        return;
+      }
       const component =
         COMPONENTS[this.hass.panels[this._currentPage].component_name];
       await promiseTimeout(
@@ -267,9 +293,9 @@ class PartialPanelResolver extends HassRouterPage {
       // screen, so later panel updates do not fire it again. Native apps remove
       // it instantly because their own splash screen is still visible.
       if (
-        removeLaunchScreen(!!this.hass.auth.external?.config.hasSplashscreen)
+        removeLaunchScreen(!!this.hass.auth?.external?.config.hasSplashscreen)
       ) {
-        this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+        this.hass.auth?.external?.fireMessage({ type: "frontend/loaded" });
       }
     }
   }

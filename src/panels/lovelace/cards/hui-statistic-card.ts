@@ -110,7 +110,13 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   private _subscribeEnergy() {
     if (!this._energySub) {
-      this._energySub = getEnergyDataCollection(this.hass!, {
+      this._energySub = getEnergyDataCollection(this.hass!.connection, {
+        callWS: this.hass!.callWS,
+        entities: this.hass!.entities,
+        states: this.hass!.states,
+        locale: this.hass!.locale,
+        config: this.hass!.config,
+        panelUrl: this.hass!.panelUrl,
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._energyStart = data.start;
@@ -175,7 +181,19 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     this._error = undefined;
 
     if (this._config.footer) {
-      this._footerElement = createHeaderFooterElement(this._config.footer);
+      const footerElement = createHeaderFooterElement(this._config.footer);
+      // A lazy loaded footer has no `hass` accessor before it is upgraded,
+      // so the forwarding in `shouldUpdate` skips it until then
+      footerElement.addEventListener(
+        "ll-upgrade",
+        () => {
+          if ("hass" in footerElement) {
+            footerElement.hass = this.hass;
+          }
+        },
+        { once: true }
+      );
+      this._footerElement = footerElement;
     } else if (this._footerElement) {
       this._footerElement = undefined;
     }
@@ -204,7 +222,12 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       (this._config.name
         ? this.hass.formatEntityName(stateObj, this._config.name)
         : "") ||
-      getStatisticLabel(this.hass, this._config.entity, this._metadata);
+      getStatisticLabel(
+        this.hass.states,
+        this.hass.formatEntityName,
+        this._config.entity,
+        this._metadata
+      );
 
     const interactive = !isExternalStatistic(this._config.entity);
 
@@ -243,7 +266,11 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           <span class="measurement"
             >${
               this._config.unit ||
-              getDisplayUnit(this.hass, this._config.entity, this._metadata)
+              getDisplayUnit(
+                this.hass.states,
+                this._config.entity,
+                this._metadata
+              )
             }</span
           >
         </div>
@@ -384,7 +411,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     }
     try {
       this._metadata = (
-        await getStatisticMetadata(this.hass, [this._config.entity])
+        await getStatisticMetadata(this.hass.callWS, [this._config.entity])
       )?.[0];
     } catch (e: any) {
       this._error = e.message;

@@ -1,8 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAlertCircleCheck,
-  mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
   mdiCheckboxBlankOutline,
@@ -28,6 +26,8 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
+import "../trigger/ha-automation-trigger-references";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -39,9 +39,9 @@ import { capitalizeFirstLetter } from "../../../../common/string/capitalize-firs
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
-import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
@@ -55,16 +55,20 @@ import {
   ACTION_BUILDING_BLOCKS,
   ACTION_COMBINED_BLOCKS,
   ACTION_ICONS,
+  getAutomationActionType,
   YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
   ActionSidebarConfig,
   AutomationClipboard,
   Condition,
+  TriggerCondition,
 } from "../../../../data/automation";
+import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import {
+  conditionDescriptionsContext,
   fullEntitiesContext,
   manifestsContext,
 } from "../../../../data/context";
@@ -77,7 +81,7 @@ import type {
   RepeatAction,
   ServiceAction,
 } from "../../../../data/script";
-import { getActionType, isAction } from "../../../../data/script";
+import { isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import type { TargetSelector } from "../../../../data/selector";
 import { callExecuteScript } from "../../../../data/service";
@@ -89,7 +93,11 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
+import { getUiSupportWarnings } from "../ui-support";
+import { getDeviceTarget } from "../target/get_device_target";
+import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-action-editor";
 import type HaAutomationActionEditor from "./ha-automation-action-editor";
@@ -107,23 +115,8 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-
-export const getAutomationActionType = memoizeOne(
-  (action: Action | undefined) => {
-    if (!action) {
-      return undefined;
-    }
-    if ("action" in action) {
-      return getActionType(action) as "action";
-    }
-    if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
-      return "condition" as const;
-    }
-    return Object.keys(ACTION_ICONS).find(
-      (option) => option in action
-    ) as keyof typeof ACTION_ICONS;
-  }
-);
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -152,6 +145,14 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
   }
   fireEvent(element, "value-changed", { value: newAction });
 };
+
+const getWaitTemplateCondition = (template: unknown): Condition | undefined =>
+  typeof template === "string" && template.trim()
+    ? {
+        condition: "template",
+        value_template: template,
+      }
+    : undefined;
 
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
@@ -205,6 +206,10 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: DomainManifestLookup;
 
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions?: ConditionDescriptions;
+
   @state() private _running = false;
 
   @state() private _runResult?: {
@@ -220,6 +225,8 @@ export default class HaAutomationActionRow extends LitElement {
   private _automationRowElement?: HaAutomationRow;
 
   private _runResultTimeout?: number;
+
+  private _sidebarAction?: Action;
 
   get selected() {
     return this._selected;
@@ -241,10 +248,32 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     const type = getAutomationActionType(this.action);
+    if (this._warnings && this._yamlMode && type) {
+      this._warnings = getUiSupportWarnings(
+        this.hass.localize,
+        `ha-automation-action-${type}`,
+        this.action
+      );
+    }
     this._uiModeAvailable =
       type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Controller updates (trigger selection, ID migration, or cleanup) bypass the
+    // sidebar's save callback. Refresh its snapshot unless it already has this
+    // action, so ordinary sidebar edits do not reopen it and disrupt focus.
+    if (
+      changedProperties.has("action") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.action !== this._sidebarAction
+    ) {
+      this.openSidebar();
     }
   }
 
@@ -292,18 +321,37 @@ export default class HaAutomationActionRow extends LitElement {
       ? this._extractTargets(this.action as ServiceAction)
       : type === "device_id" && (this.action as DeviceAction).device_id
         ? { device_id: (this.action as DeviceAction).device_id }
+        : type === "condition"
+          ? this._extractConditionTarget(this.action as Condition)
+          : undefined;
+
+    const waitTemplateCondition =
+      type === "wait_template" && "wait_template" in this.action
+        ? this._waitTemplateCondition(this.action.wait_template)
         : undefined;
 
     const serviceTargetSpec =
-      type === "service" && action
-        ? this.hass.services?.[computeDomain(action)]?.[computeObjectId(action)]
+      type === "condition"
+        ? this._conditionDescriptions?.[(this.action as Condition).condition]
             ?.target
-        : undefined;
+        : type === "service" && action
+          ? this.hass.services?.[computeDomain(action)]?.[
+              computeObjectId(action)
+            ]?.target
+          : undefined;
 
     const noteTooltipText = truncateWithEllipsis(
       this.action.note?.trim() || "",
       250
     );
+
+    const liveTestCondition = !this.optionsInSidebar
+      ? undefined
+      : waitTemplateCondition ||
+        (type === "condition" &&
+        (this.action as Condition).condition !== "trigger"
+          ? (this.action as Condition)
+          : undefined);
 
     return html`
       ${
@@ -312,22 +360,19 @@ export default class HaAutomationActionRow extends LitElement {
               <ha-service-icon
                 slot="leading-icon"
                 class="action-icon"
-                .hass=${this.hass}
                 .service=${this.action.action}
               ></ha-service-icon>
             `
-          : type === "condition" &&
-              this.optionsInSidebar &&
-              (this.action as Condition).condition !== "trigger"
+          : liveTestCondition
             ? html`<ha-automation-condition-live-test
                 id="condition-icon"
                 slot="leading-icon"
                 .hass=${this.hass}
-                .condition=${this.action as Condition}
+                .condition=${liveTestCondition}
               >
                 <ha-svg-icon
                   class="action-icon"
-                  .path=${ACTION_ICONS[type]}
+                  .path=${ACTION_ICONS[type!]}
                 ></ha-svg-icon>
               </ha-automation-condition-live-test>`
             : html`
@@ -345,7 +390,7 @@ export default class HaAutomationActionRow extends LitElement {
             this._entityReg,
             this.action,
             undefined,
-            false,
+            undefined,
             this._manifests
           )
         )}
@@ -357,6 +402,21 @@ export default class HaAutomationActionRow extends LitElement {
                 serviceTargetSpec,
                 type !== "device_id"
               )
+            : nothing
+        }
+        ${
+          type === "wait_template" || type === "wait_for_trigger"
+            ? html`<ha-automation-row-options
+                .config=${this.action}
+              ></ha-automation-row-options>`
+            : nothing
+        }
+        ${
+          this._isTriggerConditionAction(type)
+            ? html` <ha-automation-trigger-references
+                .condition=${this.action as TriggerCondition}
+                .hass=${this.hass}
+              ></ha-automation-trigger-references>`
             : nothing
         }
         ${
@@ -392,6 +452,18 @@ export default class HaAutomationActionRow extends LitElement {
             : nothing
         }
       </h3>
+      <ha-automation-row-event-chip
+        .show=${this.action.enabled === false && !this._running}
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
+      </ha-automation-row-event-chip>
+
       <ha-automation-row-event-chip
         .show=${this._running}
         .variant=${this._runResult?.variant}
@@ -463,17 +535,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.copy"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>C</span>
             </span>`
@@ -487,17 +549,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.triggers.cut"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span>X</span>
             </span>`
@@ -517,17 +569,7 @@ export default class HaAutomationActionRow extends LitElement {
                       "ui.panel.config.automation.editor.actions.paste"
                     ),
                     html`<span class="shortcut">
-                      <span
-                        >${
-                          isMac
-                            ? html`<ha-svg-icon
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )
-                        }</span
-                      >
+                      <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                       <span>+</span>
                       <span>V</span>
                     </span>`
@@ -632,17 +674,7 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.actions.delete"
             ),
             html`<span class="shortcut">
-              <span
-                >${
-                  isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )
-                }</span
-              >
+              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
               <span>+</span>
               <span
                 >${this.hass.localize(
@@ -679,6 +711,14 @@ export default class HaAutomationActionRow extends LitElement {
     `;
   }
 
+  private _isTriggerConditionAction(
+    type: ReturnType<typeof getAutomationActionType>
+  ) {
+    return (
+      type === "condition" && (this.action as Condition).condition === "trigger"
+    );
+  }
+
   protected render() {
     if (!this.action) return nothing;
 
@@ -691,17 +731,6 @@ export default class HaAutomationActionRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        ${
-          this.action.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row
@@ -777,6 +806,28 @@ export default class HaAutomationActionRow extends LitElement {
     return {};
   }
 
+  private _extractConditionTarget(
+    condition: Condition
+  ): HassServiceTarget | undefined {
+    if (typeof condition !== "object") {
+      return undefined;
+    }
+    if ("target" in condition && condition.target) {
+      return condition.target;
+    }
+    if (
+      (condition.condition === "state" ||
+        condition.condition === "numeric_state") &&
+      "entity_id" in condition
+    ) {
+      return getEntityTarget(condition.entity_id);
+    }
+    if (condition.condition === "device" && "device_id" in condition) {
+      return getDeviceTarget(condition.device_id as string);
+    }
+    return undefined;
+  }
+
   private _renderTargets = memoizeOne(
     (
       target?: HassServiceTarget,
@@ -810,6 +861,8 @@ export default class HaAutomationActionRow extends LitElement {
     }
     copyToClipboard(dump(action));
   }
+
+  private _waitTemplateCondition = memoizeOne(getWaitTemplateCondition);
 
   private _onDisable = () => {
     const enabled = !(this.action.enabled ?? true);
@@ -862,8 +915,10 @@ export default class HaAutomationActionRow extends LitElement {
     this._running = false;
     this._runResult = undefined;
 
+    const { enabled: _enabled, ...action } = this.action;
+
     const validated = await validateConfig(this.hass, {
-      actions: this.action,
+      actions: action,
     });
 
     if (!validated.actions.valid) {
@@ -887,7 +942,7 @@ export default class HaAutomationActionRow extends LitElement {
       }, 500);
 
       try {
-        await callExecuteScript(this.hass, this.action);
+        await callExecuteScript(this.hass, action);
         clearTimeout(runTimeout);
       } catch (err: any) {
         clearTimeout(runTimeout);
@@ -976,7 +1031,7 @@ export default class HaAutomationActionRow extends LitElement {
           this._entityReg,
           this.action,
           undefined,
-          true,
+          { ignoreAlias: true },
           this._manifests
         )
       ),
@@ -1069,7 +1124,13 @@ export default class HaAutomationActionRow extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.actions.cut_to_clipboard"
       ),
-      duration: 2000,
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
     });
   };
 
@@ -1105,7 +1166,7 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
@@ -1133,10 +1194,12 @@ export default class HaAutomationActionRow extends LitElement {
 
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
+    this._sidebarAction = sidebarAction;
     const actionType = getAutomationActionType(sidebarAction);
 
     fireEvent(this, "open-sidebar", {
       save: (value) => {
+        this._sidebarAction = value;
         fireEvent(this, "value-changed", { value });
       },
       close: (focus?: boolean) => {
@@ -1151,8 +1214,10 @@ export default class HaAutomationActionRow extends LitElement {
         this._renameAction();
       },
       editNote: this._editNoteAction,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,
@@ -1176,10 +1241,7 @@ export default class HaAutomationActionRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }

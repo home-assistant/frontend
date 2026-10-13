@@ -1,11 +1,11 @@
 import { enums, object, optional, union } from "superstruct";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { Condition } from "../common/validate-condition";
+import type { VisibilityCondition } from "../common/validate-condition";
 import type { LovelaceElementConfig } from "../elements/types";
 
 export interface ConditionalBaseConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig | LovelaceElementConfig;
-  conditions: Condition[];
+  conditions: VisibilityCondition[];
 }
 
 export const TIMESTAMP_RENDERING_FORMATS = [

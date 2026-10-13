@@ -124,7 +124,7 @@ class HaBackupConfigData extends LitElement {
 
   private async _fetchStorageInfo() {
     try {
-      this._storageInfo = await fetchHostDisksUsage(this.hass);
+      this._storageInfo = await fetchHostDisksUsage(this.hass, "default", 3);
     } catch (_err: any) {
       this._storageInfo = null;
     }

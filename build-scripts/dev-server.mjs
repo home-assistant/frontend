@@ -18,7 +18,7 @@
 //   health   demo, gallery, e2e-app: a fixed port plus the /__ha_dev_status
 //            endpoint each dev server exposes (see runDevServer in
 //            build-scripts/gulp/rspack.js).
-//   process  app (yarn dev) and app-serve (yarn dev:serve): plain yarn dev has
+//   process  app (pnpm dev) and app-serve (pnpm dev:serve): plain pnpm dev has
 //            no port, so these treat the first "Build done" log line as ready.
 
 import fs from "node:fs";
@@ -61,7 +61,7 @@ const developAndServeScript = path.join(
 );
 const logDir = path.join(buildCacheDir, "ha-dev-server");
 
-// Each suite names its yarn alias (for hints), a liveness model, and how to
+// Each suite names its pnpm alias (for hints), a liveness model, and how to
 // spawn it. health suites carry a fixed port; process suites carry the log line
 // that means "ready" and, for app-serve, forward extra args to the script.
 const SUITES = new Map([
@@ -236,7 +236,7 @@ const readSuite = (suite) => {
 };
 
 const hints = (suite) => {
-  const alias = `yarn ${SUITES.get(suite).alias}`;
+  const alias = `pnpm ${SUITES.get(suite).alias}`;
   return (
     `  Stop:   ${alias} --stop\n` +
     `  Status: ${alias} --status\n` +
@@ -255,7 +255,7 @@ const reportProcessConflict = (suite, existing) => {
   if (existing?.kind === "build") {
     process.stdout.write(
       `Frontend build already running${existing.pid ? ` (pid ${existing.pid})` : ""}. ` +
-        "Stop it with yarn build --stop.\n"
+        "Stop it with pnpm build --stop.\n"
     );
     return;
   }
@@ -269,9 +269,9 @@ const reportProcessConflict = (suite, existing) => {
 
 const stopCommandFor = (owner) =>
   owner?.kind === "build"
-    ? "yarn build --stop"
+    ? "pnpm build --stop"
     : owner?.kind === "dev"
-      ? `yarn ${SUITES.get(owner.suite)?.alias ?? "dev"} --stop`
+      ? `pnpm ${SUITES.get(owner.suite)?.alias ?? "dev"} --stop`
       : undefined;
 
 const acquireSuiteForStart = async (suite) => {

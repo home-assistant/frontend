@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
@@ -12,6 +13,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/radio/ha-radio-group";
 import "../../../../components/input/ha-input";
+import { domainToName } from "../../../../data/integration";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -156,7 +158,8 @@ export class DialogEnergySolarSettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
@@ -234,7 +237,7 @@ export class DialogEnergySolarSettings
                             },
                             this.hass.auth.data.hassUrl
                           )}
-                        />${entry.title}
+                        />${entry.title || domainToName(this.hass.localize, entry.domain)}
                       </div>
                     </ha-checkbox>`
                 )}
@@ -290,7 +293,7 @@ export class DialogEnergySolarSettings
             );
   }
 
-  private _handleForecastChanged(ev: Event) {
+  private _handleForecastChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
     this._forecast = (ev.currentTarget as HaRadioGroup).value === "true";
     this._updateFormDirtyState();
   }
@@ -339,7 +342,7 @@ export class DialogEnergySolarSettings
       this._params?.statsMetadata &&
       !(ev.detail.value in this._params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass, [
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {

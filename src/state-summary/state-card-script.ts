@@ -2,7 +2,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import "../components/ha-button";
 import { UNAVAILABLE } from "../data/entity/entity";

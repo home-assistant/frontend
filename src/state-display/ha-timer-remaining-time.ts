@@ -1,70 +1,47 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeDisplayTimer, timerTimeRemaining } from "../data/timer";
-import type { HomeAssistant } from "../types";
+import { TimerRemainingTimeController } from "../common/controllers/timer-remaining-time-controller";
+import { consume } from "../common/decorators/consume";
+import { formattersContext } from "../data/context";
+import { computeDisplayTimer } from "../data/timer";
 
 @customElement("ha-timer-remaining-time")
 class HaTimerRemainingTime extends ReactiveElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @state() private timeRemaining?: number;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
 
-  private _updateRemaining: any;
+  private _remainingTime = new TimerRemainingTimeController(this);
 
   protected createRenderRoot() {
     return this;
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("stateObj")) {
+      this._remainingTime.setStateObj(this.stateObj);
+    }
+  }
+
   protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
+
+    if (!this._formatters) {
+      return;
+    }
+
     this.innerHTML =
-      computeDisplayTimer(this.hass, this.stateObj, this.timeRemaining) ?? "-";
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.stateObj) {
-      this._startInterval(this.stateObj);
-    }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this._clearInterval();
-  }
-
-  protected willUpdate(changedProp: PropertyValues<this>): void {
-    super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._startInterval(this.stateObj);
-    }
-  }
-
-  private _clearInterval() {
-    if (this._updateRemaining) {
-      clearInterval(this._updateRemaining);
-      this._updateRemaining = null;
-    }
-  }
-
-  private _startInterval(stateObj: HassEntity) {
-    this._clearInterval();
-    this._calculateRemaining(stateObj);
-
-    if (stateObj.state === "active") {
-      this._updateRemaining = setInterval(
-        () => this._calculateRemaining(this.stateObj),
-        1000
-      );
-    }
-  }
-
-  private _calculateRemaining(stateObj: HassEntity) {
-    this.timeRemaining = timerTimeRemaining(stateObj);
+      computeDisplayTimer(
+        this._formatters.formatEntityState,
+        this.stateObj,
+        this._remainingTime.timeRemaining
+      ) ?? "-";
   }
 }
 

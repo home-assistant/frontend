@@ -142,7 +142,7 @@ export interface DeviceAction extends BaseAction {
   type: string;
   device_id: string;
   domain: string;
-  entity_id: string;
+  entity_id?: string;
 }
 
 export interface DelayActionParts extends BaseAction {
@@ -229,7 +229,7 @@ export interface StopAction extends BaseAction {
 }
 
 export interface SequenceAction extends BaseAction {
-  sequence: (ManualScriptConfig | Action)[];
+  sequence: (ManualScriptConfig | Action)[] | null;
   metadata?: {};
 }
 
@@ -507,7 +507,7 @@ export const migrateAutomationAction = (
 
   if (typeof action === "object" && action !== null && "sequence" in action) {
     delete (action as SequenceAction).metadata;
-    for (const sequenceAction of (action as SequenceAction).sequence) {
+    for (const sequenceAction of (action as SequenceAction).sequence ?? []) {
       migrateAutomationAction(sequenceAction, report);
     }
   }

@@ -44,8 +44,10 @@ export class HaIconButtonToggle extends HaIconButton {
         color: var(--primary-background-color);
         background-color: unset;
       }
+      /* ha-icon-button-group zeroes this so its sliding thumb draws the
+         circle instead. */
       :host([selected]:not([disabled])) ha-button::part(base)::before {
-        opacity: 1;
+        opacity: var(--ha-icon-button-toggle-thumb-opacity, 1);
       }
       ::slotted(*) {
         display: block;

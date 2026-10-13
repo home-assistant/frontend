@@ -6,20 +6,15 @@ build/
 dist/
 /hass_frontend/
 /translations/
+/.compress-cache/
+/.rspack-cache/
 # Composite action source, not build output
 !/.github/actions/build/
 
-# yarn
-.yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
+# Node
 node_modules/
-yarn-error.log
 npm-debug.log
+.pnpm-store/
 
 # Python stuff
 *.py[cod]
@@ -72,3 +67,4 @@ test/e2e/app/dist/
 .serena
 
 test/benchmarks/results/
+

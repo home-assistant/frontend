@@ -1,12 +1,16 @@
 import type { EntityDomainFilter } from "../common/entity/entity_domain_filter";
 import type { HomeAssistant } from "../types";
 
-type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
+export interface CloudAutoLogin {
+  email: string;
+  failed: string | null;
+}
 
 interface CloudStatusNotLoggedIn {
   logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
   http_use_ssl: boolean;
+  auto_login: CloudAutoLogin | null;
 }
 
 export interface CertificateInformation {
@@ -21,10 +25,11 @@ export interface CloudPreferences {
   alexa_enabled: boolean;
   remote_enabled: boolean;
   remote_allow_remote_enable: boolean;
-  strict_connection: StrictConnectionMode;
-  google_secure_devices_pin: string | undefined;
+  google_secure_devices_pin: string | null;
   cloudhooks: Record<string, CloudWebhook>;
+  alexa_default_expose: string[] | null;
   alexa_report_state: boolean;
+  google_default_expose: string[] | null;
   google_report_state: boolean;
   tts_default_voice: [string, string];
   cloud_ice_servers_enabled: boolean;
@@ -37,18 +42,19 @@ export type RemoteCertificateStatus =
 
 export interface CloudStatusLoggedIn {
   logged_in: true;
+  auto_login: null;
   cloud: "disconnected" | "connecting" | "connected";
   cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
+  google_local_connected: boolean;
   google_entities: EntityDomainFilter;
-  google_domains: string[];
   alexa_registered: boolean;
   alexa_entities: EntityDomainFilter;
   prefs: CloudPreferences;
-  remote_domain: string | undefined;
+  remote_domain: string | null;
   remote_connected: boolean;
-  remote_certificate: undefined | CertificateInformation;
+  remote_certificate: CertificateInformation | null;
   remote_certificate_status: RemoteCertificateStatus | null;
   http_use_ssl: boolean;
   active_subscription: boolean;
@@ -57,6 +63,11 @@ export interface CloudStatusLoggedIn {
 }
 
 export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
+
+export const cloudStatusAutoLogin = (
+  status: CloudStatus | undefined
+): CloudAutoLogin | null =>
+  !status || status.logged_in ? null : (status.auto_login ?? null);
 
 // Onboarding items the backend tracks. Mirrors ONBOARDING_ITEMS in the cloud
 // integration; onboarding is complete once every item has been onboarded.
@@ -102,15 +113,15 @@ export interface CloudLoginMFA extends CloudLoginBase {
   code: string;
 }
 
+export type CloudEvent =
+  | { type: "login" | "logout" | "auto_login_cancelled" }
+  | { type: "auto_login_failed"; translation_key: string | null };
+
 export const cloudLogin = ({
   hass,
   ...rest
 }: CloudLoginPassword | CloudLoginMFA) =>
-  hass.callApi<{ success: boolean; cloud_pipeline?: string }>(
-    "POST",
-    "cloud/login",
-    rest
-  );
+  hass.callApi<{ success: boolean }>("POST", "cloud/login", rest);
 
 export const cloudLogout = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/logout");
@@ -120,19 +131,31 @@ export const cloudForgotPassword = (hass: HomeAssistant, email: string) =>
     email,
   });
 
-export const cloudRegister = (
+export const cloudRegisterAutoLogin = (
   hass: HomeAssistant,
   email: string,
   password: string
 ) =>
-  hass.callApi("POST", "cloud/register", {
+  hass.callApi("POST", "cloud/register_auto_login", {
     email,
     password,
   });
 
-export const cloudResendVerification = (hass: HomeAssistant, email: string) =>
-  hass.callApi("POST", "cloud/resend_confirm", {
-    email,
+export const attemptCloudAutoLoginNow = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/attempt_auto_login_now" });
+
+export const resendCloudAutoLoginConfirm = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/resend_auto_login_confirm" });
+
+export const cancelCloudAutoLogin = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/cancel_auto_login" });
+
+export const subscribeCloudEvents = (
+  hass: HomeAssistant,
+  callback: (event: CloudEvent) => void
+) =>
+  hass.connection.subscribeMessage<CloudEvent>(callback, {
+    type: "cloud/subscribe_events",
   });
 
 export const fetchCloudStatus = (hass: HomeAssistant) =>
@@ -173,7 +196,6 @@ export const updateCloudPref = (
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
     remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
-    strict_connection?: CloudPreferences["strict_connection"];
     cloud_ice_servers_enabled?: CloudPreferences["cloud_ice_servers_enabled"];
   }
 ) =>

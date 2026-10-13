@@ -145,6 +145,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .no-background {
       background: none;
+      backdrop-filter: none;
       box-shadow: none;
       border: none;
     }

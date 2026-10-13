@@ -1,10 +1,13 @@
 import memoizeOne from "memoize-one";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
+import { consume } from "../common/decorators/consume";
+import type { EntityNameType } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import {
   STRINGS_SEPARATOR_DOT,
@@ -12,13 +15,20 @@ import {
 } from "../common/const";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import {
+  formattersContext,
+  internationalizationContext,
+} from "../data/context";
+import {
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
   SENSOR_DEVICE_CLASS_UPTIME,
 } from "../data/sensor";
 import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
-import type { HomeAssistant } from "../types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
@@ -56,11 +66,18 @@ export const DEFAULT_STATE_CONTENT_DOMAINS: Record<string, StateContent> = {
   valve: ["state", "current_position"],
 };
 
+const NAME_CONTENT_TYPES = new Map<string, EntityNameType>([
+  ["device_name", "device"],
+  ["parent_device_name", "parent_device"],
+  ["area_name", "area"],
+  ["floor_name", "floor"],
+]);
+
 const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
 
 const TIMESTAMP_CONTENTS = [...TIMESTAMP_STATE_PROPS, "last_triggered"];
 
-const TIMESTAMP_DOMAIN_CONTENTS = {
+const TIMESTAMP_DOMAIN_CONTENTS: Record<string, string[] | undefined> = {
   calendar: ["start_time", "end_time"],
   input_datetime: ["timestamp"],
   sun: [
@@ -98,17 +115,16 @@ export const stateContentHasTimestamp = (
       }
     }
   }
+  const domainContents = TIMESTAMP_DOMAIN_CONTENTS[domain];
   return (
-    TIMESTAMP_DOMAIN_CONTENTS[domain] &&
-    content &&
-    contentArray.some((c) => TIMESTAMP_DOMAIN_CONTENTS[domain].includes(c))
+    !!content &&
+    !!domainContents &&
+    contentArray.some((c) => domainContents.includes(c))
   );
 };
 
 @customElement("state-display")
 class StateDisplay extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: false }) public content?: StateContent;
@@ -122,6 +138,14 @@ class StateDisplay extends LitElement {
 
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   protected createRenderRoot() {
     return this;
@@ -148,7 +172,9 @@ class StateDisplay extends LitElement {
   }
 
   private _computeContent(
-    content: string
+    content: string,
+    formatters: HomeAssistantFormatters,
+    i18n: HomeAssistantInternationalization
   ): TemplateResult<1> | string | undefined {
     const stateObj = this.stateObj;
     const domain = computeStateDomain(stateObj);
@@ -168,7 +194,6 @@ class StateDisplay extends LitElement {
       ) {
         return html`
           <hui-timestamp-display
-            .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
             .format=${
               this.timeFormat ||
@@ -182,7 +207,7 @@ class StateDisplay extends LitElement {
         `;
       }
 
-      return this.hass!.formatEntityState(stateObj);
+      return formatters.formatEntityState(stateObj);
     }
     if (content === "name" && this.name) {
       return html`${this.name}`;
@@ -190,13 +215,11 @@ class StateDisplay extends LitElement {
     if (content === "entity-id") {
       return stateObj.entity_id;
     }
-    if (
-      content === "device_name" ||
-      content === "area_name" ||
-      content === "floor_name"
-    ) {
-      const type = content.replace("_name", "") as "device" | "area" | "floor";
-      return this.hass.formatEntityName(stateObj, { type }) || undefined;
+    const nameType = NAME_CONTENT_TYPES.get(content);
+    if (nameType) {
+      return (
+        formatters.formatEntityName(stateObj, { type: nameType }) || undefined
+      );
     }
 
     let relativeDateTime: string | number | undefined;
@@ -214,7 +237,6 @@ class StateDisplay extends LitElement {
 
     if (relativeDateTime || relativeDateTime === 0) {
       return html`<hui-timestamp-display
-        .hass=${this.hass}
         .ts=${new Date(relativeDateTime)}
         .format=${this.timeFormat}
         capitalize
@@ -228,14 +250,17 @@ class StateDisplay extends LitElement {
     if (specialContent.includes(content)) {
       if (content === "install_status") {
         return html`
-          ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
+          ${computeUpdateStateDisplay(stateObj as UpdateEntity, {
+            localize: i18n.localize,
+            locale: i18n.locale,
+            formatEntityState: formatters.formatEntityState,
+          })}
         `;
       }
       if (content === "remaining_time") {
         import("./ha-timer-remaining-time");
         return html`
           <ha-timer-remaining-time
-            .hass=${this.hass}
             .stateObj=${stateObj}
           ></ha-timer-remaining-time>
         `;
@@ -250,19 +275,27 @@ class StateDisplay extends LitElement {
     ) {
       return undefined;
     }
-    return this.hass!.formatEntityAttributeValue(stateObj, content);
+
+    return formatters.formatEntityAttributeValue(stateObj, content);
   }
 
   protected render() {
+    const formatters = this._formatters;
+    const i18n = this._i18n;
+
+    if (!formatters || !i18n) {
+      return nothing;
+    }
+
     const stateObj = this.stateObj;
     const contents = ensureArray(this._content);
 
     const values = contents
-      .map((content) => this._computeContent(content))
+      .map((content) => this._computeContent(content, formatters, i18n))
       .filter(Boolean);
 
     if (!values.length) {
-      return html`${this.hass!.formatEntityState(stateObj)}`;
+      return html`${formatters.formatEntityState(stateObj)}`;
     }
 
     return join(values, STRINGS_SEPARATOR_DOT);

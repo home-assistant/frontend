@@ -251,7 +251,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           this._config!.show_name
             ? html`
                 <div class="name">
-                  ${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
+                  ${createEntityNotFoundWarning(this.hass!.localize, this.hass!.config)}
                 </div>
               `
             : ""
@@ -259,10 +259,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         ${
           this._config!.show_icon
             ? html` <hui-warning-element
-                .label=${createEntityNotFoundWarning(
-                  this.hass!,
-                  entityConf.entity
-                )}
+                .label=${createEntityNotFoundWarning(this.hass!.localize, this.hass!.config)}
               ></hui-warning-element>`
             : ""
         }
@@ -319,7 +316,6 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                     stateObj.state !== UNKNOWN
                       ? html`
                           <hui-timestamp-display
-                            .hass=${this.hass}
                             .ts=${new Date(stateObj.state)}
                             .format=${
                               entityConf.time_format ??

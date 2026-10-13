@@ -1,9 +1,10 @@
 import "@formatjs/intl-durationformat/polyfill-force";
-import { expect, describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   formatDuration,
-  formatDurationLong,
   formatDurationDigital,
+  formatDurationLong,
+  formatDurationNarrow,
   formatNumericDuration,
 } from "../../../src/common/datetime/format_duration";
 import type { FrontendLocaleData } from "../../../src/data/translation";
@@ -60,6 +61,20 @@ describe("formatDurationLong", () => {
     expect(formatDurationLong(LOCALE, duration)).toBe(
       "1 day, 2 hours, 3 minutes, 4 seconds"
     );
+  });
+});
+
+describe("formatDurationNarrow", () => {
+  it("formats narrow duration", () => {
+    const duration = { days: 1, hours: 2, minutes: 3, seconds: 4 };
+    expect(formatDurationNarrow(LOCALE, duration)).toBe("1d 2h 3m 4s");
+  });
+
+  it("only formats units that are present", () => {
+    expect(formatDurationNarrow(LOCALE, { hours: 1, minutes: 30 })).toBe(
+      "1h 30m"
+    );
+    expect(formatDurationNarrow(LOCALE, { seconds: 45 })).toBe("45s");
   });
 });
 

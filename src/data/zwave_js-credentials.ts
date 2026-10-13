@@ -113,7 +113,7 @@ export interface ZwaveUsersResponse {
 
 export interface SetZwaveUserParams {
   user_id?: number;
-  user_name?: string | null;
+  user_name?: string;
   user_type?: string;
   credential_rule?: string;
   active?: boolean;

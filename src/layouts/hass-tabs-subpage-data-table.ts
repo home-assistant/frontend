@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { ContextType } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -17,6 +18,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { canShowPage } from "../common/config/can_show_page";
+import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
@@ -28,16 +30,22 @@ import type {
   SortingDirection,
 } from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import "../components/ha-adaptive-dialog";
 import "../components/ha-button";
-import "../components/ha-dialog";
 import "../components/ha-dialog-footer";
 import "../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
+import "../components/ha-filter-pane-chip";
 import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
 import "../components/input/ha-input-search";
 import type { HaInputSearch } from "../components/input/ha-input-search";
+import {
+  configContext,
+  entitiesContext,
+  internationalizationContext,
+} from "../data/context";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
@@ -45,9 +53,22 @@ import type { PageNavigation } from "./hass-tabs-subpage";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Unread, kept for callers that still pass it until they move to contexts
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
@@ -153,6 +174,18 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Boolean }) public empty = false;
 
+  /**
+   * Show a loading state instead of the empty message until data is ready.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public loading = false;
+
+  /**
+   * Error to show below the column headings, with a retry action, when loading the table's data failed.
+   * Pass `true` to show the default message.
+   */
+  @property({ attribute: false }) public loadError?: boolean | string;
+
   @property({ attribute: false }) public route!: Route;
 
   /**
@@ -210,15 +243,16 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>) {
+  protected willUpdate(changedProperties: PropertyValues) {
     if (
       changedProperties.has("tabs") ||
-      (changedProperties.has("hass") &&
-        this.hass?.config.components !==
-          changedProperties.get("hass")?.config.components)
+      changedProperties.has("_hassConfig") ||
+      changedProperties.has("_entities")
     ) {
       this.showTabs =
-        this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;
+        this.tabs.filter((page) =>
+          canShowPage({ ...this._hassConfig, entities: this._entities }, page)
+        ).length > 1;
     }
 
     if (this.hasUpdated) {
@@ -234,23 +268,16 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    const localize = this.localizeFunc || this.hass.localize;
+    const localize = this.localizeFunc || this._i18n.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
-      ? html`<div class="relative">
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.filters")}
-            .active=${this.filters}
-            @click=${this._toggleFilters}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiFilterVariant}></ha-svg-icon>
-          </ha-assist-chip>
-          ${
-            this.filters
-              ? html`<div class="badge">${this.filters}</div>`
-              : nothing
-          }
-        </div>`
+      ? html`<ha-filter-pane-chip
+          .label=${localize("ui.components.subpage-data-table.filters")}
+          .path=${mdiFilterVariant}
+          .count=${this.filters}
+          .active=${!!this.filters}
+          @click=${this._toggleFilters}
+        ></ha-filter-pane-chip>`
       : nothing;
 
     const selectModeBtn =
@@ -395,7 +422,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage
-        .hass=${this.hass}
         .localizeFunc=${this.localizeFunc}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
@@ -471,18 +497,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               ? nothing
               : html`<div class="pane" slot="pane">
                   <div class="table-header">
-                    <ha-assist-chip
+                    <ha-filter-pane-chip
                       .label=${localize(
                         "ui.components.subpage-data-table.filters"
                       )}
+                      .path=${mdiFilterVariant}
                       active
                       @click=${this._toggleFilters}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiFilterVariant}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>
+                    ></ha-filter-pane-chip>
                     ${
                       this.filters
                         ? html`<ha-icon-button
@@ -502,7 +524,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             : nothing
         }
         ${
-          this.empty
+          this.empty && !this.loading
             ? html`<div class="center">
                 <slot name="empty">${this.noDataText}</slot>
               </div>`
@@ -524,7 +546,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .narrow=${this.narrow}
                   .columns=${this.columns}
                   .data=${this.data}
+                  .loading=${this.loading}
                   .noDataText=${this.noDataText}
+                  .loadError=${this.loadError}
                   .filter=${this.filter}
                   .selectable=${this._selectMode}
                   .id=${this.id}
@@ -576,16 +600,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       </hass-tabs-subpage>
       ${
         this.showFilters && !showPane
-          ? html`<ha-dialog
-              .open=${true}
+          ? html`<ha-adaptive-dialog
+              open
+              flexcontent
               width="full"
               header-title=${localize("ui.components.subpage-data-table.filters")}
               @closed=${this._closeFilters}
             >
               <ha-icon-button
                 slot="headerNavigationIcon"
+                data-dialog="close"
                 .path=${mdiClose}
-                @click=${this._closeFilters}
                 .label=${localize(
                   "ui.components.subpage-data-table.close_filter"
                 )}
@@ -606,13 +631,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 <slot name="filter-pane"></slot>
               </div>
               <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this._closeFilters}>
+                <ha-button slot="primaryAction" data-dialog="close">
                   ${localize("ui.components.subpage-data-table.show_results", {
                     number: this.data.length,
                   })}
                 </ha-button>
               </ha-dialog-footer>
-            </ha-dialog>`
+            </ha-adaptive-dialog>`
           : nothing
       }
     `;
@@ -762,6 +787,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 100%;
       --data-table-border-width: 0;
       --data-table-empty-row-height: var(--safe-area-inset-bottom, 0px);
+      /* Same insets as the content padding of hass-tabs-subpage */
+      --data-table-inset-right: var(--safe-area-inset-right, 0px);
+    }
+    :host([narrow]) ha-data-table {
+      --data-table-inset-left: var(--safe-area-inset-left, 0px);
     }
     :host(:not([narrow])) ha-data-table,
     .pane {
@@ -817,11 +847,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 56px;
       width: 100%;
       justify-content: space-between;
-      padding: 0 16px;
+      padding-left: calc(16px + var(--data-table-inset-left, 0px));
+      padding-right: calc(16px + var(--data-table-inset-right, 0px));
       gap: var(--ha-space-4);
       box-sizing: border-box;
       background: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
+      overflow-x: auto;
+      scrollbar-width: none;
     }
     ha-input-search {
       flex: 1;
@@ -885,39 +918,21 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       padding: 16px;
     }
 
-    .badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      inset-inline-end: -4px;
-      inset-inline-start: initial;
-      min-width: 16px;
-      box-sizing: border-box;
-      border-radius: var(--ha-border-radius-circle);
-      font-size: var(--ha-font-size-xs);
-      font-weight: var(--ha-font-weight-normal);
-      background-color: var(--primary-color);
-      line-height: var(--ha-line-height-normal);
-      text-align: center;
-      padding: 0px 2px;
-      color: var(--text-primary-color);
-    }
-
     .narrow-header-row {
       display: flex;
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0 16px;
+      padding-left: calc(16px + var(--data-table-inset-left, 0px));
+      padding-right: calc(16px + var(--data-table-inset-right, 0px));
       box-sizing: border-box;
       overflow-x: scroll;
-      -ms-overflow-style: none;
       scrollbar-width: none;
     }
 
     .narrow-header-row .flex {
       flex: 1;
-      margin-left: -16px;
+      margin-inline-start: -16px;
     }
 
     .selection-bar {
@@ -951,38 +966,34 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       gap: var(--ha-space-2);
     }
 
-    .relative {
-      position: relative;
-    }
-
-    ha-assist-chip {
+    ha-assist-chip,
+    ha-filter-pane-chip {
       --ha-assist-chip-container-shape: 10px;
       --ha-assist-chip-container-color: var(--card-background-color);
     }
 
     .select-mode-chip {
-      --md-assist-chip-icon-label-space: 0;
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-icon-label-space: 0;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
-    ha-dialog {
+    ha-adaptive-dialog {
       --dialog-content-padding: 0;
+      /* Fixed height so the sheet does not resize while filtering. */
+      --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+      --ha-dialog-min-height: calc(var(--safe-height) - var(--ha-space-20));
     }
 
     .filter-dialog-content {
-      height: calc(
-        100vh -
-          70px - var(--header-height, 0px) - var(
-            --safe-area-inset-top,
-            0px
-          ) - var(--safe-area-inset-bottom, 0px)
-      );
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
 
     ha-dropdown ha-assist-chip {
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     ha-dropdown-item.selected {

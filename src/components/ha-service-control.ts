@@ -35,6 +35,7 @@ import {
 } from "../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
+import { getSelectorFallbackValue } from "./ha-form/get-selector-fallback-value";
 import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-icon-button";
@@ -77,6 +78,10 @@ const isFullWidthSelector = (selector?: Selector): boolean =>
   Object.keys(selector).some((selectorType) =>
     FULL_WIDTH_SELECTOR_TYPES.has(selectorType)
   );
+
+// A switch fits next to its label, even when the editor is narrow.
+const isBooleanSelector = (selector?: Selector): boolean =>
+  !!selector && "boolean" in selector;
 
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
@@ -610,7 +615,6 @@ export class HaServiceControl extends LitElement {
                 >
                   <ha-service-section-icon
                     slot="icons"
-                    .hass=${this.hass}
                     .service=${this._value!.action}
                     .section=${dataField.key}
                   ></ha-service-section-icon>
@@ -692,7 +696,10 @@ export class HaServiceControl extends LitElement {
 
     return dataField.selector
       ? html`<ha-settings-row
-          .narrow=${this.narrow || isFullWidthSelector(selector)}
+          .narrow=${
+            (this.narrow && !isBooleanSelector(selector)) ||
+            isFullWidthSelector(selector)
+          }
         >
           ${
             !showOptional
@@ -799,20 +806,8 @@ export class HaServiceControl extends LitElement {
 
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
@@ -1039,7 +1034,6 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
-      --ha-entities-picker-entity-min-width: 0;
       border-top: var(
         --service-control-items-border-top,
         1px solid var(--divider-color)

@@ -2,6 +2,10 @@ import { mdiDeleteOutline, mdiMenuDown, mdiPlus, mdiWifi } from "@mdi/js";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -630,7 +634,9 @@ export class HassioNetwork extends LitElement {
     this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 
-  private _handleRadioValueChanged(ev: Event): void {
+  private _handleRadioValueChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup & { version: "ipv4" | "ipv6" }>
+  ): void {
     const source = ev.currentTarget as HaRadioGroup;
     const value = source.value as "disabled" | "auto" | "static";
     const version = (source as any).version as "ipv4" | "ipv6";
@@ -645,7 +651,9 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _handleRadioValueChangedAp(ev: Event): void {
+  private _handleRadioValueChangedAp(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ): void {
     const source = ev.currentTarget as HaRadioGroup;
     const value = source.value as "open" | "wep" | "wpa-psk";
     this._wifiConfiguration!.auth = value;
@@ -653,7 +661,11 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_wifiConfiguration");
   }
 
-  private _handleInputValueChanged(ev: Event): void {
+  private _handleInputValueChanged(
+    ev: HASSDomTargetEvent<
+      HaInput & { version: "ipv4" | "ipv6"; index: number }
+    >
+  ): void {
     const source = ev.target as HaInput;
     const value = source.value;
     const version = (ev.target as any).version as "ipv4" | "ipv6";
@@ -691,7 +703,7 @@ export class HassioNetwork extends LitElement {
     }
   }
 
-  private _handleInputValueChangedWifi(ev: Event): void {
+  private _handleInputValueChangedWifi(ev: HASSDomTargetEvent<HaInput>): void {
     const source = ev.target as HaInput;
     const value = source.value;
     const id = source.id;
@@ -708,7 +720,9 @@ export class HassioNetwork extends LitElement {
     this._wifiConfiguration![id] = value;
   }
 
-  private _addAddress(ev: Event): void {
+  private _addAddress(
+    ev: HASSDomTargetEvent<HTMLElement & { version: "ipv4" | "ipv6" }>
+  ): void {
     const version = (ev.target as any).version as "ipv4" | "ipv6";
     this._interface![version]!.address!.push(
       version === "ipv4" ? "0.0.0.0/24" : "::/64"
@@ -717,7 +731,11 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _removeAddress(ev: Event): void {
+  private _removeAddress(
+    ev: HASSDomTargetEvent<
+      HTMLElement & { index: number; version: "ipv4" | "ipv6" }
+    >
+  ): void {
     const source = ev.target as any;
     const index = source.index as number;
     const version = source.version as "ipv4" | "ipv6";
@@ -752,7 +770,11 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _removeNameserver(ev: Event): void {
+  private _removeNameserver(
+    ev: HASSDomTargetEvent<
+      HTMLElement & { index: number; version: "ipv4" | "ipv6" }
+    >
+  ): void {
     const source = ev.target as any;
     const index = source.index as number;
     const version = source.version as "ipv4" | "ipv6";

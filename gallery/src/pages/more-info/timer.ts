@@ -16,6 +16,25 @@ const ENTITIES = [
       duration: "0:05:00",
     },
   },
+  {
+    entity_id: "timer.active_timer",
+    state: "active",
+    attributes: {
+      friendly_name: "Active timer",
+      duration: "0:10:00",
+      remaining: "0:10:00",
+      finishes_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    },
+  },
+  {
+    entity_id: "timer.paused_timer",
+    state: "paused",
+    attributes: {
+      friendly_name: "Paused timer",
+      duration: "0:10:00",
+      remaining: "0:03:21",
+    },
+  },
 ];
 
 @customElement("demo-more-info-timer")

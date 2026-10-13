@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -18,10 +19,15 @@ import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
+import { timerJustFinished } from "../../../data/timer";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
+import {
+  computeCardFeatureLayout,
+  computeCardFeatureRows,
+} from "../card-features/common/feature-layout";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
@@ -87,6 +93,31 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
 
+  @state() private _timerFinished = false;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      !changedProps.has("hass") ||
+      !this._config?.entity ||
+      computeDomain(this._config.entity) !== "timer"
+    ) {
+      return;
+    }
+    const stateObj = this.hass?.states[this._config.entity];
+    const oldStateObj = (changedProps.get("hass") as HomeAssistant | undefined)
+      ?.states[this._config.entity];
+    if (stateObj && timerJustFinished(oldStateObj, stateObj)) {
+      this._timerFinished = true;
+    }
+  }
+
+  private _timerFinishedAnimationEnded(ev: AnimationEvent): void {
+    if (ev.animationName === "timer-finished-pulse") {
+      this._timerFinished = false;
+    }
+  }
+
   public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
       throw new Error("Specify an entity");
@@ -107,14 +138,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition =
-      this._config && this._featurePosition(this._config);
-    const featuresCount = this._config?.features?.length || 0;
-    return (
-      1 +
-      (this._config?.vertical ? 1 : 0) +
-      (featuresPosition === "inline" ? 0 : featuresCount)
-    );
+    const featureRows = this._config ? this._featureRows(this._config) : 0;
+    return 1 + (this._config?.vertical ? 1 : 0) + featureRows;
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -123,12 +148,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     let rows = 1;
     const featurePosition = this._config && this._featurePosition(this._config);
     const featuresCount = this._config?.features?.length || 0;
-    if (featuresCount) {
+    if (this._config && featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
-      } else {
-        rows += featuresCount;
       }
+      rows += this._featureRows(this._config);
     }
 
     if (this._config?.vertical) {
@@ -234,15 +258,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return config.features_position || "bottom";
   });
 
-  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
-    const features = config.features || [];
-    const featurePosition = this._featurePosition(config);
+  private _featureLayout = memoizeOne((config: TileCardConfig) =>
+    computeCardFeatureLayout(config.features, this._featurePosition(config))
+  );
 
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
-    }
-    return features;
-  });
+  private _featureRows = memoizeOne((config: TileCardConfig) =>
+    computeCardFeatureRows(config.features, this._featurePosition(config))
+  );
 
   protected render() {
     if (!this._config || !this.hass) {
@@ -253,8 +275,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -270,7 +292,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : html`
           <state-display
             .stateObj=${stateObj}
-            .hass=${this.hass}
             .content=${this._config.state_content}
             .timeFormat=${this._config.time_format}
           >
@@ -286,7 +307,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
 
     const featurePosition = this._featurePosition(this._config);
-    const features = this._displayedFeatures(this._config);
+    const features = this._featureLayout(this._config);
 
     const hasImage = Boolean(imageUrl);
 
@@ -317,7 +338,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
-            class=${classMap({ image: hasImage })}
+            class=${classMap({
+              image: hasImage,
+              "timer-finished": this._timerFinished,
+            })}
+            @animationend=${this._timerFinishedAnimationEnded}
           >
             ${
               hasImage
@@ -341,14 +366,28 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             }
           </ha-tile-info>
           ${
-            features.length > 0
+            features.inline.length > 0
               ? html`
                   <hui-card-features
-                    slot="features"
+                    slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
                     .color=${this._config.color}
-                    .features=${features}
+                    .features=${features.inline}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
+          ${
+            features.below.length > 0
+              ? html`
+                  <hui-card-features
+                    slot="features"
+                    .columns=${features.columns}
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${features.below}
                   ></hui-card-features>
                 `
               : nothing
@@ -383,6 +422,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
       ha-tile-icon[data-domain="lock"][data-state="jammed"] {
         animation: pulse 1s infinite;
+      }
+
+      ha-tile-icon.timer-finished {
+        animation: timer-finished-pulse 0.5s ease-in-out 2;
+      }
+
+      @keyframes timer-finished-pulse {
+        50% {
+          --tile-icon-color: var(--error-color);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        ha-tile-icon.timer-finished {
+          animation-duration: var(--ha-animation-duration-none);
+        }
       }
 
       /* Make sure we display the whole image */

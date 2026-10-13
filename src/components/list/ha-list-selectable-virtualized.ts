@@ -20,6 +20,9 @@ import { HaListVirtualized } from "./ha-list-virtualized";
  *
  * @attr {boolean} multi - Whether multiple options can be selected at once. In
  *   single-select mode, selecting a row clears any previous selection.
+ * @attr {boolean} controlled - Only notify on click, never toggle a row's `selected` state.
+ *   Set it when the consumer derives `selected` from its own state, for example when a row stands
+ *   for a group whose click also changes its children.
  *
  * @fires ha-list-item-selected - Fires when the user selects a row.
  *   `detail` is the row's index (number).

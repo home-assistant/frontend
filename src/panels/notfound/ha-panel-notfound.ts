@@ -77,7 +77,7 @@ class HaPanelNotFound extends LitElement {
                   ),
                   tap_action: {
                     action: "navigate",
-                    navigation_path: "/profile/general",
+                    navigation_path: "/profile/dashboard",
                   },
                 },
               ],
